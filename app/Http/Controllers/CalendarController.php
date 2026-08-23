@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Deadline;
+use App\Models\Matter;
+use App\Models\MatterEvent;
+use App\Models\Task;
+use Carbon\CarbonImmutable;
+use Carbon\CarbonInterface;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
+
+class CalendarController extends Controller
+{
+    /**
+     * Handle the incoming request.
+     */
+    public function __invoke(Request $request): Response
+    {
+        $timezone = config('raf.timezone');
+        $matterIds = Matter::query()->visibleTo($request->user())->select('id');
+        $requestedMonth = $request->string('month')->toString();
+        $month = preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $requestedMonth) === 1
+            ? CarbonImmutable::parse($requestedMonth.'-01', $timezone)->startOfMonth()
+            : CarbonImmutable::now($timezone)->startOfMonth();
+        $from = $month->startOfWeek(CarbonInterface::MONDAY)->startOfDay();
+        $until = $month->endOfMonth()->endOfWeek(CarbonInterface::SUNDAY)->endOfDay();
+
+        return Inertia::render('calendar/index', [
+            'deadlines' => Deadline::query()->with('matter:id,matter_number,title')->whereIn('matter_id', $matterIds)
+                ->whereBetween('due_at', [$from, $until])->orderBy('due_at')->get(),
+            'events' => MatterEvent::query()->with('matter:id,matter_number,title')->whereIn('matter_id', $matterIds)
+                ->whereBetween('starts_at', [$from, $until])->orderBy('starts_at')->get(),
+            'tasks' => Task::query()->with('matter:id,matter_number,title')->where('assignee_id', $request->user()->getKey())
+                ->whereBetween('due_at', [$from, $until])->whereNotIn('status', ['cancelled'])->orderBy('due_at')->get(),
+            'range' => ['from' => $from->toDateString(), 'until' => $until->toDateString()],
+            'month' => $month->format('Y-m'),
+            'timezone' => $timezone,
+        ]);
+    }
+}
