@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('reaction', 32); // 'thumbs_up', 'heart', 'check', 'star'
             $table->timestamps();
 
-            $table->unique(['direct_message_id', 'user_id', 'reaction']);
+            $table->unique(['direct_message_id', 'user_id', 'reaction'], 'dmr_message_user_reaction_unique');
         });
     }
 

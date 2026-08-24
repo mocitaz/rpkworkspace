@@ -36,7 +36,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('comment_id')->references('id')->on('comments')->cascadeOnDelete();
-            $table->unique(['comment_id', 'user_id', 'emoji']);
+            $table->unique(['comment_id', 'user_id', 'emoji'], 'cr_comment_user_emoji_unique');
         });
     }
 

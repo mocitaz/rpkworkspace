@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->unsignedSmallInteger('hours_before');
             $table->timestamps();
-            $table->unique(['deadline_id', 'user_id', 'hours_before']);
+            $table->unique(['deadline_id', 'user_id', 'hours_before'], 'drd_deadline_user_hours_unique');
             $table->index(['user_id', 'created_at']);
         });
     }
