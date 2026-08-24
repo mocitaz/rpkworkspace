@@ -25,8 +25,8 @@ return new class extends Migration
             $table->text('signed_user_agent')->nullable();
             $table->string('accepted_name')->nullable();
             $table->timestamps();
-            $table->unique(['signature_request_id', 'email']);
-            $table->index(['signature_request_id', 'signing_order', 'status']);
+            $table->unique(['signature_request_id', 'email'], 'ss_request_email_unique');
+            $table->index(['signature_request_id', 'signing_order', 'status'], 'ss_request_order_status_idx');
         });
     }
 

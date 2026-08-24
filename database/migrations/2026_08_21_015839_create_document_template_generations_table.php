@@ -19,7 +19,7 @@ return new class extends Migration
             $table->json('resolved_placeholders');
             $table->foreignId('generated_by')->constrained('users')->restrictOnDelete();
             $table->timestamps();
-            $table->index(['document_template_id', 'created_at']);
+            $table->index(['document_template_id', 'created_at'], 'dtg_template_created_idx');
         });
     }
 
