@@ -18,7 +18,7 @@ return new class extends Migration
         });
 
         Schema::table('payments', function (Blueprint $table) {
-            $table->timestamp('refunded_at')->nullable()->after('reversed_at');
+            $table->timestamp('refunded_at')->nullable()->after('received_at');
             $table->foreignId('refunded_by')->nullable()->after('refunded_at')->constrained('users')->nullOnDelete();
             $table->text('refund_reason')->nullable()->after('refunded_by');
         });
