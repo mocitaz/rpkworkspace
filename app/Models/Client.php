@@ -52,6 +52,10 @@ class Client extends Model
                 try {
                     return decrypt($value);
                 } catch (Throwable) {
+                    if (str_starts_with($value, 'eyJ')) {
+                        return null;
+                    }
+
                     return $value;
                 }
             },
