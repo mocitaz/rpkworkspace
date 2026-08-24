@@ -2,283 +2,177 @@
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <title>INVOICE — {{ $invoice->invoice_number }}</title>
+    <title>Faktur Tagihan {{ $invoice->invoice_number }} — RPK Law Firm</title>
     <style>
-        @page {
-            margin: 32px 36px 40px 36px;
-            size: a4 portrait;
-        }
-        * {
-            box-sizing: border-box;
-            -webkit-print-color-adjust: exact;
-        }
-        body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            color: #1a1a1a;
-            margin: 0;
-            padding: 0;
-            font-size: 11px;
-            line-height: 1.45;
-        }
-        .header-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 24px;
-            border-bottom: 2px solid #0f172a;
-            padding-bottom: 16px;
-        }
-        .firm-title {
-            font-size: 20px;
-            font-weight: bold;
-            color: #0f172a;
-            letter-spacing: 0.5px;
-            margin: 0 0 4px 0;
-            text-transform: uppercase;
-        }
-        .firm-subtitle {
-            font-size: 9.5px;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 600;
-            margin: 0 0 8px 0;
-        }
-        .firm-address {
-            font-size: 9.5px;
-            color: #475569;
-            line-height: 1.4;
-        }
-        .doc-badge-title {
-            font-size: 24px;
-            font-weight: 900;
-            color: #0f172a;
-            letter-spacing: 1px;
-            text-align: right;
-            margin: 0 0 4px 0;
-        }
-        .doc-badge-number {
-            font-size: 12px;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            color: #0284c7;
-            text-align: right;
-            margin: 0 0 4px 0;
-        }
-        .doc-badge-status {
-            text-align: right;
-            font-size: 9px;
-            font-weight: bold;
-            text-transform: uppercase;
-            color: #475569;
-            letter-spacing: 0.5px;
-        }
-        .meta-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        .meta-box {
-            width: 50%;
-            vertical-align: top;
-            padding: 12px 14px;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-        }
-        .meta-label {
-            font-size: 8.5px;
-            font-weight: bold;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 4px;
-        }
-        .meta-value-title {
-            font-size: 12px;
-            font-weight: bold;
-            color: #0f172a;
-            margin-bottom: 3px;
-        }
-        .meta-value-sub {
-            font-size: 9.5px;
-            color: #475569;
-            line-height: 1.35;
-        }
-        .info-row {
-            margin-bottom: 3px;
-        }
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 18px;
-        }
-        .items-table th {
-            background-color: #0f172a;
-            color: #ffffff;
-            font-size: 9px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            padding: 8px 10px;
-            border: none;
-        }
-        .items-table td {
-            padding: 9px 10px;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 10px;
-            vertical-align: top;
-        }
-        .items-table tbody tr:nth-child(even) {
-            background-color: #f8fafc;
-        }
-        .text-left { text-align: left; }
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .font-mono { font-family: 'Courier New', Courier, monospace; }
+        @page { margin: 32px 40px 42px; size: A4 portrait; }
+        * { box-sizing: border-box; }
+        body { margin: 0; color: #1e293b; font-family: "DejaVu Sans", Helvetica, Arial, sans-serif; font-size: 8.5px; line-height: 1.48; }
+        table { width: 100%; border-collapse: collapse; }
+        .mono { font-family: "DejaVu Sans Mono", monospace; }
+        .navy { color: #0a1b33; }
+        .gold { color: #8f6a22; }
+        .muted { color: #64748b; }
+        .right { text-align: right; }
+        .center { text-align: center; }
+        .uppercase { text-transform: uppercase; }
 
-        .summary-wrapper {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 24px;
-        }
-        .notes-column {
-            width: 55%;
-            vertical-align: top;
-            padding-right: 20px;
-        }
-        .totals-column {
-            width: 45%;
-            vertical-align: top;
-        }
-        .totals-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .totals-table td {
-            padding: 5px 8px;
-            font-size: 10px;
-        }
-        .totals-table tr.grand-total td {
-            background-color: #0f172a;
-            color: #ffffff;
-            font-weight: bold;
-            font-size: 12px;
-            padding: 9px 10px;
-            border-radius: 4px;
-        }
-        .bank-box {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 10px 12px;
-            margin-top: 4px;
-        }
-        .bank-title {
-            font-size: 9px;
-            font-weight: bold;
-            color: #0f172a;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
-        }
-        .signature-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .signature-box {
-            width: 40%;
-            vertical-align: top;
-            text-align: center;
-        }
-        .signature-line {
-            width: 180px;
-            border-bottom: 1px solid #0f172a;
-            margin: 50px auto 4px auto;
-        }
-        .footer-note {
-            margin-top: 24px;
-            border-top: 1px solid #e2e8f0;
-            padding-top: 8px;
-            font-size: 8px;
-            color: #94a3b8;
-            text-align: center;
-        }
+        /* Letterhead Header */
+        .letterhead { margin-bottom: 14px; }
+        .letterhead td { vertical-align: middle; }
+        .logo-cell { width: 55%; }
+        .logo-crop { width: 195px; height: 62px; overflow: hidden; }
+        .logo-crop img { width: 195px; height: auto; margin-top: -24px; }
+        .office-cell { width: 45%; color: #475569; font-size: 7.2px; line-height: 1.55; text-align: right; }
+        .gold-rule { height: 2px; border-top: 1.5px solid #8f6a22; border-bottom: 1px solid #e2d2aa; margin-bottom: 18px; }
+
+        /* Document Header */
+        .doc-header-table { margin-bottom: 16px; }
+        .doc-header-table td { vertical-align: top; }
+        .doc-badge { display: inline-block; background: #0a1b33; color: #ffffff; padding: 2.5px 8px; font-size: 6.8px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; border-radius: 3px; }
+        .doc-title { margin-top: 5px; font-size: 19px; font-weight: bold; color: #0a1b33; letter-spacing: .3px; }
+        .doc-subtitle { margin-top: 2px; font-size: 7.5px; color: #64748b; }
+        
+        .ref-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; padding: 8px 12px; text-align: right; width: 42%; }
+        .ref-label { font-size: 6.8px; font-weight: bold; color: #8f6a22; letter-spacing: 1px; text-transform: uppercase; }
+        .ref-val { font-size: 11.5px; font-weight: bold; color: #0a1b33; margin-top: 2px; }
+        .ref-status { display: inline-block; padding: 2px 7px; font-size: 6.5px; font-weight: bold; border-radius: 3px; margin-top: 4px; text-transform: uppercase; }
+        .status-paid { background: #ecfdf5; color: #047857; }
+        .status-unpaid { background: #fff1f2; color: #be123c; }
+        .status-partial { background: #fffbeb; color: #b45309; }
+
+        /* Information Grid */
+        .info-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 5px; margin-bottom: 16px; table-layout: fixed; }
+        .info-card > tbody > tr > td { width: 50%; padding: 10px 14px; vertical-align: top; }
+        .info-card > tbody > tr > td:first-child { border-right: 1px solid #e2e8f0; }
+        .section-label { font-size: 6.8px; font-weight: bold; color: #8f6a22; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
+        .client-name { font-size: 11px; font-weight: bold; color: #0a1b33; margin-bottom: 2px; }
+        .client-detail { font-size: 7.6px; color: #475569; line-height: 1.5; }
+        .detail-row td { padding: 1.8px 0; font-size: 7.6px; vertical-align: top; }
+        .detail-label { width: 40%; color: #64748b; font-weight: bold; }
+        .detail-val { width: 60%; color: #0f172a; font-weight: bold; }
+
+        /* Items Table */
+        .items-table { margin-bottom: 16px; }
+        .items-table th { background: #0a1b33; color: #ffffff; font-size: 7px; font-weight: bold; padding: 6px 8px; text-transform: uppercase; letter-spacing: .5px; }
+        .items-table td { padding: 8px 8px; border-bottom: 1px solid #e2e8f0; font-size: 7.8px; vertical-align: top; }
+        .item-desc { font-weight: bold; color: #0a1b33; font-size: 8.5px; }
+
+        /* Summary & Bank Remittance */
+        .summary-layout { margin-bottom: 18px; page-break-inside: avoid; }
+        .summary-layout td { vertical-align: top; }
+        .bank-cell { width: 55%; padding-right: 20px; }
+        .bank-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; padding: 10px 12px; }
+        .bank-title { font-size: 8px; font-weight: bold; color: #0a1b33; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px; }
+        .bank-grid td { padding: 2px 0; font-size: 7.5px; vertical-align: top; }
+        .bank-label { width: 32%; color: #64748b; font-weight: bold; }
+        .bank-val { color: #0a1b33; font-weight: bold; }
+
+        .totals-cell { width: 45%; }
+        .totals-table { border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff; }
+        .totals-table td { padding: 4.5px 8px; font-size: 7.8px; }
+        .totals-label { color: #64748b; font-weight: bold; }
+        .totals-val { text-align: right; color: #0f172a; font-weight: bold; }
+        .total-highlight td { background: #0a1b33; color: #ffffff; font-size: 9.5px; font-weight: bold; padding: 7px 8px; }
+        .total-highlight .totals-label { color: #ffffff; }
+        .total-highlight .totals-val { color: #ffffff; }
+        .outstanding-row td { background: #fff1f2; color: #be123c; font-weight: bold; font-size: 8.5px; border-top: 1px solid #fecdd3; }
+
+        /* Closing Signature */
+        .closing-layout { margin-top: 24px; page-break-inside: avoid; }
+        .closing-layout td { vertical-align: bottom; }
+        .legal-clause { width: 58%; padding-right: 24px; font-size: 6.8px; color: #64748b; line-height: 1.5; }
+        .sig-col { width: 42%; text-align: center; }
+        .sig-firm { font-size: 8.5px; font-weight: bold; color: #0a1b33; margin-top: 2px; }
+        .sig-space { height: 42px; }
+        .sig-line { width: 170px; border-top: 1px solid #0a1b33; margin: 0 auto 3px; }
+        .sig-name { font-size: 7.5px; font-weight: bold; color: #0a1b33; }
+
+        /* Watermark & Footer */
+        .watermark { position: fixed; top: 40%; left: 0; width: 100%; text-align: center; transform: rotate(-25deg); opacity: 0.04; font-size: 26px; font-weight: bold; color: #0a1b33; z-index: -1000; }
+        .footer { position: fixed; right: 0; bottom: -30px; left: 0; padding-top: 5px; border-top: 1px solid #cbd5e1; color: #64748b; font-size: 6.5px; }
+        .footer td:last-child { text-align: right; }
     </style>
 </head>
 <body>
 
-    <!-- Header / Letterhead -->
-    <table class="header-table">
+    <div class="watermark">
+        DIUNDUH OLEH {{ strtoupper(auth()->user()->name ?? 'RPK USER') }}<br>
+        {{ now()->format('Y-m-d H:i') }} WIB · DOKUMEN RESMI RPK LAW FIRM
+    </div>
+
+    <table class="footer">
         <tr>
-            <td style="width: 58%; vertical-align: top;">
-                <div class="firm-title">{{ config('raf.firm.name', 'RPK Law Firm') }}</div>
-                <div class="firm-subtitle">Advocates &amp; Legal Consultants</div>
-                <div class="firm-address">
-                    Gedung Perkantoran Menara Hukum Lt. 18, Jl. Jend. Sudirman Kav. 52-53<br>
-                    Jakarta Selatan 12190, Indonesia · Tel: +62 21 520 8899<br>
-                    Email: billing@raflaw.co.id · Website: www.raflaw.co.id
+            <td>RONI, PUTRA &amp; KUSUMAH LAW FIRM &nbsp;|&nbsp; DOKUMEN TAGIHAN RESMI &nbsp;|&nbsp; RAHASIA</td>
+            <td class="mono">{{ $invoice->invoice_number }} &nbsp;|&nbsp; {{ now()->timezone(config('raf.timezone'))->format('d/m/Y H:i') }} WIB</td>
+        </tr>
+    </table>
+
+    <!-- Letterhead -->
+    <table class="letterhead">
+        <tr>
+            <td class="logo-cell">
+                <div class="logo-crop">
+                    <img src="{{ public_path('logo/logo.png') }}" alt="Roni, Putra & Kusumah Law Firm">
                 </div>
             </td>
-            <td style="width: 42%; vertical-align: top; text-align: right;">
-                <div class="doc-badge-title">INVOICE</div>
-                <div class="doc-badge-number">{{ $invoice->invoice_number }}</div>
-                <div class="doc-badge-status">
-                    Status: <strong>{{ strtoupper($invoice->status) }}</strong>
+            <td class="office-cell">
+                <strong>RONI, PUTRA &amp; KUSUMAH LAW FIRM</strong><br>
+                Menara Hukum RPK, Lantai 5, Jl. LLRE Martadinata No. 88, Bandung 40115<br>
+                Tel: +62 22 420 8899 &nbsp;·&nbsp; Email: billing@rpklaw.co.id
+            </td>
+        </tr>
+    </table>
+    <div class="gold-rule"></div>
+
+    <!-- Document Header & Reference -->
+    <table class="doc-header-table">
+        <tr>
+            <td>
+                <span class="doc-badge">FAKTUR TAGIHAN RESMI (INVOICE)</span>
+                <div class="doc-title">INVOICE PENAGIHAN JASA HUKUM</div>
+                <div class="doc-subtitle">Honorarium advokat, biaya penanganan perkara, dan penggantian pengeluaran operasional.</div>
+            </td>
+            <td style="width: 40%; text-align: right;">
+                <div class="ref-box" style="margin-left: auto;">
+                    <div class="ref-label">NOMOR FAKTUR</div>
+                    <div class="ref-val mono">{{ $invoice->invoice_number }}</div>
+                    @php
+                        $statusClass = $invoice->status === 'paid' ? 'status-paid' : ($invoice->status === 'partial' ? 'status-partial' : 'status-unpaid');
+                        $statusLabel = $invoice->status === 'paid' ? 'LUNAS (PAID)' : ($invoice->status === 'partial' ? 'DIBAYAR SEBAGIAN' : 'BELUM DIBAYAR (UNPAID)');
+                    @endphp
+                    <span class="ref-status {{ $statusClass }}">{{ $statusLabel }}</span>
                 </div>
             </td>
         </tr>
     </table>
 
-    <!-- Metadata Section: Client & Invoice Info -->
-    <table class="meta-table">
+    <!-- Client & Matter Information Grid -->
+    <table class="info-card">
         <tr>
-            <td class="meta-box" style="margin-right: 8px;">
-                <div class="meta-label">Ditujukan Kepada (Billed To):</div>
-                <div class="meta-value-title">{{ $invoice->client->display_name }}</div>
+            <td>
+                <div class="section-label">DITUJUKAN KEPADA (BILL TO):</div>
+                <div class="client-name">{{ $invoice->client->display_name }}</div>
                 @if ($invoice->client->legal_name && $invoice->client->legal_name !== $invoice->client->display_name)
-                    <div class="meta-value-sub" style="font-style: italic; margin-bottom: 4px;">{{ $invoice->client->legal_name }}</div>
+                    <div class="client-detail" style="font-weight: bold;">{{ $invoice->client->legal_name }}</div>
                 @endif
-                @if ($invoice->client->address_line1)
-                    <div class="meta-value-sub">
-                        {{ $invoice->client->address_line1 }}
-                        @if ($invoice->client->city), {{ $invoice->client->city }}@endif
-                        @if ($invoice->client->postal_code) {{ $invoice->client->postal_code }}@endif
-                    </div>
-                @endif
-                @if ($invoice->client->email)
-                    <div class="meta-value-sub">Email: {{ $invoice->client->email }}</div>
-                @endif
-                @if ($invoice->client->tax_identification_number)
-                    <div class="meta-value-sub font-mono">NPWP: {{ $invoice->client->tax_identification_number }}</div>
-                @endif
+                <div class="client-detail">
+                    @if ($invoice->client->address_line_1){{ $invoice->client->address_line_1 }}<br>@endif
+                    @if ($invoice->client->city){{ $invoice->client->city }}@if ($invoice->client->postal_code) {{ $invoice->client->postal_code }}@endif<br>@endif
+                    @if ($invoice->client->email)Email: {{ $invoice->client->email }}<br>@endif
+                    @if ($invoice->client->tax_identifier)NPWP: <span class="mono">{{ $invoice->client->tax_identifier }}</span>@endif
+                </div>
             </td>
-            <td style="width: 4%;"></td>
-            <td class="meta-box">
-                <div class="meta-label">Rincian Penagihan:</div>
-                <div class="info-row">
-                    <span class="meta-value-sub" style="color: #64748b; width: 90px; display: inline-block;">Perihal / Judul:</span>
-                    <strong style="color: #0f172a;">{{ $invoice->title }}</strong>
-                </div>
-                @if ($invoice->matter)
-                    <div class="info-row">
-                        <span class="meta-value-sub" style="color: #64748b; width: 90px; display: inline-block;">No. Matter:</span>
-                        <strong class="font-mono" style="color: #0284c7;">{{ $invoice->matter->matter_number }}</strong>
-                        <span class="meta-value-sub">({{ $invoice->matter->title }})</span>
-                    </div>
-                @endif
-                <div class="info-row">
-                    <span class="meta-value-sub" style="color: #64748b; width: 90px; display: inline-block;">Tgl. Diterbitkan:</span>
-                    <span class="meta-value-sub font-mono"><strong>{{ $invoice->issued_at?->translatedFormat('d F Y') ?? date('d F Y') }}</strong></span>
-                </div>
-                <div class="info-row">
-                    <span class="meta-value-sub" style="color: #64748b; width: 90px; display: inline-block;">Tgl. Jatuh Tempo:</span>
-                    <span class="meta-value-sub font-mono" style="color: #dc2626;"><strong>{{ $invoice->due_at?->translatedFormat('d F Y') ?? '—' }}</strong></span>
-                </div>
-                <div class="info-row">
-                    <span class="meta-value-sub" style="color: #64748b; width: 90px; display: inline-block;">Mata Uang:</span>
-                    <strong class="font-mono">{{ $invoice->currency }}</strong>
-                </div>
+            <td>
+                <div class="section-label">RINCIAN PERKARA &amp; PENAGIHAN:</div>
+                <table class="detail-row">
+                    <tr><td class="detail-label">Perihal:</td><td class="detail-val">{{ $invoice->title }}</td></tr>
+                    @if ($invoice->matter)
+                        <tr><td class="detail-label">Nomor Perkara:</td><td class="detail-val mono" style="color: #0369a1;">{{ $invoice->matter->matter_number }}</td></tr>
+                    @endif
+                    <tr><td class="detail-label">Tanggal Terbit:</td><td class="detail-val">{{ $invoice->issued_at?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}</td></tr>
+                    <tr><td class="detail-label">Jatuh Tempo:</td><td class="detail-val" style="color: #b91c1c;">{{ $invoice->due_at?->translatedFormat('d F Y') ?? 'Saat Diterima' }}</td></tr>
+                    <tr><td class="detail-label">Mata Uang:</td><td class="detail-val mono">{{ $invoice->currency ?: 'IDR' }}</td></tr>
+                </table>
             </td>
         </tr>
     </table>
@@ -287,94 +181,77 @@
     <table class="items-table">
         <thead>
             <tr>
-                <th class="text-center" style="width: 6%;">No.</th>
-                <th class="text-left" style="width: 52%;">Uraian Jasa Hukum / Deskripsi Biaya</th>
-                <th class="text-center" style="width: 10%;">Qty</th>
-                <th class="text-right" style="width: 16%;">Tarif Satuan ({{ $invoice->currency }})</th>
-                <th class="text-right" style="width: 16%;">Jumlah ({{ $invoice->currency }})</th>
+                <th class="center" style="width: 6%">No</th>
+                <th style="width: 50%; text-align: left">Deskripsi Jasa Hukum &amp; Pengeluaran</th>
+                <th class="center" style="width: 10%">Kuantitas</th>
+                <th class="right" style="width: 17%">Tarif Satuan ({{ $invoice->currency ?: 'IDR' }})</th>
+                <th class="right" style="width: 17%">Total ({{ $invoice->currency ?: 'IDR' }})</th>
             </tr>
         </thead>
         <tbody>
-            @forelse ($invoice->lineItems as $idx => $item)
+            @forelse ($invoice->lineItems as $index => $item)
                 <tr>
-                    <td class="text-center font-mono" style="color: #64748b;">{{ $idx + 1 }}</td>
-                    <td class="text-left">
-                        <strong style="color: #0f172a;">{{ $item->description }}</strong>
+                    <td class="center mono muted">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</td>
+                    <td>
+                        <div class="item-desc">{{ $item->description }}</div>
                     </td>
-                    <td class="text-center font-mono">{{ $item->quantity }}</td>
-                    <td class="text-right font-mono">{{ number_format($item->unit_amount ?? ($item->total_amount / max(1, $item->quantity)), 0, ',', '.') }}</td>
-                    <td class="text-right font-mono" style="font-weight: 600;">{{ number_format($item->total_amount, 0, ',', '.') }}</td>
+                    <td class="center mono">{{ $item->quantity }}</td>
+                    <td class="right mono">{{ number_format($item->unit_amount ?? ($item->total_amount / max(1, $item->quantity)), 0, ',', '.') }}</td>
+                    <td class="right mono"><strong>{{ number_format($item->total_amount, 0, ',', '.') }}</strong></td>
                 </tr>
             @empty
-                <tr>
-                    <td colspan="5" class="text-center" style="padding: 16px; color: #94a3b8;">Tidak ada rincian item invoice.</td>
-                </tr>
+                <tr><td colspan="5" class="center muted" style="padding: 14px;">Belum ada item tagihan tercatat.</td></tr>
             @endforelse
         </tbody>
     </table>
 
-    <!-- Summary & Bank Payment Instructions -->
-    <table class="summary-wrapper">
+    <!-- Settlement & Remittance Details -->
+    <table class="summary-layout">
         <tr>
-            <!-- Left: Payment Instructions -->
-            <td class="notes-column">
+            <td class="bank-cell">
                 <div class="bank-box">
-                    <div class="bank-title">Instruksi Pembayaran &amp; Rekening Bank:</div>
-                    <div class="meta-value-sub" style="margin-bottom: 4px;">
-                        Mohon lakukan transfer pembayaran ke rekening resmi kantor hukum kami:
-                    </div>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 9.5px;">
-                        <tr>
-                            <td style="width: 90px; color: #64748b; padding: 1.5px 0;">Bank:</td>
-                            <td style="font-weight: bold; color: #0f172a;">Bank Central Asia (BCA) KCU Sudirman</td>
-                        </tr>
-                        <tr>
-                            <td style="color: #64748b; padding: 1.5px 0;">No. Rekening:</td>
-                            <td class="font-mono" style="font-weight: bold; color: #0284c7; font-size: 11px;">872-009-8811</td>
-                        </tr>
-                        <tr>
-                            <td style="color: #64748b; padding: 1.5px 0;">Atas Nama:</td>
-                            <td style="font-weight: bold; color: #0f172a;">RPK LAW FIRM &amp; PARTNERS</td>
-                        </tr>
-                        <tr>
-                            <td style="color: #64748b; padding: 1.5px 0;">Berita Transfer:</td>
-                            <td class="font-mono" style="font-size: 9px; color: #475569;">{{ $invoice->invoice_number }} - {{ $invoice->client->display_name }}</td>
-                        </tr>
+                    <div class="bank-title">Instruksi Pembayaran &amp; Rekening Resmi</div>
+                    <table class="bank-grid">
+                        <tr><td class="bank-label">Bank Penerima:</td><td class="bank-val">Bank Central Asia (BCA) — KCU Sudirman</td></tr>
+                        <tr><td class="bank-label">Nomor Rekening:</td><td class="bank-val mono" style="color: #0369a1; font-size: 8.5px;">872-009-8811</td></tr>
+                        <tr><td class="bank-label">Atas Nama:</td><td class="bank-val">RPK LAW FIRM &amp; PARTNERS</td></tr>
+                        <tr><td class="bank-label">Berita Transfer:</td><td class="bank-val mono">{{ $invoice->invoice_number }}</td></tr>
                     </table>
+                    <div style="margin-top: 5px; font-size: 6.8px; color: #64748b; font-style: italic;">
+                        *Mohon mencantumkan Nomor Faktur pada berita transfer dan mengirimkan bukti transfer ke <strong>billing@rpklaw.co.id</strong>.
+                    </div>
                 </div>
             </td>
-
-            <!-- Right: Totals -->
-            <td class="totals-column">
+            <td class="totals-cell">
                 <table class="totals-table">
                     <tr>
-                        <td class="text-left" style="color: #64748b;">Subtotal Jasa:</td>
-                        <td class="text-right font-mono">{{ $invoice->currency }} {{ number_format($invoice->subtotal_amount, 0, ',', '.') }}</td>
+                        <td class="totals-label">Subtotal:</td>
+                        <td class="totals-val mono">{{ $invoice->currency ?: 'IDR' }} {{ number_format($invoice->subtotal_amount, 0, ',', '.') }}</td>
                     </tr>
                     @if ($invoice->discount_amount > 0)
                         <tr>
-                            <td class="text-left" style="color: #16a34a;">Potongan / Diskon:</td>
-                            <td class="text-right font-mono" style="color: #16a34a;">- {{ $invoice->currency }} {{ number_format($invoice->discount_amount, 0, ',', '.') }}</td>
+                            <td class="totals-label">Potongan / Diskon:</td>
+                            <td class="totals-val mono" style="color: #047857;">- {{ $invoice->currency ?: 'IDR' }} {{ number_format($invoice->discount_amount, 0, ',', '.') }}</td>
                         </tr>
                     @endif
                     @if ($invoice->tax_amount > 0)
                         <tr>
-                            <td class="text-left" style="color: #64748b;">PPN / Pajak:</td>
-                            <td class="text-right font-mono">{{ $invoice->currency }} {{ number_format($invoice->tax_amount, 0, ',', '.') }}</td>
+                            <td class="totals-label">PPN (11%):</td>
+                            <td class="totals-val mono">{{ $invoice->currency ?: 'IDR' }} {{ number_format($invoice->tax_amount, 0, ',', '.') }}</td>
                         </tr>
                     @endif
-                    <tr class="grand-total">
-                        <td class="text-left">TOTAL TAGIHAN:</td>
-                        <td class="text-right font-mono">{{ $invoice->currency }} {{ number_format($invoice->total_amount, 0, ',', '.') }}</td>
+                    <tr class="total-highlight">
+                        <td class="totals-label">TOTAL TAGIHAN:</td>
+                        <td class="totals-val mono">{{ $invoice->currency ?: 'IDR' }} {{ number_format($invoice->total_amount, 0, ',', '.') }}</td>
                     </tr>
                     @if ($invoice->paid_amount > 0)
                         <tr>
-                            <td class="text-left" style="padding-top: 6px; color: #16a34a; font-weight: 600;">Jumlah Telah Dibayar:</td>
-                            <td class="text-right font-mono" style="padding-top: 6px; color: #16a34a; font-weight: 600;">{{ $invoice->currency }} {{ number_format($invoice->paid_amount, 0, ',', '.') }}</td>
+                            <td class="totals-label" style="color: #047857;">Telah Dibayar:</td>
+                            <td class="totals-val mono" style="color: #047857;">{{ $invoice->currency ?: 'IDR' }} {{ number_format($invoice->paid_amount, 0, ',', '.') }}</td>
                         </tr>
-                        <tr>
-                            <td class="text-left" style="color: #dc2626; font-weight: bold;">Sisa Tagihan (Outstanding):</td>
-                            <td class="text-right font-mono" style="color: #dc2626; font-weight: bold;">{{ $invoice->currency }} {{ number_format($invoice->outstanding_amount, 0, ',', '.') }}</td>
+                        <tr class="outstanding-row">
+                            <td class="totals-label" style="color: #be123c;">SISA TAGIHAN:</td>
+                            <td class="totals-val mono">{{ $invoice->currency ?: 'IDR' }} {{ number_format($invoice->outstanding_amount, 0, ',', '.') }}</td>
                         </tr>
                     @endif
                 </table>
@@ -382,29 +259,21 @@
         </tr>
     </table>
 
-    <!-- Signature Block -->
-    <table class="signature-table">
+    <!-- Legal Notes & Signatures -->
+    <table class="closing-layout">
         <tr>
-            <td style="width: 60%; vertical-align: bottom;">
-                <div class="meta-value-sub" style="font-size: 8.5px; color: #64748b; line-height: 1.4;">
-                    * Pembayaran dianggap sah setelah dana efektif masuk ke rekening kantor kami.<br>
-                    * Harap mengirimkan bukti transfer via email ke billing@raflaw.co.id.
-                </div>
+            <td class="legal-clause">
+                <strong>Catatan Hukum &amp; Kepatuhan:</strong><br>
+                Faktur ini diterbitkan secara sah berdasarkan Perjanjian Jasa Hukum yang disepakati. Pembayaran dianggap sah setelah dana efektif masuk ke rekening resmi firma hukum Roni, Putra &amp; Kusumah. Dokumen ini merupakan tanda bukti tagihan resmi yang sah menurut hukum.
             </td>
-            <td class="signature-box">
-                <div class="meta-value-sub" style="margin-bottom: 2px;">Jakarta, {{ date('d F Y') }}</div>
-                <div class="meta-value-sub" style="font-weight: bold; color: #0f172a;">{{ config('raf.firm.name', 'RPK Law Firm') }}</div>
-                <div class="signature-line"></div>
-                <div style="font-size: 10px; font-weight: bold; color: #0f172a;">Managing Partner / Finance Director</div>
-                <div style="font-size: 8.5px; color: #64748b;">Advokat &amp; Konsultan Hukum</div>
+            <td class="sig-col">
+                <div style="font-size: 7.2px; color: #64748b;">Hormat Kami,</div>
+                <div class="sig-firm">RONI, PUTRA &amp; KUSUMAH LAW FIRM</div>
+                <div class="sig-space"></div>
+                <div class="sig-line"></div>
+                <div class="sig-name">Managing Partner / Direktur Keuangan</div>
             </td>
         </tr>
     </table>
-
-    <!-- Footer Security & Timestamp -->
-    <div class="footer-note">
-        Dokumen ini diterbitkan secara resmi melalui Sistem Manajemen Keuangan {{ config('raf.firm.name') }}. Dokumen ID: {{ $invoice->id }} · Dicetak pada: {{ now()->timezone(config('raf.timezone'))->translatedFormat('d/m/Y H:i:s T') }}
-    </div>
-
 </body>
 </html>

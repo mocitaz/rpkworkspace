@@ -22,7 +22,12 @@ class DocumentPreviewController extends Controller
     ): StreamedResponse {
         Gate::authorize('download', $document);
         $this->assertVersionIsAccessible($document, $version);
-        abort_unless($version->mime_type === 'application/pdf' || str_starts_with($version->mime_type, 'image/'), 415);
+        abort_unless(
+            $version->mime_type === 'application/pdf'
+            || str_starts_with($version->mime_type, 'image/')
+            || str_starts_with($version->mime_type, 'text/'),
+            415
+        );
 
         $audit->record($document, 'document.previewed', ['version_number' => $version->version_number], $request->user(), $request);
 

@@ -16,6 +16,7 @@ class PdfRenderer
         $options = new Options;
         $options->set('defaultFont', 'DejaVu Sans');
         $options->set('isRemoteEnabled', false);
+        $options->setChroot(public_path());
 
         $dompdf = new Dompdf($options);
         $dompdf->loadHtml(view($view, $data)->render());

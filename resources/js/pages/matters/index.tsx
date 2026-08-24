@@ -1,17 +1,30 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head, Link, router } from '@inertiajs/react';
 import {
     Briefcase,
+    Building2,
+    Calendar,
     ChevronDown,
     ChevronRight,
+    Clock,
+    FileText,
+    Filter,
     FolderKanban,
     Layers,
     Plus,
+    RotateCcw,
+    Scale,
     Search,
     ShieldAlert,
+    TrendingUp,
+    User,
+    UserCheck,
+    Users,
 } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { EmptyState } from '@/components/empty-state';
 import { Pagination } from '@/components/pagination';
 import { StatusBadge } from '@/components/status-badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -20,7 +33,9 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useInitials } from '@/hooks/use-initials';
 import { formatDate } from '@/lib/format';
+import * as clientRoutes from '@/routes/clients';
 import * as matterRoutes from '@/routes/matters';
 
 type Matter = {
@@ -31,9 +46,13 @@ type Matter = {
     priority: string;
     next_deadline?: string;
     updated_at: string;
-    client: { display_name: string };
+    client: { id?: string; display_name: string; type?: string; client_number?: string };
     practice_area?: { name: string };
-    responsible_partner: { id?: number; name: string; avatar_url?: string | null };
+    responsible_partner: {
+        id?: number;
+        name: string;
+        avatar_url?: string | null;
+    };
 };
 
 type Page<T> = {
@@ -53,228 +72,308 @@ export default function MattersIndex({
     filters: Record<string, string>;
     can: { create: boolean };
 }) {
-    const activeMattersCount = matters.data.filter((m) => m.status === 'active').length;
-    const highPriorityCount = matters.data.filter(
-        (m) => m.priority === 'critical' || m.priority === 'high',
-    ).length;
+    const getInitials = useInitials();
+    const [searchQuery, setSearchQuery] = useState(filters.search ?? '');
+
+    const activeMattersCount = useMemo(
+        () => matters.data.filter((m) => m.status === 'active').length,
+        [matters.data],
+    );
+
+    const highPriorityCount = useMemo(
+        () => matters.data.filter((m) => m.priority === 'critical' || m.priority === 'high').length,
+        [matters.data],
+    );
+
+    const corporateCount = useMemo(
+        () => matters.data.filter((m) => {
+            const pa = m.practice_area?.name?.toLowerCase() ?? '';
+            return pa.includes('corporate') || pa.includes('bisnis') || pa.includes('komersial');
+        }).length,
+        [matters.data],
+    );
+
+    const litigationCount = Math.max(0, activeMattersCount - corporateCount);
+
+    const handleFilterStatus = (statusValue: string) => {
+        const queryParams = new URLSearchParams(window.location.search);
+        if (statusValue) {
+            queryParams.set('status', statusValue);
+        } else {
+            queryParams.delete('status');
+        }
+        router.get(matterRoutes.index(), Object.fromEntries(queryParams.entries()), {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
 
     return (
         <>
-            <Head title="Matters" />
+            <Head title="Portofolio Perkara" />
 
-            <div className="min-h-screen w-full bg-[#fbfbfa] text-[#111111] antialiased dark:bg-[#121212] dark:text-[#fbfbfa]">
-                <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-                    {/* Notion Minimalist Header */}
-                    <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                    {/* 1. Header Navigation & Action Bar */}
+                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">
-                            <h1 className="text-2xl font-bold tracking-tight text-[#111111] dark:text-white">
-                                Matters
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                                Portofolio Perkara
                             </h1>
-                            <p className="text-xs text-[#787774] dark:text-zinc-400">
-                                Direktori penanganan perkara hukum, klien, dan penugasan tim advokat.
+                            <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                Seluruh registrasi perkara hukum, penugasan partner, jadwal sidang, dan monitoring tenggat perkara.
                             </p>
                         </div>
 
-                        {/* Right: Actions */}
+                        {/* Action Buttons */}
                         <div className="flex shrink-0 items-center gap-2">
                             {can.create && (
                                 <Button
-                                    className="h-8 rounded-lg bg-[#111111] px-3.5 text-xs font-semibold text-white shadow-2xs transition-colors hover:bg-black active:scale-95 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
                                     asChild
+                                    className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                 >
                                     <Link href={matterRoutes.create()}>
-                                        <Plus className="mr-1.5 size-3.5" />
-                                        Buat Matter
+                                        <Plus className="mr-1 size-3.5" />
+                                        Registrasi Perkara Baru
                                     </Link>
                                 </Button>
                             )}
                         </div>
-                    </header>
+                    </div>
 
-                    {/* Compact 4-Column Stat Strip (h-[76px]) */}
+                    {/* 2. Streamlined KPI Bento Cards (Compact & Slim) */}
                     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                         {/* 1. Total Matters */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Total Portofolio</span>
-                                <FolderKanban className="size-3.5 text-[#1f6c9f] dark:text-sky-400" />
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">TOTAL PERKARA</span>
+                                <FolderKanban className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-[#111111] dark:text-white">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {matters.total}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    perkara terdaftar
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    {matters.data.length} di halaman ini
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Arsip Portofolio Firma</span>
+                                <span className="font-mono font-semibold text-slate-700 dark:text-zinc-300">100% Tercatat</span>
                             </div>
                         </div>
 
                         {/* 2. Active Matters */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Perkara Berjalan</span>
-                                <span className="size-2 rounded-full bg-emerald-500" />
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">PERKARA AKTIF</span>
+                                <Briefcase className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {activeMattersCount}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    status aktif
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    {corporateCount} Corp · {litigationCount} Litigasi
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Dalam Penanganan</span>
+                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">Aktif</span>
                             </div>
                         </div>
 
                         {/* 3. High/Critical Priority */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Prioritas Tinggi</span>
-                                <ShieldAlert className="size-3.5 text-[#956400] dark:text-amber-400" />
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">PRIORITAS TINGGI</span>
+                                <ShieldAlert className="size-3.5 text-slate-400 transition-colors group-hover:text-rose-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-amber-600 dark:text-amber-400">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {highPriorityCount}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    kritis & tinggi
+                                <span className="text-[11px] font-medium text-rose-600 dark:text-rose-400">
+                                    kasus atensi
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Tenggat Terpantau</span>
+                                <span className="font-semibold text-rose-600 dark:text-rose-400">Atensi Partner</span>
                             </div>
                         </div>
 
-                        {/* 4. Area Praktik */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Area Praktik</span>
-                                <Layers className="size-3.5 text-[#787774] dark:text-zinc-300" />
+                        {/* 4. Practice Area */}
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">AREA PRAKTIK</span>
+                                <Scale className="size-3.5 text-slate-400 transition-colors group-hover:text-purple-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-[#111111] dark:text-white">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {practiceAreas.length}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
                                     bidang keahlian
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Spesialisasi Hukum</span>
+                                <span className="font-semibold text-purple-600 dark:text-purple-400">Terdistribusi</span>
                             </div>
                         </div>
                     </section>
 
-                    {/* Notion Inline Filter Toolbar */}
-                    <Form
-                        {...matterRoutes.index.form()}
-                        className="flex flex-col gap-2 rounded-xl border border-black/[0.08] bg-white p-2.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.08] dark:bg-[#1a1a1c]"
-                    >
-                        {/* Search Input */}
-                        <div className="relative flex-1 min-w-[240px]">
-                            <Search className="pointer-events-none absolute left-3 top-2 size-3.5 text-[#787774]" />
-                            <Input
-                                name="search"
-                                defaultValue={filters.search}
-                                placeholder="Cari nomor perkara atau judul matter…"
-                                className="h-7.5 w-full rounded-lg border-black/[0.08] bg-[#fbfbfa] pl-8.5 pr-3 text-xs text-[#2f3437] placeholder:text-[#787774] focus:border-black/20 focus:bg-white focus:outline-none dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200 dark:focus:border-white/20"
-                            />
-                        </div>
-
-                        {/* Filter Selects and Toggles */}
-                        <div className="flex flex-wrap items-center gap-2">
-                            {/* Status Filter */}
-                            <div className="relative">
-                                <select
-                                    name="status"
-                                    defaultValue={filters.status ?? ''}
-                                    className="h-7.5 cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-3 pr-7 text-xs font-medium text-[#2f3437] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200 dark:hover:bg-white/[0.04]"
+                    {/* 3. Filter Controls & Segmented Quick Filter Bar */}
+                    <div className="space-y-3">
+                        <div className="flex flex-col gap-3 rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.06] dark:bg-[#14161b]">
+                            {/* Segmented Quick Status Pills */}
+                            <div className="flex flex-wrap items-center gap-1">
+                                <button
+                                    type="button"
+                                    onClick={() => handleFilterStatus('')}
+                                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                        !filters.status
+                                            ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                            : 'text-slate-600 hover:bg-slate-100 dark:text-zinc-400 dark:hover:bg-white/[0.04]'
+                                    }`}
                                 >
-                                    <option value="">Semua Status</option>
-                                    <option value="active">Aktif</option>
-                                    <option value="on_hold">Ditunda</option>
-                                    <option value="closed">Ditutup</option>
-                                </select>
-                                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
+                                    Semua ({matters.total})
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleFilterStatus('active')}
+                                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                        filters.status === 'active'
+                                            ? 'bg-emerald-600 text-white shadow-2xs'
+                                            : 'text-slate-600 hover:bg-slate-100 hover:text-emerald-700 dark:text-zinc-400 dark:hover:bg-white/[0.04]'
+                                    }`}
+                                >
+                                    Aktif ({activeMattersCount})
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleFilterStatus('on_hold')}
+                                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                        filters.status === 'on_hold'
+                                            ? 'bg-amber-600 text-white shadow-2xs'
+                                            : 'text-slate-600 hover:bg-slate-100 hover:text-amber-700 dark:text-zinc-400 dark:hover:bg-white/[0.04]'
+                                    }`}
+                                >
+                                    Ditunda
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleFilterStatus('closed')}
+                                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                        filters.status === 'closed'
+                                            ? 'bg-slate-700 text-white shadow-2xs dark:bg-zinc-700'
+                                            : 'text-slate-600 hover:bg-slate-100 dark:text-zinc-400 dark:hover:bg-white/[0.04]'
+                                    }`}
+                                >
+                                    Ditutup
+                                </button>
                             </div>
 
-                            {/* Practice Area Filter */}
-                            <div className="relative">
-                                <select
-                                    name="practice_area_id"
-                                    defaultValue={filters.practice_area_id ?? ''}
-                                    className="h-7.5 cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-3 pr-7 text-xs font-medium text-[#2f3437] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200 dark:hover:bg-white/[0.04]"
-                                >
-                                    <option value="">Semua Area Praktik</option>
-                                    {practiceAreas.map((area) => (
-                                        <option key={area.id} value={area.id}>
-                                            {area.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
-                            </div>
-
-                            {/* Mine Toggle */}
-                            <label className="flex h-7.5 cursor-pointer items-center gap-2 rounded-lg border border-black/[0.08] bg-[#fbfbfa] px-3 text-xs font-medium text-[#2f3437] transition-colors hover:bg-black/[0.02] dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200 dark:hover:bg-white/[0.04]">
-                                <input
-                                    type="checkbox"
-                                    name="mine"
-                                    value="1"
-                                    defaultChecked={filters.mine === '1'}
-                                    className="size-3.5 rounded border-zinc-300 text-[#111111] focus:ring-0 dark:border-zinc-700"
-                                />
-                                Ditugaskan ke saya
-                            </label>
-
-                            {/* Submit Filter Button */}
-                            <Button
-                                type="submit"
-                                variant="outline"
-                                className="h-7.5 rounded-lg border-black/10 bg-white px-3 text-xs font-medium text-[#111111] shadow-2xs hover:bg-black/[0.03] dark:border-white/10 dark:bg-[#1c1c1e] dark:text-zinc-200 dark:hover:bg-white/[0.06]"
+                            {/* Search & Select Form */}
+                            <Form
+                                {...matterRoutes.index.form()}
+                                className="flex flex-wrap items-center gap-2"
                             >
-                                Terapkan
-                            </Button>
-                        </div>
-                    </Form>
+                                <div className="relative min-w-[200px] flex-1 sm:w-64 sm:flex-none">
+                                    <Search className="pointer-events-none absolute top-2.5 left-2.5 size-3.5 text-slate-400" />
+                                    <Input
+                                        name="search"
+                                        defaultValue={filters.search}
+                                        placeholder="Cari perkara, nomor, klien…"
+                                        className="h-8 w-full rounded-lg border-slate-200 bg-slate-50/70 pr-3 pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                    />
+                                </div>
 
-                    {/* Notion Database Table View */}
-                    <div className="overflow-hidden rounded-xl border border-black/[0.08] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
+                                <div className="relative">
+                                    <select
+                                        name="practice_area_id"
+                                        defaultValue={filters.practice_area_id ?? ''}
+                                        className="h-8 cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-700 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                    >
+                                        <option value="">Semua Area</option>
+                                        {practiceAreas.map((area) => (
+                                            <option key={area.id} value={area.id}>
+                                                {area.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
+                                </div>
+
+                                <Button
+                                    type="submit"
+                                    size="sm"
+                                    className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                                >
+                                    Filter
+                                </Button>
+
+                                {(filters.search || filters.practice_area_id || filters.mine || filters.status) && (
+                                    <Button
+                                        asChild
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-8 rounded-lg border-slate-200 px-2.5 text-xs text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                    >
+                                        <Link href={matterRoutes.index()}>
+                                            <RotateCcw className="size-3" />
+                                        </Link>
+                                    </Button>
+                                )}
+                            </Form>
+                        </div>
+                    </div>
+
+                    {/* 4. Precision Data Table (Notion Minimalist Style) */}
+                    <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                         {matters.data.length === 0 ? (
-                            <div className="flex min-h-[380px] items-center justify-center p-12 text-center">
+                            <div className="flex min-h-[300px] items-center justify-center p-8 text-center">
                                 <EmptyState
-                                    title="Tidak ada matter yang sesuai"
-                                    description="Ubah filter pencarian atau buat perkara baru untuk menambah portofolio."
+                                    title="Tidak ada perkara yang sesuai"
+                                    description="Coba ubah kata kunci filter pencarian atau registrasi perkara baru."
                                 />
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left text-xs">
                                     <thead>
-                                        <tr className="border-b border-black/[0.04] bg-[#fafafa] text-[10px] font-semibold tracking-wider text-[#787774] uppercase dark:border-white/[0.06] dark:bg-[#161618]">
-                                            <th className="py-2.5 pl-4 pr-3 font-semibold">Perkara</th>
+                                        <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
+                                            <th className="py-2.5 pr-3 pl-4 font-semibold">Perkara &amp; Nomor</th>
                                             <th className="px-3 py-2.5 font-semibold">Klien</th>
                                             <th className="px-3 py-2.5 font-semibold">Area Praktik</th>
-                                            <th className="px-3 py-2.5 text-center font-semibold">Partner</th>
+                                            <th className="px-3 py-2.5 text-center font-semibold">Lead Partner</th>
                                             <th className="px-3 py-2.5 font-semibold">Status</th>
                                             <th className="px-3 py-2.5 font-semibold">Prioritas</th>
                                             <th className="px-3 py-2.5 font-semibold">Tenggat</th>
-                                            <th className="py-2.5 pl-1 pr-4 text-right font-semibold"></th>
+                                            <th className="py-2.5 pr-4 pl-1 text-right font-semibold"></th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-black/[0.04] dark:divide-white/[0.05]">
+                                    <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                                         {matters.data.map((matter) => (
                                             <tr
                                                 key={matter.id}
-                                                className="group transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
+                                                className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
                                             >
-                                                {/* 1. Matter Title & Number */}
-                                                <td className="py-3 pl-4 pr-3">
+                                                {/* 1. Title & Number */}
+                                                <td className="py-2.5 pr-3 pl-4">
                                                     <Link
                                                         href={matterRoutes.show(matter.id)}
                                                         className="flex items-center gap-2.5"
                                                     >
-                                                        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-black/[0.04] text-[#787774] dark:bg-white/[0.06] dark:text-zinc-300">
+                                                        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-600 group-hover:text-white dark:bg-blue-950/40 dark:text-blue-400">
                                                             <Briefcase className="size-3.5" />
                                                         </div>
-                                                        <div className="min-w-0">
-                                                            <p className="truncate text-xs font-semibold text-[#111111] group-hover:text-blue-600 dark:text-zinc-100 dark:group-hover:text-sky-400">
+                                                        <div className="min-w-0 space-y-0.5">
+                                                            <p className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
                                                                 {matter.title}
                                                             </p>
-                                                            <span className="inline-block rounded bg-[#e1f3fe] px-1.5 py-0.2 font-mono text-[10px] font-medium text-[#1f6c9f] dark:bg-blue-950/50 dark:text-sky-300">
+                                                            <span className="inline-block font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
                                                                 {matter.matter_number}
                                                             </span>
                                                         </div>
@@ -282,75 +381,84 @@ export default function MattersIndex({
                                                 </td>
 
                                                 {/* 2. Client */}
-                                                <td className="whitespace-nowrap px-3 py-3 font-medium text-[#2f3437] dark:text-zinc-300">
-                                                    {matter.client.display_name}
+                                                <td className="px-3 py-2.5 font-medium whitespace-nowrap">
+                                                    {matter.client.id ? (
+                                                        <Link
+                                                            href={clientRoutes.show(matter.client.id)}
+                                                            className="inline-flex items-center gap-1.5 text-slate-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
+                                                        >
+                                                            {matter.client.type === 'individual' || matter.client.type === 'person' ? (
+                                                                <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                                            ) : (
+                                                                <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
+                                                            )}
+                                                            <span className="hover:underline">{matter.client.display_name}</span>
+                                                        </Link>
+                                                    ) : (
+                                                        <span className="inline-flex items-center gap-1.5 text-slate-700 dark:text-zinc-300">
+                                                            {matter.client.type === 'individual' || matter.client.type === 'person' ? (
+                                                                <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                                            ) : (
+                                                                <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
+                                                            )}
+                                                            <span>{matter.client.display_name}</span>
+                                                        </span>
+                                                    )}
                                                 </td>
 
                                                 {/* 3. Practice Area */}
-                                                <td className="whitespace-nowrap px-3 py-3">
-                                                    <span className="inline-flex items-center rounded-md bg-black/[0.04] px-2 py-0.5 text-[10px] font-medium text-[#787774] dark:bg-white/[0.06] dark:text-zinc-400">
+                                                <td className="px-3 py-2.5 whitespace-nowrap">
+                                                    <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
                                                         {matter.practice_area?.name ?? 'Umum'}
                                                     </span>
                                                 </td>
 
-                                                {/* 4. Responsible Partner (Avatar with Tooltip) */}
-                                                <td className="whitespace-nowrap px-3 py-3 text-center">
-                                                    <TooltipProvider delayDuration={150}>
+                                                {/* 4. Responsible Partner */}
+                                                <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                                                    <TooltipProvider delayDuration={100}>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
                                                                 <div className="inline-flex cursor-pointer items-center justify-center">
-                                                                    <div className="relative flex size-6.5 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black/[0.05] text-[10px] font-semibold text-zinc-700 dark:bg-white/[0.1] dark:text-zinc-300">
-                                                                        {matter.responsible_partner.avatar_url ? (
-                                                                            <img
-                                                                                src={matter.responsible_partner.avatar_url}
-                                                                                alt={matter.responsible_partner.name}
-                                                                                className="size-full object-cover"
-                                                                            />
-                                                                        ) : (
-                                                                            matter.responsible_partner.name
-                                                                                .split(' ')
-                                                                                .map((n) => n[0])
-                                                                                .slice(0, 2)
-                                                                                .join('')
-                                                                        )}
-                                                                    </div>
+                                                                    <Avatar className="size-6 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                        <AvatarImage src={matter.responsible_partner.avatar_url ?? undefined} />
+                                                                        <AvatarFallback className="text-[8px] font-bold">
+                                                                            {getInitials(matter.responsible_partner.name)}
+                                                                        </AvatarFallback>
+                                                                    </Avatar>
                                                                 </div>
                                                             </TooltipTrigger>
                                                             <TooltipContent
                                                                 side="top"
-                                                                className="rounded-lg border border-black/10 bg-[#111111] px-2.5 py-1 text-xs text-white shadow-lg dark:border-white/10 dark:bg-white dark:text-black"
+                                                                className="bg-slate-900 px-2.5 py-1 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800"
                                                             >
-                                                                <div className="flex flex-col text-left">
-                                                                    <span className="font-semibold">{matter.responsible_partner.name}</span>
-                                                                    <span className="text-[10px] text-[#787774] dark:text-zinc-400">Partner Penanggung Jawab</span>
-                                                                </div>
+                                                                {matter.responsible_partner.name}
                                                             </TooltipContent>
                                                         </Tooltip>
                                                     </TooltipProvider>
                                                 </td>
 
                                                 {/* 5. Status */}
-                                                <td className="whitespace-nowrap px-3 py-3">
+                                                <td className="px-3 py-2.5 whitespace-nowrap">
                                                     <StatusBadge value={matter.status} />
                                                 </td>
 
                                                 {/* 6. Priority */}
-                                                <td className="whitespace-nowrap px-3 py-3">
+                                                <td className="px-3 py-2.5 whitespace-nowrap">
                                                     <StatusBadge value={matter.priority} />
                                                 </td>
 
                                                 {/* 7. Next Deadline */}
-                                                <td className="whitespace-nowrap px-3 py-3 font-mono text-[11px] text-[#787774] dark:text-zinc-400">
-                                                    {matter.next_deadline ? formatDate(matter.next_deadline) : '—'}
+                                                <td className="px-3 py-2.5 font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                    {matter.next_deadline ? formatDate(matter.next_deadline) : '-'}
                                                 </td>
 
                                                 {/* 8. Action Arrow */}
-                                                <td className="py-3 pl-1 pr-4 text-right">
+                                                <td className="py-2.5 pr-4 pl-1 text-right">
                                                     <Link
                                                         href={matterRoutes.show(matter.id)}
-                                                        className="inline-flex size-6 items-center justify-center text-[#787774] opacity-0 transition-opacity group-hover:opacity-100 hover:text-[#111111] dark:hover:text-white"
+                                                        className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
                                                     >
-                                                        <ChevronRight className="size-3.5" />
+                                                        <ChevronRight className="size-4" />
                                                     </Link>
                                                 </td>
                                             </tr>
@@ -360,11 +468,10 @@ export default function MattersIndex({
                             </div>
                         )}
 
-                        {/* Unified Table Footer with Pagination */}
-                        <div className="flex flex-col justify-between gap-3 border-t border-black/[0.04] bg-[#fafafa] px-4 py-2.5 sm:flex-row sm:items-center dark:border-white/[0.06] dark:bg-[#161618]">
-                            <span className="text-xs text-[#787774] dark:text-zinc-400">
-                                Menampilkan <span className="font-semibold text-[#111111] dark:text-white">{matters.data.length}</span> dari{' '}
-                                <span className="font-semibold text-[#111111] dark:text-white">{matters.total}</span> perkara
+                        {/* Table Footer with Pagination */}
+                        <div className="flex flex-col justify-between gap-3 border-t border-slate-100 bg-slate-50/50 px-4 py-2.5 sm:flex-row sm:items-center dark:border-white/[0.04] dark:bg-[#121418]">
+                            <span className="text-xs text-slate-500 dark:text-zinc-400">
+                                Menampilkan <span className="font-semibold text-slate-900 dark:text-white">{matters.data.length}</span> dari <span className="font-semibold text-slate-900 dark:text-white">{matters.total}</span> perkara
                             </span>
 
                             <Pagination links={matters.links} />
@@ -377,5 +484,5 @@ export default function MattersIndex({
 }
 
 MattersIndex.layout = {
-    breadcrumbs: [{ title: 'Matters', href: matterRoutes.index() }],
+    breadcrumbs: [{ title: 'Perkara', href: matterRoutes.index() }],
 };

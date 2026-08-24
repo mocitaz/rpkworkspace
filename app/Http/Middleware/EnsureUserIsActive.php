@@ -21,7 +21,7 @@ class EnsureUserIsActive
             $request->session()->regenerateToken();
 
             return redirect()->route('login')->withErrors([
-                'email' => 'Akun Anda dinonaktifkan. Hubungi administrator RAF Workspace.',
+                'email' => 'Akun Anda dinonaktifkan. Hubungi administrator RPK Workspace.',
             ]);
         }
 

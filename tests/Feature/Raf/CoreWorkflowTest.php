@@ -12,7 +12,7 @@ it('validates and audits authorized client creation', function () {
     ])->assertSessionHasNoErrors();
 
     $client = Client::query()->firstOrFail();
-    expect($client->client_number)->toStartWith('RAF-C-')
+    expect($client->client_number)->toStartWith('RPK-C-')
         ->and(AuditLog::query()->where('event', 'client.created')->where('subject_id', $client->getKey())->exists())->toBeTrue();
 });
 

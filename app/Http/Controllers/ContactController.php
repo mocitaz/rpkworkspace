@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreContactRequest;
+use App\Http\Requests\UpdateContactRequest;
 use App\Models\Client;
 use App\Models\Contact;
 use App\Services\AuditService;
@@ -47,7 +48,10 @@ class ContactController extends Controller
             'clients' => Client::query()->where('status', 'active')->orderBy('display_name')->get(['id', 'display_name']),
             'metrics' => $metrics,
             'filters' => $request->only(['search', 'client_id']),
-            'can' => ['create' => $request->user()->can('create', Contact::class)],
+            'can' => [
+                'create' => $request->user()->can('create', Contact::class),
+                'update' => $request->user()->can('update', Contact::class),
+            ],
         ]);
     }
 
@@ -60,5 +64,17 @@ class ContactController extends Controller
         $audit->record($contact, 'contact.created', [], $request->user(), $request);
 
         return back()->with('success', 'Kontak berhasil ditambahkan.');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateContactRequest $request, Contact $contact, AuditService $audit): RedirectResponse
+    {
+        $old = $contact->only(['first_name', 'last_name', 'job_title', 'organization_name', 'email', 'phone', 'mobile', 'notes', 'client_id']);
+        $contact->update($request->validated());
+        $audit->record($contact, 'contact.updated', ['old' => $old, 'new' => $contact->only(array_keys($old))], $request->user(), $request);
+
+        return back()->with('success', 'Data kontak berhasil diperbarui.');
     }
 }

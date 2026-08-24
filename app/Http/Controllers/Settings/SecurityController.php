@@ -16,8 +16,18 @@ class SecurityController extends Controller
     /**
      * Show the user's security settings page.
      */
-    public function edit(TwoFactorAuthenticationRequest $request): Response
+    public function edit(TwoFactorAuthenticationRequest $request): Response|RedirectResponse
     {
+        if (Features::optionEnabled(Features::twoFactorAuthentication(), 'confirmPassword') ||
+            Features::optionEnabled(Features::passkeys(), 'confirmPassword')) {
+            $confirmedAt = (int) $request->session()->get('auth.password_confirmed_at', 0);
+            $timeout = (int) config('auth.password_timeout', 10800);
+
+            if ((time() - $confirmedAt) > $timeout) {
+                return redirect()->guest(route('password.confirm'));
+            }
+        }
+
         $props = [
             'canManageTwoFactor' => Features::canManageTwoFactorAuthentication(),
             'canManagePasskeys' => Features::canManagePasskeys(),

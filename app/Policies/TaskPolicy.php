@@ -45,8 +45,12 @@ class TaskPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Task $task): bool
+    public function update(User $user, ?Task $task = null): bool
     {
+        if ($task === null) {
+            return $user->hasPermission('task.manage') || $user->hasPermission('task.create');
+        }
+
         return $this->view($user, $task)
             && ($user->hasPermission('task.manage') || $task->assignee_id === $user->getKey());
     }
@@ -54,7 +58,7 @@ class TaskPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Task $task): bool
+    public function delete(User $user, ?Task $task = null): bool
     {
         return false;
     }
@@ -62,7 +66,7 @@ class TaskPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Task $task): bool
+    public function restore(User $user, ?Task $task = null): bool
     {
         return false;
     }
@@ -70,7 +74,7 @@ class TaskPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Task $task): bool
+    public function forceDelete(User $user, ?Task $task = null): bool
     {
         return false;
     }

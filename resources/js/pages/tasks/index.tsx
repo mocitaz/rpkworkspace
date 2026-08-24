@@ -1,24 +1,40 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
 import {
     AlertCircle,
+    ArrowUpRight,
+    Briefcase,
+    Calendar,
     CalendarClock,
+    Check,
     CheckCircle2,
     ChevronDown,
-    Circle,
+    ChevronRight,
     Clock,
+    ExternalLink,
+    FileText,
     Filter,
     FolderKanban,
+    Grid,
+    LayoutList,
     ListTodo,
+    Pencil,
     Plus,
+    RotateCcw,
+    Scale,
     Search,
+    TrendingUp,
+    User,
     UserCheck,
+    UserPlus,
     Users,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { DiscussionBox, type DiscussionComment } from '@/components/comments/discussion-box';
 import { EmptyState } from '@/components/empty-state';
 import InputError from '@/components/input-error';
 import { Pagination } from '@/components/pagination';
 import { StatusBadge } from '@/components/status-badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -36,6 +52,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useInitials } from '@/hooks/use-initials';
 import { formatDate } from '@/lib/format';
 import * as matterRoutes from '@/routes/matters';
 import * as taskRoutes from '@/routes/tasks';
@@ -57,9 +74,11 @@ type Task = {
     due_at?: string;
     assignee_id?: number;
     reviewer_id?: number;
+    matter_id?: string;
     assignee?: Person;
     reviewer?: Person;
     matter?: { id: string; matter_number: string; title: string };
+    comments?: DiscussionComment[];
 };
 
 type Page = {
@@ -86,13 +105,19 @@ export default function TasksIndex({
         completed: number;
     };
     filters: { view?: string; status?: string; matter_id?: string };
-    can: { create: boolean };
+    can: { create: boolean; update?: boolean };
 }) {
-    const [open, setOpen] = useState(() =>
+    const getInitials = useInitials();
+    const [openCreate, setOpenCreate] = useState(() =>
         new URLSearchParams(window.location.search).has('create'),
     );
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+    const [editingTask, setEditingTask] = useState<Task | null>(null);
+    const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
+    const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
 
-    const changeStatus = (task: Task, status: string) =>
+    const changeStatus = (task: Task, status: string) => {
+        setUpdatingTaskId(task.id);
         router.patch(
             taskRoutes.update(task.id),
             {
@@ -104,8 +129,17 @@ export default function TasksIndex({
                 due_at: task.due_at ?? '',
                 status,
             },
-            { preserveScroll: true },
+            {
+                preserveScroll: true,
+                onFinish: () => {
+                    setUpdatingTaskId(null);
+                    if (selectedTask?.id === task.id) {
+                        setSelectedTask({ ...selectedTask, status });
+                    }
+                },
+            },
         );
+    };
 
     const viewTabs = [
         { id: '', label: 'Semua Tugas' },
@@ -114,108 +148,128 @@ export default function TasksIndex({
         { id: 'overdue', label: 'Lewat Tenggat' },
     ];
 
+    const isTaskOverdue = (task: Task) =>
+        task.due_at &&
+        new Date(task.due_at) < new Date() &&
+        !['completed', 'cancelled'].includes(task.status);
+
     return (
         <>
-            <Head title="Tugas & Instruksi Kerja" />
+            <Head title="Manajemen Tugas & Instruksi Kerja" />
 
-            <div className="min-h-screen w-full bg-[#fbfbfa] text-[#111111] antialiased dark:bg-[#121212] dark:text-[#fbfbfa]">
-                <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-                    {/* Notion Minimalist Page Header */}
-                    <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                    {/* 1. Header & Actions */}
+                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">
-                            <h1 className="text-2xl font-bold tracking-tight text-[#111111] dark:text-white">
-                                Tugas & Instruksi Kerja
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                                Tugas &amp; Instruksi Kerja
                             </h1>
-                            <p className="text-xs text-[#787774] dark:text-zinc-400">
-                                Pelacakan penugasan advokat, review partner, dan tenggat waktu seluruh perkara.
+                            <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                Delegasi penugasan advokat, supervisi partner, dan kontrol batas waktu deliverable perkara.
                             </p>
                         </div>
 
-                        {/* Right: Actions */}
                         {can.create && (
                             <div className="flex shrink-0 items-center gap-2">
                                 <Button
-                                    onClick={() => setOpen(true)}
-                                    className="h-8 rounded-lg bg-[#111111] px-3.5 text-xs font-semibold text-white shadow-2xs transition-colors hover:bg-black active:scale-95 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                                    onClick={() => setOpenCreate(true)}
+                                    className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                 >
-                                    <Plus className="mr-1.5 size-3.5" />
+                                    <Plus className="mr-1 size-3.5" />
                                     Buat Tugas Baru
                                 </Button>
                             </div>
                         )}
-                    </header>
+                    </div>
 
-                    {/* Compact 4-Column Stat Strip (h-[76px]) */}
+                    {/* 2. Top 4 KPI Metrics Bento Cards */}
                     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                         {/* 1. Total Tugas */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Total Tugas</span>
-                                <ListTodo className="size-3.5 text-[#1f6c9f] dark:text-sky-400" />
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">TOTAL INSTRUKSI</span>
+                                <ListTodo className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-[#111111] dark:text-white">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {metrics.total}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    seluruh perkara
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    tugas kolektif
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Arsip Kantor</span>
+                                <span className="font-semibold text-slate-700 dark:text-zinc-300">{tasks.data.length} di halaman ini</span>
                             </div>
                         </div>
 
                         {/* 2. Tugas Saya */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Tugas Saya</span>
-                                <UserCheck className="size-3.5 text-purple-600 dark:text-purple-400" />
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">TUGAS SAYA</span>
+                                <UserCheck className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-purple-600 dark:text-purple-400">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {metrics.mine}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    perlu dikerjakan
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    tanggung jawab Anda
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Personal Assignment</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">Aktif</span>
                             </div>
                         </div>
 
                         {/* 3. Lewat Tenggat */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Lewat Tenggat</span>
-                                <AlertCircle className="size-3.5 text-rose-600 dark:text-rose-400" />
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">LEWAT TENGGAT</span>
+                                <AlertCircle className="size-3.5 text-rose-500 transition-colors dark:text-rose-400" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-rose-600 dark:text-rose-400">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-rose-600 dark:text-rose-400">
                                     {metrics.overdue}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    tenggat terlewat
+                                <span className="text-[11px] font-medium text-rose-600 dark:text-rose-400">
+                                    melewati batas
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Perlu Tindak Lanjut</span>
+                                <span className="font-semibold text-rose-600 dark:text-rose-400">Atensi Kritis</span>
                             </div>
                         </div>
 
                         {/* 4. Selesai */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Selesai</span>
-                                <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">SELESAI</span>
+                                <CheckCircle2 className="size-3.5 text-emerald-600 transition-colors dark:text-emerald-400" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
                                     {metrics.completed}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    dituntaskan
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    tuntas
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Deliverable Tuntas</span>
+                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">Selesai</span>
                             </div>
                         </div>
                     </section>
 
-                    {/* Filter & View Switcher Bar */}
-                    <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                        {/* Segmented View Pills */}
-                        <div className="inline-flex rounded-lg bg-black/[0.04] p-1 dark:bg-white/[0.06]">
+                    {/* 3. Filter Controls & Segmented Quick Filter Bar */}
+                    <div className="space-y-3">
+                        {/* Segmented Quick Status Pills */}
+                        <div className="flex flex-wrap items-center gap-1.5">
                             {viewTabs.map((tab) => {
                                 const isCurrent = (filters.view ?? '') === tab.id;
                                 return (
@@ -229,10 +283,10 @@ export default function TasksIndex({
                                                 { preserveState: true },
                                             )
                                         }
-                                        className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                                             isCurrent
-                                                ? 'bg-white text-[#111111] shadow-2xs dark:bg-zinc-700 dark:text-white'
-                                                : 'text-[#787774] hover:text-[#111111] dark:text-zinc-400 dark:hover:text-white'
+                                                ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                                : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
                                         }`}
                                     >
                                         {tab.label}
@@ -241,217 +295,257 @@ export default function TasksIndex({
                             })}
                         </div>
 
-                        {/* Dropdown Filters */}
-                        <div className="flex items-center gap-2">
-                            {/* Matter Filter */}
-                            <div className="relative min-w-[180px]">
-                                <select
-                                    defaultValue={filters.matter_id ?? ''}
-                                    onChange={(e) =>
-                                        router.get(
-                                            taskRoutes.index(),
-                                            { ...filters, matter_id: e.target.value || undefined },
-                                            { preserveState: true },
-                                        )
-                                    }
-                                    className="h-7.5 w-full cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-white pl-3 pr-7 text-xs font-medium text-[#2f3437] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 dark:border-white/[0.08] dark:bg-[#1a1a1c] dark:text-zinc-200"
-                                >
-                                    <option value="">Semua Perkara</option>
-                                    {matters.map((matter) => (
-                                        <option key={matter.id} value={matter.id}>
-                                            {matter.matter_number} — {matter.title}
-                                        </option>
-                                    ))}
-                                </select>
-                                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
+                        {/* Dropdown Filters & View Switcher */}
+                        <div className="flex flex-col gap-3 rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center">
+                                {/* Matter Filter */}
+                                <div className="relative min-w-[220px] flex-1 sm:max-w-xs">
+                                    <select
+                                        defaultValue={filters.matter_id ?? ''}
+                                        onChange={(e) =>
+                                            router.get(
+                                                taskRoutes.index(),
+                                                { ...filters, matter_id: e.target.value || undefined },
+                                                { preserveState: true },
+                                            )
+                                        }
+                                        className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                    >
+                                        <option value="">Semua Perkara Hukum</option>
+                                        {matters.map((matter) => (
+                                            <option key={matter.id} value={matter.id}>
+                                                {matter.matter_number} - {matter.title}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
+                                </div>
+
+                                {/* Status Filter */}
+                                <div className="relative min-w-[160px]">
+                                    <select
+                                        defaultValue={filters.status ?? ''}
+                                        onChange={(e) =>
+                                            router.get(
+                                                taskRoutes.index(),
+                                                { ...filters, status: e.target.value || undefined },
+                                                { preserveState: true },
+                                            )
+                                        }
+                                        className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                    >
+                                        <option value="">Semua Status</option>
+                                        <option value="todo">Belum Mulai</option>
+                                        <option value="in_progress">Sedang Dikerjakan</option>
+                                        <option value="waiting">Menunggu</option>
+                                        <option value="review">Review Partner</option>
+                                        <option value="completed">Selesai</option>
+                                        <option value="cancelled">Dibatalkan</option>
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
+                                </div>
+
+                                {(filters.view || filters.matter_id || filters.status) && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => router.get(taskRoutes.index(), {}, { preserveState: true })}
+                                        className="h-8 rounded-lg border-slate-200 px-2.5 text-xs text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                    >
+                                        <RotateCcw className="mr-1 size-3 text-slate-400" />
+                                        Reset
+                                    </Button>
+                                )}
                             </div>
 
-                            {/* Status Filter */}
-                            <div className="relative min-w-[140px]">
-                                <select
-                                    defaultValue={filters.status ?? ''}
-                                    onChange={(e) =>
-                                        router.get(
-                                            taskRoutes.index(),
-                                            { ...filters, status: e.target.value || undefined },
-                                            { preserveState: true },
-                                        )
-                                    }
-                                    className="h-7.5 w-full cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-white pl-3 pr-7 text-xs font-medium text-[#2f3437] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 dark:border-white/[0.08] dark:bg-[#1a1a1c] dark:text-zinc-200"
+                            {/* View Switcher Pills */}
+                            <div className="flex items-center gap-1 border-t border-slate-100 pt-2 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-2.5 dark:border-white/[0.04]">
+                                <button
+                                    type="button"
+                                    onClick={() => setViewMode('table')}
+                                    className={`flex size-7 items-center justify-center rounded-lg transition-all ${
+                                        viewMode === 'table'
+                                            ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400'
+                                    }`}
+                                    title="Tampilan Tabel"
                                 >
-                                    <option value="">Semua Status</option>
-                                    <option value="todo">Belum Dikerjakan</option>
-                                    <option value="in_progress">Sedang Dikerjakan</option>
-                                    <option value="waiting">Menunggu</option>
-                                    <option value="review">Dalam Review</option>
-                                    <option value="completed">Selesai</option>
-                                    <option value="cancelled">Dibatalkan</option>
-                                </select>
-                                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
+                                    <LayoutList className="size-3.5" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setViewMode('cards')}
+                                    className={`flex size-7 items-center justify-center rounded-lg transition-all ${
+                                        viewMode === 'cards'
+                                            ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400'
+                                    }`}
+                                    title="Tampilan Grid"
+                                >
+                                    <Grid className="size-3.5" />
+                                </button>
                             </div>
                         </div>
                     </div>
 
-                    {/* Task Table Surface */}
-                    <div className="overflow-hidden rounded-xl border border-black/[0.08] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                        {tasks.data.length === 0 ? (
-                            <div className="flex min-h-[380px] items-center justify-center p-12 text-center">
-                                <EmptyState
-                                    title="Tidak ada tugas pada filter ini"
-                                    description="Seluruh instruksi kerja telah dituntaskan atau silakan sesuaikan filter pilihan Anda."
-                                />
-                            </div>
-                        ) : (
+                    {/* 4. Tasks Content */}
+                    {tasks.data.length === 0 ? (
+                        <div className="flex min-h-[300px] items-center justify-center rounded-xl border border-slate-200/70 bg-white p-8 text-center shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <EmptyState
+                                title="Tidak ada tugas pada filter ini"
+                                description="Seluruh instruksi kerja telah dituntaskan atau silakan sesuaikan filter pilihan Anda."
+                            />
+                        </div>
+                    ) : viewMode === 'table' ? (
+                        /* Precision Data Table View */
+                        <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left text-xs">
                                     <thead>
-                                        <tr className="border-b border-black/[0.04] bg-[#fafafa] text-[10px] font-semibold uppercase tracking-wider text-[#787774] dark:border-white/[0.06] dark:bg-[#161618]">
-                                            <th className="py-2.5 pl-4 pr-3 font-semibold">Tugas & Lingkup Perkara</th>
+                                        <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
+                                            <th className="py-2.5 pr-3 pl-4 font-semibold">Tugas &amp; Kasus</th>
                                             <th className="px-3 py-2.5 text-center font-semibold">Assignee</th>
                                             <th className="px-3 py-2.5 text-center font-semibold">Reviewer</th>
                                             <th className="px-3 py-2.5 font-semibold">Tenggat</th>
                                             <th className="px-3 py-2.5 font-semibold">Prioritas</th>
-                                            <th className="py-2.5 pl-3 pr-4 text-left font-semibold">Status</th>
+                                            <th className="px-3 py-2.5 font-semibold">Status</th>
+                                            <th className="py-2.5 pr-4 pl-1 text-right font-semibold"></th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-black/[0.04] dark:divide-white/[0.05]">
+                                    <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                                         {tasks.data.map((task) => {
-                                            const isOverdue =
-                                                task.due_at &&
-                                                new Date(task.due_at) < new Date() &&
-                                                !['completed', 'cancelled'].includes(task.status);
+                                            const overdue = isTaskOverdue(task);
 
                                             return (
                                                 <tr
                                                     key={task.id}
-                                                    className="group transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
+                                                    className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
                                                 >
                                                     {/* Task Title & Matter Info */}
-                                                    <td className="py-3 pl-4 pr-3">
-                                                        <div className="space-y-1">
-                                                            <p className={`font-semibold text-[#111111] dark:text-white ${task.status === 'completed' ? 'line-through opacity-50' : ''}`}>
+                                                    <td className="py-2.5 pr-3 pl-4">
+                                                        <div className="space-y-0.5">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setSelectedTask(task)}
+                                                                className={`text-left text-xs font-semibold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400 ${
+                                                                    task.status === 'completed'
+                                                                        ? 'line-through opacity-50'
+                                                                        : ''
+                                                                }`}
+                                                            >
                                                                 {task.title}
-                                                            </p>
+                                                            </button>
+
                                                             {task.matter ? (
-                                                                <Link
-                                                                    href={matterRoutes.show(task.matter.id)}
-                                                                    className="inline-flex items-center gap-1 font-mono text-[10px] text-blue-600 hover:underline dark:text-sky-400"
-                                                                >
-                                                                    <span className="rounded bg-[#e1f3fe] px-1.5 py-0.2 font-semibold text-[#1f6c9f] dark:bg-blue-950/50 dark:text-sky-300">
-                                                                        {task.matter.matter_number}
-                                                                    </span>
-                                                                    <span className="truncate max-w-[260px] text-[#787774] dark:text-zinc-400">
-                                                                        · {task.matter.title}
-                                                                    </span>
-                                                                </Link>
+                                                                <div>
+                                                                    <Link
+                                                                        href={matterRoutes.show(task.matter.id)}
+                                                                        className="inline-flex items-center gap-1 font-mono text-[10px] font-medium text-slate-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400"
+                                                                    >
+                                                                        <span className="rounded bg-blue-50/80 px-1 py-0.2 font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                                            {task.matter.matter_number}
+                                                                        </span>
+                                                                        <span className="max-w-[240px] truncate">
+                                                                            · {task.matter.title}
+                                                                        </span>
+                                                                    </Link>
+                                                                </div>
                                                             ) : (
-                                                                <span className="font-mono text-[10px] text-[#787774] dark:text-zinc-500">
-                                                                    Tugas Umum / Non-Perkara
+                                                                <span className="font-mono text-[10px] text-slate-400">
+                                                                    Umum / Non-Perkara
                                                                 </span>
                                                             )}
                                                         </div>
                                                     </td>
 
                                                     {/* Assignee Avatar */}
-                                                    <td className="whitespace-nowrap px-3 py-3 text-center">
+                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
                                                         {task.assignee ? (
-                                                            <TooltipProvider delayDuration={150}>
+                                                            <TooltipProvider delayDuration={100}>
                                                                 <Tooltip>
                                                                     <TooltipTrigger asChild>
                                                                         <div className="inline-flex cursor-pointer items-center justify-center">
-                                                                            <div className="relative flex size-6.5 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black/[0.05] text-[10px] font-semibold text-zinc-700 dark:bg-white/[0.1] dark:text-zinc-300">
-                                                                                {task.assignee.avatar_url ? (
-                                                                                    <img
-                                                                                        src={task.assignee.avatar_url}
-                                                                                        alt={task.assignee.name}
-                                                                                        className="size-full object-cover"
-                                                                                    />
-                                                                                ) : (
-                                                                                    task.assignee.name
-                                                                                        .split(' ')
-                                                                                        .map((n) => n[0])
-                                                                                        .slice(0, 2)
-                                                                                        .join('')
-                                                                                )}
-                                                                            </div>
+                                                                            <Avatar className="size-6 rounded-full border border-slate-200 dark:border-white/10">
+                                                                                <AvatarImage src={task.assignee.avatar_url ?? undefined} />
+                                                                                <AvatarFallback className="text-[8px] font-bold">
+                                                                                    {getInitials(task.assignee.name)}
+                                                                                </AvatarFallback>
+                                                                            </Avatar>
                                                                         </div>
                                                                     </TooltipTrigger>
-                                                                    <TooltipContent className="rounded-lg border border-black/10 bg-[#111111] px-2.5 py-1 text-xs text-white shadow-lg dark:border-white/10 dark:bg-white dark:text-black">
+                                                                    <TooltipContent side="top" className="rounded-lg border border-slate-800 bg-slate-900 px-2.5 py-1 text-xs text-white shadow-xl dark:border-white/10 dark:bg-white dark:text-slate-900">
                                                                         <p className="font-semibold">{task.assignee.name}</p>
-                                                                        <p className="text-[10px] text-[#787774]">{task.assignee.position_title ?? 'Assignee'}</p>
+                                                                        <p className="text-[10px] text-slate-400 dark:text-zinc-500">
+                                                                            {task.assignee.position_title ?? 'Assignee'}
+                                                                        </p>
                                                                     </TooltipContent>
                                                                 </Tooltip>
-                                                            </TooltipProvider>
+                              </TooltipProvider>
                                                         ) : (
-                                                            <span className="text-[#787774] dark:text-zinc-500">—</span>
+                                                            <span className="font-mono text-slate-400">-</span>
                                                         )}
                                                     </td>
 
                                                     {/* Reviewer Avatar */}
-                                                    <td className="whitespace-nowrap px-3 py-3 text-center">
+                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
                                                         {task.reviewer ? (
-                                                            <TooltipProvider delayDuration={150}>
+                                                            <TooltipProvider delayDuration={100}>
                                                                 <Tooltip>
                                                                     <TooltipTrigger asChild>
                                                                         <div className="inline-flex cursor-pointer items-center justify-center">
-                                                                            <div className="relative flex size-6.5 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black/[0.05] text-[10px] font-semibold text-zinc-700 dark:bg-white/[0.1] dark:text-zinc-300">
-                                                                                {task.reviewer.avatar_url ? (
-                                                                                    <img
-                                                                                        src={task.reviewer.avatar_url}
-                                                                                        alt={task.reviewer.name}
-                                                                                        className="size-full object-cover"
-                                                                                    />
-                                                                                ) : (
-                                                                                    task.reviewer.name
-                                                                                        .split(' ')
-                                                                                        .map((n) => n[0])
-                                                                                        .slice(0, 2)
-                                                                                        .join('')
-                                                                                )}
-                                                                            </div>
+                                                                            <Avatar className="size-6 rounded-full border border-slate-200 dark:border-white/10">
+                                                                                <AvatarImage src={task.reviewer.avatar_url ?? undefined} />
+                                                                                <AvatarFallback className="text-[8px] font-bold">
+                                                                                    {getInitials(task.reviewer.name)}
+                                                                                </AvatarFallback>
+                                                                            </Avatar>
                                                                         </div>
                                                                     </TooltipTrigger>
-                                                                    <TooltipContent className="rounded-lg border border-black/10 bg-[#111111] px-2.5 py-1 text-xs text-white shadow-lg dark:border-white/10 dark:bg-white dark:text-black">
+                                                                    <TooltipContent side="top" className="rounded-lg border border-slate-800 bg-slate-900 px-2.5 py-1 text-xs text-white shadow-xl dark:border-white/10 dark:bg-white dark:text-slate-900">
                                                                         <p className="font-semibold">{task.reviewer.name}</p>
-                                                                        <p className="text-[10px] text-[#787774]">{task.reviewer.position_title ?? 'Reviewer Partner'}</p>
+                                                                        <p className="text-[10px] text-slate-400 dark:text-zinc-500">
+                                                                            {task.reviewer.position_title ?? 'Reviewer'}
+                                                                        </p>
                                                                     </TooltipContent>
                                                                 </Tooltip>
                                                             </TooltipProvider>
                                                         ) : (
-                                                            <span className="text-[#787774] dark:text-zinc-500">—</span>
+                                                            <span className="font-mono text-slate-400">-</span>
                                                         )}
                                                     </td>
 
                                                     {/* Due Date */}
-                                                    <td className="whitespace-nowrap px-3 py-3 font-mono text-[11px]">
+                                                    <td className="px-3 py-2.5 font-mono text-[11px] whitespace-nowrap">
                                                         {task.due_at ? (
                                                             <span
                                                                 className={
-                                                                    isOverdue
-                                                                        ? 'inline-flex items-center gap-1 font-bold text-rose-600 dark:text-rose-400'
-                                                                        : 'text-[#787774] dark:text-zinc-400'
+                                                                    overdue
+                                                                        ? 'inline-flex items-center gap-1 font-semibold text-rose-600 dark:text-rose-400'
+                                                                        : 'font-medium text-slate-700 dark:text-zinc-300'
                                                                 }
                                                             >
-                                                                {isOverdue && <AlertCircle className="size-3" />}
+                                                                {overdue && <AlertCircle className="size-3 shrink-0 text-rose-500" />}
                                                                 {formatDate(task.due_at)}
                                                             </span>
                                                         ) : (
-                                                            <span className="text-[#787774] dark:text-zinc-500">—</span>
+                                                            <span className="font-mono text-slate-400">-</span>
                                                         )}
                                                     </td>
 
                                                     {/* Priority */}
-                                                    <td className="whitespace-nowrap px-3 py-3">
+                                                    <td className="px-3 py-2.5 whitespace-nowrap">
                                                         <StatusBadge value={task.priority} />
                                                     </td>
 
                                                     {/* Status Selector */}
-                                                    <td className="whitespace-nowrap py-3 pl-3 pr-4 text-left">
+                                                    <td className="px-3 py-2.5 whitespace-nowrap">
                                                         <div className="relative inline-block">
                                                             <select
                                                                 value={task.status}
+                                                                disabled={updatingTaskId === task.id}
                                                                 onChange={(e) => changeStatus(task, e.target.value)}
-                                                                className="h-7 cursor-pointer appearance-none rounded-md border border-black/[0.08] bg-[#fbfbfa] pl-2 pr-6 text-[11px] font-medium text-[#111111] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200"
+                                                                className="h-7 cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-6 pl-2 text-[10.5px] font-medium text-slate-800 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                                             >
                                                                 <option value="todo">Belum Mulai</option>
                                                                 <option value="in_progress">Dikerjakan</option>
@@ -460,8 +554,21 @@ export default function TasksIndex({
                                                                 <option value="completed">Selesai</option>
                                                                 <option value="cancelled">Dibatalkan</option>
                                                             </select>
-                                                            <ChevronDown className="pointer-events-none absolute right-1.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
+                                                            <ChevronDown className="pointer-events-none absolute top-1/2 right-1.5 size-2.5 -translate-y-1/2 text-slate-400" />
                                                         </div>
+                                                    </td>
+
+                                                    {/* Action */}
+                                                    <td className="py-2.5 pr-4 pl-1 text-right whitespace-nowrap">
+                                                        <Button
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            onClick={() => setSelectedTask(task)}
+                                                            className="h-7 px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/[0.06]"
+                                                        >
+                                                            Detail
+                                                            <ChevronRight className="ml-0.5 size-3 text-slate-400" />
+                                                        </Button>
                                                     </td>
                                                 </tr>
                                             );
@@ -469,35 +576,393 @@ export default function TasksIndex({
                                     </tbody>
                                 </table>
                             </div>
-                        )}
 
-                        {/* Unified Table Footer with Pagination */}
-                        <div className="flex flex-col justify-between gap-3 border-t border-black/[0.04] bg-[#fafafa] px-4 py-2.5 sm:flex-row sm:items-center dark:border-white/[0.06] dark:bg-[#161618]">
-                            <span className="text-xs text-[#787774] dark:text-zinc-400">
-                                Menampilkan <span className="font-semibold text-[#111111] dark:text-white">{tasks.data.length}</span> dari{' '}
-                                <span className="font-semibold text-[#111111] dark:text-white">{tasks.total}</span> tugas
-                            </span>
-
-                            <Pagination links={tasks.links} />
+                            {/* Pagination Footer */}
+                            <div className="flex flex-col justify-between gap-3 border-t border-slate-100 bg-slate-50/50 px-4 py-2.5 sm:flex-row sm:items-center dark:border-white/[0.04] dark:bg-[#121418]">
+                                <span className="text-xs text-slate-500 dark:text-zinc-400">
+                                    Menampilkan <span className="font-semibold text-slate-900 dark:text-white">{tasks.data.length}</span> dari <span className="font-semibold text-slate-900 dark:text-white">{tasks.total}</span> tugas
+                                </span>
+                                <Pagination links={tasks.links} />
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        /* Grid Cards View */
+                        <div className="space-y-4">
+                            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                {tasks.data.map((task) => {
+                                    const overdue = isTaskOverdue(task);
+
+                                    return (
+                                        <article
+                                            key={task.id}
+                                            onClick={() => setSelectedTask(task)}
+                                            className="group flex cursor-pointer flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]"
+                                        >
+                                            <div className="space-y-2.5">
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <StatusBadge value={task.priority} />
+                                                    <StatusBadge value={task.status} />
+                                                </div>
+
+                                                <div>
+                                                    <h3
+                                                        className={`text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400 ${
+                                                            task.status === 'completed'
+                                                                ? 'line-through opacity-50'
+                                                                : ''
+                                                        }`}
+                                                    >
+                                                        {task.title}
+                                                    </h3>
+                                                    {task.description && (
+                                                        <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-slate-500 dark:text-zinc-400">
+                                                            {task.description}
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                {task.matter && (
+                                                    <div className="inline-flex items-center gap-1 rounded-md bg-blue-50/80 px-2 py-0.5 text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                        <Scale className="size-2.5 shrink-0" />
+                                                        <span className="font-mono">{task.matter.matter_number}</span>
+                                                        <span className="truncate">· {task.matter.title}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-xs dark:border-white/[0.04]">
+                                                {/* Personnel */}
+                                                <div className="flex items-center gap-1.5">
+                                                    {task.assignee ? (
+                                                        <>
+                                                            <Avatar className="size-5 rounded-full border border-slate-200 dark:border-white/10">
+                                                                <AvatarImage src={task.assignee.avatar_url ?? undefined} />
+                                                                <AvatarFallback className="text-[7px] font-bold">
+                                                                    {getInitials(task.assignee.name)}
+                                                                </AvatarFallback>
+                                                            </Avatar>
+                                                            <span className="text-[10px] text-slate-700 dark:text-zinc-300">
+                                                                {task.assignee.name.split(' ')[0]}
+                                                            </span>
+                                                        </>
+                                                    ) : (
+                                                        <span className="text-[10px] text-slate-400">Unassigned</span>
+                                                    )}
+                                                </div>
+
+                                                {/* Due Date */}
+                                                {task.due_at ? (
+                                                    <span
+                                                        className={`font-mono text-[10px] font-medium ${
+                                                            overdue
+                                                                ? 'text-rose-600 dark:text-rose-400'
+                                                                : 'text-slate-500 dark:text-zinc-400'
+                                                        }`}
+                                                    >
+                                                        {formatDate(task.due_at)}
+                                                    </span>
+                                                ) : (
+                                                    <span className="font-mono text-[10px] text-slate-400">Tanpa tenggat</span>
+                                                )}
+                                            </div>
+                                        </article>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Pagination */}
+                            <div className="border-t border-slate-100 p-3 dark:border-white/[0.04]">
+                                <Pagination links={tasks.links} />
+                            </div>
+                        </div>
+                    )}
                 </main>
             </div>
 
+            {/* Modal Dialog: Detail Ringkasan Tugas & Kolaborasi */}
+            <Dialog open={!!selectedTask} onOpenChange={(open) => !open && setSelectedTask(null)}>
+                {selectedTask && (
+                    <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
+                        {/* Header: Title, Badges & Action Controls */}
+                        <DialogHeader className="border-b border-slate-100 pb-4 dark:border-white/[0.06] space-y-3.5">
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="flex items-start gap-3">
+                                    <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400 mt-0.5">
+                                        <ListTodo className="size-4.5" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <StatusBadge value={selectedTask.priority} />
+                                            <StatusBadge value={selectedTask.status} />
+                                            {selectedTask.due_at && isTaskOverdue(selectedTask) && (
+                                                <span className="inline-flex items-center rounded-full bg-rose-50 px-2.5 py-0.5 text-[10px] font-bold text-rose-700 uppercase dark:bg-rose-950/60 dark:text-rose-300">
+                                                    Lewat Tenggat
+                                                </span>
+                                            )}
+                                        </div>
+                                        <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug">
+                                            {selectedTask.title}
+                                        </DialogTitle>
+                                        <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                            {selectedTask.matter ? (
+                                                <span>
+                                                    Terkait Perkara{' '}
+                                                    <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
+                                                        {selectedTask.matter.matter_number}
+                                                    </span>{' '}
+                                                    · {selectedTask.matter.title}
+                                                </span>
+                                            ) : (
+                                                <span>Tugas internal &amp; instruksi umum kantor</span>
+                                            )}
+                                        </DialogDescription>
+                                    </div>
+                                </div>
+
+                                {can.update && (
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => {
+                                            const t = selectedTask;
+                                            setSelectedTask(null);
+                                            setEditingTask(t);
+                                        }}
+                                        className="h-8 shrink-0 rounded-xl border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
+                                    >
+                                        <Pencil className="mr-1.5 size-3 text-slate-400" />
+                                        Edit Tugas
+                                    </Button>
+                                )}
+                            </div>
+
+                            {/* Symmetrical Quick Status Switcher Segment */}
+                            <div className="flex items-center justify-between rounded-xl bg-slate-100/80 p-1.5 dark:bg-white/[0.04]">
+                                <span className="pl-2 text-xs font-semibold text-slate-500 dark:text-zinc-400">
+                                    Ubah Status Alur Kerja:
+                                </span>
+                                <div className="flex items-center gap-1.5">
+                                    {selectedTask.status !== 'in_progress' && (
+                                        <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            onClick={() => changeStatus(selectedTask, 'in_progress')}
+                                            className="h-7.5 rounded-lg bg-white px-3 text-xs font-bold text-blue-600 shadow-2xs hover:bg-blue-50 dark:bg-[#20232a] dark:text-blue-400"
+                                        >
+                                            Kerjakan
+                                        </Button>
+                                    )}
+                                    {selectedTask.status !== 'review' && (
+                                        <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            onClick={() => changeStatus(selectedTask, 'review')}
+                                            className="h-7.5 rounded-lg bg-white px-3 text-xs font-bold text-amber-600 shadow-2xs hover:bg-amber-50 dark:bg-[#20232a] dark:text-amber-400"
+                                        >
+                                            Minta Review
+                                        </Button>
+                                    )}
+                                    {selectedTask.status !== 'completed' && (
+                                        <Button
+                                            size="sm"
+                                            onClick={() => changeStatus(selectedTask, 'completed')}
+                                            className="h-7.5 rounded-lg bg-emerald-600 px-3.5 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-95"
+                                        >
+                                            <Check className="mr-1 size-3.5" />
+                                            Tandai Selesai
+                                        </Button>
+                                    )}
+                                </div>
+                            </div>
+                        </DialogHeader>
+
+                        <div className="space-y-4 pt-2">
+                            {/* Symmetric 2x2 Grid Cockpit */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                {/* 1. Perkara Terkait */}
+                                <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#121418]">
+                                    <div className="space-y-1.5">
+                                        <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
+                                            <Briefcase className="size-3.5 text-blue-600 dark:text-blue-400" />
+                                            <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                                Perkara Terkait
+                                            </span>
+                                        </div>
+                                        {selectedTask.matter ? (
+                                            <div className="pt-0.5">
+                                                <p className="line-clamp-2 text-xs font-semibold text-slate-900 dark:text-white">
+                                                    <span className="font-mono text-blue-600 dark:text-blue-400">{selectedTask.matter.matter_number}</span> · {selectedTask.matter.title}
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <p className="pt-0.5 text-xs text-slate-400 italic">Tugas independen (tanpa perkara)</p>
+                                        )}
+                                    </div>
+                                    {selectedTask.matter && (
+                                        <div className="pt-3">
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="h-7.5 w-full rounded-xl border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-200"
+                                                asChild
+                                            >
+                                                <Link href={matterRoutes.show(selectedTask.matter.id)}>
+                                                    Buka Perkara
+                                                    <ArrowUpRight className="ml-1 size-3.5 text-slate-400" />
+                                                </Link>
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* 2. Batas Waktu (Tenggat) */}
+                                <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#121418]">
+                                    <div className="space-y-1.5">
+                                        <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
+                                            <Clock className="size-3.5 text-amber-600 dark:text-amber-400" />
+                                            <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                                Batas Waktu (Tenggat)
+                                            </span>
+                                        </div>
+                                        <div className="pt-0.5">
+                                            {selectedTask.due_at ? (
+                                                <div className="space-y-0.5">
+                                                    <p className="font-mono text-sm font-bold text-slate-900 dark:text-white">
+                                                        {formatDate(selectedTask.due_at, true)}
+                                                    </p>
+                                                    <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                        {isTaskOverdue(selectedTask) ? (
+                                                            <span className="font-semibold text-rose-600 dark:text-rose-400">⚠️ Melewati batas waktu</span>
+                                                        ) : (
+                                                            <span>Jadwal deliverable perkara</span>
+                                                        )}
+                                                    </p>
+                                                </div>
+                                            ) : (
+                                                <p className="text-xs text-slate-400 italic">Tidak ditentukan</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="pt-3">
+                                        <div className="flex h-7.5 items-center justify-center rounded-xl bg-slate-200/50 px-2 text-[11px] font-medium text-slate-600 dark:bg-white/[0.04] dark:text-zinc-400">
+                                            {selectedTask.due_at ? 'Target penyelesaian deliverable' : 'Fleksibel'}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 3. Pelaksana (Assignee) */}
+                                <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#121418]">
+                                    <div className="space-y-1.5">
+                                        <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
+                                            <UserCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                            <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                                Pelaksana (Assignee)
+                                            </span>
+                                        </div>
+                                        <div className="pt-1">
+                                            {selectedTask.assignee ? (
+                                                <div className="flex items-center gap-2.5">
+                                                    <Avatar className="size-8.5 rounded-full border border-slate-200 dark:border-white/10">
+                                                        <AvatarImage src={selectedTask.assignee.avatar_url ?? undefined} />
+                                                        <AvatarFallback className="text-[10px] font-bold">
+                                                            {getInitials(selectedTask.assignee.name)}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="min-w-0">
+                                                        <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                                            {selectedTask.assignee.name}
+                                                        </p>
+                                                        <p className="truncate text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                            {selectedTask.assignee.position_title ?? 'Advokat Pelaksana'}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <p className="text-xs text-slate-400 italic">Belum ditugaskan</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 4. Reviewer (Partner) */}
+                                <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#121418]">
+                                    <div className="space-y-1.5">
+                                        <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
+                                            <User className="size-3.5 text-indigo-600 dark:text-indigo-400" />
+                                            <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                                Reviewer (Partner)
+                                            </span>
+                                        </div>
+                                        <div className="pt-1">
+                                            {selectedTask.reviewer ? (
+                                                <div className="flex items-center gap-2.5">
+                                                    <Avatar className="size-8.5 rounded-full border border-slate-200 dark:border-white/10">
+                                                        <AvatarImage src={selectedTask.reviewer.avatar_url ?? undefined} />
+                                                        <AvatarFallback className="text-[10px] font-bold">
+                                                            {getInitials(selectedTask.reviewer.name)}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="min-w-0">
+                                                        <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                                            {selectedTask.reviewer.name}
+                                                        </p>
+                                                        <p className="truncate text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                            {selectedTask.reviewer.position_title ?? 'Supervising Partner'}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <p className="text-xs text-slate-400 italic">Tanpa reviewer</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Instruksi Kerja & Catatan Teknis */}
+                            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#121418] space-y-2">
+                                <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
+                                    <FileText className="size-3.5 text-slate-600 dark:text-zinc-300" />
+                                    <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-700 dark:text-zinc-300">
+                                        Instruksi Kerja &amp; Catatan Teknis
+                                    </span>
+                                </div>
+                                <div className="text-xs leading-relaxed text-slate-700 dark:text-zinc-300 whitespace-pre-wrap">
+                                    {selectedTask.description ||
+                                        'Tidak ada instruksi kerja tambahan. Kerjakan tugas sesuai SOP dan arahan Partner penanggung jawab.'}
+                                </div>
+                            </div>
+
+                            {/* Task Collaboration Discussion Box */}
+                            <div className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <DiscussionBox
+                                    commentableType="task"
+                                    commentableId={selectedTask.id}
+                                    comments={selectedTask.comments || []}
+                                    staffList={users || []}
+                                    title="Klarifikasi & Catatan Diskusi Tugas"
+                                    subtitle="Tanyakan kendala atau konfirmasi arahan riset."
+                                />
+                            </div>
+                        </div>
+                    </DialogContent>
+                )}
+            </Dialog>
+
             {/* Modal Dialog: Buat Tugas Baru */}
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-h-[85vh] overflow-y-auto rounded-2xl border border-black/[0.08] bg-white p-5 shadow-2xl sm:max-w-xl dark:border-white/10 dark:bg-[#1c1c1e]">
-                    <DialogHeader className="border-b border-black/[0.04] pb-3 dark:border-white/[0.06]">
-                        <div className="flex items-center gap-2.5">
-                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-black/[0.04] text-[#111111] dark:bg-white/[0.06] dark:text-white">
-                                <ListTodo className="size-4" />
+            <Dialog open={openCreate} onOpenChange={setOpenCreate}>
+                <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
+                    <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
+                        <div className="flex items-center gap-3">
+                            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                                <ListTodo className="size-4.5" />
                             </div>
                             <div>
-                                <DialogTitle className="text-sm font-bold tracking-tight text-[#111111] dark:text-white">
-                                    Buat Tugas & Instruksi Baru
+                                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                    Buat Tugas &amp; Instruksi Baru
                                 </DialogTitle>
-                                <DialogDescription className="text-xs text-[#787774] dark:text-zinc-400">
-                                    Tetapkan penugasan kerja advokat, reviewer partner, dan tenggat waktu.
+                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                    Tetapkan penugasan advokat, reviewer, dan tenggat waktu.
                                 </DialogDescription>
                             </div>
                         </div>
@@ -505,9 +970,9 @@ export default function TasksIndex({
 
                     <Form
                         {...taskRoutes.store.form()}
-                        className="space-y-3.5 pt-1"
+                        className="space-y-4 pt-1"
                         resetOnSuccess
-                        onSuccess={() => setOpen(false)}
+                        onSuccess={() => setOpenCreate(false)}
                     >
                         {({ errors, processing }) => (
                             <>
@@ -515,81 +980,93 @@ export default function TasksIndex({
                                     label="Judul Tugas"
                                     name="title"
                                     error={errors.title}
-                                    placeholder="Contoh: Analisis Dokumen Kontrak EPC & Klausul Arbitrase"
+                                    placeholder="Contoh: Analisis Dokumen Kontrak & Klausul Arbitrase"
                                     required
                                 />
 
-                                <div className="grid gap-1.5">
-                                    <Label htmlFor="matter_id" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
-                                        Terkait Matter
+                                <div className="grid gap-1">
+                                    <Label
+                                        htmlFor="matter_id"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                    >
+                                        Terkait Matter / Perkara
                                     </Label>
                                     <div className="relative">
                                         <select
                                             id="matter_id"
                                             name="matter_id"
-                                            className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-3 pr-8 text-xs font-medium text-[#111111] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200"
+                                            className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                         >
                                             <option value="">Tanpa matter (Tugas Umum)</option>
                                             {matters.map((matter) => (
                                                 <option key={matter.id} value={matter.id}>
-                                                    {matter.matter_number} — {matter.title}
+                                                    {matter.matter_number} - {matter.title}
                                                 </option>
                                             ))}
                                         </select>
-                                        <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
+                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
                                     </div>
                                     <InputError message={errors.matter_id} />
                                 </div>
 
                                 <div className="grid gap-3 sm:grid-cols-2">
-                                    <div className="grid gap-1.5">
-                                        <Label htmlFor="assignee_id" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+                                    <div className="grid gap-1">
+                                        <Label
+                                            htmlFor="assignee_id"
+                                            className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                        >
                                             Ditugaskan ke (Assignee)
                                         </Label>
                                         <div className="relative">
                                             <select
                                                 id="assignee_id"
                                                 name="assignee_id"
-                                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-3 pr-8 text-xs font-medium text-[#111111] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200"
+                                                className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                             >
                                                 <option value="">Belum Ditugaskan</option>
                                                 {users.map((user) => (
                                                     <option key={user.id} value={user.id}>
-                                                        {user.name} {user.position_title ? `— ${user.position_title}` : ''}
+                                                        {user.name} {user.position_title ? `- ${user.position_title}` : ''}
                                                     </option>
                                                 ))}
                                             </select>
-                                            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
+                                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
                                         </div>
                                         <InputError message={errors.assignee_id} />
                                     </div>
 
-                                    <div className="grid gap-1.5">
-                                        <Label htmlFor="reviewer_id" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
-                                            Reviewer (Partner / Supervising)
+                                    <div className="grid gap-1">
+                                        <Label
+                                            htmlFor="reviewer_id"
+                                            className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                        >
+                                            Reviewer (Partner)
                                         </Label>
                                         <div className="relative">
                                             <select
                                                 id="reviewer_id"
                                                 name="reviewer_id"
-                                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-3 pr-8 text-xs font-medium text-[#111111] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200"
+                                                className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                             >
                                                 <option value="">Tanpa Reviewer</option>
                                                 {users.map((user) => (
                                                     <option key={user.id} value={user.id}>
-                                                        {user.name} {user.position_title ? `— ${user.position_title}` : ''}
+                                                        {user.name} {user.position_title ? `- ${user.position_title}` : ''}
                                                     </option>
                                                 ))}
                                             </select>
-                                            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
+                                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
                                         </div>
                                         <InputError message={errors.reviewer_id} />
                                     </div>
                                 </div>
 
                                 <div className="grid gap-3 sm:grid-cols-3">
-                                    <div className="grid gap-1.5">
-                                        <Label htmlFor="priority" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+                                    <div className="grid gap-1">
+                                        <Label
+                                            htmlFor="priority"
+                                            className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                        >
                                             Prioritas
                                         </Label>
                                         <div className="relative">
@@ -597,19 +1074,22 @@ export default function TasksIndex({
                                                 id="priority"
                                                 name="priority"
                                                 defaultValue="normal"
-                                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-3 pr-8 text-xs font-medium text-[#111111] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200"
+                                                className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                             >
                                                 <option value="low">Rendah</option>
                                                 <option value="normal">Normal</option>
                                                 <option value="high">Tinggi</option>
                                                 <option value="critical">Kritis</option>
                                             </select>
-                                            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
+                                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
                                         </div>
                                     </div>
 
-                                    <div className="grid gap-1.5">
-                                        <Label htmlFor="status" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+                                    <div className="grid gap-1">
+                                        <Label
+                                            htmlFor="status"
+                                            className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                        >
                                             Status Awal
                                         </Label>
                                         <div className="relative">
@@ -617,55 +1097,60 @@ export default function TasksIndex({
                                                 id="status"
                                                 name="status"
                                                 defaultValue="todo"
-                                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-3 pr-8 text-xs font-medium text-[#111111] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200"
+                                                className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                             >
                                                 <option value="todo">Belum Mulai</option>
-                                                <option value="in_progress">Sedang Dikerjakan</option>
+                                                <option value="in_progress">Dikerjakan</option>
                                                 <option value="waiting">Menunggu</option>
                                                 <option value="review">Review</option>
                                             </select>
-                                            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
+                                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
                                         </div>
                                     </div>
 
                                     <Field
-                                        label="Batas Waktu (Tenggat)"
+                                        label="Tenggat Waktu"
                                         name="due_at"
                                         type="date"
                                         error={errors.due_at}
                                     />
                                 </div>
 
-                                <div className="grid gap-1.5">
-                                    <Label htmlFor="description" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
-                                        Deskripsi & Instruksi Kerja
+                                <div className="grid gap-1">
+                                    <Label
+                                        htmlFor="description"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                    >
+                                        Instruksi Kerja
                                     </Label>
                                     <textarea
                                         id="description"
                                         name="description"
                                         rows={3}
-                                        placeholder="Tuliskan petunjuk teknis, rincian deliverable, atau catatan instruksi..."
-                                        className="w-full rounded-lg border border-black/[0.08] bg-[#fbfbfa] p-2.5 text-xs leading-relaxed text-[#111111] outline-none transition-colors placeholder:text-[#787774] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-white"
+                                        placeholder="Petunjuk teknis, rincian deliverable, atau catatan instruksi..."
+                                        className="w-full rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 transition-colors outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                     />
                                     <InputError message={errors.description} />
                                 </div>
 
-                                <div className="flex items-center justify-end gap-2 border-t border-black/[0.04] pt-3 dark:border-white/[0.06]">
+                                <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        onClick={() => setOpen(false)}
-                                        className="h-8 rounded-lg border-black/10 bg-white px-3 text-xs font-medium text-[#111111] hover:bg-black/[0.03] dark:border-white/10 dark:bg-[#1c1c1e] dark:text-zinc-200"
+                                        size="sm"
+                                        onClick={() => setOpenCreate(false)}
+                                        className="h-8.5 rounded-xl border-slate-200 px-3.5 text-xs text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
                                     >
                                         Batal
                                     </Button>
                                     <Button
+                                        size="sm"
                                         disabled={processing}
-                                        className="h-8 rounded-lg bg-[#111111] px-4 text-xs font-semibold text-white shadow-2xs hover:bg-black active:scale-95 dark:bg-white dark:text-black"
+                                        className="h-8.5 rounded-xl bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-slate-900"
                                     >
                                         {processing ? (
                                             <>
-                                                <Spinner className="mr-1.5 size-3.5" />
+                                                <Spinner className="mr-1.5 size-3" />
                                                 Menyimpan...
                                             </>
                                         ) : (
@@ -678,6 +1163,206 @@ export default function TasksIndex({
                     </Form>
                 </DialogContent>
             </Dialog>
+
+            {/* Modal Dialog: Edit Tugas In-Place */}
+            <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
+                {editingTask && (
+                    <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
+                        <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
+                            <div className="flex items-center gap-3">
+                                <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                                    <Pencil className="size-4.5" />
+                                </div>
+                                <div>
+                                    <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                        Edit Detail Tugas
+                                    </DialogTitle>
+                                    <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                        Perbarui penugasan, instruksi, dan tenggat waktu.
+                                    </DialogDescription>
+                                </div>
+                            </div>
+                        </DialogHeader>
+
+                        <Form
+                            {...taskRoutes.update.form(editingTask.id)}
+                            className="space-y-4 pt-1"
+                            onSuccess={() => setEditingTask(null)}
+                        >
+                            {({ errors, processing }) => (
+                                <>
+                                    <Field
+                                        label="Judul Tugas"
+                                        name="title"
+                                        defaultValue={editingTask.title}
+                                        error={errors.title}
+                                        required
+                                    />
+
+                                    <div className="grid gap-3 sm:grid-cols-2">
+                                        <div className="grid gap-1">
+                                            <Label
+                                                htmlFor="assignee_id_edit"
+                                                className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                            >
+                                                Ditugaskan ke (Assignee)
+                                            </Label>
+                                            <div className="relative">
+                                                <select
+                                                    id="assignee_id_edit"
+                                                    name="assignee_id"
+                                                    defaultValue={editingTask.assignee_id ?? ''}
+                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                >
+                                                    <option value="">Belum Ditugaskan</option>
+                                                    {users.map((user) => (
+                                                        <option key={user.id} value={user.id}>
+                                                            {user.name} {user.position_title ? `- ${user.position_title}` : ''}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
+                                            </div>
+                                            <InputError message={errors.assignee_id} />
+                                        </div>
+
+                                        <div className="grid gap-1">
+                                            <Label
+                                                htmlFor="reviewer_id_edit"
+                                                className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                            >
+                                                Reviewer (Partner)
+                                            </Label>
+                                            <div className="relative">
+                                                <select
+                                                    id="reviewer_id_edit"
+                                                    name="reviewer_id"
+                                                    defaultValue={editingTask.reviewer_id ?? ''}
+                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                >
+                                                    <option value="">Tanpa Reviewer</option>
+                                                    {users.map((user) => (
+                                                        <option key={user.id} value={user.id}>
+                                                            {user.name} {user.position_title ? `- ${user.position_title}` : ''}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
+                                            </div>
+                                            <InputError message={errors.reviewer_id} />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid gap-3 sm:grid-cols-3">
+                                        <div className="grid gap-1">
+                                            <Label
+                                                htmlFor="priority_edit"
+                                                className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                            >
+                                                Prioritas
+                                            </Label>
+                                            <div className="relative">
+                                                <select
+                                                    id="priority_edit"
+                                                    name="priority"
+                                                    defaultValue={editingTask.priority}
+                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                >
+                                                    <option value="low">Rendah</option>
+                                                    <option value="normal">Normal</option>
+                                                    <option value="high">Tinggi</option>
+                                                    <option value="critical">Kritis</option>
+                                                </select>
+                                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid gap-1">
+                                            <Label
+                                                htmlFor="status_edit"
+                                                className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                            >
+                                                Status
+                                            </Label>
+                                            <div className="relative">
+                                                <select
+                                                    id="status_edit"
+                                                    name="status"
+                                                    defaultValue={editingTask.status}
+                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                >
+                                                    <option value="todo">Belum Mulai</option>
+                                                    <option value="in_progress">Dikerjakan</option>
+                                                    <option value="waiting">Menunggu</option>
+                                                    <option value="review">Review</option>
+                                                    <option value="completed">Selesai</option>
+                                                </select>
+                                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
+                                            </div>
+                                        </div>
+
+                                        <Field
+                                            label="Tenggat Waktu"
+                                            name="due_at"
+                                            type="date"
+                                            defaultValue={
+                                                editingTask.due_at
+                                                    ? editingTask.due_at.split('T')[0]
+                                                    : undefined
+                                            }
+                                            error={errors.due_at}
+                                        />
+                                    </div>
+
+                                    <div className="grid gap-1">
+                                        <Label
+                                            htmlFor="description_edit"
+                                            className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                        >
+                                            Instruksi Kerja
+                                        </Label>
+                                        <textarea
+                                            id="description_edit"
+                                            name="description"
+                                            rows={3}
+                                            defaultValue={editingTask.description ?? ''}
+                                            placeholder="Petunjuk teknis, rincian deliverable, atau catatan instruksi..."
+                                            className="w-full rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 transition-colors outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                        />
+                                        <InputError message={errors.description} />
+                                    </div>
+
+                                    <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setEditingTask(null)}
+                                            className="h-8.5 rounded-xl border-slate-200 px-3.5 text-xs text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                        >
+                                            Batal
+                                        </Button>
+                                        <Button
+                                            size="sm"
+                                            disabled={processing}
+                                            className="h-8.5 rounded-xl bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-slate-900"
+                                        >
+                                            {processing ? (
+                                                <>
+                                                    <Spinner className="mr-1.5 size-3" />
+                                                    Menyimpan...
+                                                </>
+                                            ) : (
+                                                'Perbarui Tugas'
+                                            )}
+                                        </Button>
+                                    </div>
+                                </>
+                            )}
+                        </Form>
+                    </DialogContent>
+                )}
+            </Dialog>
         </>
     );
 }
@@ -685,6 +1370,7 @@ export default function TasksIndex({
 function Field({
     label,
     name,
+    defaultValue,
     error,
     className,
     type = 'text',
@@ -693,6 +1379,7 @@ function Field({
 }: {
     label: string;
     name: string;
+    defaultValue?: string;
     error?: string;
     className?: string;
     type?: string;
@@ -700,17 +1387,21 @@ function Field({
     required?: boolean;
 }) {
     return (
-        <div className={`grid gap-1.5 ${className ?? ''}`}>
-            <Label htmlFor={name} className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+        <div className={`grid gap-1 ${className ?? ''}`}>
+            <Label
+                htmlFor={name}
+                className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+            >
                 {label} {required && <span className="text-rose-500">*</span>}
             </Label>
             <Input
                 id={name}
                 name={name}
                 type={type}
+                defaultValue={defaultValue}
                 required={required}
                 placeholder={placeholder}
-                className="h-8 rounded-lg border-black/[0.08] bg-[#fbfbfa] text-xs text-[#111111] transition-colors focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-white"
+                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 placeholder:text-slate-400 transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
             />
             <InputError message={error} />
         </div>

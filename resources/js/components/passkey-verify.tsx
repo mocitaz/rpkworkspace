@@ -15,6 +15,7 @@ type Props = {
     label?: string;
     loadingLabel?: string;
     separator?: string;
+    separatorPosition?: 'top' | 'bottom';
 };
 
 export default function PasskeyVerify({
@@ -22,6 +23,7 @@ export default function PasskeyVerify({
     label,
     loadingLabel,
     separator,
+    separatorPosition = 'bottom',
 }: Props = {}) {
     const { verify, isLoading, error, isSupported } = usePasskeyVerify({
         ...(routes && {
@@ -39,17 +41,32 @@ export default function PasskeyVerify({
         return null;
     }
 
+    const separatorElement = (
+        <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+                <Separator className="w-full" />
+            </div>
+            <div className="relative flex justify-center text-[10.5px] uppercase">
+                <span className="bg-white px-2.5 font-bold tracking-wider text-slate-400 dark:bg-[#14161b] dark:text-zinc-500">
+                    {separator ?? 'Or continue with email'}
+                </span>
+            </div>
+        </div>
+    );
+
     return (
         <>
+            {separatorPosition === 'top' && separatorElement}
+
             <div className="grid gap-2">
                 <Button
                     type="button"
                     variant="outline"
-                    className="w-full"
+                    className="h-11 w-full rounded-xl border-slate-200/90 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.03] dark:text-zinc-300 dark:hover:bg-white/[0.06]"
                     onClick={verify}
                     disabled={isLoading}
                 >
-                    {isLoading ? <Spinner /> : <KeyRound className="h-4 w-4" />}
+                    {isLoading ? <Spinner className="mr-1.5 size-4" /> : <KeyRound className="mr-1.5 size-4 text-slate-400" />}
                     {isLoading
                         ? (loadingLabel ?? 'Authenticating...')
                         : (label ?? 'Sign in with a passkey')}
@@ -59,16 +76,7 @@ export default function PasskeyVerify({
                 )}
             </div>
 
-            <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                    <Separator className="w-full" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2 text-muted-foreground">
-                        {separator ?? 'Or continue with email'}
-                    </span>
-                </div>
-            </div>
+            {separatorPosition === 'bottom' && separatorElement}
         </>
     );
 }

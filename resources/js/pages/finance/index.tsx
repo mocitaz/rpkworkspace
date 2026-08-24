@@ -8,17 +8,20 @@ import {
     CheckCircle2,
     ChevronDown,
     DollarSign,
+    FileDown,
     FilePlus2,
     FileText,
     FolderKanban,
+    Layers,
     Plus,
     Receipt,
     ReceiptText,
     Trash2,
+    TrendingUp,
     Undo2,
     WalletCards,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { EmptyState } from '@/components/empty-state';
 import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
@@ -84,11 +87,14 @@ type Overview = {
     quotation_amount: number;
     invoiced_amount: number;
     payment_received_amount: number;
+    total_cash_inflow?: number;
+    unallocated_payment_amount?: number;
     expense_amount: number;
     receivable_amount: number;
     overdue_amount?: number;
     aging?: Record<string, number>;
     margin_amount: number;
+    net_cash_flow?: number;
 };
 
 export default function FinanceIndex({
@@ -125,22 +131,24 @@ export default function FinanceIndex({
     const [reversePayment, setReversePayment] = useState<LedgerItem | null>(null);
     const [refundPayment, setRefundPayment] = useState<LedgerItem | null>(null);
     const [cancelInvoice, setCancelInvoice] = useState<LedgerItem | null>(null);
+    const [activeTab, setActiveTab] = useState<'all' | 'invoices' | 'quotations' | 'expenses' | 'payments'>('all');
+
     const currency = overview?.currency ?? 'IDR';
 
     return (
         <>
-            <Head title="Keuangan & Billing Operasional" />
+            <Head title="Keuangan & Billing Operasional - RPK Legal Workspace" />
 
-            <div className="min-h-screen w-full bg-[#fbfbfa] text-[#111111] antialiased dark:bg-[#121212] dark:text-[#fbfbfa]">
-                <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-                    {/* Header Minimalist Notion */}
-                    <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                    {/* 1. Header & Actions */}
+                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">
-                            <h1 className="text-2xl font-bold tracking-tight text-[#111111] dark:text-white">
-                                Keuangan &amp; Billing
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                                Keuangan &amp; Billing Operasional
                             </h1>
-                            <p className="text-xs text-[#787774] dark:text-zinc-400">
-                                Manajemen invoice tagihan, quotation tarif hukum, biaya perkara (disbursement), dan arus kas.
+                            <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                Manajemen invoice tagihan klien, quotation tarif perkara, pengeluaran (disbursement), dan arus kas firma.
                             </p>
                         </div>
 
@@ -150,9 +158,9 @@ export default function FinanceIndex({
                                 <Button
                                     variant="outline"
                                     onClick={() => setModal('quotation')}
-                                    className="h-8 rounded-lg border-black/10 bg-white px-3 text-xs font-medium text-[#111111] shadow-2xs hover:bg-black/[0.03] dark:border-white/10 dark:bg-[#1c1c1e] dark:text-zinc-200"
+                                    className="h-8 rounded-lg border-slate-200/70 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
                                 >
-                                    <FilePlus2 className="mr-1.5 size-3.5 text-[#787774]" />
+                                    <FilePlus2 className="mr-1 size-3.5 text-blue-600 dark:text-blue-400" />
                                     Quotation
                                 </Button>
                             )}
@@ -160,9 +168,9 @@ export default function FinanceIndex({
                                 <Button
                                     variant="outline"
                                     onClick={() => setModal('expense')}
-                                    className="h-8 rounded-lg border-black/10 bg-white px-3 text-xs font-medium text-[#111111] shadow-2xs hover:bg-black/[0.03] dark:border-white/10 dark:bg-[#1c1c1e] dark:text-zinc-200"
+                                    className="h-8 rounded-lg border-slate-200/70 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
                                 >
-                                    <WalletCards className="mr-1.5 size-3.5 text-[#787774]" />
+                                    <WalletCards className="mr-1 size-3.5 text-rose-600 dark:text-rose-400" />
                                     Catat Biaya
                                 </Button>
                             )}
@@ -170,145 +178,171 @@ export default function FinanceIndex({
                                 <Button
                                     variant="outline"
                                     onClick={() => setModal('payment')}
-                                    className="h-8 rounded-lg border-black/10 bg-white px-3 text-xs font-medium text-[#111111] shadow-2xs hover:bg-black/[0.03] dark:border-white/10 dark:bg-[#1c1c1e] dark:text-zinc-200"
+                                    className="h-8 rounded-lg border-slate-200/70 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
                                 >
-                                    <Banknote className="mr-1.5 size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                    <Banknote className="mr-1 size-3.5 text-emerald-600 dark:text-emerald-400" />
                                     Pembayaran
                                 </Button>
                             )}
                             {can.invoice && (
                                 <Button
                                     onClick={() => setModal('invoice')}
-                                    className="h-8 rounded-lg bg-[#111111] px-3.5 text-xs font-semibold text-white shadow-2xs transition-colors hover:bg-black active:scale-95 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+                                    className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                 >
-                                    <ReceiptText className="mr-1.5 size-3.5" />
+                                    <ReceiptText className="mr-1 size-3.5" />
                                     Buat Invoice
                                 </Button>
                             )}
                         </div>
-                    </header>
+                    </div>
 
                     {/* Filter / Matter Selector Bar */}
                     <Form
                         {...financeRoutes.index.form()}
-                        className="flex flex-col gap-2 rounded-xl border border-black/[0.08] bg-white p-2.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] sm:flex-row sm:items-center dark:border-white/[0.08] dark:bg-[#1a1a1c]"
+                        className="flex flex-col gap-2.5 rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:flex-row sm:items-center dark:border-white/[0.06] dark:bg-[#14161b]"
                     >
+                        <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
+                            <FolderKanban className="size-3.5 shrink-0" />
+                            <span className="text-xs font-semibold whitespace-nowrap">Lingkup Perkara:</span>
+                        </div>
                         <div className="relative flex-1">
                             <select
                                 name="matter_id"
                                 defaultValue={selectedMatterId}
-                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-3 pr-8 text-xs font-medium text-[#111111] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200"
+                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                             >
-                                <option value="">Semua Lingkup Perkara (Ringkasan Global)</option>
+                                <option value="">
+                                    Semua Lingkup Perkara (Ringkasan Finansial Global)
+                                </option>
                                 {matters.map((m) => (
                                     <option value={m.id} key={m.id}>
-                                        {m.matter_number} — {m.title} {m.client ? `(${m.client})` : ''}
+                                        {m.matter_number} - {m.title}{' '}
+                                        {m.client ? `(${m.client})` : ''}
                                     </option>
                                 ))}
                             </select>
-                            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-[#787774]" />
+                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
                         </div>
                         <Button
                             type="submit"
-                            variant="outline"
-                            className="h-8 shrink-0 rounded-lg border-black/10 bg-white px-3.5 text-xs font-medium text-[#111111] hover:bg-black/[0.03] dark:border-white/10 dark:bg-[#1c1c1e] dark:text-zinc-200"
+                            size="sm"
+                            className="h-8 shrink-0 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                         >
-                            Tampilkan Ringkasan
+                            Filter Ringkasan
                         </Button>
                     </Form>
 
                     {/* Bento Metric Cards */}
                     {overview ? (
                         <div className="space-y-3">
-                            {/* Primary 4 Financial Metrics (h-[76px]) */}
+                            {/* Primary 4 Financial Metrics */}
                             <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                                 {/* 1. Invoice Diterbitkan */}
-                                <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                    <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                        <span>Total Tagihan Diterbitkan</span>
-                                        <Receipt className="size-3.5 text-[#1f6c9f] dark:text-sky-400" />
+                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                        <span className="text-[11px] font-semibold">TOTAL TAGIHAN</span>
+                                        <Receipt className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                                     </div>
-                                    <div className="flex items-baseline justify-between">
-                                        <span className="font-mono text-base font-bold tracking-tight text-[#111111] dark:text-white">
+                                    <div className="mt-2 flex items-baseline justify-between">
+                                        <span className="font-mono text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                                             {formatMoney(overview.invoiced_amount, currency)}
                                         </span>
-                                        <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                            invoice resmi
-                                        </span>
+                                    </div>
+                                    <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                        <span>Invoice Diterbitkan</span>
+                                        <span className="font-semibold text-blue-600 dark:text-blue-400">Aktif</span>
                                     </div>
                                 </div>
 
-                                {/* 2. Pembayaran Diterima */}
-                                <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                    <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                        <span>Kas Diterima (Collected)</span>
+                                {/* 2. Pembayaran Diterima (Total Kas Masuk) */}
+                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                        <span className="text-[11px] font-semibold">TOTAL KAS MASUK</span>
                                         <Banknote className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                                     </div>
-                                    <div className="flex items-baseline justify-between">
-                                        <span className="font-mono text-base font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
-                                            {formatMoney(overview.payment_received_amount, currency)}
+                                    <div className="mt-2 flex items-baseline justify-between">
+                                        <span className="font-mono text-xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+                                            {formatMoney(overview.total_cash_inflow ?? overview.payment_received_amount, currency)}
                                         </span>
-                                        <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                            dana masuk
+                                    </div>
+                                    <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 dark:border-white/[0.04]">
+                                        <span className="truncate">
+                                            Teralokasi: {formatMoney(overview.payment_received_amount, currency)}
+                                            {(overview.unallocated_payment_amount ?? 0) > 0 && (
+                                                <span className="text-amber-600 dark:text-amber-400 ml-1">
+                                                    · DP: {formatMoney(overview.unallocated_payment_amount ?? 0, currency)}
+                                                </span>
+                                            )}
                                         </span>
+                                        <span className="shrink-0 font-semibold text-emerald-600 dark:text-emerald-400">Kas Riil</span>
                                     </div>
                                 </div>
 
                                 {/* 3. Piutang Berjalan */}
-                                <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                    <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                        <span>Piutang (Outstanding)</span>
-                                        <CalendarClock className="size-3.5 text-amber-600 dark:text-amber-400" />
+                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                        <span className="text-[11px] font-semibold">PIUTANG (OUTSTANDING)</span>
+                                        <CalendarClock className="size-3.5 text-amber-500 dark:text-amber-400" />
                                     </div>
-                                    <div className="flex items-baseline justify-between">
-                                        <span className="font-mono text-base font-bold tracking-tight text-amber-600 dark:text-amber-400">
+                                    <div className="mt-2 flex items-baseline justify-between">
+                                        <span className="font-mono text-xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
                                             {formatMoney(overview.receivable_amount, currency)}
                                         </span>
-                                        <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                            belum lunas
-                                        </span>
+                                    </div>
+                                    <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                        <span>Belum Dilunasi</span>
+                                        <span className="font-semibold text-amber-600 dark:text-amber-400">Berjalan</span>
                                     </div>
                                 </div>
 
                                 {/* 4. Net Margin */}
-                                <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                    <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                        <span>Net Margin &amp; Profit</span>
-                                        <DollarSign className="size-3.5 text-purple-600 dark:text-purple-400" />
+                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                        <span className="text-[11px] font-semibold">MARGIN &amp; PROFIT</span>
+                                        <DollarSign className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                                     </div>
-                                    <div className="flex items-baseline justify-between">
-                                        <span className="font-mono text-base font-bold tracking-tight text-purple-600 dark:text-purple-400">
+                                    <div className="mt-2 flex items-baseline justify-between">
+                                        <span className="font-mono text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                                             {formatMoney(overview.margin_amount, currency)}
                                         </span>
-                                        <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                            setelah biaya
-                                        </span>
+                                    </div>
+                                    <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                        <span>Net Margin</span>
+                                        <span className="font-semibold text-slate-700 dark:text-zinc-300">Setelah Biaya</span>
                                     </div>
                                 </div>
                             </section>
 
-                            {/* Secondary Operational Metrics & Aging */}
-                            <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                                <div className="rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                    <p className="text-[10px] font-medium text-[#787774] dark:text-zinc-400">Anggaran (Budget)</p>
-                                    <p className="mt-0.5 font-mono text-xs font-bold text-[#111111] dark:text-white">
+                            {/* Secondary Operational Metrics Bar */}
+                            <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <p className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                        Anggaran (Budget)
+                                    </p>
+                                    <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
                                         {formatMoney(overview.budget_amount, currency)}
                                     </p>
                                 </div>
-                                <div className="rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                    <p className="text-[10px] font-medium text-[#787774] dark:text-zinc-400">Biaya Perkara (Expense)</p>
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <p className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                        Biaya Perkara (Expense)
+                                    </p>
                                     <p className="mt-0.5 font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
                                         {formatMoney(overview.expense_amount, currency)}
                                     </p>
                                 </div>
-                                <div className="rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                    <p className="text-[10px] font-medium text-[#787774] dark:text-zinc-400">Quotation Diajukan</p>
-                                    <p className="mt-0.5 font-mono text-xs font-bold text-[#111111] dark:text-white">
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <p className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                        Quotation Diajukan
+                                    </p>
+                                    <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
                                         {formatMoney(overview.quotation_amount, currency)}
                                     </p>
                                 </div>
-                                <div className="rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                    <p className="text-[10px] font-medium text-[#787774] dark:text-zinc-400">Lewat Jatuh Tempo</p>
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <p className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                        Lewat Jatuh Tempo
+                                    </p>
                                     <p className="mt-0.5 font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
                                         {formatMoney(overview.overdue_amount ?? 0, currency)}
                                     </p>
@@ -317,26 +351,58 @@ export default function FinanceIndex({
 
                             {/* Aging Analysis Breakdown Bar */}
                             {overview.aging && (
-                                <div className="rounded-xl border border-black/[0.08] bg-white p-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                    <div className="mb-2 flex items-center justify-between">
-                                        <span className="text-[11px] font-bold text-[#111111] dark:text-white">
-                                            Analisis Umur Piutang (Aging Receivables)
-                                        </span>
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="mb-2.5 flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-slate-700 uppercase dark:bg-zinc-800 dark:text-zinc-300">
+                                                AGING REPORT
+                                            </span>
+                                            <h3 className="text-xs font-semibold text-slate-900 dark:text-white">
+                                                Analisis Umur Piutang (Receivables Schedule)
+                                            </h3>
+                                        </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
                                         {[
-                                            ['Belum Jatuh Tempo', overview.aging.current, 'text-[#111111] dark:text-white'],
-                                            ['1–30 Hari', overview.aging['1_30'], 'text-amber-600 dark:text-amber-400'],
-                                            ['31–60 Hari', overview.aging['31_60'], 'text-amber-700 dark:text-amber-300'],
-                                            ['61–90 Hari', overview.aging['61_90'], 'text-rose-600 dark:text-rose-400'],
-                                            ['>90 Hari (Kritis)', overview.aging.over_90, 'text-rose-700 dark:text-rose-300 font-bold'],
-                                        ].map(([label, val, textCls]) => (
+                                            [
+                                                'Belum Jatuh Tempo',
+                                                overview.aging.current,
+                                                'text-slate-900 dark:text-white',
+                                                'border-slate-200 bg-slate-50/60 dark:border-white/5 dark:bg-[#121418]',
+                                            ],
+                                            [
+                                                '1-30 Hari',
+                                                overview.aging['1_30'],
+                                                'text-amber-600 dark:text-amber-400',
+                                                'border-amber-100 bg-amber-50/40 dark:border-amber-900/20 dark:bg-amber-950/10',
+                                            ],
+                                            [
+                                                '31-60 Hari',
+                                                overview.aging['31_60'],
+                                                'text-amber-700 dark:text-amber-300',
+                                                'border-amber-200 bg-amber-50/60 dark:border-amber-900/30 dark:bg-amber-950/20',
+                                            ],
+                                            [
+                                                '61-90 Hari',
+                                                overview.aging['61_90'],
+                                                'text-rose-600 dark:text-rose-400',
+                                                'border-rose-100 bg-rose-50/40 dark:border-rose-900/20 dark:bg-rose-950/10',
+                                            ],
+                                            [
+                                                '>90 Hari (Kritis)',
+                                                overview.aging.over_90,
+                                                'text-rose-700 dark:text-rose-300 font-bold',
+                                                'border-rose-200 bg-rose-50/70 dark:border-rose-900/40 dark:bg-rose-950/30',
+                                            ],
+                                        ].map(([label, val, textCls, cardCls]) => (
                                             <div
                                                 key={String(label)}
-                                                className="rounded-lg bg-[#fafafa] p-2 dark:bg-zinc-800/40"
+                                                className={`rounded-lg border p-2.5 ${cardCls}`}
                                             >
-                                                <p className="text-[10px] text-[#787774] dark:text-zinc-400 truncate">{label}</p>
-                                                <p className={`mt-0.5 font-mono text-xs font-semibold ${textCls}`}>
+                                                <p className="truncate text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                    {label}
+                                                </p>
+                                                <p className={`mt-0.5 font-mono text-xs font-bold ${textCls}`}>
                                                     {formatMoney(Number(val), currency)}
                                                 </p>
                                             </div>
@@ -346,7 +412,7 @@ export default function FinanceIndex({
                             )}
                         </div>
                     ) : (
-                        <div className="flex min-h-[300px] items-center justify-center rounded-xl border border-black/[0.08] bg-white p-8 text-center shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
+                        <div className="flex min-h-[200px] items-center justify-center rounded-xl border border-slate-200/70 bg-white p-6 text-center shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                             <EmptyState
                                 title="Pilih perkara untuk melihat ringkasan keuangan"
                                 description="Pilih perkara melalui menu di atas untuk menampilkan rincian budget, invoice, dan penerimaan."
@@ -354,49 +420,132 @@ export default function FinanceIndex({
                         </div>
                     )}
 
+                    {/* Segmented Tab Navigation for Ledgers */}
+                    <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-200/60 pb-3 dark:border-white/[0.06]">
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('all')}
+                            className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                activeTab === 'all'
+                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
+                            }`}
+                        >
+                            <Layers className="size-3" />
+                            Semua Ledger
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('invoices')}
+                            className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                activeTab === 'invoices'
+                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
+                            }`}
+                        >
+                            <ReceiptText className="size-3" />
+                            Invoice Tagihan ({invoices.length})
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('quotations')}
+                            className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                activeTab === 'quotations'
+                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
+                            }`}
+                        >
+                            <FilePlus2 className="size-3" />
+                            Quotation ({quotations.length})
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('expenses')}
+                            className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                activeTab === 'expenses'
+                                    ? 'bg-rose-600 text-white shadow-2xs'
+                                    : 'border border-slate-200/70 bg-white text-rose-700 hover:bg-rose-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-rose-400'
+                            }`}
+                        >
+                            <WalletCards className="size-3" />
+                            Biaya Perkara ({expenses.length})
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('payments')}
+                            className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                activeTab === 'payments'
+                                    ? 'bg-emerald-600 text-white shadow-2xs'
+                                    : 'border border-slate-200/70 bg-white text-emerald-700 hover:bg-emerald-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-emerald-400'
+                            }`}
+                        >
+                            <Banknote className="size-3" />
+                            Penerimaan Kas ({payments.length})
+                        </button>
+                    </div>
+
                     {/* 4 Ledgers Grid */}
                     <div className="grid gap-4 lg:grid-cols-2">
                         {/* 1. Invoice Terbaru */}
-                        <Ledger
-                            title="Invoice Tagihan Terbaru"
-                            items={invoices}
-                            currency={currency}
-                            icon={ReceiptText}
-                            value={(i) => i.outstanding_amount ?? i.total_amount ?? 0}
-                            date={(i) => i.due_at}
-                            canTransition={can.invoiceTransition}
-                            onCancel={setCancelInvoice}
-                        />
+                        {(activeTab === 'all' || activeTab === 'invoices') && (
+                            <div className={activeTab === 'invoices' ? 'lg:col-span-2' : ''}>
+                                <Ledger
+                                    title="Invoice Tagihan Klien"
+                                    items={invoices}
+                                    currency={currency}
+                                    icon={ReceiptText}
+                                    iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400"
+                                    value={(i) => i.outstanding_amount ?? i.total_amount ?? 0}
+                                    date={(i) => i.due_at}
+                                    canTransition={can.invoiceTransition}
+                                    onCancel={setCancelInvoice}
+                                />
+                            </div>
+                        )}
 
                         {/* 2. Quotation Terbaru */}
-                        <Ledger
-                            title="Quotation / Penawaran Biaya"
-                            items={quotations}
-                            currency={currency}
-                            icon={FilePlus2}
-                            value={(i) => i.total_amount ?? 0}
-                            approveQuotations={can.quotationApprove}
-                            canTransition={can.invoiceTransition}
-                        />
+                        {(activeTab === 'all' || activeTab === 'quotations') && (
+                            <div className={activeTab === 'quotations' ? 'lg:col-span-2' : ''}>
+                                <Ledger
+                                    title="Quotation &amp; Penawaran Honorarium"
+                                    items={quotations}
+                                    currency={currency}
+                                    icon={FilePlus2}
+                                    iconBg="bg-slate-100 text-slate-700 dark:bg-zinc-800 dark:text-zinc-300"
+                                    value={(i) => i.total_amount ?? 0}
+                                    approveQuotations={can.quotationApprove}
+                                    canTransition={can.invoiceTransition}
+                                />
+                            </div>
+                        )}
 
                         {/* 3. Biaya Perkara & Disbursement */}
-                        <Ledger
-                            title="Biaya Perkara &amp; Disbursement"
-                            items={expenses}
-                            currency={currency}
-                            icon={WalletCards}
-                            value={(i) => i.amount ?? 0}
-                            date={(i) => i.incurred_at}
-                        />
+                        {(activeTab === 'all' || activeTab === 'expenses') && (
+                            <div className={activeTab === 'expenses' ? 'lg:col-span-2' : ''}>
+                                <Ledger
+                                    title="Biaya Perkara &amp; Disbursement"
+                                    items={expenses}
+                                    currency={currency}
+                                    icon={WalletCards}
+                                    iconBg="bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
+                                    value={(i) => i.amount ?? 0}
+                                    date={(i) => i.incurred_at}
+                                />
+                            </div>
+                        )}
 
                         {/* 4. Riwayat Penerimaan Pembayaran */}
-                        <PaymentLedger
-                            items={payments}
-                            currency={currency}
-                            canManage={can.payment}
-                            onReverse={setReversePayment}
-                            onRefund={setRefundPayment}
-                        />
+                        {(activeTab === 'all' || activeTab === 'payments') && (
+                            <div className={activeTab === 'payments' ? 'lg:col-span-2' : ''}>
+                                <PaymentLedger
+                                    items={payments}
+                                    currency={currency}
+                                    canManage={can.payment}
+                                    onReverse={setReversePayment}
+                                    onRefund={setRefundPayment}
+                                />
+                            </div>
+                        )}
                     </div>
                 </main>
             </div>
@@ -409,9 +558,18 @@ export default function FinanceIndex({
                 clients={clients}
                 invoices={invoices}
             />
-            <ReversePaymentDialog payment={reversePayment} onClose={() => setReversePayment(null)} />
-            <RefundPaymentDialog payment={refundPayment} onClose={() => setRefundPayment(null)} />
-            <CancelInvoiceDialog invoice={cancelInvoice} onClose={() => setCancelInvoice(null)} />
+            <ReversePaymentDialog
+                payment={reversePayment}
+                onClose={() => setReversePayment(null)}
+            />
+            <RefundPaymentDialog
+                payment={refundPayment}
+                onClose={() => setRefundPayment(null)}
+            />
+            <CancelInvoiceDialog
+                invoice={cancelInvoice}
+                onClose={() => setCancelInvoice(null)}
+            />
         </>
     );
 }
@@ -421,6 +579,7 @@ function Ledger({
     items,
     currency,
     icon: IconComp,
+    iconBg = 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400',
     value,
     date,
     approveQuotations = false,
@@ -431,6 +590,7 @@ function Ledger({
     items: LedgerItem[];
     currency: string;
     icon: typeof ReceiptText;
+    iconBg?: string;
     value: (item: LedgerItem) => number;
     date?: (item: LedgerItem) => string | undefined;
     approveQuotations?: boolean;
@@ -438,49 +598,56 @@ function Ledger({
     onCancel?: (invoice: LedgerItem) => void;
 }) {
     return (
-        <div className="flex flex-col justify-between rounded-xl border border-black/[0.08] bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
+        <div className="flex flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
             <div>
-                <div className="flex items-center gap-2 border-b border-black/[0.04] pb-2.5 dark:border-white/[0.04]">
-                    <div className="flex size-6 items-center justify-center rounded-md bg-black/[0.04] text-[#111111] dark:bg-white/[0.06] dark:text-zinc-200">
-                        <IconComp className="size-3.5" />
+                <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                    <div className="flex items-center gap-2">
+                        <div className={`flex size-7 items-center justify-center rounded-lg ${iconBg}`}>
+                            <IconComp className="size-3.5" />
+                        </div>
+                        <h3 className="text-xs font-bold tracking-tight text-slate-900 dark:text-white">
+                            {title}
+                        </h3>
                     </div>
-                    <h3 className="text-xs font-bold text-[#111111] dark:text-white">
-                        {title}
-                    </h3>
+                    <span className="rounded bg-slate-100 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                        {items.length} data
+                    </span>
                 </div>
 
-                <div className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
+                <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                     {items.length ? (
                         items.map((i) => (
                             <div
                                 key={i.id}
-                                className="flex items-center justify-between gap-3 py-2.5 transition-colors hover:bg-black/[0.01] dark:hover:bg-white/[0.02]"
+                                className="group flex flex-col justify-between gap-2 py-2.5 transition-colors hover:bg-slate-50/50 sm:flex-row sm:items-center dark:hover:bg-white/[0.02]"
                             >
                                 <div className="min-w-0 flex-1">
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-wrap items-center gap-1.5">
                                         {i.invoice_number ? (
                                             <Link
                                                 href={invoiceRoutes.show.url(i.id)}
-                                                className="font-mono text-xs font-semibold text-blue-600 hover:underline dark:text-sky-400"
+                                                className="font-mono text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                             >
                                                 {i.invoice_number}
                                             </Link>
                                         ) : (
-                                            <p className="truncate text-xs font-semibold text-[#111111] dark:text-white">
+                                            <p className="truncate text-xs font-semibold text-slate-900 dark:text-white">
                                                 {i.quotation_number ?? i.title ?? i.description}
                                             </p>
                                         )}
                                         <StatusBadge value={i.status} />
                                     </div>
-                                    <p className="mt-0.5 truncate font-mono text-[10px] text-[#787774] dark:text-zinc-400">
-                                        {i.matter?.matter_number ? `${i.matter.matter_number} · ${i.matter.title}` : 'Tanpa Matter'}
-                                        {date?.(i) ? ` · ${formatDate(date(i)!)}` : ''}
+                                    <p className="mt-0.5 truncate font-mono text-[10px] text-slate-500 dark:text-zinc-400">
+                                        {i.matter?.matter_number
+                                            ? `${i.matter.matter_number} · ${i.matter.title}`
+                                            : 'Tanpa Matter Terpilih'}
+                                        {date?.(i) ? ` · Jatuh Tempo: ${formatDate(date(i)!)}` : ''}
                                     </p>
                                 </div>
 
                                 <div className="flex shrink-0 items-center gap-2 text-right">
                                     <div className="text-right">
-                                        <span className="font-mono text-xs font-bold text-[#111111] dark:text-white">
+                                        <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
                                             {formatMoney(value(i), i.currency || currency)}
                                         </span>
                                     </div>
@@ -490,16 +657,16 @@ function Ledger({
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="size-7 rounded-md text-[#787774] hover:bg-black/[0.04] hover:text-[#111111]"
+                                            className="size-7 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
                                             asChild
                                         >
                                             <a
                                                 href={invoiceRoutes.pdf.url(i.id)}
                                                 target="_blank"
                                                 rel="noreferrer"
-                                                title="Download PDF Invoice"
+                                                title="Download Dokumen PDF Invoice"
                                             >
-                                                <FileText className="size-3.5" />
+                                                <FileDown className="size-3.5 text-blue-600 dark:text-blue-400" />
                                             </a>
                                         </Button>
                                     )}
@@ -508,29 +675,34 @@ function Ledger({
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="size-7 rounded-md text-[#787774] hover:bg-black/[0.04] hover:text-[#111111]"
+                                            className="size-7 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
                                             asChild
                                         >
                                             <a
                                                 href={quotationRoutes.pdf.url(i.id)}
                                                 target="_blank"
                                                 rel="noreferrer"
-                                                title="Download PDF Quotation"
+                                                title="Download Dokumen PDF Quotation"
                                             >
-                                                <FileText className="size-3.5" />
+                                                <FileDown className="size-3.5 text-slate-700 dark:text-zinc-300" />
                                             </a>
                                         </Button>
                                     )}
 
                                     {/* Transitions & Approvals */}
-                                    {canTransition && i.invoice_number && i.status === 'draft' && (
-                                        <Form {...invoiceRoutes.transition.form(i.id)}>
-                                            <input type="hidden" name="status" value="sent" />
-                                            <Button size="sm" className="h-6 rounded-md bg-[#111111] px-2 text-[10px] font-medium text-white hover:bg-black dark:bg-white dark:text-black">
-                                                Kirim
-                                            </Button>
-                                        </Form>
-                                    )}
+                                    {canTransition &&
+                                        i.invoice_number &&
+                                        i.status === 'draft' && (
+                                            <Form {...invoiceRoutes.transition.form(i.id)}>
+                                                <input type="hidden" name="status" value="sent" />
+                                                <Button
+                                                    size="sm"
+                                                    className="h-7 rounded-lg bg-slate-900 px-2.5 text-[10.5px] font-semibold text-white hover:bg-black dark:bg-white dark:text-slate-900"
+                                                >
+                                                    Kirim
+                                                </Button>
+                                            </Form>
+                                        )}
 
                                     {canTransition &&
                                         i.invoice_number &&
@@ -540,7 +712,7 @@ function Ledger({
                                                 size="sm"
                                                 variant="ghost"
                                                 onClick={() => onCancel?.(i)}
-                                                className="h-6 rounded-md text-[10px] text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
+                                                className="h-7 rounded-lg text-[10.5px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
                                             >
                                                 Batal
                                             </Button>
@@ -550,7 +722,10 @@ function Ledger({
                                         i.quotation_number &&
                                         ['draft', 'pending_approval'].includes(i.status) && (
                                             <Form {...quotationRoutes.approve.form(i.id)}>
-                                                <Button size="sm" className="h-6 rounded-md bg-emerald-600 px-2 text-[10px] font-medium text-white hover:bg-emerald-700">
+                                                <Button
+                                                    size="sm"
+                                                    className="h-7 rounded-lg bg-emerald-600 px-2.5 text-[10.5px] font-semibold text-white hover:bg-emerald-700"
+                                                >
                                                     Setujui
                                                 </Button>
                                             </Form>
@@ -559,8 +734,8 @@ function Ledger({
                             </div>
                         ))
                     ) : (
-                        <p className="py-6 text-center text-xs text-[#787774] dark:text-zinc-500">
-                            Belum ada catatan transaksi.
+                        <p className="py-6 text-center text-xs font-medium text-slate-400 dark:text-zinc-500">
+                            Belum ada catatan transaksi pada bagian ini.
                         </p>
                     )}
                 </div>
@@ -583,18 +758,23 @@ function PaymentLedger({
     onRefund: (payment: LedgerItem) => void;
 }) {
     return (
-        <div className="flex flex-col justify-between rounded-xl border border-black/[0.08] bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
+        <div className="flex flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
             <div>
-                <div className="flex items-center gap-2 border-b border-black/[0.04] pb-2.5 dark:border-white/[0.04]">
-                    <div className="flex size-6 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
-                        <Banknote className="size-3.5" />
+                <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                    <div className="flex items-center gap-2">
+                        <div className="flex size-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+                            <Banknote className="size-3.5" />
+                        </div>
+                        <h3 className="text-xs font-bold tracking-tight text-slate-900 dark:text-white">
+                            Riwayat Penerimaan Pembayaran
+                        </h3>
                     </div>
-                    <h3 className="text-xs font-bold text-[#111111] dark:text-white">
-                        Riwayat Penerimaan Pembayaran
-                    </h3>
+                    <span className="rounded bg-slate-100 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                        {items.length} pembayaran
+                    </span>
                 </div>
 
-                <div className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
+                <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                     {items.length ? (
                         items.map((payment) => (
                             <div key={payment.id} className="py-2.5">
@@ -606,59 +786,81 @@ function PaymentLedger({
                                         >
                                             {formatMoney(payment.amount ?? 0, payment.currency || currency)}
                                         </Link>
-                                        <p className="mt-0.5 font-mono text-[10px] text-[#787774] dark:text-zinc-400">
-                                            {payment.matter?.matter_number ?? 'Tanpa Matter'} ·{' '}
-                                            {payment.received_at ? formatDate(payment.received_at) : ''}
+                                        <p className="mt-0.5 font-mono text-[10px] text-slate-500 dark:text-zinc-400">
+                                            {payment.matter?.matter_number ? (
+                                                <span>
+                                                    <span className="font-semibold text-slate-700 dark:text-zinc-300">
+                                                        {payment.matter.matter_number}
+                                                    </span>{' '}
+                                                    · {payment.matter.title}
+                                                </span>
+                                            ) : (
+                                                'Tanpa Terikat Perkara Khusus'
+                                            )}{' '}
+                                            · {payment.received_at ? formatDate(payment.received_at) : ''}
                                         </p>
                                         {payment.allocations?.map((allocation) => (
-                                            <p className="mt-0.5 font-mono text-[10px] text-[#787774]" key={allocation.id}>
-                                                → Alokasi {allocation.invoice.invoice_number}: {formatMoney(allocation.amount, allocation.invoice.currency)}
+                                            <p
+                                                className="mt-0.5 font-mono text-[10px] text-slate-500 dark:text-zinc-400"
+                                                key={allocation.id}
+                                            >
+                                                → Alokasi{' '}
+                                                <span className="font-semibold text-slate-700 dark:text-zinc-300">
+                                                    {allocation.invoice.invoice_number}
+                                                </span>
+                                                : {formatMoney(allocation.amount, allocation.invoice.currency)}
                                             </p>
                                         ))}
                                         {payment.reversed_at && (
-                                            <p className="mt-1 text-[10px] font-semibold text-rose-600">
+                                            <p className="mt-0.5 text-[10px] font-semibold text-rose-600 dark:text-rose-400">
                                                 Dikoreksi: {payment.reversal_reason}
                                             </p>
                                         )}
                                         {payment.refunded_at && (
-                                            <p className="mt-1 text-[10px] font-semibold text-rose-600">
+                                            <p className="mt-0.5 text-[10px] font-semibold text-rose-600 dark:text-rose-400">
                                                 Direfund: {payment.refund_reason}
                                             </p>
                                         )}
                                     </div>
 
-                                    <div className="flex flex-col items-end gap-1.5 text-right">
-                                        <span className="rounded-md bg-black/[0.04] px-2 py-0.5 text-[10px] font-medium text-[#787774] dark:bg-white/[0.06] dark:text-zinc-300">
-                                            {payment.reversed_at ? 'Dikoreksi' : payment.refunded_at ? 'Direfund' : 'Tercatat'}
+                                    <div className="flex flex-col items-end gap-1 text-right">
+                                        <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
+                                            {payment.reversed_at
+                                                ? 'Dikoreksi'
+                                                : payment.refunded_at
+                                                  ? 'Direfund'
+                                                  : 'Tercatat Sah'}
                                         </span>
 
-                                        {canManage && !payment.reversed_at && !payment.refunded_at && (
-                                            <div className="flex items-center gap-1">
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    onClick={() => onReverse(payment)}
-                                                    className="h-6 rounded-md border-black/10 px-2 text-[10px] hover:bg-black/[0.03]"
-                                                >
-                                                    Koreksi
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant="ghost"
-                                                    onClick={() => onRefund(payment)}
-                                                    className="h-6 rounded-md px-2 text-[10px] text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
-                                                >
-                                                    Refund
-                                                </Button>
-                                            </div>
-                                        )}
+                                        {canManage &&
+                                            !payment.reversed_at &&
+                                            !payment.refunded_at && (
+                                                <div className="flex items-center gap-1">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={() => onReverse(payment)}
+                                                        className="h-6.5 rounded-lg border-slate-200 px-2 text-[10px] font-semibold hover:bg-slate-50 dark:border-white/10"
+                                                    >
+                                                        Koreksi
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        onClick={() => onRefund(payment)}
+                                                        className="h-6.5 rounded-lg px-2 text-[10px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
+                                                    >
+                                                        Refund
+                                                    </Button>
+                                                </div>
+                                            )}
                                     </div>
                                 </div>
                             </div>
                         ))
                     ) : (
-                        <p className="py-6 text-center text-xs text-[#787774] dark:text-zinc-500">
-                            Belum ada catatan pembayaran.
+                        <p className="py-6 text-center text-xs font-medium text-slate-400 dark:text-zinc-500">
+                            Belum ada riwayat penerimaan pembayaran.
                         </p>
                     )}
                 </div>
@@ -676,30 +878,37 @@ function ReversePaymentDialog({
 }) {
     return (
         <Dialog open={!!payment} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="rounded-2xl border border-black/[0.08] bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#1c1c1e]">
-                <DialogHeader className="border-b border-black/[0.04] pb-3 dark:border-white/[0.04]">
+            <DialogContent className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
                         <div className="flex size-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/40">
                             <Undo2 className="size-4" />
                         </div>
-                        <DialogTitle className="text-sm font-bold text-[#111111] dark:text-white">
+                        <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
                             Koreksi &amp; Batalkan Pembayaran
                         </DialogTitle>
                     </div>
                 </DialogHeader>
                 {payment && (
-                    <Form {...paymentRoutes.reverse.form(payment.id)} className="space-y-3 pt-2" onSuccess={onClose}>
+                    <Form
+                        {...paymentRoutes.reverse.form(payment.id)}
+                        className="space-y-3 pt-1"
+                        onSuccess={onClose}
+                    >
                         {({ processing, errors }) => (
                             <>
-                                <p className="text-xs text-[#787774] dark:text-zinc-400">
+                                <p className="text-xs text-slate-500 dark:text-zinc-400">
                                     Alokasi invoice akan dibuka kembali dan transaksi dicatat dalam log audit.
                                 </p>
-                                <div className="grid gap-1.5">
-                                    <Label htmlFor="reason" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+                                <div className="grid gap-1">
+                                    <Label
+                                        htmlFor="reason"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                                    >
                                         Alasan Pembatalan
                                     </Label>
                                     <textarea
-                                        className="w-full rounded-lg border border-black/[0.08] bg-[#fbfbfa] p-2.5 text-xs text-[#111111] outline-none transition-colors focus:border-black/20 focus:bg-white dark:border-white/10 dark:bg-[#121212] dark:text-white"
+                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs text-slate-900 transition-colors outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                         id="reason"
                                         name="reason"
                                         rows={3}
@@ -707,13 +916,26 @@ function ReversePaymentDialog({
                                         required
                                         minLength={8}
                                     />
-                                    {errors.reason && <p className="text-xs text-rose-500">{errors.reason}</p>}
+                                    {errors.reason && (
+                                        <p className="text-xs text-rose-500">{errors.reason}</p>
+                                    )}
                                 </div>
-                                <div className="flex items-center justify-end gap-2 border-t border-black/[0.04] pt-3 dark:border-white/[0.04]">
-                                    <Button type="button" variant="outline" onClick={onClose} className="h-8 rounded-lg px-3 text-xs font-medium">
+                                <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={onClose}
+                                        className="h-8 rounded-lg border-slate-200 px-3 text-xs text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                    >
                                         Batal
                                     </Button>
-                                    <Button variant="destructive" disabled={processing} className="h-8 rounded-lg px-4 text-xs font-semibold">
+                                    <Button
+                                        size="sm"
+                                        variant="destructive"
+                                        disabled={processing}
+                                        className="h-8 rounded-lg px-3.5 text-xs font-semibold"
+                                    >
                                         Batalkan Pembayaran
                                     </Button>
                                 </div>
@@ -735,30 +957,37 @@ function RefundPaymentDialog({
 }) {
     return (
         <Dialog open={!!payment} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="rounded-2xl border border-black/[0.08] bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#1c1c1e]">
-                <DialogHeader className="border-b border-black/[0.04] pb-3 dark:border-white/[0.04]">
+            <DialogContent className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
                         <div className="flex size-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/40">
                             <Undo2 className="size-4" />
                         </div>
-                        <DialogTitle className="text-sm font-bold text-[#111111] dark:text-white">
+                        <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
                             Refund Dana ke Klien
                         </DialogTitle>
                     </div>
                 </DialogHeader>
                 {payment && (
-                    <Form {...paymentRoutes.refund.form(payment.id)} className="space-y-3 pt-2" onSuccess={onClose}>
+                    <Form
+                        {...paymentRoutes.refund.form(payment.id)}
+                        className="space-y-3 pt-1"
+                        onSuccess={onClose}
+                    >
                         {({ processing, errors }) => (
                             <>
-                                <p className="text-xs text-[#787774] dark:text-zinc-400">
+                                <p className="text-xs text-slate-500 dark:text-zinc-400">
                                     Gunakan jika dana telah ditransfer balik ke rekening klien. Saldo invoice akan disesuaikan.
                                 </p>
-                                <div className="grid gap-1.5">
-                                    <Label htmlFor="refund-reason" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+                                <div className="grid gap-1">
+                                    <Label
+                                        htmlFor="refund-reason"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                                    >
                                         Alasan Pengembalian (Refund)
                                     </Label>
                                     <textarea
-                                        className="w-full rounded-lg border border-black/[0.08] bg-[#fbfbfa] p-2.5 text-xs text-[#111111] outline-none transition-colors focus:border-black/20 focus:bg-white dark:border-white/10 dark:bg-[#121212] dark:text-white"
+                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs text-slate-900 transition-colors outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                         id="refund-reason"
                                         name="reason"
                                         rows={3}
@@ -766,13 +995,26 @@ function RefundPaymentDialog({
                                         required
                                         minLength={8}
                                     />
-                                    {errors.reason && <p className="text-xs text-rose-500">{errors.reason}</p>}
+                                    {errors.reason && (
+                                        <p className="text-xs text-rose-500">{errors.reason}</p>
+                                    )}
                                 </div>
-                                <div className="flex items-center justify-end gap-2 border-t border-black/[0.04] pt-3 dark:border-white/[0.04]">
-                                    <Button type="button" variant="outline" onClick={onClose} className="h-8 rounded-lg px-3 text-xs font-medium">
+                                <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={onClose}
+                                        className="h-8 rounded-lg border-slate-200 px-3 text-xs text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                    >
                                         Batal
                                     </Button>
-                                    <Button variant="destructive" disabled={processing} className="h-8 rounded-lg px-4 text-xs font-semibold">
+                                    <Button
+                                        size="sm"
+                                        variant="destructive"
+                                        disabled={processing}
+                                        className="h-8 rounded-lg px-3.5 text-xs font-semibold"
+                                    >
                                         Catat Refund Dana
                                     </Button>
                                 </div>
@@ -794,31 +1036,38 @@ function CancelInvoiceDialog({
 }) {
     return (
         <Dialog open={!!invoice} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="rounded-2xl border border-black/[0.08] bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#1c1c1e]">
-                <DialogHeader className="border-b border-black/[0.04] pb-3 dark:border-white/[0.04]">
+            <DialogContent className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
                         <div className="flex size-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/40">
                             <Trash2 className="size-4" />
                         </div>
-                        <DialogTitle className="text-sm font-bold text-[#111111] dark:text-white">
+                        <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
                             Batalkan Invoice
                         </DialogTitle>
                     </div>
                 </DialogHeader>
                 {invoice && (
-                    <Form {...invoiceRoutes.transition.form(invoice.id)} className="space-y-3 pt-2" onSuccess={onClose}>
+                    <Form
+                        {...invoiceRoutes.transition.form(invoice.id)}
+                        className="space-y-3 pt-1"
+                        onSuccess={onClose}
+                    >
                         {({ processing, errors }) => (
                             <>
                                 <input type="hidden" name="status" value="cancelled" />
-                                <p className="text-xs text-[#787774] dark:text-zinc-400">
-                                    Invoice {invoice.invoice_number} akan dibatalkan permanen.
+                                <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                    Invoice {invoice.invoice_number} akan dibatalkan secara permanen.
                                 </p>
-                                <div className="grid gap-1.5">
-                                    <Label htmlFor="cancellation-reason" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+                                <div className="grid gap-1">
+                                    <Label
+                                        htmlFor="cancellation-reason"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                                    >
                                         Alasan Pembatalan
                                     </Label>
                                     <textarea
-                                        className="w-full rounded-lg border border-black/[0.08] bg-[#fbfbfa] p-2.5 text-xs text-[#111111] outline-none transition-colors focus:border-black/20 focus:bg-white dark:border-white/10 dark:bg-[#121212] dark:text-white"
+                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs text-slate-900 transition-colors outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                         id="cancellation-reason"
                                         name="reason"
                                         rows={3}
@@ -826,13 +1075,26 @@ function CancelInvoiceDialog({
                                         required
                                         minLength={8}
                                     />
-                                    {errors.reason && <p className="text-xs text-rose-500">{errors.reason}</p>}
+                                    {errors.reason && (
+                                        <p className="text-xs text-rose-500">{errors.reason}</p>
+                                    )}
                                 </div>
-                                <div className="flex items-center justify-end gap-2 border-t border-black/[0.04] pt-3 dark:border-white/[0.04]">
-                                    <Button type="button" variant="outline" onClick={onClose} className="h-8 rounded-lg px-3 text-xs font-medium">
+                                <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={onClose}
+                                        className="h-8 rounded-lg border-slate-200 px-3 text-xs text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                    >
                                         Batal
                                     </Button>
-                                    <Button variant="destructive" disabled={processing} className="h-8 rounded-lg px-4 text-xs font-semibold">
+                                    <Button
+                                        size="sm"
+                                        variant="destructive"
+                                        disabled={processing}
+                                        className="h-8 rounded-lg px-3.5 text-xs font-semibold"
+                                    >
                                         Batalkan Invoice
                                     </Button>
                                 </div>
@@ -861,6 +1123,19 @@ function FinanceDialog({
     const [lineItems, setLineItems] = useState([
         { description: '', quantity: '1', unitAmount: '' },
     ]);
+    const [discountAmount, setDiscountAmount] = useState<string>('0');
+    const [taxRate, setTaxRate] = useState<string>('11');
+
+    const subtotal = lineItems.reduce((acc, item) => {
+        const qty = Number(item.quantity) || 0;
+        const amt = Number(item.unitAmount) || 0;
+        return acc + qty * amt;
+    }, 0);
+
+    const discount = Number(discountAmount) || 0;
+    const taxableAmount = Math.max(0, subtotal - discount);
+    const tax = Math.round(taxableAmount * ((Number(taxRate) || 0) / 100));
+    const grandTotal = taxableAmount + tax;
 
     if (!type) {
         return null;
@@ -895,18 +1170,18 @@ function FinanceDialog({
 
     return (
         <Dialog open onOpenChange={onClose}>
-            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-2xl border border-black/[0.08] bg-white p-5 shadow-2xl sm:max-w-xl dark:border-white/10 dark:bg-[#1c1c1e]">
-                <DialogHeader className="border-b border-black/[0.04] pb-3 dark:border-white/[0.04]">
+            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-black/[0.04] text-[#111111] dark:bg-white/[0.06] dark:text-white">
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
                             <DialogIcon className="size-4" />
                         </div>
                         <div>
-                            <DialogTitle className="text-sm font-bold tracking-tight text-[#111111] dark:text-white">
+                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
                                 {dialogTitles[type]}
                             </DialogTitle>
-                            <DialogDescription className="text-xs text-[#787774] dark:text-zinc-400">
-                                Lengkapi formulir transaksi keuangan berikut dengan benar.
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                Lengkapi formulir transaksi keuangan berikut.
                             </DialogDescription>
                         </div>
                     </div>
@@ -914,14 +1189,14 @@ function FinanceDialog({
 
                 <Form
                     {...route.form()}
-                    className="space-y-3.5 pt-1"
+                    className="space-y-3 pt-1"
                     onSuccess={onClose}
                 >
                     {({ processing, errors }) => (
                         <>
                             <SelectField
                                 name="matter_id"
-                                label="Terkait Matter"
+                                label="Terkait Perkara (Matter)"
                                 matters={matters}
                                 required={isExpense}
                             />
@@ -950,94 +1225,184 @@ function FinanceDialog({
                                     )}
 
                                     {/* Line Items Builder */}
-                                    <div className="space-y-2 rounded-xl border border-black/[0.08] bg-[#fafafa] p-3 dark:border-white/[0.08] dark:bg-zinc-800/40">
+                                    <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-xs font-bold text-[#111111] dark:text-white">
+                                            <span className="text-xs font-semibold text-slate-900 dark:text-white">
                                                 Rincian Item Jasa / Biaya
                                             </span>
                                             <Button
                                                 type="button"
                                                 size="sm"
                                                 variant="outline"
-                                                className="h-6.5 rounded-md border-black/10 bg-white px-2.5 text-[10px] font-medium"
+                                                className="h-6.5 rounded-lg border-slate-200 bg-white px-2 text-[10px] font-semibold hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d]"
                                                 onClick={() =>
                                                     setLineItems((items) => [
                                                         ...items,
-                                                        { description: '', quantity: '1', unitAmount: '' },
+                                                        {
+                                                            description: '',
+                                                            quantity: '1',
+                                                            unitAmount: '',
+                                                        },
                                                     ])
                                                 }
                                             >
-                                                <Plus className="mr-1 size-3" /> Tambah Baris
+                                                <Plus className="mr-0.5 size-2.5" /> Tambah Baris
                                             </Button>
                                         </div>
 
-                                        <div className="space-y-2 pt-1">
-                                            {lineItems.map((item, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="grid gap-2 sm:grid-cols-[1fr_4.5rem_7rem_auto] sm:items-center"
-                                                >
-                                                    <Input
-                                                        name={`items[${index}][description]`}
-                                                        placeholder="Deskripsi item..."
-                                                        className="h-8 rounded-lg border-black/[0.08] bg-white text-xs dark:bg-zinc-800"
-                                                        required
-                                                        value={item.description}
-                                                        onChange={(e) =>
-                                                            setLineItems((items) =>
-                                                                items.map((cur, idx) =>
-                                                                    idx === index ? { ...cur, description: e.target.value } : cur,
-                                                                ),
-                                                            )
-                                                        }
-                                                    />
-                                                    <Input
-                                                        name={`items[${index}][quantity]`}
-                                                        type="number"
-                                                        min="1"
-                                                        placeholder="Qty"
-                                                        className="h-8 rounded-lg border-black/[0.08] bg-white text-xs dark:bg-zinc-800"
-                                                        required
-                                                        value={item.quantity}
-                                                        onChange={(e) =>
-                                                            setLineItems((items) =>
-                                                                items.map((cur, idx) =>
-                                                                    idx === index ? { ...cur, quantity: e.target.value } : cur,
-                                                                ),
-                                                            )
-                                                        }
-                                                    />
-                                                    <Input
-                                                        name={`items[${index}][unit_amount]`}
-                                                        type="number"
-                                                        min="0"
-                                                        placeholder="Nominal (IDR)"
-                                                        className="h-8 rounded-lg border-black/[0.08] bg-white text-xs dark:bg-zinc-800"
-                                                        required
-                                                        value={item.unitAmount}
-                                                        onChange={(e) =>
-                                                            setLineItems((items) =>
-                                                                items.map((cur, idx) =>
-                                                                    idx === index ? { ...cur, unitAmount: e.target.value } : cur,
-                                                                ),
-                                                            )
-                                                        }
-                                                    />
-                                                    {lineItems.length > 1 && (
-                                                        <Button
-                                                            type="button"
-                                                            size="icon"
-                                                            variant="ghost"
-                                                            className="size-7 rounded-md text-rose-500 hover:bg-rose-50"
-                                                            onClick={() =>
-                                                                setLineItems((items) => items.filter((_, idx) => idx !== index))
-                                                            }
-                                                        >
-                                                            <Trash2 className="size-3.5" />
-                                                        </Button>
-                                                    )}
-                                                </div>
-                                            ))}
+                                        <div className="space-y-1.5 pt-1">
+                                            {lineItems.map((item, index) => {
+                                                const rowTotal =
+                                                    (Number(item.quantity) || 0) *
+                                                    (Number(item.unitAmount) || 0);
+
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className="space-y-1 rounded-lg border border-slate-200/60 bg-white p-2 dark:border-white/[0.04] dark:bg-zinc-800/60"
+                                                    >
+                                                        <div className="grid gap-1.5 sm:grid-cols-[1fr_4rem_7rem_auto] sm:items-center">
+                                                            <Input
+                                                                name={`items[${index}][description]`}
+                                                                placeholder="Deskripsi item..."
+                                                                className="h-7.5 rounded-lg border-slate-200 bg-slate-50/50 text-xs dark:border-white/10 dark:bg-zinc-800"
+                                                                required
+                                                                value={item.description}
+                                                                onChange={(e) =>
+                                                                    setLineItems((items) =>
+                                                                        items.map((cur, idx) =>
+                                                                            idx === index
+                                                                                ? {
+                                                                                      ...cur,
+                                                                                      description: e.target.value,
+                                                                                  }
+                                                                                : cur,
+                                                                        ),
+                                                                    )
+                                                                }
+                                                            />
+                                                            <Input
+                                                                name={`items[${index}][quantity]`}
+                                                                type="number"
+                                                                min="1"
+                                                                placeholder="Qty"
+                                                                className="h-7.5 rounded-lg border-slate-200 bg-slate-50/50 text-xs dark:border-white/10 dark:bg-zinc-800"
+                                                                required
+                                                                value={item.quantity}
+                                                                onChange={(e) =>
+                                                                    setLineItems((items) =>
+                                                                        items.map((cur, idx) =>
+                                                                            idx === index
+                                                                                ? {
+                                                                                      ...cur,
+                                                                                      quantity: e.target.value,
+                                                                                  }
+                                                                                : cur,
+                                                                        ),
+                                                                    )
+                                                                }
+                                                            />
+                                                            <Input
+                                                                name={`items[${index}][unit_amount]`}
+                                                                type="number"
+                                                                min="0"
+                                                                placeholder="Nominal (IDR)"
+                                                                className="h-7.5 rounded-lg border-slate-200 bg-slate-50/50 text-xs dark:border-white/10 dark:bg-zinc-800"
+                                                                required
+                                                                value={item.unitAmount}
+                                                                onChange={(e) =>
+                                                                    setLineItems((items) =>
+                                                                        items.map((cur, idx) =>
+                                                                            idx === index
+                                                                                ? {
+                                                                                      ...cur,
+                                                                                      unitAmount: e.target.value,
+                                                                                  }
+                                                                                : cur,
+                                                                        ),
+                                                                    )
+                                                                }
+                                                            />
+                                                            {lineItems.length > 1 && (
+                                                                <Button
+                                                                    type="button"
+                                                                    size="icon"
+                                                                    variant="ghost"
+                                                                    className="size-7 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 shrink-0"
+                                                                    onClick={() =>
+                                                                        setLineItems((items) =>
+                                                                            items.filter((_, idx) => idx !== index),
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <Trash2 className="size-3" />
+                                                                </Button>
+                                                            )}
+                                                        </div>
+                                                        {rowTotal > 0 && (
+                                                            <div className="flex justify-end text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                                Subtotal: <span className="font-mono text-slate-800 dark:text-white ml-1">{formatMoney(rowTotal, 'IDR')}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Discount & Tax Rates */}
+                                    <div className="grid gap-2.5 sm:grid-cols-2">
+                                        <div className="grid gap-1">
+                                            <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                Diskon Potongan (IDR)
+                                            </Label>
+                                            <Input
+                                                name="discount_amount"
+                                                type="number"
+                                                min="0"
+                                                value={discountAmount}
+                                                onChange={(e) => setDiscountAmount(e.target.value)}
+                                                placeholder="0"
+                                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs dark:border-white/10 dark:bg-[#121418]"
+                                            />
+                                        </div>
+                                        <div className="grid gap-1">
+                                            <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                Tarif Pajak PPN (%)
+                                            </Label>
+                                            <Input
+                                                name="tax_rate"
+                                                type="number"
+                                                step="0.1"
+                                                min="0"
+                                                max="100"
+                                                value={taxRate}
+                                                onChange={(e) => setTaxRate(e.target.value)}
+                                                placeholder="11"
+                                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs dark:border-white/10 dark:bg-[#121418]"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Live Calculation Preview Card */}
+                                    <div className="rounded-lg border border-blue-100 bg-blue-50/50 p-3 space-y-1.5 dark:border-blue-900/30 dark:bg-blue-950/20">
+                                        <div className="flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                            <span>Subtotal Item:</span>
+                                            <span className="font-mono">{formatMoney(subtotal, 'IDR')}</span>
+                                        </div>
+                                        {discount > 0 && (
+                                            <div className="flex items-center justify-between text-xs font-medium text-rose-600 dark:text-rose-400">
+                                                <span>Diskon Potongan:</span>
+                                                <span className="font-mono">- {formatMoney(discount, 'IDR')}</span>
+                                            </div>
+                                        )}
+                                        <div className="flex items-center justify-between text-xs font-medium text-slate-600 dark:text-zinc-400">
+                                            <span>PPN ({taxRate || '0'}%):</span>
+                                            <span className="font-mono">+ {formatMoney(tax, 'IDR')}</span>
+                                        </div>
+                                        <div className="border-t border-blue-200/80 pt-1.5 flex items-center justify-between text-xs font-bold text-blue-700 dark:border-blue-900/60 dark:text-blue-400">
+                                            <span>Total Tagihan (Grand Total):</span>
+                                            <span className="font-mono text-sm">{formatMoney(grandTotal, 'IDR')}</span>
                                         </div>
                                     </div>
                                 </>
@@ -1045,7 +1410,7 @@ function FinanceDialog({
 
                             {isExpense && (
                                 <>
-                                    <div className="grid gap-3 sm:grid-cols-2">
+                                    <div className="grid gap-2.5 sm:grid-cols-2">
                                         <Field
                                             name="category"
                                             label="Kategori Biaya"
@@ -1073,8 +1438,11 @@ function FinanceDialog({
                                         placeholder="0"
                                         required
                                     />
-                                    <div className="grid gap-1.5">
-                                        <Label htmlFor="expense-proof" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+                                    <div className="grid gap-1">
+                                        <Label
+                                            htmlFor="expense-proof"
+                                            className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                                        >
                                             Unggah Bukti / Kuitansi
                                         </Label>
                                         <Input
@@ -1082,7 +1450,7 @@ function FinanceDialog({
                                             name="proof"
                                             type="file"
                                             accept="application/pdf,image/png,image/jpeg,image/webp"
-                                            className="h-8 rounded-lg border-black/[0.08] bg-[#fbfbfa] text-xs file:mr-3 file:rounded-md file:border-0 file:bg-zinc-200 file:px-2.5 file:py-0.5 file:text-xs"
+                                            className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs file:mr-2.5 file:rounded file:border-0 file:bg-slate-200 file:px-2 file:py-0.5 file:text-xs file:font-semibold dark:border-white/10 dark:bg-[#121418]"
                                         />
                                     </div>
                                     <input type="hidden" name="status" value="draft" />
@@ -1091,7 +1459,7 @@ function FinanceDialog({
 
                             {isPayment && (
                                 <>
-                                    <div className="grid gap-3 sm:grid-cols-2">
+                                    <div className="grid gap-2.5 sm:grid-cols-2">
                                         <Field
                                             name="amount"
                                             label="Nominal Pembayaran (IDR)"
@@ -1112,8 +1480,11 @@ function FinanceDialog({
                                         type="datetime-local"
                                         required
                                     />
-                                    <div className="grid gap-1.5">
-                                        <Label htmlFor="payment-proof" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+                                    <div className="grid gap-1">
+                                        <Label
+                                            htmlFor="payment-proof"
+                                            className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                                        >
                                             Unggah Bukti Transfer
                                         </Label>
                                         <Input
@@ -1121,41 +1492,79 @@ function FinanceDialog({
                                             name="proof"
                                             type="file"
                                             accept="application/pdf,image/png,image/jpeg,image/webp"
-                                            className="h-8 rounded-lg border-black/[0.08] bg-[#fbfbfa] text-xs file:mr-3 file:rounded-md file:border-0 file:bg-zinc-200 file:px-2.5 file:py-0.5 file:text-xs"
+                                            className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs file:mr-2.5 file:rounded file:border-0 file:bg-slate-200 file:px-2 file:py-0.5 file:text-xs file:font-semibold dark:border-white/10 dark:bg-[#121418]"
                                         />
                                     </div>
 
                                     {/* Invoice Allocation Builder */}
-                                    {invoices.filter((inv) => (inv.outstanding_amount ?? 0) > 0).length > 0 && (
-                                        <div className="space-y-2 rounded-xl border border-black/[0.08] bg-[#fafafa] p-3 dark:border-white/[0.08] dark:bg-zinc-800/40">
-                                            <Label className="text-xs font-bold text-[#111111] dark:text-white">Alokasi ke Invoice</Label>
-                                            <p className="text-[10px] text-[#787774]">
-                                                Alokasikan nominal pembayaran ke invoice yang memiliki sisa tagihan:
-                                            </p>
-                                            <div className="space-y-2 pt-1">
-                                                {invoices
-                                                    .filter((inv) => (inv.outstanding_amount ?? 0) > 0)
-                                                    .map((inv, index) => (
-                                                        <div className="grid grid-cols-[1fr_8rem] items-center gap-2" key={inv.id}>
-                                                            <div className="min-w-0">
-                                                                <p className="truncate font-mono text-xs font-semibold">{inv.invoice_number}</p>
-                                                                <p className="text-[10px] text-[#787774]">
-                                                                    Sisa {formatMoney(inv.outstanding_amount ?? 0, inv.currency)}
-                                                                </p>
-                                                            </div>
-                                                            <input type="hidden" name={`allocations[${index}][invoice_id]`} value={inv.id} />
-                                                            <Input
-                                                                name={`allocations[${index}][amount]`}
-                                                                type="number"
-                                                                min="1"
-                                                                placeholder="0"
-                                                                className="h-8 rounded-lg border-black/[0.08] bg-white text-xs dark:bg-zinc-800"
-                                                            />
+                                    {(() => {
+                                        const eligibleInvoices = invoices.filter(
+                                            (inv) => ['sent', 'overdue'].includes(inv.status) && (inv.outstanding_amount ?? 0) > 0
+                                        );
+                                        const draftInvoices = invoices.filter(
+                                            (inv) => inv.status === 'draft' && (inv.outstanding_amount ?? 0) > 0
+                                        );
+
+                                        return (
+                                            <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                                <Label className="text-xs font-semibold text-slate-900 dark:text-white">
+                                                    Alokasi ke Invoice
+                                                </Label>
+
+                                                {eligibleInvoices.length > 0 ? (
+                                                    <>
+                                                        <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                            Alokasikan nominal pembayaran ke invoice resmi yang terkirim / overdue:
+                                                        </p>
+                                                        <div className="space-y-1.5 pt-1">
+                                                            {eligibleInvoices.map((inv, index) => (
+                                                                <div
+                                                                    className="grid grid-cols-[1fr_7.5rem] items-center gap-2"
+                                                                    key={inv.id}
+                                                                >
+                                                                    <div className="min-w-0">
+                                                                        <div className="flex items-center gap-1.5">
+                                                                            <p className="truncate font-mono text-xs font-semibold text-slate-900 dark:text-white">
+                                                                                {inv.invoice_number}
+                                                                            </p>
+                                                                            <span className="rounded bg-blue-50 px-1 py-0.5 text-[9px] font-semibold text-blue-600 uppercase dark:bg-blue-950/40 dark:text-blue-400">
+                                                                                {inv.status}
+                                                                            </span>
+                                                                        </div>
+                                                                        <p className="text-[10px] text-slate-500">
+                                                                            Sisa {formatMoney(inv.outstanding_amount ?? 0, inv.currency)}
+                                                                        </p>
+                                                                    </div>
+                                                                    <input
+                                                                        type="hidden"
+                                                                        name={`allocations[${index}][invoice_id]`}
+                                                                        value={inv.id}
+                                                                    />
+                                                                    <Input
+                                                                        name={`allocations[${index}][amount]`}
+                                                                        type="number"
+                                                                        min="1"
+                                                                        placeholder="0"
+                                                                        className="h-7.5 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-zinc-800"
+                                                                    />
+                                                                </div>
+                                                            ))}
                                                         </div>
-                                                    ))}
+                                                    </>
+                                                ) : (
+                                                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                        Tidak ada invoice aktif (Sent/Overdue) dengan sisa tagihan. Pembayaran ini akan dicatat sebagai <strong>uang muka / dana titipan (Unallocated Retainer)</strong>.
+                                                    </p>
+                                                )}
+
+                                                {draftInvoices.length > 0 && (
+                                                    <div className="mt-2 rounded-md border border-amber-200/80 bg-amber-50/70 p-2 text-[10.5px] text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300">
+                                                        <span className="font-semibold">Perhatian:</span> Terdapat {draftInvoices.length} invoice berstatus <em>Draft</em>. Invoice Draft harus dikirim (Sent) terlebih dahulu sebelum dapat dialokasikan pembayaran.
+                                                    </div>
+                                                )}
                                             </div>
-                                        </div>
-                                    )}
+                                        );
+                                    })()}
                                 </>
                             )}
 
@@ -1164,22 +1573,24 @@ function FinanceDialog({
                                 <input type="hidden" name="status" value="draft" />
                             )}
 
-                            <div className="flex items-center justify-end gap-2 border-t border-black/[0.04] pt-3 dark:border-white/[0.04]">
+                            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
                                 <Button
                                     type="button"
                                     variant="outline"
+                                    size="sm"
                                     onClick={onClose}
-                                    className="h-8 rounded-lg border-black/10 bg-white px-3 text-xs font-medium text-[#111111] hover:bg-black/[0.03]"
+                                    className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
                                 >
                                     Batal
                                 </Button>
                                 <Button
+                                    size="sm"
                                     disabled={processing}
-                                    className="h-8 rounded-lg bg-[#111111] px-4 text-xs font-semibold text-white shadow-2xs hover:bg-black active:scale-95 dark:bg-white dark:text-black"
+                                    className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-slate-900"
                                 >
                                     {processing ? (
                                         <>
-                                            <Spinner className="mr-1.5 size-3.5" />
+                                            <Spinner className="mr-1.5 size-3" />
                                             Menyimpan...
                                         </>
                                     ) : (
@@ -1189,7 +1600,7 @@ function FinanceDialog({
                             </div>
 
                             {Object.values(errors).map((e) => (
-                                <p className="text-xs text-rose-500" key={e}>
+                                <p className="text-xs font-semibold text-rose-500" key={e}>
                                     {e}
                                 </p>
                             ))}
@@ -1217,8 +1628,11 @@ function Field({
     required?: boolean;
 }) {
     return (
-        <div className="grid gap-1.5">
-            <Label htmlFor={name} className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+        <div className="grid gap-1">
+            <Label
+                htmlFor={name}
+                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+            >
                 {label} {required && <span className="text-rose-500">*</span>}
             </Label>
             <Input
@@ -1228,7 +1642,7 @@ function Field({
                 defaultValue={defaultValue}
                 placeholder={placeholder}
                 required={required}
-                className="h-8 rounded-lg border-black/[0.08] bg-[#fbfbfa] text-xs text-[#111111] transition-colors focus:border-black/20 focus:bg-white dark:border-white/10 dark:bg-[#121212] dark:text-white"
+                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
             />
         </div>
     );
@@ -1250,8 +1664,11 @@ function SelectField({
     const data = matters ?? clients ?? [];
 
     return (
-        <div className="grid gap-1.5">
-            <Label htmlFor={name} className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+        <div className="grid gap-1">
+            <Label
+                htmlFor={name}
+                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+            >
                 {label} {required && <span className="text-rose-500">*</span>}
             </Label>
             <div className="relative">
@@ -1259,18 +1676,18 @@ function SelectField({
                     id={name}
                     name={name}
                     required={required}
-                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-3 pr-8 text-xs font-medium text-[#111111] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/10 dark:bg-[#121212] dark:text-zinc-200"
+                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                 >
                     <option value="">Pilih {label.toLowerCase()}</option>
                     {data.map((item) => (
                         <option value={item.id} key={item.id}>
                             {'matter_number' in item
-                                ? `${item.matter_number} — ${item.title}`
+                                ? `${item.matter_number} - ${item.title}`
                                 : item.display_name}
                         </option>
                     ))}
                 </select>
-                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-[#787774]" />
+                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
             </div>
         </div>
     );

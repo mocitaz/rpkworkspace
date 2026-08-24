@@ -9,7 +9,7 @@ export default function Heading({
 }) {
     return (
         <header className={variant === 'small' ? '' : 'mb-8 space-y-0.5'}>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#86868b]">
+            <p className="mb-2 text-xs font-semibold tracking-wider text-[#86868b] uppercase">
                 RPK Law Firm Workspace
             </p>
             <h2

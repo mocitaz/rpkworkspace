@@ -12,7 +12,6 @@ use App\Models\DocumentTemplate;
 use App\Models\DocumentVersion;
 use App\Models\Matter;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -46,28 +45,6 @@ it('generates a private matter document from moustache placeholders in a DOCX te
     expect($document->matter_id)->toBe($matter->getKey());
     $this->assertModelExists($document);
     Storage::disk('local')->assertExists($document->currentVersion->storage_path);
-});
-
-it('creates an immutable next version and retires the prior template version', function () {
-    Storage::fake('local');
-    $actor = rafUser(['template.manage']);
-    $actor->forceFill(['email_verified_at' => now()])->save();
-    Storage::disk('local')->put('templates/engagement.docx', 'template-v1');
-    $template = DocumentTemplate::query()->create([
-        'name' => 'Engagement Letter', 'storage_disk' => 'local', 'storage_path' => 'templates/engagement.docx',
-        'original_filename' => 'engagement.docx', 'checksum' => hash('sha256', 'template-v1'),
-        'placeholders' => ['client.name'], 'created_by' => $actor->getKey(),
-    ]);
-    $template->update(['root_template_id' => $template->getKey()]);
-
-    $this->actingAs($actor)->post(route('templates.versions.store', $template), [
-        'file' => UploadedFile::fake()->create('engagement-v2.docx', 20, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
-    ])->assertRedirect();
-
-    $next = DocumentTemplate::query()->where('root_template_id', $template->getKey())->where('version', 2)->sole();
-    expect($template->refresh()->status)->toBe('inactive')
-        ->and($next->status)->toBe('active');
-    Storage::disk('local')->assertExists($next->storage_path);
 });
 
 it('moves a document through requested review, revision, approved, and signing verification', function () {

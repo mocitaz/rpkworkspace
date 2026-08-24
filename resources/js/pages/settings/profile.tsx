@@ -1,12 +1,13 @@
 import { useRef, useState } from 'react';
 import { Form, Head, Link, usePage } from '@inertiajs/react';
-import { Camera, Trash2, UploadCloud, User as UserIcon } from 'lucide-react';
+import { Camera, CheckCircle2, Scissors, Trash2, User as UserIcon } from 'lucide-react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
-import Heading from '@/components/heading';
+import { AvatarCropperModal } from '@/components/avatar-cropper-modal';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 import type { Auth } from '@/types';
@@ -24,27 +25,41 @@ export default function Profile({
 }) {
     const { auth } = usePage<PageProps>().props;
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(auth.user.avatar_url ?? null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(
+        auth.user.avatar_url ?? null,
+    );
     const [isRemoved, setIsRemoved] = useState(false);
-
-    const userInitials = (auth.user.name || 'User')
-        .split(' ')
-        .map((n) => n[0])
-        .slice(0, 2)
-        .join('')
-        .toUpperCase();
+    const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
+    const [originalFileName, setOriginalFileName] = useState<string>('avatar.jpg');
+    const [isCropperOpen, setIsCropperOpen] = useState(false);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const url = URL.createObjectURL(file);
-            setPreviewUrl(url);
-            setIsRemoved(false);
+            setOriginalFileName(file.name);
+            const reader = new FileReader();
+            reader.onload = () => {
+                setRawImageSrc(reader.result as string);
+                setIsCropperOpen(true);
+            };
+            reader.readAsDataURL(file);
         }
+    };
+
+    const handleCropComplete = (croppedFile: File, croppedPreviewUrl: string) => {
+        // Set the cropped file into the file input using DataTransfer
+        if (fileInputRef.current) {
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(croppedFile);
+            fileInputRef.current.files = dataTransfer.files;
+        }
+        setPreviewUrl(croppedPreviewUrl);
+        setIsRemoved(false);
     };
 
     const handleRemovePhoto = () => {
         setPreviewUrl(null);
+        setRawImageSrc(null);
         setIsRemoved(true);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
@@ -53,16 +68,23 @@ export default function Profile({
 
     return (
         <>
-            <Head title="Pengaturan Profil" />
+            <Head title="Pengaturan Profil - Identitas Advokat" />
 
-            <h1 className="sr-only">Pengaturan Profil</h1>
+            {/* Avatar Cropper Modal */}
+            <AvatarCropperModal
+                isOpen={isCropperOpen}
+                imageSrc={rawImageSrc}
+                originalFileName={originalFileName}
+                onClose={() => setIsCropperOpen(false)}
+                onCropComplete={handleCropComplete}
+            />
 
-            <div className="space-y-6">
-                <div className="space-y-1 border-b border-black/[0.04] pb-3.5 dark:border-white/[0.04]">
-                    <h2 className="text-sm font-bold text-[#111111] dark:text-white">
+            <div className="space-y-5">
+                <div className="space-y-0.5 border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
+                    <h2 className="text-sm font-bold text-slate-900 dark:text-white">
                         Profil &amp; Identitas Advokat
                     </h2>
-                    <p className="text-xs text-[#787774] dark:text-zinc-400">
+                    <p className="text-xs text-slate-500 dark:text-zinc-400">
                         Perbarui informasi foto profil, nama lengkap, dan alamat email akun Anda.
                     </p>
                 </div>
@@ -77,24 +99,20 @@ export default function Profile({
                 >
                     {({ processing, errors }) => (
                         <>
-                            {/* Notion Avatar Section */}
-                            <div className="rounded-xl border border-black/[0.08] bg-[#fafafa] p-4 dark:border-white/[0.08] dark:bg-zinc-800/40">
-                                <Label className="text-xs font-semibold uppercase tracking-wider text-[#787774]">
-                                    Foto Profil
+                            {/* Avatar Section */}
+                            <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#121418]">
+                                <Label className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                    FOTO PROFIL ADVOKAT
                                 </Label>
 
-                                <div className="mt-3 flex flex-col gap-3.5 sm:flex-row sm:items-center">
+                                <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
                                     {/* Avatar Display */}
-                                    <div className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-black/10 bg-white text-base font-semibold text-[#111111] shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200">
-                                        {previewUrl ? (
-                                            <img
-                                                src={previewUrl}
-                                                alt={auth.user.name}
-                                                className="size-full object-cover"
-                                            />
-                                        ) : (
-                                            <span className="font-semibold">{userInitials}</span>
-                                        )}
+                                    <div className="group relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-white shadow-2xs dark:border-white/10 dark:bg-zinc-800">
+                                        <img
+                                            src={previewUrl || '/images/default-avatar.svg'}
+                                            alt={auth.user.name}
+                                            className="size-full object-cover transition-transform group-hover:scale-105"
+                                        />
                                     </div>
 
                                     {/* Action Buttons & Helpers */}
@@ -119,29 +137,51 @@ export default function Profile({
                                                 type="button"
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => fileInputRef.current?.click()}
-                                                className="h-7.5 rounded-lg border-black/10 bg-white px-3 text-xs font-medium text-[#111111] hover:bg-black/[0.03] dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                onClick={() => {
+                                                    if (fileInputRef.current) {
+                                                        fileInputRef.current.value = '';
+                                                    }
+                                                    fileInputRef.current?.click();
+                                                }}
+                                                className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                             >
-                                                <Camera className="mr-1.5 size-3.5 text-[#787774]" />
+                                                <Camera className="mr-1.5 size-3.5 text-slate-500" />
                                                 Pilih Foto Baru
                                             </Button>
 
-                                            {(previewUrl || auth.user.avatar_url) && !isRemoved && (
+                                            {rawImageSrc && !isRemoved && (
                                                 <Button
                                                     type="button"
-                                                    variant="ghost"
+                                                    variant="outline"
                                                     size="sm"
-                                                    onClick={handleRemovePhoto}
-                                                    className="h-7.5 rounded-lg px-2.5 text-xs font-medium text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/40"
+                                                    onClick={() => setIsCropperOpen(true)}
+                                                    className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-blue-600 shadow-2xs hover:bg-blue-50 dark:border-white/10 dark:bg-zinc-800 dark:text-blue-400"
                                                 >
-                                                    <Trash2 className="mr-1.5 size-3.5" />
-                                                    Hapus Foto
+                                                    <Scissors className="mr-1.5 size-3.5" />
+                                                    Sesuaikan / Crop
                                                 </Button>
                                             )}
+
+                                            {(previewUrl ||
+                                                auth.user.avatar_url) &&
+                                                !isRemoved && (
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={
+                                                            handleRemovePhoto
+                                                        }
+                                                        className="h-8 rounded-lg px-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/40"
+                                                    >
+                                                        <Trash2 className="mr-1.5 size-3.5" />
+                                                        Hapus Foto
+                                                    </Button>
+                                                )}
                                         </div>
 
-                                        <p className="text-[11px] text-[#787774] dark:text-zinc-400">
-                                            Format JPG, PNG, atau WebP. Maksimal 2 MB.
+                                        <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                            Format JPG, PNG, atau WebP. Anda dapat memposisikan &amp; memotong foto sebelum disimpan.
                                         </p>
 
                                         <InputError
@@ -153,79 +193,95 @@ export default function Profile({
                             </div>
 
                             {/* Name Input */}
-                            <div className="grid gap-1.5">
-                                <Label htmlFor="name" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+                            <div className="grid gap-1">
+                                <Label
+                                    htmlFor="name"
+                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                                >
                                     Nama Lengkap
                                 </Label>
 
                                 <Input
                                     id="name"
-                                    className="h-8 rounded-lg border border-black/[0.08] bg-[#fbfbfa] text-xs text-[#111111] focus:border-black/20 focus:bg-white dark:border-white/10 dark:bg-[#121212] dark:text-white"
+                                    className="h-8 rounded-lg border border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                     defaultValue={auth.user.name}
                                     name="name"
                                     required
                                     autoComplete="name"
-                                    placeholder="Nama lengkap"
+                                    placeholder="Nama lengkap advokat"
                                 />
 
                                 <InputError
-                                    className="mt-1"
+                                    className="mt-0.5"
                                     message={errors.name}
                                 />
                             </div>
 
                             {/* Email Input */}
-                            <div className="grid gap-1.5">
-                                <Label htmlFor="email" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+                            <div className="grid gap-1">
+                                <Label
+                                    htmlFor="email"
+                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                                >
                                     Alamat Email
                                 </Label>
 
                                 <Input
                                     id="email"
                                     type="email"
-                                    className="h-8 rounded-lg border border-black/[0.08] bg-[#fbfbfa] text-xs text-[#111111] focus:border-black/20 focus:bg-white dark:border-white/10 dark:bg-[#121212] dark:text-white"
+                                    className="h-8 rounded-lg border border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                     defaultValue={auth.user.email}
                                     name="email"
                                     required
                                     autoComplete="username"
-                                    placeholder="Alamat email"
+                                    placeholder="nama@rpklawoffice.com"
                                 />
 
                                 <InputError
-                                    className="mt-1"
+                                    className="mt-0.5"
                                     message={errors.email}
                                 />
                             </div>
 
                             {mustVerifyEmail &&
                                 auth.user.email_verified_at === null && (
-                                    <div>
-                                        <p className="text-xs text-[#787774]">
+                                    <div className="rounded-lg border border-amber-200 bg-amber-50/90 p-3 text-xs text-amber-900">
+                                        <p>
                                             Alamat email Anda belum terverifikasi.{' '}
                                             <Link
                                                 href={send()}
                                                 as="button"
-                                                className="text-blue-600 underline underline-offset-4 hover:text-blue-700"
+                                                className="font-semibold text-blue-600 underline underline-offset-4 hover:text-blue-700"
                                             >
                                                 Kirim ulang email verifikasi.
                                             </Link>
                                         </p>
 
-                                        {status === 'verification-link-sent' && (
-                                            <div className="mt-1 text-xs font-medium text-emerald-600">
+                                        {status ===
+                                            'verification-link-sent' && (
+                                            <div className="mt-1 flex items-center gap-1 font-semibold text-emerald-700">
+                                                <CheckCircle2 className="size-3.5" />
                                                 Tautan verifikasi baru telah dikirim ke alamat email Anda.
                                             </div>
                                         )}
                                     </div>
                                 )}
 
-                            <div className="flex items-center gap-3 pt-2">
+                            <div className="flex items-center gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
                                 <Button
+                                    size="sm"
                                     disabled={processing}
-                                    className="h-8 rounded-lg bg-[#111111] px-4 text-xs font-semibold text-white shadow-2xs hover:bg-black active:scale-95 dark:bg-white dark:text-black"
+                                    className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
                                     data-test="update-profile-button"
                                 >
-                                    Simpan Perubahan
+                                    {processing ? (
+                                        <>
+                                            <Spinner className="mr-1.5 size-3.5" />
+                                            Menyimpan...
+                                        </>
+                                    ) : (
+                                        'Simpan Perubahan'
+                                    )}
                                 </Button>
                             </div>
                         </>

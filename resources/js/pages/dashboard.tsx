@@ -1,29 +1,143 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
+    AlertCircle,
+    ArrowRight,
     Briefcase,
     Calendar as CalendarIcon,
     CheckCircle2,
+    CheckSquare,
+    ChevronLeft,
     ChevronRight,
     Clock,
+    CreditCard,
+    FileCheck2,
+    FileEdit,
+    FilePlus2,
     FileText,
+    FolderKanban,
     Gavel,
-    Layers,
-    ListTodo,
     Plus,
-    Search,
-    ShieldCheck,
-    X,
+    Receipt,
+    Scale,
+    ShieldAlert,
+    Sparkles,
+    TrendingUp,
+    UploadCloud,
+    User,
+    UserPlus,
+    Users,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { EmptyState } from '@/components/empty-state';
-import { StatusBadge } from '@/components/status-badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { WelcomeModal } from '@/components/welcome-modal';
+import { useInitials } from '@/hooks/use-initials';
 import { formatBytes, formatDate } from '@/lib/format';
 import { dashboard } from '@/routes';
+import * as auditRoutes from '@/routes/admin/audit';
 import * as calendarRoutes from '@/routes/calendar';
+import * as clientsRoutes from '@/routes/clients';
 import * as documentsRoutes from '@/routes/documents';
+import * as financeRoutes from '@/routes/finance';
 import * as mattersRoutes from '@/routes/matters';
 import * as tasksRoutes from '@/routes/tasks';
+
+type MetricData = {
+    active_matters: number;
+    corporate_matters: number;
+    litigation_matters: number;
+    open_tasks: number;
+    my_tasks: number;
+    urgent_tasks: number;
+    critical_deadlines: number;
+    today_deadlines: number;
+    total_documents: number;
+    review_documents: number;
+    recent_documents: number;
+    doc_approved_count?: number;
+    doc_filed_count?: number;
+};
+
+type ExecutiveActionItem = {
+    id: string | number;
+    title: string;
+    matter: string;
+    matter_number?: string;
+    priority?: string;
+    status?: string;
+    badge_label: string;
+    badge_color: 'rose' | 'amber' | 'blue';
+    due_text: string;
+    assignee_name: string;
+    assignee_avatar?: string | null;
+};
+
+type PriorityCenterData = {
+    high_priority?: {
+        id: string;
+        title: string;
+        matter: string;
+        matter_number: string;
+        deadline_text: string;
+        assignee_name: string;
+        assignee_avatar?: string | null;
+    } | null;
+    waiting_approval?: {
+        id: string;
+        title: string;
+        matter: string;
+        matter_number: string;
+        assignee_name: string;
+        assignee_avatar?: string | null;
+    } | null;
+    completed_today_count: number;
+    team_members: Array<{ id: string; name: string; avatar?: string | null }>;
+};
+
+type BriefingItem = {
+    id: string;
+    time: string;
+    type: string;
+    title: string;
+    matter: string;
+    matter_number?: string;
+    tag: string;
+    assignee_name: string;
+    assignee_avatar?: string;
+};
+
+type UpcomingEventItem = {
+    id: string;
+    time: string;
+    title: string;
+    subtitle: string;
+    category: string;
+    date: string;
+    full_date?: string;
+};
+
+type MatterHealthItem = {
+    id: string;
+    title: string;
+    code: string;
+    status: string;
+    progress: number;
+    next_action: string;
+    risk: string;
+};
+
+type ActivityItem = {
+    id: string;
+    event: string;
+    title: string;
+    subject: string;
+    actor: string;
+    actor_avatar?: string;
+    icon_type?: string;
+    color?: string;
+    time: string;
+};
 
 type Task = {
     id: string;
@@ -31,7 +145,9 @@ type Task = {
     priority: string;
     status: string;
     due_at?: string;
-    matter?: { id: string; matter_number: string; title: string };
+    updated_at?: string;
+    matter?: { id: string; matter_number: string; title: string; client?: { id: string; display_name: string } };
+    assignee?: { id: string; name: string; avatar_url?: string; avatar_path?: string };
 };
 
 type Deadline = {
@@ -69,636 +185,611 @@ type Document = {
     current_version?: { version_number: number; file_size?: number };
 };
 
-type DatabaseTab = 'tasks' | 'matters' | 'documents';
-
-function getDaysRemaining(dateString: string): { label: string; urgency: 'urgent' | 'warning' | 'normal' } {
-    const target = new Date(dateString);
-    const now = new Date();
-    const diffTime = target.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 0) return { label: `${Math.abs(diffDays)}h lalu`, urgency: 'urgent' };
-    if (diffDays === 0) return { label: 'Hari ini', urgency: 'urgent' };
-    if (diffDays === 1) return { label: 'Besok', urgency: 'warning' };
-    return { label: `${diffDays} hari`, urgency: 'normal' };
-}
-
-function formatTimeOnly(dateString: string): string {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('id-ID', {
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone: 'Asia/Jakarta',
-    }).format(date);
-}
+type WorkQueueTabs = 'pending' | 'in_progress' | 'completed';
 
 export default function Dashboard({
-    tasks,
-    deadlines,
-    events,
-    matters,
-    documents,
+    metrics,
+    priority_center,
+    executive_actions,
+    completed_today_count,
+    briefings = [],
+    upcoming_events = [],
+    work_queue,
+    matter_health = [],
+    activities = [],
+    tasks = [],
+    deadlines = [],
+    events = [],
+    matters = [],
+    documents = [],
 }: {
-    tasks: Task[];
-    deadlines: Deadline[];
-    events: Event[];
-    matters: Matter[];
-    documents: Document[];
+    metrics?: MetricData;
+    priority_center?: PriorityCenterData;
+    executive_actions?: ExecutiveActionItem[];
+    completed_today_count?: number;
+    briefings?: BriefingItem[];
+    upcoming_events?: UpcomingEventItem[];
+    work_queue?: {
+        pending?: Task[];
+        in_progress?: Task[];
+        completed?: Task[];
+    };
+    matter_health?: MatterHealthItem[];
+    activities?: ActivityItem[];
+    tasks?: Task[];
+    deadlines?: Deadline[];
+    events?: Event[];
+    matters?: Matter[];
+    documents?: Document[];
 }) {
     const { auth } = usePage().props;
-    const [activeTab, setActiveTab] = useState<DatabaseTab>('tasks');
-    const [searchQuery, setSearchQuery] = useState('');
+    const getInitials = useInitials();
 
-    const overdueTasks = useMemo(
-        () => tasks.filter((t) => t.due_at && new Date(t.due_at) < new Date()),
-        [tasks],
-    );
-    const criticalDeadlines = useMemo(
-        () => deadlines.filter((d) => d.is_critical),
-        [deadlines],
-    );
+    const fullName = auth.user?.name ?? 'Advokat & Partner';
 
-    const userName = auth.user.name ?? 'Administrator';
+    const todayFormatted = useMemo(() => {
+        return new Intl.DateTimeFormat('id-ID', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        }).format(new Date());
+    }, []);
 
-    // Filtered data for active Notion Database
-    const filteredTasks = useMemo(() => {
-        if (!searchQuery) return tasks;
-        const q = searchQuery.toLowerCase();
-        return tasks.filter(
-            (t) =>
-                t.title.toLowerCase().includes(q) ||
-                (t.matter?.title && t.matter.title.toLowerCase().includes(q)) ||
-                (t.matter?.matter_number && t.matter.matter_number.toLowerCase().includes(q)),
-        );
-    }, [tasks, searchQuery]);
+    // Metric Counters from Real DB Props
+    const activeMattersCount = metrics?.active_matters ?? matters.length ?? 0;
+    const corporateCount = metrics?.corporate_matters ?? 0;
+    const litigationCount = metrics?.litigation_matters ?? 0;
+    const openTasksCount = metrics?.open_tasks ?? tasks.length ?? 0;
+    const urgentTasksCount = metrics?.urgent_tasks ?? 0;
+    const criticalDeadlinesCount = metrics?.critical_deadlines ?? deadlines.length ?? 0;
+    const todayDeadlinesCount = metrics?.today_deadlines ?? 0;
+    const totalDocsCount = metrics?.total_documents ?? documents.length ?? 0;
+    const reviewDocsCount = metrics?.review_documents ?? 0;
+    const docApprovedCount = metrics?.doc_approved_count ?? 0;
+    const docFiledCount = metrics?.doc_filed_count ?? 0;
 
-    const filteredMatters = useMemo(() => {
-        if (!searchQuery) return matters;
-        const q = searchQuery.toLowerCase();
-        return matters.filter(
-            (m) =>
-                m.title.toLowerCase().includes(q) ||
-                m.matter_number.toLowerCase().includes(q) ||
-                m.client.display_name.toLowerCase().includes(q),
-        );
-    }, [matters, searchQuery]);
+    // Interactive State
+    const [queueTab, setQueueTab] = useState<WorkQueueTabs>('pending');
+    const [selectedDateIndex, setSelectedDateIndex] = useState<number>(6); // Default: today
+    const [weekOffset, setWeekOffset] = useState<number>(0);
 
-    const filteredDocuments = useMemo(() => {
-        if (!searchQuery) return documents;
-        const q = searchQuery.toLowerCase();
-        return documents.filter(
-            (d) =>
-                d.title.toLowerCase().includes(q) ||
-                (d.matter?.matter_number && d.matter.matter_number.toLowerCase().includes(q)),
-        );
-    }, [documents, searchQuery]);
+    // Dynamic 7-day strip
+    const weekDays = useMemo(() => {
+        const list = [];
+        const now = new Date();
+        const todayString = now.toISOString().slice(0, 10);
+        const dayOfWeek = now.getDay();
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - ((dayOfWeek + 6) % 7) + weekOffset * 7);
 
-    // Combined timeline for Radar (Deadlines + Events)
-    const timelineItems = useMemo(() => {
-        const list: Array<{
-            id: string;
-            type: 'deadline' | 'event';
-            title: string;
-            date: string;
-            matter: { id: string; matter_number: string; title: string };
-            isCritical?: boolean;
-        }> = [];
-
-        deadlines.forEach((d) => {
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(monday);
+            d.setDate(monday.getDate() + i);
+            const dateString = d.toISOString().slice(0, 10);
+            const dayName = new Intl.DateTimeFormat('id-ID', { weekday: 'short' }).format(d);
+            const dayNum = d.getDate();
             list.push({
-                id: `d-${d.id}`,
-                type: 'deadline',
-                title: d.title,
-                date: d.due_at,
-                matter: d.matter,
-                isCritical: d.is_critical,
+                dayName,
+                dayNum,
+                dateObj: d,
+                dateString,
+                isToday: dateString === todayString,
             });
-        });
+        }
+        return list;
+    }, [weekOffset]);
 
-        events.forEach((e) => {
-            list.push({
-                id: `e-${e.id}`,
-                type: 'event',
-                title: e.title,
-                date: e.starts_at,
-                matter: e.matter,
-                isCritical: false,
-            });
-        });
+    const activeDay = weekDays[selectedDateIndex] ?? weekDays[weekDays.length - 1];
 
-        return list.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    }, [deadlines, events]);
+    const activeDayFormatted = useMemo(() => {
+        if (!activeDay?.dateObj) return todayFormatted;
+        const formatted = new Intl.DateTimeFormat('id-ID', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        }).format(activeDay.dateObj);
+        return activeDay.isToday ? `Hari ini, ${formatted}` : formatted;
+    }, [activeDay, todayFormatted]);
+
+    // Dynamic filtered events for the chosen calendar day
+    const filteredDayEvents = useMemo(() => {
+        if (!activeDay?.dateString) return upcoming_events;
+        const found = upcoming_events.filter((ev) => ev.date === activeDay.dateString);
+        return found.length > 0 ? found : (activeDay.isToday ? upcoming_events.slice(0, 3) : []);
+    }, [upcoming_events, activeDay]);
+
+    // Current Work Queue items from real DB
+    const currentQueueItems = useMemo(() => {
+        if (!work_queue) return [];
+        return work_queue[queueTab] ?? [];
+    }, [work_queue, queueTab]);
+
+    const pendingCount = work_queue?.pending?.length ?? 0;
+    const reviewCount = work_queue?.in_progress?.length ?? 0;
+    const completedCount = work_queue?.completed?.length ?? 0;
 
     return (
         <>
-            <Head title="Dashboard — RPK Law Firm" />
+            <Head title="Workspace Dashboard" />
 
-            <div className="min-h-screen w-full bg-[#fbfbfa] pb-24 text-[#2f3437] antialiased dark:bg-[#121212] dark:text-[#d4d4d4]">
-                <main className="mx-auto flex w-full max-w-[1240px] flex-col gap-5 px-4 pt-6 sm:px-6 lg:px-8">
-                    {/* Notion Minimalist Header */}
-                    <header className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                        <div>
-                            <h1 className="text-xl font-bold tracking-tight text-[#111111] sm:text-2xl dark:text-white">
-                                Dashboard
+            <WelcomeModal
+                user={auth.user}
+                activeMattersCount={activeMattersCount}
+                openTasksCount={openTasksCount}
+                todayDeadlinesCount={todayDeadlinesCount}
+            />
+
+            <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
+                <main className="mx-auto max-w-7xl space-y-6 px-4 py-5 sm:px-6 lg:px-8">
+                    {/* 1. Sleek Notion-Style Header */}
+                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
+                        <div className="space-y-1">
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                                Halo, {fullName}
                             </h1>
-                            <p className="text-xs text-[#787774] dark:text-zinc-400">
-                                Ruang kerja operasional kantor hukum · Selamat datang kembali, {userName}.
+                            <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                {todayFormatted} · <span className="font-semibold text-slate-700 dark:text-zinc-300">{activeMattersCount}</span> perkara aktif · <span className="font-semibold text-slate-700 dark:text-zinc-300">{openTasksCount}</span> tugas berjalan
                             </p>
                         </div>
 
-                        {/* Notion-style Action Pills */}
+                        {/* Top Action Cluster */}
                         <div className="flex shrink-0 items-center gap-2">
                             <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-8 rounded-lg border-black/[0.08] bg-white px-3 text-xs font-medium text-[#2f3437] shadow-2xs hover:bg-black/[0.03] dark:border-white/[0.1] dark:bg-[#1c1c1e] dark:text-zinc-200"
                                 asChild
+                                variant="outline"
+                                className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 active:scale-[0.98] dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                             >
-                                <Link href={tasksRoutes.index()}>
-                                    <Plus className="mr-1.5 size-3.5 text-[#787774]" />
+                                <Link href={tasksRoutes.index({ query: { create: 1 } })}>
+                                    <Plus className="mr-1 size-3.5 text-slate-400" />
                                     Tugas Baru
                                 </Link>
                             </Button>
-
                             <Button
-                                size="sm"
-                                className="h-8 rounded-lg bg-[#111111] px-3.5 text-xs font-medium text-white shadow-2xs hover:bg-black active:scale-[0.98] dark:bg-white dark:text-black dark:hover:bg-zinc-200"
                                 asChild
+                                className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                             >
                                 <Link href={mattersRoutes.create()}>
-                                    <Plus className="mr-1.5 size-3.5" />
-                                    Matter Baru
+                                    <Plus className="mr-1 size-3.5" />
+                                    Perkara Baru
                                 </Link>
                             </Button>
                         </div>
-                    </header>
+                    </div>
 
-                    {/* Compact Notion KPI Strip (4 Tiles) */}
-                    <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-                        {/* 1. Matters */}
-                        <div
-                            onClick={() => setActiveTab('matters')}
-                            className="group flex h-[76px] cursor-pointer flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-black/20 hover:shadow-xs dark:border-white/[0.08] dark:bg-[#1a1a1c] dark:hover:border-white/20"
-                        >
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Perkara Aktif</span>
-                                <Briefcase className="size-3.5 text-[#1f6c9f] dark:text-[#38bdf8]" />
+                    {/* 2. Streamlined KPI Bento Cards (Compact & Slim) */}
+                    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        {/* Card 1: Perkara Aktif */}
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">PERKARA AKTIF</span>
+                                <Briefcase className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-[#111111] dark:text-white">
-                                    {matters.length}
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                    {activeMattersCount}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    perkara dipantau
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    {corporateCount} Corp · {litigationCount} Litigasi
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span className="truncate">Portofolio Berjalan</span>
+                                <Link href={mattersRoutes.index()} className="font-semibold text-blue-600 hover:underline dark:text-blue-400">
+                                    Lihat →
+                                </Link>
                             </div>
                         </div>
 
-                        {/* 2. Tasks */}
-                        <div
-                            onClick={() => setActiveTab('tasks')}
-                            className="group flex h-[76px] cursor-pointer flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-black/20 hover:shadow-xs dark:border-white/[0.08] dark:bg-[#1a1a1c] dark:hover:border-white/20"
-                        >
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Tugas Terbuka</span>
-                                <ListTodo className="size-3.5 text-[#346538] dark:text-[#4ade80]" />
+                        {/* Card 2: Tugas Terbuka */}
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">TUGAS TERBUKA</span>
+                                <CheckCircle2 className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-[#111111] dark:text-white">
-                                    {tasks.length}
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                    {openTasksCount}
                                 </span>
-                                <span
-                                    className={`text-[10px] font-medium ${
-                                        overdueTasks.length > 0
-                                            ? 'text-rose-600 dark:text-rose-400'
-                                            : 'text-[#787774] dark:text-zinc-400'
-                                    }`}
-                                >
-                                    {overdueTasks.length > 0 ? `${overdueTasks.length} terlewat` : 'terkendali'}
+                                <span className="text-[11px] font-medium text-rose-600 dark:text-rose-400">
+                                    {urgentTasksCount} prioritas tinggi
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span className="truncate">Distribusi Tim</span>
+                                <Link href={tasksRoutes.index()} className="font-semibold text-emerald-600 hover:underline dark:text-emerald-400">
+                                    Kelola →
+                                </Link>
                             </div>
                         </div>
 
-                        {/* 3. Deadlines */}
-                        <div
-                            onClick={() => setActiveTab('tasks')}
-                            className="group flex h-[76px] cursor-pointer flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-black/20 hover:shadow-xs dark:border-white/[0.08] dark:bg-[#1a1a1c] dark:hover:border-white/20"
-                        >
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Tenggat Kritis</span>
-                                <Clock className="size-3.5 text-[#956400] dark:text-[#fbbf24]" />
+                        {/* Card 3: Tenggat & Sidang */}
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">TENGGAT &amp; SIDANG</span>
+                                <Clock className="size-3.5 text-slate-400 transition-colors group-hover:text-amber-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-[#111111] dark:text-white">
-                                    {deadlines.length}
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                    {criticalDeadlinesCount}
                                 </span>
-                                <span
-                                    className={`text-[10px] font-medium ${
-                                        criticalDeadlines.length > 0
-                                            ? 'text-amber-600 dark:text-amber-400'
-                                            : 'text-[#787774] dark:text-zinc-400'
-                                    }`}
-                                >
-                                    {criticalDeadlines.length > 0 ? `${criticalDeadlines.length} mendesak` : 'terjadwal'}
+                                <span className="text-[11px] font-medium text-amber-600 dark:text-amber-400">
+                                    {todayDeadlinesCount > 0 ? `${todayDeadlinesCount} hari ini` : 'minggu ini'}
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span className="truncate">Jadwal Sidang &amp; Deadline</span>
+                                <Link href={calendarRoutes.index()} className="font-semibold text-amber-600 hover:underline dark:text-amber-400">
+                                    Kalender →
+                                </Link>
                             </div>
                         </div>
 
-                        {/* 4. Documents */}
-                        <div
-                            onClick={() => setActiveTab('documents')}
-                            className="group flex h-[76px] cursor-pointer flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-black/20 hover:shadow-xs dark:border-white/[0.08] dark:bg-[#1a1a1c] dark:hover:border-white/20"
-                        >
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Arsip Berkas</span>
-                                <FileText className="size-3.5 text-[#787774] dark:text-zinc-300" />
+                        {/* Card 4: Dokumen Menunggu Review */}
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">DOKUMEN &amp; REVIEW</span>
+                                <FileText className="size-3.5 text-slate-400 transition-colors group-hover:text-purple-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-[#111111] dark:text-white">
-                                    {documents.length}
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                    {reviewDocsCount}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    berkas aman
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    dari {totalDocsCount} berkas
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span className="truncate">{docApprovedCount} Approved · {docFiledCount} Filed</span>
+                                <Link href={documentsRoutes.index()} className="font-semibold text-purple-600 hover:underline dark:text-purple-400">
+                                    Arsip →
+                                </Link>
                             </div>
                         </div>
                     </section>
 
-                    {/* Dual Cockpit Grid: 65% Database | 35% Timeline Radar */}
+                    {/* 3. Main Bento Hub: 2 Balanced Layout Columns */}
                     <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
-                        {/* Left: Notion Database Workspace (8 Cols on LG) */}
-                        <div className="flex flex-col justify-between overflow-hidden rounded-xl border border-black/[0.08] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.02)] lg:col-span-8 dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            {/* Database View Tabs + Search Bar */}
-                            <div className="flex flex-col justify-between gap-2.5 border-b border-black/[0.06] p-3 sm:flex-row sm:items-center dark:border-white/[0.08]">
-                                <div className="flex items-center gap-1">
-                                    <NotionTabButton
-                                        active={activeTab === 'tasks'}
-                                        onClick={() => setActiveTab('tasks')}
-                                        icon={ListTodo}
-                                        label="Tugas"
-                                        count={tasks.length}
-                                    />
-                                    <NotionTabButton
-                                        active={activeTab === 'matters'}
-                                        onClick={() => setActiveTab('matters')}
-                                        icon={Briefcase}
-                                        label="Matter"
-                                        count={matters.length}
-                                    />
-                                    <NotionTabButton
-                                        active={activeTab === 'documents'}
-                                        onClick={() => setActiveTab('documents')}
-                                        icon={FileText}
-                                        label="Dokumen"
-                                        count={documents.length}
-                                    />
-                                </div>
-
-                                {/* Instant Filter Input */}
-                                <div className="relative flex items-center">
-                                    <Search className="pointer-events-none absolute left-2.5 size-3.5 text-[#787774]" />
-                                    <input
-                                        type="text"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        placeholder="Cari dalam tampilan..."
-                                        className="h-7.5 w-full rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-8 pr-7 text-xs text-[#2f3437] placeholder:text-[#787774] focus:border-black/20 focus:bg-white focus:outline-none sm:w-48 dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200 dark:focus:border-white/20"
-                                    />
-                                    {searchQuery && (
+                        {/* Left Column (7/12): Work Queue & Executive Priority */}
+                        <div className="space-y-5 lg:col-span-7">
+                            {/* Widget 1: Work Queue (Tugas Aktif & Review) */}
+                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                    <div className="flex items-center gap-2">
+                                        <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                            Work Queue &amp; Tugas
+                                        </h2>
+                                        <span className="font-mono text-[10px] text-slate-400">
+                                            ({currentQueueItems.length})
+                                        </span>
+                                    </div>
+                                    {/* Sleek Segmented Switch */}
+                                    <div className="flex items-center rounded-lg bg-slate-100 p-0.5 text-xs dark:bg-white/[0.04]">
                                         <button
                                             type="button"
-                                            onClick={() => setSearchQuery('')}
-                                            className="absolute right-2 text-[#787774] hover:text-[#111111] dark:hover:text-white"
+                                            onClick={() => setQueueTab('pending')}
+                                            className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all ${
+                                                queueTab === 'pending'
+                                                    ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
+                                                    : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
+                                            }`}
                                         >
-                                            <X className="size-3" />
+                                            Menunggu ({pendingCount})
                                         </button>
-                                    )}
+                                        <button
+                                            type="button"
+                                            onClick={() => setQueueTab('in_progress')}
+                                            className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all ${
+                                                queueTab === 'in_progress'
+                                                    ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
+                                                    : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
+                                            }`}
+                                        >
+                                            Review ({reviewCount})
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setQueueTab('completed')}
+                                            className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all ${
+                                                queueTab === 'completed'
+                                                    ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
+                                                    : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
+                                            }`}
+                                        >
+                                            Selesai ({completedCount})
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Database Body with Fixed Compact Height (h-[440px]) */}
-                            <div className="h-[440px] overflow-y-auto">
-                                {/* TAB 1: TUGAS */}
-                                {activeTab === 'tasks' && (
-                                    <div className="min-h-full flex flex-col">
-                                        {filteredTasks.length > 0 ? (
-                                            <div>
-                                                <div className="sticky top-0 z-10 grid grid-cols-[2fr_1.1fr_120px_100px_32px] items-center gap-2 border-b border-black/[0.04] bg-[#fafafa] px-4 py-2 text-[10px] font-semibold text-[#787774] uppercase tracking-wider dark:border-white/[0.06] dark:bg-[#161618]">
-                                                    <span>Tugas</span>
-                                                    <span>Perkara</span>
-                                                    <span>Tenggat</span>
-                                                    <span>Prioritas</span>
-                                                    <span></span>
-                                                </div>
-                                                <div className="divide-y divide-black/[0.04] dark:divide-white/[0.05]">
-                                                    {filteredTasks.map((task) => {
-                                                        const isOverdue = Boolean(
-                                                            task.due_at && new Date(task.due_at) < new Date(),
-                                                        );
+                                <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
+                                    {currentQueueItems.length === 0 ? (
+                                        <p className="py-6 text-center text-xs text-slate-400 dark:text-zinc-500">
+                                            Tidak ada tugas dalam status ini.
+                                        </p>
+                                    ) : (
+                                        currentQueueItems.map((item, idx) => {
+                                            const isUrgent = item.priority === 'high';
 
-                                                        return (
-                                                            <Link
-                                                                key={task.id}
-                                                                href={tasksRoutes.index()}
-                                                                className="group grid grid-cols-[2fr_1.1fr_120px_100px_32px] items-center gap-2 px-4 py-2.5 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
+                                            return (
+                                                <div
+                                                    key={item.id || idx}
+                                                    className="group flex items-center justify-between gap-3 py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                >
+                                                    <div className="min-w-0 flex-1 space-y-0.5">
+                                                        <div className="flex items-center gap-2">
+                                                            <span
+                                                                className={`size-1.5 shrink-0 rounded-full ${
+                                                                    isUrgent
+                                                                        ? 'bg-rose-500'
+                                                                        : queueTab === 'completed'
+                                                                          ? 'bg-emerald-500'
+                                                                          : 'bg-blue-500'
+                                                                }`}
+                                                            />
+                                                            <p
+                                                                className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400"
+                                                                title={item.title}
                                                             >
-                                                                <div className="flex min-w-0 items-center gap-2.5">
-                                                                    <span
-                                                                        className={`flex size-4 shrink-0 items-center justify-center rounded border transition-colors ${
-                                                                            isOverdue
-                                                                                ? 'border-rose-400 bg-rose-50 text-rose-600 dark:border-rose-600 dark:bg-rose-950/40'
-                                                                                : 'border-zinc-300 group-hover:border-zinc-500 dark:border-zinc-600'
-                                                                        }`}
-                                                                    />
-                                                                    <span className="truncate text-xs font-medium text-[#111111] group-hover:underline dark:text-zinc-200">
-                                                                        {task.title}
-                                                                    </span>
-                                                                </div>
+                                                                {item.title}
+                                                            </p>
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5 pl-3.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                                            <span className="font-mono text-slate-700 dark:text-zinc-300">
+                                                                {item.matter?.matter_number ?? 'RPK-TASK'}
+                                                            </span>
+                                                            <span>·</span>
+                                                            <span className="truncate">
+                                                                {item.matter?.client?.display_name ?? item.matter?.title ?? 'Internal'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
 
-                                                                <div className="min-w-0">
-                                                                    {task.matter ? (
-                                                                        <span className="inline-block truncate rounded-md bg-[#e1f3fe] px-2 py-0.5 font-mono text-[10px] font-medium text-[#1f6c9f] dark:bg-blue-950/50 dark:text-sky-300">
-                                                                            {task.matter.matter_number}
-                                                                        </span>
-                                                                    ) : (
-                                                                        <span className="text-[11px] text-[#787774] dark:text-zinc-500">
-                                                                            Umum
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-
-                                                                <div className="min-w-0">
-                                                                    <span className="font-mono text-[11px] text-[#787774] dark:text-zinc-400">
-                                                                        {task.due_at ? formatDate(task.due_at) : '—'}
-                                                                    </span>
-                                                                </div>
-
-                                                                <div>
-                                                                    <StatusBadge value={task.priority} />
-                                                                </div>
-
-                                                                <div className="flex justify-end">
-                                                                    <ChevronRight className="size-3.5 text-[#787774] opacity-0 transition-opacity group-hover:opacity-100" />
-                                                                </div>
-                                                            </Link>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-1 min-h-[380px] items-center justify-center p-8 text-center">
-                                                <EmptyState title="Tidak ada tugas ditemukan" />
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {/* TAB 2: MATTERS */}
-                                {activeTab === 'matters' && (
-                                    <div className="min-h-full flex flex-col">
-                                        {filteredMatters.length > 0 ? (
-                                            <div>
-                                                <div className="sticky top-0 z-10 grid grid-cols-[1.8fr_1.1fr_1.1fr_120px_32px] items-center gap-2 border-b border-black/[0.04] bg-[#fafafa] px-4 py-2 text-[10px] font-semibold text-[#787774] uppercase tracking-wider dark:border-white/[0.06] dark:bg-[#161618]">
-                                                    <span>Perkara</span>
-                                                    <span>Klien</span>
-                                                    <span>Area Praktik</span>
-                                                    <span>Status</span>
-                                                    <span></span>
-                                                </div>
-                                                <div className="divide-y divide-black/[0.04] dark:divide-white/[0.05]">
-                                                    {filteredMatters.map((matter) => (
-                                                        <Link
-                                                            key={matter.id}
-                                                            href={mattersRoutes.show(matter.id)}
-                                                            className="group grid grid-cols-[1.8fr_1.1fr_1.1fr_120px_32px] items-center gap-2 px-4 py-2.5 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
+                                                    <div className="flex shrink-0 items-center gap-2.5 text-right">
+                                                        <span
+                                                            className={`font-mono text-[10px] font-semibold rounded-md px-1.5 py-0.5 ${
+                                                                isUrgent
+                                                                    ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
+                                                                    : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-300'
+                                                            }`}
                                                         >
-                                                            <div className="min-w-0">
-                                                                <p className="truncate text-xs font-semibold text-[#111111] group-hover:text-blue-600 dark:text-zinc-100 dark:group-hover:text-sky-400">
-                                                                    {matter.title}
-                                                                </p>
-                                                                <span className="font-mono text-[10px] text-[#787774] dark:text-zinc-500">
-                                                                    {matter.matter_number}
-                                                                </span>
-                                                            </div>
-
-                                                            <div className="min-w-0">
-                                                                <span className="truncate text-xs text-[#2f3437] dark:text-zinc-300">
-                                                                    {matter.client.display_name}
-                                                                </span>
-                                                            </div>
-
-                                                            <div className="min-w-0">
-                                                                <span className="inline-block truncate rounded-md bg-black/[0.04] px-2 py-0.5 text-[10px] text-[#787774] dark:bg-white/[0.06] dark:text-zinc-400">
-                                                                    {matter.practice_area?.name ?? 'Umum'}
-                                                                </span>
-                                                            </div>
-
-                                                            <div>
-                                                                <StatusBadge value={matter.status} />
-                                                            </div>
-
-                                                            <div className="flex justify-end">
-                                                                <ChevronRight className="size-3.5 text-[#787774] opacity-0 transition-opacity group-hover:opacity-100" />
-                                                            </div>
-                                                        </Link>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-1 min-h-[380px] items-center justify-center p-8 text-center">
-                                                <EmptyState title="Tidak ada matter ditemukan" />
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {/* TAB 3: DOKUMEN */}
-                                {activeTab === 'documents' && (
-                                    <div className="min-h-full flex flex-col">
-                                        {filteredDocuments.length > 0 ? (
-                                            <div>
-                                                <div className="sticky top-0 z-10 grid grid-cols-[2fr_1.1fr_70px_80px_110px_32px] items-center gap-2 border-b border-black/[0.04] bg-[#fafafa] px-4 py-2 text-[10px] font-semibold text-[#787774] uppercase tracking-wider dark:border-white/[0.06] dark:bg-[#161618]">
-                                                    <span>Nama Dokumen</span>
-                                                    <span>Perkara</span>
-                                                    <span>Versi</span>
-                                                    <span>Ukuran</span>
-                                                    <span>Status</span>
-                                                    <span></span>
-                                                </div>
-                                                <div className="divide-y divide-black/[0.04] dark:divide-white/[0.05]">
-                                                    {filteredDocuments.map((doc) => (
-                                                        <Link
-                                                            key={doc.id}
-                                                            href={documentsRoutes.show(doc.id)}
-                                                            className="group grid grid-cols-[2fr_1.1fr_70px_80px_110px_32px] items-center gap-2 px-4 py-2.5 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
-                                                        >
-                                                            <div className="flex min-w-0 items-center gap-2">
-                                                                <FileText className="size-3.5 shrink-0 text-[#787774]" />
-                                                                <span className="truncate text-xs font-medium text-[#111111] group-hover:text-blue-600 dark:text-zinc-100 dark:group-hover:text-sky-400">
-                                                                    {doc.title}
-                                                                </span>
-                                                            </div>
-
-                                                            <div className="min-w-0">
-                                                                <span className="font-mono text-xs text-[#787774] dark:text-zinc-400">
-                                                                    {doc.matter?.matter_number ?? '—'}
-                                                                </span>
-                                                            </div>
-
-                                                            <div>
-                                                                <span className="font-mono text-[10px] text-[#787774] dark:text-zinc-400">
-                                                                    v{doc.current_version?.version_number ?? 1}.0
-                                                                </span>
-                                                            </div>
-
-                                                            <div>
-                                                                <span className="font-mono text-[10px] text-[#787774] dark:text-zinc-400">
-                                                                    {formatBytes(doc.current_version?.file_size)}
-                                                                </span>
-                                                            </div>
-
-                                                            <div>
-                                                                <StatusBadge value={doc.status} />
-                                                            </div>
-
-                                                            <div className="flex justify-end">
-                                                                <ChevronRight className="size-3.5 text-[#787774] opacity-0 transition-opacity group-hover:opacity-100" />
-                                                            </div>
-                                                        </Link>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="flex flex-1 min-h-[380px] items-center justify-center p-8 text-center">
-                                                <EmptyState title="Tidak ada dokumen ditemukan" />
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Database Bottom Action Strip */}
-                            <div className="flex h-9 shrink-0 items-center justify-between border-t border-black/[0.06] bg-[#fafafa] px-4 text-[11px] text-[#787774] dark:border-white/[0.08] dark:bg-[#161618]">
-                                <span>
-                                    {activeTab === 'tasks' && `${filteredTasks.length} tugas dalam antrean`}
-                                    {activeTab === 'matters' && `${filteredMatters.length} perkara aktif`}
-                                    {activeTab === 'documents' && `${filteredDocuments.length} berkas terindeks`}
-                                </span>
-                                <Link
-                                    href={
-                                        activeTab === 'tasks'
-                                            ? tasksRoutes.index()
-                                            : activeTab === 'matters'
-                                              ? mattersRoutes.index()
-                                              : documentsRoutes.index()
-                                    }
-                                    className="inline-flex items-center gap-1 font-medium text-[#111111] hover:underline dark:text-white"
-                                >
-                                    <span>Buka Halaman Lengkap</span>
-                                    <ChevronRight className="size-3" />
-                                </Link>
-                            </div>
-                        </div>
-
-                        {/* Right: Radar & Quick Context (4 Cols on LG) */}
-                        <div className="space-y-4 lg:col-span-4">
-                            {/* Card 1: Radar Tenggat & Agenda */}
-                            <div className="overflow-hidden rounded-xl border border-black/[0.08] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                <div className="flex items-center justify-between border-b border-black/[0.06] px-4 py-2.5 dark:border-white/[0.08]">
-                                    <span className="text-[10px] font-bold tracking-wider text-[#787774] uppercase">
-                                        Radar Tenggat & Sidang
-                                    </span>
-                                    <Link
-                                        href={calendarRoutes.index()}
-                                        className="text-[10px] font-semibold text-blue-600 hover:underline dark:text-sky-400"
-                                    >
-                                        Kalender →
-                                    </Link>
-                                </div>
-
-                                <div className="divide-y divide-black/[0.04] dark:divide-white/[0.05]">
-                                    {timelineItems.slice(0, 4).map((item) => {
-                                        const { label, urgency } = getDaysRemaining(item.date);
-
-                                        return (
-                                            <Link
-                                                key={item.id}
-                                                href={mattersRoutes.show(item.matter.id)}
-                                                className="group flex items-center justify-between gap-2.5 px-4 py-2.5 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
-                                            >
-                                                <div className="flex min-w-0 items-center gap-2.5">
-                                                    {item.type === 'event' ? (
-                                                        <Gavel className="size-3.5 shrink-0 text-blue-600 dark:text-sky-400" />
-                                                    ) : (
-                                                        <Clock className={`size-3.5 shrink-0 ${
-                                                            item.isCritical ? 'text-rose-500' : 'text-[#787774]'
-                                                        }`} />
-                                                    )}
-                                                    <div className="min-w-0">
-                                                        <p className="truncate text-xs font-semibold text-[#111111] group-hover:underline dark:text-white">
-                                                            {item.title}
-                                                        </p>
-                                                        <p className="truncate font-mono text-[10px] text-[#787774] dark:text-zinc-400">
-                                                            {item.matter.matter_number} · {formatDate(item.date)}
-                                                        </p>
+                                                            {item.due_at ? formatDate(item.due_at) : 'Hari ini'}
+                                                        </span>
+                                                        <TooltipProvider delayDuration={100}>
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                        <AvatarImage src={item.assignee?.avatar_url} />
+                                                                        <AvatarFallback className="text-[8px] font-bold">
+                                                                            {getInitials(item.assignee?.name ?? 'FR')}
+                                                                        </AvatarFallback>
+                                                                    </Avatar>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent side="top" className="bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800">
+                                                                    {item.assignee?.name ?? 'Fajar Roni'}
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
                                                     </div>
                                                 </div>
-
-                                                <span
-                                                    className={`shrink-0 rounded-md px-2 py-0.5 font-mono text-[10px] font-semibold ${
-                                                        urgency === 'urgent'
-                                                            ? 'bg-[#fdebec] text-[#9f2f2d] dark:bg-rose-950/60 dark:text-rose-300'
-                                                            : urgency === 'warning'
-                                                              ? 'bg-[#fbf3db] text-[#956400] dark:bg-amber-950/60 dark:text-amber-300'
-                                                              : 'bg-[#edf3ec] text-[#346538] dark:bg-emerald-950/60 dark:text-emerald-300'
-                                                    }`}
-                                                >
-                                                    {label}
-                                                </span>
-                                            </Link>
-                                        );
-                                    })}
-
-                                    {timelineItems.length === 0 && (
-                                        <p className="p-4 text-center text-xs text-[#787774]">
-                                            Tidak ada tenggat batas waktu terdekat.
-                                        </p>
+                                            );
+                                        })
                                     )}
+                                </div>
+
+                                <div className="mt-2 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
+                                    <Link
+                                        href={tasksRoutes.index()}
+                                        className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                    >
+                                        Buka Seluruh Daftar Tugas →
+                                    </Link>
                                 </div>
                             </div>
 
-                            {/* Card 2: Recent Matters Pulse */}
-                            <div className="overflow-hidden rounded-xl border border-black/[0.08] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                <div className="flex items-center justify-between border-b border-black/[0.06] px-4 py-2.5 dark:border-white/[0.08]">
-                                    <span className="text-[10px] font-bold tracking-wider text-[#787774] uppercase">
-                                        Perkara Terkini
-                                    </span>
+                            {/* Widget 2: Executive Actions & High Priority */}
+                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                    <div className="flex items-center gap-2">
+                                        <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                            Prioritas &amp; Tindakan Kemitraan
+                                        </h2>
+                                        <span className="rounded-full bg-rose-50 px-2 py-0.5 font-mono text-[9px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
+                                            {executive_actions?.length ?? 0} MENDESAK
+                                        </span>
+                                    </div>
                                     <Link
-                                        href={mattersRoutes.index()}
-                                        className="text-[10px] font-semibold text-blue-600 hover:underline dark:text-sky-400"
+                                        href={tasksRoutes.index({ query: { priority: 'high' } })}
+                                        className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                                     >
                                         Semua →
                                     </Link>
                                 </div>
 
-                                <div className="divide-y divide-black/[0.04] dark:divide-white/[0.05]">
-                                    {matters.slice(0, 3).map((matter) => (
-                                        <Link
-                                            key={matter.id}
-                                            href={mattersRoutes.show(matter.id)}
-                                            className="group flex items-center justify-between gap-2 px-4 py-2.5 transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
+                                <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
+                                    {!executive_actions || executive_actions.length === 0 ? (
+                                        <p className="py-6 text-center text-xs text-slate-400 dark:text-zinc-500">
+                                            Tidak ada tindakan prioritas mendesak saat ini.
+                                        </p>
+                                    ) : (
+                                        executive_actions.map((action, idx) => {
+                                            return (
+                                                <div
+                                                    key={action.id || idx}
+                                                    className="group flex items-start justify-between gap-3 py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                >
+                                                    <div className="min-w-0 flex-1 space-y-1">
+                                                        <div className="flex items-center gap-2">
+                                                            <span
+                                                                className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold ${
+                                                                    action.badge_color === 'rose'
+                                                                        ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300'
+                                                                        : action.badge_color === 'amber'
+                                                                          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
+                                                                          : 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
+                                                                }`}
+                                                            >
+                                                                {action.badge_label}
+                                                            </span>
+                                                            <span className="font-mono text-[10px] text-slate-500 dark:text-zinc-400">
+                                                                {action.due_text}
+                                                            </span>
+                                                        </div>
+                                                        <p
+                                                            className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400"
+                                                            title={action.title}
+                                                        >
+                                                            {action.title}
+                                                        </p>
+                                                        <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400">
+                                                            {action.matter}
+                                                        </p>
+                                                    </div>
+
+                                                    <div className="flex shrink-0 items-center gap-1.5 pt-1">
+                                                        <TooltipProvider delayDuration={100}>
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                        <AvatarImage src={action.assignee_avatar ?? undefined} />
+                                                                        <AvatarFallback className="text-[7px] font-bold">
+                                                                            {getInitials(action.assignee_name)}
+                                                                        </AvatarFallback>
+                                                                    </Avatar>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent side="top" className="bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800">
+                                                                    {action.assignee_name}
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right Column (5/12): Calendar Agenda, Briefing & Activity */}
+                        <div className="space-y-5 lg:col-span-5">
+                            {/* Widget 3: Agenda & Calendar Strip */}
+                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                    <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                        Jadwal Sidang &amp; Agenda
+                                    </h2>
+                                    <Link
+                                        href={calendarRoutes.index()}
+                                        className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                    >
+                                        Buka Kalender →
+                                    </Link>
+                                </div>
+
+                                {/* Mini 7-Day Clean Strip */}
+                                <div className="mt-3 grid grid-cols-7 gap-1 rounded-lg bg-slate-50 p-1 text-center dark:bg-white/[0.03]">
+                                    {weekDays.map((d, index) => (
+                                        <button
+                                            key={index}
+                                            type="button"
+                                            onClick={() => setSelectedDateIndex(index)}
+                                            className={`flex flex-col items-center justify-center rounded-md py-1 text-xs transition-all ${
+                                                selectedDateIndex === index
+                                                    ? 'bg-slate-900 text-white font-bold shadow-2xs dark:bg-white dark:text-slate-900'
+                                                    : 'text-slate-600 hover:bg-white hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/[0.06]'
+                                            }`}
                                         >
-                                            <div className="min-w-0">
-                                                <p className="truncate text-xs font-semibold text-[#111111] group-hover:underline dark:text-white">
-                                                    {matter.title}
-                                                </p>
-                                                <p className="truncate text-[10px] text-[#787774] dark:text-zinc-400">
-                                                    <span className="font-mono">{matter.matter_number}</span> · {matter.client.display_name}
-                                                </p>
-                                            </div>
-                                            <StatusBadge value={matter.status} />
-                                        </Link>
+                                            <span className="text-[9px] uppercase opacity-75">{d.dayName}</span>
+                                            <span className="font-mono text-xs font-semibold">{d.dayNum}</span>
+                                        </button>
                                     ))}
+                                </div>
+
+                                <div className="mt-3 flex items-center justify-between border-b border-slate-100 pb-2 text-[11px] dark:border-white/[0.04]">
+                                    <span className="font-semibold text-slate-800 dark:text-zinc-200">
+                                        {activeDayFormatted}
+                                    </span>
+                                    <span className="text-slate-400">
+                                        {filteredDayEvents.length} Agenda
+                                    </span>
+                                </div>
+
+                                <div className="space-y-2 pt-2">
+                                    {filteredDayEvents.length === 0 ? (
+                                        <p className="py-4 text-center text-xs text-slate-400 dark:text-zinc-500">
+                                            Tidak ada agenda sidang pada tanggal ini.
+                                        </p>
+                                    ) : (
+                                        filteredDayEvents.map((ev, idx) => (
+                                            <div
+                                                key={ev.id || idx}
+                                                className="flex items-center justify-between gap-2 text-xs"
+                                            >
+                                                <div className="flex min-w-0 items-center gap-2">
+                                                    <span className="size-1.5 shrink-0 rounded-full bg-blue-600" />
+                                                    <span className="font-mono text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
+                                                        {ev.time}
+                                                    </span>
+                                                    <div className="min-w-0 truncate">
+                                                        <p className="truncate font-medium text-slate-900 dark:text-white" title={ev.title}>
+                                                            {ev.title}
+                                                        </p>
+                                                        <p className="truncate text-[10px] text-slate-400">
+                                                            {ev.subtitle}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                    {ev.category}
+                                                </span>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Widget 4: Recent Audit Activity */}
+                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                    <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                        Aktivitas &amp; Log Terkini
+                                    </h2>
+                                    <Link
+                                        href={auditRoutes.index()}
+                                        className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                    >
+                                        Log →
+                                    </Link>
+                                </div>
+
+                                <div className="relative space-y-3 pt-3 before:absolute before:top-4 before:bottom-3 before:left-1 before:w-px before:bg-slate-200 dark:before:bg-zinc-800">
+                                    {!activities || activities.length === 0 ? (
+                                        <p className="py-6 text-center text-xs text-slate-400 dark:text-zinc-500">
+                                            Belum ada aktivitas tercatat di audit log.
+                                        </p>
+                                    ) : (
+                                        activities.slice(0, 5).map((act, idx) => {
+                                            return (
+                                                <div key={act.id || idx} className="relative flex items-start gap-2.5 pl-4">
+                                                    <span className="absolute top-1.5 left-0 size-2 -translate-x-1/2 rounded-full bg-slate-400 ring-2 ring-white dark:ring-[#14161b]" />
+                                                    <div className="min-w-0 flex-1 space-y-0.5">
+                                                        <div className="flex items-center justify-between gap-2">
+                                                            <p className="truncate text-xs font-semibold text-slate-800 dark:text-zinc-200" title={act.title}>
+                                                                {act.title}
+                                                            </p>
+                                                            <span className="font-mono text-[10px] text-slate-400 shrink-0">
+                                                                {act.time}
+                                                            </span>
+                                                        </div>
+                                                        <p className="truncate text-[11px] text-slate-400 dark:text-zinc-500" title={act.subject}>
+                                                            {act.subject}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -708,39 +799,3 @@ export default function Dashboard({
         </>
     );
 }
-
-function NotionTabButton({
-    active,
-    onClick,
-    icon: Icon,
-    label,
-    count,
-}: {
-    active: boolean;
-    onClick: () => void;
-    icon: React.ComponentType<{ className?: string }>;
-    label: string;
-    count?: number;
-}) {
-    return (
-        <button
-            type="button"
-            onClick={onClick}
-            className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
-                active
-                    ? 'bg-black/[0.06] text-[#111111] dark:bg-white/[0.1] dark:text-white'
-                    : 'text-[#787774] hover:bg-black/[0.03] hover:text-[#111111] dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
-            }`}
-        >
-            <Icon className="size-3.5" />
-            <span>{label}</span>
-            {typeof count === 'number' && (
-                <span className="font-mono text-[10px] opacity-70">
-                    ({count})
-                </span>
-            )}
-        </button>
-    );
-}
-
-Dashboard.layout = { breadcrumbs: [{ title: 'Dashboard', href: dashboard() }] };

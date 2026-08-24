@@ -45,8 +45,32 @@ class FinanceController extends Controller
         Gate::authorize('viewAny', Matter::class);
         abort_unless($request->user()->hasPermission('billing.view'), 403);
 
-        $matters = Matter::query()->visibleTo($request->user())->with('client:id,display_name')->latest('updated_at')->limit(30)->get();
-        $selectedMatter = $matters->firstWhere('id', $request->string('matter_id')->toString()) ?? $matters->first();
+        $matters = Matter::query()->visibleTo($request->user())->with('client:id,display_name')->latest('updated_at')->get();
+        $selectedMatterId = $request->string('matter_id')->toString();
+        $selectedMatter = ! empty($selectedMatterId) ? $matters->firstWhere('id', $selectedMatterId) : null;
+
+        $visibleMatterIds = $matters->pluck('id');
+
+        $financialOverview = $selectedMatter
+            ? $overview->for($selectedMatter)
+            : $overview->forCollection($matters);
+
+        $invoiceQuery = Invoice::query();
+        $quotationQuery = Quotation::query();
+        $expenseQuery = Expense::query();
+        $paymentQuery = Payment::query();
+
+        if ($selectedMatter) {
+            $invoiceQuery->where('matter_id', $selectedMatter->getKey());
+            $quotationQuery->where('matter_id', $selectedMatter->getKey());
+            $expenseQuery->where('matter_id', $selectedMatter->getKey());
+            $paymentQuery->where('matter_id', $selectedMatter->getKey());
+        } else {
+            $invoiceQuery->where(fn ($q) => $q->whereIn('matter_id', $visibleMatterIds)->orWhereNull('matter_id'));
+            $quotationQuery->where(fn ($q) => $q->whereIn('matter_id', $visibleMatterIds)->orWhereNull('matter_id'));
+            $expenseQuery->where(fn ($q) => $q->whereIn('matter_id', $visibleMatterIds)->orWhereNull('matter_id'));
+            $paymentQuery->where(fn ($q) => $q->whereIn('matter_id', $visibleMatterIds)->orWhereNull('matter_id'));
+        }
 
         return Inertia::render('finance/index', [
             'matters' => $matters->map(fn (Matter $matter) => [
@@ -54,12 +78,12 @@ class FinanceController extends Controller
                 'title' => $matter->title, 'client' => $matter->client?->display_name,
             ]),
             'clients' => Client::query()->where('status', 'active')->orderBy('display_name')->get(['id', 'display_name']),
-            'overview' => $selectedMatter ? $overview->for($selectedMatter) : null,
-            'selectedMatterId' => $selectedMatter?->getKey(),
-            'invoices' => Invoice::query()->whereIn('matter_id', $matters->pluck('id'))->with('matter:id,matter_number,title')->latest()->limit(12)->get(),
-            'quotations' => Quotation::query()->whereIn('matter_id', $matters->pluck('id'))->with('matter:id,matter_number,title')->latest()->limit(12)->get(),
-            'expenses' => Expense::query()->whereIn('matter_id', $matters->pluck('id'))->with('matter:id,matter_number,title')->latest('incurred_at')->limit(12)->get(),
-            'payments' => Payment::query()->whereIn('matter_id', $matters->pluck('id'))->with(['matter:id,matter_number,title', 'allocations.invoice:id,invoice_number,outstanding_amount,currency'])->latest('received_at')->limit(12)->get(),
+            'overview' => $financialOverview,
+            'selectedMatterId' => $selectedMatter?->getKey() ?? '',
+            'invoices' => $invoiceQuery->with('matter:id,matter_number,title')->latest()->limit(50)->get(),
+            'quotations' => $quotationQuery->with('matter:id,matter_number,title')->latest()->limit(50)->get(),
+            'expenses' => $expenseQuery->with('matter:id,matter_number,title')->latest('incurred_at')->limit(50)->get(),
+            'payments' => $paymentQuery->with(['matter:id,matter_number,title', 'allocations.invoice:id,invoice_number,outstanding_amount,currency'])->latest('received_at')->limit(50)->get(),
             'can' => [
                 'invoice' => $request->user()->hasPermission('billing.manage'),
                 'quotation' => $request->user()->hasPermission('quotation.manage'),

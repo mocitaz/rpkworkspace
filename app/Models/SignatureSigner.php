@@ -3,14 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SignatureSigner extends Model
 {
-    use HasUlids;
+    use HasFactory, HasUlids;
 
-    protected $fillable = ['signature_request_id', 'name', 'email', 'signing_order', 'signing_token', 'status', 'signed_at', 'last_reminded_at', 'signed_ip_address', 'signed_user_agent', 'accepted_name'];
+    protected $fillable = ['signature_request_id', 'name', 'email', 'signing_order', 'signing_token', 'status', 'signed_at', 'last_reminded_at', 'signed_ip_address', 'signed_user_agent', 'accepted_name', 'signature_data'];
 
     protected $hidden = ['signing_token', 'signed_ip_address', 'signed_user_agent'];
 

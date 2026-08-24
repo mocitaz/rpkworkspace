@@ -9,7 +9,7 @@
 
 @theme {
     --font-sans:
-        'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        'Manrope', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
         'Segoe UI', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 
@@ -62,46 +62,48 @@
 }
 
 :root {
+    --workspace-accent: oklch(0.55 0.16 255);
+    --workspace-accent-soft: oklch(0.96 0.018 255);
     --gold: oklch(0.72 0.11 78);
     --gold-dark: oklch(0.55 0.09 78);
     --gold-soft: oklch(0.97 0.02 78);
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.13 0.008 265);
-    --card: oklch(1 0 0);
+    --background: oklch(0.975 0.004 250);
+    --foreground: oklch(0.2 0.016 255);
+    --card: oklch(0.995 0.002 250);
     --card-foreground: oklch(0.13 0.008 265);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.13 0.008 265);
-    --primary: oklch(0.13 0.008 265);
+    --primary: oklch(0.27 0.035 255);
     --primary-foreground: oklch(1 0 0);
-    --secondary: oklch(0.96 0.003 265);
+    --secondary: oklch(0.95 0.006 250);
     --secondary-foreground: oklch(0.15 0.006 265);
-    --muted: oklch(0.96 0.003 265);
-    --muted-foreground: oklch(0.48 0.01 265);
-    --accent: oklch(0.95 0.003 265);
+    --muted: oklch(0.95 0.006 250);
+    --muted-foreground: oklch(0.5 0.018 255);
+    --accent: oklch(0.94 0.012 250);
     --accent-foreground: oklch(0.13 0.008 265);
     --destructive: oklch(0.58 0.22 27);
     --destructive-foreground: oklch(1 0 0);
-    --border: oklch(0.91 0.003 265);
-    --input: oklch(0.90 0.003 265);
-    --ring: oklch(0.13 0.008 265);
+    --border: oklch(0.89 0.009 250);
+    --input: oklch(0.87 0.01 250);
+    --ring: oklch(0.55 0.16 255);
     --chart-1: oklch(0.646 0.222 41.116);
     --chart-2: oklch(0.6 0.118 184.704);
     --chart-3: oklch(0.398 0.07 227.392);
     --chart-4: oklch(0.828 0.189 84.429);
     --chart-5: oklch(0.769 0.188 70.08);
-    --radius: 0.5rem;
-    --sidebar: oklch(0.985 0.002 265);
-    --sidebar-foreground: oklch(0.32 0.008 265);
-    --sidebar-primary: oklch(0.13 0.008 265);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.99 0.003 250);
+    --sidebar-foreground: oklch(0.35 0.018 255);
+    --sidebar-primary: oklch(0.55 0.16 255);
     --sidebar-primary-foreground: oklch(1 0 0);
-    --sidebar-accent: oklch(0.94 0.003 265);
-    --sidebar-accent-foreground: oklch(0.10 0.008 265);
-    --sidebar-border: oklch(0.91 0.003 265);
-    --sidebar-ring: oklch(0.13 0.008 265);
+    --sidebar-accent: oklch(0.955 0.012 250);
+    --sidebar-accent-foreground: oklch(0.22 0.025 255);
+    --sidebar-border: oklch(0.9 0.008 250);
+    --sidebar-ring: oklch(0.55 0.16 255);
 }
 
 .dark {
-    --gold: oklch(0.78 0.10 78);
+    --gold: oklch(0.78 0.1 78);
     --gold-dark: oklch(0.84 0.08 78);
     --gold-soft: oklch(0.24 0.02 78);
     --background: oklch(0.12 0.006 265);
@@ -112,13 +114,13 @@
     --popover-foreground: oklch(0.985 0 0);
     --primary: oklch(0.985 0 0);
     --primary-foreground: oklch(0.14 0.008 265);
-    --secondary: oklch(0.20 0.006 265);
+    --secondary: oklch(0.2 0.006 265);
     --secondary-foreground: oklch(0.985 0 0);
     --muted: oklch(0.18 0.006 265);
     --muted-foreground: oklch(0.65 0.01 265);
-    --accent: oklch(0.20 0.006 265);
+    --accent: oklch(0.2 0.006 265);
     --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.50 0.18 25);
+    --destructive: oklch(0.5 0.18 25);
     --destructive-foreground: oklch(0.985 0 0);
     --border: oklch(0.22 0.006 265);
     --input: oklch(0.24 0.006 265);
@@ -129,7 +131,7 @@
     --chart-4: oklch(0.627 0.265 303.9);
     --chart-5: oklch(0.645 0.246 16.439);
     --sidebar: oklch(0.13 0.006 265);
-    --sidebar-foreground: oklch(0.80 0.006 265);
+    --sidebar-foreground: oklch(0.8 0.006 265);
     --sidebar-primary: oklch(0.985 0 0);
     --sidebar-primary-foreground: oklch(0.14 0.008 265);
     --sidebar-accent: oklch(0.19 0.006 265);
@@ -145,29 +147,144 @@
 
     html {
         font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+        scroll-behavior: smooth;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
 
     body {
         @apply bg-background text-foreground antialiased selection:bg-foreground selection:text-background;
+        min-height: 100dvh;
+        font-variant-numeric: tabular-nums;
+    }
+
+    button,
+    a,
+    input,
+    select,
+    textarea {
+        @apply motion-reduce:transition-none;
     }
 }
 
 @layer components {
     .app-page {
-        @apply mx-auto flex w-full max-w-[1360px] flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8 lg:py-7;
+        @apply mx-auto flex w-full max-w-[1380px] flex-col gap-5 px-4 py-5 sm:px-6 lg:px-8 lg:py-6;
     }
     .data-surface {
-        @apply overflow-hidden rounded-2xl border border-zinc-200/80 bg-white/80 shadow-[0_2px_12px_rgba(0,0,0,0.03)] backdrop-blur-xl dark:border-zinc-800/80 dark:bg-zinc-900/80 dark:shadow-none;
+        @apply overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.02),0_4px_12px_rgba(0,0,0,0.03)] ring-1 ring-black/[0.04] dark:border-white/[0.08] dark:bg-[#16181d] dark:shadow-none dark:ring-white/[0.04];
     }
     .eyebrow {
-        @apply text-[10px] font-semibold tracking-[0.08em] text-muted-foreground uppercase;
+        @apply text-[10px] font-bold tracking-[0.12em] text-slate-400 uppercase dark:text-zinc-500;
     }
     .apple-glass {
         @apply border border-white/60 bg-white/70 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-2xl transition-all duration-300 dark:border-white/10 dark:bg-zinc-900/65 dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)];
     }
     .apple-glass-card {
-        @apply rounded-3xl border border-white/70 bg-white/75 p-5 shadow-[0_8px_32px_rgba(0,0,0,0.03)] backdrop-blur-2xl transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 dark:border-white/10 dark:bg-zinc-900/70 dark:shadow-[0_8px_32px_rgba(0,0,0,0.35)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)];
+        @apply rounded-2xl border border-black/[0.06] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02),0_4px_12px_rgba(0,0,0,0.03)] ring-1 ring-black/[0.04] backdrop-blur-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(0,0,0,0.05)] dark:border-white/[0.08] dark:bg-[#16181d] dark:shadow-none dark:hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)];
+    }
+
+    .metric-tile {
+        @apply rounded-2xl border border-black/[0.06] bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.02),0_4px_12px_rgba(0,0,0,0.03)] ring-1 ring-black/[0.04] transition-all duration-150 hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgba(0,0,0,0.04)] dark:border-white/[0.08] dark:bg-[#16181d] dark:shadow-none dark:ring-white/[0.04] dark:hover:border-white/[0.14];
+    }
+
+    .metric-tile-dark {
+        @apply border-blue-200/60 bg-blue-50/50 text-slate-900 ring-1 ring-blue-500/10 hover:border-blue-300 dark:border-blue-400/20 dark:bg-blue-950/20 dark:text-white dark:ring-blue-400/10;
+    }
+
+    .workspace-table-head {
+        @apply border-b border-black/[0.05] bg-slate-50/75 text-[10px] font-bold tracking-[0.09em] text-slate-500 uppercase dark:border-white/[0.07] dark:bg-white/[0.025] dark:text-zinc-500;
+    }
+
+    .workspace-canvas {
+        @apply relative min-h-[100dvh] w-full bg-[#f8f9fb] text-slate-900 antialiased dark:bg-[#0d0f12] dark:text-zinc-100;
+    }
+
+    .workspace-page {
+        @apply relative mx-auto flex w-full max-w-[1440px] flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8 lg:py-5;
+        animation: workspace-enter 260ms ease-out both;
+    }
+
+    .workspace-page > header {
+        @apply rounded-2xl border border-black/[0.06] bg-white px-5 py-4 shadow-[0_1px_3px_rgba(0,0,0,0.02),0_4px_12px_rgba(0,0,0,0.03)] ring-1 ring-black/[0.04] dark:border-white/[0.08] dark:bg-[#16181d] dark:ring-white/[0.04];
+    }
+
+    .workspace-page > header h1 {
+        @apply text-[1.4rem] leading-tight font-bold tracking-tight text-slate-900 sm:text-[1.65rem] dark:text-white;
+    }
+
+    .workspace-page > header p {
+        @apply mt-1 max-w-3xl text-xs leading-relaxed text-slate-500 dark:text-zinc-400;
+    }
+
+    .detail-page > header {
+        @apply overflow-hidden border-black/[0.06] bg-white py-5 lg:px-6 dark:border-white/[0.08] dark:bg-[#16181d];
+    }
+
+    .detail-page > header h1 {
+        @apply text-[1.65rem] sm:text-[1.85rem];
+    }
+
+    .detail-page [class*='sticky'][class*='top-'] {
+        top: 5rem;
+    }
+
+    .detail-page [role='tablist'] {
+        @apply rounded-xl border border-black/[0.06] bg-white/80 p-1 shadow-2xs backdrop-blur dark:border-white/[0.08] dark:bg-white/[0.03];
+    }
+
+    .workspace-page table {
+        @apply tabular-nums;
+    }
+
+    .workspace-page thead tr {
+        @apply bg-slate-50/80 text-slate-500 dark:bg-white/[0.025] dark:text-zinc-400;
+    }
+
+    .workspace-page tbody tr {
+        @apply transition-colors duration-150 hover:bg-slate-50/60 dark:hover:bg-white/[0.03];
+    }
+
+    .workspace-page :is(input, textarea, select) {
+        border-radius: 0.75rem;
+    }
+
+    .workspace-page select {
+        @apply transition-all duration-150 focus:border-slate-900 focus:bg-white dark:focus:border-white/40;
+    }
+
+    .workspace-page :is(button, a):focus-visible {
+        @apply outline-2 outline-offset-2 outline-slate-900/50 dark:outline-white/50;
+    }
+
+    .workspace-panel {
+        @apply overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.02),0_4px_12px_rgba(0,0,0,0.03)] ring-1 ring-black/[0.04] dark:border-white/[0.08] dark:bg-[#16181d] dark:ring-white/[0.04];
+    }
+
+    .workspace-kicker {
+        @apply text-[10px] font-bold tracking-[0.12em] text-blue-600 uppercase dark:text-blue-400;
+    }
+
+    .leader-line {
+        @apply border-b border-dotted border-slate-300 dark:border-zinc-700 flex-1 mx-2 mb-1;
     }
 }
+
+@keyframes workspace-enter {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .workspace-page {
+        animation: none;
+    }
+}
+
+

@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DocumentApproval extends Model
 {
-    use HasUlids;
+    use HasFactory, HasUlids;
 
     protected $fillable = ['document_id', 'requested_by', 'reviewer_id', 'status', 'request_note', 'resolution_note', 'resolved_at'];
 

@@ -1,7 +1,21 @@
 import { Form } from '@inertiajs/react';
-import { ChevronDown, Pencil, ShieldCheck, UserCheck, Users, X } from 'lucide-react';
-import { useState } from 'react';
+import {
+    Briefcase,
+    Calendar,
+    Check,
+    ChevronDown,
+    Gavel,
+    Pencil,
+    Scale,
+    Shield,
+    ShieldAlert,
+    UserCheck,
+    Users,
+    X,
+} from 'lucide-react';
+import React, { useState } from 'react';
 import InputError from '@/components/input-error';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -15,13 +29,22 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { useInitials } from '@/hooks/use-initials';
 import * as matterRoutes from '@/routes/matters';
 
-type Person = { id: number; name: string; position_title?: string; avatar_url?: string | null };
+type Person = {
+    id: number;
+    name: string;
+    position_title?: string;
+    avatar_url?: string | null;
+};
+
 type Matter = {
     id: string;
     title: string;
     summary?: string;
+    parent_matter_id?: string | null;
+    relationship_type?: string;
     practice_area_id?: number;
     matter_type?: string;
     status: string;
@@ -41,36 +64,50 @@ export function MatterEditDialog({
     matter,
     practiceAreas,
     users,
+    parentMatters = [],
 }: {
     matter: Matter;
     practiceAreas: { id: number; name: string }[];
     users: Person[];
+    parentMatters?: { id: string; matter_number: string; title: string }[];
 }) {
+    const getInitials = useInitials();
     const [open, setOpen] = useState(false);
+    const [selectedMembers, setSelectedMembers] = useState<number[]>(
+        matter.members.map((m) => m.id),
+    );
+
+    const toggleMember = (id: number) => {
+        setSelectedMembers((prev) =>
+            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+        );
+    };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button
                     variant="outline"
-                    className="h-8 rounded-lg border-black/10 bg-white px-3 text-xs font-medium text-[#111111] shadow-2xs hover:bg-black/[0.03] dark:border-white/10 dark:bg-[#1c1c1e] dark:text-zinc-200 dark:hover:bg-white/[0.06]"
+                    size="sm"
+                    className="h-8 cursor-pointer rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
                 >
-                    <Pencil className="mr-1.5 size-3.5 text-[#787774]" />
-                    Edit Matter
+                    <Pencil className="mr-1 size-3 text-slate-400" />
+                    Edit Perkara
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-2xl border border-black/[0.08] bg-white p-5 shadow-2xl sm:max-w-3xl dark:border-white/10 dark:bg-[#1c1c1e]">
-                <DialogHeader className="border-b border-black/[0.04] pb-3 dark:border-white/[0.06]">
+
+            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-2xl dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-black/[0.04] text-[#111111] dark:bg-white/[0.06] dark:text-white">
-                            <Pencil className="size-4" />
+                        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                            <Scale className="size-3.5" />
                         </div>
                         <div>
-                            <DialogTitle className="text-sm font-bold tracking-tight text-[#111111] dark:text-white">
-                                Edit Matter & Penugasan Tim
+                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                Edit Parameter Perkara &amp; Tim Advokat
                             </DialogTitle>
-                            <DialogDescription className="text-xs text-[#787774] dark:text-zinc-400">
-                                Perubahan data perkara dan susunan advokat akan disimpan dalam log audit internal.
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                Perubahan status perkara dan penugasan tim dicatat ke dalam log audit firma.
                             </DialogDescription>
                         </div>
                     </div>
@@ -78,17 +115,18 @@ export function MatterEditDialog({
 
                 <Form
                     {...matterRoutes.update.form(matter.id)}
-                    className="space-y-5 pt-1"
+                    className="space-y-4 pt-1"
                     onSuccess={() => setOpen(false)}
                 >
                     {({ errors, processing }) => (
                         <>
-                            {/* Section 1: Informasi Utama */}
-                            <div className="space-y-3.5">
-                                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-                                    Informasi & Tata Kelola Perkara
+                            {/* Section 1: Informasi & Klasifikasi Perkara */}
+                            <div className="space-y-2.5">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                    1. Informasi &amp; Tata Kelola Perkara
                                 </span>
-                                <div className="grid gap-3 sm:grid-cols-2">
+
+                                <div className="grid gap-2.5 sm:grid-cols-2">
                                     <Field
                                         label="Judul Perkara"
                                         name="title"
@@ -96,6 +134,7 @@ export function MatterEditDialog({
                                         error={errors.title}
                                         required
                                         className="sm:col-span-2"
+                                        placeholder="Contoh: Sengketa Wanprestasi Perjanjian Kerjasama"
                                     />
 
                                     <Select
@@ -108,11 +147,41 @@ export function MatterEditDialog({
                                     />
 
                                     <Field
-                                        label="Jenis Perkara"
+                                        label="Sub-Tipe Perkara"
                                         name="matter_type"
                                         value={matter.matter_type}
                                         error={errors.matter_type}
-                                        placeholder="Contoh: EPC Contract & Land Acquisition"
+                                        placeholder="Contoh: Commercial Dispute"
+                                    />
+
+                                    <Select
+                                        label="Perkara Induk / Parent Matter (Opsional)"
+                                        name="parent_matter_id"
+                                        value={matter.parent_matter_id ?? ''}
+                                        error={errors.parent_matter_id}
+                                        optional
+                                        options={[
+                                            { value: '', label: '— Bukan Perkara Turunan / Standalone —' },
+                                            ...parentMatters.map((item) => ({
+                                                value: item.id,
+                                                label: `${item.matter_number} - ${item.title}`,
+                                            })),
+                                        ]}
+                                    />
+
+                                    <Select
+                                        label="Tipe Relasi Tingkat Perkara"
+                                        name="relationship_type"
+                                        value={matter.relationship_type ?? 'related_dispute'}
+                                        error={errors.relationship_type}
+                                        options={[
+                                            { value: 'related_dispute', label: 'Sengketa Terkait / Turunan' },
+                                            { value: 'appeal_pt', label: 'Tingkat Banding (Pengadilan Tinggi)' },
+                                            { value: 'cassation_ma', label: 'Tingkat Kasasi (Mahkamah Agung)' },
+                                            { value: 'judicial_review_pk', label: 'Peninjauan Kembali (PK)' },
+                                            { value: 'execution', label: 'Permohonan Eksekusi Putusan' },
+                                            { value: 'counterclaim_reconvention', label: 'Gugatan Rekonvensi / Balik' },
+                                        ]}
                                     />
 
                                     <Select
@@ -139,8 +208,66 @@ export function MatterEditDialog({
                                         options={confidentialityOptions}
                                     />
 
+                                    <Field
+                                        label="Yurisdiksi Hukum"
+                                        name="jurisdiction"
+                                        value={matter.jurisdiction}
+                                        error={errors.jurisdiction}
+                                        placeholder="Indonesia / DKI Jakarta"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Section 2: Forum Sidang & Register Eksternal */}
+                            <div className="space-y-2.5">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                    2. Forum Pengadilan &amp; Register Eksternal
+                                </span>
+
+                                <div className="grid gap-2.5 sm:grid-cols-2">
+                                    <Field
+                                        label="Pengadilan / Lembaga Arbitrase"
+                                        name="court"
+                                        value={matter.court}
+                                        error={errors.court}
+                                        placeholder="PN Jakarta Pusat / BANI / Non-Litigasi"
+                                    />
+
+                                    <Field
+                                        label="No. Register Perkara Eksternal"
+                                        name="external_case_number"
+                                        value={matter.external_case_number}
+                                        error={errors.external_case_number}
+                                        placeholder="Contoh: 142/Pdt.G/2026/PN.Jkt.Pst"
+                                    />
+
+                                    <Field
+                                        label="Tanggal Dibuka"
+                                        name="opened_at"
+                                        type="date"
+                                        value={matter.opened_at?.slice(0, 10)}
+                                        error={errors.opened_at}
+                                    />
+
+                                    <Field
+                                        label="Tanggal Ditutup (Opsional)"
+                                        name="closed_at"
+                                        type="date"
+                                        value={matter.closed_at?.slice(0, 10)}
+                                        error={errors.closed_at}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Section 3: Responsible Partner & Lead Supervisi */}
+                            <div className="space-y-2.5">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                    3. Kepemimpinan &amp; Advokat Supervisi
+                                </span>
+
+                                <div className="grid gap-2.5 sm:grid-cols-2">
                                     <Select
-                                        label="Responsible Partner"
+                                        label="Responsible Partner (Penanggung Jawab)"
                                         name="responsible_partner_id"
                                         value={matter.responsible_partner_id.toString()}
                                         error={errors.responsible_partner_id}
@@ -155,118 +282,113 @@ export function MatterEditDialog({
                                         optional
                                         options={users.map(userOption)}
                                     />
-
-                                    <Field
-                                        label="Tanggal Dibuka"
-                                        name="opened_at"
-                                        type="date"
-                                        value={matter.opened_at?.slice(0, 10)}
-                                        error={errors.opened_at}
-                                    />
-
-                                    <Field
-                                        label="Tanggal Ditutup"
-                                        name="closed_at"
-                                        type="date"
-                                        value={matter.closed_at?.slice(0, 10)}
-                                        error={errors.closed_at}
-                                    />
-
-                                    <Field
-                                        label="Yurisdiksi"
-                                        name="jurisdiction"
-                                        value={matter.jurisdiction}
-                                        error={errors.jurisdiction}
-                                        placeholder="Indonesia"
-                                    />
-
-                                    <Field
-                                        label="Pengadilan / Forum"
-                                        name="court"
-                                        value={matter.court}
-                                        error={errors.court}
-                                        placeholder="Pengadilan Negeri / Non-litigasi"
-                                    />
-
-                                    <Field
-                                        label="Nomor Perkara Eksternal"
-                                        name="external_case_number"
-                                        value={matter.external_case_number}
-                                        error={errors.external_case_number}
-                                        placeholder="Nomor register perkara luar"
-                                    />
-
-                                    <div className="grid gap-1.5 sm:col-span-2">
-                                        <Label htmlFor="matter-summary" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
-                                            Ringkasan & Lingkup Perkara
-                                        </Label>
-                                        <textarea
-                                            id="matter-summary"
-                                            name="summary"
-                                            rows={3}
-                                            defaultValue={matter.summary}
-                                            placeholder="Deskripsi ringkas ruang lingkup perkara..."
-                                            className="w-full rounded-lg border border-black/[0.08] bg-[#fbfbfa] p-2.5 text-xs leading-relaxed text-[#111111] outline-none transition-colors placeholder:text-[#787774] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-white"
-                                        />
-                                        <InputError message={errors.summary} />
-                                    </div>
                                 </div>
                             </div>
 
-                            {/* Section 2: Anggota Tim Advokat */}
-                            <div className="space-y-3 rounded-xl border border-black/[0.06] bg-[#fafafa] p-4 dark:border-white/[0.06] dark:bg-zinc-900/40">
-                                <div>
-                                    <h4 className="text-xs font-semibold text-[#111111] dark:text-white">
-                                        Susunan Tim Advokat
-                                    </h4>
-                                    <p className="text-[11px] text-[#787774] dark:text-zinc-400">
-                                        Centang advokat yang bertugas aktif menangani perkara ini.
-                                    </p>
+                            {/* Section 4: Tim Advokat (Interactive Compact Selection) */}
+                            <div className="space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs font-semibold text-slate-900 dark:text-white">
+                                        Susunan Tim Advokat &amp; Kuasa Hukum
+                                    </span>
+                                    <span className="rounded-md bg-blue-50 px-2 py-0.5 font-mono text-[10px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                        {selectedMembers.length} Ditugaskan
+                                    </span>
                                 </div>
 
-                                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                                    {users.map((user) => (
-                                        <label
-                                            key={user.id}
-                                            className="flex cursor-pointer items-center gap-2.5 rounded-lg border border-black/[0.06] bg-white p-2 transition-colors hover:border-black/20 dark:border-white/[0.06] dark:bg-[#1c1c1e] dark:hover:border-white/20"
-                                        >
-                                            <Checkbox
-                                                name="member_ids[]"
-                                                value={user.id}
-                                                defaultChecked={matter.members.some((m) => m.id === user.id)}
-                                                className="size-3.5 rounded border-zinc-300 text-[#111111]"
-                                            />
-                                            <div className="min-w-0">
-                                                <p className="truncate text-xs font-semibold text-[#111111] dark:text-white">
-                                                    {user.name}
-                                                </p>
-                                                <p className="truncate text-[10px] text-[#787774] dark:text-zinc-400">
-                                                    {user.position_title ?? 'Advokat'}
-                                                </p>
-                                            </div>
-                                        </label>
-                                    ))}
+                                <div className="grid gap-1.5 sm:grid-cols-2">
+                                    {users.map((user) => {
+                                        const isChecked = selectedMembers.includes(user.id);
+                                        return (
+                                            <label
+                                                key={user.id}
+                                                onClick={() => toggleMember(user.id)}
+                                                className={`group flex cursor-pointer items-center justify-between gap-2 rounded-lg border p-2 text-xs transition-all ${
+                                                    isChecked
+                                                        ? 'border-blue-500/60 bg-white shadow-2xs dark:border-blue-500/40 dark:bg-[#16181d]'
+                                                        : 'border-slate-200/70 bg-white/70 hover:border-slate-300 dark:border-white/[0.04] dark:bg-[#14161b]'
+                                                }`}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    name="member_ids[]"
+                                                    value={user.id}
+                                                    checked={isChecked}
+                                                    onChange={() => {}}
+                                                    className="sr-only"
+                                                />
+                                                <div className="flex items-center gap-2 min-w-0">
+                                                    <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                                        <AvatarImage src={user.avatar_url ?? undefined} />
+                                                        <AvatarFallback className="text-[8px] font-bold">
+                                                            {getInitials(user.name)}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="min-w-0">
+                                                        <p className="truncate text-xs font-semibold text-slate-900 dark:text-white">
+                                                            {user.name}
+                                                        </p>
+                                                        <p className="truncate text-[10px] text-slate-400">
+                                                            {user.position_title ?? 'Advokat'}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div
+                                                    className={`flex size-4 shrink-0 items-center justify-center rounded border ${
+                                                        isChecked
+                                                            ? 'border-blue-600 bg-blue-600 text-white'
+                                                            : 'border-slate-300 bg-white dark:border-zinc-700 dark:bg-zinc-800'
+                                                    }`}
+                                                >
+                                                    {isChecked && <Check className="size-3 stroke-[3]" />}
+                                                </div>
+                                            </label>
+                                        );
+                                    })}
                                 </div>
                                 <InputError message={errors.member_ids} />
                             </div>
 
+                            {/* Section 5: Ringkasan & Ruang Lingkup */}
+                            <div className="grid gap-1">
+                                <Label
+                                    htmlFor="matter-summary"
+                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                >
+                                    Ringkasan &amp; Lingkup Perkara
+                                </Label>
+                                <textarea
+                                    id="matter-summary"
+                                    name="summary"
+                                    rows={2.5}
+                                    defaultValue={matter.summary}
+                                    placeholder="Deskripsikan fakta hukum dan ruang lingkup penanganan perkara..."
+                                    className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 transition-colors outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                />
+                                <InputError message={errors.summary} />
+                            </div>
+
                             {/* Footer Actions */}
-                            <div className="flex items-center justify-end gap-2 border-t border-black/[0.04] pt-3 dark:border-white/[0.06]">
+                            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
                                 <Button
                                     type="button"
                                     variant="outline"
+                                    size="sm"
                                     onClick={() => setOpen(false)}
-                                    className="h-8 rounded-lg border-black/10 bg-white px-3 text-xs font-medium text-[#111111] hover:bg-black/[0.03] dark:border-white/10 dark:bg-[#1c1c1e] dark:text-zinc-200"
+                                    className="h-8 rounded-lg border-slate-200 px-3 text-xs text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
                                 >
                                     Batal
                                 </Button>
                                 <Button
+                                    type="submit"
+                                    size="sm"
                                     disabled={processing}
-                                    className="h-8 rounded-lg bg-[#111111] px-4 text-xs font-semibold text-white shadow-2xs hover:bg-black active:scale-95 dark:bg-white dark:text-black"
+                                    className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-slate-900"
                                 >
                                     {processing ? (
                                         <>
-                                            <Spinner className="mr-1.5 size-3.5" />
+                                            <Spinner className="mr-1.5 size-3" />
                                             Menyimpan...
                                         </>
                                     ) : (
@@ -289,12 +411,14 @@ const statusOptions = [
     ['closed', 'Ditutup'],
     ['archived', 'Diarsipkan'],
 ];
+
 const priorityOptions = [
     ['low', 'Rendah'],
     ['normal', 'Normal'],
     ['high', 'Tinggi'],
     ['critical', 'Kritis'],
 ];
+
 const confidentialityOptions = [
     ['standard', 'Standar'],
     ['confidential', 'Rahasia'],
@@ -302,7 +426,10 @@ const confidentialityOptions = [
 ];
 
 function userOption(user: Person): [number, string] {
-    return [user.id, `${user.name}${user.position_title ? ` — ${user.position_title}` : ''}`];
+    return [
+        user.id,
+        `${user.name}${user.position_title ? ` (${user.position_title})` : ''}`,
+    ];
 }
 
 function Field({
@@ -325,8 +452,11 @@ function Field({
     placeholder?: string;
 }) {
     return (
-        <div className={`grid gap-1.5 ${className ?? ''}`}>
-            <Label htmlFor={name} className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+        <div className={`grid gap-1 ${className ?? ''}`}>
+            <Label
+                htmlFor={name}
+                className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+            >
                 {label} {required && <span className="text-rose-500">*</span>}
             </Label>
             <Input
@@ -336,12 +466,14 @@ function Field({
                 defaultValue={value}
                 required={required}
                 placeholder={placeholder}
-                className="h-8 rounded-lg border-black/[0.08] bg-[#fbfbfa] text-xs text-[#111111] transition-colors focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-white"
+                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 placeholder:text-slate-400 transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
             />
             <InputError message={error} />
         </div>
     );
 }
+
+type SelectOption = (string | number)[] | { value: string | number; label: string };
 
 function Select({
     label,
@@ -355,17 +487,29 @@ function Select({
     name: string;
     value?: string;
     error?: string;
-    options: (string | number)[][];
+    options: SelectOption[];
     optional?: boolean;
 }) {
+    const normalizedOptions = options.map((opt) => {
+        if (Array.isArray(opt)) {
+            return { value: opt[0], label: String(opt[1]) };
+        }
+        return opt;
+    });
+
     return (
-        <div className="grid gap-1.5">
+        <div className="grid gap-1">
             <div className="flex items-center justify-between">
-                <Label htmlFor={name} className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+                <Label
+                    htmlFor={name}
+                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                >
                     {label}
                 </Label>
                 {optional && (
-                    <span className="text-[10px] text-[#787774] dark:text-zinc-500">Opsional</span>
+                    <span className="text-[10px] text-slate-400">
+                        Opsional
+                    </span>
                 )}
             </div>
             <div className="relative">
@@ -374,16 +518,16 @@ function Select({
                     name={name}
                     defaultValue={value}
                     required={!optional}
-                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-3 pr-8 text-xs font-medium text-[#111111] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200 dark:hover:bg-white/[0.04]"
+                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                 >
                     {optional && <option value="">Tidak ditentukan</option>}
-                    {options.map(([optValue, text]) => (
-                        <option key={optValue} value={optValue}>
-                            {text}
+                    {normalizedOptions.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                            {opt.label}
                         </option>
                     ))}
                 </select>
-                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
+                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
             </div>
             <InputError message={error} />
         </div>

@@ -1,24 +1,36 @@
 import { Head, Link } from '@inertiajs/react';
 import {
     AlertCircle,
+    ArrowUpRight,
     Calendar as CalendarIcon,
     CalendarClock,
     CheckCircle2,
     ChevronLeft,
     ChevronRight,
+    Clock,
+    Download,
     Gavel,
     Grid3X3,
     List,
     ListTodo,
     Scale,
+    TrendingUp,
     Users,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { EmptyState } from '@/components/empty-state';
 import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { formatDate } from '@/lib/format';
 import * as calendarRoutes from '@/routes/calendar';
+import * as calendarExportRoutes from '@/routes/calendar/export';
 import * as matterRoutes from '@/routes/matters';
 
 type Item = {
@@ -53,31 +65,40 @@ export default function CalendarIndex({
     timezone: string;
 }) {
     const [view, setView] = useState<'month' | 'list'>('month');
+    const [selectedCategory, setSelectedCategory] = useState<'all' | 'Agenda' | 'Tenggat' | 'Tugas'>('all');
+    const [selectedItem, setSelectedItem] = useState<CalendarItem | null>(null);
 
-    const items: CalendarItem[] = [
-        ...deadlines.map((item) => ({
-            ...item,
-            date: item.due_at!,
-            kind: 'Tenggat' as const,
-            icon: Gavel,
-        })),
-        ...events.map((item) => ({
-            ...item,
-            date: item.starts_at!,
-            kind: 'Agenda' as const,
-            icon: CalendarClock,
-        })),
-        ...tasks.map((item) => ({
-            ...item,
-            date: item.due_at!,
-            kind: 'Tugas' as const,
-            icon: ListTodo,
-        })),
-    ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const allItems: CalendarItem[] = useMemo(() => {
+        return [
+            ...deadlines.map((item) => ({
+                ...item,
+                date: item.due_at!,
+                kind: 'Tenggat' as const,
+                icon: CalendarClock,
+            })),
+            ...events.map((item) => ({
+                ...item,
+                date: item.starts_at!,
+                kind: 'Agenda' as const,
+                icon: Gavel,
+            })),
+            ...tasks.map((item) => ({
+                ...item,
+                date: item.due_at!,
+                kind: 'Tugas' as const,
+                icon: ListTodo,
+            })),
+        ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    }, [deadlines, events, tasks]);
+
+    const filteredItems = useMemo(() => {
+        if (selectedCategory === 'all') return allItems;
+        return allItems.filter((i) => i.kind === selectedCategory);
+    }, [allItems, selectedCategory]);
 
     const days = dateRange(range.from, range.until);
     const [year, monthNumber] = month.split('-').map(Number);
-    const title = new Intl.DateTimeFormat('id-ID', {
+    const formattedMonthTitle = new Intl.DateTimeFormat('id-ID', {
         month: 'long',
         year: 'numeric',
         timeZone: timezone,
@@ -85,44 +106,46 @@ export default function CalendarIndex({
 
     return (
         <>
-            <Head title={`Kalender & Jadwal — ${title}`} />
+            <Head title={`Kalender & Jadwal Agenda - ${formattedMonthTitle}`} />
 
-            <div className="min-h-screen w-full bg-[#fbfbfa] text-[#111111] antialiased dark:bg-[#121212] dark:text-[#fbfbfa]">
-                <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-                    {/* Notion Minimalist Header */}
-                    <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                    {/* 1. Header Navigation & Top Control Bar */}
+                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">
-                            <h1 className="text-2xl font-bold tracking-tight text-[#111111] capitalize dark:text-white">
-                                {title}
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 capitalize sm:text-2xl dark:text-white">
+                                {formattedMonthTitle}
                             </h1>
-                            <p className="text-xs text-[#787774] dark:text-zinc-400">
-                                Agenda terpadu jadwal sidang pengadilan, tenggat waktu bukti, dan tugas perkara ({timezone}).
+                            <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                Jadwal sidang pengadilan, mediasi, batas waktu pembuktian (tenggat), dan tugas perkara ({timezone}).
                             </p>
                         </div>
 
-                        {/* Month Navigation & View Toggle */}
+                        {/* Month Navigation & View Controls */}
                         <div className="flex flex-wrap items-center gap-2">
                             {/* Previous / Today / Next Month Controls */}
-                            <div className="flex items-center gap-1 rounded-lg border border-black/[0.08] bg-white p-1 shadow-2xs dark:border-white/[0.08] dark:bg-[#1a1a1c]">
+                            <div className="flex items-center gap-0.5 rounded-lg border border-slate-200/70 bg-white p-0.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="size-7 rounded-md text-[#787774] hover:bg-black/[0.04] hover:text-[#111111] dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                    className="size-7 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
                                     asChild
                                 >
                                     <Link
                                         href={calendarRoutes.index({
-                                            query: { month: shiftMonth(month, -1) },
+                                            query: {
+                                                month: shiftMonth(month, -1),
+                                            },
                                         })}
                                         aria-label="Bulan sebelumnya"
                                     >
-                                        <ChevronLeft className="size-4" />
+                                        <ChevronLeft className="size-3.5" />
                                     </Link>
                                 </Button>
 
                                 <Button
                                     variant="ghost"
-                                    className="h-7 rounded-md px-2.5 text-xs font-medium text-[#111111] hover:bg-black/[0.04] dark:text-zinc-200 dark:hover:bg-white/[0.06]"
+                                    className="h-7 rounded px-2.5 text-xs font-semibold text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-white/[0.06]"
                                     asChild
                                 >
                                     <Link href={calendarRoutes.index()}>
@@ -133,130 +156,304 @@ export default function CalendarIndex({
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="size-7 rounded-md text-[#787774] hover:bg-black/[0.04] hover:text-[#111111] dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                    className="size-7 rounded text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
                                     asChild
                                 >
                                     <Link
                                         href={calendarRoutes.index({
-                                            query: { month: shiftMonth(month, 1) },
+                                            query: {
+                                                month: shiftMonth(month, 1),
+                                            },
                                         })}
                                         aria-label="Bulan berikutnya"
                                     >
-                                        <ChevronRight className="size-4" />
+                                        <ChevronRight className="size-3.5" />
                                     </Link>
                                 </Button>
                             </div>
 
-                            {/* View Segmented Pill Switcher */}
-                            <div className="inline-flex rounded-lg bg-black/[0.04] p-1 dark:bg-white/[0.06]">
+                            {/* View Segmented Switcher */}
+                            <div className="flex items-center gap-0.5 rounded-lg border border-slate-200/70 bg-white p-0.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                 <button
                                     type="button"
                                     onClick={() => setView('month')}
-                                    className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                                    className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold transition-all ${
                                         view === 'month'
-                                            ? 'bg-white text-[#111111] shadow-2xs dark:bg-zinc-700 dark:text-white'
-                                            : 'text-[#787774] hover:text-[#111111] dark:text-zinc-400 dark:hover:text-white'
+                                            ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400'
                                     }`}
                                 >
-                                    <Grid3X3 className="size-3.5" />
+                                    <Grid3X3 className="size-3" />
                                     Bulan
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setView('list')}
-                                    className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                                    className={`flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-semibold transition-all ${
                                         view === 'list'
-                                            ? 'bg-white text-[#111111] shadow-2xs dark:bg-zinc-700 dark:text-white'
-                                            : 'text-[#787774] hover:text-[#111111] dark:text-zinc-400 dark:hover:text-white'
+                                            ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400'
                                     }`}
                                 >
-                                    <List className="size-3.5" />
-                                    Daftar Agenda
+                                    <List className="size-3" />
+                                    Daftar
                                 </button>
                             </div>
-                        </div>
-                    </header>
 
-                    {/* Compact 4-Column Stat Strip (h-[76px]) */}
+                            {/* iCal .ics Sync Export Button */}
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-200"
+                                asChild
+                            >
+                                <a
+                                    href={calendarExportRoutes.ics.url()}
+                                    download="RPK-Law-Firm-Calendar.ics"
+                                >
+                                    <Download className="mr-1 size-3 text-blue-600 dark:text-blue-400" />
+                                    Sync (.ics)
+                                </a>
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* 2. Top 4 KPI Metrics Bento Cards */}
                     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                         {/* 1. Sidang & Agenda */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Sidang & Agenda</span>
-                                <Gavel className="size-3.5 text-purple-600 dark:text-purple-400" />
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">SIDANG &amp; AGENDA</span>
+                                <Gavel className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-purple-600 dark:text-purple-400">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {events.length}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    pengadilan & mediasi
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    jadwal sidang
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Pengadilan &amp; Mediasi</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">Terjadwal</span>
                             </div>
                         </div>
 
-                        {/* 2. Tenggat Waktu */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Tenggat Kritis</span>
-                                <CalendarClock className="size-3.5 text-rose-600 dark:text-rose-400" />
+                        {/* 2. Tenggat Kritis */}
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">TENGGAT KRITIS</span>
+                                <CalendarClock className="size-3.5 text-rose-500 dark:text-rose-400" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-rose-600 dark:text-rose-400">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-rose-600 dark:text-rose-400">
                                     {deadlines.length}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    batas waktu berkas
+                                <span className="text-[11px] font-medium text-rose-600 dark:text-rose-400">
+                                    batas waktu
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Batas Waktu Berkas</span>
+                                <span className="font-semibold text-rose-600 dark:text-rose-400">Prioritas</span>
                             </div>
                         </div>
 
                         {/* 3. Tugas Terkait */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Tugas Terkait</span>
-                                <ListTodo className="size-3.5 text-[#1f6c9f] dark:text-sky-400" />
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">TUGAS TERKAIT</span>
+                                <ListTodo className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-[#111111] dark:text-white">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {tasks.length}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    jatuh tempo
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    tugas jatuh tempo
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Instruksi Advokat</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">Aktif</span>
                             </div>
                         </div>
 
                         {/* 4. Total Aktivitas */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Total Jadwal</span>
-                                <CalendarIcon className="size-3.5 text-[#2d5530] dark:text-emerald-400" />
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">TOTAL JADWAL</span>
+                                <CalendarIcon className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-[#111111] dark:text-white">
-                                    {items.length}
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                    {allItems.length}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
                                     aktivitas kalender
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Kalender Kantor</span>
+                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">Tercatat</span>
                             </div>
                         </div>
                     </section>
 
-                    {/* View Switch: Month Grid or List View */}
+                    {/* 3. Category Filter Tabs */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                        <button
+                            type="button"
+                            onClick={() => setSelectedCategory('all')}
+                            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                selectedCategory === 'all'
+                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
+                            }`}
+                        >
+                            Semua Aktivitas ({allItems.length})
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setSelectedCategory('Agenda')}
+                            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                selectedCategory === 'Agenda'
+                                    ? 'bg-blue-600 text-white shadow-2xs'
+                                    : 'border border-slate-200/70 bg-white text-blue-700 hover:bg-blue-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-blue-400'
+                            }`}
+                        >
+                            Sidang &amp; Agenda ({events.length})
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setSelectedCategory('Tenggat')}
+                            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                selectedCategory === 'Tenggat'
+                                    ? 'bg-rose-600 text-white shadow-2xs'
+                                    : 'border border-slate-200/70 bg-white text-rose-700 hover:bg-rose-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-rose-400'
+                            }`}
+                        >
+                            Tenggat Waktu ({deadlines.length})
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setSelectedCategory('Tugas')}
+                            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                selectedCategory === 'Tugas'
+                                    ? 'bg-slate-800 text-white shadow-2xs dark:bg-zinc-200 dark:text-slate-900'
+                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
+                            }`}
+                        >
+                            Tugas Terkait ({tasks.length})
+                        </button>
+                    </div>
+
+                    {/* 4. View Switch: Month Grid or List View */}
                     {view === 'month' ? (
                         <MonthGrid
                             days={days}
                             month={month}
-                            items={items}
+                            items={filteredItems}
                             timezone={timezone}
+                            onSelectItem={setSelectedItem}
                         />
                     ) : (
-                        <ListView items={items} />
+                        <ListView items={filteredItems} onSelectItem={setSelectedItem} />
                     )}
                 </main>
             </div>
+
+            {/* Modal Dialog: Detail Ringkasan Agenda / Jadwal */}
+            <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
+                {selectedItem && (
+                    <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                        <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                            <div className="flex items-start justify-between gap-3">
+                                <div className="space-y-1">
+                                    <div className="flex flex-wrap items-center gap-1.5">
+                                        {selectedItem.kind === 'Agenda' && (
+                                            <span className="rounded bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                Sidang &amp; Agenda
+                                            </span>
+                                        )}
+                                        {selectedItem.kind === 'Tenggat' && (
+                                            <span className="rounded bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
+                                                Batas Waktu Tenggat
+                                            </span>
+                                        )}
+                                        {selectedItem.kind === 'Tugas' && (
+                                            <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                Instruksi Tugas
+                                            </span>
+                                        )}
+                                        {selectedItem.is_critical && (
+                                            <span className="rounded bg-rose-600 px-2 py-0.5 text-[10px] font-semibold text-white uppercase">
+                                                Prioritas Kritis
+                                            </span>
+                                        )}
+                                        {selectedItem.status && (
+                                            <StatusBadge value={selectedItem.status} />
+                                        )}
+                                    </div>
+                                    <DialogTitle className="pt-0.5 text-sm font-bold text-slate-900 dark:text-white">
+                                        {selectedItem.title}
+                                    </DialogTitle>
+                                </div>
+                            </div>
+                        </DialogHeader>
+
+                        <div className="space-y-4 pt-1">
+                            {/* Linked Matter Card */}
+                            {selectedItem.matter ? (
+                                <div className="rounded-lg border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-900/30 dark:bg-blue-950/20">
+                                    <div className="flex items-center justify-between">
+                                        <div className="space-y-0.5">
+                                            <span className="text-[10px] font-semibold text-blue-600 uppercase dark:text-blue-400">
+                                                PERKARA HUKUM TERKAIT
+                                            </span>
+                                            <p className="text-xs font-semibold text-slate-900 dark:text-white">
+                                                {selectedItem.matter.matter_number} · {selectedItem.matter.title}
+                                            </p>
+                                        </div>
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            className="h-7 rounded-lg border-blue-200 bg-white px-2.5 text-xs font-semibold text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300"
+                                            asChild
+                                        >
+                                            <Link href={matterRoutes.show(selectedItem.matter.id)}>
+                                                Buka
+                                                <ArrowUpRight className="ml-0.5 size-3" />
+                                            </Link>
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 text-xs text-slate-500 dark:border-white/[0.04] dark:bg-[#121418]">
+                                    Agenda operasional umum kantor firma RPK.
+                                </div>
+                            )}
+
+                            {/* Schedule & Timing Box */}
+                            <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 space-y-2 text-xs dark:border-white/[0.04] dark:bg-[#121418]">
+                                <div className="flex items-center justify-between gap-2 border-b border-slate-200/50 pb-1.5 dark:border-white/[0.04]">
+                                    <span className="text-slate-500 dark:text-zinc-400">Waktu Pelaksanaan</span>
+                                    <span className="font-mono font-semibold text-slate-900 dark:text-white">
+                                        {formatDate(selectedItem.date, true)} ({timezone})
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between gap-2">
+                                    <span className="text-slate-500 dark:text-zinc-400">Kategori Kegiatan</span>
+                                    <span className="font-semibold text-slate-800 dark:text-zinc-200">
+                                        {selectedItem.kind === 'Agenda' ? 'Sidang / Mediasi Resmi' : selectedItem.kind === 'Tenggat' ? 'Batas Waktu Dokumen Perkara' : 'Tugas Eksekusi Advokat'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </DialogContent>
+                )}
+            </Dialog>
         </>
     );
 }
@@ -266,24 +463,34 @@ function MonthGrid({
     month,
     items,
     timezone,
+    onSelectItem,
 }: {
     days: string[];
     month: string;
     items: CalendarItem[];
     timezone: string;
+    onSelectItem: (item: CalendarItem) => void;
 }) {
     const todayKey = dateKey(new Date().toISOString(), timezone);
 
     return (
-        <div className="overflow-hidden rounded-xl border border-black/[0.08] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
+        <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
             <div className="overflow-x-auto">
-                <div className="min-w-[900px]">
+                <div className="min-w-[840px]">
                     {/* Days of the Week Header */}
-                    <div className="grid grid-cols-7 border-b border-black/[0.05] bg-[#fafafa] text-center dark:border-white/[0.05] dark:bg-[#161618]">
-                        {['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'].map((day) => (
+                    <div className="grid grid-cols-7 border-b border-slate-100 bg-slate-50/60 text-center dark:border-white/[0.04] dark:bg-[#121418]">
+                        {[
+                            'Senin',
+                            'Selasa',
+                            'Rabu',
+                            'Kamis',
+                            'Jumat',
+                            'Sabtu',
+                            'Minggu',
+                        ].map((day) => (
                             <div
                                 key={day}
-                                className="py-2.5 text-[10px] font-semibold uppercase tracking-wider text-[#787774]"
+                                className="py-2 text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400"
                             >
                                 {day}
                             </div>
@@ -291,7 +498,7 @@ function MonthGrid({
                     </div>
 
                     {/* Day Grid Matrix */}
-                    <div className="grid grid-cols-7 divide-x divide-y divide-black/[0.04] dark:divide-white/[0.04]">
+                    <div className="grid grid-cols-7 divide-x divide-y divide-slate-100 dark:divide-white/[0.04]">
                         {days.map((day) => {
                             const dayItems = items.filter(
                                 (item) => dateKey(item.date, timezone) === day,
@@ -302,24 +509,24 @@ function MonthGrid({
                             return (
                                 <div
                                     key={day}
-                                    className={`flex min-h-[125px] flex-col justify-between p-2 transition-colors ${
+                                    className={`flex min-h-[110px] flex-col justify-between p-2 transition-colors ${
                                         isCurrentMonth
-                                            ? 'bg-white dark:bg-[#1a1a1c]'
-                                            : 'bg-[#fafafa]/50 text-[#787774]/50 dark:bg-zinc-900/20 dark:text-zinc-600'
+                                            ? 'bg-white dark:bg-[#14161b]'
+                                            : 'bg-slate-50/30 text-slate-400 dark:bg-zinc-900/10 dark:text-zinc-600'
                                     }`}
                                 >
                                     {/* Top: Date Number */}
                                     <div className="flex items-center justify-between">
                                         {isToday ? (
-                                            <span className="flex size-5.5 items-center justify-center rounded-full bg-[#111111] text-[11px] font-bold text-white shadow-2xs dark:bg-white dark:text-black">
+                                            <span className="flex size-5 items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold text-white dark:bg-white dark:text-slate-900">
                                                 {Number(day.slice(-2))}
                                             </span>
                                         ) : (
                                             <span
                                                 className={`text-xs font-semibold ${
                                                     isCurrentMonth
-                                                        ? 'text-[#111111] dark:text-white'
-                                                        : 'text-[#787774]/60 dark:text-zinc-600'
+                                                        ? 'text-slate-900 dark:text-white'
+                                                        : 'text-slate-400 dark:text-zinc-600'
                                                 }`}
                                             >
                                                 {Number(day.slice(-2))}
@@ -327,8 +534,8 @@ function MonthGrid({
                                         )}
 
                                         {dayItems.length > 0 && (
-                                            <span className="font-mono text-[9px] text-[#787774] dark:text-zinc-500">
-                                                {dayItems.length} agenda
+                                            <span className="rounded bg-slate-100 px-1 py-0.2 font-mono text-[9px] font-medium text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                                                {dayItems.length}
                                             </span>
                                         )}
                                     </div>
@@ -338,34 +545,31 @@ function MonthGrid({
                                         {dayItems.slice(0, 3).map((item) => {
                                             const chipStyle =
                                                 item.kind === 'Tenggat'
-                                                    ? 'bg-[#fdebec] text-[#9f2f2d] dark:bg-rose-950/40 dark:text-rose-300'
+                                                    ? 'bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900/30'
                                                     : item.kind === 'Agenda'
-                                                      ? 'bg-purple-50 text-purple-800 dark:bg-purple-950/40 dark:text-purple-300'
-                                                      : 'bg-[#e1f3fe] text-[#1f6c9f] dark:bg-blue-950/40 dark:text-blue-300';
+                                                      ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900/30'
+                                                      : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-zinc-800/80 dark:text-zinc-300 dark:border-white/10';
 
                                             return (
-                                                <Link
+                                                <button
+                                                    type="button"
                                                     key={`${item.kind}-${item.id}`}
-                                                    href={
-                                                        item.matter
-                                                            ? matterRoutes.show(item.matter.id)
-                                                            : calendarRoutes.index()
-                                                    }
+                                                    onClick={() => onSelectItem(item)}
                                                     title={`${item.kind}: ${item.title}`}
-                                                    className={`group block truncate rounded-md px-1.5 py-0.5 text-[10px] font-medium transition-colors hover:opacity-80 ${chipStyle}`}
+                                                    className={`group flex w-full cursor-pointer items-center justify-between gap-1 truncate rounded border px-1.5 py-0.5 text-left text-[9.5px] font-medium transition-all hover:shadow-2xs ${chipStyle}`}
                                                 >
-                                                    <div className="flex items-center gap-1 truncate">
-                                                        <span className="font-mono text-[9px] opacity-75">
-                                                            {formatTime(item.date, timezone)}
-                                                        </span>
-                                                        <span className="truncate">{item.title}</span>
-                                                    </div>
-                                                </Link>
+                                                    <span className="truncate">
+                                                        {item.title}
+                                                    </span>
+                                                    <span className="shrink-0 font-mono text-[8.5px] opacity-75">
+                                                        {formatTime(item.date, timezone)}
+                                                    </span>
+                                                </button>
                                             );
                                         })}
 
                                         {dayItems.length > 3 && (
-                                            <span className="block text-center text-[9px] font-medium text-[#787774] dark:text-zinc-500">
+                                            <span className="block text-center text-[9px] font-medium text-slate-400 dark:text-zinc-500">
                                                 +{dayItems.length - 3} lainnya
                                             </span>
                                         )}
@@ -380,10 +584,16 @@ function MonthGrid({
     );
 }
 
-function ListView({ items }: { items: CalendarItem[] }) {
+function ListView({
+    items,
+    onSelectItem,
+}: {
+    items: CalendarItem[];
+    onSelectItem: (item: CalendarItem) => void;
+}) {
     if (!items.length) {
         return (
-            <div className="flex min-h-[380px] items-center justify-center rounded-xl border border-black/[0.08] bg-white p-12 text-center shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
+            <div className="flex min-h-[300px] items-center justify-center rounded-xl border border-slate-200/70 bg-white p-8 text-center shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                 <EmptyState
                     title="Tidak ada agenda pada bulan ini"
                     description="Seluruh tenggat, sidang, atau tugas perkara akan otomatis terdaftar di sini."
@@ -393,50 +603,48 @@ function ListView({ items }: { items: CalendarItem[] }) {
     }
 
     return (
-        <div className="overflow-hidden rounded-xl border border-black/[0.08] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-            <div className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
+        <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+            <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                 {items.map((item) => {
                     const iconStyle =
                         item.kind === 'Tenggat'
-                            ? 'bg-[#fdebec] text-[#9f2f2d] dark:bg-rose-950/40 dark:text-rose-400'
+                            ? 'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400'
                             : item.kind === 'Agenda'
-                              ? 'bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400'
-                              : 'bg-[#e1f3fe] text-[#1f6c9f] dark:bg-blue-950/40 dark:text-sky-400';
+                              ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400'
+                              : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-400';
 
                     const IconComp = item.icon;
 
                     return (
-                        <Link
+                        <div
                             key={`${item.kind}-${item.id}`}
-                            href={
-                                item.matter
-                                    ? matterRoutes.show(item.matter.id)
-                                    : calendarRoutes.index()
-                            }
-                            className="group flex flex-col justify-between gap-3 p-3.5 transition-colors hover:bg-black/[0.02] sm:flex-row sm:items-center dark:hover:bg-white/[0.03]"
+                            onClick={() => onSelectItem(item)}
+                            className="group flex cursor-pointer flex-col justify-between gap-2.5 p-3.5 transition-colors hover:bg-slate-50/50 sm:flex-row sm:items-center dark:hover:bg-white/[0.02]"
                         >
-                            <div className="flex min-w-0 items-center gap-3">
-                                <div className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${iconStyle}`}>
-                                    <IconComp className="size-4" />
+                            <div className="flex min-w-0 items-center gap-2.5">
+                                <div
+                                    className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${iconStyle}`}
+                                >
+                                    <IconComp className="size-3.5" />
                                 </div>
                                 <div className="min-w-0">
-                                    <h4 className="truncate text-xs font-semibold text-[#111111] group-hover:text-blue-600 dark:text-white dark:group-hover:text-sky-400">
+                                    <h4 className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
                                         {item.title}
                                     </h4>
-                                    <p className="font-mono text-[10px] text-[#787774] dark:text-zinc-400">
+                                    <p className="font-mono text-[10px] text-slate-500 dark:text-zinc-400">
                                         {item.matter ? (
                                             <span>
-                                                {item.matter.matter_number} · {item.matter.title}
+                                                <span className="font-semibold text-slate-700 dark:text-zinc-300">{item.matter.matter_number}</span> · {item.matter.title}
                                             </span>
                                         ) : (
-                                            'Tugas Personal'
+                                            'Agenda Operasional Umum'
                                         )}
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="flex shrink-0 items-center gap-3">
-                                <time className="font-mono text-xs text-[#787774] dark:text-zinc-400">
+                            <div className="flex shrink-0 items-center gap-2.5">
+                                <time className="font-mono text-xs text-slate-700 dark:text-zinc-300">
                                     {formatDate(item.date, true)}
                                 </time>
                                 {item.is_critical ? (
@@ -444,12 +652,12 @@ function ListView({ items }: { items: CalendarItem[] }) {
                                 ) : item.status ? (
                                     <StatusBadge value={item.status} />
                                 ) : (
-                                    <span className="rounded-md bg-black/[0.04] px-2 py-0.5 text-[10px] font-medium text-[#787774] dark:bg-white/[0.06] dark:text-zinc-300">
+                                    <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
                                         {item.kind}
                                     </span>
                                 )}
                             </div>
-                        </Link>
+                        </div>
                     );
                 })}
             </div>
@@ -477,7 +685,8 @@ function dateKey(value: string, timezone: string): string {
         day: '2-digit',
         timeZone: timezone,
     }).formatToParts(new Date(value));
-    const get = (type: string) => parts.find((part) => part.type === type)?.value;
+    const get = (type: string) =>
+        parts.find((part) => part.type === type)?.value;
 
     return `${get('year')}-${get('month')}-${get('day')}`;
 }

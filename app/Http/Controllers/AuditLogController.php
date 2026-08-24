@@ -4,16 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\AuditLog;
 use App\Models\User;
+use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AuditLogController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
     public function __invoke(Request $request): Response
+    {
+        return $this->index($request);
+    }
+
+    public function index(Request $request): Response
     {
         abort_unless($request->user()->hasPermission('audit.view'), 403);
 
@@ -39,5 +43,72 @@ class AuditLogController extends Controller
             'metrics' => $metrics,
             'filters' => $request->only(['event', 'actor_id', 'from', 'until']),
         ]);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        abort_unless($request->user()->hasPermission('audit.view'), 403);
+
+        $query = AuditLog::query()
+            ->with('actor:id,name,email')
+            ->when($request->string('event')->toString(), fn ($q, $event) => $q->where('event', $event))
+            ->when($request->integer('actor_id'), fn ($q, $actorId) => $q->where('actor_id', $actorId))
+            ->when($request->date('from'), fn ($q, $from) => $q->where('created_at', '>=', $from->startOfDay()))
+            ->when($request->date('until'), fn ($q, $until) => $q->where('created_at', '<=', $until->endOfDay()))
+            ->latest('created_at');
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="rpk-audit-trail-'.now()->format('Ymd-His').'.csv"',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        return response()->stream(function () use ($query) {
+            $handle = fopen('php://output', 'w');
+            if ($handle === false) {
+                return;
+            }
+
+            // UTF-8 BOM for Microsoft Excel compatibility
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, [
+                'ID Log',
+                'Waktu Kejadian (WIB)',
+                'Nama Pengguna / Aktor',
+                'Email Pengguna',
+                'Aksi / Event',
+                'Tipe Entitas',
+                'ID Entitas',
+                'Alamat IP',
+                'Perangkat / User Agent',
+                'Metadata / Payload JSON',
+            ]);
+
+            $query->chunk(500, function ($logs) use ($handle) {
+                foreach ($logs as $log) {
+                    $createdAt = $log->created_at instanceof CarbonInterface
+                        ? $log->created_at->setTimezone(config('raf.timezone', 'Asia/Jakarta'))->format('Y-m-d H:i:s')
+                        : ($log->created_at ? (string) $log->created_at : '-');
+
+                    fputcsv($handle, [
+                        $log->id,
+                        $createdAt,
+                        $log->actor?->name ?? 'System / Otomatis',
+                        $log->actor?->email ?? '-',
+                        $log->event,
+                        $log->subject_type ? class_basename($log->subject_type) : '-',
+                        $log->subject_id ?? '-',
+                        $log->ip_address ?? '-',
+                        $log->user_agent ?? '-',
+                        json_encode($log->metadata, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                    ]);
+                }
+            });
+
+            fclose($handle);
+        }, 200, $headers);
     }
 }

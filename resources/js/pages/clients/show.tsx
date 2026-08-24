@@ -1,11 +1,17 @@
-import { Head, Link } from '@inertiajs/react';
+import { Form, Head, Link, router } from '@inertiajs/react';
 import {
+    AlertTriangle,
     ArrowLeft,
     Briefcase,
     Building2,
     Calendar,
+    CheckCircle2,
+    ChevronDown,
     ChevronRight,
+    Clock,
+    Copy,
     ExternalLink,
+    FileBadge,
     FileText,
     Globe,
     Mail,
@@ -13,20 +19,37 @@ import {
     Pencil,
     Phone,
     Plus,
+    Shield,
+    ShieldAlert,
     ShieldCheck,
-    UserCheck,
+    ContactRound,
+    Trash2,
+    User,
     Users,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { ClientEditDialog } from '@/components/client-edit-dialog';
 import { EmptyState } from '@/components/empty-state';
 import { StatusBadge } from '@/components/status-badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useInitials } from '@/hooks/use-initials';
 import { formatBytes, formatDate } from '@/lib/format';
 import * as clientRoutes from '@/routes/clients';
 import * as documentRoutes from '@/routes/documents';
@@ -49,6 +72,20 @@ type Matter = {
     responsible_partner?: Person;
 };
 
+type ComplianceDocument = {
+    id: string;
+    client_id: string;
+    document_type: string;
+    document_number: string;
+    title: string;
+    issued_at?: string;
+    expires_at?: string;
+    issuer?: string;
+    notes?: string;
+    compliance_status: 'expired' | 'expiring_soon' | 'active' | 'no_expiry';
+    creator?: { id: number; name: string };
+};
+
 type Client = {
     id: string;
     client_number: string;
@@ -69,6 +106,13 @@ type Client = {
     postal_code?: string;
     country_code: string;
     notes?: string;
+    kyc_risk_level?: string;
+    kyc_status?: string;
+    kyc_checklist?: Record<string, boolean> | null;
+    kyc_assessed_at?: string;
+    kyc_assessed_by?: number;
+    kyc_notes?: string;
+    kyc_assessed_by_user?: Person;
     relationship_partner_id?: number;
     opened_at?: string;
     closed_at?: string;
@@ -80,6 +124,7 @@ type Client = {
         email?: string;
         mobile?: string;
     }[];
+    compliance_documents?: ComplianceDocument[];
 };
 
 type Document = {
@@ -87,15 +132,33 @@ type Document = {
     title: string;
     status: string;
     updated_at: string;
-    current_version?: { version_number: number; file_size: number; mime_type?: string };
+    current_version?: {
+        version_number: number;
+        file_size: number;
+        mime_type?: string;
+    };
 };
 
 const tabs = [
     { id: 'Overview', label: 'Ringkasan' },
     { id: 'Matters', label: 'Matters' },
+    { id: 'Legalitas', label: 'Legalitas & Kepatuhan' },
     { id: 'Kontak', label: 'Kontak Person' },
+    { id: 'KYC', label: 'Kepatuhan KYC & AML' },
     { id: 'Dokumen', label: 'Dokumen' },
 ] as const;
+
+const complianceTypeLabels: Record<string, string> = {
+    deed_establishment: 'Akta Pendirian Perusahaan',
+    deed_amendment_directors: 'Akta Perubahan Direksi / Saham',
+    nib: 'Nomor Induk Berusaha (NIB)',
+    sk_menkumham: 'SK Pengesahan Kemenkumham',
+    kbli_license: 'Izin Usaha KBLI / Sektoral',
+    amdal_environmental: 'AMDAL / Izin Lingkungan',
+    trademark_ip: 'Sertifikat Merek & HKI',
+    tax_id: 'Surat Keterangan Pajak (SKT)',
+    other: 'Dokumen Legalitas Lainnya',
+};
 
 export default function ClientShow({
     client,
@@ -109,660 +172,1346 @@ export default function ClientShow({
     activeMatters: Matter[];
     closedMatters: Matter[];
     documents: Document[];
-    partners: { id: number; name: string; position_title?: string; avatar_path?: string | null }[];
+    partners: {
+        id: number;
+        name: string;
+        position_title?: string;
+        avatar_path?: string | null;
+    }[];
     can: { update: boolean };
 }) {
+    const getInitials = useInitials();
     const [tab, setTab] = useState<(typeof tabs)[number]['id']>('Overview');
-    const allMatters = [...activeMatters, ...closedMatters];
+    const [copiedTax, setCopiedTax] = useState(false);
+    const [isAddingCompliance, setIsAddingCompliance] = useState(false);
+    const [editingCompliance, setEditingCompliance] = useState<ComplianceDocument | null>(null);
+    const allMatters = useMemo(() => [...activeMatters, ...closedMatters], [activeMatters, closedMatters]);
+
+    const handleCopyTax = () => {
+        if (client.tax_identifier) {
+            navigator.clipboard.writeText(client.tax_identifier);
+            setCopiedTax(true);
+            setTimeout(() => setCopiedTax(false), 2000);
+        }
+    };
 
     return (
         <>
-            <Head title={`${client.client_number} — ${client.display_name}`} />
+            <Head title={`${client.client_number} - ${client.display_name}`} />
 
-            <div className="min-h-screen w-full bg-[#fbfbfa] text-[#111111] antialiased dark:bg-[#121212] dark:text-[#fbfbfa]">
-                <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-                    {/* Notion Minimalist Header */}
-                    <header className="space-y-2.5">
-                        <Link
-                            href={clientRoutes.index()}
-                            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#787774] transition-colors hover:text-[#111111] dark:text-zinc-400 dark:hover:text-white"
-                        >
-                            <ArrowLeft className="size-3.5" />
-                            Klien
-                        </Link>
+            <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                    {/* 1. Header Navigation & Client Cockpit Bar */}
+                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 lg:flex-row lg:items-center dark:border-white/[0.06]">
+                        <div className="space-y-1.5">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
+                                    {client.client_number}
+                                </span>
+                                <span className="text-slate-300 dark:text-zinc-700">•</span>
+                                <StatusBadge value={client.status} />
+                                <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${
+                                    client.type === 'individual' || client.type === 'person'
+                                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                                        : 'bg-slate-100 text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300'
+                                }`}>
+                                    {client.type === 'individual' || client.type === 'person' ? 'Individu' : 'Badan Hukum'}
+                                </span>
+                            </div>
 
-                        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-                            <div className="space-y-1.5 min-w-0">
-                                <h1 className="text-2xl font-bold tracking-tight text-[#111111] sm:text-3xl dark:text-white">
+                            <div className="flex items-center gap-2.5">
+                                {client.type === 'individual' || client.type === 'person' ? (
+                                    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-emerald-200/60 bg-emerald-50 text-emerald-700 shadow-2xs dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-300">
+                                        <User className="size-4" />
+                                    </div>
+                                ) : (
+                                    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-blue-200/60 bg-blue-50 text-blue-700 shadow-2xs dark:border-blue-900/40 dark:bg-blue-950/60 dark:text-blue-300">
+                                        <Building2 className="size-4" />
+                                    </div>
+                                )}
+                                <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                     {client.display_name}
                                 </h1>
-
-                                <div className="flex flex-wrap items-center gap-2 text-xs text-[#787774] dark:text-zinc-400">
-                                    <span className="inline-block rounded bg-[#e1f3fe] px-2 py-0.5 font-mono text-[11px] font-semibold text-[#1f6c9f] dark:bg-blue-950/50 dark:text-sky-300">
-                                        {client.client_number}
-                                    </span>
-                                    <span>·</span>
-                                    <span className="font-medium text-[#2f3437] dark:text-zinc-200">{client.legal_name}</span>
-                                    <span>·</span>
-                                    <span>{client.industry ?? 'Umum'}</span>
-                                    <span>·</span>
-                                    <StatusBadge value={client.status} />
-                                    <span className="rounded-md bg-black/[0.04] px-2 py-0.5 text-[10px] font-medium capitalize text-[#787774] dark:bg-white/[0.06] dark:text-zinc-300">
-                                        {client.type === 'corporate' ? 'Korporasi' : 'Individu'}
-                                    </span>
-                                </div>
                             </div>
 
-                            {/* Actions */}
-                            <div className="flex shrink-0 items-center gap-2">
-                                {can.update && (
-                                    <Button
-                                        variant="outline"
-                                        className="h-8 rounded-lg border-black/10 bg-white px-3 text-xs font-medium text-[#111111] shadow-2xs hover:bg-black/[0.03] dark:border-white/10 dark:bg-[#1c1c1e] dark:text-zinc-200 dark:hover:bg-white/[0.06]"
-                                        asChild
-                                    >
-                                        <Link href={clientRoutes.edit(client.id)}>
-                                            <Pencil className="mr-1.5 size-3.5 text-[#787774]" />
-                                            Edit Klien
-                                        </Link>
-                                    </Button>
+                            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-zinc-400">
+                                <span className="font-medium text-slate-700 dark:text-zinc-200">
+                                    {client.legal_name}
+                                </span>
+                                <span className="text-slate-300 dark:text-zinc-700">•</span>
+                                <span>{client.industry ?? 'Umum'}</span>
+                                {client.city && (
+                                    <>
+                                        <span className="text-slate-300 dark:text-zinc-700">•</span>
+                                        <span>{[client.city, client.country_code].filter(Boolean).join(', ')}</span>
+                                    </>
                                 )}
-
-                                <Button
-                                    className="h-8 rounded-lg bg-[#111111] px-3.5 text-xs font-semibold text-white shadow-2xs transition-colors hover:bg-black active:scale-95 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
-                                    asChild
-                                >
-                                    <Link href={matterRoutes.create()}>
-                                        <Plus className="mr-1.5 size-3.5" />
-                                        Buat Matter Baru
-                                    </Link>
-                                </Button>
                             </div>
                         </div>
-                    </header>
 
-                    {/* Compact 4-Column Stat Strip (h-[76px]) */}
+                        {/* Cockpit Action Buttons */}
+                        <div className="flex shrink-0 flex-wrap items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                                asChild
+                            >
+                                <Link href={clientRoutes.index()}>
+                                    <ArrowLeft className="mr-1 size-3 text-slate-400" />
+                                    Kembali
+                                </Link>
+                            </Button>
+
+                            {can.update && (
+                                <ClientEditDialog
+                                    client={client}
+                                    partners={partners}
+                                    trigger={
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-8 cursor-pointer rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                                        >
+                                            <Pencil className="mr-1 size-3 text-slate-400" />
+                                            Edit Profil
+                                        </Button>
+                                    }
+                                />
+                            )}
+
+                            <Button
+                                size="sm"
+                                className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                                asChild
+                            >
+                                <Link href={matterRoutes.create()}>
+                                    <Plus className="mr-1 size-3" />
+                                    Buat Matter Baru
+                                </Link>
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* 2. Top 4 Overview Stat Cards */}
                     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                        {/* 1. Partner */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-                                Relationship Partner
-                            </span>
-                            <div className="flex min-w-0 items-center gap-2.5">
-                                <div className="relative flex size-6.5 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black/[0.05] text-[10px] font-semibold text-zinc-700 dark:bg-white/[0.1] dark:text-zinc-300">
-                                    {client.relationship_partner?.avatar_url ? (
-                                        <img
-                                            src={client.relationship_partner.avatar_url}
-                                            alt={client.relationship_partner.name}
-                                            className="size-full object-cover"
-                                        />
-                                    ) : (
-                                        (client.relationship_partner?.name || 'P')
-                                            .split(' ')
-                                            .map((n) => n[0])
-                                            .slice(0, 2)
-                                            .join('')
-                                    )}
-                                </div>
+                        {/* 1. Relationship Partner */}
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">RELATIONSHIP PARTNER</span>
+                                <ShieldCheck className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
+                            </div>
+                            <div className="mt-2 flex items-center gap-2">
+                                <Avatar className="size-6 rounded-full border border-slate-200/80 dark:border-white/10">
+                                    <AvatarImage src={client.relationship_partner?.avatar_url ?? undefined} />
+                                    <AvatarFallback className="text-[8px] font-bold">
+                                        {client.relationship_partner ? getInitials(client.relationship_partner.name) : '-'}
+                                    </AvatarFallback>
+                                </Avatar>
                                 <div className="min-w-0">
-                                    <p className="truncate text-xs font-semibold text-[#111111] dark:text-white">
+                                    <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
                                         {client.relationship_partner?.name ?? 'Belum ditentukan'}
                                     </p>
-                                    <p className="truncate text-[10px] text-[#787774] dark:text-zinc-400">
+                                    <p className="truncate text-[10px] text-slate-400 dark:text-zinc-500">
                                         {client.relationship_partner?.position_title ?? 'Partner'}
                                     </p>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* 2. Industri & Tipe */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-                                Sektor & Entitas
-                            </span>
-                            <div className="min-w-0">
-                                <p className="truncate text-xs font-semibold text-[#111111] dark:text-white">
-                                    {client.industry ?? 'Umum'}
-                                </p>
-                                <p className="truncate text-[10px] text-[#787774] dark:text-zinc-400">
-                                    {client.type === 'corporate' ? 'Badan Hukum / Korporasi' : 'Individu'}
-                                </p>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Penanggung Jawab Klien</span>
                             </div>
                         </div>
 
-                        {/* 3. Matter Aktif */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-                                Portofolio Perkara
-                            </span>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-sm font-bold text-[#111111] dark:text-white">
-                                    {activeMatters.length} Aktif
-                                </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    {allMatters.length} total perkara
-                                </span>
+                        {/* 2. Sektor & Entitas */}
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">SEKTOR &amp; ENTITAS</span>
+                                <Building2 className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
+                            </div>
+                            <div className="mt-2">
+                                <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                    {client.industry ?? 'Umum / Korporasi'}
+                                </p>
+                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                    {client.type === 'corporate' ? 'Badan Hukum / Korporasi' : 'Perorangan'}
+                                </p>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Profil Usaha</span>
                             </div>
                         </div>
 
-                        {/* 4. Kontak Perwakilan */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-                                Kontak Person
-                            </span>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-sm font-bold text-[#111111] dark:text-white">
-                                    {client.contacts.length} Kontak
+                        {/* 3. Portofolio Perkara */}
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">PORTOFOLIO PERKARA</span>
+                                <Briefcase className="size-3.5 text-slate-400 transition-colors group-hover:text-amber-600 dark:text-zinc-500" />
+                            </div>
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                    {activeMatters.length}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    perwakilan terdaftar
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    matter aktif
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Total Tercatat</span>
+                                <span className="font-semibold text-slate-700 dark:text-zinc-300">{allMatters.length} Kasus</span>
+                            </div>
+                        </div>
+
+                        {/* 4. Kontak Person */}
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">KONTAK PERSON</span>
+                                <ContactRound className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
+                            </div>
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                    {client.contacts.length}
+                                </span>
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    perwakilan resmi
+                                </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Personil Terdaftar</span>
                             </div>
                         </div>
                     </section>
 
-                    {/* Notion Pill Tab Bar */}
-                    <div className="space-y-4">
-                        <div className="flex border-b border-black/[0.08] dark:border-white/[0.08]">
-                            {tabs.map((item) => {
-                                const isActive = tab === item.id;
-                                const count =
-                                    item.id === 'Matters'
-                                        ? allMatters.length
-                                        : item.id === 'Kontak'
-                                          ? client.contacts.length
-                                          : item.id === 'Dokumen'
-                                            ? documents.length
-                                            : null;
+                    {/* 3. Segmented Navigation Tabs */}
+                    <div className="flex flex-wrap items-center gap-1 rounded-xl border border-slate-200/70 bg-slate-100/70 p-1 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        {tabs.map((item) => {
+                            const isActive = tab === item.id;
+                            const count =
+                                item.id === 'Matters'
+                                    ? allMatters.length
+                                    : item.id === 'Kontak'
+                                      ? client.contacts.length
+                                      : item.id === 'Dokumen'
+                                        ? documents.length
+                                        : null;
 
-                                return (
-                                    <button
-                                        key={item.id}
-                                        type="button"
-                                        onClick={() => setTab(item.id)}
-                                        className={`relative flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-medium transition-colors ${
-                                            isActive
-                                                ? 'text-[#111111] dark:text-white'
-                                                : 'text-[#787774] hover:text-[#111111] dark:text-zinc-400 dark:hover:text-white'
-                                        }`}
-                                    >
-                                        <span>{item.label}</span>
-                                        {count !== null && count > 0 && (
-                                            <span className="font-mono text-[10px] text-[#787774] dark:text-zinc-500">
-                                                ({count})
-                                            </span>
-                                        )}
-                                        {isActive && (
-                                            <span className="absolute bottom-0 left-0 h-[2px] w-full bg-[#111111] dark:bg-white" />
-                                        )}
-                                    </button>
-                                );
-                            })}
-                        </div>
-
-                        {/* TAB 1: OVERVIEW */}
-                        {tab === 'Overview' && (
-                            <div className="overflow-hidden rounded-xl border border-black/[0.08] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                {/* 1. Full-Width Top Section: Catatan / Ikhtisar Klien */}
-                                <div className="border-b border-black/[0.06] bg-[#fafafa] p-5 dark:border-white/[0.06] dark:bg-zinc-900/30">
-                                    <div className="mb-2 flex items-center gap-2">
-                                        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-                                            Catatan & Ikhtisar Klien
+                            return (
+                                <button
+                                    key={item.id}
+                                    type="button"
+                                    onClick={() => setTab(item.id)}
+                                    className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-semibold transition-all ${
+                                        isActive
+                                            ? 'bg-white text-slate-900 shadow-2xs dark:bg-[#20232a] dark:text-white'
+                                            : 'text-slate-600 hover:bg-white/60 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
+                                    }`}
+                                >
+                                    <span>{item.label}</span>
+                                    {count !== null && count > 0 && (
+                                        <span
+                                            className={`rounded-full px-1.5 py-0.2 font-mono text-[10px] font-bold ${
+                                                isActive
+                                                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
+                                                    : 'bg-slate-200/80 text-slate-700 dark:bg-zinc-800 dark:text-zinc-400'
+                                            }`}
+                                        >
+                                            {count}
                                         </span>
-                                    </div>
-                                    <p className="text-xs leading-relaxed text-[#2f3437] whitespace-pre-wrap dark:text-zinc-200">
-                                        {client.notes ||
-                                            'Profil klien terdaftar dalam database firma hukum RPK dengan tata kelola hak akses dan kerahasiaan dokumen terverifikasi.'}
-                                    </p>
-                                </div>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
 
-                                {/* 2. Bottom Grid: 2 Columns Split */}
-                                <div className="grid divide-y divide-black/[0.06] lg:grid-cols-[1.4fr_1fr] lg:divide-x lg:divide-y-0 dark:divide-white/[0.06]">
-                                    {/* Left Column: Active Matters & Key Contacts */}
-                                    <div className="flex flex-col divide-y divide-black/[0.06] dark:divide-white/[0.06]">
-                                        {/* Section: Matter Berjalan */}
-                                        <div className="p-5">
-                                            <div className="mb-3 flex items-center justify-between">
-                                                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-                                                    Matter Berjalan ({activeMatters.length})
-                                                </span>
-                                                {allMatters.length > 0 && (
-                                                    <button
-                                                        onClick={() => setTab('Matters')}
-                                                        className="text-xs font-medium text-blue-600 hover:underline dark:text-sky-400"
-                                                    >
-                                                        Lihat Semua
-                                                    </button>
-                                                )}
-                                            </div>
-
-                                            {activeMatters.length ? (
-                                                <div className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
-                                                    {activeMatters.map((matter) => (
-                                                        <Link
-                                                            key={matter.id}
-                                                            href={matterRoutes.show(matter.id)}
-                                                            className="group flex items-center justify-between py-2.5 transition-colors"
-                                                        >
-                                                            <div className="min-w-0 pr-3">
-                                                                <p className="truncate text-xs font-semibold text-[#111111] group-hover:text-blue-600 dark:text-white dark:group-hover:text-sky-400">
-                                                                    {matter.title}
-                                                                </p>
-                                                                <div className="flex items-center gap-1.5 font-mono text-[10px] text-[#787774] dark:text-zinc-400">
-                                                                    <span className="rounded bg-[#e1f3fe] px-1.5 py-0.2 font-semibold text-[#1f6c9f] dark:bg-blue-950/50 dark:text-sky-300">
-                                                                        {matter.matter_number}
-                                                                    </span>
-                                                                    <span>·</span>
-                                                                    <span>{matter.practice_area?.name ?? 'Umum'}</span>
-                                                                </div>
-                                                            </div>
-                                                            <StatusBadge value={matter.status} />
-                                                        </Link>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <p className="text-xs text-[#787774] dark:text-zinc-500">
-                                                    Tidak ada matter yang sedang berjalan.
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        {/* Section: Kontak Perwakilan */}
-                                        <div className="p-5">
-                                            <div className="mb-3 flex items-center justify-between">
-                                                <span className="text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-                                                    Kontak Person ({client.contacts.length})
-                                                </span>
-                                                {client.contacts.length > 2 && (
-                                                    <button
-                                                        onClick={() => setTab('Kontak')}
-                                                        className="text-xs font-medium text-blue-600 hover:underline dark:text-sky-400"
-                                                    >
-                                                        Lihat Semua
-                                                    </button>
-                                                )}
-                                            </div>
-
-                                            {client.contacts.length ? (
-                                                <div className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
-                                                    {client.contacts.map((contact) => (
-                                                        <div
-                                                            key={contact.id}
-                                                            className="flex items-center justify-between py-2.5 text-xs"
-                                                        >
-                                                            <div className="flex min-w-0 items-center gap-2.5 pr-3">
-                                                                <div className="flex size-6.5 shrink-0 items-center justify-center rounded-full bg-black/[0.05] text-[10px] font-semibold text-zinc-700 dark:bg-white/[0.1] dark:text-zinc-300">
-                                                                    {contact.full_name
-                                                                        .split(' ')
-                                                                        .map((n) => n[0])
-                                                                        .slice(0, 2)
-                                                                        .join('')}
-                                                                </div>
-                                                                <div className="min-w-0">
-                                                                    <p className="truncate font-semibold text-[#111111] dark:text-white">
-                                                                        {contact.full_name}
-                                                                    </p>
-                                                                    <p className="truncate text-[10px] text-[#787774] dark:text-zinc-400">
-                                                                        {contact.job_title ?? 'Kontak Perwakilan'}
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-                                                            <div className="shrink-0 text-right text-[11px] text-[#787774] dark:text-zinc-400">
-                                                                <p>{contact.email ?? '—'}</p>
-                                                                <p className="font-mono text-[10px]">{contact.mobile ?? ''}</p>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            ) : (
-                                                <p className="text-xs text-[#787774] dark:text-zinc-500">
-                                                    Belum ada kontak perwakilan terdaftar.
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Right Column: Legalitas, Domisili & Partner */}
-                                    <div className="flex flex-col divide-y divide-black/[0.06] dark:divide-white/[0.06]">
-                                        {/* Section: Legalitas & Kontak Resmi */}
-                                        <div className="p-5 text-xs">
-                                            <span className="mb-3 block text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-                                                Legalitas & Kontak Perusahaan
+                    {/* 4. 2-Column Split Cockpit Workspace Layout */}
+                    <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
+                        {/* Sisi Kiri: Main Workspace (8 Columns) */}
+                        <div className="space-y-4 lg:col-span-8">
+                            {/* TAB 1: OVERVIEW */}
+                            {tab === 'Overview' && (
+                                <div className="space-y-4">
+                                    {/* Catatan & Ikhtisar Klien */}
+                                    <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                        <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2 dark:border-white/[0.04]">
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Catatan &amp; Ikhtisar Klien
                                             </span>
-                                            <div className="divide-y divide-black/[0.04] dark:divide-white/[0.04]">
-                                                {client.tax_identifier && (
-                                                    <div className="flex items-center justify-between py-2">
-                                                        <span className="text-[#787774] dark:text-zinc-400">NPWP / Tax ID</span>
-                                                        <span className="font-mono font-semibold text-[#111111] dark:text-white">
-                                                            {client.tax_identifier}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                {client.registration_identifier && (
-                                                    <div className="flex items-center justify-between py-2">
-                                                        <span className="text-[#787774] dark:text-zinc-400">No. Registrasi / NIB</span>
-                                                        <span className="font-mono font-semibold text-[#111111] dark:text-white">
-                                                            {client.registration_identifier}
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                <div className="flex items-center justify-between py-2">
-                                                    <span className="text-[#787774] dark:text-zinc-400">Email Resmi</span>
-                                                    <span className="font-medium text-[#111111] dark:text-white">
-                                                        {client.email || '—'}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center justify-between py-2">
-                                                    <span className="text-[#787774] dark:text-zinc-400">Telepon</span>
-                                                    <span className="font-mono font-medium text-[#111111] dark:text-white">
-                                                        {client.phone || '—'}
-                                                    </span>
-                                                </div>
-                                                {client.website && (
-                                                    <div className="flex items-center justify-between py-2">
-                                                        <span className="text-[#787774] dark:text-zinc-400">Website</span>
-                                                        <a
-                                                            href={client.website.startsWith('http') ? client.website : `https://${client.website}`}
-                                                            target="_blank"
-                                                            rel="noreferrer"
-                                                            className="inline-flex items-center gap-1 font-medium text-blue-600 hover:underline dark:text-sky-400"
-                                                        >
-                                                            {client.website.replace(/^https?:\/\//, '')}
-                                                            <ExternalLink className="size-3" />
-                                                        </a>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {/* Section: Alamat & Domisili */}
-                                        <div className="p-5 text-xs">
-                                            <span className="mb-3 block text-[10px] font-semibold uppercase tracking-wider text-[#787774]">
-                                                Alamat & Domisili
+                                            <span className="text-[11px] text-slate-400">
+                                                Profil Entitas
                                             </span>
-                                            <div className="space-y-1 text-xs text-[#2f3437] dark:text-zinc-200">
-                                                <p className="font-semibold text-[#111111] dark:text-white">{client.address_line_1 || '—'}</p>
-                                                {client.address_line_2 && (
-                                                    <p className="text-[#787774] dark:text-zinc-400">{client.address_line_2}</p>
-                                                )}
-                                                <p className="text-[11px] text-[#787774] dark:text-zinc-400">
-                                                    {[client.city, client.province, client.postal_code, client.country_code]
-                                                        .filter(Boolean)
-                                                        .join(', ')}
-                                                </p>
-                                            </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* TAB 2: MATTERS */}
-                        {tab === 'Matters' && (
-                            <div className="overflow-hidden rounded-xl border border-black/[0.08] bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c] space-y-4">
-                                <div className="flex items-center justify-between border-b border-black/[0.04] pb-3 dark:border-white/[0.06]">
-                                    <div>
-                                        <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] dark:text-white">
-                                            Daftar Perkara Hukum ({allMatters.length})
-                                        </h2>
-                                        <p className="text-[11px] text-[#787774] dark:text-zinc-400">
-                                            Seluruh riwayat penanganan perkara aktif maupun selesai untuk klien ini.
+                                        <p className="text-xs leading-relaxed whitespace-pre-wrap text-slate-700 dark:text-zinc-300">
+                                            {client.notes ||
+                                                'Klien terverifikasi. Dokumen KYC, beneficial ownership, dan surat penunjukan telah ditelaah saat pembukaan hubungan profesional.'}
                                         </p>
                                     </div>
-                                    <Button
-                                        size="sm"
-                                        className="h-7.5 rounded-lg bg-[#111111] px-3 text-xs font-semibold text-white shadow-2xs hover:bg-black dark:bg-white dark:text-black"
-                                        asChild
-                                    >
-                                        <Link href={matterRoutes.create()}>
-                                            <Plus className="mr-1 size-3.5" />
-                                            Buat Matter
-                                        </Link>
-                                    </Button>
-                                </div>
 
-                                {allMatters.length ? (
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-left text-xs">
-                                            <thead>
-                                                <tr className="border-b border-black/[0.04] text-[10px] font-semibold uppercase tracking-wider text-[#787774] dark:border-white/[0.06]">
-                                                    <th className="pb-2.5 pr-4 font-semibold">Perkara</th>
-                                                    <th className="pb-2.5 px-3 font-semibold">Area Praktik</th>
-                                                    <th className="pb-2.5 px-3 text-center font-semibold">Partner</th>
-                                                    <th className="pb-2.5 px-3 font-semibold">Diperbarui</th>
-                                                    <th className="pb-2.5 px-3 font-semibold">Status</th>
-                                                    <th className="pb-2.5 pl-3 text-right font-semibold"></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-black/[0.04] dark:divide-white/[0.05]">
-                                                {allMatters.map((matter) => (
-                                                    <tr key={matter.id} className="group transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]">
-                                                        <td className="py-3 pr-4">
-                                                            <Link
-                                                                href={matterRoutes.show(matter.id)}
-                                                                className="font-semibold text-[#111111] group-hover:text-blue-600 dark:text-white dark:group-hover:text-sky-400"
-                                                            >
+                                    {/* Matter Berjalan */}
+                                    <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                        <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Matter Berjalan ({activeMatters.length})
+                                            </span>
+                                            {allMatters.length > 0 && (
+                                                <button
+                                                    onClick={() => setTab('Matters')}
+                                                    className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                                >
+                                                    Lihat Semua →
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {activeMatters.length ? (
+                                            <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                                {activeMatters.map((matter) => (
+                                                    <Link
+                                                        key={matter.id}
+                                                        href={matterRoutes.show(matter.id)}
+                                                        className="group flex items-center justify-between py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                    >
+                                                        <div className="min-w-0 pr-3">
+                                                            <p className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
                                                                 {matter.title}
-                                                                <span className="mt-0.5 block font-mono text-[10px] text-[#787774] dark:text-zinc-400">
+                                                            </p>
+                                                            <div className="mt-0.5 flex items-center gap-2 font-mono text-[10px] text-slate-500 dark:text-zinc-400">
+                                                                <span className="font-semibold text-blue-600 dark:text-blue-400">
                                                                     {matter.matter_number}
                                                                 </span>
-                                                            </Link>
-                                                        </td>
-                                                        <td className="py-3 px-3 whitespace-nowrap">
-                                                            <span className="rounded-md bg-black/[0.04] px-2 py-0.5 text-[10px] font-medium text-[#787774] dark:bg-white/[0.06] dark:text-zinc-400">
-                                                                {matter.practice_area?.name ?? 'Umum'}
-                                                            </span>
-                                                        </td>
-                                                        <td className="py-3 px-3 text-center whitespace-nowrap">
-                                                            {matter.responsible_partner ? (
-                                                                <TooltipProvider delayDuration={150}>
-                                                                    <Tooltip>
-                                                                        <TooltipTrigger asChild>
-                                                                            <div className="inline-flex cursor-pointer items-center justify-center">
-                                                                                <div className="relative flex size-6.5 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black/[0.05] text-[9px] font-semibold text-zinc-700 dark:bg-white/[0.1] dark:text-zinc-300">
-                                                                                    {matter.responsible_partner.avatar_url ? (
-                                                                                        <img
-                                                                                            src={matter.responsible_partner.avatar_url}
-                                                                                            alt={matter.responsible_partner.name}
-                                                                                            className="size-full object-cover"
-                                                                                        />
-                                                                                    ) : (
-                                                                                        matter.responsible_partner.name
-                                                                                            .split(' ')
-                                                                                            .map((n) => n[0])
-                                                                                            .slice(0, 2)
-                                                                                            .join('')
-                                                                                    )}
-                                                                                </div>
-                                                                            </div>
-                                                                        </TooltipTrigger>
-                                                                        <TooltipContent className="rounded-lg border border-black/10 bg-[#111111] px-2.5 py-1 text-xs text-white shadow-lg dark:border-white/10 dark:bg-zinc-800">
-                                                                            <p className="font-semibold">{matter.responsible_partner.name}</p>
-                                                                            <p className="text-[10px] text-zinc-400">{matter.responsible_partner.position_title ?? 'Partner'}</p>
-                                                                        </TooltipContent>
-                                                                    </Tooltip>
-                                                                </TooltipProvider>
-                                                            ) : (
-                                                                <span className="text-[#787774]">—</span>
-                                                            )}
-                                                        </td>
-                                                        <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-[#787774] dark:text-zinc-400">
-                                                            {formatDate(matter.updated_at)}
-                                                        </td>
-                                                        <td className="py-3 px-3 whitespace-nowrap">
-                                                            <StatusBadge value={matter.status} />
-                                                        </td>
-                                                        <td className="py-3 pl-3 text-right whitespace-nowrap">
-                                                            <Link
-                                                                href={matterRoutes.show(matter.id)}
-                                                                className="inline-flex size-6 items-center justify-center text-[#787774] opacity-0 transition-opacity group-hover:opacity-100 hover:text-[#111111] dark:hover:text-white"
-                                                            >
-                                                                <ChevronRight className="size-3.5" />
-                                                            </Link>
-                                                        </td>
-                                                    </tr>
+                                                                <span>•</span>
+                                                                <span>{matter.practice_area?.name ?? 'Umum'}</span>
+                                                            </div>
+                                                        </div>
+                                                        <StatusBadge value={matter.status} />
+                                                    </Link>
                                                 ))}
-                                            </tbody>
-                                        </table>
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-slate-400">
+                                                Tidak ada matter yang sedang berjalan saat ini.
+                                            </p>
+                                        )}
                                     </div>
-                                ) : (
-                                    <div className="flex min-h-[240px] items-center justify-center p-8 text-center">
-                                        <EmptyState title="Belum ada matter terkait klien ini" />
-                                    </div>
-                                )}
-                            </div>
-                        )}
 
-                        {/* TAB 3: KONTAK */}
-                        {tab === 'Kontak' && (
-                            <div className="overflow-hidden rounded-xl border border-black/[0.08] bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c] space-y-4">
-                                <div className="flex items-center justify-between border-b border-black/[0.04] pb-3 dark:border-white/[0.06]">
-                                    <div>
-                                        <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] dark:text-white">
-                                            Daftar Kontak Perwakilan ({client.contacts.length})
-                                        </h2>
-                                        <p className="text-[11px] text-[#787774] dark:text-zinc-400">
-                                            Orang yang dapat dihubungi terkait administrasi dan komunikasi perkara.
-                                        </p>
+                                    {/* Kontak Preview */}
+                                    <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                        <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Kontak Person ({client.contacts.length})
+                                            </span>
+                                            {client.contacts.length > 2 && (
+                                                <button
+                                                    onClick={() => setTab('Kontak')}
+                                                    className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                                >
+                                                    Lihat Semua →
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {client.contacts.length ? (
+                                            <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                                {client.contacts.slice(0, 3).map((contact) => (
+                                                    <div
+                                                        key={contact.id}
+                                                        className="flex items-center justify-between py-2.5 text-xs"
+                                                    >
+                                                        <div className="flex min-w-0 items-center gap-2.5 pr-3">
+                                                            <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[10px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                                {getInitials(contact.full_name)}
+                                                            </div>
+                                                            <div className="min-w-0">
+                                                                <p className="truncate font-semibold text-slate-900 dark:text-white">
+                                                                    {contact.full_name}
+                                                                </p>
+                                                                <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
+                                                                    {contact.job_title ?? 'Perwakilan Resmi Klien'}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="shrink-0 text-right text-xs">
+                                                            <p className="text-slate-700 dark:text-zinc-300">
+                                                                {contact.email ?? '-'}
+                                                            </p>
+                                                            <p className="font-mono text-[10px] text-slate-400">
+                                                                {contact.mobile ?? ''}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-slate-400">
+                                                Belum ada kontak perwakilan yang didaftarkan.
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
+                            )}
 
-                                {client.contacts.length ? (
-                                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                                        {client.contacts.map((contact) => (
-                                            <div
-                                                key={contact.id}
-                                                className="flex flex-col justify-between rounded-xl border border-black/[0.06] bg-[#fafafa] p-4 text-xs transition-colors hover:bg-black/[0.02] dark:border-white/[0.06] dark:bg-zinc-900/40"
-                                            >
-                                                <div className="flex items-start gap-2.5">
-                                                    <div className="flex size-7.5 shrink-0 items-center justify-center rounded-lg bg-black/[0.05] text-[10px] font-semibold text-zinc-700 dark:bg-white/[0.1] dark:text-zinc-300">
-                                                        {contact.full_name
-                                                            .split(' ')
-                                                            .map((n) => n[0])
-                                                            .slice(0, 2)
-                                                            .join('')}
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <h4 className="truncate font-semibold text-[#111111] dark:text-white">
-                                                            {contact.full_name}
-                                                        </h4>
-                                                        <p className="truncate text-[10px] text-[#787774] dark:text-zinc-400">
-                                                            {contact.job_title ?? 'Kontak Klien'}
-                                                        </p>
-                                                    </div>
-                                                </div>
+                            {/* TAB 2: MATTERS */}
+                            {tab === 'Matters' && (
+                                <div className="space-y-3 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
+                                        <div>
+                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                Daftar Perkara Hukum ({allMatters.length})
+                                            </h2>
+                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                Seluruh riwayat penanganan perkara aktif maupun selesai.
+                                            </p>
+                                        </div>
+                                        <Button
+                                            size="sm"
+                                            className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                            asChild
+                                        >
+                                            <Link href={matterRoutes.create()}>
+                                                <Plus className="mr-1 size-3" />
+                                                Buat Matter
+                                            </Link>
+                                        </Button>
+                                    </div>
 
-                                                <div className="mt-3 space-y-1 border-t border-black/[0.04] pt-2.5 text-[11px] dark:border-white/[0.04]">
-                                                    {contact.email && (
-                                                        <div className="flex items-center gap-2 text-[#787774] dark:text-zinc-400">
-                                                            <Mail className="size-3 shrink-0" />
-                                                            <span className="truncate text-[#2f3437] dark:text-zinc-200">{contact.email}</span>
-                                                        </div>
-                                                    )}
-                                                    {contact.mobile && (
-                                                        <div className="flex items-center gap-2 text-[#787774] dark:text-zinc-400">
-                                                            <Phone className="size-3 shrink-0" />
-                                                            <span className="font-mono text-[#2f3437] dark:text-zinc-200">{contact.mobile}</span>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                    {allMatters.length ? (
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left text-xs">
+                                                <thead>
+                                                    <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
+                                                        <th className="py-2.5 pr-3 pl-3 font-semibold">Perkara</th>
+                                                        <th className="px-3 py-2.5 font-semibold">Area Praktik</th>
+                                                        <th className="px-3 py-2.5 text-center font-semibold">Partner</th>
+                                                        <th className="px-3 py-2.5 font-semibold">Diperbarui</th>
+                                                        <th className="px-3 py-2.5 font-semibold">Status</th>
+                                                        <th className="py-2.5 pr-3 pl-1 text-right font-semibold"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                                    {allMatters.map((matter) => (
+                                                        <tr
+                                                            key={matter.id}
+                                                            className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                        >
+                                                            <td className="py-2.5 pr-3 pl-3">
+                                                                <Link
+                                                                    href={matterRoutes.show(matter.id)}
+                                                                    className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400"
+                                                                >
+                                                                    {matter.title}
+                                                                    <span className="mt-0.5 block font-mono text-[10px] text-blue-600 dark:text-blue-400">
+                                                                        {matter.matter_number}
+                                                                    </span>
+                                                                </Link>
+                                                            </td>
+                                                            <td className="px-3 py-2.5 whitespace-nowrap">
+                                                                <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                                    {matter.practice_area?.name ?? 'Umum'}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                                                                {matter.responsible_partner ? (
+                                                                    <TooltipProvider delayDuration={100}>
+                                                                        <Tooltip>
+                                                                            <TooltipTrigger asChild>
+                                                                                <div className="inline-flex cursor-pointer items-center justify-center">
+                                                                                    <Avatar className="size-6 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                                        <AvatarImage src={matter.responsible_partner.avatar_url ?? undefined} />
+                                                                                        <AvatarFallback className="text-[8px] font-bold">
+                                                                                            {getInitials(matter.responsible_partner.name)}
+                                                                                        </AvatarFallback>
+                                                                                    </Avatar>
+                                                                                </div>
+                                                                            </TooltipTrigger>
+                                                                            <TooltipContent
+                                                                                side="top"
+                                                                                className="bg-slate-900 px-2.5 py-1 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800"
+                                                                            >
+                                                                                {matter.responsible_partner.name}
+                                                                            </TooltipContent>
+                                                                        </Tooltip>
+                                                                    </TooltipProvider>
+                                                                ) : (
+                                                                    <span className="text-slate-400">-</span>
+                                                                )}
+                                                            </td>
+                                                            <td className="px-3 py-2.5 font-mono text-[10px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                                {formatDate(matter.updated_at)}
+                                                            </td>
+                                                            <td className="px-3 py-2.5 whitespace-nowrap">
+                                                                <StatusBadge value={matter.status} />
+                                                            </td>
+                                                            <td className="py-2.5 pr-3 pl-1 text-right whitespace-nowrap">
+                                                                <Link
+                                                                    href={matterRoutes.show(matter.id)}
+                                                                    className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                                                >
+                                                                    <ChevronRight className="size-4" />
+                                                                </Link>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ) : (
+                                        <div className="flex min-h-[200px] items-center justify-center p-6 text-center">
+                                            <EmptyState title="Belum ada perkara terkait klien ini" />
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* TAB: LEGALITAS & KEPATUHAN KORPORASI */}
+                            {/* TAB: LEGALITAS & KEPATUHAN KORPORASI */}
+                            {tab === 'Legalitas' && (
+                                <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="flex flex-col justify-between gap-3 border-b border-slate-100 pb-3 sm:flex-row sm:items-center dark:border-white/[0.04]">
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <FileBadge className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                    Legalitas Korporasi &amp; Kepatuhan Izin ({client.compliance_documents?.length ?? 0})
+                                                </h2>
                                             </div>
+                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                                Monitoring masa berlaku akta pendirian, susunan direksi, SK Menkumham, NIB OSS, dan izin operasional klien.
+                                            </p>
+                                        </div>
+
+                                        {can.update && (
+                                            <Button
+                                                size="sm"
+                                                onClick={() => setIsAddingCompliance(true)}
+                                                className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                                            >
+                                                <Plus className="mr-1.5 size-3.5" />
+                                                Tambah Dokumen Legalitas
+                                            </Button>
+                                        )}
+                                    </div>
+
+                                    {/* 4 Clean Metric Cards (Matching Brankas Alat Bukti) */}
+                                    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
+                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">TOTAL DOKUMEN</span>
+                                            <p className="mt-1 font-mono text-lg font-bold text-slate-900 dark:text-white">
+                                                {client.compliance_documents?.length ?? 0}
+                                            </p>
+                                        </div>
+                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
+                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">BERLAKU AKTIF</span>
+                                            <p className="mt-1 font-mono text-lg font-bold text-emerald-700 dark:text-emerald-400">
+                                                {client.compliance_documents?.filter((d) => d.compliance_status === 'active' || d.compliance_status === 'no_expiry').length ?? 0}
+                                            </p>
+                                        </div>
+                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
+                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">SEGERA BERAKHIR (H-60)</span>
+                                            <p className="mt-1 font-mono text-lg font-bold text-amber-700 dark:text-amber-400">
+                                                {client.compliance_documents?.filter((d) => d.compliance_status === 'expiring_soon').length ?? 0}
+                                            </p>
+                                        </div>
+                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
+                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">KEDALUWARSA</span>
+                                            <p className="mt-1 font-mono text-lg font-bold text-rose-700 dark:text-rose-400">
+                                                {client.compliance_documents?.filter((d) => d.compliance_status === 'expired').length ?? 0}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {client.compliance_documents && client.compliance_documents.length > 0 ? (
+                                        <div className="space-y-2.5 pt-1">
+                                            {client.compliance_documents.map((doc) => {
+                                                const isExpired = doc.compliance_status === 'expired';
+                                                const isExpiring = doc.compliance_status === 'expiring_soon';
+
+                                                return (
+                                                    <div
+                                                        key={doc.id}
+                                                        className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#16181d] dark:hover:border-white/10"
+                                                    >
+                                                        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+                                                            <div className="min-w-0 flex-1 space-y-1.5">
+                                                                <div className="flex flex-wrap items-center gap-1.5">
+                                                                    <span className="rounded-md bg-slate-900 px-2 py-0.5 font-mono text-[10px] font-bold text-white shadow-2xs dark:bg-white dark:text-slate-900">
+                                                                        {complianceTypeLabels[doc.document_type] ?? doc.document_type}
+                                                                    </span>
+                                                                    {doc.document_number && (
+                                                                        <span className="rounded-md border border-slate-200/70 bg-slate-50 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300">
+                                                                            No: {doc.document_number}
+                                                                        </span>
+                                                                    )}
+                                                                    {isExpired && (
+                                                                        <span className="flex items-center gap-1 rounded-md border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-400">
+                                                                            <AlertTriangle className="size-3" />
+                                                                            KEDALUWARSA
+                                                                        </span>
+                                                                    )}
+                                                                    {isExpiring && (
+                                                                        <span className="flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-400">
+                                                                            <Clock className="size-3" />
+                                                                            SEGERA BERAKHIR
+                                                                        </span>
+                                                                    )}
+                                                                    {doc.compliance_status === 'active' && (
+                                                                        <span className="flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-400">
+                                                                            <CheckCircle2 className="size-3" />
+                                                                            BERLAKU AKTIF
+                                                                        </span>
+                                                                    )}
+                                                                    {doc.compliance_status === 'no_expiry' && (
+                                                                        <span className="rounded-md border border-slate-200/70 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300">
+                                                                            TETAP / TIDAK BERAKHIR
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+
+                                                                <h4 className="text-xs font-bold text-slate-900 leading-snug dark:text-white">
+                                                                    {doc.title}
+                                                                </h4>
+
+                                                                {doc.notes && (
+                                                                    <p className="text-[11px] text-slate-600 leading-relaxed dark:text-zinc-400">
+                                                                        {doc.notes}
+                                                                    </p>
+                                                                )}
+
+                                                                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-[11px] text-slate-500 dark:text-zinc-400">
+                                                                    {doc.issuer && (
+                                                                        <span className="flex items-center gap-1.5 text-slate-700 dark:text-zinc-300">
+                                                                            <Building2 className="size-3.5 text-slate-400" />
+                                                                            <span>Penerbit: <strong>{doc.issuer}</strong></span>
+                                                                        </span>
+                                                                    )}
+                                                                    {doc.issued_at && (
+                                                                        <span className="flex items-center gap-1.5 text-slate-700 dark:text-zinc-300">
+                                                                            <Calendar className="size-3.5 text-slate-400" />
+                                                                            <span>Terbit: <strong>{formatDate(doc.issued_at)}</strong></span>
+                                                                        </span>
+                                                                    )}
+                                                                    {doc.expires_at && (
+                                                                        <span className={`flex items-center gap-1.5 ${isExpired ? 'text-rose-700 dark:text-rose-400' : isExpiring ? 'text-amber-700 dark:text-amber-400' : 'text-slate-700 dark:text-zinc-300'}`}>
+                                                                            <Clock className="size-3.5 text-slate-400" />
+                                                                            <span>Masa Berlaku: <strong>{formatDate(doc.expires_at)}</strong></span>
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+
+                                                            {can.update && (
+                                                                <div className="flex shrink-0 items-center gap-1.5 self-start pt-1 sm:pt-0">
+                                                                    <Button
+                                                                        type="button"
+                                                                        variant="outline"
+                                                                        size="sm"
+                                                                        onClick={() => setEditingCompliance(doc)}
+                                                                        className="h-7.5 cursor-pointer rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-300 dark:hover:bg-zinc-800"
+                                                                    >
+                                                                        Ubah
+                                                                    </Button>
+                                                                    <Button
+                                                                        type="button"
+                                                                        variant="ghost"
+                                                                        size="sm"
+                                                                        onClick={() => {
+                                                                            if (confirm(`Hapus pencatatan dokumen legalitas "${doc.title}"?`)) {
+                                                                                router.delete(`/clients/${client.id}/compliance-documents/${doc.id}`);
+                                                                            }
+                                                                        }}
+                                                                        className="size-7.5 p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400"
+                                                                        title="Hapus Dokumen Legalitas"
+                                                                    >
+                                                                        <Trash2 className="size-3.5" />
+                                                                    </Button>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    ) : (
+                                        <div className="flex min-h-[180px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-200/80 p-6 text-center dark:border-white/10">
+                                            <FileBadge className="size-7 text-slate-300 dark:text-zinc-600" />
+                                            <p className="mt-2 text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                                Belum ada dokumen legalitas korporasi yang dicatat
+                                            </p>
+                                            <p className="mt-0.5 text-[11px] text-slate-400">
+                                                Daftarkan Akta Pendirian, Akta Perubahan Direksi, NIB, atau SK Menkumham untuk memantau masa berlakunya.
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* TAB 3: KONTAK */}
+                            {tab === 'Kontak' && (
+                                <div className="space-y-3 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
+                                        <div>
+                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                Daftar Kontak Perwakilan ({client.contacts.length})
+                                            </h2>
+                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                Personil yang dapat dihubungi terkait administrasi dan komunikasi perkara.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {client.contacts.length ? (
+                                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                            {client.contacts.map((contact) => (
+                                                <div
+                                                    key={contact.id}
+                                                    className="flex flex-col justify-between rounded-xl border border-slate-200/70 bg-slate-50/60 p-3 text-xs transition-all hover:border-slate-300 hover:bg-white dark:border-white/[0.06] dark:bg-[#121418] dark:hover:bg-[#16181d]"
+                                                >
+                                                    <div className="flex items-start gap-2.5">
+                                                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[10px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                            {getInitials(contact.full_name)}
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <h4 className="truncate font-semibold text-slate-900 dark:text-white">
+                                                                {contact.full_name}
+                                                            </h4>
+                                                            <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
+                                                                {contact.job_title ?? 'Perwakilan Klien'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="mt-3 space-y-1 border-t border-slate-100 pt-2 text-[10px] dark:border-white/[0.04]">
+                                                        {contact.email && (
+                                                            <a
+                                                                href={`mailto:${contact.email}`}
+                                                                className="flex items-center gap-1.5 text-blue-600 hover:underline dark:text-blue-400"
+                                                            >
+                                                                <Mail className="size-3 shrink-0" />
+                                                                <span className="truncate">{contact.email}</span>
+                                                            </a>
+                                                        )}
+                                                        {contact.mobile && (
+                                                            <a
+                                                                href={`tel:${contact.mobile}`}
+                                                                className="flex items-center gap-1.5 font-mono text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white"
+                                                            >
+                                                                <Phone className="size-3 shrink-0 text-slate-400" />
+                                                                <span>{contact.mobile}</span>
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="flex min-h-[200px] items-center justify-center p-6 text-center">
+                                            <EmptyState title="Belum ada kontak perwakilan terdaftar" />
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* TAB 4: KEPATUHAN KYC & AML */}
+                            {tab === 'KYC' && (
+                                <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3 dark:border-white/[0.04]">
+                                        <div>
+                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                Kepatuhan KYC &amp; Anti-Money Laundering (PMPJ)
+                                            </h2>
+                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                Prinsip Mengenali Pengguna Jasa (PMPJ) dan penilaian risiko kepatuhan hukum.
+                                            </p>
+                                        </div>
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            {client.kyc_status === 'rejected' ? (
+                                                <span className="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
+                                                    <ShieldAlert className="size-3 text-rose-600" />
+                                                    DITOLAK / RISIKO TINGGI
+                                                </span>
+                                            ) : client.kyc_status === 'pending_documents' ? (
+                                                <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
+                                                    <ShieldAlert className="size-3 text-amber-600" />
+                                                    MENUNGGU BERKAS
+                                                </span>
+                                            ) : client.kyc_status === 'in_review' ? (
+                                                <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
+                                                    <ShieldCheck className="size-3 text-blue-600" />
+                                                    DALAM PENELAAHAN
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+                                                    <ShieldCheck className="size-3 text-emerald-600" />
+                                                    TERVERIFIKASI
+                                                </span>
+                                            )}
+
+                                            {can.update && (
+                                                <ClientEditDialog
+                                                    client={client}
+                                                    partners={partners}
+                                                    trigger={
+                                                        <Button
+                                                            size="sm"
+                                                            className="h-8 cursor-pointer rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                                                        >
+                                                            <Pencil className="mr-1 size-3" />
+                                                            Perbarui KYC
+                                                        </Button>
+                                                    }
+                                                />
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* AML Risk & Verification Summary Card */}
+                                    <div className="grid gap-3 sm:grid-cols-3">
+                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                PROFIL RISIKO AML
+                                            </span>
+                                            <p className={`mt-1 text-xs font-bold ${
+                                                client.kyc_risk_level === 'high'
+                                                    ? 'text-rose-600 dark:text-rose-400'
+                                                    : client.kyc_risk_level === 'medium'
+                                                      ? 'text-amber-600 dark:text-amber-400'
+                                                      : 'text-emerald-600 dark:text-emerald-400'
+                                            }`}>
+                                                {client.kyc_risk_level === 'high'
+                                                    ? 'Risiko Tinggi (EDD)'
+                                                    : client.kyc_risk_level === 'medium'
+                                                      ? 'Risiko Menengah'
+                                                      : 'Risiko Rendah (Standar)'}
+                                            </p>
+                                        </div>
+                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                PARTNER PENILAI KYC
+                                            </span>
+                                            <p className="mt-1 text-xs font-bold text-slate-900 dark:text-white">
+                                                {client.kyc_assessed_by_user?.name ?? client.relationship_partner?.name ?? 'Managing Partner'}
+                                            </p>
+                                        </div>
+                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                YURISDIKSI
+                                            </span>
+                                            <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                {client.country_code} ({client.city ?? 'Indonesia'})
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* KYC Assessment Notes */}
+                                    <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                            CATATAN UJI TUNTAS &amp; BENEFICIAL OWNERSHIP
+                                        </span>
+                                        <p className="mt-1 text-xs leading-relaxed text-slate-800 dark:text-zinc-200">
+                                            {client.kyc_notes ?? client.notes ?? 'Klien terverifikasi resmi. Berkas KYC dan Beneficial Ownership telah ditelaah manual.'}
+                                        </p>
+                                    </div>
+
+                                    {/* Statutory Documents Checklist */}
+                                    <div className="space-y-2 pt-1">
+                                        <h3 className="text-xs font-bold text-slate-900 dark:text-white">
+                                            Kelengkapan Berkas Legalitas &amp; Dokumen Korporasi
+                                        </h3>
+                                        <div className="space-y-1.5">
+                                            {[
+                                                { key: 'director_id', label: 'Kartu Identitas Direksi & Penanggung Jawab (KTP / Paspor)' },
+                                                { key: 'tax_id', label: 'Nomor Pokok Wajib Pajak (NPWP Korporasi / Perorangan)' },
+                                                { key: 'business_license', label: 'Nomor Induk Berusaha (NIB) / Izin Usaha Sektoral' },
+                                                { key: 'incorporation_deed', label: 'Akta Pendirian Perusahaan & SK Kemenkumham' },
+                                                { key: 'articles_amendment', label: 'Akta Perubahan Anggaran Dasar (Beneficial Ownership)' },
+                                                { key: 'aml_declaration', label: 'Formulir Deklarasi Kepatuhan AML (AML Statement)' },
+                                            ].map((doc) => {
+                                                const isChecked = client.kyc_checklist
+                                                    ? Boolean(client.kyc_checklist[doc.key])
+                                                    : true;
+
+                                                return (
+                                                    <div
+                                                        key={doc.key}
+                                                        className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50/50 px-3 py-2 text-xs dark:border-white/[0.04] dark:bg-white/[0.02]"
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            {isChecked ? (
+                                                                <ShieldCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                                            ) : (
+                                                                <ShieldAlert className="size-3.5 text-amber-500" />
+                                                            )}
+                                                            <span
+                                                                className={`text-xs ${
+                                                                    isChecked
+                                                                        ? 'text-slate-800 dark:text-zinc-200'
+                                                                        : 'text-slate-500 dark:text-zinc-400'
+                                                                }`}
+                                                            >
+                                                                {doc.label}
+                                                            </span>
+                                                        </div>
+                                                        <span
+                                                            className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold ${
+                                                                isChecked
+                                                                    ? 'bg-emerald-100/70 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
+                                                                    : 'bg-amber-100/70 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
+                                                                }`}
+                                                        >
+                                                            {isChecked ? 'Lengkap' : 'Belum Terlampir'}
+                                                        </span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB 5: DOKUMEN */}
+                            {tab === 'Dokumen' && (
+                                <div className="space-y-3 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
+                                        <div>
+                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                Dokumen Terkait Klien ({documents.length})
+                                            </h2>
+                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                Arsip legalitas, surat kuasa, dan dokumen perkara terkait.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {documents.length ? (
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left text-xs">
+                                                <thead>
+                                                    <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
+                                                        <th className="py-2.5 pr-3 pl-3 font-semibold">Nama Dokumen</th>
+                                                        <th className="px-3 py-2.5 font-semibold">Versi</th>
+                                                        <th className="px-3 py-2.5 font-semibold">Ukuran</th>
+                                                        <th className="px-3 py-2.5 font-semibold">Diperbarui</th>
+                                                        <th className="px-3 py-2.5 font-semibold">Status</th>
+                                                        <th className="py-2.5 pr-3 pl-1 text-right font-semibold"></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                                    {documents.map((doc) => (
+                                                        <tr
+                                                            key={doc.id}
+                                                            className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                        >
+                                                            <td className="py-2.5 pr-3 pl-3">
+                                                                <div className="flex items-center gap-2.5">
+                                                                    <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                                                                        <FileText className="size-3.5" />
+                                                                    </div>
+                                                                    <div className="min-w-0">
+                                                                        <p className="truncate font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
+                                                                            {doc.title}
+                                                                        </p>
+                                                                        <p className="text-[10px] text-slate-400">
+                                                                            {doc.current_version?.mime_type ?? 'Dokumen Legalitas'}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-3 py-2.5 whitespace-nowrap">
+                                                                <span className="font-mono text-[10px] font-semibold text-slate-700 dark:text-zinc-300">
+                                                                    v{doc.current_version?.version_number ?? 1}.0
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-3 py-2.5 font-mono text-[10px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                                {formatBytes(doc.current_version?.file_size)}
+                                                            </td>
+                                                            <td className="px-3 py-2.5 font-mono text-[10px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                                {formatDate(doc.updated_at)}
+                                                            </td>
+                                                            <td className="px-3 py-2.5 whitespace-nowrap">
+                                                                <StatusBadge value={doc.status} />
+                                                            </td>
+                                                            <td className="py-2.5 pr-3 pl-1 text-right whitespace-nowrap">
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="ghost"
+                                                                    className="h-7 px-2 text-xs font-semibold text-blue-600 hover:bg-blue-50 dark:text-blue-400"
+                                                                    asChild
+                                                                >
+                                                                    <Link href={documentRoutes.show(doc.id)}>
+                                                                        Buka
+                                                                        <ChevronRight className="ml-0.5 size-3" />
+                                                                    </Link>
+                                                                </Button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ) : (
+                                        <div className="flex min-h-[200px] items-center justify-center p-6 text-center">
+                                            <EmptyState title="Belum ada dokumen yang dapat diakses" />
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Sisi Kanan: Inspector Panel (4 Columns) */}
+                        <div className="space-y-4 lg:col-span-4">
+                            {/* Legalitas & Kontak Perusahaan */}
+                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <span className="mb-3 block text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                    Legalitas &amp; Kontak Perusahaan
+                                </span>
+                                <div className="space-y-2.5 text-xs">
+                                    {client.tax_identifier && (
+                                        <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 dark:border-white/[0.04]">
+                                            <span className="text-slate-500 dark:text-zinc-400">NPWP / Tax ID</span>
+                                            <button
+                                                type="button"
+                                                onClick={handleCopyTax}
+                                                className="group inline-flex items-center gap-1 font-mono font-semibold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
+                                            >
+                                                <span>{client.tax_identifier}</span>
+                                                <Copy className="size-3 text-slate-400 group-hover:text-blue-600" />
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {client.registration_identifier && (
+                                        <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 dark:border-white/[0.04]">
+                                            <span className="text-slate-500 dark:text-zinc-400">No. NIB / AHU</span>
+                                            <span className="font-mono font-semibold text-slate-900 dark:text-white">
+                                                {client.registration_identifier}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 dark:border-white/[0.04]">
+                                        <span className="text-slate-500 dark:text-zinc-400">Email Resmi</span>
+                                        {client.email ? (
+                                            <a
+                                                href={`mailto:${client.email}`}
+                                                className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                            >
+                                                {client.email}
+                                            </a>
+                                        ) : (
+                                            <span className="text-slate-400">-</span>
+                                        )}
+                                    </div>
+
+                                    <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 dark:border-white/[0.04]">
+                                        <span className="text-slate-500 dark:text-zinc-400">Telepon</span>
+                                        {client.phone ? (
+                                            <a
+                                                href={`tel:${client.phone}`}
+                                                className="font-mono font-semibold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
+                                            >
+                                                {client.phone}
+                                            </a>
+                                        ) : (
+                                            <span className="text-slate-400">-</span>
+                                        )}
+                                    </div>
+
+                                    {client.website && (
+                                        <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 dark:border-white/[0.04]">
+                                            <span className="text-slate-500 dark:text-zinc-400">Website</span>
+                                            <a
+                                                href={client.website.startsWith('http') ? client.website : `https://${client.website}`}
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                            >
+                                                {client.website.replace(/^https?:\/\//, '')}
+                                                <ExternalLink className="size-3" />
+                                            </a>
+                                        </div>
+                                    )}
+
+                                    <div className="flex items-center justify-between gap-2 pt-0.5">
+                                        <span className="text-slate-500 dark:text-zinc-400">Status Klien</span>
+                                        <StatusBadge value={client.status} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Alamat & Domisili */}
+                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="mb-2 flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
+                                    <MapPin className="size-3.5 text-slate-400" />
+                                    <span className="text-[11px] font-semibold uppercase">
+                                        Alamat &amp; Domisili
+                                    </span>
+                                </div>
+                                <div className="space-y-1 text-xs text-slate-700 dark:text-zinc-200">
+                                    <p className="font-semibold text-slate-900 dark:text-white">
+                                        {client.address_line_1 || '-'}
+                                    </p>
+                                    {client.address_line_2 && (
+                                        <p className="text-slate-500 dark:text-zinc-400">
+                                            {client.address_line_2}
+                                        </p>
+                                    )}
+                                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                        {[client.city, client.province, client.postal_code, client.country_code]
+                                            .filter(Boolean)
+                                            .join(', ')}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Berkas Legalitas Terkini */}
+                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="mb-3 flex items-center justify-between">
+                                    <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                        Berkas Legalitas ({documents.length})
+                                    </span>
+                                    {documents.length > 0 && (
+                                        <button
+                                            onClick={() => setTab('Dokumen')}
+                                            className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                        >
+                                            Semua Berkas
+                                        </button>
+                                    )}
+                                </div>
+
+                                {documents.length > 0 ? (
+                                    <div className="space-y-1.5">
+                                        {documents.slice(0, 3).map((doc) => (
+                                            <Link
+                                                key={doc.id}
+                                                href={documentRoutes.show(doc.id)}
+                                                className="group flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 transition-all hover:border-slate-200 hover:bg-white dark:border-white/[0.04] dark:bg-[#121418] dark:hover:bg-[#16181d]"
+                                            >
+                                                <div className="flex min-w-0 items-center gap-2">
+                                                    <FileText className="size-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
+                                                    <span className="truncate text-xs font-medium text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
+                                                        {doc.title}
+                                                    </span>
+                                                </div>
+                                                <span className="shrink-0 font-mono text-[10px] text-slate-400">
+                                                    {formatBytes(doc.current_version?.file_size)}
+                                                </span>
+                                            </Link>
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="flex min-h-[240px] items-center justify-center p-8 text-center">
-                                        <EmptyState title="Belum ada kontak perwakilan" />
-                                    </div>
+                                    <p className="text-xs text-slate-400">
+                                        Belum ada dokumen legalitas terlampir.
+                                    </p>
                                 )}
                             </div>
-                        )}
-
-                        {/* TAB 4: DOKUMEN */}
-                        {tab === 'Dokumen' && (
-                            <div className="overflow-hidden rounded-xl border border-black/[0.08] bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c] space-y-4">
-                                <div className="flex items-center justify-between border-b border-black/[0.04] pb-3 dark:border-white/[0.06]">
-                                    <div>
-                                        <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] dark:text-white">
-                                            Dokumen Terkait Klien ({documents.length})
-                                        </h2>
-                                        <p className="text-[11px] text-[#787774] dark:text-zinc-400">
-                                            Seluruh arsip legalitas, surat kuasa, dan dokumen yang terhubung dengan klien ini.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                {documents.length ? (
-                                    <div className="overflow-x-auto">
-                                        <table className="w-full text-left text-xs">
-                                            <thead>
-                                                <tr className="border-b border-black/[0.04] text-[10px] font-semibold uppercase tracking-wider text-[#787774] dark:border-white/[0.06]">
-                                                    <th className="pb-2.5 pr-4 font-semibold">Nama Dokumen</th>
-                                                    <th className="pb-2.5 px-3 font-semibold">Versi</th>
-                                                    <th className="pb-2.5 px-3 font-semibold">Ukuran</th>
-                                                    <th className="pb-2.5 px-3 font-semibold">Diperbarui</th>
-                                                    <th className="pb-2.5 px-3 font-semibold">Status</th>
-                                                    <th className="pb-2.5 pl-3 text-right font-semibold">Aksi</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="divide-y divide-black/[0.04] dark:divide-white/[0.05]">
-                                                {documents.map((doc) => (
-                                                    <tr key={doc.id} className="group transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]">
-                                                        <td className="py-3 pr-4">
-                                                            <div className="flex items-center gap-2.5">
-                                                                <FileText className="size-3.5 shrink-0 text-[#787774]" />
-                                                                <div>
-                                                                    <p className="font-semibold text-[#111111] group-hover:text-blue-600 dark:text-white dark:group-hover:text-sky-400">
-                                                                        {doc.title}
-                                                                    </p>
-                                                                    <p className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                                                        {doc.current_version?.mime_type ?? 'Dokumen Legalitas'}
-                                                                    </p>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td className="py-3 px-3 whitespace-nowrap">
-                                                            <span className="font-mono text-[10px] text-[#787774] dark:text-zinc-400">
-                                                                v{doc.current_version?.version_number ?? 1}.0
-                                                            </span>
-                                                        </td>
-                                                        <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-[#787774] dark:text-zinc-400">
-                                                            {formatBytes(doc.current_version?.file_size)}
-                                                        </td>
-                                                        <td className="py-3 px-3 whitespace-nowrap font-mono text-[11px] text-[#787774] dark:text-zinc-400">
-                                                            {formatDate(doc.updated_at)}
-                                                        </td>
-                                                        <td className="py-3 px-3 whitespace-nowrap">
-                                                            <StatusBadge value={doc.status} />
-                                                        </td>
-                                                        <td className="py-3 pl-3 text-right whitespace-nowrap">
-                                                            <Button
-                                                                size="sm"
-                                                                variant="ghost"
-                                                                className="h-6.5 rounded px-2 text-xs text-blue-600 hover:bg-blue-50 dark:text-sky-400 dark:hover:bg-blue-950/40"
-                                                                asChild
-                                                            >
-                                                                <Link href={documentRoutes.show(doc.id)}>
-                                                                    Buka
-                                                                    <ChevronRight className="ml-1 size-3" />
-                                                                </Link>
-                                                            </Button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                ) : (
-                                    <div className="flex min-h-[240px] items-center justify-center p-8 text-center">
-                                        <EmptyState title="Belum ada dokumen yang dapat diakses" />
-                                    </div>
-                                )}
-                            </div>
-                        )}
+                        </div>
                     </div>
                 </main>
             </div>
+
+            {/* Modal Tambah Dokumen Legalitas */}
+            {isAddingCompliance && (
+                <ComplianceDocumentDialog
+                    clientId={client.id}
+                    onClose={() => setIsAddingCompliance(false)}
+                />
+            )}
+
+            {/* Modal Edit Dokumen Legalitas */}
+            {editingCompliance && (
+                <ComplianceDocumentDialog
+                    clientId={client.id}
+                    document={editingCompliance}
+                    onClose={() => setEditingCompliance(null)}
+                />
+            )}
         </>
+    );
+}
+
+function ComplianceDocumentDialog({
+    clientId,
+    document,
+    onClose,
+}: {
+    clientId: string;
+    document?: ComplianceDocument;
+    onClose: () => void;
+}) {
+    const isEdit = !!document;
+    const action = isEdit
+        ? `/clients/${clientId}/compliance-documents/${document.id}`
+        : `/clients/${clientId}/compliance-documents`;
+    const method = isEdit ? ('put' as const) : ('post' as const);
+
+    return (
+        <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-4 shadow-xl sm:max-w-lg dark:border-white/10 dark:bg-[#16181d]">
+                <DialogHeader className="border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+                            <FileBadge className="size-4" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                {isEdit ? 'Ubah Dokumen Legalitas' : 'Catat Dokumen Legalitas Baru'}
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                {isEdit
+                                    ? `Perbarui rincian atau masa berlaku ${document.document_number}`
+                                    : 'Daftarkan akta pendirian, izin usaha, NIB, atau SK Kemenkumham'}
+                            </DialogDescription>
+                        </div>
+                    </div>
+                </DialogHeader>
+
+                <Form action={action} method={method} className="space-y-3 pt-1" onSuccess={onClose}>
+                    {({ processing, errors }) => (
+                        <>
+                            <div className="grid gap-1">
+                                <Label htmlFor="document_type" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                    Jenis Dokumen Legalitas
+                                </Label>
+                                <div className="relative">
+                                    <select
+                                        name="document_type"
+                                        id="document_type"
+                                        defaultValue={document?.document_type ?? 'deed_establishment'}
+                                        className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                    >
+                                        <option value="deed_establishment">Akta Pendirian Perusahaan</option>
+                                        <option value="deed_amendment_directors">Akta Perubahan Direksi / Saham</option>
+                                        <option value="nib">Nomor Induk Berusaha (NIB OSS)</option>
+                                        <option value="sk_menkumham">SK Pengesahan Kemenkumham</option>
+                                        <option value="kbli_license">Izin Usaha KBLI / Sektoral</option>
+                                        <option value="amdal_environmental">AMDAL / Izin Lingkungan</option>
+                                        <option value="trademark_ip">Sertifikat Merek & HKI</option>
+                                        <option value="tax_id">Surat Keterangan Pajak (SKT)</option>
+                                        <option value="other">Dokumen Legalitas Lainnya</option>
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
+                                </div>
+                            </div>
+
+                            <div className="grid gap-2 sm:grid-cols-2">
+                                <div className="grid gap-1">
+                                    <Label htmlFor="document_number" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                        Nomor Dokumen / Akta
+                                    </Label>
+                                    <Input
+                                        id="document_number"
+                                        name="document_number"
+                                        defaultValue={document?.document_number ?? ''}
+                                        required
+                                        placeholder="Contoh: No. 14 Tanggal 05-01-2024"
+                                        className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    />
+                                </div>
+                                <div className="grid gap-1">
+                                    <Label htmlFor="issuer" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                        Instansi / Notaris Penerbit
+                                    </Label>
+                                    <Input
+                                        id="issuer"
+                                        name="issuer"
+                                        defaultValue={document?.issuer ?? ''}
+                                        placeholder="Contoh: Notaris Sugeng, S.H. / BKPM"
+                                        className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid gap-1">
+                                <Label htmlFor="title" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                    Judul / Nama Dokumen
+                                </Label>
+                                <Input
+                                    id="title"
+                                    name="title"
+                                    defaultValue={document?.title ?? ''}
+                                    required
+                                    placeholder="Contoh: Akta Perubahan Masa Jabatan Direksi & Komisaris"
+                                    className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                />
+                            </div>
+
+                            <div className="grid gap-2 sm:grid-cols-2">
+                                <div className="grid gap-1">
+                                    <Label htmlFor="issued_at" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                        Tanggal Diterbitkan
+                                    </Label>
+                                    <Input
+                                        id="issued_at"
+                                        name="issued_at"
+                                        type="date"
+                                        defaultValue={document?.issued_at ? document.issued_at.slice(0, 10) : ''}
+                                        className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    />
+                                </div>
+                                <div className="grid gap-1">
+                                    <Label htmlFor="expires_at" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                        Tanggal Kedaluwarsa (Masa Berlaku)
+                                    </Label>
+                                    <Input
+                                        id="expires_at"
+                                        name="expires_at"
+                                        type="date"
+                                        defaultValue={document?.expires_at ? document.expires_at.slice(0, 10) : ''}
+                                        className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid gap-1">
+                                <Label htmlFor="notes" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                    Catatan / Keterangan Legalitas
+                                </Label>
+                                <textarea
+                                    id="notes"
+                                    name="notes"
+                                    defaultValue={document?.notes ?? ''}
+                                    rows={2}
+                                    className="rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs leading-relaxed text-slate-900 outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    placeholder="Keterangan pasal penting, klausula pembatasan direksi..."
+                                />
+                            </div>
+
+                            {Object.keys(errors).length > 0 && (
+                                <p className="text-xs font-medium text-rose-600">
+                                    {Object.values(errors).join(' ')}
+                                </p>
+                            )}
+
+                            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-2.5 dark:border-white/[0.04]">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={onClose}
+                                    className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                                >
+                                    Batal
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    disabled={processing}
+                                    className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                                >
+                                    {processing ? (
+                                        <>
+                                            <Spinner className="mr-1.5 size-3" />
+                                            Menyimpan...
+                                        </>
+                                    ) : isEdit ? (
+                                        'Perbarui Dokumen'
+                                    ) : (
+                                        'Simpan Dokumen'
+                                    )}
+                                </Button>
+                            </div>
+                        </>
+                    )}
+                </Form>
+            </DialogContent>
+        </Dialog>
     );
 }
 
@@ -772,3 +1521,4 @@ ClientShow.layout = {
         { title: 'Detail Klien', href: '#' },
     ],
 };
+

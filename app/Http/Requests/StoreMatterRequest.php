@@ -38,6 +38,8 @@ class StoreMatterRequest extends FormRequest
             'jurisdiction' => ['nullable', 'string', 'max:150'],
             'court' => ['nullable', 'string', 'max:255'],
             'external_case_number' => ['nullable', 'string', 'max:150'],
+            'parent_matter_id' => ['nullable', 'exists:matters,id'],
+            'relationship_type' => ['nullable', 'string', 'in:appeal_pt,cassation_ma,judicial_review_pk,execution,counterclaim_reconvention,related_dispute'],
             'member_ids' => ['nullable', 'array'],
             'member_ids.*' => ['integer', 'exists:users,id'],
             'conflict_check_id' => ['required', 'exists:conflict_checks,id'],

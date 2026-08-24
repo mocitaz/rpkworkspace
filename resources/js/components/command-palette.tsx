@@ -50,7 +50,7 @@ const commands = [
     },
 ];
 
-export function CommandPalette() {
+export function CommandPalette({ className }: { className?: string } = {}) {
     const [open, setOpen] = useState(false);
     const [query, setQuery] = useState('');
     const filtered = useMemo(
@@ -84,22 +84,26 @@ export function CommandPalette() {
 
     return (
         <>
-            {/* Notion Search Capsule Trigger */}
+            {/* Corporate Search Capsule Trigger */}
             <button
                 type="button"
                 onClick={() => setOpen(true)}
-                className="flex h-7.5 items-center gap-2 rounded-lg border border-black/[0.08] bg-black/[0.03] px-2.5 text-xs text-[#787774] transition-colors hover:border-black/20 hover:bg-white hover:text-[#111111] dark:border-white/[0.08] dark:bg-white/[0.05] dark:text-zinc-400 dark:hover:bg-white/[0.08] dark:hover:text-white"
+                className={`flex h-8 w-full items-center justify-between gap-2.5 rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 text-xs text-slate-500 shadow-2xs transition-all hover:border-slate-300 hover:bg-white hover:text-slate-900 active:scale-[0.99] dark:border-white/[0.08] dark:bg-[#16181d] dark:text-zinc-400 dark:hover:border-white/15 dark:hover:bg-[#1a1c22] dark:hover:text-white ${className ?? ''}`}
             >
-                <Search className="size-3.5 text-[#787774] dark:text-zinc-400" />
-                <span className="hidden sm:inline font-medium">Cari di workspace...</span>
-                <kbd className="rounded border border-black/[0.08] bg-white px-1 py-0.2 font-mono text-[9px] font-medium text-[#787774] shadow-2xs dark:border-white/[0.1] dark:bg-zinc-800 dark:text-zinc-300">
+                <div className="flex min-w-0 items-center gap-2">
+                    <Search className="size-3.5 shrink-0 text-slate-400 dark:text-zinc-500" />
+                    <span className="truncate text-xs font-medium">
+                        Cari perkara, klien, dokumen, atau aksi...
+                    </span>
+                </div>
+                <kbd className="hidden shrink-0 items-center rounded-md border border-slate-200 bg-white px-1.5 py-0.5 font-mono text-[9.5px] font-bold text-slate-500 shadow-2xs sm:inline-flex dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-400">
                     ⌘K
                 </kbd>
             </button>
 
-            {/* Apple Spotlight Modal */}
+            {/* Corporate Spotlight Modal */}
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="top-[20%] translate-y-0 gap-0 overflow-hidden rounded-3xl border border-black/10 bg-white/95 p-0 shadow-2xl backdrop-blur-xl sm:max-w-lg dark:border-white/10 dark:bg-[#1c1c1e]/95">
+                <DialogContent className="top-[20%] translate-y-0 gap-0 overflow-hidden rounded-2xl border border-black/[0.08] bg-white/95 p-0 shadow-2xl backdrop-blur-xl sm:max-w-lg dark:border-white/10 dark:bg-[#16181d]/95">
                     <DialogTitle className="sr-only">
                         Pencarian Spotlight &amp; Perintah Cepat
                     </DialogTitle>
@@ -108,7 +112,7 @@ export function CommandPalette() {
                     </DialogDescription>
 
                     <div className="flex items-center gap-3 border-b border-black/[0.06] px-4 py-3.5 dark:border-white/[0.06]">
-                        <Search className="size-4.5 shrink-0 text-[#0071e3] dark:text-[#2997ff]" />
+                        <Search className="size-4.5 shrink-0 text-slate-700 dark:text-zinc-300" />
                         <Input
                             autoFocus
                             value={query}
@@ -128,14 +132,14 @@ export function CommandPalette() {
                                 }
                             }}
                             placeholder="Ketik untuk mencari perkara, klien, dokumen, atau perintah…"
-                            className="h-8 border-0 bg-transparent p-0 text-xs font-medium text-[#1d1d1f] shadow-none placeholder:text-[#86868b] focus-visible:ring-0 dark:text-white"
+                            className="h-8 border-0 bg-transparent p-0 text-xs font-medium text-slate-900 shadow-none placeholder:text-slate-400 focus-visible:ring-0 dark:text-white"
                         />
-                        <kbd className="rounded-md border border-black/10 bg-zinc-100 px-1.5 py-0.5 font-mono text-[10px] font-medium text-[#86868b] dark:border-white/10 dark:bg-zinc-800">
+                        <kbd className="rounded-md border border-black/10 bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-medium text-slate-500 dark:border-white/10 dark:bg-zinc-800">
                             ESC
                         </kbd>
                     </div>
 
-                    <div className="max-h-72 overflow-y-auto p-2 space-y-1">
+                    <div className="max-h-72 space-y-1 overflow-y-auto p-2">
                         {query.trim().length >= 2 && (
                             <button
                                 type="button"
@@ -148,14 +152,16 @@ export function CommandPalette() {
                                         ),
                                     )
                                 }
-                                className="flex w-full items-center gap-2.5 rounded-2xl p-2.5 text-left text-xs font-semibold text-[#0071e3] hover:bg-blue-50 transition-colors dark:text-[#2997ff] dark:hover:bg-blue-950/40"
+                                className="flex w-full items-center gap-2.5 rounded-xl p-2.5 text-left text-xs font-semibold text-blue-600 transition-colors hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
                             >
                                 <Search className="size-4 shrink-0" />
-                                <span>Cari “{query.trim()}” di seluruh sistem</span>
+                                <span>
+                                    Cari “{query.trim()}” di seluruh sistem
+                                </span>
                             </button>
                         )}
 
-                        <div className="px-3 pt-2 pb-1 text-[10px] font-bold tracking-wider text-[#86868b] uppercase dark:text-zinc-500">
+                        <div className="px-3 pt-2 pb-1 text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
                             Tindakan Cepat
                         </div>
 
@@ -166,15 +172,17 @@ export function CommandPalette() {
                                     key={command.label}
                                     type="button"
                                     onClick={() => run(command.action)}
-                                    className="group flex w-full items-center justify-between gap-3 rounded-2xl p-2.5 text-left text-xs font-medium text-[#1d1d1f] hover:bg-zinc-100 transition-colors dark:text-white dark:hover:bg-zinc-800"
+                                    className="group flex w-full items-center justify-between gap-3 rounded-xl p-2.5 text-left text-xs font-medium text-slate-800 transition-colors hover:bg-slate-100/80 dark:text-zinc-200 dark:hover:bg-white/[0.06]"
                                 >
                                     <div className="flex items-center gap-2.5">
-                                        <div className="flex size-7 items-center justify-center rounded-xl bg-zinc-100 text-[#86868b] group-hover:bg-[#0071e3] group-hover:text-white transition-colors dark:bg-zinc-800 dark:group-hover:bg-[#2997ff] dark:group-hover:text-black">
+                                        <div className="flex size-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600 transition-colors group-hover:bg-slate-900 group-hover:text-white dark:bg-zinc-800 dark:text-zinc-400 dark:group-hover:bg-white dark:group-hover:text-slate-900">
                                             <Icon className="size-3.5" />
                                         </div>
                                         <span>{command.label}</span>
                                     </div>
-                                    <span className="text-[10px] text-[#86868b]">Aksi</span>
+                                    <span className="text-[10px] text-slate-400 dark:text-zinc-500">
+                                        Aksi
+                                    </span>
                                 </button>
                             );
                         })}

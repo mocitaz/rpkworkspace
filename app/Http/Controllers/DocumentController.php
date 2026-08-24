@@ -93,7 +93,13 @@ class DocumentController extends Controller
                 'creator:id,name', 'versions.uploader:id,name',
                 'approvals.reviewer:id,name', 'approvals.requester:id,name',
                 'signatureRequests.signers:id,signature_request_id,name,email,status,signed_at',
+                'comments' => fn ($query) => $query->whereNull('parent_id')->with([
+                    'user:id,name,position_title,avatar_path',
+                    'reactions.user:id,name',
+                    'replies' => fn ($r) => $r->with(['user:id,name,position_title,avatar_path', 'reactions.user:id,name'])->oldest(),
+                ])->orderByDesc('is_pinned')->latest(),
             ]),
+            'firmStaff' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title', 'avatar_path']),
             'can' => [
                 'uploadVersion' => $request->user()->can('update', $document),
                 'download' => $request->user()->can('download', $document),

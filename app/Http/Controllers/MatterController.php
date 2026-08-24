@@ -35,7 +35,7 @@ class MatterController extends Controller
 
         return Inertia::render('matters/index', [
             'matters' => Matter::query()->visibleTo($request->user())
-                ->with(['client:id,display_name', 'practiceArea:id,name', 'responsiblePartner:id,name,avatar_path'])
+                ->with(['client:id,display_name,type,client_number', 'practiceArea:id,name', 'responsiblePartner:id,name,avatar_path'])
                 ->withMin(['deadlines as next_deadline' => fn ($query) => $query->where('status', 'open')->where('due_at', '>=', now())], 'due_at')
                 ->when($search, fn ($query) => $query->where(fn ($nested) => $nested->where('matter_number', 'like', "%{$search}%")->orWhere('title', 'like', "%{$search}%")))
                 ->when($request->string('status')->toString(), fn ($query, $status) => $query->where('status', $status))
@@ -65,6 +65,7 @@ class MatterController extends Controller
             'clients' => Client::query()->where('status', 'active')->orderBy('display_name')->get(['id', 'client_number', 'display_name']),
             'practiceAreas' => PracticeArea::query()->where('is_active', true)->orderBy('sort_order')->get(['id', 'name']),
             'users' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title']),
+            'parentMatters' => Matter::query()->visibleTo($request->user())->whereNotIn('status', ['closed', 'archived'])->orderBy('matter_number')->get(['id', 'matter_number', 'title']),
             'conflictCheck' => $conflictCheck,
             'canRunConflictCheck' => $request->user()->hasPermission('conflict.manage'),
         ]);
@@ -101,13 +102,22 @@ class MatterController extends Controller
     {
         Gate::authorize('view', $matter);
         $matter->load([
-            'client:id,client_number,display_name', 'practiceArea:id,name',
+            'client:id,client_number,display_name,type,legal_name', 'practiceArea:id,name',
+            'parentMatter:id,matter_number,title,relationship_type,status',
+            'childMatters:id,parent_matter_id,matter_number,title,relationship_type,status,opened_at',
             'responsiblePartner:id,name,position_title,avatar_path', 'supervisingLawyer:id,name,position_title,avatar_path',
             'members:id,name,position_title,avatar_path', 'parties',
+            'evidences' => fn ($query) => $query->with('creator:id,name')->orderBy('evidence_code', 'asc'),
+            'chronologies' => fn ($query) => $query->orderBy('event_date', 'asc'),
             'deadlines' => fn ($query) => $query->where('status', 'open')->orderBy('due_at')->limit(8),
             'tasks' => fn ($query) => $query->with('assignee:id,name,avatar_path')->whereNotIn('status', ['completed', 'cancelled'])->orderBy('due_at')->limit(8),
             'events' => fn ($query) => $query->orderByDesc('starts_at')->limit(10),
             'documents' => fn ($query) => $query->with('currentVersion:id,document_id,version_number,file_size,mime_type')->latest('updated_at')->limit(8),
+            'comments' => fn ($query) => $query->whereNull('parent_id')->with([
+                'user:id,name,position_title,avatar_path',
+                'reactions.user:id,name',
+                'replies' => fn ($r) => $r->with(['user:id,name,position_title,avatar_path', 'reactions.user:id,name'])->oldest(),
+            ])->orderByDesc('is_pinned')->latest(),
             'notes' => fn ($query) => $query->where(function ($notes) use ($request) {
                 $notes->whereNull('private_to_id')->orWhere('private_to_id', $request->user()->getKey());
             })->latest()->limit(8),
@@ -115,10 +125,12 @@ class MatterController extends Controller
 
         return Inertia::render('matters/show', [
             'matter' => $matter,
+            'firmStaff' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title', 'avatar_path']),
             'can' => ['update' => $request->user()->can('update', $matter), 'uploadDocument' => $request->user()->can('create', Document::class)],
             'editOptions' => $request->user()->can('update', $matter) ? [
                 'practiceAreas' => PracticeArea::query()->where('is_active', true)->orderBy('sort_order')->get(['id', 'name']),
                 'users' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title']),
+                'parentMatters' => Matter::query()->visibleTo($request->user())->where('id', '!=', $matter->id)->whereNotIn('status', ['closed', 'archived'])->orderBy('matter_number')->get(['id', 'matter_number', 'title']),
             ] : null,
         ]);
     }

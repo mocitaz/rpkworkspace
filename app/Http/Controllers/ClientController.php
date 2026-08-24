@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 use App\Models\Client;
+use App\Models\ClientComplianceDocument;
 use App\Models\Document;
 use App\Models\Matter;
 use App\Models\User;
@@ -57,7 +58,7 @@ class ClientController extends Controller
         $client = Client::query()->create([
             ...$request->validated(),
             'id' => $id,
-            'client_number' => 'RAF-C-'.now(config('raf.timezone'))->format('Y').'-'.Str::upper(Str::substr($id, -6)),
+            'client_number' => 'RPK-C-'.now(config('raf.timezone'))->format('Y').'-'.Str::upper(Str::substr($id, -6)),
             'opened_at' => now()->toDateString(),
             'created_by' => $request->user()->getKey(),
         ]);
@@ -73,7 +74,12 @@ class ClientController extends Controller
     {
         Gate::authorize('view', $client);
         $canUpdate = $request->user()->can('update', $client);
-        $client->load(['relationshipPartner:id,name,position_title,avatar_path', 'contacts' => fn ($query) => $query->orderBy('last_name')]);
+        $client->load([
+            'relationshipPartner:id,name,position_title,avatar_path',
+            'kycAssessedBy:id,name,position_title,avatar_path',
+            'contacts' => fn ($query) => $query->orderBy('last_name'),
+            'complianceDocuments' => fn ($query) => $query->with('creator:id,name')->orderBy('expires_at', 'asc'),
+        ]);
 
         if ($canUpdate) {
             $client->makeVisible('tax_identifier');
@@ -125,5 +131,72 @@ class ClientController extends Controller
         $audit->record($client, 'client.updated', ['changed' => array_keys($client->getChanges())], $request->user(), $request);
 
         return to_route('clients.show', $client)->with('success', 'Data klien berhasil diperbarui.');
+    }
+
+    public function storeComplianceDocument(Request $request, Client $client, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('update', $client);
+
+        $validated = $request->validate([
+            'document_type' => ['required', 'string', 'in:deed_establishment,deed_amendment_directors,nib,kbli_license,sk_menkumham,amdal_environmental,trademark_ip,tax_id,other'],
+            'document_number' => ['required', 'string', 'max:128'],
+            'title' => ['required', 'string', 'max:255'],
+            'issued_at' => ['nullable', 'date'],
+            'expires_at' => ['nullable', 'date'],
+            'issuer' => ['nullable', 'string', 'max:128'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $doc = $client->complianceDocuments()->create([
+            ...$validated,
+            'created_by' => $request->user()->getKey(),
+        ]);
+
+        $audit->record($doc, 'client.compliance_added', [
+            'client_id' => $client->getKey(),
+            'document_number' => $doc->document_number,
+            'title' => $doc->title,
+        ], $request->user(), $request);
+
+        return back()->with('success', 'Dokumen legalitas & kepatuhan berhasil ditambahkan.');
+    }
+
+    public function updateComplianceDocument(Request $request, Client $client, ClientComplianceDocument $complianceDocument, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('update', $client);
+
+        $validated = $request->validate([
+            'document_type' => ['required', 'string', 'in:deed_establishment,deed_amendment_directors,nib,kbli_license,sk_menkumham,amdal_environmental,trademark_ip,tax_id,other'],
+            'document_number' => ['required', 'string', 'max:128'],
+            'title' => ['required', 'string', 'max:255'],
+            'issued_at' => ['nullable', 'date'],
+            'expires_at' => ['nullable', 'date'],
+            'issuer' => ['nullable', 'string', 'max:128'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $complianceDocument->update($validated);
+
+        $audit->record($complianceDocument, 'client.compliance_updated', [
+            'client_id' => $client->getKey(),
+            'document_number' => $complianceDocument->document_number,
+        ], $request->user(), $request);
+
+        return back()->with('success', 'Dokumen legalitas berhasil diperbarui.');
+    }
+
+    public function destroyComplianceDocument(Client $client, ClientComplianceDocument $complianceDocument, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('update', $client);
+
+        $number = $complianceDocument->document_number;
+        $complianceDocument->delete();
+
+        $audit->record($client, 'client.compliance_deleted', [
+            'client_id' => $client->getKey(),
+            'document_number' => $number,
+        ], request()->user(), request());
+
+        return back()->with('success', 'Dokumen legalitas berhasil dihapus.');
     }
 }

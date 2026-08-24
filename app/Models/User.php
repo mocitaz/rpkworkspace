@@ -30,7 +30,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'position_title', 'avatar_path', 'email', 'password', 'locale', 'timezone', 'is_active', 'disabled_at'])]
+#[Fillable(['name', 'position_title', 'employee_code', 'department', 'employment_type', 'employment_status', 'work_mode', 'joined_at', 'contract_end', 'leave_balance', 'utilization', 'performance_score', 'next_review', 'avatar_path', 'email', 'password', 'locale', 'timezone', 'is_active', 'disabled_at', 'last_seen_at'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
@@ -52,7 +52,7 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     protected function avatarUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->avatar_path ? '/storage/'.$this->avatar_path : null,
+            get: fn () => $this->avatar_path ? '/storage/'.$this->avatar_path : '/images/default-avatar.svg',
         );
     }
 
@@ -73,6 +73,18 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     public function auditLogs(): HasMany
     {
         return $this->hasMany(AuditLog::class, 'actor_id');
+    }
+
+    /** @return HasMany<DirectMessage, $this> */
+    public function directMessagesSent(): HasMany
+    {
+        return $this->hasMany(DirectMessage::class, 'sender_id');
+    }
+
+    /** @return HasMany<DirectMessage, $this> */
+    public function directMessagesReceived(): HasMany
+    {
+        return $this->hasMany(DirectMessage::class, 'recipient_id');
     }
 
     public function hasPermission(string $permission): bool
@@ -97,7 +109,12 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
             'is_active' => 'boolean',
+            'last_seen_at' => 'datetime',
             'disabled_at' => 'datetime',
+            'joined_at' => 'date',
+            'contract_end' => 'date',
+            'next_review' => 'date',
+            'performance_score' => 'decimal:1',
         ];
     }
 }

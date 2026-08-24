@@ -2,6 +2,7 @@ import { Form, Head } from '@inertiajs/react';
 import {
     Activity,
     ChevronDown,
+    Download,
     Filter,
     Layers,
     RotateCcw,
@@ -59,181 +60,214 @@ export default function AuditIndex({
 }) {
     return (
         <>
-            <Head title="Audit Log & Jejak Aktivitas" />
+            <Head title="Audit Log & Jejak Aktivitas - Kepatuhan Hukum" />
 
-            <div className="min-h-screen w-full bg-[#fbfbfa] text-[#111111] antialiased dark:bg-[#121212] dark:text-[#fbfbfa]">
-                <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-                    {/* Header Minimalist Notion */}
-                    <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                    {/* 1. Header Navigation & Action Bar */}
+                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">
-                            <h1 className="text-2xl font-bold tracking-tight text-[#111111] dark:text-white">
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                 Audit Log &amp; Jejak Aktivitas
                             </h1>
-                            <p className="text-xs text-[#787774] dark:text-zinc-400">
-                                Pelacakan riwayat aktivitas, modifikasi berkas perkara, akses finansial, dan audit trail kepatuhan hukum.
+                            <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                Pelacakan riwayat aktivitas, modifikasi berkas perkara, akses finansial, dan audit trail kepatuhan hukum firma.
                             </p>
                         </div>
-                    </header>
 
-                    {/* Compact 4-Column Stat Strips (h-[76px]) */}
+                        {/* Right: Actions */}
+                        <div className="flex shrink-0 items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                asChild
+                            >
+                                <a
+                                    href={auditRoutes.exportMethod.url({
+                                        query: filters,
+                                    })}
+                                    download
+                                >
+                                    <Download className="mr-1.5 size-3.5 text-blue-600 dark:text-blue-400" />
+                                    Ekspor CSV Kepatuhan
+                                </a>
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* 2. Top 4 Compact Bento KPI Cards */}
                     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                         {/* 1. Total Log */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Total Rekaman Audit</span>
-                                <ShieldCheck className="size-3.5 text-[#1f6c9f] dark:text-sky-400" />
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">TOTAL REKAMAN AUDIT</span>
+                                <ShieldCheck className="size-3.5 text-blue-600 dark:text-blue-400" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-base font-bold tracking-tight text-[#111111] dark:text-white">
-                                    {metrics.total} Log
+                            <div className="mt-2 flex items-baseline gap-1.5">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                    {metrics.total}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    immutable
+                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                    log
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Immutable Ledger</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">Permanen</span>
                             </div>
                         </div>
 
                         {/* 2. Hari Ini */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Aktivitas Hari Ini</span>
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">AKTIVITAS HARI INI</span>
                                 <Activity className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-base font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
-                                    {metrics.today} Event
+                            <div className="mt-2 flex items-baseline gap-1.5">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+                                    {metrics.today}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    24 jam terakhir
+                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                    event
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>24 Jam Terakhir</span>
+                                <span className="font-semibold text-emerald-600">Harian</span>
                             </div>
                         </div>
 
                         {/* 3. Pelaku Aktif */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Pelaku Teridentifikasi</span>
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">PELAKU TERIDENTIFIKASI</span>
                                 <Users className="size-3.5 text-purple-600 dark:text-purple-400" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-base font-bold tracking-tight text-purple-600 dark:text-purple-400">
-                                    {metrics.actors_count} Anggota
+                            <div className="mt-2 flex items-baseline gap-1.5">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-purple-600 dark:text-purple-400">
+                                    {metrics.actors_count}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    tercatat beraksi
+                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                    anggota
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Tercatat Beraksi</span>
+                                <span className="font-semibold text-purple-600">Aktif</span>
                             </div>
                         </div>
 
                         {/* 4. Variasi Event */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Ragam Event</span>
-                                <Layers className="size-3.5 text-amber-600 dark:text-amber-400" />
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">RAGAM EVENT</span>
+                                <Layers className="size-3.5 text-amber-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-base font-bold tracking-tight text-[#111111] dark:text-white">
-                                    {metrics.events_count} Tipe Event
+                            <div className="mt-2 flex items-baseline gap-1.5">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
+                                    {metrics.events_count}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    auth, berkas, finance
+                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                    tipe
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Auth, Dokumen &amp; Finance</span>
+                                <span className="font-semibold text-amber-600">Cakupan</span>
                             </div>
                         </div>
                     </section>
 
-                    {/* Filter Bar */}
+                    {/* 3. Filter Bar */}
                     <Form
                         {...auditRoutes.index.form()}
-                        className="grid grid-cols-1 gap-2 rounded-xl border border-black/[0.08] bg-white p-2.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] sm:grid-cols-2 md:grid-cols-[1fr_1fr_140px_140px_auto] md:items-end dark:border-white/[0.08] dark:bg-[#1a1a1c]"
+                        className="flex flex-col gap-2 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs sm:flex-row sm:items-center dark:border-white/[0.06] dark:bg-[#14161b]"
                     >
                         {/* Event Dropdown */}
-                        <div className="space-y-1">
-                            <Label className="text-[10px] font-semibold uppercase text-[#787774]">Jenis Event</Label>
-                            <div className="relative">
-                                <select
-                                    name="event"
-                                    defaultValue={filters.event ?? ''}
-                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-3 pr-8 text-xs font-medium text-[#111111] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200"
-                                >
-                                    <option value="">Semua Event</option>
-                                    {events.map((ev) => (
-                                        <option key={ev} value={ev}>
-                                            {ev}
-                                        </option>
-                                    ))}
-                                </select>
-                                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
-                            </div>
+                        <div className="relative min-w-[170px] flex-1">
+                            <select
+                                name="event"
+                                defaultValue={filters.event ?? ''}
+                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                            >
+                                <option value="">Semua Jenis Event</option>
+                                {events.map((ev) => (
+                                    <option key={ev} value={ev}>
+                                        {ev}
+                                    </option>
+                                ))}
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
                         </div>
 
                         {/* Actor Dropdown */}
-                        <div className="space-y-1">
-                            <Label className="text-[10px] font-semibold uppercase text-[#787774]">Pelaku / Aktor</Label>
-                            <div className="relative">
-                                <select
-                                    name="actor_id"
-                                    defaultValue={filters.actor_id ?? ''}
-                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-3 pr-8 text-xs font-medium text-[#111111] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200"
-                                >
-                                    <option value="">Semua Pelaku</option>
-                                    {actors.map((actor) => (
-                                        <option key={actor.id} value={actor.id}>
-                                            {actor.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
-                            </div>
+                        <div className="relative min-w-[170px] flex-1">
+                            <select
+                                name="actor_id"
+                                defaultValue={filters.actor_id ?? ''}
+                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                            >
+                                <option value="">Semua Pelaku / Aktor</option>
+                                {actors.map((actor) => (
+                                    <option key={actor.id} value={actor.id}>
+                                        {actor.name}
+                                    </option>
+                                ))}
+                            </select>
+                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
                         </div>
 
                         {/* From Date */}
-                        <div className="space-y-1">
-                            <Label className="text-[10px] font-semibold uppercase text-[#787774]">Dari Tanggal</Label>
+                        <div className="relative min-w-[130px]">
                             <Input
                                 name="from"
                                 type="date"
                                 defaultValue={filters.from}
-                                className="h-8 rounded-lg border border-black/[0.08] bg-[#fbfbfa] text-xs text-[#111111] dark:border-white/[0.1] dark:bg-[#121212]"
+                                className="h-8 rounded-lg border-slate-200 bg-white text-xs text-slate-900 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
                             />
                         </div>
 
                         {/* Until Date */}
-                        <div className="space-y-1">
-                            <Label className="text-[10px] font-semibold uppercase text-[#787774]">Sampai Tanggal</Label>
+                        <div className="relative min-w-[130px]">
                             <Input
                                 name="until"
                                 type="date"
                                 defaultValue={filters.until}
-                                className="h-8 rounded-lg border border-black/[0.08] bg-[#fbfbfa] text-xs text-[#111111] dark:border-white/[0.1] dark:bg-[#121212]"
+                                className="h-8 rounded-lg border-slate-200 bg-white text-xs text-slate-900 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
                             />
                         </div>
 
                         {/* Buttons */}
-                        <div className="flex items-center gap-1.5 pt-2 sm:pt-0">
+                        <div className="flex items-center gap-1.5 shrink-0">
                             <Button
                                 type="submit"
-                                className="h-8 rounded-lg bg-[#111111] px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-black active:scale-95 dark:bg-white dark:text-black"
+                                size="sm"
+                                className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                             >
                                 <Filter className="mr-1 size-3" /> Filter
                             </Button>
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="h-8 rounded-lg border-black/10 px-2.5 text-xs hover:bg-black/[0.03]"
+                                size="sm"
+                                className="h-8 rounded-lg border-slate-200 px-2.5 text-xs hover:bg-slate-50"
                                 asChild
                             >
-                                <a href={auditRoutes.index.url()} title="Reset Filter">
-                                    <RotateCcw className="size-3 text-[#787774]" />
+                                <a
+                                    href={auditRoutes.index.url()}
+                                    title="Reset Filter"
+                                >
+                                    <RotateCcw className="size-3 text-slate-500" />
                                 </a>
                             </Button>
                         </div>
                     </Form>
 
-                    {/* Audit Logs Table Card */}
-                    <div className="overflow-hidden rounded-xl border border-black/[0.08] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
+                    {/* 4. Audit Logs Table Card */}
+                    <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                         {auditLogs.data.length === 0 ? (
-                            <div className="flex min-h-[380px] items-center justify-center p-12 text-center">
+                            <div className="flex min-h-[320px] items-center justify-center p-8 text-center">
                                 <EmptyState
                                     title="Tidak ada log audit ditemukan"
                                     description="Tidak ada rekaman aktivitas yang sesuai dengan kriteria filter yang Anda pilih."
@@ -243,60 +277,64 @@ export default function AuditIndex({
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left text-xs">
                                     <thead>
-                                        <tr className="border-b border-black/[0.04] bg-[#fafafa] text-[10px] font-semibold uppercase tracking-wider text-[#787774] dark:border-white/[0.06] dark:bg-[#161618]">
-                                            <th className="py-2.5 pl-4 pr-3">Waktu (WIB)</th>
-                                            <th className="py-2.5 px-3">Event &amp; Objek</th>
-                                            <th className="py-2.5 px-3">Pelaku / Aktor</th>
-                                            <th className="py-2.5 px-3">Detail Perubahan</th>
-                                            <th className="py-2.5 pl-3 pr-4 text-right">IP Address</th>
+                                        <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
+                                            <th className="py-2.5 pr-3 pl-4">Waktu (WIB)</th>
+                                            <th className="px-3 py-2.5">Event &amp; Objek</th>
+                                            <th className="px-3 py-2.5">Pelaku / Aktor</th>
+                                            <th className="px-3 py-2.5">Detail Perubahan</th>
+                                            <th className="py-2.5 pr-4 pl-3 text-right">IP Address</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-black/[0.04] dark:divide-white/[0.05]">
+                                    <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                                         {auditLogs.data.map((log) => (
                                             <tr
                                                 key={log.id}
-                                                className="group transition-colors hover:bg-black/[0.01] dark:hover:bg-white/[0.02]"
+                                                className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
                                             >
                                                 {/* Timestamp */}
-                                                <td className="py-3 pl-4 pr-3 whitespace-nowrap font-mono text-[11px] text-[#787774] dark:text-zinc-400">
+                                                <td className="py-2.5 pr-3 pl-4 font-mono text-xs font-semibold whitespace-nowrap text-slate-600 dark:text-zinc-400">
                                                     {formatDate(log.created_at, true)}
                                                 </td>
 
                                                 {/* Event & Target Object */}
-                                                <td className="py-3 px-3 whitespace-nowrap">
+                                                <td className="px-3 py-2.5 whitespace-nowrap">
                                                     <div className="space-y-0.5">
-                                                        <span className="rounded bg-[#e1f3fe] px-1.5 py-0.2 font-mono text-[10px] font-semibold text-[#1f6c9f] dark:bg-blue-950/40 dark:text-sky-300">
+                                                        <span className="rounded bg-blue-50 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
                                                             {log.event}
                                                         </span>
-                                                        <p className="font-mono text-[10px] text-[#787774] dark:text-zinc-400">
-                                                            {log.subject_type ? log.subject_type.split('\\').pop() : 'System'}
-                                                            {log.subject_id ? ` · #${log.subject_id.slice(-8)}` : ''}
+                                                        <p className="font-mono text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                            {log.subject_type
+                                                                ? log.subject_type.split('\\').pop()
+                                                                : 'System'}
+                                                            {log.subject_id
+                                                                ? ` · #${log.subject_id.slice(-8)}`
+                                                                : ''}
                                                         </p>
                                                     </div>
                                                 </td>
 
                                                 {/* Actor */}
-                                                <td className="py-3 px-3 whitespace-nowrap">
+                                                <td className="px-3 py-2.5 whitespace-nowrap">
                                                     <div>
-                                                        <span className="font-semibold text-[#111111] dark:text-white">
+                                                        <span className="font-semibold text-slate-900 dark:text-white">
                                                             {log.actor?.name ?? 'Sistem Otomatis'}
                                                         </span>
-                                                        <p className="text-[10px] text-[#787774]">
+                                                        <p className="text-[10.5px] text-slate-500">
                                                             {log.actor?.email ?? 'system@internal'}
                                                         </p>
                                                     </div>
                                                 </td>
 
                                                 {/* JSON Metadata Details */}
-                                                <td className="py-3 px-3 max-w-sm">
-                                                    <pre className="max-h-20 overflow-auto rounded-md bg-[#fafafa] p-2 font-mono text-[10px] leading-relaxed text-[#111111] border border-black/[0.06] dark:border-white/5 dark:bg-zinc-800/40 dark:text-zinc-300">
+                                                <td className="max-w-sm px-3 py-2.5">
+                                                    <pre className="max-h-20 overflow-auto rounded-lg border border-slate-200/70 bg-slate-50/60 p-2 font-mono text-[10px] leading-relaxed text-slate-800 dark:border-white/5 dark:bg-zinc-800/40 dark:text-zinc-300">
                                                         {JSON.stringify(log.metadata ?? {}, null, 2)}
                                                     </pre>
                                                 </td>
 
                                                 {/* IP Address */}
-                                                <td className="py-3 pl-3 pr-4 text-right whitespace-nowrap font-mono text-[11px] text-[#787774] dark:text-zinc-400">
-                                                    {log.ip_address ?? '—'}
+                                                <td className="py-2.5 pr-4 pl-3 text-right font-mono text-xs font-semibold whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                    {log.ip_address ?? '-'}
                                                 </td>
                                             </tr>
                                         ))}
@@ -305,10 +343,17 @@ export default function AuditIndex({
                             </div>
                         )}
 
-                        <div className="flex flex-col justify-between gap-3 border-t border-black/[0.04] bg-[#fafafa] px-4 py-2.5 sm:flex-row sm:items-center dark:border-white/[0.06] dark:bg-[#161618]">
-                            <span className="text-xs text-[#787774] dark:text-zinc-400">
-                                Menampilkan <span className="font-semibold text-[#111111] dark:text-white">{auditLogs.data.length}</span> dari{' '}
-                                <span className="font-semibold text-[#111111] dark:text-white">{auditLogs.total}</span> rekaman log
+                        <div className="flex flex-col justify-between gap-2.5 border-t border-slate-100 bg-slate-50/60 px-4 py-3 sm:flex-row sm:items-center dark:border-white/[0.04] dark:bg-[#121418]">
+                            <span className="text-xs text-slate-500 dark:text-zinc-400">
+                                Menampilkan{' '}
+                                <span className="font-semibold text-slate-900 dark:text-white">
+                                    {auditLogs.data.length}
+                                </span>{' '}
+                                dari{' '}
+                                <span className="font-semibold text-slate-900 dark:text-white">
+                                    {auditLogs.total}
+                                </span>{' '}
+                                rekaman log
                             </span>
                             <Pagination links={auditLogs.links} />
                         </div>

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Matter extends Model
 {
@@ -17,7 +18,7 @@ class Matter extends Model
     use HasFactory, HasUlids;
 
     protected $fillable = [
-        'matter_number', 'title', 'client_id', 'summary', 'budget_amount', 'currency', 'practice_area_id', 'matter_type',
+        'matter_number', 'title', 'client_id', 'parent_matter_id', 'relationship_type', 'summary', 'budget_amount', 'currency', 'practice_area_id', 'matter_type',
         'status', 'priority', 'confidentiality_level', 'responsible_partner_id',
         'supervising_lawyer_id', 'opened_at', 'closed_at', 'jurisdiction', 'court',
         'external_case_number', 'archived_at', 'archived_by', 'legal_hold_at', 'legal_hold_by',
@@ -138,6 +139,12 @@ class Matter extends Model
         return $this->hasMany(Correspondence::class);
     }
 
+    /** @return HasMany<MatterChronology, $this> */
+    public function chronologies(): HasMany
+    {
+        return $this->hasMany(MatterChronology::class)->orderBy('event_date', 'asc');
+    }
+
     /** @return HasMany<ConflictCheck, $this> */
     public function conflictChecks(): HasMany
     {
@@ -162,6 +169,12 @@ class Matter extends Model
         return $this->hasMany(Invoice::class);
     }
 
+    /** @return MorphMany<Comment, $this> */
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
     /** @return HasMany<Expense, $this> */
     public function expenses(): HasMany
     {
@@ -172,5 +185,23 @@ class Matter extends Model
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);
+    }
+
+    /** @return BelongsTo<Matter, $this> */
+    public function parentMatter(): BelongsTo
+    {
+        return $this->belongsTo(Matter::class, 'parent_matter_id');
+    }
+
+    /** @return HasMany<Matter, $this> */
+    public function childMatters(): HasMany
+    {
+        return $this->hasMany(Matter::class, 'parent_matter_id')->orderBy('opened_at', 'asc');
+    }
+
+    /** @return HasMany<MatterEvidence, $this> */
+    public function evidences(): HasMany
+    {
+        return $this->hasMany(MatterEvidence::class)->orderBy('evidence_code', 'asc');
     }
 }

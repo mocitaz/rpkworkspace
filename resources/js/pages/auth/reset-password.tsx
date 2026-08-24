@@ -1,4 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
+import { Lock, Mail } from 'lucide-react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
 import { Button } from '@/components/ui/button';
@@ -16,74 +17,90 @@ type Props = {
 export default function ResetPassword({ token, email, passwordRules }: Props) {
     return (
         <>
-            <Head title="Atur Ulang Kata Sandi" />
+            <Head title="Reset Password - RPK Law Workspace" />
 
             <Form
                 {...update.form()}
                 transform={(data) => ({ ...data, token, email })}
                 resetOnSuccess={['password', 'password_confirmation']}
+                className="space-y-4"
             >
                 {({ processing, errors }) => (
-                    <div className="grid gap-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                name="email"
-                                autoComplete="email"
-                                value={email}
-                                className="mt-1 block w-full"
-                                readOnly
-                            />
-                            <InputError
-                                message={errors.email}
-                                className="mt-2"
-                            />
+                    <>
+                        <div className="space-y-1">
+                            <Label htmlFor="email" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                Email
+                            </Label>
+                            <div className="relative flex items-center">
+                                <Mail className="pointer-events-none absolute left-3.5 size-4 text-slate-400 dark:text-zinc-500" />
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    name="email"
+                                    autoComplete="email"
+                                    value={email}
+                                    className="h-11 rounded-xl border-slate-200/80 bg-slate-100/70 pl-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
+                                    readOnly
+                                />
+                            </div>
+                            <InputError message={errors.email} />
                         </div>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Kata sandi baru</Label>
-                            <PasswordInput
-                                id="password"
-                                name="password"
-                                autoComplete="new-password"
-                                className="mt-1 block w-full"
-                                autoFocus
-                                placeholder="Masukkan kata sandi baru"
-                                passwordrules={passwordRules}
-                            />
+                        <div className="space-y-1">
+                            <Label htmlFor="password" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                Kata Sandi Baru
+                            </Label>
+                            <div className="relative w-full">
+                                <Lock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 dark:text-zinc-500 z-10" />
+                                <PasswordInput
+                                    id="password"
+                                    name="password"
+                                    autoComplete="new-password"
+                                    autoFocus
+                                    placeholder="Masukkan kata sandi baru"
+                                    passwordrules={passwordRules}
+                                    className="h-11 w-full rounded-xl border-slate-200/80 bg-[#f8fafc] pl-10 pr-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
+                                />
+                            </div>
                             <InputError message={errors.password} />
                         </div>
 
-                        <div className="grid gap-2">
-                            <Label htmlFor="password_confirmation">
-                                Konfirmasi kata sandi baru
+                        <div className="space-y-1">
+                            <Label htmlFor="password_confirmation" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                Konfirmasi Kata Sandi Baru
                             </Label>
-                            <PasswordInput
-                                id="password_confirmation"
-                                name="password_confirmation"
-                                autoComplete="new-password"
-                                className="mt-1 block w-full"
-                                placeholder="Ulangi kata sandi baru"
-                                passwordrules={passwordRules}
-                            />
-                            <InputError
-                                message={errors.password_confirmation}
-                                className="mt-2"
-                            />
+                            <div className="relative w-full">
+                                <Lock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 dark:text-zinc-500 z-10" />
+                                <PasswordInput
+                                    id="password_confirmation"
+                                    name="password_confirmation"
+                                    autoComplete="new-password"
+                                    placeholder="Ulangi kata sandi baru"
+                                    passwordrules={passwordRules}
+                                    className="h-11 w-full rounded-xl border-slate-200/80 bg-[#f8fafc] pl-10 pr-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
+                                />
+                            </div>
+                            <InputError message={errors.password_confirmation} />
                         </div>
 
-                        <Button
-                            type="submit"
-                            className="mt-4 w-full"
-                            disabled={processing}
-                            data-test="reset-password-button"
-                        >
-                            {processing && <Spinner />}
-                            Simpan kata sandi baru
-                        </Button>
-                    </div>
+                        <div className="pt-2">
+                            <Button
+                                type="submit"
+                                className="h-11 w-full rounded-xl bg-[#3b41e2] text-xs font-bold tracking-wide text-white shadow-lg shadow-indigo-500/25 hover:bg-[#3237c5] active:scale-[0.98] transition-all dark:bg-blue-600 dark:hover:bg-blue-500"
+                                disabled={processing}
+                                data-test="reset-password-button"
+                            >
+                                {processing ? (
+                                    <>
+                                        <Spinner className="mr-1.5 size-4" />
+                                        Menyimpan...
+                                    </>
+                                ) : (
+                                    'Simpan Kata Sandi Baru'
+                                )}
+                            </Button>
+                        </div>
+                    </>
                 )}
             </Form>
         </>
@@ -91,6 +108,6 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
 }
 
 ResetPassword.layout = {
-    title: 'Atur ulang kata sandi',
+    title: 'Reset Password',
     description: 'Masukkan kata sandi baru untuk kembali mengakses workspace.',
 };

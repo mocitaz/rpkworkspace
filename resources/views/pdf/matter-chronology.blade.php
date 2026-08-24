@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <title>Kronologi Fakta Perkara {{ $matter->matter_number }} — RPK Law Firm</title>
+    <style>
+        @page { margin: 32px 40px 42px; size: A4 portrait; }
+        * { box-sizing: border-box; }
+        body { margin: 0; color: #1e293b; font-family: "DejaVu Sans", Helvetica, Arial, sans-serif; font-size: 8px; line-height: 1.48; }
+        table { width: 100%; border-collapse: collapse; }
+        .mono { font-family: "DejaVu Sans Mono", monospace; }
+        .navy { color: #0a1b33; }
+        .gold { color: #8f6a22; }
+        .muted { color: #64748b; }
+        .right { text-align: right; }
+        .center { text-align: center; }
+
+        /* Letterhead Header */
+        .letterhead { margin-bottom: 14px; }
+        .letterhead td { vertical-align: middle; }
+        .logo-cell { width: 55%; }
+        .logo-crop { width: 195px; height: 62px; overflow: hidden; }
+        .logo-crop img { width: 195px; height: auto; margin-top: -24px; }
+        .office-cell { width: 45%; color: #475569; font-size: 7.2px; line-height: 1.55; text-align: right; }
+        .gold-rule { height: 2px; border-top: 1.5px solid #8f6a22; border-bottom: 1px solid #e2d2aa; margin-bottom: 18px; }
+
+        /* Title Box */
+        .title-box { margin-bottom: 16px; }
+        .title-badge { display: inline-block; background: #0a1b33; color: #ffffff; padding: 2.5px 8px; font-size: 6.8px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; border-radius: 3px; }
+        .doc-title { margin-top: 5px; font-size: 18px; font-weight: bold; color: #0a1b33; }
+        .doc-subtitle { margin-top: 2px; font-size: 7.5px; color: #64748b; }
+
+        /* Meta Card */
+        .meta-card { background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px 14px; margin-bottom: 16px; border-radius: 5px; }
+        .meta-table td { padding: 2.5px 0; font-size: 7.8px; vertical-align: top; }
+        .meta-label { width: 28%; color: #64748b; font-weight: bold; }
+        .meta-value { width: 72%; color: #0f172a; font-weight: bold; }
+
+        .timeline-table { margin-top: 10px; margin-bottom: 16px; }
+        .timeline-table th { background: #0a1b33; color: #ffffff; font-size: 7px; font-weight: bold; padding: 7px 8px; text-align: left; text-transform: uppercase; letter-spacing: .5px; }
+        .timeline-table td { padding: 9px 8px; border-bottom: 1px solid #e2e8f0; font-size: 7.5px; vertical-align: top; }
+
+        .tag-critical { display: inline-block; background: #fee2e2; color: #991b1b; padding: 2px 6px; font-size: 6.5px; font-weight: bold; border-radius: 3px; }
+        .tag-high { display: inline-block; background: #fef3c7; color: #92400e; padding: 2px 6px; font-size: 6.5px; font-weight: bold; border-radius: 3px; }
+        .tag-normal { display: inline-block; background: #f1f5f9; color: #475569; padding: 2px 6px; font-size: 6.5px; font-weight: bold; border-radius: 3px; }
+
+        .signature-block { margin-top: 24px; page-break-inside: avoid; }
+        .signature-block td { vertical-align: top; width: 45%; }
+        .sig-space { height: 42px; }
+        .sig-line { width: 170px; border-top: 1px solid #0a1b33; margin-top: 3px; margin-bottom: 3px; }
+
+        .watermark { position: fixed; top: 38%; left: 0; width: 100%; text-align: center; transform: rotate(-25deg); opacity: 0.04; font-size: 26px; font-weight: bold; color: #0a1b33; z-index: -1000; }
+        .footer { margin-top: 22px; padding-top: 8px; border-top: 1px solid #cbd5e1; font-size: 6.8px; color: #64748b; }
+    </style>
+</head>
+<body>
+
+    <div class="watermark">
+        DIUNDUH OLEH {{ strtoupper(auth()->user()->name ?? 'RPK USER') }}<br>
+        {{ now()->format('Y-m-d H:i') }} WIB · BERKAS LITIGASI RESMI RPK LAW FIRM
+    </div>
+
+    <!-- Letterhead Header -->
+    <table class="letterhead">
+        <tr>
+            <td class="logo-cell">
+                <div class="logo-crop">
+                    <img src="{{ public_path('logo/logo.png') }}" alt="RPK Law Firm">
+                </div>
+            </td>
+            <td class="office-cell">
+                <strong>RONI, PUTRA &amp; KUSUMAH LAW FIRM</strong><br>
+                Menara Hukum RPK, Lt. 5, Jl. LLRE Martadinata No. 88, Bandung 40115<br>
+                Tel: +62 22 420 8899 &nbsp;·&nbsp; Email: litigation@rpklaw.co.id
+            </td>
+        </tr>
+    </table>
+    <div class="gold-rule"></div>
+
+    <!-- Title Box -->
+    <div class="title-box">
+        <span class="title-badge">BERKAS LITIGASI &amp; PEMBUKTIAN HUKUM</span>
+        <div class="doc-title">KRONOLOGI FAKTA &amp; REKAMAN PERISTIWA HUKUM</div>
+        <div class="doc-subtitle">Daftar urutan peristiwa faktual, bukti surat terkait, dan keterangan saksi untuk kepentingan proses peradilan / mediasi.</div>
+    </div>
+
+    <!-- Matter Meta Info -->
+    <div class="meta-card">
+        <table class="meta-table">
+            <tr>
+                <td class="meta-label">NOMOR PERKARA:</td>
+                <td class="meta-value mono" style="color: #0369a1; font-size: 8.5px;">{{ $matter->matter_number }}</td>
+            </tr>
+            <tr>
+                <td class="meta-label">JUDUL PERKARA:</td>
+                <td class="meta-value" style="font-size: 8.5px;">{{ $matter->title }}</td>
+            </tr>
+            <tr>
+                <td class="meta-label">KLIEN:</td>
+                <td class="meta-value">{{ $matter->client->display_name ?? 'Klien Internal' }}</td>
+            </tr>
+            <tr>
+                <td class="meta-label">BIDANG HUKUM:</td>
+                <td class="meta-value">{{ $matter->practiceArea->name ?? '-' }} ({{ strtoupper((string) ($matter->stage ?? 'Aktif')) }})</td>
+            </tr>
+            <tr>
+                <td class="meta-label">DISUSUN PADA:</td>
+                <td class="meta-value mono">{{ now()->translatedFormat('d F Y') }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Timeline Entries Table -->
+    <table class="timeline-table">
+        <thead>
+            <tr>
+                <th style="width: 18%;">Waktu Kejadian</th>
+                <th style="width: 52%;">Fakta Peristiwa &amp; Kronologi Hukum</th>
+                <th style="width: 15%;">Sumber / Bukti</th>
+                <th style="width: 15%; text-align: center;">Tingkat Relevansi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($matter->chronologies ?? [] as $index => $item)
+                <tr>
+                    <td class="mono" style="font-weight: bold; color: #0369a1;">
+                        {{ $item->event_date ? \Carbon\Carbon::parse($item->event_date)->translatedFormat('d M Y') : '-' }}
+                    </td>
+                    <td>
+                        <strong style="color: #0a1b33; font-size: 8.2px;">{{ $item->title }}</strong>
+                        @if ($item->description)
+                            <div style="margin-top: 2px; color: #334155; line-height: 1.45;">
+                                {{ $item->description }}
+                            </div>
+                        @endif
+                        @if ($item->witness_name)
+                            <div style="margin-top: 2px; font-size: 6.8px; color: #64748b;">
+                                Saksi Terkait: <strong>{{ $item->witness_name }}</strong>
+                            </div>
+                        @endif
+                    </td>
+                    <td>
+                        <span style="font-size: 7px; color: #475569; font-weight: bold;">
+                            {{ $item->evidence_reference ?? 'Pemeriksaan Berkas' }}
+                        </span>
+                    </td>
+                    <td class="center">
+                        @php
+                            $importance = $item->importance_level ?? 'normal';
+                            $badgeClass = $importance === 'critical' ? 'tag-critical' : ($importance === 'high' ? 'tag-high' : 'tag-normal');
+                            $badgeLabel = $importance === 'critical' ? 'KRUSIAL (P-1)' : ($importance === 'high' ? 'PENTING' : 'FAKTUAL');
+                        @endphp
+                        <span class="{{ $badgeClass }}">{{ $badgeLabel }}</span>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="4" class="center muted" style="padding: 14px;">Belum ada rekaman kronologi fakta terdaftar untuk perkara ini.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+
+    <!-- Signature Block -->
+    <table class="signature-block">
+        <tr>
+            <td>
+                <div style="font-size: 7.2px; color: #64748b;">Disusun Oleh Kuasa Hukum:</div>
+                <div style="font-size: 8.5px; font-weight: bold; color: #0a1b33; margin-top: 2px;">RONI, PUTRA &amp; KUSUMAH LAW FIRM</div>
+                <div class="sig-space"></div>
+                <div class="sig-line"></div>
+                <div style="font-size: 7.5px; font-weight: bold; color: #0a1b33;">{{ $matter->assignedLawyer->name ?? 'Advokat Litigasi' }}</div>
+                <div style="font-size: 6.8px; color: #64748b;">Advokat / Kuasa Hukum Pemohon</div>
+            </td>
+            <td style="width: 10%;"></td>
+            <td>
+                <div style="font-size: 7.2px; color: #64748b;">Mengetahui:</div>
+                <div style="font-size: 8.5px; font-weight: bold; color: #0a1b33; margin-top: 2px;">Managing Partner Penanggung Jawab</div>
+                <div class="sig-space"></div>
+                <div class="sig-line"></div>
+                <div style="font-size: 7.5px; font-weight: bold; color: #0a1b33;">{{ $matter->responsiblePartner->name ?? 'Managing Partner' }}</div>
+                <div style="font-size: 6.8px; color: #64748b;">Partner In-Charge</div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="footer">
+        <tr>
+            <td>RONI, PUTRA &amp; KUSUMAH LAW FIRM &nbsp;|&nbsp; KRONOLOGI FAKTA PERKARA &nbsp;|&nbsp; RAHASIA ADVOKAT</td>
+            <td class="right mono">{{ $matter->matter_number }} &nbsp;|&nbsp; {{ now()->timezone(config('raf.timezone'))->format('d/m/Y H:i') }} WIB</td>
+        </tr>
+    </table>
+</body>
+</html>

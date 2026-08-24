@@ -32,23 +32,28 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
     const { isCurrentOrParentUrl } = useCurrentUrl();
 
     return (
-        <div className="min-h-screen w-full bg-[#fbfbfa] text-[#111111] antialiased dark:bg-[#121212] dark:text-[#fbfbfa]">
-            <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-                {/* Header Minimalist Notion */}
-                <header className="space-y-1">
-                    <h1 className="text-2xl font-bold tracking-tight text-[#111111] dark:text-white">
-                        Pengaturan Workspace
-                    </h1>
-                    <p className="text-xs text-[#787774] dark:text-zinc-400">
-                        Kelola profil advokat, keamanan otentikasi akun, dan preferensi tampilan antarmuka.
-                    </p>
-                </header>
+        <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
+            <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                {/* 1. Header Navigation & Action Bar */}
+                <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
+                    <div className="space-y-1">
+                        <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                            Pengaturan Akun
+                        </h1>
+                        <p className="text-xs text-slate-500 dark:text-zinc-400">
+                            Kelola profil advokat, keamanan otentikasi akun, dan preferensi tampilan antarmuka firma hukum RPK.
+                        </p>
+                    </div>
+                </div>
 
                 {/* Main Settings Body */}
-                <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                    {/* Left Sidebar Nav */}
-                    <aside className="lg:col-span-4">
-                        <nav className="flex flex-col gap-1.5" aria-label="Settings Navigation">
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+                    {/* Left Settings Sidebar */}
+                    <aside className="lg:col-span-3">
+                        <nav
+                            className="flex flex-col gap-1 rounded-xl border border-slate-200/70 bg-white p-1.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]"
+                            aria-label="Settings Navigation"
+                        >
                             {sidebarNavItems.map((item, index) => {
                                 const active = isCurrentOrParentUrl(item.href);
                                 const Icon = item.icon;
@@ -58,32 +63,27 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                         key={`${toUrl(item.href)}-${index}`}
                                         href={item.href}
                                         className={cn(
-                                            'group flex items-start gap-3 rounded-xl p-3 text-xs transition-all',
+                                            'group flex items-start gap-2.5 rounded-lg p-2.5 text-xs transition-colors',
                                             active
-                                                ? 'border border-black/[0.08] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]'
-                                                : 'hover:bg-black/[0.02] text-[#787774] hover:text-[#111111] dark:hover:bg-white/[0.02] dark:hover:text-white'
+                                                ? 'bg-slate-100/90 text-slate-900 dark:bg-white/[0.06] dark:text-white'
+                                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.02] dark:hover:text-white',
                                         )}
                                     >
                                         <div
                                             className={cn(
-                                                'flex size-7 shrink-0 items-center justify-center rounded-lg transition-colors',
+                                                'flex size-7 shrink-0 items-center justify-center rounded-md transition-colors',
                                                 active
-                                                    ? 'bg-[#111111] text-white shadow-2xs dark:bg-white dark:text-black'
-                                                    : 'bg-black/[0.04] text-[#787774] group-hover:bg-black/[0.06] dark:bg-white/[0.06] dark:text-zinc-400'
+                                                    ? 'bg-blue-600 text-white dark:bg-blue-600'
+                                                    : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 dark:bg-zinc-800 dark:text-zinc-400',
                                             )}
                                         >
                                             <Icon className="size-3.5" />
                                         </div>
-                                        <div>
-                                            <span
-                                                className={cn(
-                                                    'block font-semibold',
-                                                    active ? 'text-[#111111] dark:text-white' : 'text-[#787774] group-hover:text-[#111111] dark:text-zinc-400 dark:group-hover:text-white'
-                                                )}
-                                            >
+                                        <div className="min-w-0">
+                                            <span className="block font-semibold text-xs leading-snug">
                                                 {item.title}
                                             </span>
-                                            <span className="text-[11px] text-[#787774] dark:text-zinc-400">
+                                            <span className="block truncate text-[11px] text-slate-500 dark:text-zinc-400">
                                                 {item.description}
                                             </span>
                                         </div>
@@ -94,8 +94,8 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                     </aside>
 
                     {/* Right Content Area */}
-                    <div className="lg:col-span-8">
-                        <div className="rounded-xl border border-black/[0.08] bg-white p-6 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
+                    <div className="lg:col-span-9">
+                        <div className="rounded-xl border border-slate-200/70 bg-white p-5 shadow-2xs sm:p-6 dark:border-white/[0.06] dark:bg-[#14161b]">
                             {children}
                         </div>
                     </div>

@@ -6,11 +6,13 @@ use App\Models\Deadline;
 use App\Models\Matter;
 use App\Models\MatterEvent;
 use App\Models\Task;
+use App\Services\IcsCalendarGenerator;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class CalendarController extends Controller
 {
@@ -38,6 +40,32 @@ class CalendarController extends Controller
             'range' => ['from' => $from->toDateString(), 'until' => $until->toDateString()],
             'month' => $month->format('Y-m'),
             'timezone' => $timezone,
+        ]);
+    }
+
+    public function exportIcs(Request $request, IcsCalendarGenerator $generator): SymfonyResponse
+    {
+        $matterIds = Matter::query()->visibleTo($request->user())->select('id');
+        $from = CarbonImmutable::now()->subDays(14)->startOfDay();
+        $until = CarbonImmutable::now()->addDays(90)->endOfDay();
+
+        $events = MatterEvent::query()->with('matter:id,matter_number,title')
+            ->whereIn('matter_id', $matterIds)
+            ->whereBetween('starts_at', [$from, $until])
+            ->orderBy('starts_at')
+            ->get();
+
+        $deadlines = Deadline::query()->with('matter:id,matter_number,title')
+            ->whereIn('matter_id', $matterIds)
+            ->whereBetween('due_at', [$from, $until])
+            ->orderBy('due_at')
+            ->get();
+
+        $ics = $generator->generate($events, $deadlines);
+
+        return response($ics, 200, [
+            'Content-Type' => 'text/calendar; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="RPK-Law-Firm-Calendar.ics"',
         ]);
     }
 }

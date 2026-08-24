@@ -1,17 +1,25 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
+    ArrowRight,
     Briefcase,
     Building2,
     ChevronDown,
     ChevronRight,
+    ExternalLink,
+    Filter,
     Plus,
+    RotateCcw,
     Search,
-    UserCheck,
+    TrendingUp,
+    ContactRound,
+    User,
     Users,
 } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { EmptyState } from '@/components/empty-state';
 import { Pagination } from '@/components/pagination';
 import { StatusBadge } from '@/components/status-badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -20,7 +28,9 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useInitials } from '@/hooks/use-initials';
 import * as clientRoutes from '@/routes/clients';
+import * as matterRoutes from '@/routes/matters';
 
 type Client = {
     id: string;
@@ -54,195 +64,315 @@ export default function ClientsIndex({
     filters: Record<string, string>;
     can: { create: boolean };
 }) {
-    const activeClientsCount = clients.data.filter((c) => c.status === 'active').length;
-    const totalMattersCount = clients.data.reduce((acc, c) => acc + (c.matters_count || 0), 0);
-    const totalContactsCount = clients.data.reduce((acc, c) => acc + (c.contacts_count || 0), 0);
+    const getInitials = useInitials();
+    const [searchQuery, setSearchQuery] = useState(filters.search ?? '');
+
+    const activeClientsCount = useMemo(
+        () => clients.data.filter((c) => c.status === 'active').length,
+        [clients.data],
+    );
+
+    const totalMattersCount = useMemo(
+        () => clients.data.reduce((acc, c) => acc + (c.matters_count || 0), 0),
+        [clients.data],
+    );
+
+    const totalContactsCount = useMemo(
+        () => clients.data.reduce((acc, c) => acc + (c.contacts_count || 0), 0),
+        [clients.data],
+    );
+
+    const handleFilterStatus = (statusValue: string) => {
+        const queryParams = new URLSearchParams(window.location.search);
+        if (statusValue) {
+            queryParams.set('status', statusValue);
+        } else {
+            queryParams.delete('status');
+        }
+        router.get(clientRoutes.index(), Object.fromEntries(queryParams.entries()), {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    const handleSearchSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const queryParams = new URLSearchParams(window.location.search);
+        if (searchQuery.trim()) {
+            queryParams.set('search', searchQuery.trim());
+        } else {
+            queryParams.delete('search');
+        }
+        router.get(clientRoutes.index(), Object.fromEntries(queryParams.entries()), {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    const handleResetFilters = () => {
+        setSearchQuery('');
+        router.get(clientRoutes.index(), {}, { preserveState: true, preserveScroll: true });
+    };
 
     return (
         <>
-            <Head title="Klien" />
+            <Head title="Direktori Klien & Entitas Hukum" />
 
-            <div className="min-h-screen w-full bg-[#fbfbfa] text-[#111111] antialiased dark:bg-[#121212] dark:text-[#fbfbfa]">
-                <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-                    {/* Notion Minimalist Page Header */}
-                    <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                    {/* 1. Header & Actions */}
+                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">
-                            <h1 className="text-2xl font-bold tracking-tight text-[#111111] dark:text-white">
-                                Klien
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                                Direktori Klien
                             </h1>
-                            <p className="text-xs text-[#787774] dark:text-zinc-400">
-                                Direktori seluruh profil korporasi & individu klien, kontak perwakilan, serta riwayat perkara.
+                            <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                Profil korporasi &amp; perorangan, perwakilan hukum, portofolio perkara, dan kepatuhan KYC.
                             </p>
                         </div>
 
-                        {/* Right: Actions */}
                         <div className="flex shrink-0 items-center gap-2">
                             {can.create && (
                                 <Button
-                                    className="h-8 rounded-lg bg-[#111111] px-3.5 text-xs font-semibold text-white shadow-2xs transition-colors hover:bg-black active:scale-95 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
                                     asChild
+                                    className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                 >
                                     <Link href={clientRoutes.create()}>
-                                        <Plus className="mr-1.5 size-3.5" />
-                                        Buat Klien
+                                        <Plus className="mr-1 size-3.5" />
+                                        Registrasi Klien Baru
                                     </Link>
                                 </Button>
                             )}
                         </div>
-                    </header>
+                    </div>
 
-                    {/* Compact 4-Column Stat Strip (h-[76px]) */}
+                    {/* 2. Top 4 KPI Metrics Bento Cards */}
                     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                        {/* 1. Total Klien */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Total Portofolio</span>
-                                <Building2 className="size-3.5 text-[#1f6c9f] dark:text-sky-400" />
+                        {/* 1. Total Portofolio */}
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">TOTAL PORTOFOLIO</span>
+                                <Building2 className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-[#111111] dark:text-white">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {clients.total}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
                                     entitas terdaftar
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Arsip Portofolio Klien</span>
+                                <span className="font-semibold text-slate-700 dark:text-zinc-300">{clients.data.length} di halaman ini</span>
                             </div>
                         </div>
 
                         {/* 2. Klien Aktif */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Klien Aktif</span>
-                                <span className="size-2 rounded-full bg-emerald-500" />
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">KLIEN AKTIF</span>
+                                <Users className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {activeClientsCount}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    status aktif
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    kerjasama berjalan
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Retainer &amp; Kasus</span>
+                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">Aktif</span>
                             </div>
                         </div>
 
-                        {/* 3. Total Matter Klien */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Perkara Terkait</span>
-                                <Briefcase className="size-3.5 text-[#956400] dark:text-amber-400" />
+                        {/* 3. Perkara Terkait */}
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">PERKARA TERKAIT</span>
+                                <Briefcase className="size-3.5 text-slate-400 transition-colors group-hover:text-amber-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-[#111111] dark:text-white">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {totalMattersCount}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    total perkara
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    total matter
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Akumulasi Kasus</span>
+                                <span className="font-semibold text-amber-600 dark:text-amber-400">Terhubung</span>
                             </div>
                         </div>
 
-                        {/* 4. Kontak Representatif */}
-                        <div className="flex h-[76px] flex-col justify-between rounded-xl border border-black/[0.07] bg-white p-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                            <div className="flex items-center justify-between text-[11px] font-medium text-[#787774] dark:text-zinc-400">
-                                <span>Kontak Terdata</span>
-                                <UserCheck className="size-3.5 text-[#787774] dark:text-zinc-300" />
+                        {/* 4. Kontak Person */}
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[11px] font-semibold">KONTAK PERSON</span>
+                                <ContactRound className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
-                            <div className="flex items-baseline justify-between">
-                                <span className="font-mono text-lg font-bold tracking-tight text-[#111111] dark:text-white">
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {totalContactsCount}
                                 </span>
-                                <span className="text-[10px] text-[#787774] dark:text-zinc-400">
-                                    personil perwakilan
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    perwakilan resmi
                                 </span>
+                            </div>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Personil Terdaftar</span>
+                                <span className="font-semibold text-purple-600 dark:text-purple-400">Terotorisasi</span>
                             </div>
                         </div>
                     </section>
 
-                    {/* Notion Inline Filter Toolbar */}
-                    <Form
-                        {...clientRoutes.index.form()}
-                        className="flex flex-col gap-2 rounded-xl border border-black/[0.08] bg-white p-2.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.08] dark:bg-[#1a1a1c]"
-                    >
-                        {/* Search Input */}
-                        <div className="relative flex-1 min-w-[240px]">
-                            <Search className="pointer-events-none absolute left-3 top-2 size-3.5 text-[#787774]" />
-                            <Input
-                                name="search"
-                                defaultValue={filters.search}
-                                placeholder="Cari nama, nomor klien, atau kontak..."
-                                className="h-7.5 w-full rounded-lg border-black/[0.08] bg-[#fbfbfa] pl-8.5 pr-3 text-xs text-[#2f3437] placeholder:text-[#787774] focus:border-black/20 focus:bg-white focus:outline-none dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200 dark:focus:border-white/20"
-                            />
-                        </div>
-
-                        {/* Filter Status */}
-                        <div className="flex items-center gap-2">
-                            <div className="relative">
-                                <select
-                                    name="status"
-                                    defaultValue={filters.status ?? ''}
-                                    className="h-7.5 cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-3 pr-7 text-xs font-medium text-[#2f3437] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200"
+                    {/* 3. Filter Controls & Segmented Quick Filter Bar */}
+                    <div className="space-y-3">
+                        <div className="flex flex-col gap-3 rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.06] dark:bg-[#14161b]">
+                            {/* Segmented Quick Status Pills */}
+                            <div className="flex flex-wrap items-center gap-1">
+                                <button
+                                    type="button"
+                                    onClick={() => handleFilterStatus('')}
+                                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                        !filters.status
+                                            ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                            : 'text-slate-600 hover:bg-slate-100 dark:text-zinc-400 dark:hover:bg-white/[0.04]'
+                                    }`}
                                 >
-                                    <option value="">Semua Status</option>
-                                    <option value="active">Aktif</option>
-                                    <option value="inactive">Tidak Aktif</option>
-                                    <option value="closed">Ditutup</option>
-                                </select>
-                                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
+                                    Semua ({clients.total})
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleFilterStatus('active')}
+                                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                        filters.status === 'active'
+                                            ? 'bg-emerald-600 text-white shadow-2xs'
+                                            : 'text-slate-600 hover:bg-slate-100 hover:text-emerald-700 dark:text-zinc-400 dark:hover:bg-white/[0.04]'
+                                    }`}
+                                >
+                                    Aktif ({activeClientsCount})
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleFilterStatus('inactive')}
+                                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                        filters.status === 'inactive'
+                                            ? 'bg-amber-600 text-white shadow-2xs'
+                                            : 'text-slate-600 hover:bg-slate-100 hover:text-amber-700 dark:text-zinc-400 dark:hover:bg-white/[0.04]'
+                                    }`}
+                                >
+                                    Tidak Aktif
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => handleFilterStatus('closed')}
+                                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                        filters.status === 'closed'
+                                            ? 'bg-slate-700 text-white shadow-2xs dark:bg-zinc-700'
+                                            : 'text-slate-600 hover:bg-slate-100 dark:text-zinc-400 dark:hover:bg-white/[0.04]'
+                                    }`}
+                                >
+                                    Ditutup
+                                </button>
                             </div>
 
-                            <Button
-                                type="submit"
-                                variant="outline"
-                                className="h-7.5 rounded-lg border-black/10 bg-white px-3 text-xs font-medium text-[#111111] shadow-2xs hover:bg-black/[0.03] dark:border-white/10 dark:bg-[#1c1c1e] dark:text-zinc-200"
-                            >
-                                Cari
-                            </Button>
-                        </div>
-                    </Form>
+                            {/* Search Form */}
+                            <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
+                                <div className="relative min-w-[200px] flex-1 sm:w-64 sm:flex-none">
+                                    <Search className="pointer-events-none absolute top-2.5 left-2.5 size-3.5 text-slate-400" />
+                                    <Input
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder="Cari nama, no. klien, industri..."
+                                        className="h-8 w-full rounded-lg border-slate-200 bg-slate-50/70 pr-3 pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                    />
+                                </div>
 
-                    {/* Notion Database Table View */}
-                    <div className="overflow-hidden rounded-xl border border-black/[0.08] bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
+                                <Button
+                                    type="submit"
+                                    size="sm"
+                                    className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                                >
+                                    Cari
+                                </Button>
+
+                                {(filters.search || filters.status) && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleResetFilters}
+                                        className="h-8 rounded-lg border-slate-200 px-2.5 text-xs text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                    >
+                                        <RotateCcw className="size-3" />
+                                    </Button>
+                                )}
+                            </form>
+                        </div>
+                    </div>
+
+                    {/* 4. Precision Data Table */}
+                    <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                         {clients.data.length === 0 ? (
-                            <div className="flex min-h-[380px] items-center justify-center p-12 text-center">
+                            <div className="flex min-h-[300px] items-center justify-center p-8 text-center">
                                 <EmptyState
-                                    title="Belum ada klien yang sesuai"
-                                    description="Coba sesuaikan kata kunci pencarian atau buat profil klien baru."
+                                    title="Belum ada data klien yang cocok"
+                                    description="Coba sesuaikan kata kunci pencarian atau registrasi profil klien baru."
                                 />
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left text-xs">
                                     <thead>
-                                        <tr className="border-b border-black/[0.04] bg-[#fafafa] text-[10px] font-semibold tracking-wider text-[#787774] uppercase dark:border-white/[0.06] dark:bg-[#161618]">
-                                            <th className="py-2.5 pl-4 pr-3 font-semibold">Klien</th>
-                                            <th className="px-3 py-2.5 font-semibold">Industri</th>
-                                            <th className="px-3 py-2.5 text-center font-semibold">Partner</th>
+                                        <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
+                                            <th className="py-2.5 pr-3 pl-4 font-semibold">Klien &amp; Nomor</th>
+                                            <th className="px-3 py-2.5 font-semibold">Sektor Industri</th>
+                                            <th className="px-3 py-2.5 text-center font-semibold">Partner Relasi</th>
                                             <th className="px-3 py-2.5 text-center font-semibold">Matter</th>
                                             <th className="px-3 py-2.5 text-center font-semibold">Kontak</th>
                                             <th className="px-3 py-2.5 font-semibold">Status</th>
-                                            <th className="py-2.5 pl-1 pr-4 text-right font-semibold"></th>
+                                            <th className="py-2.5 pr-4 pl-1 text-right font-semibold"></th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-black/[0.04] dark:divide-white/[0.05]">
+                                    <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                                         {clients.data.map((client) => (
                                             <tr
                                                 key={client.id}
-                                                className="group transition-colors hover:bg-black/[0.02] dark:hover:bg-white/[0.03]"
+                                                className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
                                             >
-                                                {/* 1. Client Title & Number */}
-                                                <td className="py-3 pl-4 pr-3">
+                                                {/* 1. Client Info */}
+                                                <td className="py-2.5 pr-3 pl-4">
                                                     <Link
                                                         href={clientRoutes.show(client.id)}
                                                         className="flex items-center gap-2.5"
                                                     >
-                                                        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-black/[0.04] text-[#787774] dark:bg-white/[0.06] dark:text-zinc-300">
-                                                            <Building2 className="size-3.5" />
-                                                        </div>
-                                                        <div className="min-w-0">
-                                                            <p className="truncate text-xs font-semibold text-[#111111] group-hover:text-blue-600 dark:text-zinc-100 dark:group-hover:text-sky-400">
-                                                                {client.display_name}
-                                                            </p>
-                                                            <span className="inline-block rounded bg-[#e1f3fe] px-1.5 py-0.2 font-mono text-[10px] font-medium text-[#1f6c9f] dark:bg-blue-950/50 dark:text-sky-300">
+                                                        {client.type === 'individual' || client.type === 'person' ? (
+                                                            <div className="flex size-7.5 shrink-0 items-center justify-center rounded-xl border border-emerald-200/60 bg-emerald-50 text-emerald-700 shadow-2xs transition-colors group-hover:bg-emerald-600 group-hover:text-white dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-300">
+                                                                <User className="size-3.5" />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex size-7.5 shrink-0 items-center justify-center rounded-xl border border-blue-200/60 bg-blue-50 text-blue-700 shadow-2xs transition-colors group-hover:bg-blue-600 group-hover:text-white dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-300">
+                                                                <Building2 className="size-3.5" />
+                                                            </div>
+                                                        )}
+                                                        <div className="min-w-0 space-y-0.5">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <p className="truncate text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                                                                    {client.display_name}
+                                                                </p>
+                                                                <span className={`inline-block rounded px-1.5 py-0.2 text-[9px] font-bold ${
+                                                                    client.type === 'individual' || client.type === 'person'
+                                                                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                                                                        : 'bg-slate-100 text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300'
+                                                                }`}>
+                                                                    {client.type === 'individual' || client.type === 'person' ? 'Individu' : 'Badan Hukum'}
+                                                                </span>
+                                                            </div>
+                                                            <span className="inline-block font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
                                                                 {client.client_number}
                                                             </span>
                                                         </div>
@@ -250,71 +380,68 @@ export default function ClientsIndex({
                                                 </td>
 
                                                 {/* 2. Industry */}
-                                                <td className="whitespace-nowrap px-3 py-3">
-                                                    <span className="inline-flex items-center rounded-md bg-black/[0.04] px-2 py-0.5 text-[10px] font-medium text-[#787774] dark:bg-white/[0.06] dark:text-zinc-400">
+                                                <td className="px-3 py-2.5 whitespace-nowrap">
+                                                    <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
                                                         {client.industry ?? 'Umum'}
                                                     </span>
                                                 </td>
 
-                                                {/* 3. Partner (Avatar with Tooltip) */}
-                                                <td className="whitespace-nowrap px-3 py-3 text-center">
+                                                {/* 3. Relationship Partner */}
+                                                <td className="px-3 py-2.5 text-center whitespace-nowrap">
                                                     {client.relationship_partner ? (
-                                                        <TooltipProvider delayDuration={150}>
+                                                        <TooltipProvider delayDuration={100}>
                                                             <Tooltip>
                                                                 <TooltipTrigger asChild>
                                                                     <div className="inline-flex cursor-pointer items-center justify-center">
-                                                                        <div className="relative flex size-6.5 shrink-0 items-center justify-center overflow-hidden rounded-full bg-black/[0.05] text-[10px] font-semibold text-zinc-700 dark:bg-white/[0.1] dark:text-zinc-300">
-                                                                            {client.relationship_partner.avatar_url ? (
-                                                                                <img
-                                                                                    src={client.relationship_partner.avatar_url}
-                                                                                    alt={client.relationship_partner.name}
-                                                                                    className="size-full object-cover"
-                                                                                />
-                                                                            ) : (
-                                                                                client.relationship_partner.name
-                                                                                    .split(' ')
-                                                                                    .map((n) => n[0])
-                                                                                    .slice(0, 2)
-                                                                                    .join('')
-                                                                            )}
-                                                                        </div>
+                                                                        <Avatar className="size-6 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                            <AvatarImage src={client.relationship_partner.avatar_url ?? undefined} />
+                                                                            <AvatarFallback className="text-[8px] font-bold">
+                                                                                {getInitials(client.relationship_partner.name)}
+                                                                            </AvatarFallback>
+                                                                        </Avatar>
                                                                     </div>
                                                                 </TooltipTrigger>
-                                                                <TooltipContent className="rounded-lg border border-black/10 bg-[#111111] px-2.5 py-1 text-xs text-white shadow-lg dark:border-white/10 dark:bg-white dark:text-black">
-                                                                    <p className="font-semibold">{client.relationship_partner.name}</p>
-                                                                    <p className="text-[10px] text-[#787774]">
-                                                                        {client.relationship_partner.position_title ?? 'Partner'}
-                                                                    </p>
+                                                                <TooltipContent
+                                                                    side="top"
+                                                                    className="bg-slate-900 px-2.5 py-1 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800"
+                                                                >
+                                                                    {client.relationship_partner.name}
                                                                 </TooltipContent>
                                                             </Tooltip>
                                                         </TooltipProvider>
                                                     ) : (
-                                                        <span className="text-[11px] text-[#787774] dark:text-zinc-500">—</span>
+                                                        <span className="font-mono text-slate-400">-</span>
                                                     )}
                                                 </td>
 
                                                 {/* 4. Matters Count */}
-                                                <td className="whitespace-nowrap px-3 py-3 text-center font-mono text-xs font-semibold text-[#111111] dark:text-zinc-200">
-                                                    {client.matters_count}
+                                                <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                                                    <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                        <Briefcase className="size-3 text-slate-400" />
+                                                        {client.matters_count ?? 0}
+                                                    </span>
                                                 </td>
 
                                                 {/* 5. Contacts Count */}
-                                                <td className="whitespace-nowrap px-3 py-3 text-center font-mono text-xs font-semibold text-[#111111] dark:text-zinc-200">
-                                                    {client.contacts_count}
+                                                <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                                                    <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 font-mono text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                        <ContactRound className="size-3 text-blue-500" />
+                                                        {client.contacts_count ?? 0}
+                                                    </span>
                                                 </td>
 
                                                 {/* 6. Status */}
-                                                <td className="whitespace-nowrap px-3 py-3">
+                                                <td className="px-3 py-2.5 whitespace-nowrap">
                                                     <StatusBadge value={client.status} />
                                                 </td>
 
-                                                {/* 7. Action Chevron */}
-                                                <td className="py-3 pl-1 pr-4 text-right whitespace-nowrap">
+                                                {/* 7. Action */}
+                                                <td className="py-2.5 pr-4 pl-1 text-right whitespace-nowrap">
                                                     <Link
                                                         href={clientRoutes.show(client.id)}
-                                                        className="inline-flex size-6 items-center justify-center text-[#787774] opacity-0 transition-opacity group-hover:opacity-100 hover:text-[#111111] dark:hover:text-white"
+                                                        className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
                                                     >
-                                                        <ChevronRight className="size-3.5" />
+                                                        <ChevronRight className="size-4" />
                                                     </Link>
                                                 </td>
                                             </tr>
@@ -324,11 +451,10 @@ export default function ClientsIndex({
                             </div>
                         )}
 
-                        {/* Unified Table Footer with Pagination */}
-                        <div className="flex flex-col justify-between gap-3 border-t border-black/[0.04] bg-[#fafafa] px-4 py-2.5 sm:flex-row sm:items-center dark:border-white/[0.06] dark:bg-[#161618]">
-                            <span className="text-xs text-[#787774] dark:text-zinc-400">
-                                Menampilkan <span className="font-semibold text-[#111111] dark:text-white">{clients.data.length}</span> dari{' '}
-                                <span className="font-semibold text-[#111111] dark:text-white">{clients.total}</span> klien
+                        {/* Pagination Footer */}
+                        <div className="flex flex-col justify-between gap-3 border-t border-slate-100 bg-slate-50/50 px-4 py-2.5 sm:flex-row sm:items-center dark:border-white/[0.04] dark:bg-[#121418]">
+                            <span className="text-xs text-slate-500 dark:text-zinc-400">
+                                Menampilkan <span className="font-semibold text-slate-900 dark:text-white">{clients.data.length}</span> dari <span className="font-semibold text-slate-900 dark:text-white">{clients.total}</span> klien
                             </span>
 
                             <Pagination links={clients.links} />

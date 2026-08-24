@@ -21,12 +21,14 @@ function Avatar({
 
 function AvatarImage({
   className,
+  src,
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Image>) {
   return (
     <AvatarPrimitive.Image
       data-slot="avatar-image"
-      className={cn("aspect-square size-full", className)}
+      src={src || "/images/default-avatar.svg"}
+      className={cn("aspect-square size-full object-cover", className)}
       {...props}
     />
   )
@@ -34,17 +36,26 @@ function AvatarImage({
 
 function AvatarFallback({
   className,
+  children,
   ...props
 }: React.ComponentProps<typeof AvatarPrimitive.Fallback>) {
   return (
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn(
-        "bg-muted flex size-full items-center justify-center rounded-full",
+        "bg-slate-100 dark:bg-zinc-800 flex size-full items-center justify-center rounded-full overflow-hidden text-slate-700 dark:text-zinc-200",
         className
       )}
       {...props}
-    />
+    >
+      {children || (
+        <img
+          src="/images/default-avatar.svg"
+          alt="Default Avatar"
+          className="size-full object-cover"
+        />
+      )}
+    </AvatarPrimitive.Fallback>
   )
 }
 

@@ -25,6 +25,7 @@ class SignSignatureRequest extends FormRequest
         return [
             'accepted_name' => ['required', 'string', 'max:255'],
             'accept_terms' => ['accepted'],
+            'signature_data' => ['nullable', 'string', 'max:500000'],
         ];
     }
 }

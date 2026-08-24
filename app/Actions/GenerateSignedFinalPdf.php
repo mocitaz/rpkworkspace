@@ -88,10 +88,26 @@ class GenerateSignedFinalPdf
 
     private function stamp(string $sourcePath, SignatureRequest $signatureRequest): string
     {
-        $qrPath = dirname($sourcePath).'/verification.png';
+        $outputDir = dirname($sourcePath);
+        $qrPath = $outputDir.'/verification.png';
         $verificationUrl = route('signature.verify', $signatureRequest->verification_code);
         $result = (new PngWriter)->write(new QrCode(data: $verificationUrl, size: 260, margin: 0));
         $result->saveToFile($qrPath);
+
+        $signatureRequest->loadMissing('signers');
+        $primarySignerWithSignature = $signatureRequest->signers->first(fn ($s) => ! empty($s->signature_data));
+        $visualSigPath = null;
+        if ($primarySignerWithSignature && is_string($primarySignerWithSignature->signature_data)) {
+            $data = $primarySignerWithSignature->signature_data;
+            if (str_contains($data, ';base64,')) {
+                [, $base64] = explode(';base64,', $data, 2);
+                $decoded = base64_decode($base64);
+                if ($decoded !== false && strlen($decoded) > 50) {
+                    $visualSigPath = $outputDir.'/visual_sig_'.$primarySignerWithSignature->getKey().'.png';
+                    file_put_contents($visualSigPath, $decoded);
+                }
+            }
+        }
 
         $pdf = new Fpdi;
         $pageCount = $pdf->setSourceFile($sourcePath);
@@ -105,19 +121,25 @@ class GenerateSignedFinalPdf
             $pdf->useTemplate($template);
 
             if ($page === $pageCount) {
+                $stampHeight = 22;
                 $pdf->SetFillColor(255, 255, 255);
                 $pdf->SetDrawColor(30, 30, 30);
-                $pdf->Rect(10, max(10, $size['height'] - 29), $size['width'] - 20, 19, 'DF');
+                $pdf->Rect(10, max(10, $size['height'] - ($stampHeight + 10)), $size['width'] - 20, $stampHeight, 'DF');
                 $pdf->SetTextColor(20, 20, 20);
                 $pdf->SetFont('Helvetica', 'B', 8);
-                $pdf->SetXY(14, $size['height'] - 25);
-                $pdf->Cell(0, 4, 'SIGNED FINAL - RAF Workspace');
+                $pdf->SetXY(14, $size['height'] - ($stampHeight + 6));
+                $pdf->Cell(0, 4, 'SIGNED FINAL - RPK Workspace');
                 $pdf->SetFont('Helvetica', '', 7);
-                $pdf->SetXY(14, $size['height'] - 20);
+                $pdf->SetXY(14, $size['height'] - ($stampHeight + 1));
                 $pdf->Cell(0, 4, 'Verification: '.$verificationUrl);
-                $pdf->SetXY(14, $size['height'] - 15);
+                $pdf->SetXY(14, $size['height'] - ($stampHeight - 4));
                 $pdf->Cell(0, 4, 'Checksum: '.$signatureRequest->document_checksum);
-                $pdf->Image($qrPath, $size['width'] - 27, $size['height'] - 27, 13, 13, 'PNG');
+
+                if ($visualSigPath && is_file($visualSigPath)) {
+                    $pdf->Image($visualSigPath, $size['width'] - 62, $size['height'] - ($stampHeight + 8), 30, 16, 'PNG');
+                }
+
+                $pdf->Image($qrPath, $size['width'] - 27, $size['height'] - ($stampHeight + 7), 14, 14, 'PNG');
             }
         }
 

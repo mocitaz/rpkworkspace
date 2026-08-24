@@ -46,9 +46,13 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::authenticateUsing(function (Request $request) {
             $user = User::query()->where('email', $request->string('email')->lower())->first();
 
-            return $user && $user->is_active && Hash::check($request->string('password'), $user->password)
-                ? $user
-                : null;
+            if ($user && $user->is_active && Hash::check($request->string('password'), $user->password)) {
+                $request->session()->put('auth.password_confirmed_at', time());
+
+                return $user;
+            }
+
+            return null;
         });
     }
 

@@ -1,4 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
+import { Fingerprint, Lock, Mail } from 'lucide-react';
 import InputError from '@/components/input-error';
 import PasskeyVerify from '@/components/passkey-verify';
 import PasswordInput from '@/components/password-input';
@@ -19,24 +20,19 @@ type Props = {
 export default function Login({ status, canResetPassword }: Props) {
     return (
         <>
-            <Head title="Masuk" />
-
-            <PasskeyVerify
-                label="Masuk dengan passkey"
-                loadingLabel="Memverifikasi passkey..."
-                separator="atau lanjut dengan email"
-            />
+            <Head title="Login to account - RPK Law Workspace" />
 
             <Form
                 {...store.form()}
                 resetOnSuccess={['password']}
-                className="flex flex-col gap-7"
+                className="space-y-4"
             >
                 {({ processing, errors }) => (
                     <>
-                        <div className="grid gap-5">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Alamat email</Label>
+                        {/* Email Input with Prepended Icon */}
+                        <div className="space-y-1">
+                            <div className="relative flex items-center">
+                                <Mail className="pointer-events-none absolute left-3.5 size-4 text-slate-400 dark:text-zinc-500" />
                                 <Input
                                     id="email"
                                     type="email"
@@ -45,66 +41,99 @@ export default function Login({ status, canResetPassword }: Props) {
                                     autoFocus
                                     tabIndex={1}
                                     autoComplete="email"
-                                    placeholder="email@example.com"
+                                    placeholder="Email Address"
+                                    className="h-11 rounded-xl border-slate-200/80 bg-[#f8fafc] pl-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
                                 />
-                                <InputError message={errors.email} />
                             </div>
+                            <InputError message={errors.email} />
+                        </div>
 
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Kata sandi</Label>
-                                    {canResetPassword && (
-                                        <TextLink
-                                            href={request()}
-                                            className="ml-auto text-sm"
-                                            tabIndex={5}
-                                        >
-                                            Lupa kata sandi?
-                                        </TextLink>
-                                    )}
-                                </div>
+                        {/* Password Input with Prepended Icon */}
+                        <div className="space-y-1">
+                            <div className="relative w-full">
+                                <Lock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 dark:text-zinc-500 z-10" />
                                 <PasswordInput
                                     id="password"
                                     name="password"
                                     required
                                     tabIndex={2}
                                     autoComplete="current-password"
-                                    placeholder="Kata sandi"
+                                    placeholder="Password"
+                                    className="h-11 w-full rounded-xl border-slate-200/80 bg-[#f8fafc] pl-10 pr-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
                                 />
-                                <InputError message={errors.password} />
                             </div>
+                            <InputError message={errors.password} />
+                        </div>
 
-                            <div className="flex items-center space-x-3">
+                        {/* Remember Me & Forgot Password Row */}
+                        <div className="flex items-center justify-between pt-0.5 text-xs">
+                            <div className="flex items-center space-x-2">
                                 <Checkbox
                                     id="remember"
                                     name="remember"
                                     tabIndex={3}
+                                    className="rounded-full border-slate-300 text-blue-600 focus:ring-blue-500"
                                 />
-                                <Label htmlFor="remember">Ingat saya</Label>
+                                <Label
+                                    htmlFor="remember"
+                                    className="cursor-pointer text-xs font-normal text-slate-500 dark:text-zinc-400"
+                                >
+                                    Remember me
+                                </Label>
                             </div>
 
-                            <Button
-                                type="submit"
-                                className="mt-3 h-11 w-full"
-                                tabIndex={4}
-                                disabled={processing}
-                                data-test="login-button"
-                            >
-                                {processing && <Spinner />}
-                                Masuk ke Workspace
-                            </Button>
+                            {canResetPassword && (
+                                <TextLink
+                                    href={request()}
+                                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline dark:text-blue-400"
+                                    tabIndex={5}
+                                >
+                                    Forgot password?
+                                </TextLink>
+                            )}
                         </div>
 
-                        <p className="text-center text-xs leading-5 text-muted-foreground">
-                            Akun hanya dapat dibuat oleh administrator RPK Law
-                            Firm.
-                        </p>
+                        {/* Primary Action Button */}
+                        <Button
+                            type="submit"
+                            className="h-11 w-full rounded-xl bg-[#3b41e2] text-xs font-bold tracking-wide text-white shadow-lg shadow-indigo-500/25 hover:bg-[#3237c5] active:scale-[0.98] transition-all dark:bg-blue-600 dark:hover:bg-blue-500"
+                            tabIndex={4}
+                            disabled={processing}
+                            data-test="login-button"
+                        >
+                            {processing ? (
+                                <>
+                                    <Spinner className="mr-1.5 size-4" />
+                                    Logging in...
+                                </>
+                            ) : (
+                                'Login'
+                            )}
+                        </Button>
+
+                        {/* Passkey Biometric Fast-Login Alternative */}
+                        <div className="pt-1">
+                            <PasskeyVerify
+                                label="Masuk Cepat dengan Passkey (Biometrik)"
+                                loadingLabel="Memverifikasi autentikasi..."
+                                separator="OR LOGIN WITH:"
+                                separatorPosition="top"
+                            />
+                        </div>
+
+                        {/* Bottom Help Note */}
+                        <div className="pt-1 text-center text-xs text-slate-500 dark:text-zinc-400">
+                            Don't have an account?{' '}
+                            <span className="font-semibold text-blue-600 hover:underline cursor-pointer dark:text-blue-400">
+                                Contact Administrator
+                            </span>
+                        </div>
                     </>
                 )}
             </Form>
 
             {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
+                <div className="mt-4 rounded-xl bg-emerald-50 p-2.5 text-center text-xs font-medium text-emerald-700 border border-emerald-200">
                     {status}
                 </div>
             )}
@@ -113,6 +142,5 @@ export default function Login({ status, canResetPassword }: Props) {
 }
 
 Login.layout = {
-    title: 'RPK Law Firm Workspace',
-    description: 'Masuk ke ruang kerja internal RPK Law Firm',
+    title: 'Login to account',
 };

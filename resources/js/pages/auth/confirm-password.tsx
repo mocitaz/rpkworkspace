@@ -28,28 +28,37 @@ export default function ConfirmPassword() {
 
             <Form {...store.form()} resetOnSuccess={['password']}>
                 {({ processing, errors }) => (
-                    <div className="space-y-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="password">Kata sandi</Label>
+                    <div className="space-y-4">
+                        <div className="space-y-1.5">
+                            <Label htmlFor="password" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                Kata Sandi Advokat
+                            </Label>
                             <PasswordInput
                                 id="password"
                                 name="password"
                                 placeholder="Masukkan kata sandi Anda"
                                 autoComplete="current-password"
                                 autoFocus
+                                className="h-9 rounded-lg border-slate-200 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
                             />
 
                             <InputError message={errors.password} />
                         </div>
 
-                        <div className="flex items-center">
+                        <div className="pt-1">
                             <Button
-                                className="w-full"
+                                className="h-9 w-full rounded-lg bg-slate-900 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-[0.99] dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                 disabled={processing}
                                 data-test="confirm-password-button"
                             >
-                                {processing && <Spinner />}
-                                Lanjutkan
+                                {processing ? (
+                                    <>
+                                        <Spinner className="mr-1.5 size-3.5" />
+                                        Mengonfirmasi...
+                                    </>
+                                ) : (
+                                    'Lanjutkan ke Pengaturan Keamanan'
+                                )}
                             </Button>
                         </div>
                     </div>

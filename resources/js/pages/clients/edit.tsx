@@ -7,7 +7,7 @@ import {
     Mail,
     MapPin,
     ShieldCheck,
-    UserCheck,
+    ContactRound,
 } from 'lucide-react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -35,6 +35,12 @@ type Client = {
     postal_code?: string;
     country_code: string;
     notes?: string;
+    kyc_risk_level?: string;
+    kyc_status?: string;
+    kyc_checklist?: Record<string, boolean> | null;
+    kyc_assessed_at?: string;
+    kyc_assessed_by?: number;
+    kyc_notes?: string;
     status: string;
     relationship_partner_id?: number;
     opened_at?: string;
@@ -48,6 +54,15 @@ type Partner = {
     avatar_path?: string | null;
 };
 
+const KYC_DOCUMENT_ITEMS = [
+    { key: 'director_id', label: 'Kartu Identitas Direksi & Penanggung Jawab (KTP / Paspor)' },
+    { key: 'tax_id', label: 'Nomor Pokok Wajib Pajak (NPWP Korporasi / Perorangan)' },
+    { key: 'business_license', label: 'Nomor Induk Berusaha (NIB) / Izin Usaha Sektoral' },
+    { key: 'incorporation_deed', label: 'Akta Pendirian Perusahaan & SK Pengesahan Kemenkumham' },
+    { key: 'articles_amendment', label: 'Akta Perubahan Anggaran Dasar (Beneficial Ownership)' },
+    { key: 'aml_declaration', label: 'Formulir Deklarasi Kepatuhan AML (AML Statement)' },
+];
+
 export default function ClientEdit({
     client,
     partners,
@@ -57,58 +72,59 @@ export default function ClientEdit({
 }) {
     return (
         <>
-            <Head title={`Edit Klien — ${client.display_name}`} />
+            <Head title={`Edit Klien - ${client.display_name}`} />
 
-            <div className="min-h-screen w-full bg-[#fbfbfa] text-[#111111] antialiased dark:bg-[#121212] dark:text-[#fbfbfa]">
-                <main className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-                    {/* Notion Minimalist Page Header */}
-                    <header className="space-y-2.5">
-                        <Link
-                            href={clientRoutes.show(client.id)}
-                            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#787774] transition-colors hover:text-[#111111] dark:text-zinc-400 dark:hover:text-white"
-                        >
-                            <ArrowLeft className="size-3.5" />
-                            {client.display_name}
-                        </Link>
-
-                        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-                            <div className="space-y-1">
-                                <h1 className="text-2xl font-bold tracking-tight text-[#111111] dark:text-white">
-                                    Edit Profil & Data Klien
-                                </h1>
-                                <p className="text-xs text-[#787774] dark:text-zinc-400">
-                                    Nomor Klien:{' '}
-                                    <span className="inline-block rounded bg-[#e1f3fe] px-1.5 py-0.2 font-mono text-[11px] font-semibold text-[#1f6c9f] dark:bg-blue-950/50 dark:text-sky-300">
-                                        {client.client_number}
-                                    </span>
-                                    {' · '}
-                                    Seluruh pembaruan data akan dicatat ke dalam audit log kepatuhan.
-                                </p>
+            <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
+                <main className="mx-auto max-w-4xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                    {/* Header with Navigation */}
+                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
+                        <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                                <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
+                                    {client.client_number}
+                                </span>
                             </div>
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                                Edit Profil &amp; Penilaian KYC
+                            </h1>
+                            <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                Perubahan data dan evaluasi kepatuhan dicatat ke dalam log audit firma hukum.
+                            </p>
                         </div>
-                    </header>
+
+                        <div className="flex shrink-0 items-center">
+                            <Button
+                                variant="outline"
+                                className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                                asChild
+                            >
+                                <Link href={clientRoutes.show(client.id)}>
+                                    <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
+                                    Kembali ke Detail Klien
+                                </Link>
+                            </Button>
+                        </div>
+                    </div>
 
                     {/* Form Section */}
-                    <Form {...clientRoutes.update.form(client.id)} className="space-y-5">
+                    <Form
+                        {...clientRoutes.update.form(client.id)}
+                        className="space-y-4"
+                    >
                         {({ errors, processing }) => (
                             <>
-                                {/* 1. Identitas & Klasifikasi Entitas */}
-                                <section className="overflow-hidden rounded-xl border border-black/[0.08] bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                    <div className="flex items-center gap-2.5 border-b border-black/[0.04] pb-3 dark:border-white/[0.06]">
-                                        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-black/[0.04] text-[#111111] dark:bg-white/[0.06] dark:text-white">
-                                            <Building2 className="size-3.5" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] dark:text-white">
-                                                1. Identitas & Klasifikasi Entitas
+                                {/* Tahap 1: Identitas & Klasifikasi Entitas */}
+                                <section className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                        <div className="flex items-center gap-2">
+                                            <Building2 className="size-4 text-blue-600 dark:text-blue-400" />
+                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                1. Identitas &amp; Klasifikasi Entitas
                                             </h2>
-                                            <p className="text-[11px] text-[#787774] dark:text-zinc-400">
-                                                Tipe badan hukum, status operasional, nama merek, dan bidang industri.
-                                            </p>
                                         </div>
                                     </div>
 
-                                    <div className="mt-4 grid gap-3.5 sm:grid-cols-2">
+                                    <div className="mt-3.5 grid gap-3 sm:grid-cols-2">
                                         <SelectField
                                             label="Tipe Klien"
                                             name="type"
@@ -155,29 +171,24 @@ export default function ClientEdit({
                                             name="industry"
                                             defaultValue={client.industry}
                                             error={errors.industry}
-                                            placeholder="Contoh: Infrastruktur, Teknologi, Properti"
+                                            placeholder="Contoh: Infrastruktur, Teknologi"
                                             className="sm:col-span-2"
                                         />
                                     </div>
                                 </section>
 
-                                {/* 2. Penugasan Partner & Komunikasi */}
-                                <section className="overflow-hidden rounded-xl border border-black/[0.08] bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                    <div className="flex items-center gap-2.5 border-b border-black/[0.04] pb-3 dark:border-white/[0.06]">
-                                        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-black/[0.04] text-[#111111] dark:bg-white/[0.06] dark:text-white">
-                                            <UserCheck className="size-3.5" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] dark:text-white">
-                                                2. Penugasan Partner & Kontak Resmi
+                                {/* Tahap 2: Penugasan Partner & Kontak Resmi */}
+                                <section className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                        <div className="flex items-center gap-2">
+                                            <ContactRound className="size-4 text-blue-600 dark:text-blue-400" />
+                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                2. Penugasan Partner &amp; Komunikasi Resmi
                                             </h2>
-                                            <p className="text-[11px] text-[#787774] dark:text-zinc-400">
-                                                Partner penanggung jawab dan saluran komunikasi kantor resmi.
-                                            </p>
                                         </div>
                                     </div>
 
-                                    <div className="mt-4 grid gap-3.5 sm:grid-cols-3">
+                                    <div className="mt-3.5 grid gap-3 sm:grid-cols-3">
                                         <div className="sm:col-span-3">
                                             <SelectField
                                                 label="Partner Penanggung Jawab"
@@ -187,7 +198,7 @@ export default function ClientEdit({
                                                 optional
                                                 options={partners.map((partner) => ({
                                                     value: partner.id,
-                                                    label: `${partner.name} — ${partner.position_title ?? 'Partner'}`,
+                                                    label: `${partner.name} ${partner.position_title ? `(${partner.position_title})` : ''}`,
                                                 }))}
                                             />
                                         </div>
@@ -220,38 +231,33 @@ export default function ClientEdit({
                                     </div>
                                 </section>
 
-                                {/* 3. Domisili & Legalitas Klien */}
-                                <section className="overflow-hidden rounded-xl border border-black/[0.08] bg-white p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] dark:border-white/[0.08] dark:bg-[#1a1a1c]">
-                                    <div className="flex items-center gap-2.5 border-b border-black/[0.04] pb-3 dark:border-white/[0.06]">
-                                        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-black/[0.04] text-[#111111] dark:bg-white/[0.06] dark:text-white">
-                                            <MapPin className="size-3.5" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-xs font-bold uppercase tracking-wider text-[#111111] dark:text-white">
-                                                3. Domisili & Legalitas
+                                {/* Tahap 3: Domisili & Legalitas Klien */}
+                                <section className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                        <div className="flex items-center gap-2">
+                                            <MapPin className="size-4 text-emerald-600 dark:text-emerald-400" />
+                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                3. Domisili &amp; Legalitas
                                             </h2>
-                                            <p className="text-[11px] text-[#787774] dark:text-zinc-400">
-                                                Lokasi domisili hukum kantor pusat, identitas pajak, dan legalitas.
-                                            </p>
                                         </div>
                                     </div>
 
-                                    <div className="mt-4 grid gap-3.5 sm:grid-cols-3">
+                                    <div className="mt-3.5 grid gap-3 sm:grid-cols-3">
                                         <Field
                                             label="Alamat Gedung / Jalan"
                                             name="address_line_1"
                                             defaultValue={client.address_line_1}
                                             error={errors.address_line_1}
-                                            placeholder="Sudirman Central Business District (SCBD), Tower 2 Lt. 18"
+                                            placeholder="Gedung &amp; Jalan"
                                             className="sm:col-span-3"
                                         />
 
                                         <Field
-                                            label="Alamat Lanjutan (Opsional)"
+                                            label="Lantai / Unit (Opsional)"
                                             name="address_line_2"
                                             defaultValue={client.address_line_2}
                                             error={errors.address_line_2}
-                                            placeholder="Gedung / Lantai / Unit"
+                                            placeholder="Lantai / Unit"
                                             className="sm:col-span-3"
                                         />
 
@@ -280,7 +286,7 @@ export default function ClientEdit({
                                         />
 
                                         <Field
-                                            label="NPWP / Nomor Pokok Wajib Pajak"
+                                            label="NPWP"
                                             name="tax_identifier"
                                             defaultValue={client.tax_identifier}
                                             error={errors.tax_identifier}
@@ -296,33 +302,157 @@ export default function ClientEdit({
                                             className="sm:col-span-2"
                                         />
 
-                                        <div className="grid gap-1.5 sm:col-span-3">
-                                            <Label htmlFor="notes" className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+                                        <div className="grid gap-1 sm:col-span-3">
+                                            <Label
+                                                htmlFor="notes"
+                                                className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                            >
                                                 Catatan / Ringkasan Klien
                                             </Label>
                                             <textarea
                                                 id="notes"
                                                 name="notes"
-                                                rows={3}
+                                                rows={2.5}
                                                 defaultValue={client.notes}
-                                                placeholder="Tambahkan ikhtisar latar belakang klien, preferensi komunikasi, atau riwayat kerja sama..."
-                                                className="w-full rounded-lg border border-black/[0.08] bg-[#fbfbfa] p-2.5 text-xs leading-relaxed text-[#111111] outline-none transition-colors placeholder:text-[#787774] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-white"
+                                                placeholder="Tambahkan ikhtisar latar belakang klien..."
+                                                className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 transition-colors outline-hidden placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                             />
                                             <InputError message={errors.notes} />
                                         </div>
                                     </div>
                                 </section>
 
-                                {/* Sticky Bottom Action Bar */}
-                                <div className="sticky bottom-4 z-20 flex items-center justify-between rounded-xl border border-black/[0.08] bg-white/95 p-3 shadow-lg backdrop-blur-md dark:border-white/[0.08] dark:bg-[#1a1a1c]/95">
-                                    <p className="hidden text-xs text-[#787774] sm:block dark:text-zinc-400">
+                                {/* Tahap 4: Penilaian Manual Kepatuhan KYC & AML (PMPJ) */}
+                                <section className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                        <div className="flex items-center gap-2">
+                                            <ShieldCheck className="size-4 text-blue-600 dark:text-blue-400" />
+                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                4. Penilaian Manual Kepatuhan KYC &amp; AML (PMPJ)
+                                            </h2>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-3.5 grid gap-3 sm:grid-cols-2">
+                                        <SelectField
+                                            label="Status Verifikasi KYC"
+                                            name="kyc_status"
+                                            defaultValue={client.kyc_status ?? 'verified'}
+                                            error={errors.kyc_status}
+                                            options={[
+                                                { value: 'verified', label: 'Terverifikasi Penuh (Verified)' },
+                                                { value: 'in_review', label: 'Dalam Penelaahan Manual (In Review)' },
+                                                { value: 'pending_documents', label: 'Menunggu Kelengkapan Dokumen (Pending)' },
+                                                { value: 'rejected', label: 'Ditolak / Berisiko Sanksi (Rejected)' },
+                                            ]}
+                                        />
+
+                                        <SelectField
+                                            label="Tingkat Risiko AML"
+                                            name="kyc_risk_level"
+                                            defaultValue={client.kyc_risk_level ?? 'low'}
+                                            error={errors.kyc_risk_level}
+                                            options={[
+                                                { value: 'low', label: 'Risiko Rendah (Standar)' },
+                                                { value: 'medium', label: 'Risiko Menengah (Perlu Pemantauan)' },
+                                                { value: 'high', label: 'Risiko Tinggi (Enhanced Due Diligence - EDD)' },
+                                            ]}
+                                        />
+
+                                        <SelectField
+                                            label="Partner Penilai KYC"
+                                            name="kyc_assessed_by"
+                                            defaultValue={
+                                                client.kyc_assessed_by?.toString() ??
+                                                client.relationship_partner_id?.toString() ??
+                                                ''
+                                            }
+                                            error={errors.kyc_assessed_by}
+                                            optional
+                                            options={partners.map((partner) => ({
+                                                value: partner.id,
+                                                label: `${partner.name} ${partner.position_title ? `(${partner.position_title})` : ''}`,
+                                            }))}
+                                        />
+
+                                        <Field
+                                            label="Tanggal Penilaian Terakhir"
+                                            name="kyc_assessed_at"
+                                            type="date"
+                                            defaultValue={
+                                                client.kyc_assessed_at?.slice(0, 10) ??
+                                                new Date().toISOString().slice(0, 10)
+                                            }
+                                            error={errors.kyc_assessed_at}
+                                        />
+
+                                        {/* Document Checklist */}
+                                        <div className="space-y-2 sm:col-span-2">
+                                            <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                                Checklist Verifikasi Dokumen Legalitas (Manual)
+                                            </Label>
+                                            <div className="space-y-1.5 rounded-lg border border-slate-200/70 bg-slate-50/50 p-2.5 dark:border-white/10 dark:bg-[#121418]">
+                                                {KYC_DOCUMENT_ITEMS.map((item) => {
+                                                    const isChecked = client.kyc_checklist
+                                                        ? Boolean(client.kyc_checklist[item.key])
+                                                        : true;
+
+                                                    return (
+                                                        <label
+                                                            key={item.key}
+                                                            className="flex cursor-pointer items-start gap-2 rounded p-1 text-xs transition-colors hover:bg-slate-100 dark:hover:bg-zinc-800"
+                                                        >
+                                                            <input
+                                                                type="checkbox"
+                                                                name={`kyc_checklist[${item.key}]`}
+                                                                value="1"
+                                                                defaultChecked={isChecked}
+                                                                className="mt-0.5 size-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                                            />
+                                                            <span className="text-slate-700 dark:text-zinc-200">
+                                                                {item.label}
+                                                            </span>
+                                                        </label>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+
+                                        {/* KYC Notes */}
+                                        <div className="grid gap-1 sm:col-span-2">
+                                            <Label
+                                                htmlFor="kyc_notes"
+                                                className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                            >
+                                                Catatan Uji Tuntas &amp; Beneficial Ownership (KYC Notes)
+                                            </Label>
+                                            <textarea
+                                                id="kyc_notes"
+                                                name="kyc_notes"
+                                                rows={2.5}
+                                                defaultValue={
+                                                    client.kyc_notes ??
+                                                    'Klien terverifikasi resmi RPK Law Firm. Berkas KYC lengkap, Beneficial Ownership tertelusuri, dan lolos uji tapis sanksi (AML/CFT screening).'
+                                                }
+                                                placeholder="Catat temuan uji tuntas, Beneficial Ownership, konfirmasi PEP..."
+                                                className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs leading-relaxed text-slate-900 transition-colors outline-hidden focus:border-blue-600 dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                            />
+                                            <InputError message={errors.kyc_notes} />
+                                        </div>
+                                    </div>
+                                </section>
+
+                                {/* Action Bar */}
+                                <div className="flex flex-col justify-between gap-3 border-t border-slate-200/60 pt-4 sm:flex-row sm:items-center dark:border-white/[0.06]">
+                                    <p className="text-[11px] text-slate-400">
                                         Perubahan profil klien akan segera diperbarui di seluruh perkara terkait.
                                     </p>
-                                    <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
+                                    <div className="flex items-center gap-2">
                                         <Button
                                             type="button"
                                             variant="outline"
-                                            className="h-8 rounded-lg border-black/10 bg-white px-3.5 text-xs font-medium text-[#111111] hover:bg-black/[0.03] dark:border-white/10 dark:bg-[#1c1c1e] dark:text-zinc-200"
+                                            size="sm"
+                                            className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
                                             asChild
                                         >
                                             <Link href={clientRoutes.show(client.id)}>
@@ -332,12 +462,13 @@ export default function ClientEdit({
 
                                         <Button
                                             type="submit"
+                                            size="sm"
                                             disabled={processing}
-                                            className="h-8 rounded-lg bg-[#111111] px-4 text-xs font-semibold text-white shadow-2xs hover:bg-black active:scale-95 dark:bg-white dark:text-black"
+                                            className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-slate-900"
                                         >
                                             {processing ? (
                                                 <>
-                                                    <Spinner className="mr-1.5 size-3.5" />
+                                                    <Spinner className="mr-1.5 size-3" />
                                                     Menyimpan...
                                                 </>
                                             ) : (
@@ -375,8 +506,11 @@ function Field({
     required?: boolean;
 }) {
     return (
-        <div className={`grid gap-1.5 ${className ?? ''}`}>
-            <Label htmlFor={name} className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+        <div className={`grid gap-1 ${className ?? ''}`}>
+            <Label
+                htmlFor={name}
+                className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+            >
                 {label} {required && <span className="text-rose-500">*</span>}
             </Label>
             <Input
@@ -386,7 +520,7 @@ function Field({
                 defaultValue={defaultValue}
                 required={required}
                 placeholder={placeholder}
-                className="h-8 rounded-lg border-black/[0.08] bg-[#fbfbfa] text-xs text-[#111111] transition-colors focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-white"
+                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 placeholder:text-slate-400 transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
             />
             <InputError message={error} />
         </div>
@@ -409,13 +543,18 @@ function SelectField({
     optional?: boolean;
 }) {
     return (
-        <div className="grid gap-1.5">
+        <div className="grid gap-1">
             <div className="flex items-center justify-between">
-                <Label htmlFor={name} className="text-xs font-medium text-[#2f3437] dark:text-zinc-200">
+                <Label
+                    htmlFor={name}
+                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                >
                     {label}
                 </Label>
                 {optional && (
-                    <span className="text-[10px] text-[#787774] dark:text-zinc-500">Opsional</span>
+                    <span className="text-[10px] text-slate-400">
+                        Opsional
+                    </span>
                 )}
             </div>
             <div className="relative">
@@ -424,7 +563,7 @@ function SelectField({
                     name={name}
                     defaultValue={defaultValue}
                     required={!optional}
-                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-black/[0.08] bg-[#fbfbfa] pl-3 pr-8 text-xs font-medium text-[#111111] outline-none transition-colors hover:bg-black/[0.02] focus:border-black/20 focus:bg-white dark:border-white/[0.1] dark:bg-[#121212] dark:text-zinc-200"
+                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                 >
                     {optional && <option value="">Tidak ditentukan</option>}
                     {options.map((option) => (
@@ -433,7 +572,7 @@ function SelectField({
                         </option>
                     ))}
                 </select>
-                <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-3 -translate-y-1/2 text-[#787774]" />
+                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
             </div>
             <InputError message={error} />
         </div>

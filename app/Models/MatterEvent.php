@@ -15,12 +15,16 @@ class MatterEvent extends Model
 
     protected $fillable = [
         'matter_id', 'event_type', 'title', 'description', 'starts_at', 'ends_at',
-        'location', 'owner_id', 'created_by',
+        'location', 'checklist', 'owner_id', 'created_by',
     ];
 
     protected function casts(): array
     {
-        return ['starts_at' => 'datetime', 'ends_at' => 'datetime'];
+        return [
+            'starts_at' => 'datetime',
+            'ends_at' => 'datetime',
+            'checklist' => 'array',
+        ];
     }
 
     /** @return BelongsTo<Matter, $this> */

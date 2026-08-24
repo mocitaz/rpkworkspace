@@ -19,7 +19,7 @@ class ClientFactory extends Factory
     public function definition(): array
     {
         return [
-            'client_number' => 'RAF-C-'.now()->format('Y').'-'.fake()->unique()->numerify('######'),
+            'client_number' => 'RPK-C-'.now()->format('Y').'-'.fake()->unique()->numerify('######'),
             'type' => 'organization',
             'legal_name' => fake()->unique()->company(),
             'display_name' => fake()->company(),

@@ -50,6 +50,7 @@ class SignSignatureRequest
                 'signed_ip_address' => $request->ip(),
                 'signed_user_agent' => $request->userAgent(),
                 'accepted_name' => $acceptedName,
+                'signature_data' => $request->input('signature_data'),
             ]);
 
             if (! $signatureRequest->signers()->where('status', 'pending')->exists()) {

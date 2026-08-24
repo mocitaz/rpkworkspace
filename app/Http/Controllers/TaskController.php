@@ -30,6 +30,11 @@ class TaskController extends Controller
             'matter:id,matter_number,title',
             'assignee:id,name,position_title,avatar_path',
             'reviewer:id,name,position_title,avatar_path',
+            'comments' => fn ($query) => $query->whereNull('parent_id')->with([
+                'user:id,name,position_title,avatar_path',
+                'reactions.user:id,name',
+                'replies' => fn ($r) => $r->with(['user:id,name,position_title,avatar_path', 'reactions.user:id,name'])->oldest(),
+            ])->orderByDesc('is_pinned')->latest(),
         ])
             ->where(fn ($q) => $q->whereNull('matter_id')->orWhereIn('matter_id', $visibleMatterIds))
             ->when($request->string('view')->toString() === 'mine', fn ($q) => $q->where('assignee_id', $userId))
@@ -51,7 +56,10 @@ class TaskController extends Controller
             'users' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title', 'avatar_path']),
             'metrics' => $metrics,
             'filters' => $request->only(['view', 'status', 'matter_id']),
-            'can' => ['create' => $request->user()->can('create', Task::class)],
+            'can' => [
+                'create' => $request->user()->can('create', Task::class),
+                'update' => $request->user()->can('update', Task::class),
+            ],
         ]);
     }
 

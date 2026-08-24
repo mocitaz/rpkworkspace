@@ -8,55 +8,55 @@ export default function AuthSimpleLayout({
     description,
 }: AuthLayoutProps) {
     return (
-        <div className="min-h-dvh bg-background xl:grid xl:grid-cols-[minmax(0,1.12fr)_minmax(460px,0.88fr)]">
-            <aside className="relative hidden min-h-dvh overflow-hidden bg-[#111214] text-white xl:block">
+        <div className="relative flex min-h-screen w-full flex-col justify-between overflow-hidden text-slate-900 selection:bg-blue-600 selection:text-white dark:text-zinc-100">
+            {/* Seamless Full-Bleed Illustrated Scenery Canvas Background */}
+            <div className="pointer-events-none fixed inset-0 z-0 select-none overflow-hidden bg-[#e6ebf0] dark:bg-[#0c0d12]">
                 <img
-                    src="/images/raf-legal-workspace-login-hero.png"
-                    alt="Ruang kerja legal RPK Law Firm"
-                    className="absolute inset-0 size-full object-cover object-center"
+                    src="/images/rpk-login-vector-bg.jpg"
+                    alt="RPK Legal Workspace Scenic Backdrop"
+                    className="size-full object-cover object-bottom opacity-95 dark:opacity-35"
                 />
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(8,9,11,0.72)_0%,rgba(8,9,11,0.2)_48%,rgba(8,9,11,0.9)_100%)]" />
-                <div className="relative flex min-h-dvh flex-col p-10 2xl:p-14">
-                    <Link
-                        href={home()}
-                        className="inline-flex w-fit items-center"
-                    >
-                        <img
-                            src="/logo/raf-law-firm-transparent.png"
-                            alt="RPK Law Firm"
-                            className="h-12 w-auto brightness-0 invert"
-                        />
-                    </Link>
-                    <div className="mt-auto max-w-lg">
-                        <p className="text-[11px] font-semibold tracking-[0.18em] text-[#d4aa64] uppercase">
-                            RPK Law Firm · Jakarta
-                        </p>
-                        <h2 className="mt-4 text-3xl leading-[1.12] font-medium tracking-[-0.04em] text-balance 2xl:text-4xl">
-                            Ketelitian hukum, dalam satu workspace yang tenang.
-                        </h2>
-                        <p className="mt-4 max-w-md text-sm leading-6 text-white/65">
-                            Kelola matter, dokumen rahasia, tenggat, dan jejak
-                            audit dengan kontrol yang jelas untuk setiap tim.
-                        </p>
+                <div className="absolute inset-0 bg-white/5 backdrop-blur-[0.5px] dark:bg-black/30" />
+            </div>
+
+            {/* Center Floating Auth Card */}
+            <main className="relative z-10 flex flex-1 items-center justify-center p-4 sm:p-6 lg:p-8">
+                <div className="w-full max-w-[420px]">
+                    <div className="rounded-3xl border border-slate-200/80 bg-white/95 p-7 shadow-2xl shadow-slate-900/10 backdrop-blur-xl sm:p-9 dark:border-white/10 dark:bg-[#14161b]/95 dark:shadow-2xl">
+                        {/* Brand Logo & Header */}
+                        <div className="mb-5 flex flex-col items-center text-center">
+                            <Link
+                                href={home()}
+                                className="group mb-4 inline-flex items-center justify-center transition-transform hover:scale-105"
+                            >
+                                <img
+                                    src="/logo/raf-law-firm-transparent.png"
+                                    alt="RPK Law Firm"
+                                    className="h-14 w-auto max-w-[170px] object-contain drop-shadow-xs"
+                                />
+                            </Link>
+
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                {title || 'Login to account'}
+                            </h1>
+                            {description && (
+                                <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">
+                                    {description}
+                                </p>
+                            )}
+                        </div>
+
+                        {children}
                     </div>
-                    <p className="mt-10 text-[11px] tracking-[0.06em] text-white/40 uppercase">
-                        Confidential legal operations
-                    </p>
-                </div>
-            </aside>
-            <main className="relative flex min-h-dvh items-center justify-center bg-white px-6 py-10 sm:px-10 xl:px-14 dark:bg-background">
-                <div className="w-full max-w-[390px]">
-                    <div className="text-center">
-                        <h1 className="text-2xl font-semibold tracking-[-0.035em] text-foreground">
-                            {title}
-                        </h1>
-                        <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                            {description}
-                        </p>
-                    </div>
-                    <div className="mt-9">{children}</div>
                 </div>
             </main>
+
+            {/* Subtle Clean Footer */}
+            <footer className="relative z-10 py-3 text-center text-xs font-medium text-slate-500/90 drop-shadow-xs dark:text-zinc-400">
+                <div className="mx-auto max-w-5xl px-4">
+                    &copy; {new Date().getFullYear()} RPK-LMIS (Legal Matter Information System). All rights reserved.
+                </div>
+            </footer>
         </div>
     );
 }
