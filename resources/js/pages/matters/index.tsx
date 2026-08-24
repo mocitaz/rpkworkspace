@@ -340,132 +340,172 @@ export default function MattersIndex({
                                 />
                             </div>
                         ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left text-xs">
-                                    <thead>
-                                        <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <th className="py-2.5 pr-3 pl-4 font-semibold">Perkara &amp; Nomor</th>
-                                            <th className="px-3 py-2.5 font-semibold">Klien</th>
-                                            <th className="px-3 py-2.5 font-semibold">Area Praktik</th>
-                                            <th className="px-3 py-2.5 text-center font-semibold">Lead Partner</th>
-                                            <th className="px-3 py-2.5 font-semibold">Status</th>
-                                            <th className="px-3 py-2.5 font-semibold">Prioritas</th>
-                                            <th className="px-3 py-2.5 font-semibold">Tenggat</th>
-                                            <th className="py-2.5 pr-4 pl-1 text-right font-semibold"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                                        {matters.data.map((matter) => (
-                                            <tr
-                                                key={matter.id}
-                                                className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
-                                            >
-                                                {/* 1. Title & Number */}
-                                                <td className="py-2.5 pr-3 pl-4">
-                                                    <Link
-                                                        href={matterRoutes.show(matter.id)}
-                                                        className="flex items-center gap-2.5"
-                                                    >
-                                                        <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-600 group-hover:text-white dark:bg-blue-950/40 dark:text-blue-400">
-                                                            <Briefcase className="size-3.5" />
-                                                        </div>
-                                                        <div className="min-w-0 space-y-0.5">
-                                                            <p className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
-                                                                {matter.title}
-                                                            </p>
-                                                            <span className="inline-block font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
-                                                                {matter.matter_number}
-                                                            </span>
-                                                        </div>
-                                                    </Link>
-                                                </td>
+                            <>
+                                {/* Mobile Cards (sm:hidden) */}
+                        <div className="divide-y divide-slate-100 sm:hidden dark:divide-white/[0.04]">
+                            {matters.data.map((matter) => (
+                                <Link
+                                    key={matter.id}
+                                    href={matterRoutes.show(matter.id)}
+                                    className="block p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
+                                >
+                                    <div className="flex items-start justify-between gap-2">
+                                        <div className="min-w-0 flex-1">
+                                            <div className="flex items-center gap-1.5 font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                <span>{matter.matter_number}</span>
+                                                <span>·</span>
+                                                <span className="truncate">{matter.practice_area?.name ?? 'Umum'}</span>
+                                            </div>
+                                            <p className="mt-0.5 line-clamp-2 text-xs font-bold text-slate-900 dark:text-white">
+                                                {matter.title}
+                                            </p>
+                                            <p className="mt-1 truncate text-[11px] font-medium text-slate-600 dark:text-zinc-300">
+                                                {matter.client.display_name}
+                                            </p>
+                                        </div>
+                                        <ChevronRight className="size-4 shrink-0 text-slate-400" />
+                                    </div>
+                                    <div className="mt-2.5 flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-2 text-[10px] dark:border-white/[0.04]">
+                                        <StatusBadge value={matter.status} />
+                                        <StatusBadge value={matter.priority} />
+                                        {matter.next_deadline && (
+                                            <span className="ml-auto font-mono text-slate-500 dark:text-zinc-400">
+                                                {formatDate(matter.next_deadline)}
+                                            </span>
+                                        )}
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
 
-                                                {/* 2. Client */}
-                                                <td className="px-3 py-2.5 font-medium whitespace-nowrap">
-                                                    {matter.client.id ? (
-                                                        <Link
-                                                            href={clientRoutes.show(matter.client.id)}
-                                                            className="inline-flex items-center gap-1.5 text-slate-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
-                                                        >
-                                                            {matter.client.type === 'individual' || matter.client.type === 'person' ? (
-                                                                <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                                            ) : (
-                                                                <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
-                                                            )}
-                                                            <span className="hover:underline">{matter.client.display_name}</span>
-                                                        </Link>
-                                                    ) : (
-                                                        <span className="inline-flex items-center gap-1.5 text-slate-700 dark:text-zinc-300">
-                                                            {matter.client.type === 'individual' || matter.client.type === 'person' ? (
-                                                                <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                                            ) : (
-                                                                <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
-                                                            )}
-                                                            <span>{matter.client.display_name}</span>
+                        {/* Desktop Data Table (hidden sm:block) */}
+                        <div className="hidden overflow-x-auto sm:block">
+                            <table className="w-full text-left text-xs">
+                                <thead>
+                                    <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <th className="py-2.5 pr-3 pl-4 font-semibold">Perkara &amp; Nomor</th>
+                                        <th className="px-3 py-2.5 font-semibold">Klien</th>
+                                        <th className="px-3 py-2.5 font-semibold">Area Praktik</th>
+                                        <th className="px-3 py-2.5 text-center font-semibold">Lead Partner</th>
+                                        <th className="px-3 py-2.5 font-semibold">Status</th>
+                                        <th className="px-3 py-2.5 font-semibold">Prioritas</th>
+                                        <th className="px-3 py-2.5 font-semibold">Tenggat</th>
+                                        <th className="py-2.5 pr-4 pl-1 text-right font-semibold"></th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                    {matters.data.map((matter) => (
+                                        <tr
+                                            key={matter.id}
+                                            className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                        >
+                                            {/* 1. Title & Number */}
+                                            <td className="py-2.5 pr-3 pl-4">
+                                                <Link
+                                                    href={matterRoutes.show(matter.id)}
+                                                    className="flex items-center gap-2.5"
+                                                >
+                                                    <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-600 group-hover:text-white dark:bg-blue-950/40 dark:text-blue-400">
+                                                        <Briefcase className="size-3.5" />
+                                                    </div>
+                                                    <div className="min-w-0 space-y-0.5">
+                                                        <p className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
+                                                            {matter.title}
+                                                        </p>
+                                                        <span className="inline-block font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                            {matter.matter_number}
                                                         </span>
-                                                    )}
-                                                </td>
+                                                    </div>
+                                                </Link>
+                                            </td>
 
-                                                {/* 3. Practice Area */}
-                                                <td className="px-3 py-2.5 whitespace-nowrap">
-                                                    <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                        {matter.practice_area?.name ?? 'Umum'}
-                                                    </span>
-                                                </td>
-
-                                                {/* 4. Responsible Partner */}
-                                                <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                    <TooltipProvider delayDuration={100}>
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <div className="inline-flex cursor-pointer items-center justify-center">
-                                                                    <Avatar className="size-6 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                                        <AvatarImage src={matter.responsible_partner.avatar_url ?? undefined} />
-                                                                        <AvatarFallback className="text-[8px] font-bold">
-                                                                            {getInitials(matter.responsible_partner.name)}
-                                                                        </AvatarFallback>
-                                                                    </Avatar>
-                                                                </div>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent
-                                                                side="top"
-                                                                className="bg-slate-900 px-2.5 py-1 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800"
-                                                            >
-                                                                {matter.responsible_partner.name}
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    </TooltipProvider>
-                                                </td>
-
-                                                {/* 5. Status */}
-                                                <td className="px-3 py-2.5 whitespace-nowrap">
-                                                    <StatusBadge value={matter.status} />
-                                                </td>
-
-                                                {/* 6. Priority */}
-                                                <td className="px-3 py-2.5 whitespace-nowrap">
-                                                    <StatusBadge value={matter.priority} />
-                                                </td>
-
-                                                {/* 7. Next Deadline */}
-                                                <td className="px-3 py-2.5 font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
-                                                    {matter.next_deadline ? formatDate(matter.next_deadline) : '-'}
-                                                </td>
-
-                                                {/* 8. Action Arrow */}
-                                                <td className="py-2.5 pr-4 pl-1 text-right">
+                                            {/* 2. Client */}
+                                            <td className="px-3 py-2.5 font-medium whitespace-nowrap">
+                                                {matter.client.id ? (
                                                     <Link
-                                                        href={matterRoutes.show(matter.id)}
-                                                        className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                                        href={clientRoutes.show(matter.client.id)}
+                                                        className="inline-flex items-center gap-1.5 text-slate-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
                                                     >
-                                                        <ChevronRight className="size-4" />
+                                                        {matter.client.type === 'individual' || matter.client.type === 'person' ? (
+                                                            <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                                        ) : (
+                                                            <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
+                                                        )}
+                                                        <span className="hover:underline">{matter.client.display_name}</span>
                                                     </Link>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                ) : (
+                                                    <span className="inline-flex items-center gap-1.5 text-slate-700 dark:text-zinc-300">
+                                                        {matter.client.type === 'individual' || matter.client.type === 'person' ? (
+                                                            <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                                        ) : (
+                                                            <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
+                                                        )}
+                                                        <span>{matter.client.display_name}</span>
+                                                    </span>
+                                                )}
+                                            </td>
+
+                                            {/* 3. Practice Area */}
+                                            <td className="px-3 py-2.5 whitespace-nowrap">
+                                                <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                    {matter.practice_area?.name ?? 'Umum'}
+                                                </span>
+                                            </td>
+
+                                            {/* 4. Responsible Partner */}
+                                            <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                                                <TooltipProvider delayDuration={100}>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <div className="inline-flex cursor-pointer items-center justify-center">
+                                                                <Avatar className="size-6 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                    <AvatarImage src={matter.responsible_partner.avatar_url ?? undefined} />
+                                                                    <AvatarFallback className="text-[8px] font-bold">
+                                                                        {getInitials(matter.responsible_partner.name)}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+                                                            </div>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent
+                                                            side="top"
+                                                            className="bg-slate-900 px-2.5 py-1 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800"
+                                                        >
+                                                            {matter.responsible_partner.name}
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            </td>
+
+                                            {/* 5. Status */}
+                                            <td className="px-3 py-2.5 whitespace-nowrap">
+                                                <StatusBadge value={matter.status} />
+                                            </td>
+
+                                            {/* 6. Priority */}
+                                            <td className="px-3 py-2.5 whitespace-nowrap">
+                                                <StatusBadge value={matter.priority} />
+                                            </td>
+
+                                            {/* 7. Next Deadline */}
+                                            <td className="px-3 py-2.5 font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                {matter.next_deadline ? formatDate(matter.next_deadline) : '-'}
+                                            </td>
+
+                                            {/* 8. Action Arrow */}
+                                            <td className="py-2.5 pr-4 pl-1 text-right">
+                                                <Link
+                                                    href={matterRoutes.show(matter.id)}
+                                                    className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                                >
+                                                    <ChevronRight className="size-4" />
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        </>
                         )}
 
                         {/* Table Footer with Pagination */}

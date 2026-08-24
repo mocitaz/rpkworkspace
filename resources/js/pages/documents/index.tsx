@@ -286,122 +286,179 @@ export default function DocumentsIndex({
                                 />
                             </div>
                         ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left text-xs">
-                                    <thead>
-                                        <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <th className="py-2.5 pr-3 pl-4">Dokumen &amp; Kerahasiaan</th>
-                                            <th className="px-3 py-2.5">Terkait Perkara / Klien</th>
-                                            <th className="px-3 py-2.5 text-center">Versi</th>
-                                            <th className="px-3 py-2.5 text-right">Ukuran</th>
-                                            <th className="px-3 py-2.5 text-center">Status</th>
-                                            <th className="py-2.5 px-3 text-right">Pembaruan</th>
-                                            <th className="py-2.5 pr-4 pl-3 text-center">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                                        {documents.data.map((document) => (
-                                            <tr
-                                                key={document.id}
-                                                className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
-                                            >
-                                                {/* Document Title & Badges */}
-                                                <td className="py-2.5 pr-3 pl-4">
-                                                    <div className="space-y-0.5">
-                                                        <Link
-                                                            href={documentRoutes.show(document.id)}
-                                                            className="font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
-                                                        >
-                                                            {document.title}
-                                                        </Link>
-                                                        <div className="flex flex-wrap items-center gap-1">
-                                                            <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[9.5px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                                {document.document_type ?? 'Dokumen Umum'}
-                                                            </span>
-                                                            <span
-                                                                className={`rounded px-1.5 py-0.2 text-[9.5px] font-semibold ${
-                                                                    document.confidentiality_level === 'strictly_confidential'
-                                                                        ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
-                                                                        : document.confidentiality_level === 'restricted'
-                                                                          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'
-                                                                          : 'bg-slate-100 text-slate-600 dark:bg-white/[0.06]'
-                                                                }`}
-                                                            >
-                                                                {document.confidentiality_level}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </td>
-
-                                                {/* Matter / Client Info */}
-                                                <td className="px-3 py-2.5 whitespace-nowrap">
-                                                    {document.matter ? (
+                            <>
+                                {/* Mobile Cards (sm:hidden) */}
+                                <div className="divide-y divide-slate-100 sm:hidden dark:divide-white/[0.04]">
+                                    {documents.data.map((document) => (
+                                        <div
+                                            key={document.id}
+                                            className="space-y-2 p-3.5"
+                                        >
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="min-w-0 flex-1">
+                                                    <Link
+                                                        href={documentRoutes.show(document.id)}
+                                                        className="line-clamp-2 text-xs font-bold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
+                                                    >
+                                                        {document.title}
+                                                    </Link>
+                                                    {document.matter && (
                                                         <Link
                                                             href={matterRoutes.show(document.matter.id)}
-                                                            className="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:underline dark:text-blue-400"
+                                                            className="mt-0.5 inline-flex items-center gap-1 font-mono text-[10px] font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                                         >
-                                                            <FolderKanban className="size-3 shrink-0 text-slate-400" />
-                                                            <span className="max-w-[200px] truncate font-semibold">
-                                                                {document.matter.matter_number} · {document.matter.title}
-                                                            </span>
+                                                            <FolderKanban className="size-2.5 shrink-0" />
+                                                            <span className="truncate">{document.matter.matter_number} · {document.matter.title}</span>
                                                         </Link>
-                                                    ) : document.client ? (
-                                                        <Link
-                                                            href={clientRoutes.show(document.client.id)}
-                                                            className="inline-flex items-center gap-1 text-xs text-slate-700 hover:underline dark:text-zinc-300"
-                                                        >
-                                                            <Building2 className="size-3 shrink-0 text-slate-400" />
-                                                            <span className="max-w-[160px] truncate font-semibold">
-                                                                {document.client.display_name}
-                                                            </span>
-                                                        </Link>
-                                                    ) : (
-                                                        <span className="text-slate-400 dark:text-zinc-500">-</span>
                                                     )}
-                                                </td>
-
-                                                {/* Version Chip */}
-                                                <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                    <span className="rounded bg-slate-100 px-1.5 py-0.2 font-mono text-[11px] font-semibold text-slate-900 dark:bg-zinc-800 dark:text-white">
-                                                        v{document.current_version?.version_number ?? 1}.0
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setPreviewDoc(document)}
+                                                    className="h-7 shrink-0 rounded-lg px-2 text-[11px] font-semibold text-blue-600 dark:text-blue-400"
+                                                >
+                                                    <Eye className="mr-1 size-3" />
+                                                    Lihat
+                                                </Button>
+                                            </div>
+                                            <div className="flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-2 text-[10px] dark:border-white/[0.04]">
+                                                <StatusBadge value={document.status} />
+                                                <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-white">
+                                                    v{document.current_version?.version_number ?? 1}.0
+                                                </span>
+                                                {document.current_version?.file_size ? (
+                                                    <span className="font-mono text-slate-500 dark:text-zinc-400">
+                                                        {formatBytes(document.current_version.file_size)}
                                                     </span>
-                                                </td>
-
-                                                {/* File Size */}
-                                                <td className="px-3 py-2.5 text-right font-mono text-xs whitespace-nowrap text-slate-500 dark:text-zinc-400">
-                                                    {document.current_version?.file_size
-                                                        ? formatBytes(document.current_version.file_size)
-                                                        : '-'}
-                                                </td>
-
-                                                {/* Status Badge */}
-                                                <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                    <StatusBadge value={document.status} />
-                                                </td>
-
-                                                {/* Updated At */}
-                                                <td className="py-2.5 px-3 text-right font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                ) : null}
+                                                <span className="ml-auto font-mono text-slate-400 dark:text-zinc-500">
                                                     {formatDate(document.updated_at)}
-                                                </td>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
 
-                                                {/* Action: Quick Preview */}
-                                                <td className="py-2.5 pr-4 pl-3 text-center whitespace-nowrap">
-                                                    <Button
-                                                        type="button"
-                                                        variant="outline"
-                                                        size="sm"
-                                                        onClick={() => setPreviewDoc(document)}
-                                                        className="h-7 cursor-pointer rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-blue-600 shadow-2xs hover:border-blue-300 hover:bg-blue-50/80 active:scale-95 dark:border-white/10 dark:bg-[#14161b] dark:text-blue-400"
-                                                    >
-                                                        <Eye className="mr-1 size-3" />
-                                                        Pratinjau
-                                                    </Button>
-                                                </td>
+                                {/* Desktop Table (hidden sm:block) */}
+                                <div className="hidden overflow-x-auto sm:block">
+                                    <table className="w-full text-left text-xs">
+                                        <thead>
+                                            <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
+                                                <th className="py-2.5 pr-3 pl-4 font-semibold">Nama Dokumen &amp; Tipe</th>
+                                                <th className="px-3 py-2.5 font-semibold">Terkait Perkara / Klien</th>
+                                                <th className="px-3 py-2.5 text-center font-semibold">Versi</th>
+                                                <th className="px-3 py-2.5 text-right font-semibold">Ukuran</th>
+                                                <th className="px-3 py-2.5 text-center font-semibold">Status</th>
+                                                <th className="px-3 py-2.5 text-right font-semibold">Diperbarui</th>
+                                                <th className="py-2.5 pr-4 pl-3 text-center font-semibold">Aksi</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                            {documents.data.map((document) => (
+                                                <tr
+                                                    key={document.id}
+                                                    className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                >
+                                                    {/* Document Title & Badges */}
+                                                    <td className="py-2.5 pr-3 pl-4">
+                                                        <div className="space-y-0.5">
+                                                            <Link
+                                                                href={documentRoutes.show(document.id)}
+                                                                className="font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
+                                                            >
+                                                                {document.title}
+                                                            </Link>
+                                                            <div className="flex flex-wrap items-center gap-1">
+                                                                <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[9.5px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                                    {document.document_type ?? 'Dokumen Umum'}
+                                                                </span>
+                                                                <span
+                                                                    className={`rounded px-1.5 py-0.2 text-[9.5px] font-semibold ${
+                                                                        document.confidentiality_level === 'strictly_confidential'
+                                                                            ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
+                                                                            : document.confidentiality_level === 'restricted'
+                                                                              ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'
+                                                                              : 'bg-slate-100 text-slate-600 dark:bg-white/[0.06]'
+                                                                    }`}
+                                                                >
+                                                                    {document.confidentiality_level}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+
+                                                    {/* Matter / Client Info */}
+                                                    <td className="px-3 py-2.5 whitespace-nowrap">
+                                                        {document.matter ? (
+                                                            <Link
+                                                                href={matterRoutes.show(document.matter.id)}
+                                                                className="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:underline dark:text-blue-400"
+                                                            >
+                                                                <FolderKanban className="size-3 shrink-0 text-slate-400" />
+                                                                <span className="max-w-[200px] truncate font-semibold">
+                                                                    {document.matter.matter_number} · {document.matter.title}
+                                                                </span>
+                                                            </Link>
+                                                        ) : document.client ? (
+                                                            <Link
+                                                                href={clientRoutes.show(document.client.id)}
+                                                                className="inline-flex items-center gap-1 text-xs text-slate-700 hover:underline dark:text-zinc-300"
+                                                            >
+                                                                <Building2 className="size-3 shrink-0 text-slate-400" />
+                                                                <span className="max-w-[160px] truncate font-semibold">
+                                                                    {document.client.display_name}
+                                                                </span>
+                                                            </Link>
+                                                        ) : (
+                                                            <span className="text-slate-400 dark:text-zinc-500">-</span>
+                                                        )}
+                                                    </td>
+
+                                                    {/* Version Chip */}
+                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                                                        <span className="rounded bg-slate-100 px-1.5 py-0.2 font-mono text-[11px] font-semibold text-slate-900 dark:bg-zinc-800 dark:text-white">
+                                                            v{document.current_version?.version_number ?? 1}.0
+                                                        </span>
+                                                    </td>
+
+                                                    {/* File Size */}
+                                                    <td className="px-3 py-2.5 text-right font-mono text-xs whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                        {document.current_version?.file_size
+                                                            ? formatBytes(document.current_version.file_size)
+                                                            : '-'}
+                                                    </td>
+
+                                                    {/* Status Badge */}
+                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                                                        <StatusBadge value={document.status} />
+                                                    </td>
+
+                                                    {/* Updated At */}
+                                                    <td className="py-2.5 px-3 text-right font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                        {formatDate(document.updated_at)}
+                                                    </td>
+
+                                                    {/* Action: Quick Preview */}
+                                                    <td className="py-2.5 pr-4 pl-3 text-center whitespace-nowrap">
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => setPreviewDoc(document)}
+                                                            className="h-7 cursor-pointer rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-blue-600 shadow-2xs hover:border-blue-300 hover:bg-blue-50/80 active:scale-95 dark:border-white/10 dark:bg-[#14161b] dark:text-blue-400"
+                                                        >
+                                                            <Eye className="mr-1 size-3" />
+                                                            Pratinjau
+                                                        </Button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </>
                         )}
 
                         {/* Pagination Footer */}

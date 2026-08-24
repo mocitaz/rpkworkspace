@@ -421,10 +421,10 @@ export function FloatingChat() {
     );
 
     return (
-        <div className="fixed right-5 bottom-5 z-50 flex flex-col items-end">
+        <div className="fixed right-3.5 bottom-17 sm:right-5 sm:bottom-5 z-40 flex flex-col items-end">
             {/* Pop-up Modal Window */}
             {isOpen && (
-                <div className="mb-3.5 flex h-[510px] w-[350px] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl transition-all sm:w-[390px] dark:border-white/10 dark:bg-[#14161b]">
+                <div className="mb-2.5 flex h-[calc(100svh-8.5rem)] max-h-[520px] w-[calc(100vw-1.75rem)] max-w-[380px] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl transition-all sm:h-[510px] sm:w-[390px] dark:border-white/10 dark:bg-[#14161b]">
                     {/* View A: Contact List */}
                     {!activeContact ? (
                         <div className="flex h-full flex-col">

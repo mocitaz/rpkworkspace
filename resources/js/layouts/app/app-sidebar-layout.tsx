@@ -3,6 +3,7 @@ import { AppShell } from '@/components/app-shell';
 import { AppSidebar } from '@/components/app-sidebar';
 import { AppSidebarHeader } from '@/components/app-sidebar-header';
 import { FloatingChat } from '@/components/floating-chat';
+import { MobileBottomNav } from '@/components/mobile-bottom-nav';
 import type { AppLayoutProps } from '@/types';
 
 export default function AppSidebarLayout({
@@ -12,11 +13,13 @@ export default function AppSidebarLayout({
     return (
         <AppShell variant="sidebar">
             <AppSidebar />
-            <AppContent variant="sidebar" className="overflow-x-hidden">
+            <AppContent variant="sidebar" className="overflow-x-hidden pb-20 md:pb-6">
                 <AppSidebarHeader breadcrumbs={breadcrumbs} />
                 {children}
             </AppContent>
             <FloatingChat />
+            <MobileBottomNav />
         </AppShell>
     );
 }
+

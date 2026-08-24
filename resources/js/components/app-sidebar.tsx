@@ -66,6 +66,7 @@ const administrationItems: NavItem[] = [
 
 export function AppSidebar() {
     const { auth } = usePage().props;
+    const { isMobile, setOpenMobile } = useSidebar();
     const adminItems = [...administrationItems];
     const operationalItems = [...workItems];
     const knowledgeNavigationItems = [...knowledgeItems];
@@ -116,6 +117,11 @@ export function AppSidebar() {
                 <Link
                     href={dashboard()}
                     prefetch
+                    onClick={() => {
+                        if (isMobile) {
+                            setOpenMobile(false);
+                        }
+                    }}
                     className="group flex w-full items-center rounded-xl p-1 transition-colors hover:bg-slate-100/80 focus:outline-none dark:hover:bg-white/[0.06]"
                 >
                     <AppLogo />

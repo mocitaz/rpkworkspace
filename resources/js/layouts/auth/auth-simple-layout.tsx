@@ -20,9 +20,9 @@ export default function AuthSimpleLayout({
             </div>
 
             {/* Center Floating Auth Card */}
-            <main className="relative z-10 flex flex-1 items-center justify-center p-4 sm:p-6 lg:p-8">
+            <main className="relative z-10 flex flex-1 items-center justify-center p-3 sm:p-6 lg:p-8">
                 <div className="w-full max-w-[420px]">
-                    <div className="rounded-3xl border border-slate-200/80 bg-white/95 p-7 shadow-2xl shadow-slate-900/10 backdrop-blur-xl sm:p-9 dark:border-white/10 dark:bg-[#14161b]/95 dark:shadow-2xl">
+                    <div className="rounded-3xl border border-slate-200/80 bg-white/95 p-5 shadow-2xl shadow-slate-900/10 backdrop-blur-xl sm:p-9 dark:border-white/10 dark:bg-[#14161b]/95 dark:shadow-2xl">
                         {/* Brand Logo & Header */}
                         <div className="mb-5 flex flex-col items-center text-center">
                             <Link

@@ -400,7 +400,57 @@ export default function TasksIndex({
                     ) : viewMode === 'table' ? (
                         /* Precision Data Table View */
                         <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="overflow-x-auto">
+                            {/* Mobile Cards (sm:hidden) */}
+                            <div className="divide-y divide-slate-100 sm:hidden dark:divide-white/[0.04]">
+                                {tasks.data.map((task) => {
+                                    const overdue = isTaskOverdue(task);
+                                    return (
+                                        <div
+                                            key={task.id}
+                                            onClick={() => setSelectedTask(task)}
+                                            className="cursor-pointer space-y-2 p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
+                                        >
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="min-w-0 flex-1">
+                                                    <p
+                                                        className={`text-xs font-bold text-slate-900 dark:text-white ${
+                                                            task.status === 'completed'
+                                                                ? 'line-through opacity-50'
+                                                                : ''
+                                                        }`}
+                                                    >
+                                                        {task.title}
+                                                    </p>
+                                                    {task.matter && (
+                                                        <p className="mt-0.5 truncate font-mono text-[10px] font-semibold text-blue-600 dark:text-blue-400">
+                                                            {task.matter.matter_number} · {task.matter.title}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                                <ChevronRight className="size-4 shrink-0 text-slate-400" />
+                                            </div>
+                                            <div className="flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-2 text-[10px] dark:border-white/[0.04]">
+                                                <StatusBadge value={task.status} />
+                                                <StatusBadge value={task.priority} />
+                                                {task.due_at && (
+                                                    <span
+                                                        className={`ml-auto font-mono ${
+                                                            overdue
+                                                                ? 'font-bold text-rose-600 dark:text-rose-400'
+                                                                : 'text-slate-500 dark:text-zinc-400'
+                                                        }`}
+                                                    >
+                                                        {formatDate(task.due_at)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Desktop Table (hidden sm:block) */}
+                            <div className="hidden overflow-x-auto sm:block">
                                 <table className="w-full text-left text-xs">
                                     <thead>
                                         <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">

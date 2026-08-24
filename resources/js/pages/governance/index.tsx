@@ -250,12 +250,12 @@ export default function GovernanceIndex({
                         </div>
                     </section>
 
-                    {/* 3. Segmented Tab Switcher */}
-                    <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-200/60 pb-2.5 dark:border-white/[0.06]">
+                    {/* 3. Segmented Tab Navigation for Governance */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto border-b border-slate-200/60 pb-2.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden dark:border-white/[0.06]">
                         <button
                             type="button"
                             onClick={() => setActiveTab('all')}
-                            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                            className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                                 activeTab === 'all'
                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-950'
                                     : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-400'
@@ -267,7 +267,7 @@ export default function GovernanceIndex({
                         <button
                             type="button"
                             onClick={() => setActiveTab('correspondence')}
-                            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                            className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                                 activeTab === 'correspondence'
                                     ? 'bg-blue-600 text-white shadow-2xs'
                                     : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-blue-50/50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-400'
@@ -279,7 +279,7 @@ export default function GovernanceIndex({
                         <button
                             type="button"
                             onClick={() => setActiveTab('conflicts')}
-                            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                            className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                                 activeTab === 'conflicts'
                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                     : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-400'
@@ -291,7 +291,7 @@ export default function GovernanceIndex({
                         <button
                             type="button"
                             onClick={() => setActiveTab('hold')}
-                            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                            className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                                 activeTab === 'hold'
                                     ? 'bg-emerald-600 text-white shadow-2xs'
                                     : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-emerald-50/50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-400'

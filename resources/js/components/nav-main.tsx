@@ -5,6 +5,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    useSidebar,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import type { NavItem } from '@/types';
@@ -17,6 +18,7 @@ export function NavMain({
     label: string;
 }) {
     const { isCurrentUrl } = useCurrentUrl();
+    const { isMobile, setOpenMobile } = useSidebar();
 
     return (
         <SidebarGroup className="px-2.5 py-1.5 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-1">
@@ -44,6 +46,11 @@ export function NavMain({
                                 <Link
                                     href={item.href}
                                     prefetch
+                                    onClick={() => {
+                                        if (isMobile) {
+                                            setOpenMobile(false);
+                                        }
+                                    }}
                                     className={`group relative flex h-8.5 w-full items-center gap-2.5 rounded-xl px-2.5 text-xs transition-all duration-150 group-data-[collapsible=icon]:mx-auto! group-data-[collapsible=icon]:size-9! group-data-[collapsible=icon]:justify-center! group-data-[collapsible=icon]:p-0! ${
                                         active
                                             ? 'bg-slate-900 font-bold text-white shadow-2xs dark:bg-white dark:text-slate-900'

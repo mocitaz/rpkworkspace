@@ -226,7 +226,7 @@ export default function FinanceIndex({
                         <Button
                             type="submit"
                             size="sm"
-                            className="h-8 shrink-0 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                            className="h-8 w-full shrink-0 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white hover:bg-slate-800 sm:w-auto dark:bg-white dark:text-slate-900"
                         >
                             Filter Ringkasan
                         </Button>
@@ -421,11 +421,11 @@ export default function FinanceIndex({
                     )}
 
                     {/* Segmented Tab Navigation for Ledgers */}
-                    <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-200/60 pb-3 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-1.5 overflow-x-auto border-b border-slate-200/60 pb-2.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden dark:border-white/[0.06]">
                         <button
                             type="button"
                             onClick={() => setActiveTab('all')}
-                            className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                            className={`flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                                 activeTab === 'all'
                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                     : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
@@ -437,7 +437,7 @@ export default function FinanceIndex({
                         <button
                             type="button"
                             onClick={() => setActiveTab('invoices')}
-                            className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                            className={`flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                                 activeTab === 'invoices'
                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                     : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
@@ -449,7 +449,7 @@ export default function FinanceIndex({
                         <button
                             type="button"
                             onClick={() => setActiveTab('quotations')}
-                            className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                            className={`flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                                 activeTab === 'quotations'
                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                     : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
@@ -461,7 +461,7 @@ export default function FinanceIndex({
                         <button
                             type="button"
                             onClick={() => setActiveTab('expenses')}
-                            className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                            className={`flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                                 activeTab === 'expenses'
                                     ? 'bg-rose-600 text-white shadow-2xs'
                                     : 'border border-slate-200/70 bg-white text-rose-700 hover:bg-rose-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-rose-400'
@@ -473,7 +473,7 @@ export default function FinanceIndex({
                         <button
                             type="button"
                             onClick={() => setActiveTab('payments')}
-                            className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                            className={`flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                                 activeTab === 'payments'
                                     ? 'bg-emerald-600 text-white shadow-2xs'
                                     : 'border border-slate-200/70 bg-white text-emerald-700 hover:bg-emerald-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-emerald-400'

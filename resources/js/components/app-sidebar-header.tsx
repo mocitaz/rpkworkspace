@@ -23,12 +23,12 @@ export function AppSidebarHeader({
     const getInitials = useInitials();
 
     return (
-        <header className="sticky top-0 z-30 flex h-13 shrink-0 items-center justify-between gap-3 border-b border-slate-200/80 bg-white/95 px-3.5 backdrop-blur-xl transition-colors sm:px-5 dark:border-white/[0.08] dark:bg-[#121418]/95">
+        <header className="sticky top-0 z-30 flex h-13 shrink-0 items-center justify-between gap-2 border-b border-slate-200/80 bg-white/95 px-2.5 backdrop-blur-xl transition-colors sm:gap-3 sm:px-5 dark:border-white/[0.08] dark:bg-[#121418]/95">
             {/* Left: Breadcrumbs & Mobile Toggle */}
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
                 <SidebarTrigger className="size-8.5 rounded-xl text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 active:scale-95 md:hidden dark:text-zinc-400 dark:hover:bg-white/[0.08] dark:hover:text-white" />
                 {breadcrumbs.length > 0 && (
-                    <div className="min-w-0">
+                    <div className="hidden min-w-0 sm:flex">
                         <Breadcrumbs breadcrumbs={breadcrumbs} />
                     </div>
                 )}
