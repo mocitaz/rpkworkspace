@@ -312,11 +312,11 @@ export default function GovernanceIndex({
                     </div>
 
                     {/* 4. Main 2-Column Grid */}
-                    <div className="grid gap-4 lg:grid-cols-2">
+                    <div className="grid gap-4 lg:grid-cols-2 items-start">
                         {/* Section 1: Korespondensi Terbaru */}
                         {(activeTab === 'all' || activeTab === 'correspondence') && (
-                            <div className={activeTab === 'correspondence' ? 'lg:col-span-2' : 'flex h-full flex-col'}>
-                                <div className="flex h-full flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className={activeTab === 'correspondence' ? 'lg:col-span-2' : ''}>
+                                <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     {/* Header */}
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3 dark:border-white/[0.04]">
                                         <div className="flex items-center gap-2.5">
@@ -352,7 +352,7 @@ export default function GovernanceIndex({
                                     {/* Refined Filter Toolbar */}
                                     <Form
                                         {...governanceRoutes.index.form()}
-                                        className="my-3.5 space-y-2.5 rounded-xl border border-slate-200/60 bg-slate-50/50 p-3 dark:border-white/[0.04] dark:bg-[#121418]"
+                                        className="my-3 space-y-2 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]"
                                     >
                                         {/* Row 1: Search Input & Action Buttons */}
                                         <div className="flex gap-2">
@@ -360,7 +360,7 @@ export default function GovernanceIndex({
                                                 <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                                                 <Input
                                                     name="search"
-                                                    placeholder="Cari perihal surat, nomor, atau isi pesan..."
+                                                    placeholder="Cari perihal surat, nomor, atau isi..."
                                                     defaultValue={filters.search}
                                                     className="h-8 rounded-lg border-slate-200/80 bg-white pl-8 text-xs text-slate-900 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-100"
                                                 />
@@ -368,7 +368,7 @@ export default function GovernanceIndex({
                                             <Button
                                                 type="submit"
                                                 size="sm"
-                                                className="h-8 shrink-0 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                                className="h-8 shrink-0 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                             >
                                                 Filter
                                             </Button>
@@ -417,9 +417,9 @@ export default function GovernanceIndex({
                                     </Form>
 
                                     {/* List Data / Empty State */}
-                                    <div className="flex flex-1 flex-col justify-center">
+                                    <div className="mt-1">
                                         {correspondences.length ? (
-                                            <div className="space-y-2">
+                                            <div className="max-h-[620px] overflow-y-auto space-y-2 pr-1">
                                                 {correspondences.map((item) => {
                                                     const isInbound = item.direction === 'inbound';
                                                     return (
