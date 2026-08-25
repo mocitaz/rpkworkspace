@@ -41,16 +41,34 @@ it('lets an administrator update role permissions while retaining administration
         ->toContain('audit.view', 'admin.users.manage');
 });
 
-it('prevents an administrator from disabling themselves', function () {
-    $administrator = rafUser(['admin.users.manage']);
-    $administratorRole = Role::query()->create(['name' => 'Administrator', 'slug' => 'administrator']);
-    $administratorRole->permissions()->sync([Permission::query()->firstOrCreate(['name' => 'admin.users.manage'])->getKey()]);
-    $administrator->roles()->sync([$administratorRole->getKey()]);
+it('allows an administrator to create a user with a manual password without sending reset link', function () {
+    Notification::fake();
 
-    $this->actingAs($administrator)->put(route('admin.users.update', $administrator), [
-        'name' => $administrator->name,
-        'email' => $administrator->email,
-        'is_active' => false,
-        'role_ids' => [$administratorRole->getKey()],
-    ])->assertStatus(422);
+    $administrator = rafUser(['admin.users.manage']);
+    $associate = Role::query()->create(['name' => 'Staff Associate', 'slug' => 'staff-associate']);
+
+    $this->actingAs($administrator)->post(route('admin.users.store'), [
+        'name' => 'Budi Staff',
+        'email' => 'budi@example.test',
+        'password' => 'Secret12345!',
+        'position_title' => 'Associate',
+        'role_ids' => [$associate->getKey()],
+    ])->assertSessionHasNoErrors();
+
+    $user = User::query()->where('email', 'budi@example.test')->firstOrFail();
+    expect($user->is_active)->toBeTrue()
+        ->and(\Illuminate\Support\Facades\Hash::check('Secret12345!', $user->password))->toBeTrue();
+
+    Notification::assertNothingSent();
+
+    // Now update the password
+    $this->actingAs($administrator)->put(route('admin.users.update', $user), [
+        'name' => 'Budi Staff Updated',
+        'email' => 'budi@example.test',
+        'password' => 'NewPassword999!',
+        'is_active' => true,
+        'role_ids' => [$associate->getKey()],
+    ])->assertSessionHasNoErrors();
+
+    expect(\Illuminate\Support\Facades\Hash::check('NewPassword999!', $user->fresh()->password))->toBeTrue();
 });

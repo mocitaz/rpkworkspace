@@ -33,6 +33,7 @@ class UpdateAdminUserRequest extends FormRequest
                 Rule::unique((new User)->getTable(), 'email')->ignore($this->route('user')),
             ],
             'position_title' => ['nullable', 'string', 'max:150'],
+            'password' => ['nullable', 'string', 'min:8'],
             'is_active' => ['required', 'boolean'],
             'role_ids' => ['required', 'array', 'min:1'],
             'role_ids.*' => ['integer', 'distinct', 'exists:roles,id'],

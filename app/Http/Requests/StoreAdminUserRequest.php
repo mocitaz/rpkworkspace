@@ -28,6 +28,7 @@ class StoreAdminUserRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique((new User)->getTable(), 'email')],
             'position_title' => ['nullable', 'string', 'max:150'],
+            'password' => ['nullable', 'string', 'min:8'],
             'role_ids' => ['required', 'array', 'min:1'],
             'role_ids.*' => ['integer', 'distinct', 'exists:roles,id'],
         ];

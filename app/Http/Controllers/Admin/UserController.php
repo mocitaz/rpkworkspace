@@ -54,10 +54,13 @@ class UserController extends Controller
 
     public function store(StoreAdminUserRequest $request, AuditService $audit): RedirectResponse
     {
-        $user = DB::transaction(function () use ($request) {
+        $hasCustomPassword = $request->filled('password');
+        $initialPassword = $hasCustomPassword ? (string) $request->input('password') : Str::password(32);
+
+        $user = DB::transaction(function () use ($request, $initialPassword) {
             $user = User::query()->create([
-                ...$request->safe()->except('role_ids'),
-                'password' => Str::password(32),
+                ...$request->safe()->except(['role_ids', 'password']),
+                'password' => $initialPassword,
                 'is_active' => true,
             ]);
             $user->roles()->sync($this->roleAssignments($request->validated('role_ids'), $request->user()));
@@ -65,14 +68,23 @@ class UserController extends Controller
             return $user;
         });
 
-        $resetStatus = Password::sendResetLink(['email' => $user->email]);
-        $audit->record($user, 'user.invited', ['role_ids' => $request->validated('role_ids')], $request->user(), $request);
+        $resetStatus = null;
+        if (! $hasCustomPassword) {
+            $resetStatus = Password::sendResetLink(['email' => $user->email]);
+        }
+
+        $audit->record($user, 'user.invited', [
+            'role_ids' => $request->validated('role_ids'),
+            'manual_password_set' => $hasCustomPassword,
+        ], $request->user(), $request);
 
         return back()->with(
-            $resetStatus === Password::RESET_LINK_SENT ? 'success' : 'error',
-            $resetStatus === Password::RESET_LINK_SENT
-                ? 'Undangan dibuat dan tautan pengaturan password dikirim.'
-                : 'Akun dibuat, tetapi email undangan belum dapat dikirim.',
+            'success',
+            $hasCustomPassword
+                ? "Pengguna {$user->name} berhasil ditambahkan dengan password yang ditentukan."
+                : ($resetStatus === Password::RESET_LINK_SENT
+                    ? 'Undangan dibuat dan tautan pengaturan password dikirim ke email.'
+                    : 'Akun dibuat, namun email aktivasi belum dapat dikirim.')
         );
     }
 
@@ -92,18 +104,22 @@ class UserController extends Controller
         abort_if($request->user()->is($user) && ! $selectedRolesRetainAdministration, 422, 'Anda tidak dapat mencabut akses administrasi akun sendiri.');
 
         DB::transaction(function () use ($validated, $request, $user): void {
-            $user->update([
-                ...collect($validated)->except('role_ids')->all(),
-                'disabled_at' => $validated['is_active'] ? null : now(),
-            ]);
+            $data = collect($validated)->except(['role_ids', 'password'])->all();
+            if ($request->filled('password')) {
+                $data['password'] = (string) $request->input('password');
+            }
+            $data['disabled_at'] = $validated['is_active'] ? null : now();
+
+            $user->update($data);
             $user->roles()->sync($this->roleAssignments($validated['role_ids'], $request->user()));
         });
         $audit->record($user, 'user.updated', [
             'is_active' => $user->is_active,
             'role_ids' => $validated['role_ids'],
+            'password_changed' => $request->filled('password'),
         ], $request->user(), $request);
 
-        return back()->with('success', 'Pengguna diperbarui.');
+        return back()->with('success', 'Data pengguna berhasil diperbarui.');
     }
 
     /**

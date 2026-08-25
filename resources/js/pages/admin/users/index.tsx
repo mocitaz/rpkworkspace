@@ -412,6 +412,12 @@ export default function UsersIndex({
                                     label="Jabatan / Posisi"
                                     placeholder="Contoh: Senior Associate"
                                 />
+                                <Field
+                                    name="password"
+                                    label="Password Akun (Opsional)"
+                                    type="password"
+                                    placeholder="Minimal 8 karakter (kosongkan jika kirim link aktivasi via email)"
+                                />
 
                                 <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
                                     <Label className="text-xs font-semibold text-slate-900 dark:text-white">
@@ -635,6 +641,12 @@ function EditUserDialog({
                                 name="position_title"
                                 label="Jabatan / Posisi"
                                 defaultValue={user.position_title ?? ''}
+                            />
+                            <Field
+                                name="password"
+                                label="Ubah Password (Opsional)"
+                                type="password"
+                                placeholder="Kosongkan jika tidak ingin mengubah password saat ini"
                             />
 
                             <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
