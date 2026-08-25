@@ -1,26 +1,21 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import {
     AlertTriangle,
-    Briefcase,
     Building2,
     Check,
     CheckCircle2,
     ChevronDown,
     Contact,
     Copy,
-    IdCard,
     KeyRound,
     Mail,
-    MapPin,
     MessageSquare,
     Pencil,
-    Plus,
     RotateCcw,
     Search,
     Shield,
     ShieldCheck,
     Trash2,
-    UserCheck,
     UserPlus,
     Users,
 } from 'lucide-react';
@@ -125,7 +120,7 @@ export default function UsersIndex({
                                 Personel &amp; Hak Akses
                             </h1>
                             <p className="text-[11px] text-slate-500 sm:text-xs dark:text-zinc-400">
-                                Direktori staf firma, kartu identitas pegawai digital, dan matriks hak akses perizinan (permissions).
+                                Direktori staf firma, kartu identitas pegawai digital, dan matriks hak akses perizinan.
                             </p>
                         </div>
 
@@ -134,7 +129,7 @@ export default function UsersIndex({
                             <Button
                                 size="sm"
                                 onClick={() => setInviteOpen(true)}
-                                className="h-7.5 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
+                                className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
                             >
                                 <UserPlus className="mr-1.5 size-3.5" />
                                 Tambah Staf Baru
@@ -148,7 +143,7 @@ export default function UsersIndex({
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
                                 <span className="text-[10px] font-bold uppercase tracking-wider">TOTAL PERSONEL</span>
-                                <Users className="size-3.5 text-blue-600 dark:text-blue-400" />
+                                <Users className="size-3.5 text-slate-700 dark:text-zinc-300" />
                             </div>
                             <div className="mt-1.5 flex items-baseline gap-1.5">
                                 <span className="font-mono text-xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -160,7 +155,7 @@ export default function UsersIndex({
                             </div>
                             <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Terdaftar Resmi</span>
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">Firma Hukum</span>
+                                <span className="font-semibold text-slate-800 dark:text-zinc-200">Firma Hukum</span>
                             </div>
                         </div>
 
@@ -188,10 +183,10 @@ export default function UsersIndex({
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
                                 <span className="text-[10px] font-bold uppercase tracking-wider">STRUKTUR ROLE</span>
-                                <ShieldCheck className="size-3.5 text-purple-600 dark:text-purple-400" />
+                                <ShieldCheck className="size-3.5 text-slate-700 dark:text-zinc-300" />
                             </div>
                             <div className="mt-1.5 flex items-baseline gap-1.5">
-                                <span className="font-mono text-xl font-bold tracking-tight text-purple-600 dark:text-purple-400">
+                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {metrics.roles_count}
                                 </span>
                                 <span className="text-[10.5px] text-slate-500 dark:text-zinc-400">
@@ -200,7 +195,7 @@ export default function UsersIndex({
                             </div>
                             <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Hirarki Posisi</span>
-                                <span className="font-semibold text-purple-600">Partner &amp; Staf</span>
+                                <span className="font-semibold text-slate-800 dark:text-zinc-200">Partner &amp; Staf</span>
                             </div>
                         </div>
 
@@ -208,10 +203,10 @@ export default function UsersIndex({
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
                                 <span className="text-[10px] font-bold uppercase tracking-wider">MATRIKS PERMISSION</span>
-                                <KeyRound className="size-3.5 text-amber-500" />
+                                <KeyRound className="size-3.5 text-slate-700 dark:text-zinc-300" />
                             </div>
                             <div className="mt-1.5 flex items-baseline gap-1.5">
-                                <span className="font-mono text-xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
+                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {metrics.permissions_count}
                                 </span>
                                 <span className="text-[10.5px] text-slate-500 dark:text-zinc-400">
@@ -220,7 +215,7 @@ export default function UsersIndex({
                             </div>
                             <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Hak Akses Fitur</span>
-                                <span className="font-semibold text-amber-600">Granular</span>
+                                <span className="font-semibold text-slate-800 dark:text-zinc-200">Granular</span>
                             </div>
                         </div>
                     </section>
@@ -230,19 +225,19 @@ export default function UsersIndex({
                         <button
                             type="button"
                             onClick={() => setTab('cards')}
-                            className={`flex h-7.5 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all ${
+                            className={`flex h-7.5 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-all ${
                                 tab === 'cards'
                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                     : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300'
                             }`}
                         >
-                            <Contact className="size-3.5 text-blue-500" />
+                            <Contact className="size-3.5" />
                             Kartu Pegawai ({users.total})
                         </button>
                         <button
                             type="button"
                             onClick={() => setTab('users')}
-                            className={`flex h-7.5 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all ${
+                            className={`flex h-7.5 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-all ${
                                 tab === 'users'
                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                     : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300'
@@ -254,10 +249,10 @@ export default function UsersIndex({
                         <button
                             type="button"
                             onClick={() => setTab('roles')}
-                            className={`flex h-7.5 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all ${
+                            className={`flex h-7.5 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-all ${
                                 tab === 'roles'
-                                    ? 'bg-purple-600 text-white shadow-2xs'
-                                    : 'border border-slate-200/70 bg-white text-purple-700 hover:bg-purple-50 dark:border-white/10 dark:bg-[#14161b] dark:text-purple-300'
+                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300'
                             }`}
                         >
                             <KeyRound className="size-3.5" />
@@ -280,7 +275,7 @@ export default function UsersIndex({
                                             name="search"
                                             defaultValue={filters.search}
                                             placeholder="Cari nama, NIP, email, jabatan, atau departemen..."
-                                            className="h-7.5 w-full rounded-lg border-slate-200 bg-white pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
+                                            className="h-7.5 w-full rounded-lg border-slate-200 bg-white pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:ring-0 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
                                         />
                                     </div>
                                     {(filters.search || filters.role_id) && (
@@ -296,7 +291,7 @@ export default function UsersIndex({
                                             </Link>
                                         </Button>
                                     )}
-                                    <span className="shrink-0 rounded-md bg-white px-2 py-0.5 font-mono text-[10.5px] font-semibold text-slate-700 border border-slate-200/70 shadow-2xs dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-300">
+                                    <span className="shrink-0 rounded-md bg-white px-2.5 py-0.5 font-mono text-[10.5px] font-semibold text-slate-700 border border-slate-200/70 shadow-2xs dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-300">
                                         {users.total} personel
                                     </span>
                                 </div>
@@ -307,7 +302,7 @@ export default function UsersIndex({
                                         <select
                                             name="role_id"
                                             defaultValue={filters.role_id ?? ''}
-                                            className="h-7.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                            className="h-7.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-slate-400 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                         >
                                             <option value="">Semua Role / Kewenangan</option>
                                             {roles.map((r) => (
@@ -344,7 +339,7 @@ export default function UsersIndex({
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200/70 bg-white py-12 px-4 text-center shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                        <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200/70 bg-white py-12 px-4 text-center shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                             <div className="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 dark:bg-white/[0.06] dark:text-zinc-400">
                                                 <Contact className="size-5" />
                                             </div>
@@ -360,7 +355,7 @@ export default function UsersIndex({
                                                 <Button
                                                     size="sm"
                                                     onClick={() => setInviteOpen(true)}
-                                                    className="mt-3.5 h-7.5 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
+                                                    className="mt-3.5 h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                                 >
                                                     <UserPlus className="mr-1 size-3" /> Tambah Staf Baru
                                                 </Button>
@@ -409,9 +404,9 @@ export default function UsersIndex({
                                                         {/* Avatar & User Info */}
                                                         <td className="py-2.5 pr-3 pl-4">
                                                             <div className="flex items-center gap-2.5">
-                                                                <Avatar className="size-8 shrink-0 rounded-lg border border-slate-200 shadow-2xs dark:border-white/10">
-                                                                    <AvatarImage src={user.avatar_url ?? undefined} />
-                                                                    <AvatarFallback className="rounded-lg bg-blue-50 text-[11px] font-bold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                                                <Avatar className="size-8.5 shrink-0 rounded-lg border border-slate-200 shadow-2xs dark:border-white/10">
+                                                                    <AvatarImage src={user.avatar_url ?? undefined} className="object-cover" />
+                                                                    <AvatarFallback className="rounded-lg bg-slate-100 text-[11px] font-bold text-slate-800 dark:bg-zinc-800 dark:text-zinc-200">
                                                                         {getInitials(user.name)}
                                                                     </AvatarFallback>
                                                                 </Avatar>
@@ -419,7 +414,7 @@ export default function UsersIndex({
                                                                     <button
                                                                         type="button"
                                                                         onClick={() => setSelectedStaff(user)}
-                                                                        className="text-left font-semibold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 transition-colors"
+                                                                        className="text-left font-semibold text-slate-900 hover:text-slate-600 dark:text-white dark:hover:text-zinc-300 transition-colors"
                                                                     >
                                                                         {user.name}
                                                                     </button>
@@ -450,7 +445,7 @@ export default function UsersIndex({
                                                                     user.roles.map((r) => (
                                                                         <span
                                                                             key={r.id}
-                                                                            className="rounded bg-purple-50 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-purple-700 dark:bg-purple-950/40 dark:text-purple-300"
+                                                                            className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-700 border border-slate-200/60 dark:bg-zinc-800 dark:text-zinc-300 dark:border-white/5"
                                                                         >
                                                                             {r.name}
                                                                         </span>
@@ -473,7 +468,7 @@ export default function UsersIndex({
                                                                     variant="outline"
                                                                     size="sm"
                                                                     onClick={() => setSelectedStaff(user)}
-                                                                    className="h-7 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-blue-600 shadow-2xs hover:bg-blue-50 dark:border-white/10 dark:bg-zinc-800 dark:text-blue-400"
+                                                                    className="h-7 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                                                     title="Lihat Kartu Pegawai Digital"
                                                                 >
                                                                     <Contact className="size-3" />
@@ -550,7 +545,7 @@ export default function UsersIndex({
 
             {/* Modal: Kredensial Pengguna yang Baru Dibuat */}
             <Dialog open={!!createdCreds} onOpenChange={(open) => !open && setCreatedCreds(null)}>
-                <DialogContent className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                <DialogContent className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
                     <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                         <div className="flex items-center gap-3">
                             <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
@@ -569,14 +564,14 @@ export default function UsersIndex({
 
                     {createdCreds && (
                         <div className="space-y-3.5 pt-2 text-xs">
-                            <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-[#121418]">
+                            <div className="space-y-2 rounded-xl border border-slate-200 bg-slate-50/70 p-3 dark:border-white/10 dark:bg-[#121418]">
                                 <div className="flex items-center justify-between border-b border-slate-200/60 pb-2 dark:border-white/5">
                                     <span className="text-slate-500">Nama Pengguna</span>
                                     <span className="font-bold text-slate-900 dark:text-white">{createdCreds.name}</span>
                                 </div>
                                 <div className="flex items-center justify-between border-b border-slate-200/60 pb-2 dark:border-white/5">
                                     <span className="text-slate-500">Email Login</span>
-                                    <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{createdCreds.email}</span>
+                                    <span className="font-mono font-bold text-slate-900 dark:text-white">{createdCreds.email}</span>
                                 </div>
                                 <div className="flex items-center justify-between border-b border-slate-200/60 pb-2 dark:border-white/5">
                                     <span className="text-slate-500">Password</span>
@@ -606,7 +601,7 @@ export default function UsersIndex({
                                         setCopied(true);
                                         setTimeout(() => setCopied(false), 2500);
                                     }}
-                                    className="flex-1 h-8.5 rounded-lg bg-blue-600 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
+                                    className="flex-1 h-8.5 rounded-lg bg-slate-900 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
                                 >
                                     {copied ? (
                                         <>
@@ -669,22 +664,19 @@ function StaffCard({
     return (
         <div
             onClick={() => onViewDetail(user)}
-            className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:-translate-y-0.5 hover:border-blue-400 hover:shadow-md cursor-pointer dark:border-white/[0.06] dark:bg-[#14161b] dark:hover:border-blue-500/50"
+            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 shadow-2xs transition-all duration-200 hover:-translate-y-1 hover:border-slate-400 hover:shadow-md cursor-pointer dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/20"
         >
-            {/* Top decorative gradient bar */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-slate-900 dark:from-blue-500 dark:via-indigo-400 dark:to-white" />
-
-            <div>
-                {/* Header ribbon & status */}
-                <div className="flex items-center justify-between gap-1.5 pt-0.5">
-                    <span className="font-mono text-[9.5px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+            <div className="space-y-3.5">
+                {/* Header: NIP Badge & Status (Clean, No colored strip) */}
+                <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-[10px] font-semibold tracking-wider text-slate-600 bg-slate-100 dark:bg-zinc-800 dark:text-zinc-300 px-2.5 py-0.5 rounded-md border border-slate-200/50 dark:border-white/5">
                         {displayId}
                     </span>
                     <span
-                        className={`inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9.5px] font-semibold ${
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                             user.is_active
-                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
-                                : 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
+                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-900/40'
+                                : 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200/60 dark:border-rose-900/40'
                         }`}
                     >
                         <span
@@ -696,12 +688,12 @@ function StaffCard({
                     </span>
                 </div>
 
-                {/* Avatar & Core Profile Info */}
-                <div className="mt-3 flex items-start gap-3">
-                    <div className="relative">
-                        <Avatar className="size-12 shrink-0 rounded-xl border border-slate-200 shadow-2xs dark:border-white/10">
-                            <AvatarImage src={user.avatar_url ?? undefined} />
-                            <AvatarFallback className="rounded-xl bg-gradient-to-br from-blue-50 to-indigo-100 text-xs font-bold text-blue-800 dark:from-blue-950 dark:to-indigo-900 dark:text-blue-200">
+                {/* Profile Core: Avatar & Identity */}
+                <div className="flex items-center gap-3.5 pt-0.5">
+                    <div className="relative shrink-0">
+                        <Avatar className="size-13 rounded-xl border border-slate-200/80 shadow-xs dark:border-white/10">
+                            <AvatarImage src={user.avatar_url ?? undefined} className="object-cover" />
+                            <AvatarFallback className="rounded-xl bg-slate-100 text-xs font-bold text-slate-800 dark:bg-zinc-800 dark:text-zinc-200">
                                 {getInitials(user.name)}
                             </AvatarFallback>
                         </Avatar>
@@ -712,61 +704,35 @@ function StaffCard({
                         )}
                     </div>
 
-                    <div className="min-w-0 flex-1">
-                        <h4 className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400 line-clamp-1">
+                    <div className="min-w-0 flex-1 space-y-0.5">
+                        <h4 className="text-xs font-bold tracking-tight text-slate-900 group-hover:text-slate-700 dark:text-white dark:group-hover:text-zinc-200 line-clamp-1">
                             {user.name}
                         </h4>
-                        <p className="mt-0.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400 line-clamp-1">
+                        <p className="text-[11px] font-semibold text-slate-600 dark:text-zinc-300 line-clamp-1">
                             {user.position_title || 'Staf Kantor Hukum'}
                         </p>
                         {user.department && (
-                            <div className="mt-0.5 flex items-center gap-1 text-[10px] text-slate-500 dark:text-zinc-400 truncate">
-                                <Building2 className="size-3 shrink-0 text-slate-400" />
+                            <div className="flex items-center gap-1 text-[10.5px] text-slate-400 dark:text-zinc-500 truncate">
+                                <Building2 className="size-3 shrink-0 text-slate-400 dark:text-zinc-500" />
                                 <span className="truncate">{user.department}</span>
                             </div>
                         )}
                     </div>
                 </div>
 
-                {/* Email line */}
-                <div className="mt-3 rounded-lg border border-slate-100 bg-slate-50/70 px-2.5 py-1.5 text-[10.5px] text-slate-600 dark:border-white/[0.04] dark:bg-[#121418] dark:text-zinc-300">
-                    <div className="flex items-center gap-1.5 truncate">
+                {/* Email Box */}
+                <div className="rounded-xl border border-slate-200/60 bg-slate-50/70 px-3 py-2 text-[11px] text-slate-600 transition-colors group-hover:bg-slate-100/70 dark:border-white/[0.04] dark:bg-[#121418] dark:text-zinc-300 dark:group-hover:bg-zinc-800/40">
+                    <div className="flex items-center gap-2 truncate">
                         <Mail className="size-3 shrink-0 text-slate-400" />
-                        <span className="font-mono truncate">{user.email}</span>
+                        <span className="font-mono text-[10.5px] truncate">{user.email}</span>
                     </div>
-                </div>
-
-                {/* Role pills & work mode */}
-                <div className="mt-2 flex flex-wrap items-center gap-1">
-                    {user.roles.length > 0 ? (
-                        user.roles.map((r) => (
-                            <span
-                                key={r.id}
-                                className="rounded bg-purple-50 px-1.5 py-0.5 font-mono text-[9.5px] font-semibold text-purple-700 dark:bg-purple-950/40 dark:text-purple-300"
-                            >
-                                {r.name}
-                            </span>
-                        ))
-                    ) : (
-                        <span className="text-[10px] text-slate-400">Tanpa Role</span>
-                    )}
-                    {user.work_mode && (
-                        <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[9.5px] font-medium text-slate-600 dark:bg-zinc-800 dark:text-zinc-300">
-                            {user.work_mode}
-                        </span>
-                    )}
-                    {user.employment_type && (
-                        <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[9.5px] font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                            {user.employment_type}
-                        </span>
-                    )}
                 </div>
             </div>
 
             {/* Bottom action bar */}
-            <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 dark:border-white/[0.04]">
-                <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-blue-600 group-hover:underline dark:text-blue-400">
-                    <Contact className="size-3" />
+            <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-white/[0.04]">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-900 group-hover:underline dark:text-zinc-200">
+                    <Contact className="size-3.5 text-slate-500 dark:text-zinc-400" />
                     Buka Kartu Staf
                 </span>
                 <Button
@@ -777,7 +743,7 @@ function StaffCard({
                         e.stopPropagation();
                         onEdit(user);
                     }}
-                    className="h-6.5 rounded-md px-2 text-[10.5px] font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+                    className="h-7 rounded-lg px-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
                 >
                     <Pencil className="mr-1 size-2.5" />
                     Kelola
@@ -805,65 +771,54 @@ function StaffDetailModal({
 
     return (
         <Dialog open={!!user} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
-                {/* 1. Executive ID Badge Top Header Banner */}
-                <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 p-5 text-white">
-                    {/* Watermark Logo Pattern & Shield */}
-                    <div className="pointer-events-none absolute right-2 top-2 opacity-10">
-                        <ShieldCheck className="size-36 text-white" />
-                    </div>
-                    <div className="relative z-10 flex items-center justify-between border-b border-white/10 pb-3">
-                        <div className="flex items-center gap-2">
-                            <div className="flex size-7 items-center justify-center rounded-lg bg-blue-600/30 border border-blue-400/30 text-blue-300">
-                                <Shield className="size-3.5" />
-                            </div>
-                            <div>
-                                <span className="block text-[10px] font-bold uppercase tracking-widest text-blue-300">
-                                    RPK LAW FIRM WORKSPACE
-                                </span>
-                                <span className="block text-[9px] text-slate-300">
-                                    Kartu Identitas Staf &amp; Anggota Tim Digital
-                                </span>
-                            </div>
-                        </div>
-                        <span className="rounded-md border border-white/20 bg-white/10 px-2 py-0.5 font-mono text-[10px] font-bold text-white shadow-2xs">
+            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                {/* 1. Ultra-clean Header ID Card Style (No blue banner) */}
+                <div className="border-b border-slate-100 bg-slate-50/70 p-5 text-center dark:border-white/[0.06] dark:bg-[#121418]">
+                    {/* Top Seal & NIP badge */}
+                    <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400 mb-3">
+                        <span className="flex items-center gap-1.5">
+                            <Shield className="size-3 text-slate-500 dark:text-zinc-400" />
+                            RPK WORKSPACE DIGITAL ID
+                        </span>
+                        <span className="rounded-md border border-slate-200/80 bg-white px-2 py-0.5 font-mono text-[10px] font-bold text-slate-700 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
                             {displayId}
                         </span>
                     </div>
 
-                    {/* Staff Profile Hero in ID Badge */}
-                    <div className="relative z-10 mt-4 flex items-center gap-3.5">
-                        <Avatar className="size-16 shrink-0 rounded-2xl border-2 border-white/20 shadow-lg">
-                            <AvatarImage src={user.avatar_url ?? undefined} />
-                            <AvatarFallback className="rounded-2xl bg-blue-800 text-sm font-bold text-white">
-                                {getInitials(user.name)}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0 flex-1 space-y-0.5">
-                            <div className="flex items-center gap-1.5">
-                                <h3 className="text-base font-bold tracking-tight text-white line-clamp-1">
-                                    {user.name}
-                                </h3>
-                                {user.is_active && (
-                                    <span title="Akun Aktif & Terverifikasi">
-                                        <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
-                                    </span>
-                                )}
-                            </div>
-                            <p className="text-xs font-semibold text-blue-200">
-                                {user.position_title || 'Staf Kantor Hukum'}
-                            </p>
-                            <p className="text-[11px] text-slate-300 flex items-center gap-1">
-                                <Building2 className="size-3 shrink-0 text-blue-300" />
-                                <span>{user.department || 'Divisi Hukum & Operasional'}</span>
-                            </p>
+                    {/* Centered Avatar and Identity */}
+                    <div className="flex flex-col items-center">
+                        <div className="relative">
+                            <Avatar className="size-20 rounded-2xl border-2 border-white shadow-md dark:border-zinc-800">
+                                <AvatarImage src={user.avatar_url ?? undefined} className="object-cover" />
+                                <AvatarFallback className="rounded-2xl bg-slate-900 text-base font-bold text-white dark:bg-white dark:text-slate-900">
+                                    {getInitials(user.name)}
+                                </AvatarFallback>
+                            </Avatar>
+                            {user.is_active && (
+                                <span className="absolute -bottom-1 -right-1 flex size-5 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#14161b]" title="Akun Aktif">
+                                    <Check className="size-2.5 text-white stroke-[3]" />
+                                </span>
+                            )}
                         </div>
+
+                        <h3 className="mt-3 text-base font-bold tracking-tight text-slate-900 dark:text-white">
+                            {user.name}
+                        </h3>
+                        <p className="mt-0.5 text-xs font-semibold text-slate-600 dark:text-zinc-300">
+                            {user.position_title || 'Staf Kantor Hukum'}
+                        </p>
+                        {user.department && (
+                            <div className="mt-1 flex items-center gap-1 text-[11px] text-slate-500 dark:text-zinc-400">
+                                <Building2 className="size-3 shrink-0 text-slate-400" />
+                                <span>{user.department}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                {/* 2. Structured Staff Details */}
+                {/* 2. Structured Staff Details (Clean, without Tipe Pegawai / Hybrid / Roles clutter) */}
                 <div className="p-5 space-y-3.5 text-xs">
-                    {/* Section: Kontak & Akun */}
+                    {/* Section: Email & Login */}
                     <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 dark:border-white/[0.06] dark:bg-[#121418] space-y-2">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
                             KONTAK &amp; KREDENSIAL RESMI
@@ -871,7 +826,7 @@ function StaffDetailModal({
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
                             <div className="flex flex-col gap-0.5">
                                 <span className="text-[10px] text-slate-400">Email Resmi</span>
-                                <div className="flex items-center justify-between gap-1 rounded-lg border border-slate-200/70 bg-white px-2 py-1 dark:border-white/10 dark:bg-zinc-800">
+                                <div className="flex items-center justify-between gap-1 rounded-lg border border-slate-200/70 bg-white px-2.5 py-1.5 dark:border-white/10 dark:bg-zinc-800">
                                     <span className="font-mono text-xs font-semibold text-slate-900 dark:text-white truncate">
                                         {user.email}
                                     </span>
@@ -882,7 +837,7 @@ function StaffDetailModal({
                                             setCopied(true);
                                             setTimeout(() => setCopied(false), 2000);
                                         }}
-                                        className="shrink-0 p-0.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer"
+                                        className="shrink-0 p-0.5 text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200 cursor-pointer"
                                         title="Salin Email"
                                     >
                                         {copied ? (
@@ -894,8 +849,8 @@ function StaffDetailModal({
                                 </div>
                             </div>
                             <div className="flex flex-col gap-0.5">
-                                <span className="text-[10px] text-slate-400">Status Akun Login</span>
-                                <div className="flex items-center gap-1.5 rounded-lg border border-slate-200/70 bg-white px-2 py-1 text-xs font-semibold dark:border-white/10 dark:bg-zinc-800">
+                                <span className="text-[10px] text-slate-400">Status Akun</span>
+                                <div className="flex items-center gap-1.5 rounded-lg border border-slate-200/70 bg-white px-2.5 py-1.5 text-xs font-semibold dark:border-white/10 dark:bg-zinc-800">
                                     <span
                                         className={`size-2 rounded-full ${
                                             user.is_active ? 'bg-emerald-500' : 'bg-rose-500'
@@ -909,62 +864,24 @@ function StaffDetailModal({
                         </div>
                     </div>
 
-                    {/* Section: Kepegawaian */}
+                    {/* Section: Identitas Pegawai */}
                     <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 dark:border-white/[0.06] dark:bg-[#121418] space-y-2">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-                            STATUS KEPEGAWAIAN &amp; OPERASIONAL
+                            INFORMASI IDENTITAS PEGAWAI
                         </span>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-0.5">
-                            <div className="rounded-lg border border-slate-200/70 bg-white p-2 dark:border-white/10 dark:bg-zinc-800">
-                                <span className="text-[10px] text-slate-400 block">Tipe Pegawai</span>
-                                <span className="font-semibold text-slate-900 dark:text-white mt-0.5 block">
-                                    {user.employment_type || 'Karyawan Tetap'}
-                                </span>
-                            </div>
-                            <div className="rounded-lg border border-slate-200/70 bg-white p-2 dark:border-white/10 dark:bg-zinc-800">
-                                <span className="text-[10px] text-slate-400 block">Mode Kerja</span>
-                                <span className="font-semibold text-slate-900 dark:text-white mt-0.5 block">
-                                    {user.work_mode || 'WFO (Kantor)'}
-                                </span>
-                            </div>
-                            <div className="rounded-lg border border-slate-200/70 bg-white p-2 dark:border-white/10 dark:bg-zinc-800 col-span-2 sm:col-span-1">
+                        <div className="grid grid-cols-2 gap-2 pt-0.5">
+                            <div className="rounded-lg border border-slate-200/70 bg-white p-2.5 dark:border-white/10 dark:bg-zinc-800">
                                 <span className="text-[10px] text-slate-400 block">Nomor NIP / ID</span>
-                                <span className="font-mono font-semibold text-blue-600 dark:text-blue-400 mt-0.5 block">
+                                <span className="font-mono font-bold text-slate-900 dark:text-white mt-0.5 block">
                                     {displayId}
                                 </span>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* Section: Roles & Hak Akses */}
-                    <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 dark:border-white/[0.06] dark:bg-[#121418] space-y-2">
-                        <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-                                ROLE &amp; OTORISASI AKSES
-                            </span>
-                            <span className="font-mono text-[10px] font-semibold text-purple-600 dark:text-purple-400">
-                                {user.roles.length} Role Terpasang
-                            </span>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5 pt-0.5">
-                            {user.roles.length > 0 ? (
-                                user.roles.map((r) => (
-                                    <div
-                                        key={r.id}
-                                        className="flex items-center gap-1.5 rounded-lg border border-purple-200/80 bg-purple-50 px-2.5 py-1 text-xs font-semibold text-purple-800 dark:border-purple-900/40 dark:bg-purple-950/40 dark:text-purple-300"
-                                    >
-                                        <KeyRound className="size-3 text-purple-600 dark:text-purple-400" />
-                                        <span>{r.name}</span>
-                                        <span className="font-mono text-[10px] text-purple-500">
-                                            ({r.permissions?.length ?? 0} izin)
-                                        </span>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-xs text-slate-400 italic">
-                                    Pengguna belum memiliki penetapan role khusus.
-                                </p>
-                            )}
+                            <div className="rounded-lg border border-slate-200/70 bg-white p-2.5 dark:border-white/10 dark:bg-zinc-800">
+                                <span className="text-[10px] text-slate-400 block">Departemen / Divisi</span>
+                                <span className="font-semibold text-slate-900 dark:text-white mt-0.5 block truncate">
+                                    {user.department || '-'}
+                                </span>
+                            </div>
                         </div>
                     </div>
 
@@ -974,7 +891,7 @@ function StaffDetailModal({
                             <Button
                                 asChild
                                 size="sm"
-                                className="h-7.5 flex-1 sm:flex-initial rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white hover:bg-blue-700 shadow-2xs"
+                                className="h-8 flex-1 sm:flex-initial rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white hover:bg-slate-800 shadow-2xs dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
                             >
                                 <Link href={`/chat?user_id=${user.id}`}>
                                     <MessageSquare className="mr-1.5 size-3.5" />
@@ -985,7 +902,7 @@ function StaffDetailModal({
                                 asChild
                                 variant="outline"
                                 size="sm"
-                                className="h-7.5 flex-1 sm:flex-initial rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                className="h-8 flex-1 sm:flex-initial rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
                             >
                                 <a href={`mailto:${user.email}`}>
                                     <Mail className="mr-1.5 size-3.5" />
@@ -1003,9 +920,9 @@ function StaffDetailModal({
                                     onClose();
                                     onEdit(user);
                                 }}
-                                className="h-7.5 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200"
+                                className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200"
                             >
-                                <Pencil className="mr-1.5 size-3.5 text-slate-400" />
+                                <Pencil className="mr-1.5 size-3 text-slate-400" />
                                 Edit Staf
                             </Button>
                             <Button
@@ -1013,7 +930,7 @@ function StaffDetailModal({
                                 variant="ghost"
                                 size="sm"
                                 onClick={onClose}
-                                className="h-7.5 rounded-lg px-3 text-xs font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800"
+                                className="h-8 rounded-lg px-3 text-xs font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800"
                             >
                                 Tutup
                             </Button>
@@ -1075,7 +992,7 @@ function RolePermissions({
                                                     name="permission_ids[]"
                                                     value={permission.id}
                                                     defaultChecked={isAssigned}
-                                                    className="mt-0.5 size-3.5 rounded border-slate-300 text-purple-600 focus:ring-purple-500"
+                                                    className="mt-0.5 size-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
                                                 />
                                                 <div className="min-w-0">
                                                     <span className="font-mono text-xs font-semibold text-slate-900 dark:text-white">
@@ -1096,7 +1013,7 @@ function RolePermissions({
                                     <Button
                                         size="sm"
                                         disabled={processing}
-                                        className="h-7.5 rounded-lg bg-purple-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-purple-700"
+                                        className="h-7.5 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                     >
                                         Simpan Izin Role {role.name}
                                     </Button>
@@ -1137,10 +1054,10 @@ function InviteUserDialog({
                 onOpenChange(nextOpen);
             }}
         >
-            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700 dark:bg-zinc-800 dark:text-zinc-200">
                             <UserPlus className="size-4" />
                         </div>
                         <div>
@@ -1181,7 +1098,7 @@ function InviteUserDialog({
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="Contoh: Rian Anggara, S.H."
                                     required
-                                    className="h-7.5 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    className="h-7.5 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-slate-400 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                 />
                                 <InputError message={errors.name} />
                             </div>
@@ -1197,7 +1114,7 @@ function InviteUserDialog({
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="rian@rpklawoffice.com"
                                     required
-                                    className="h-7.5 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    className="h-7.5 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-slate-400 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                 />
                                 <InputError message={errors.email} />
                             </div>
@@ -1215,25 +1132,12 @@ function InviteUserDialog({
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid gap-1">
                                 <Field
                                     name="department"
                                     label="Departemen / Divisi"
                                     placeholder="Litigasi & Arbitrase"
                                 />
-                                <div className="grid gap-1">
-                                    <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                        Mode Kerja
-                                    </Label>
-                                    <select
-                                        name="work_mode"
-                                        className="h-7.5 w-full rounded-lg border border-slate-200 bg-slate-50/60 px-2 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
-                                    >
-                                        <option value="WFO">WFO (Kantor)</option>
-                                        <option value="Hybrid">Hybrid</option>
-                                        <option value="Remote">Remote (WFH)</option>
-                                    </select>
-                                </div>
                             </div>
 
                             <div className="grid gap-1">
@@ -1251,32 +1155,32 @@ function InviteUserDialog({
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Kosongkan jika ingin default: password"
-                                    className="h-7.5 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    className="h-7.5 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-slate-400 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                 />
                                 <InputError message={errors.password} />
                             </div>
 
                             {/* Live Informative Auth Preview Box */}
-                            <div className="rounded-lg border border-blue-100 bg-blue-50/80 p-2.5 text-xs dark:border-blue-900/40 dark:bg-blue-950/30 space-y-1">
-                                <div className="flex items-center gap-1.5 font-bold text-blue-900 dark:text-blue-200 text-[11px]">
-                                    <KeyRound className="size-3 text-blue-600 dark:text-blue-400" />
+                            <div className="rounded-xl border border-slate-200/80 bg-slate-50/80 p-2.5 text-xs dark:border-white/10 dark:bg-[#121418] space-y-1">
+                                <div className="flex items-center gap-1.5 font-bold text-slate-800 dark:text-zinc-200 text-[11px]">
+                                    <KeyRound className="size-3 text-slate-600 dark:text-zinc-400" />
                                     <span>Informasi Akses Login Staf:</span>
                                 </div>
-                                <div className="space-y-0.5 text-[10.5px] text-blue-800/90 dark:text-blue-300">
+                                <div className="space-y-0.5 text-[10.5px] text-slate-600 dark:text-zinc-400">
                                     <p className="flex items-center justify-between">
                                         <span>• Email Login:</span>
-                                        <strong className="font-mono text-blue-950 dark:text-blue-100">{email || '(isi email di atas)'}</strong>
+                                        <strong className="font-mono text-slate-900 dark:text-white">{email || '(isi email di atas)'}</strong>
                                     </p>
                                     <p className="flex items-center justify-between">
                                         <span>• Password Login:</span>
-                                        <code className="rounded bg-white px-1.5 py-0.2 font-mono font-bold text-blue-900 border border-blue-200/60 dark:bg-zinc-800 dark:text-blue-200 dark:border-white/10">
+                                        <code className="rounded bg-white px-1.5 py-0.2 font-mono font-bold text-slate-900 border border-slate-200 shadow-2xs dark:bg-zinc-800 dark:text-zinc-200 dark:border-white/10">
                                             {password || 'password'}
                                         </code>
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/[0.06] dark:bg-[#121418]">
+                            <div className="space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/[0.06] dark:bg-[#121418]">
                                 <Label className="text-xs font-semibold text-slate-900 dark:text-white">
                                     Pilih Role Kewenangan *
                                 </Label>
@@ -1290,7 +1194,7 @@ function InviteUserDialog({
                                                 type="checkbox"
                                                 name="role_ids[]"
                                                 value={role.id}
-                                                className="size-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                                className="size-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
                                             />
                                             <span className="font-semibold text-slate-900 dark:text-white">{role.name}</span>
                                         </label>
@@ -1312,7 +1216,7 @@ function InviteUserDialog({
                                 <Button
                                     size="sm"
                                     disabled={processing}
-                                    className="h-7.5 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
+                                    className="h-7.5 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
                                 >
                                     {processing ? (
                                         <>
@@ -1350,7 +1254,7 @@ function EditUserDialog({
 
     return (
         <Dialog open={!!user} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
                         Kelola Pengguna: {user.name}
@@ -1368,10 +1272,10 @@ function EditUserDialog({
                     {({ errors, processing }) => (
                         <>
                             {/* Avatar Display */}
-                            <div className="flex items-center gap-2.5 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/5 dark:bg-[#121418]">
+                            <div className="flex items-center gap-2.5 rounded-xl border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/5 dark:bg-[#121418]">
                                 <Avatar className="size-10 shrink-0 rounded-lg border border-slate-200 shadow-2xs dark:border-white/10">
-                                    <AvatarImage src={user.avatar_url ?? undefined} />
-                                    <AvatarFallback className="rounded-lg bg-blue-50 text-xs font-bold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                    <AvatarImage src={user.avatar_url ?? undefined} className="object-cover" />
+                                    <AvatarFallback className="rounded-lg bg-slate-100 text-xs font-bold text-slate-800 dark:bg-zinc-800 dark:text-zinc-200">
                                         {getInitials(user.name)}
                                     </AvatarFallback>
                                 </Avatar>
@@ -1383,7 +1287,7 @@ function EditUserDialog({
                                         {user.email}
                                     </p>
                                     {user.position_title && (
-                                        <span className="mt-0.5 inline-block rounded bg-blue-50 px-1.5 py-0.2 font-mono text-[9.5px] font-semibold text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
+                                        <span className="mt-0.5 inline-block rounded bg-slate-100 px-2 py-0.5 font-mono text-[9.5px] font-semibold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
                                             {user.position_title}
                                         </span>
                                     )}
@@ -1417,26 +1321,12 @@ function EditUserDialog({
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid gap-1">
                                 <Field
                                     name="department"
                                     label="Departemen / Divisi"
                                     defaultValue={user.department ?? ''}
                                 />
-                                <div className="grid gap-1">
-                                    <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                        Mode Kerja
-                                    </Label>
-                                    <select
-                                        name="work_mode"
-                                        defaultValue={user.work_mode ?? 'WFO'}
-                                        className="h-7.5 w-full rounded-lg border border-slate-200 bg-slate-50/60 px-2 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
-                                    >
-                                        <option value="WFO">WFO (Kantor)</option>
-                                        <option value="Hybrid">Hybrid</option>
-                                        <option value="Remote">Remote (WFH)</option>
-                                    </select>
-                                </div>
                             </div>
 
                             <Field
@@ -1446,7 +1336,7 @@ function EditUserDialog({
                                 placeholder="Kosongkan jika tidak ingin mengubah password saat ini"
                             />
 
-                            <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/[0.06] dark:bg-[#121418]">
+                            <div className="space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/[0.06] dark:bg-[#121418]">
                                 <Label className="text-xs font-semibold text-slate-900 dark:text-white">
                                     Role Kewenangan
                                 </Label>
@@ -1461,7 +1351,7 @@ function EditUserDialog({
                                                 name="role_ids[]"
                                                 value={role.id}
                                                 defaultChecked={assignedRoleIds.has(role.id)}
-                                                className="size-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                                className="size-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
                                             />
                                             <span className="font-semibold text-slate-900 dark:text-white">{role.name}</span>
                                         </label>
@@ -1470,14 +1360,14 @@ function EditUserDialog({
                                 <InputError message={errors.role_ids} />
                             </div>
 
-                            <div className="flex items-center gap-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2 dark:border-white/5 dark:bg-zinc-800/40">
+                            <div className="flex items-center gap-2 rounded-xl border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/5 dark:bg-zinc-800/40">
                                 <input
                                     type="checkbox"
                                     id="is_active"
                                     name="is_active"
                                     value="1"
                                     defaultChecked={user.is_active}
-                                    className="size-3.5 rounded border-slate-300 text-blue-600"
+                                    className="size-3.5 rounded border-slate-300 text-slate-900"
                                 />
                                 <Label
                                     htmlFor="is_active"
@@ -1515,7 +1405,7 @@ function EditUserDialog({
                                     <Button
                                         size="sm"
                                         disabled={processing}
-                                        className="h-7.5 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
+                                        className="h-7.5 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                     >
                                         Simpan Perubahan
                                     </Button>
@@ -1541,7 +1431,7 @@ function DeleteUserDialog({
 
     return (
         <Dialog open={!!user} onOpenChange={onOpenChange}>
-            <DialogContent className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
                         <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
@@ -1559,9 +1449,9 @@ function DeleteUserDialog({
                 </DialogHeader>
 
                 <div className="space-y-3 pt-2">
-                    <div className="flex items-center gap-2.5 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/5 dark:bg-[#121418]">
+                    <div className="flex items-center gap-2.5 rounded-xl border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/5 dark:bg-[#121418]">
                         <Avatar className="size-9 shrink-0 rounded-lg border border-slate-200 dark:border-white/10">
-                            <AvatarImage src={user.avatar_url ?? undefined} />
+                            <AvatarImage src={user.avatar_url ?? undefined} className="object-cover" />
                             <AvatarFallback className="rounded-lg bg-rose-50 text-xs font-bold text-rose-700 dark:bg-rose-950 dark:text-rose-300">
                                 {getInitials(user.name)}
                             </AvatarFallback>
@@ -1652,7 +1542,7 @@ function Field({
                 placeholder={placeholder}
                 defaultValue={defaultValue}
                 required={required}
-                className="h-7.5 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                className="h-7.5 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-slate-400 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
             />
         </div>
     );
