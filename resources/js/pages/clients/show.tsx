@@ -20,6 +20,7 @@ import {
     Pencil,
     Phone,
     Plus,
+    Scale,
     Shield,
     ShieldAlert,
     ShieldCheck,
@@ -136,12 +137,12 @@ type Document = {
 };
 
 const tabs = [
-    { id: 'Overview', label: 'Ringkasan' },
-    { id: 'Matters', label: 'Matters' },
-    { id: 'Legalitas', label: 'Legalitas & Kepatuhan' },
-    { id: 'Kontak', label: 'Kontak Person' },
-    { id: 'KYC', label: 'Kepatuhan KYC & AML' },
-    { id: 'Dokumen', label: 'Dokumen' },
+    { id: 'Overview', label: 'Ringkasan', icon: Building2 },
+    { id: 'Matters', label: 'Matters', icon: Briefcase },
+    { id: 'Legalitas', label: 'Legalitas & Kepatuhan', icon: Scale },
+    { id: 'Kontak', label: 'Kontak Person', icon: ContactRound },
+    { id: 'KYC', label: 'Kepatuhan KYC & AML', icon: ShieldCheck },
+    { id: 'Dokumen', label: 'Dokumen', icon: FileText },
 ] as const;
 
 const complianceTypeLabels: Record<string, string> = {
@@ -383,26 +384,30 @@ export default function ClientShow({
                     <div className="flex flex-wrap items-center gap-1 rounded-xl border border-slate-200/70 bg-slate-100/70 p-1 dark:border-white/[0.06] dark:bg-[#14161b]">
                         {tabs.map((item) => {
                             const isActive = tab === item.id;
+                            const Icon = item.icon;
                             const count =
                                 item.id === 'Matters'
                                     ? allMatters.length
-                                    : item.id === 'Kontak'
-                                      ? client.contacts.length
-                                      : item.id === 'Dokumen'
-                                        ? documents.length
-                                        : null;
+                                    : item.id === 'Legalitas'
+                                      ? client.compliance_documents?.length || 0
+                                      : item.id === 'Kontak'
+                                        ? client.contacts.length
+                                        : item.id === 'Dokumen'
+                                          ? documents.length
+                                          : null;
 
                             return (
                                 <button
                                     key={item.id}
                                     type="button"
                                     onClick={() => setTab(item.id)}
-                                    className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-xs font-semibold transition-all ${
+                                    className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                                         isActive
                                             ? 'bg-white text-slate-900 shadow-2xs dark:bg-[#20232a] dark:text-white'
                                             : 'text-slate-600 hover:bg-white/60 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
                                     }`}
                                 >
+                                    <Icon className={`size-3.5 shrink-0 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-zinc-500'}`} />
                                     <span>{item.label}</span>
                                     {count !== null && count > 0 && (
                                         <span
