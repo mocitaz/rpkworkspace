@@ -13,11 +13,18 @@ import {
     Download,
     ExternalLink,
     Gavel,
+    Globe,
     Grid3X3,
+    Info,
+    Laptop,
+    Link2,
     List,
     ListTodo,
+    Lock,
+    Radio,
     RefreshCw,
     Scale,
+    ShieldCheck,
     Smartphone,
     TrendingUp,
     Users,
@@ -516,14 +523,14 @@ function LiveCalendarSyncModal({
                 <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
                     <div className="flex items-center gap-3">
                         <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
-                            <Smartphone className="size-5" />
+                            <Radio className="size-5" />
                         </div>
                         <div>
                             <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
                                 Langganan Kalender Otomatis (Live Sync)
                             </DialogTitle>
                             <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Cukup setup 1x saja — jadwal sidang, mediasi, &amp; tenggat perkara akan otomatis masuk ke HP Anda.
+                                Jadwal sidang, mediasi, dan tenggat perkara akan otomatis tersinkronisasi langsung ke HP Anda.
                             </DialogDescription>
                         </div>
                     </div>
@@ -531,20 +538,25 @@ function LiveCalendarSyncModal({
 
                 <div className="space-y-3.5 pt-2 text-xs">
                     {/* Opsi 1: Apple Calendar (iPhone / Mac / iPad) */}
-                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 transition-all hover:border-blue-400 hover:bg-white dark:border-white/[0.06] dark:bg-[#121418] dark:hover:border-blue-700">
+                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 transition-all hover:border-slate-400 hover:bg-white dark:border-white/[0.06] dark:bg-[#121418] dark:hover:border-zinc-700">
                         <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
-                            <div className="space-y-0.5">
-                                <div className="flex items-center gap-1.5">
-                                    <span className="font-bold text-slate-900 dark:text-white">
-                                        🍏 iPhone / iPad / Mac
-                                    </span>
-                                    <span className="rounded bg-blue-100 px-1.5 py-0.2 text-[9.5px] font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                                        Apple Calendar
-                                    </span>
+                            <div className="flex items-start gap-3">
+                                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900">
+                                    <Laptop className="size-4" />
                                 </div>
-                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                    Buka aplikasi Kalender bawaan &amp; klik Berlangganan langsung.
-                                </p>
+                                <div className="space-y-0.5 min-w-0">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="font-bold text-slate-900 dark:text-white">
+                                            Apple Calendar
+                                        </span>
+                                        <span className="rounded bg-slate-200/70 px-1.5 py-0.5 text-[9.5px] font-semibold text-slate-700 dark:bg-white/10 dark:text-zinc-300">
+                                            iOS • Mac
+                                        </span>
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                        Buka aplikasi Kalender resmi iPhone, iPad, atau Mac.
+                                    </p>
+                                </div>
                             </div>
                             <Button
                                 size="sm"
@@ -553,27 +565,32 @@ function LiveCalendarSyncModal({
                             >
                                 <a href={feed.webcal_url}>
                                     <ExternalLink className="mr-1.5 size-3.5" />
-                                    Buka di iPhone
+                                    Buka di Apple
                                 </a>
                             </Button>
                         </div>
                     </div>
 
                     {/* Opsi 2: Google Calendar (Android / Web) */}
-                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 transition-all hover:border-emerald-400 hover:bg-white dark:border-white/[0.06] dark:bg-[#121418] dark:hover:border-emerald-700">
+                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 transition-all hover:border-blue-400 hover:bg-white dark:border-white/[0.06] dark:bg-[#121418] dark:hover:border-blue-700">
                         <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
-                            <div className="space-y-0.5">
-                                <div className="flex items-center gap-1.5">
-                                    <span className="font-bold text-slate-900 dark:text-white">
-                                        🌐 Google Calendar
-                                    </span>
-                                    <span className="rounded bg-emerald-100 px-1.5 py-0.2 text-[9.5px] font-semibold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                                        Android &amp; Web
-                                    </span>
+                            <div className="flex items-start gap-3">
+                                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400">
+                                    <Globe className="size-4" />
                                 </div>
-                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                    Tambahkan ke Google Calendar untuk sinkron ke HP Android Anda.
-                                </p>
+                                <div className="space-y-0.5 min-w-0">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="font-bold text-slate-900 dark:text-white">
+                                            Google Calendar
+                                        </span>
+                                        <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[9.5px] font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                            Android • Web
+                                        </span>
+                                    </div>
+                                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                        Tambahkan ke Google Calendar untuk sinkron ke Android.
+                                    </p>
+                                </div>
                             </div>
                             <Button
                                 size="sm"
@@ -582,8 +599,8 @@ function LiveCalendarSyncModal({
                                 asChild
                             >
                                 <a href={feed.google_url} target="_blank" rel="noreferrer">
-                                    <ExternalLink className="mr-1.5 size-3.5 text-emerald-600" />
-                                    Buka Google Calendar
+                                    <ExternalLink className="mr-1.5 size-3.5 text-blue-600 dark:text-blue-400" />
+                                    Buka di Google
                                 </a>
                             </Button>
                         </div>
@@ -591,9 +608,10 @@ function LiveCalendarSyncModal({
 
                     {/* Opsi 3: Tautan Langganan Langsung (iCal / WebCal URL) */}
                     <div className="space-y-1.5">
-                        <label className="text-xs font-semibold text-slate-900 dark:text-white">
-                            Tautan Langganan Kalender Pribadi (URL Feed):
-                        </label>
+                        <div className="flex items-center gap-1.5 font-semibold text-slate-900 dark:text-white">
+                            <Link2 className="size-3.5 text-slate-400" />
+                            <span>Tautan Langganan Kalender Pribadi (URL Feed):</span>
+                        </div>
                         <div className="flex gap-1.5">
                             <input
                                 type="text"
@@ -624,22 +642,27 @@ function LiveCalendarSyncModal({
                     </div>
 
                     {/* Panduan Singkat */}
-                    <div className="space-y-1 rounded-lg border border-slate-200/60 bg-blue-50/40 p-3 text-[11px] text-slate-600 dark:border-blue-900/30 dark:bg-blue-950/20 dark:text-zinc-400">
-                        <p className="font-semibold text-slate-900 dark:text-zinc-200">
-                            💡 Cara Menempelkan URL di Google Calendar (Manual):
-                        </p>
-                        <ol className="list-decimal pl-4 space-y-0.5 leading-relaxed">
-                            <li>Buka <strong>calendar.google.com</strong> di komputer/browser.</li>
-                            <li>Di bilah kiri pada <strong>Kalender lainnya (Other calendars)</strong>, klik tanda <strong>+</strong>.</li>
-                            <li>Pilih <strong>"Dari URL (From URL)"</strong> ➔ tempelkan link di atas ➔ klik <strong>Tambahkan Kalender</strong>.</li>
+                    <div className="space-y-1.5 rounded-xl border border-slate-200/60 bg-slate-50/70 p-3 text-[11px] text-slate-600 dark:border-white/[0.04] dark:bg-[#121418] dark:text-zinc-400">
+                        <div className="flex items-center gap-1.5 font-semibold text-slate-900 dark:text-zinc-200">
+                            <Info className="size-3.5 text-blue-600 dark:text-blue-400" />
+                            <span>Panduan Pengaturan Manual (Google Calendar &amp; Outlook):</span>
+                        </div>
+                        <ol className="list-decimal pl-4 space-y-1 leading-relaxed">
+                            <li>
+                                <strong>Google Calendar (Browser):</strong> Buka <em>calendar.google.com</em>, di bilah kiri klik <strong>Kalender lainnya (+)</strong> &rarr; pilih <strong>Dari URL</strong> &rarr; tempel tautan di atas &rarr; klik <strong>Tambahkan Kalender</strong>.
+                            </li>
+                            <li>
+                                <strong>Microsoft Outlook:</strong> Klik <strong>Tambah Kalender</strong> &rarr; pilih <strong>Berlangganan dari web</strong> &rarr; tempel tautan di atas &rarr; Simpan.
+                            </li>
                         </ol>
                     </div>
 
                     {/* Keamanan & Rotate Token */}
-                    <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-white/[0.06]">
-                        <span className="text-[10.5px] text-slate-400 dark:text-zinc-500">
-                            🔒 Tautan khusus untuk akun Anda.
-                        </span>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                        <div className="flex items-center gap-1.5 text-[10.5px] text-slate-400 dark:text-zinc-500">
+                            <Lock className="size-3 text-slate-400" />
+                            <span>Tautan feed bersifat rahasia dan unik per akun.</span>
+                        </div>
                         <Form {...calendarFeedRoutes.rotate.form()} onSuccess={() => {}}>
                             {({ processing }) => (
                                 <Button
