@@ -47,7 +47,9 @@ class FinanceController extends Controller
 
         $matters = Matter::query()->visibleTo($request->user())->with('client:id,display_name')->latest('updated_at')->get();
         $selectedMatterId = $request->string('matter_id')->toString();
-        $selectedMatter = ! empty($selectedMatterId) ? $matters->firstWhere('id', $selectedMatterId) : null;
+        $selectedMatter = ! empty($selectedMatterId)
+            ? ($matters->firstWhere('id', $selectedMatterId) ?? Matter::query()->visibleTo($request->user())->with('client:id,display_name')->find($selectedMatterId))
+            : null;
 
         $visibleMatterIds = $matters->pluck('id');
 

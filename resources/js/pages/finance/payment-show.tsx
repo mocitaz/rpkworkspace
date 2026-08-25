@@ -214,38 +214,56 @@ export default function PaymentShow({ payment }: { payment: Payment }) {
                         <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
                             {payment.allocations.length ? (
                                 payment.allocations.map((allocation) => (
-                                    <Link
-                                        key={allocation.id}
-                                        href={invoiceRoutes.show.url(allocation.invoice.id)}
-                                        className="group flex flex-col justify-between gap-2 py-3 transition-colors hover:bg-slate-50/50 sm:flex-row sm:items-center dark:hover:bg-white/[0.02]"
-                                    >
-                                        <div className="space-y-0.5">
-                                            <div className="flex items-center gap-1.5">
-                                                <span className="font-mono text-xs font-semibold text-blue-600 group-hover:underline dark:text-blue-400">
-                                                    {allocation.invoice.invoice_number}
-                                                </span>
-                                                <StatusBadge value={allocation.invoice.status} />
+                                    allocation.invoice ? (
+                                        <Link
+                                            key={allocation.id}
+                                            href={invoiceRoutes.show.url(allocation.invoice.id)}
+                                            className="group flex flex-col justify-between gap-2 py-3 transition-colors hover:bg-slate-50/50 sm:flex-row sm:items-center dark:hover:bg-white/[0.02]"
+                                        >
+                                            <div className="space-y-0.5">
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="font-mono text-xs font-semibold text-blue-600 group-hover:underline dark:text-blue-400">
+                                                        {allocation.invoice.invoice_number}
+                                                    </span>
+                                                    <StatusBadge value={allocation.invoice.status} />
+                                                </div>
+                                                <p className="text-xs font-medium text-slate-900 dark:text-white">
+                                                    {allocation.invoice.title}
+                                                </p>
+                                                <p className="font-mono text-[10px] text-slate-500 dark:text-zinc-400">
+                                                    Sisa Tagihan: {formatMoney(allocation.invoice.outstanding_amount, allocation.invoice.currency)}
+                                                </p>
                                             </div>
-                                            <p className="text-xs font-medium text-slate-900 dark:text-white">
-                                                {allocation.invoice.title}
-                                            </p>
-                                            <p className="font-mono text-[10px] text-slate-500 dark:text-zinc-400">
-                                                Sisa Tagihan: {formatMoney(allocation.invoice.outstanding_amount, allocation.invoice.currency)}
-                                            </p>
-                                        </div>
 
-                                        <div className="flex items-center gap-2.5 text-right">
-                                            <div className="text-right">
-                                                <span className="text-[9.5px] font-semibold text-slate-400 uppercase block">
-                                                    Dialokasikan
-                                                </span>
-                                                <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                                                    {formatMoney(allocation.amount, allocation.invoice.currency)}
+                                            <div className="flex items-center gap-2.5 text-right">
+                                                <div className="text-right">
+                                                    <span className="text-[9.5px] font-semibold text-slate-400 uppercase block">
+                                                        Dialokasikan
+                                                    </span>
+                                                    <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                                        {formatMoney(allocation.amount, allocation.invoice.currency)}
+                                                    </span>
+                                                </div>
+                                                <ArrowUpRight className="size-3.5 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-blue-600" />
+                                            </div>
+                                        </Link>
+                                    ) : (
+                                        <div
+                                            key={allocation.id}
+                                            className="flex flex-col justify-between gap-2 py-3 sm:flex-row sm:items-center"
+                                        >
+                                            <div className="space-y-0.5">
+                                                <span className="font-mono text-xs font-semibold text-slate-500">
+                                                    Invoice Tidak Ditemukan
                                                 </span>
                                             </div>
-                                            <ArrowUpRight className="size-3.5 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-blue-600" />
+                                            <div className="text-right">
+                                                <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                                    {formatMoney(allocation.amount, payment.currency)}
+                                                </span>
+                                            </div>
                                         </div>
-                                    </Link>
+                                    )
                                 ))
                             ) : (
                                 <p className="py-6 text-center text-xs font-medium text-slate-400 dark:text-zinc-500">

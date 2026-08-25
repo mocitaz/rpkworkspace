@@ -142,12 +142,23 @@ export const formatBytes = (bytes?: number | null) => {
     }).format(bytes / 1024);
 };
 
-export const formatMoney = (amount: number, currency = 'IDR') =>
-    new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency,
-        maximumFractionDigits: 0,
-    }).format(amount);
+export const formatMoney = (amount?: number | string | null, currency = 'IDR') => {
+    const cleanCurrency =
+        typeof currency === 'string' && currency.trim().length === 3
+            ? currency.trim().toUpperCase()
+            : 'IDR';
+    const num = typeof amount === 'number' && !isNaN(amount) ? amount : (Number(amount) || 0);
+
+    try {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: cleanCurrency,
+            maximumFractionDigits: 0,
+        }).format(num);
+    } catch {
+        return `Rp ${new Intl.NumberFormat('id-ID').format(num)}`;
+    }
+};
 
 export const terbilang = (n: number): string => {
     if (n < 0) return `Minus ${terbilang(Math.abs(n))}`;

@@ -21,7 +21,7 @@ class MatterFinancialOverview
             ->whereNotIn('status', ['cancelled', 'draft']);
         $invoicedAmount = (int) (clone $invoices)->sum('total_amount');
         $paidAmount = (int) (clone $invoices)->sum('paid_amount');
-        $receivableAmount = (int) $invoices->sum('outstanding_amount');
+        $receivableAmount = (int) (clone $invoices)->sum('outstanding_amount');
         $expenseAmount = (int) Expense::query()
             ->whereBelongsTo($matter)
             ->whereNotIn('status', ['cancelled', 'draft'])
@@ -53,8 +53,8 @@ class MatterFinancialOverview
         });
 
         return [
-            'currency' => $matter->currency ?? 'IDR',
-            'budget_amount' => $matter->budget_amount,
+            'currency' => strtoupper(trim((string) ($matter->currency ?: 'IDR'))),
+            'budget_amount' => (int) ($matter->budget_amount ?? 0),
             'quotation_amount' => $quotationAmount,
             'invoiced_amount' => $invoicedAmount,
             'payment_received_amount' => $paidAmount,
@@ -81,7 +81,7 @@ class MatterFinancialOverview
             ->whereNotIn('status', ['cancelled', 'draft']);
         $invoicedAmount = (int) (clone $invoices)->sum('total_amount');
         $paidAmount = (int) (clone $invoices)->sum('paid_amount');
-        $receivableAmount = (int) $invoices->sum('outstanding_amount');
+        $receivableAmount = (int) (clone $invoices)->sum('outstanding_amount');
         $expenseAmount = (int) Expense::query()
             ->where(fn ($q) => $q->whereIn('matter_id', $matterIds)->orWhereNull('matter_id'))
             ->whereNotIn('status', ['cancelled', 'draft'])

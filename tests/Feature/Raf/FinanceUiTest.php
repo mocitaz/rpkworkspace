@@ -47,3 +47,23 @@ test('downloads professional invoice and quotation pdf documents', function () {
         ->and($quotationResponse->getContent())->toStartWith('%PDF')
         ->and(strlen($quotationResponse->getContent()))->toBeGreaterThan(100_000);
 });
+
+test('renders finance workspace filtered by specific matter_id parameter', function () {
+    $user = rafUser(['matter.view', 'billing.view']);
+    $matter = Matter::factory()->create(['responsible_partner_id' => $user->id, 'budget_amount' => 50000000, 'currency' => 'IDR']);
+    Invoice::factory()->create([
+        'client_id' => $matter->client_id,
+        'matter_id' => $matter->id,
+        'outstanding_amount' => 5000000,
+        'due_at' => now()->addDays(10),
+    ]);
+
+    $response = $this->actingAs($user)->get(route('finance.index', ['matter_id' => $matter->id]));
+
+    $response->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('finance/index')
+            ->where('selectedMatterId', $matter->id)
+            ->has('overview')
+        );
+});

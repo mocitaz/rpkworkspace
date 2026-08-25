@@ -806,9 +806,9 @@ function PaymentLedger({
                                             >
                                                 → Alokasi{' '}
                                                 <span className="font-semibold text-slate-700 dark:text-zinc-300">
-                                                    {allocation.invoice.invoice_number}
+                                                    {allocation.invoice?.invoice_number ?? 'Invoice'}
                                                 </span>
-                                                : {formatMoney(allocation.amount, allocation.invoice.currency)}
+                                                : {formatMoney(allocation.amount, allocation.invoice?.currency ?? currency)}
                                             </p>
                                         ))}
                                         {payment.reversed_at && (
