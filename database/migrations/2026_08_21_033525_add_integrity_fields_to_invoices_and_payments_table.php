@@ -12,37 +12,37 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('invoices', function (Blueprint $table) {
-            if (!Schema::hasColumn('invoices', 'cancelled_at')) {
+            if (! Schema::hasColumn('invoices', 'cancelled_at')) {
                 $table->timestamp('cancelled_at')->nullable()->after('paid_at');
             }
-            if (!Schema::hasColumn('invoices', 'cancelled_by')) {
+            if (! Schema::hasColumn('invoices', 'cancelled_by')) {
                 $table->foreignId('cancelled_by')->nullable()->after('cancelled_at')->constrained('users')->nullOnDelete();
             }
-            if (!Schema::hasColumn('invoices', 'cancellation_reason')) {
+            if (! Schema::hasColumn('invoices', 'cancellation_reason')) {
                 $table->text('cancellation_reason')->nullable()->after('cancelled_by');
             }
         });
 
         Schema::table('payments', function (Blueprint $table) {
-            if (!Schema::hasColumn('payments', 'refunded_at')) {
+            if (! Schema::hasColumn('payments', 'refunded_at')) {
                 $table->timestamp('refunded_at')->nullable()->after('received_at');
             }
-            if (!Schema::hasColumn('payments', 'refunded_by')) {
+            if (! Schema::hasColumn('payments', 'refunded_by')) {
                 $table->foreignId('refunded_by')->nullable()->after('refunded_at')->constrained('users')->nullOnDelete();
             }
-            if (!Schema::hasColumn('payments', 'refund_reason')) {
+            if (! Schema::hasColumn('payments', 'refund_reason')) {
                 $table->text('refund_reason')->nullable()->after('refunded_by');
             }
         });
 
         Schema::table('document_templates', function (Blueprint $table) {
-            if (!Schema::hasColumn('document_templates', 'scan_status')) {
+            if (! Schema::hasColumn('document_templates', 'scan_status')) {
                 $table->string('scan_status', 32)->default('pending')->after('status')->index();
             }
-            if (!Schema::hasColumn('document_templates', 'scan_message')) {
+            if (! Schema::hasColumn('document_templates', 'scan_message')) {
                 $table->text('scan_message')->nullable()->after('scan_status');
             }
-            if (!Schema::hasColumn('document_templates', 'scanned_at')) {
+            if (! Schema::hasColumn('document_templates', 'scanned_at')) {
                 $table->timestamp('scanned_at')->nullable()->after('scan_message');
             }
         });

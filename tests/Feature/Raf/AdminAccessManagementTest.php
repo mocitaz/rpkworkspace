@@ -4,7 +4,7 @@ use App\Models\AuditLog;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
-use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 
 it('invites a user, assigns roles, and sets default password to password', function () {
@@ -20,7 +20,7 @@ it('invites a user, assigns roles, and sets default password to password', funct
 
     $invited = User::query()->where('email', 'ayu@example.test')->firstOrFail();
     expect($invited->is_active)->toBeTrue()
-        ->and(\Illuminate\Support\Facades\Hash::check('password', $invited->password))->toBeTrue()
+        ->and(Hash::check('password', $invited->password))->toBeTrue()
         ->and($invited->roles()->pluck('roles.id')->all())->toContain($associate->getKey())
         ->and(AuditLog::query()->where('event', 'user.invited')->where('subject_id', $invited->getKey())->exists())->toBeTrue();
 });
@@ -55,7 +55,7 @@ it('allows an administrator to create a user with a manual password without send
 
     $user = User::query()->where('email', 'budi@example.test')->firstOrFail();
     expect($user->is_active)->toBeTrue()
-        ->and(\Illuminate\Support\Facades\Hash::check('Secret12345!', $user->password))->toBeTrue();
+        ->and(Hash::check('Secret12345!', $user->password))->toBeTrue();
 
     Notification::assertNothingSent();
 
@@ -68,5 +68,5 @@ it('allows an administrator to create a user with a manual password without send
         'role_ids' => [$associate->getKey()],
     ])->assertSessionHasNoErrors();
 
-    expect(\Illuminate\Support\Facades\Hash::check('NewPassword999!', $user->fresh()->password))->toBeTrue();
+    expect(Hash::check('NewPassword999!', $user->fresh()->password))->toBeTrue();
 });
