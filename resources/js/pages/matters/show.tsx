@@ -185,14 +185,14 @@ type Matter = {
 };
 
 const tabs = [
-    { id: 'Overview', label: 'Ringkasan' },
-    { id: 'Diskusi', label: 'Diskusi Tim' },
-    { id: 'Tugas', label: 'Tugas' },
-    { id: 'Timeline', label: 'Timeline & Sidang' },
-    { id: 'Kronologi', label: 'Kronologi Fakta' },
-    { id: 'BuktiFisik', label: 'Brankas Alat Bukti' },
-    { id: 'Dokumen', label: 'Dokumen' },
-    { id: 'Catatan', label: 'Catatan' },
+    { id: 'Overview', label: 'Ringkasan', icon: Briefcase },
+    { id: 'Diskusi', label: 'Diskusi Tim', icon: MessageSquare },
+    { id: 'Tugas', label: 'Tugas', icon: ListChecks },
+    { id: 'Timeline', label: 'Timeline & Sidang', icon: CalendarClock },
+    { id: 'Kronologi', label: 'Kronologi Fakta', icon: History },
+    { id: 'BuktiFisik', label: 'Brankas Alat Bukti', icon: Archive },
+    { id: 'Dokumen', label: 'Dokumen', icon: FileText },
+    { id: 'Catatan', label: 'Catatan', icon: FileText },
 ] as const;
 
 const relationshipTypeLabels: Record<string, string> = {
@@ -567,19 +567,28 @@ export default function MatterShow({
                                             ? matter.events.length
                                             : item.id === 'Kronologi'
                                               ? (matter.chronologies?.length ?? 0)
-                                              : null;
+                                              : item.id === 'BuktiFisik'
+                                                ? (matter.evidences?.length ?? 0)
+                                                : null;
 
                             return (
                                 <button
                                     key={item.id}
                                     type="button"
                                     onClick={() => setTab(item.id)}
-                                    className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                    className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                                         isActive
                                             ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                             : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
                                     }`}
                                 >
+                                    <item.icon
+                                        className={`size-3.5 ${
+                                            isActive
+                                                ? 'text-white dark:text-slate-900'
+                                                : 'text-slate-500 group-hover:text-slate-700 dark:text-zinc-400'
+                                        }`}
+                                    />
                                     <span>{item.label}</span>
                                     {count !== null && count > 0 && (
                                         <span
@@ -607,9 +616,12 @@ export default function MatterShow({
                                     {/* Ringkasan & Lingkup Perkara */}
                                     <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                         <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                            <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Ringkasan &amp; Lingkup Perkara
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <Briefcase className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                    Ringkasan &amp; Lingkup Perkara
+                                                </h2>
+                                            </div>
                                             <span className="text-[11px] text-slate-400">
                                                 Latar Belakang Kasus
                                             </span>
@@ -628,9 +640,12 @@ export default function MatterShow({
                                     {/* Hierarki & Silsilah Perkara (Parent-Child Matters) */}
                                     <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                         <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                            <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Hierarki &amp; Perkara Terkait
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <FolderKanban className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                    Hierarki &amp; Perkara Terkait
+                                                </h2>
+                                            </div>
                                             <span className="text-[11px] text-slate-400">
                                                 Banding / Kasasi / PK
                                             </span>
@@ -708,9 +723,12 @@ export default function MatterShow({
                                     {/* Tugas Berjalan */}
                                     <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                         <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                            <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Tugas Berjalan ({matter.tasks.length})
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <ListChecks className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                    Tugas Berjalan ({matter.tasks.length})
+                                                </h2>
+                                            </div>
                                             {matter.tasks.length > 3 && (
                                                 <button
                                                     onClick={() => setTab('Tugas')}
@@ -726,9 +744,12 @@ export default function MatterShow({
                                     {/* Pihak Terkait & Lawan */}
                                     <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                         <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                            <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Pihak Terkait &amp; Lawan ({matter.parties.length})
-                                            </span>
+                                            <div className="flex items-center gap-2">
+                                                <Users className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                    Pihak Terkait &amp; Lawan ({matter.parties.length})
+                                                </h2>
+                                            </div>
                                             {can.update && (
                                                 <button
                                                     onClick={() => setOperation('party')}
@@ -788,10 +809,13 @@ export default function MatterShow({
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
                                         <div>
-                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Daftar Tugas Perkara ({matter.tasks.length})
-                                            </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                            <div className="flex items-center gap-2">
+                                                <ListChecks className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                    Daftar Tugas Perkara ({matter.tasks.length})
+                                                </h2>
+                                            </div>
+                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                                 Item pekerjaan hukum, riset berkas, dan penugasan advokat.
                                             </p>
                                         </div>
@@ -860,10 +884,13 @@ export default function MatterShow({
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
                                         <div>
-                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Agenda, Sidang &amp; Timeline ({matter.events.length})
-                                            </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                            <div className="flex items-center gap-2">
+                                                <CalendarClock className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                    Agenda, Sidang &amp; Timeline ({matter.events.length})
+                                                </h2>
+                                            </div>
+                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                                 Jadwal pertemuan, proses peradilan, dan hitung mundur sidang pengadilan.
                                             </p>
                                         </div>
@@ -1024,10 +1051,13 @@ export default function MatterShow({
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3 dark:border-white/[0.04]">
                                         <div>
-                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Kronologi &amp; Rekaman Fakta Hukum ({matter.chronologies?.length ?? 0})
-                                            </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                            <div className="flex items-center gap-2">
+                                                <History className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                    Kronologi &amp; Rekaman Fakta Hukum ({matter.chronologies?.length ?? 0})
+                                                </h2>
+                                            </div>
+                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                                 Garis waktu peristiwa faktual perkara, referensi alat bukti surat, dan saksi terkait.
                                             </p>
                                         </div>
@@ -1325,10 +1355,13 @@ export default function MatterShow({
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
                                         <div>
-                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Berkas &amp; Dokumen Perkara ({matter.documents.length})
-                                            </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                            <div className="flex items-center gap-2">
+                                                <FileText className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                    Berkas &amp; Dokumen Perkara ({matter.documents.length})
+                                                </h2>
+                                            </div>
+                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                                 Arsip surat kuasa, bukti dokumen perkara, dan draft perjanjian.
                                             </p>
                                         </div>
@@ -1441,10 +1474,13 @@ export default function MatterShow({
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
                                         <div>
-                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Catatan Internal ({matter.notes.length})
-                                            </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                            <div className="flex items-center gap-2">
+                                                <FileText className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                    Catatan Internal ({matter.notes.length})
+                                                </h2>
+                                            </div>
+                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                                 Memorandum rahasia, arahan partner, dan catatan strategi perkara.
                                             </p>
                                         </div>
@@ -1505,9 +1541,12 @@ export default function MatterShow({
                             {/* Client Profile Card */}
                             <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                 <div className="mb-2 flex items-center justify-between">
-                                    <span className="text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
-                                        PROFIL KLIEN
-                                    </span>
+                                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
+                                        <Building2 className="size-3.5 text-slate-400" />
+                                        <span className="text-[11px] font-semibold uppercase">
+                                            Profil Klien
+                                        </span>
+                                    </div>
                                     <Link
                                         href={clientRoutes.show(matter.client.id)}
                                         className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
@@ -1548,9 +1587,12 @@ export default function MatterShow({
 
                             {/* Parameter & Metadata Cockpit */}
                             <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <span className="mb-2.5 block text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
-                                    PARAMETER PERKARA
-                                </span>
+                                <div className="mb-2.5 flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
+                                    <Scale className="size-3.5 text-slate-400" />
+                                    <span className="text-[11px] font-semibold uppercase">
+                                        Parameter Perkara
+                                    </span>
+                                </div>
                                 <div className="space-y-2 text-xs">
                                     <div className="flex items-center justify-between">
                                         <span className="text-slate-500 dark:text-zinc-400">Yurisdiksi</span>
@@ -1588,9 +1630,12 @@ export default function MatterShow({
                             {/* Progres & Kesehatan Perkara */}
                             <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                 <div className="mb-2 flex items-center justify-between">
-                                    <span className="text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
-                                        PROGRES TUGAS
-                                    </span>
+                                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
+                                        <TrendingUp className="size-3.5 text-slate-400" />
+                                        <span className="text-[11px] font-semibold uppercase">
+                                            Progres Tugas
+                                        </span>
+                                    </div>
                                     <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
                                         {taskProgressPercent}% Selesai
                                     </span>
@@ -1612,9 +1657,12 @@ export default function MatterShow({
                             {/* Lampiran Dokumen Terkini */}
                             <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                 <div className="mb-2 flex items-center justify-between">
-                                    <span className="text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
-                                        LAMPIRAN TERKINI ({matter.documents.length})
-                                    </span>
+                                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
+                                        <FileText className="size-3.5 text-slate-400" />
+                                        <span className="text-[11px] font-semibold uppercase">
+                                            Lampiran Terkini ({matter.documents.length})
+                                        </span>
+                                    </div>
                                     {matter.documents.length > 0 && (
                                         <button
                                             onClick={() => setTab('Dokumen')}
