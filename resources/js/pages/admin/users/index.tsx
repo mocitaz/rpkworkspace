@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head, Link, router } from '@inertiajs/react';
 import {
     AlertTriangle,
     Award,
@@ -34,6 +34,7 @@ import {
     Smartphone,
     Sparkles,
     Trash2,
+    User as UserIcon,
     UserCheck,
     UserPlus,
     Users,
@@ -133,7 +134,6 @@ export default function UsersIndex({
 }) {
     const getInitials = useInitials();
     const [tab, setTab] = useState<'cards' | 'users' | 'roles'>('cards');
-    const [selectedStaff, setSelectedStaff] = useState<User | null>(null);
     const [editing, setEditing] = useState<User | null>(null);
     const [deleting, setDeleting] = useState<User | null>(null);
     const [inviteOpen, setInviteOpen] = useState(false);
@@ -389,9 +389,6 @@ export default function UsersIndex({
                                                 <StaffCard
                                                     key={user.id}
                                                     user={user}
-                                                    onViewDetail={(u) =>
-                                                        setSelectedStaff(u)
-                                                    }
                                                     onEdit={(u) =>
                                                         setEditing(u)
                                                     }
@@ -494,19 +491,16 @@ export default function UsersIndex({
                                                                     </AvatarFallback>
                                                                 </Avatar>
                                                                 <div className="min-w-0">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() =>
-                                                                            setSelectedStaff(
-                                                                                user,
-                                                                            )
-                                                                        }
-                                                                        className="text-left font-semibold text-slate-900 transition-colors hover:text-slate-600 dark:text-white dark:hover:text-zinc-300"
+                                                                    <Link
+                                                                        href={userRoutes.show.url(
+                                                                            user.id,
+                                                                        )}
+                                                                        className="text-left font-semibold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
                                                                     >
                                                                         {
                                                                             user.name
                                                                         }
-                                                                    </button>
+                                                                    </Link>
                                                                     <p className="text-[11px] text-slate-500 dark:text-zinc-400">
                                                                         {
                                                                             user.email
@@ -577,17 +571,20 @@ export default function UsersIndex({
                                                         <td className="py-2.5 pr-4 pl-3 text-right whitespace-nowrap">
                                                             <div className="flex items-center justify-end gap-1.5">
                                                                 <Button
+                                                                    asChild
                                                                     variant="outline"
                                                                     size="sm"
-                                                                    onClick={() =>
-                                                                        setSelectedStaff(
-                                                                            user,
-                                                                        )
-                                                                    }
-                                                                    className="h-7 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
-                                                                    title="Lihat Kartu Pegawai Digital"
+                                                                    className="h-7 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                                    title="Lihat Profil Staf & CV"
                                                                 >
-                                                                    <Contact className="size-3" />
+                                                                    <Link
+                                                                        href={userRoutes.show.url(
+                                                                            user.id,
+                                                                        )}
+                                                                    >
+                                                                        <UserIcon className="mr-1 size-3" />
+                                                                        Profil
+                                                                    </Link>
                                                                 </Button>
                                                                 <Button
                                                                     variant="outline"
@@ -648,16 +645,6 @@ export default function UsersIndex({
                     )}
                 </main>
             </div>
-
-            {/* Modal: Detail ID Card Staf Interaktif */}
-            <StaffDetailModal
-                user={selectedStaff}
-                onClose={() => setSelectedStaff(null)}
-                onEdit={(user) => {
-                    setSelectedStaff(null);
-                    setEditing(user);
-                }}
-            />
 
             {/* Modal: Tambah / Undang Pengguna Baru */}
             <InviteUserDialog
@@ -800,11 +787,9 @@ export default function UsersIndex({
 
 function StaffCard({
     user,
-    onViewDetail,
     onEdit,
 }: {
     user: User;
-    onViewDetail: (user: User) => void;
     onEdit: (user: User) => void;
 }) {
     const getInitials = useInitials();
@@ -836,7 +821,7 @@ function StaffCard({
 
     return (
         <div
-            onClick={() => onViewDetail(user)}
+            onClick={() => router.visit(userRoutes.show.url(user.id))}
             className="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-200/50 dark:border-white/[0.08] dark:bg-[#13151b] dark:hover:border-white/20 dark:hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.5)]"
         >
             <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-slate-300 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:via-white/20" />
@@ -911,7 +896,7 @@ function StaffCard({
                                 </span>
                             )}
                             {user.advocate_license_no && (
-                                <span className="py-0.2 inline-flex items-center gap-0.5 rounded bg-blue-50 px-1.5 font-mono text-[9px] font-semibold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
+                                <span className="inline-flex items-center gap-0.5 rounded bg-amber-50 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
                                     <Scale className="size-2.5" />
                                     Advokat
                                 </span>
@@ -945,11 +930,15 @@ function StaffCard({
             </div>
 
             <div className="mt-3.5 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-white/[0.05]">
-                <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-zinc-200 dark:group-hover:text-blue-400">
-                    <Contact className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-400 dark:group-hover:text-blue-400" />
-                    <span>Buka Kartu ID</span>
+                <Link
+                    href={userRoutes.show.url(user.id)}
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1 text-[11px] font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-zinc-200 dark:group-hover:text-blue-400"
+                >
+                    <UserIcon className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-400 dark:group-hover:text-blue-400" />
+                    <span>Lihat Profil &amp; CV</span>
                     <ChevronRight className="size-3 text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-blue-600 dark:text-zinc-400 dark:group-hover:text-blue-400" />
-                </div>
+                </Link>
 
                 <div className="flex items-center gap-1">
                     {user.phone && (
@@ -985,450 +974,11 @@ function StaffCard({
                         className="h-7 rounded-lg px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
                     >
                         <Pencil className="mr-1 size-2.5" />
-                        Kelola
+                        Edit
                     </Button>
                 </div>
             </div>
         </div>
-    );
-}
-
-function StaffDetailModal({
-    user,
-    onClose,
-    onEdit,
-}: {
-    user: User | null;
-    onClose: () => void;
-    onEdit: (user: User) => void;
-}) {
-    const getInitials = useInitials();
-    const [copiedEmail, setCopiedEmail] = useState(false);
-    const [copiedPhone, setCopiedPhone] = useState(false);
-    const [copiedId, setCopiedId] = useState(false);
-
-    if (!user) return null;
-
-    const displayId =
-        user.employee_code || `RPK-${user.id.toString().padStart(3, '0')}`;
-
-    const handleCopy = (text: string, type: 'email' | 'phone' | 'id') => {
-        navigator.clipboard.writeText(text);
-        if (type === 'email') {
-            setCopiedEmail(true);
-            setTimeout(() => setCopiedEmail(false), 2000);
-        } else if (type === 'phone') {
-            setCopiedPhone(true);
-            setTimeout(() => setCopiedPhone(false), 2000);
-        } else {
-            setCopiedId(true);
-            setTimeout(() => setCopiedId(false), 2000);
-        }
-    };
-
-    return (
-        <Dialog open={!!user} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-h-[92vh] overflow-y-auto rounded-3xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#12141a]">
-                <div className="relative overflow-hidden bg-gradient-to-b from-slate-950 via-[#0d111c] to-[#121727] p-6 pb-6 text-center text-white">
-                    <div className="pointer-events-none absolute -top-12 -left-12 size-40 rounded-full bg-blue-500/15 blur-2xl" />
-                    <div className="pointer-events-none absolute -right-10 -bottom-10 size-44 rounded-full bg-indigo-500/15 blur-2xl" />
-
-                    <div className="relative z-10 mb-4 flex items-center justify-between pr-8 text-[10px] font-bold tracking-wider uppercase">
-                        <span className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-slate-200 backdrop-blur-md">
-                            <Shield className="size-3 text-blue-400" />
-                            RPK DIGITAL CREDENTIAL
-                        </span>
-                        <span className="flex items-center gap-1 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 font-mono text-[10px] font-bold text-white shadow-2xs backdrop-blur-md">
-                            {displayId}
-                        </span>
-                    </div>
-
-                    <div className="relative z-10 flex flex-col items-center">
-                        <div className="relative">
-                            <div className="rounded-2xl bg-gradient-to-b from-white/30 via-white/10 to-white/5 p-1 shadow-2xl backdrop-blur-md">
-                                <Avatar className="size-20 rounded-[14px] bg-slate-900 ring-2 ring-white/20">
-                                    <AvatarImage
-                                        src={user.avatar_url ?? undefined}
-                                        className="object-cover"
-                                    />
-                                    <AvatarFallback className="rounded-[14px] bg-gradient-to-br from-slate-800 to-slate-950 text-base font-extrabold text-white">
-                                        {getInitials(user.name)}
-                                    </AvatarFallback>
-                                </Avatar>
-                            </div>
-                            {user.is_active && (
-                                <span
-                                    className="absolute -right-1 -bottom-1 flex size-5.5 items-center justify-center rounded-full bg-emerald-500 shadow-md ring-3 ring-[#0d111c]"
-                                    title="Staf Aktif & Terverifikasi"
-                                >
-                                    <Check className="size-3 stroke-[3.5] text-white" />
-                                </span>
-                            )}
-                        </div>
-
-                        <h3 className="mt-3.5 text-base font-extrabold tracking-tight text-white sm:text-lg">
-                            {user.name}
-                        </h3>
-
-                        <div className="mt-1 flex flex-wrap items-center justify-center gap-1.5">
-                            <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/10 px-2.5 py-0.5 text-[11px] font-medium text-slate-200 backdrop-blur-md">
-                                <Briefcase className="size-3 text-slate-300" />
-                                {user.position_title || 'Staf Kantor Hukum'}
-                            </span>
-                            {user.department && (
-                                <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/10 px-2.5 py-0.5 text-[11px] font-medium text-slate-300 backdrop-blur-md">
-                                    <Building2 className="size-3 text-slate-300" />
-                                    {user.department}
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5">
-                            {user.advocate_license_no && (
-                                <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-semibold text-amber-200 backdrop-blur-xs">
-                                    <Scale className="size-3 text-amber-300" />
-                                    NIA: {user.advocate_license_no}
-                                </span>
-                            )}
-                            {user.education && (
-                                <span className="inline-flex items-center gap-1 rounded-full border border-slate-400/30 bg-white/10 px-2.5 py-0.5 text-[10px] font-medium text-slate-200 backdrop-blur-xs">
-                                    <GraduationCap className="size-3 text-slate-300" />
-                                    {user.education}
-                                </span>
-                            )}
-                        </div>
-
-                        {user.roles && user.roles.length > 0 && (
-                            <div className="mt-2 flex flex-wrap items-center justify-center gap-1">
-                                {user.roles.map((role) => (
-                                    <span
-                                        key={role.id}
-                                        className="inline-flex items-center gap-1 rounded-md border border-blue-400/30 bg-blue-500/20 px-2 py-0.5 text-[9.5px] font-semibold text-blue-200 backdrop-blur-xs"
-                                    >
-                                        <ShieldCheck className="size-2.5 text-blue-300" />
-                                        {role.name}
-                                    </span>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                <div className="space-y-3 p-5 text-xs">
-                    <div className="space-y-2 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/[0.06] dark:bg-[#0f1117]">
-                        <div className="flex items-center justify-between">
-                            <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                <KeyRound className="size-3 text-slate-400 dark:text-zinc-500" />
-                                Kontak &amp; Kredensial Resmi
-                            </span>
-                            <span
-                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                                    user.is_active
-                                        ? 'border border-emerald-200/60 bg-emerald-50 text-emerald-700 dark:border-emerald-800/40 dark:bg-emerald-950/50 dark:text-emerald-300'
-                                        : 'border border-rose-200/60 bg-rose-50 text-rose-700 dark:border-rose-800/40 dark:bg-rose-950/50 dark:text-rose-300'
-                                }`}
-                            >
-                                <span className="size-1.5 rounded-full bg-current" />
-                                {user.is_active
-                                    ? 'Aktif (Dapat Login)'
-                                    : 'Akses Dinonaktifkan'}
-                            </span>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                            <div className="flex items-center justify-between gap-2 rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
-                                <div className="flex min-w-0 items-center gap-2">
-                                    <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-zinc-700 dark:text-zinc-300">
-                                        <Mail className="size-3.5" />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <span className="block text-[9.5px] font-medium text-slate-400 dark:text-zinc-400">
-                                            Email Kerja
-                                        </span>
-                                        <span className="block truncate font-mono text-xs font-semibold text-slate-900 dark:text-white">
-                                            {user.email}
-                                        </span>
-                                    </div>
-                                </div>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() =>
-                                        handleCopy(user.email, 'email')
-                                    }
-                                    className="h-7 shrink-0 rounded-lg px-2 text-[11px] font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-zinc-700"
-                                    title="Salin Email"
-                                >
-                                    {copiedEmail ? (
-                                        <Check className="size-3 text-emerald-600" />
-                                    ) : (
-                                        <Copy className="size-3 text-slate-400" />
-                                    )}
-                                </Button>
-                            </div>
-
-                            <div className="flex items-center justify-between gap-2 rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
-                                <div className="flex min-w-0 items-center gap-2">
-                                    <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
-                                        <Phone className="size-3.5" />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <span className="block text-[9.5px] font-medium text-slate-400 dark:text-zinc-400">
-                                            WhatsApp / Telepon
-                                        </span>
-                                        <span className="block truncate font-mono text-xs font-semibold text-slate-900 dark:text-white">
-                                            {user.phone || '-'}
-                                        </span>
-                                    </div>
-                                </div>
-                                {user.phone ? (
-                                    <div className="flex items-center gap-1">
-                                        <a
-                                            href={`https://wa.me/${user.phone.replace(/[^0-9]/g, '')}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex h-7 w-7 items-center justify-center rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
-                                            title="Chat via WhatsApp"
-                                        >
-                                            <Smartphone className="size-3.5" />
-                                        </a>
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleCopy(user.phone!, 'phone')
-                                            }
-                                            className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200"
-                                            title="Salin Nomor Telepon"
-                                        >
-                                            {copiedPhone ? (
-                                                <Check className="size-3 text-emerald-600" />
-                                            ) : (
-                                                <Copy className="size-3 text-slate-400" />
-                                            )}
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <span className="text-[10px] text-slate-400 dark:text-zinc-500">
-                                        Belum diisi
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-
-                        {user.address && (
-                            <div className="rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
-                                <span className="flex items-center gap-1 text-[9.5px] font-medium text-slate-400 dark:text-zinc-400">
-                                    <MapPin className="size-3 text-slate-400" />
-                                    Alamat Domisili
-                                </span>
-                                <p className="mt-0.5 text-xs text-slate-800 dark:text-zinc-200">
-                                    {user.address}
-                                </p>
-                            </div>
-                        )}
-                    </div>
-
-                    {(user.advocate_license_no ||
-                        user.bas_number ||
-                        user.practice_areas) && (
-                        <div className="space-y-2 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/[0.06] dark:bg-[#0f1117]">
-                            <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                <Scale className="size-3 text-amber-500" />
-                                Legalitas &amp; Kredensial Advokat
-                            </span>
-
-                            <div className="grid grid-cols-2 gap-2">
-                                <div className="rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
-                                    <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-400">
-                                        Nomor Induk Advokat (NIA)
-                                    </span>
-                                    <span className="mt-0.5 block font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                        {user.advocate_license_no || '-'}
-                                    </span>
-                                </div>
-                                <div className="rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
-                                    <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-400">
-                                        No. BAS Pengadilan Tinggi
-                                    </span>
-                                    <span className="mt-0.5 block font-mono text-xs font-semibold text-slate-900 dark:text-white">
-                                        {user.bas_number || '-'}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {user.practice_areas && (
-                                <div className="rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
-                                    <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-400">
-                                        Bidang Keahlian / Practice Areas
-                                    </span>
-                                    <p className="mt-0.5 text-xs text-slate-800 dark:text-zinc-200">
-                                        {user.practice_areas}
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    <div className="space-y-2 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/[0.06] dark:bg-[#0f1117]">
-                        <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                            <ShieldCheck className="size-3 text-slate-400 dark:text-zinc-500" />
-                            Identitas Pegawai &amp; Operasional
-                        </span>
-
-                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                            <div className="rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
-                                <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-400">
-                                    Nomor NIP / ID
-                                </span>
-                                <div className="mt-0.5 flex items-center justify-between">
-                                    <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                        {displayId}
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            handleCopy(displayId, 'id')
-                                        }
-                                        className="cursor-pointer text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200"
-                                        title="Salin NIP"
-                                    >
-                                        {copiedId ? (
-                                            <Check className="size-3 text-emerald-600" />
-                                        ) : (
-                                            <Copy className="size-3" />
-                                        )}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
-                                <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-400">
-                                    Departemen / Divisi
-                                </span>
-                                <span className="mt-0.5 block truncate text-xs font-semibold text-slate-900 dark:text-white">
-                                    {user.department || '-'}
-                                </span>
-                            </div>
-
-                            <div className="rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
-                                <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-400">
-                                    Kapasitas Perkara
-                                </span>
-                                <span className="mt-0.5 block text-xs font-semibold text-slate-900 dark:text-white">
-                                    {user.matter_capacity_limit ?? 10} Perkara
-                                </span>
-                            </div>
-                        </div>
-
-                        {user.hourly_rate && (
-                            <div className="flex items-center justify-between rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
-                                <span className="text-[10px] font-medium text-slate-500 dark:text-zinc-400">
-                                    Tarif Billing per Jam (Hourly Rate)
-                                </span>
-                                <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                                    Rp{' '}
-                                    {Number(user.hourly_rate).toLocaleString(
-                                        'id-ID',
-                                    )}{' '}
-                                    / jam
-                                </span>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="flex items-center justify-between rounded-xl border border-dashed border-slate-200 px-3 py-1.5 text-[10px] text-slate-400 dark:border-white/10 dark:text-zinc-500">
-                        <span className="flex items-center gap-1 font-medium">
-                            <CheckCheck className="size-3 text-emerald-500" />
-                            Terverifikasi Digital Record
-                        </span>
-                        <span className="font-mono font-medium">
-                            ID: #{user.id.toString().padStart(4, '0')}
-                        </span>
-                    </div>
-
-                    <div className="flex flex-col items-center justify-between gap-2 border-t border-slate-100 pt-3 sm:flex-row dark:border-white/[0.06]">
-                        <div className="flex w-full items-center gap-1.5 sm:w-auto">
-                            <Button
-                                type="button"
-                                size="sm"
-                                onClick={() => {
-                                    window.dispatchEvent(
-                                        new CustomEvent('open-floating-chat', {
-                                            detail: {
-                                                userId: user.id,
-                                                name: user.name,
-                                                email: user.email,
-                                                avatar_url: user.avatar_url,
-                                                title: user.position_title,
-                                            },
-                                        }),
-                                    );
-                                    onClose();
-                                }}
-                                className="h-8 flex-1 cursor-pointer rounded-xl bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 sm:flex-initial dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
-                            >
-                                <MessageSquare className="mr-1.5 size-3.5" />
-                                Kirim Pesan
-                            </Button>
-                            {user.phone && (
-                                <Button
-                                    asChild
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-8 flex-1 rounded-xl border-emerald-200 bg-emerald-50/50 px-3 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 sm:flex-initial dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300"
-                                >
-                                    <a
-                                        href={`https://wa.me/${user.phone.replace(/[^0-9]/g, '')}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <Smartphone className="mr-1.5 size-3.5" />
-                                        WhatsApp
-                                    </a>
-                                </Button>
-                            )}
-                            <Button
-                                asChild
-                                variant="outline"
-                                size="sm"
-                                className="h-8 flex-1 rounded-xl border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 sm:flex-initial dark:border-white/10 dark:text-zinc-300"
-                            >
-                                <a href={`mailto:${user.email}`}>
-                                    <Mail className="mr-1.5 size-3.5" />
-                                    Email
-                                </a>
-                            </Button>
-                        </div>
-
-                        <div className="flex w-full items-center justify-end gap-1.5 sm:w-auto">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => {
-                                    onClose();
-                                    onEdit(user);
-                                }}
-                                className="h-8 rounded-xl border-slate-200 px-3 text-xs font-semibold text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200"
-                            >
-                                <Pencil className="mr-1.5 size-3 text-slate-400" />
-                                Edit Staf
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={onClose}
-                                className="h-8 rounded-xl px-3 text-xs font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800"
-                            >
-                                Tutup
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </DialogContent>
-        </Dialog>
     );
 }
 

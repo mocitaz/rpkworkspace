@@ -58,6 +58,31 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * Display the specified user profile details.
+     */
+    public function show(Request $request, User $user): Response
+    {
+        abort_unless($request->user()->hasPermission('admin.users.manage'), 403);
+
+        $user->load([
+            'roles:id,name,slug,description',
+            'roles.permissions:id,name',
+            'matters' => fn ($q) => $q->select(['matters.id', 'matters.matter_number', 'matters.title', 'matters.status', 'matters.priority', 'matters.opened_at'])->latest('matters.opened_at')->take(10),
+        ]);
+
+        $roles = Role::query()->with('permissions:id,name')->orderBy('name')->get();
+
+        return Inertia::render('admin/users/show', [
+            'staff' => $user,
+            'roles' => $roles,
+            'metrics' => [
+                'active_matters_count' => $user->matters()->where('status', 'active')->count(),
+                'total_matters_count' => $user->matters()->count(),
+            ],
+        ]);
+    }
+
     public function store(StoreAdminUserRequest $request, AuditService $audit): RedirectResponse
     {
         $hasCustomPassword = $request->filled('password');
