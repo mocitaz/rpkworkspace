@@ -52,7 +52,12 @@ class GovernanceController extends Controller
             'metrics' => $metrics,
             'correspondences' => $request->user()->hasPermission('correspondence.view')
                 ? Correspondence::query()->whereIn('matter_id', $matterIds)
-                    ->with('matter:id,matter_number,title')
+                    ->with([
+                        'matter:id,matter_number,title,client_id',
+                        'client:id,display_name',
+                        'creator:id,name',
+                    ])
+                    ->withCount('documents')
                     ->when($request->string('matter_id')->toString(), fn ($query, $matterId) => $query->where('matter_id', $matterId))
                     ->when($request->string('direction')->toString(), fn ($query, $direction) => $query->where('direction', $direction))
                     ->when($request->string('source')->toString(), fn ($query, $source) => $query->where('source', $source))
