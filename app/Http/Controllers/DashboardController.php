@@ -161,7 +161,7 @@ class DashboardController extends Controller
             });
 
         // 6. Recent Activities (Real DB AuditLog records with rich contextual metadata, categorization & direct links)
-        $activities = AuditLog::query()->with('actor')->latest('created_at')->limit(6)->get()
+        $activities = AuditLog::query()->with('actor')->latest('created_at')->limit(4)->get()
             ->map(function ($log) {
                 $evt = strtolower($log->event ?? '');
                 $cat = strtolower($log->category ?? '');
