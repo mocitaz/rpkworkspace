@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\DocumentVersionFactory;
+use DomainException;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,6 +27,15 @@ class DocumentVersion extends Model
         'scan_status' => 'pending',
         'extraction_status' => 'pending',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (DocumentVersion $version): void {
+            if ($version->document()->whereHas('matter', fn ($matter) => $matter->whereNotNull('legal_hold_at'))->exists()) {
+                throw new DomainException('Versi dokumen perkara dalam legal hold tidak dapat dihapus.');
+            }
+        });
+    }
 
     protected function casts(): array
     {

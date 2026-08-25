@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DomainException;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,15 @@ class MatterEvidence extends Model
         'custody_notes',
         'created_by',
     ];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (MatterEvidence $evidence): void {
+            if ($evidence->matter()->whereNotNull('legal_hold_at')->exists()) {
+                throw new DomainException('Alat bukti perkara dalam legal hold tidak dapat dihapus.');
+            }
+        });
+    }
 
     public function matter(): BelongsTo
     {

@@ -10,10 +10,12 @@ use App\Actions\RefundPayment;
 use App\Actions\ReversePayment;
 use App\Actions\TransitionInvoice;
 use App\Models\Client;
+use App\Models\Invoice;
 use App\Models\Matter;
 use App\Services\AuditService;
 use App\Services\MatterFinancialOverview;
 use App\WorkflowStatus;
+use Illuminate\Support\Carbon;
 
 it('calculates quotation and invoice totals on the server', function () {
     $actor = rafUser();
@@ -212,8 +214,10 @@ it('returns the financial overview of a matter', function () {
 it('records the partner approval of a quotation', function () {
     $actor = rafUser();
     $client = Client::factory()->recycle($actor)->create();
+    $matter = Matter::factory()->recycle($actor)->create(['client_id' => $client->getKey()]);
     $quotation = app(CreateQuotation::class)->handle([
         'client_id' => $client->getKey(),
+        'matter_id' => $matter->getKey(),
         'title' => 'Proposal pendampingan',
         'items' => [['description' => 'Fee', 'quantity' => 1, 'unit_amount' => 2_000_000]],
     ], $actor, app(GenerateDocumentNumber::class));
@@ -223,4 +227,52 @@ it('records the partner approval of a quotation', function () {
     expect($quotation->refresh()->status)->toBe('approved')
         ->and($quotation->approved_by)->toBe($actor->getKey())
         ->and($quotation->approved_at)->not->toBeNull();
+});
+
+it('calculates fractional tax rates with integer minor units', function () {
+    $actor = rafUser();
+    $client = Client::factory()->recycle($actor)->create();
+    $matter = Matter::factory()->recycle($actor)->create(['client_id' => $client->getKey()]);
+
+    $invoice = app(CreateInvoice::class)->handle([
+        'client_id' => $client->getKey(),
+        'matter_id' => $matter->getKey(),
+        'title' => 'Invoice fractional tax',
+        'tax_rate' => '11.25',
+        'items' => [['description' => 'Fee', 'quantity' => 1, 'unit_amount' => 123_457]],
+    ], $actor, app(GenerateDocumentNumber::class));
+
+    expect($invoice->tax_amount)->toBe(13_889)
+        ->and($invoice->total_amount)->toBe(137_346)
+        ->and($invoice->outstanding_amount)->toBe(137_346);
+});
+
+it('places receivables in exact aging boundaries', function () {
+    Carbon::setTestNow('2026-08-25 12:00:00');
+    $actor = rafUser();
+    $client = Client::factory()->recycle($actor)->create();
+    $matter = Matter::factory()->recycle($actor)->create(['client_id' => $client->getKey()]);
+
+    foreach ([0, 1, 30, 31, 60, 61, 90, 91] as $daysPastDue) {
+        Invoice::factory()->recycle([$actor, $client, $matter])->create([
+            'client_id' => $client->getKey(),
+            'matter_id' => $matter->getKey(),
+            'status' => 'sent',
+            'due_at' => today()->subDays($daysPastDue),
+            'total_amount' => 100,
+            'outstanding_amount' => 100,
+            'paid_amount' => 0,
+            'created_by' => $actor->getKey(),
+        ]);
+    }
+
+    expect(app(MatterFinancialOverview::class)->for($matter)['aging'])->toBe([
+        'current' => 100,
+        '1_30' => 200,
+        '31_60' => 200,
+        '61_90' => 200,
+        'over_90' => 100,
+    ]);
+
+    Carbon::setTestNow();
 });

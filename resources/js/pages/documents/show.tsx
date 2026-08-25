@@ -109,6 +109,7 @@ type Document = {
             id: string;
             name: string;
             email: string;
+            signing_token: string;
             status: string;
             signed_at?: string;
         }[];

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\DocumentFactory;
+use DomainException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,6 +23,15 @@ class Document extends Model
     ];
 
     protected $attributes = ['status' => 'draft', 'confidentiality_level' => 'standard'];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Document $document): void {
+            if ($document->matter()->whereNotNull('legal_hold_at')->exists()) {
+                throw new DomainException('Dokumen perkara dalam legal hold tidak dapat dihapus.');
+            }
+        });
+    }
 
     /**
      * @param  Builder<Document>  $query

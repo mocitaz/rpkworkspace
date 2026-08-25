@@ -148,7 +148,10 @@
                 <tr>
                     <td class="summary-label">INTEGRITAS HASH SHA-256:</td>
                     <td class="summary-value">
-                        <div class="checksum-box mono">{{ $signatureRequest->document->checksum ?? hash('sha256', $signatureRequest->verification_code) }}</div>
+                        <div class="checksum-box mono">Sumber: {{ $signatureRequest->document_checksum }}</div>
+                        @if ($signatureRequest->signed_final_checksum)
+                            <div class="checksum-box mono">PDF final: {{ $signatureRequest->signed_final_checksum }}</div>
+                        @endif
                     </td>
                 </tr>
             </table>

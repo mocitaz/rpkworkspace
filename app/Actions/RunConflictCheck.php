@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Services\AuditService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class RunConflictCheck
 {
@@ -30,7 +31,9 @@ class RunConflictCheck
             throw new \DomainException('Conflict check memerlukan setidaknya satu nama pihak yang sah.');
         }
 
-        $matches = $searchedNames->flatMap(fn (string $name) => $this->findMatches($name))->values();
+        $matches = $searchedNames->flatMap(fn (string $name) => $this->findMatches($name))
+            ->unique(fn (array $match): string => $match['type'].':'.$match['id'])
+            ->values();
         $status = $matches->contains(fn (array $match) => $match['risk'] === 'blocked') ? 'blocked' : ($matches->isEmpty() ? 'clear' : 'potential_match');
 
         $check = ConflictCheck::query()->create([
@@ -57,12 +60,18 @@ class RunConflictCheck
     /** @return Collection<int, array{type: string, id: string, name: string, risk: string, similarity: int, details: string}> */
     private function findMatches(string $name): Collection
     {
-        $like = '%'.$name.'%';
-        $cleanName = strtolower(trim($name));
+        $cleanName = $this->normalizeName($name);
+        $tokens = collect(explode(' ', $cleanName))->filter(fn (string $token): bool => mb_strlen($token) >= 3)->values();
+
+        if ($cleanName === '' || $tokens->isEmpty()) {
+            return collect();
+        }
 
         return collect()
-            ->concat(Client::query()->where('display_name', 'like', $like)->limit(20)->get()->map(function (Client $client) use ($cleanName) {
-                similar_text($cleanName, strtolower($client->display_name), $percent);
+            ->concat(Client::query()->where(function ($query) use ($tokens): void {
+                $tokens->each(fn (string $token) => $query->orWhereRaw('LOWER(display_name) LIKE ?', ['%'.$token.'%']));
+            })->limit(50)->get()->map(function (Client $client) use ($cleanName) {
+                $percent = $this->similarity($cleanName, $client->display_name);
 
                 return [
                     'type' => 'client',
@@ -72,21 +81,30 @@ class RunConflictCheck
                     'similarity' => (int) round($percent),
                     'details' => 'Klien Aktif/Eksisting RPK Law Firm (No. Klien: '.$client->client_number.')',
                 ];
-            }))
-            ->concat(Contact::query()->where(fn ($query) => $query->where('first_name', 'like', $like)->orWhere('last_name', 'like', $like)->orWhere('organization_name', 'like', $like))->limit(20)->get()->map(function (Contact $contact) use ($cleanName) {
-                similar_text($cleanName, strtolower($contact->full_name), $percent);
+            })->filter(fn (array $match): bool => $match['similarity'] >= 70))
+            ->concat(Contact::query()->where(function ($query) use ($tokens): void {
+                $tokens->each(fn (string $token) => $query->orWhere(function ($candidate) use ($token): void {
+                    $candidate->whereRaw('LOWER(first_name) LIKE ?', ['%'.$token.'%'])
+                        ->orWhereRaw('LOWER(last_name) LIKE ?', ['%'.$token.'%'])
+                        ->orWhereRaw('LOWER(organization_name) LIKE ?', ['%'.$token.'%']);
+                }));
+            })->limit(50)->get()->map(function (Contact $contact) use ($cleanName) {
+                $target = $contact->organization_name ?: $contact->full_name;
+                $percent = max($this->similarity($cleanName, $target), $this->similarity($cleanName, $contact->full_name));
 
                 return [
                     'type' => 'contact',
                     'id' => (string) $contact->getKey(),
-                    'name' => $contact->full_name,
+                    'name' => $target,
                     'risk' => 'potential_match',
                     'similarity' => (int) round($percent),
                     'details' => 'Kontak Pribadi / Direksi / Afiliasi Perusahaan ('.($contact->organization_name ?? 'Individu').')',
                 ];
-            }))
-            ->concat(Matter::query()->where('title', 'like', $like)->limit(20)->get()->map(function (Matter $matter) use ($cleanName) {
-                similar_text($cleanName, strtolower($matter->title), $percent);
+            })->filter(fn (array $match): bool => $match['similarity'] >= 70))
+            ->concat(Matter::query()->where(function ($query) use ($tokens): void {
+                $tokens->each(fn (string $token) => $query->orWhereRaw('LOWER(title) LIKE ?', ['%'.$token.'%']));
+            })->limit(50)->get()->map(function (Matter $matter) use ($cleanName) {
+                $percent = $this->similarity($cleanName, $matter->title);
 
                 return [
                     'type' => 'matter',
@@ -96,10 +114,15 @@ class RunConflictCheck
                     'similarity' => (int) round($percent),
                     'details' => 'Judul Perkara Aktif: '.$matter->matter_number,
                 ];
-            }))
-            ->concat(MatterParty::query()->with('matter:id,matter_number,title')->where(fn ($query) => $query->where('name', 'like', $like)->orWhere('organization_name', 'like', $like))->limit(20)->get()->map(function (MatterParty $party) use ($cleanName) {
+            })->filter(fn (array $match): bool => $match['similarity'] >= 70))
+            ->concat(MatterParty::query()->with('matter:id,matter_number,title')->where(function ($query) use ($tokens): void {
+                $tokens->each(fn (string $token) => $query->orWhere(function ($candidate) use ($token): void {
+                    $candidate->whereRaw('LOWER(name) LIKE ?', ['%'.$token.'%'])
+                        ->orWhereRaw('LOWER(organization_name) LIKE ?', ['%'.$token.'%']);
+                }));
+            })->limit(50)->get()->map(function (MatterParty $party) use ($cleanName) {
                 $target = $party->organization_name ?? $party->name;
-                similar_text($cleanName, strtolower($target), $percent);
+                $percent = $this->similarity($cleanName, $target);
                 $isOpposing = in_array($party->party_type, ['opposing_party', 'opponent', 'opposing_counsel'], true);
                 $roleLabel = match ($party->party_type) {
                     'opposing_party', 'opponent' => 'PIHAK LAWAN (ADVERSE PARTY)',
@@ -117,6 +140,23 @@ class RunConflictCheck
                     'similarity' => (int) round($percent),
                     'details' => $roleLabel.' pada Perkara: '.($party->matter->title ?? '-').' ('.($party->matter->matter_number ?? '-').')',
                 ];
-            }));
+            })->filter(fn (array $match): bool => $match['similarity'] >= 70));
+    }
+
+    private function similarity(string $normalizedNeedle, string $candidate): int
+    {
+        similar_text($normalizedNeedle, $this->normalizeName($candidate), $percent);
+
+        return (int) round($percent);
+    }
+
+    private function normalizeName(string $name): string
+    {
+        $normalized = Str::lower(Str::ascii($name));
+        $normalized = preg_replace('/[^a-z0-9]+/', ' ', $normalized) ?? '';
+        $legalForms = 'pt|perseroan terbatas|cv|commanditaire vennootschap|tbk|inc|incorporated|ltd|limited|llc|corp|corporation|co|company|plc|pte|gmbh|bhd|yayasan|firma';
+        $normalized = preg_replace('/\\b(?:'.$legalForms.')\\b/', ' ', $normalized) ?? '';
+
+        return Str::squish($normalized);
     }
 }

@@ -12,12 +12,23 @@ use Illuminate\Support\Facades\DB;
 
 class CreateQuotation
 {
-    public function __construct(private EnsureMatterIsNotOnLegalHold $legalHold) {}
+    public function __construct(
+        private EnsureMatterIsNotOnLegalHold $legalHold,
+        private EnsureConflictCheckCleared $conflicts,
+    ) {}
 
     /** @param array<string, mixed> $attributes */
     public function handle(array $attributes, User $creator, GenerateDocumentNumber $numbers): Quotation
     {
         return DB::transaction(function () use ($attributes, $creator, $numbers): Quotation {
+            if (empty($attributes['matter_id']) && empty($attributes['conflict_check_id'])) {
+                throw new \LogicException('Conflict check wajib untuk quotation tanpa matter.');
+            }
+
+            if (isset($attributes['conflict_check_id']) && empty($attributes['matter_id'])) {
+                $this->conflicts->forStandaloneQuotation((string) $attributes['conflict_check_id'], (string) $attributes['client_id']);
+            }
+
             if (isset($attributes['matter_id']) && is_string($attributes['matter_id']) && $attributes['matter_id'] !== '') {
                 $this->legalHold->handle(Matter::query()->whereKey($attributes['matter_id'])->sole());
             }

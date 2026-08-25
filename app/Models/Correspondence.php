@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\CorrespondenceFactory;
+use DomainException;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,15 @@ class Correspondence extends Model
     protected $fillable = ['matter_id', 'client_id', 'contact_id', 'direction', 'source', 'subject', 'from_addresses', 'to_addresses', 'cc_addresses', 'body', 'external_message_id', 'occurred_at', 'created_by'];
 
     protected $attributes = ['source' => 'manual'];
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Correspondence $correspondence): void {
+            if ($correspondence->matter()->whereNotNull('legal_hold_at')->exists()) {
+                throw new DomainException('Korespondensi perkara dalam legal hold tidak dapat dihapus.');
+            }
+        });
+    }
 
     protected function casts(): array
     {

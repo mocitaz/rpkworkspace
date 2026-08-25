@@ -11,10 +11,16 @@ use Illuminate\Support\Facades\DB;
 
 class CreateMatter
 {
+    public function __construct(private EnsureConflictCheckCleared $conflicts) {}
+
     /** @param array<string, mixed> $attributes */
     public function handle(array $attributes, User $creator): Matter
     {
         return DB::transaction(function () use ($attributes, $creator) {
+            if (isset($attributes['conflict_check_id'])) {
+                $this->conflicts->forMatter((string) $attributes['conflict_check_id'], (string) $attributes['client_id']);
+            }
+
             $year = (int) now(config('raf.timezone'))->format('Y');
 
             MatterNumberSequence::query()->insertOrIgnore([

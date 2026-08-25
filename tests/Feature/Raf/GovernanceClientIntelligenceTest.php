@@ -11,9 +11,11 @@ use App\Actions\RunConflictCheck;
 use App\Jobs\GenerateMatterHandoverExport;
 use App\Models\Client;
 use App\Models\ConflictCheck;
+use App\Models\Correspondence;
 use App\Models\Document;
 use App\Models\DocumentVersion;
 use App\Models\Matter;
+use App\Models\MatterEvidence;
 use App\Models\MatterParty;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
@@ -63,6 +65,22 @@ it('records blocked conflict matches and a partner waiver decision', function ()
         ->and($check->reviewed_by)->toBe($partner->getKey());
 });
 
+it('normalizes legal entity forms and punctuation before conflict matching', function () {
+    $actor = rafUser();
+    $existingMatter = Matter::factory()->recycle($actor)->create();
+    MatterParty::factory()->create([
+        'matter_id' => $existingMatter->getKey(),
+        'created_by' => $actor->getKey(),
+        'party_type' => 'opposing_party',
+        'name' => 'PT. Merah-Nusantara, Tbk.',
+    ]);
+
+    $check = app(RunConflictCheck::class)->handle($actor, ['Merah Nusantara Ltd']);
+
+    expect($check->status)->toBe('blocked')
+        ->and(collect($check->matches)->firstWhere('type', 'matter_party')['similarity'])->toBe(100);
+});
+
 it('requires a clear or waived conflict check before intake may continue', function () {
     $actor = rafUser();
     $matter = Matter::factory()->recycle($actor)->create();
@@ -105,6 +123,40 @@ it('prevents operational matter changes and document versions while a legal hold
         'from_addresses' => ['partner@raf.test'], 'to_addresses' => ['client@example.test'], 'occurred_at' => now(),
     ], $actor))->toThrow(DomainException::class)
         ->and(fn () => app(CreateDocumentVersion::class)->handle($document, UploadedFile::fake()->create('evidence.pdf', 10, 'application/pdf'), $actor))->toThrow(DomainException::class);
+});
+
+it('prevents direct deletion of preserved legal hold records', function () {
+    $actor = rafUser();
+    $matter = Matter::factory()->recycle($actor)->create(['legal_hold_at' => now()]);
+    $document = Document::factory()->recycle([$matter, $actor])->create([
+        'matter_id' => $matter->getKey(),
+        'created_by' => $actor->getKey(),
+    ]);
+    $version = DocumentVersion::factory()->recycle([$document, $actor])->create([
+        'document_id' => $document->getKey(),
+        'uploaded_by' => $actor->getKey(),
+    ]);
+    $evidence = MatterEvidence::factory()->recycle([$matter, $actor])->create([
+        'matter_id' => $matter->getKey(),
+        'created_by' => $actor->getKey(),
+    ]);
+    $correspondence = Correspondence::query()->create([
+        'matter_id' => $matter->getKey(),
+        'client_id' => $matter->client_id,
+        'direction' => 'inbound',
+        'source' => 'manual',
+        'subject' => 'Preserved correspondence',
+        'from_addresses' => ['client@example.test'],
+        'to_addresses' => ['lawyer@example.test'],
+        'occurred_at' => now(),
+        'created_by' => $actor->getKey(),
+    ]);
+
+    expect(fn () => $document->delete())->toThrow(DomainException::class)
+        ->and(fn () => $version->delete())->toThrow(DomainException::class)
+        ->and(fn () => $evidence->delete())->toThrow(DomainException::class)
+        ->and(fn () => $correspondence->delete())->toThrow(DomainException::class)
+        ->and(fn () => $matter->delete())->toThrow(DomainException::class);
 });
 
 it('builds a private handover bundle containing clean documents only', function () {

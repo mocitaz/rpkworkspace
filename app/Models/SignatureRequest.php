@@ -22,7 +22,7 @@ class SignatureRequest extends Model
 
     protected $fillable = [
         'document_id', 'document_version_id', 'verification_code', 'mode', 'status', 'assurance_level', 'document_checksum',
-        'signed_record_disk', 'signed_record_path', 'signed_final_disk', 'signed_final_path', 'signed_final_status', 'signed_final_message', 'certificate_disk', 'certificate_path',
+        'signed_record_disk', 'signed_record_path', 'signed_final_disk', 'signed_final_path', 'signed_final_checksum', 'signed_final_status', 'signed_final_message', 'certificate_disk', 'certificate_path',
         'expires_at', 'sent_at', 'completed_at', 'signed_final_started_at', 'signed_final_completed_at', 'created_by',
     ];
 

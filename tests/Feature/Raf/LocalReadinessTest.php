@@ -21,10 +21,12 @@ it('marks signed final PDF unavailable instead of generating a false final artif
         'document_id' => $document->getKey(), 'uploaded_by' => $actor->getKey(),
         'original_filename' => 'agreement.docx', 'storage_disk' => 'local', 'storage_path' => 'documents/agreement.docx',
     ]);
-    Storage::disk('local')->put($version->storage_path, 'DOCX placeholder');
+    $source = 'DOCX placeholder';
+    Storage::disk('local')->put($version->storage_path, $source);
+    $version->update(['checksum' => hash('sha256', $source)]);
     $signature = SignatureRequest::factory()->recycle([$document, $version, $actor])->create([
         'document_id' => $document->getKey(), 'document_version_id' => $version->getKey(),
-        'verification_code' => 'verify-local-readiness', 'document_checksum' => str_repeat('a', 64), 'created_by' => $actor->getKey(),
+        'verification_code' => 'verify-local-readiness', 'document_checksum' => $version->checksum, 'created_by' => $actor->getKey(),
     ]);
 
     app(GenerateSignedFinalPdf::class)->handle($signature);
@@ -44,16 +46,19 @@ it('stamps a PDF source into a signed final PDF with verification details', func
     $sourcePdf = new Dompdf;
     $sourcePdf->loadHtml('<h1>Agreement</h1><p>Legal document source.</p>');
     $sourcePdf->render();
-    Storage::disk('local')->put($version->storage_path, $sourcePdf->output());
+    $source = $sourcePdf->output();
+    Storage::disk('local')->put($version->storage_path, $source);
+    $version->update(['checksum' => hash('sha256', $source)]);
     $signature = SignatureRequest::factory()->recycle([$document, $version, $actor])->create([
         'document_id' => $document->getKey(), 'document_version_id' => $version->getKey(),
-        'verification_code' => 'verify-final-pdf', 'document_checksum' => str_repeat('b', 64), 'created_by' => $actor->getKey(),
+        'verification_code' => 'verify-final-pdf', 'document_checksum' => $version->checksum, 'created_by' => $actor->getKey(),
     ]);
 
     app(GenerateSignedFinalPdf::class)->handle($signature);
 
     expect($signature->refresh()->signed_final_status)->toBe('completed')
-        ->and($signature->signed_final_path)->not->toBeNull();
+        ->and($signature->signed_final_path)->not->toBeNull()
+        ->and($signature->signed_final_checksum)->toHaveLength(64);
     Storage::disk('local')->assertExists($signature->signed_final_path);
 });
 
@@ -70,11 +75,13 @@ it('converts a DOCX source before stamping its signed final PDF', function () {
     $word = new PhpWord;
     $word->addSection()->addText('Agreement source document');
     (new Word2007($word))->save($temporaryDocx);
-    Storage::disk('local')->put($version->storage_path, file_get_contents($temporaryDocx));
+    $source = file_get_contents($temporaryDocx);
+    Storage::disk('local')->put($version->storage_path, $source);
+    $version->update(['checksum' => hash('sha256', $source)]);
     unlink($temporaryDocx);
     $signature = SignatureRequest::factory()->recycle([$document, $version, $actor])->create([
         'document_id' => $document->getKey(), 'document_version_id' => $version->getKey(),
-        'verification_code' => 'verify-final-docx', 'document_checksum' => str_repeat('c', 64), 'created_by' => $actor->getKey(),
+        'verification_code' => 'verify-final-docx', 'document_checksum' => $version->checksum, 'created_by' => $actor->getKey(),
     ]);
 
     app(GenerateSignedFinalPdf::class)->handle($signature);

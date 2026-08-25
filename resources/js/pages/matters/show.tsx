@@ -117,6 +117,8 @@ type Matter = {
     supervising_lawyer_id?: number;
     practice_area_id?: number;
     closed_at?: string;
+    legal_hold_at?: string | null;
+    legal_hold_reason?: string | null;
     court?: string;
     external_case_number?: string;
     members: Person[];
@@ -428,6 +430,18 @@ export default function MatterShow({
                             )}
                         </div>
                     </div>
+
+                    {matter.legal_hold_at && (
+                        <div className="flex items-start gap-2.5 rounded-xl border border-amber-300 bg-amber-50 px-3.5 py-3 text-amber-950 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-100">
+                            <Lock className="mt-0.5 size-4 shrink-0 text-amber-700 dark:text-amber-400" />
+                            <div>
+                                <p className="text-xs font-bold">Legal Hold aktif — penghapusan bukti, dokumen, dan korespondensi dikunci.</p>
+                                {matter.legal_hold_reason && (
+                                    <p className="mt-0.5 text-[11px] text-amber-800 dark:text-amber-300">{matter.legal_hold_reason}</p>
+                                )}
+                            </div>
+                        </div>
+                    )}
 
                     {/* 2. Top 4 Bento Stat Cards */}
                     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -1085,13 +1099,18 @@ export default function MatterShow({
                                                                 {can.update && (
                                                                     <button
                                                                         type="button"
+                                                                        disabled={Boolean(matter.legal_hold_at)}
                                                                         onClick={() => {
+                                                                            if (matter.legal_hold_at) {
+                                                                                return;
+                                                                            }
+
                                                                             if (confirm('Hapus rekaman kronologi fakta ini?')) {
                                                                                 router.delete(chronologyRoutes.destroy({ matter: matter.id, chronology: item.id }));
                                                                             }
                                                                         }}
-                                                                        className="text-slate-400 hover:text-red-600 dark:hover:text-red-400"
-                                                                        title="Hapus Fakta"
+                                                                        className="text-slate-400 hover:text-red-600 disabled:cursor-not-allowed disabled:text-amber-500 disabled:opacity-60 dark:hover:text-red-400"
+                                                                        title={matter.legal_hold_at ? 'Dikunci karena Legal Hold aktif' : 'Hapus Fakta'}
                                                                     >
                                                                         <Trash2 className="size-3" />
                                                                     </button>
@@ -1265,13 +1284,18 @@ export default function MatterShow({
                                                                         type="button"
                                                                         variant="ghost"
                                                                         size="sm"
+                                                                        disabled={Boolean(matter.legal_hold_at)}
                                                                         onClick={() => {
+                                                                            if (matter.legal_hold_at) {
+                                                                                return;
+                                                                            }
+
                                                                             if (confirm(`Hapus pencatatan alat bukti ${ev.evidence_code}?`)) {
                                                                                 router.delete(`/matters/${matter.id}/evidences/${ev.id}`);
                                                                             }
                                                                         }}
-                                                                        className="size-7.5 p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400"
-                                                                        title="Hapus Bukti"
+                                                                        className="size-7.5 p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:bg-amber-50 disabled:text-amber-600 disabled:opacity-70 dark:hover:bg-rose-950/30 dark:hover:text-rose-400 dark:disabled:bg-amber-950/30"
+                                                                        title={matter.legal_hold_at ? 'Dikunci karena Legal Hold aktif' : 'Hapus Bukti'}
                                                                     >
                                                                         <Trash2 className="size-3.5" />
                                                                     </Button>

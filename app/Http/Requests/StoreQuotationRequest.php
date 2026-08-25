@@ -25,7 +25,7 @@ class StoreQuotationRequest extends FormRequest
         return [
             'client_id' => ['required', 'exists:clients,id'],
             'matter_id' => ['nullable', 'exists:matters,id'],
-            'conflict_check_id' => ['nullable', 'exists:conflict_checks,id'],
+            'conflict_check_id' => ['nullable', 'required_without:matter_id', 'exists:conflict_checks,id'],
             'title' => ['required', 'string', 'max:255'],
             'scope' => ['nullable', 'string', 'max:5000'],
             'status' => ['required', 'in:draft,pending_approval,sent,cancelled'],

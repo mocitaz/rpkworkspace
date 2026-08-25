@@ -23,9 +23,9 @@ class CreateInvoice
             $items = array_values(Arr::wrap($attributes['items'] ?? []));
             $subtotal = collect($items)->sum(fn (array $item): int => ((int) $item['quantity']) * ((int) $item['unit_amount']));
             $discount = (int) ($attributes['discount_amount'] ?? 0);
-            $taxRate = (float) ($attributes['tax_rate'] ?? 0);
+            [$taxRate, $taxRateBasisPoints] = $this->normalizeTaxRate($attributes['tax_rate'] ?? 0);
             $taxableAmount = max(0, $subtotal - $discount);
-            $taxAmount = (int) round($taxableAmount * ($taxRate / 100));
+            $taxAmount = intdiv(($taxableAmount * $taxRateBasisPoints) + 5_000, 10_000);
             $total = $taxableAmount + $taxAmount;
 
             $invoice = Invoice::query()->create([
@@ -53,5 +53,21 @@ class CreateInvoice
 
             return $invoice;
         }, 3);
+    }
+
+    /** @return array{0: string, 1: int} */
+    private function normalizeTaxRate(mixed $taxRate): array
+    {
+        $value = str_replace(',', '.', trim((string) $taxRate));
+
+        if (preg_match('/^(\d{1,3})(?:\.(\d{1,2}))?$/', $value, $matches) !== 1) {
+            throw new \InvalidArgumentException('Tarif pajak harus berupa persentase dengan maksimal dua angka desimal.');
+        }
+
+        $whole = (int) $matches[1];
+        $fraction = str_pad($matches[2] ?? '', 2, '0');
+        $basisPoints = ($whole * 100) + (int) $fraction;
+
+        return [sprintf('%d.%02d', $whole, (int) $fraction), $basisPoints];
     }
 }

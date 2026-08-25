@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Actions\CreateMatter;
-use App\Actions\EnsureConflictCheckCleared;
 use App\Actions\RunConflictCheck;
 use App\Actions\UpdateMatter;
 use App\Http\Requests\StoreMatterConflictCheckRequest;
@@ -74,9 +73,8 @@ class MatterController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreMatterRequest $request, CreateMatter $createMatter, EnsureConflictCheckCleared $conflicts, AuditService $audit): RedirectResponse
+    public function store(StoreMatterRequest $request, CreateMatter $createMatter, AuditService $audit): RedirectResponse
     {
-        $conflicts->forMatter($request->validated('conflict_check_id'), $request->validated('client_id'));
         $matter = $createMatter->handle($request->validated(), $request->user());
         $matter->members()->where('users.id', '!=', $request->user()->getKey())->where('users.is_active', true)->each(
             fn (User $user) => $user->notify((new MatterAssignedNotification($matter))->afterCommit()),

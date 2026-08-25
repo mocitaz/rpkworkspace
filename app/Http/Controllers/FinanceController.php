@@ -7,7 +7,6 @@ use App\Actions\CreateExpense;
 use App\Actions\CreateFinanceProofDocument;
 use App\Actions\CreateInvoice;
 use App\Actions\CreateQuotation;
-use App\Actions\EnsureConflictCheckCleared;
 use App\Actions\GenerateDocumentNumber;
 use App\Actions\RecordPayment;
 use App\Actions\RefundPayment;
@@ -106,14 +105,9 @@ class FinanceController extends Controller
         return back()->with('success', 'Invoice '.$invoice->invoice_number.' berhasil dibuat.');
     }
 
-    public function storeQuotation(StoreQuotationRequest $request, CreateQuotation $create, EnsureConflictCheckCleared $conflicts, GenerateDocumentNumber $numbers, AuditService $audit): RedirectResponse
+    public function storeQuotation(StoreQuotationRequest $request, CreateQuotation $create, GenerateDocumentNumber $numbers, AuditService $audit): RedirectResponse
     {
         $this->authorizeMatter($request, $request->validated('matter_id'));
-        if ($request->validated('matter_id') === null) {
-            $conflictCheckId = $request->validated('conflict_check_id');
-            abort_unless(is_string($conflictCheckId), 422, 'Conflict check wajib untuk quotation tanpa matter.');
-            $conflicts->forStandaloneQuotation($conflictCheckId, $request->validated('client_id'));
-        }
         $quotation = $create->handle($request->validated(), $request->user(), $numbers);
         $audit->record($quotation, 'quotation.created', [], $request->user(), $request);
 

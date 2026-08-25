@@ -3,6 +3,7 @@
 namespace App\Actions;
 
 use App\Models\SignatureRequest;
+use App\Services\SignatureCertificateService;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Storage;
@@ -13,6 +14,8 @@ use Symfony\Component\Process\Process;
 
 class GenerateSignedFinalPdf
 {
+    public function __construct(private SignatureCertificateService $certificates) {}
+
     public function handle(SignatureRequest $signatureRequest): SignatureRequest
     {
         $signatureRequest->loadMissing('documentVersion');
@@ -31,7 +34,16 @@ class GenerateSignedFinalPdf
 
         try {
             $source = Storage::disk($version->storage_disk)->get($version->storage_path);
+            $sourceChecksum = hash('sha256', $source);
+            if (! hash_equals((string) $version->checksum, $sourceChecksum)
+                || ! hash_equals((string) $signatureRequest->document_checksum, $sourceChecksum)) {
+                return $this->unavailable($signatureRequest, 'Checksum SHA-256 dokumen sumber tidak cocok. Proses dihentikan untuk menjaga integritas berkas.');
+            }
             file_put_contents($sourcePath, $source);
+
+            if (strtolower($extension) !== 'pdf' && $this->officeBinary() === null) {
+                return $this->unavailable($signatureRequest, 'Dokumen Word belum dapat dikonversi karena LibreOffice headless tidak tersedia. Berkas sumber tetap aman dan dapat diproses ulang setelah LibreOffice dipasang.');
+            }
             $pdfPath = $this->asPdf($sourcePath, $version->original_filename);
 
             $signedPdf = null;
@@ -48,14 +60,18 @@ class GenerateSignedFinalPdf
             $disk = (string) config('raf.documents.disk', 'local');
             $path = 'signature-artifacts/'.$signatureRequest->getKey().'/signed-final.pdf';
             Storage::disk($disk)->put($path, $signedPdf);
+            $signedFinalChecksum = hash('sha256', $signedPdf);
 
             $signatureRequest->update([
                 'signed_final_disk' => $disk,
                 'signed_final_path' => $path,
+                'signed_final_checksum' => $signedFinalChecksum,
                 'signed_final_status' => 'completed',
                 'signed_final_completed_at' => now(),
                 'signed_final_message' => null,
             ]);
+
+            $this->certificates->generate($signatureRequest->refresh());
 
             return $signatureRequest->refresh();
         } catch (\Throwable $exception) {
@@ -291,24 +307,18 @@ class GenerateSignedFinalPdf
                 }
             }
 
-            // If last page and no signers were placed, or for corporate seal
-            if ($page === $pageCount && empty($signerData)) {
-                $stampHeight = 18;
-                $pdf->SetFillColor(255, 255, 255);
-                $pdf->SetDrawColor(30, 30, 30);
-                $pdf->Rect(10, max(10, $size['height'] - ($stampHeight + 10)), $size['width'] - 20, $stampHeight, 'DF');
-                $pdf->SetTextColor(20, 20, 20);
-                $pdf->SetFont('Helvetica', 'B', 8);
-                $pdf->SetXY(14, $size['height'] - ($stampHeight + 6));
-                $pdf->Cell(0, 4, 'RPK LAW FIRM · DIGITAL E-SIGN SEAL');
-                $pdf->SetFont('Helvetica', '', 7);
-                $pdf->SetXY(14, $size['height'] - ($stampHeight + 1));
-                $pdf->Cell(0, 4, 'Verification: '.$verificationUrl);
-                $pdf->SetXY(14, $size['height'] - ($stampHeight - 4));
-                $pdf->Cell(0, 4, 'Checksum: '.$signatureRequest->document_checksum);
+        }
 
-                $pdf->Image($qrPath, $size['width'] - 25, $size['height'] - ($stampHeight + 7), 13, 13, 'PNG');
-            }
+        if (empty($signerData)) {
+            $pdf->AddPage('P', 'A4');
+            $pdf->SetTextColor(20, 20, 20);
+            $pdf->SetFont('Helvetica', 'B', 14);
+            $pdf->SetXY(20, 28);
+            $pdf->Cell(170, 8, 'RPK LAW FIRM - DIGITAL E-SIGN SEAL', 0, 1, 'C');
+            $pdf->SetFont('Helvetica', '', 9);
+            $pdf->SetXY(20, 50);
+            $pdf->MultiCell(130, 6, 'Verification: '.$verificationUrl."\nSource SHA-256: ".$signatureRequest->document_checksum);
+            $pdf->Image($qrPath, 155, 45, 32, 32, 'PNG');
         }
 
         return $pdf->Output('S');

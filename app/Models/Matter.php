@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\MatterFactory;
+use DomainException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -36,6 +37,15 @@ class Matter extends Model
     protected function casts(): array
     {
         return ['opened_at' => 'date', 'closed_at' => 'date', 'archived_at' => 'datetime', 'legal_hold_at' => 'datetime'];
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Matter $matter): void {
+            if ($matter->legal_hold_at !== null) {
+                throw new DomainException('Matter dalam legal hold tidak dapat dihapus.');
+            }
+        });
     }
 
     /**

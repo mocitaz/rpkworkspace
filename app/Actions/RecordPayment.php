@@ -27,7 +27,9 @@ class RecordPayment
             $allocatedAmount = $allocations->sum(fn (array $allocation): int => (int) $allocation['amount']);
 
             $matterId = $attributes['matter_id'] ?? null;
-            $matter = is_string($matterId) && $matterId !== '' ? Matter::query()->whereKey($matterId)->sole() : null;
+            $matter = is_string($matterId) && $matterId !== ''
+                ? Matter::query()->lockForUpdate()->whereKey($matterId)->sole()
+                : null;
             $this->legalHold->handle($matter);
 
             if ($allocatedAmount > $amount) {
@@ -51,6 +53,10 @@ class RecordPayment
                     throw new LogicException('Invoice harus memiliki klien dan mata uang yang sama dengan pembayaran.');
                 }
 
+                if ($invoice->matter_id !== $payment->matter_id) {
+                    throw new LogicException('Invoice harus berada pada matter yang sama dengan pembayaran.');
+                }
+
                 if (! in_array($invoice->status, ['sent', 'overdue'], true)) {
                     throw new LogicException('Pembayaran hanya dapat dialokasikan ke invoice terkirim atau overdue.');
                 }
@@ -67,10 +73,6 @@ class RecordPayment
                 $previousPaidAmount = $invoice->paid_amount;
                 $paidAmount = $previousPaidAmount + $allocationAmount;
                 $outstandingAmount = $invoice->outstanding_amount - $allocationAmount;
-
-                if ($payment->matter_id !== null && $invoice->matter_id !== $payment->matter_id) {
-                    throw new LogicException('Invoice harus berada pada matter yang sama dengan pembayaran.');
-                }
 
                 $invoice->update([
                     'paid_amount' => $paidAmount,

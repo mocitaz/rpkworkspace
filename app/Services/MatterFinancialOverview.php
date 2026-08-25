@@ -41,7 +41,7 @@ class MatterFinancialOverview
                 return;
             }
 
-            $daysPastDue = $invoice->due_at === null ? 0 : max(0, Carbon::parse($invoice->due_at)->diffInDays(today(), false));
+            $daysPastDue = $invoice->due_at === null ? 0 : max(0, Carbon::parse($invoice->due_at)->startOfDay()->diffInDays(today(), false));
             $bucket = match (true) {
                 $daysPastDue === 0 => 'current',
                 $daysPastDue <= 30 => '1_30',
@@ -101,7 +101,7 @@ class MatterFinancialOverview
                 return;
             }
 
-            $daysPastDue = $invoice->due_at === null ? 0 : max(0, Carbon::parse($invoice->due_at)->diffInDays(today(), false));
+            $daysPastDue = $invoice->due_at === null ? 0 : max(0, Carbon::parse($invoice->due_at)->startOfDay()->diffInDays(today(), false));
             $bucket = match (true) {
                 $daysPastDue === 0 => 'current',
                 $daysPastDue <= 30 => '1_30',
