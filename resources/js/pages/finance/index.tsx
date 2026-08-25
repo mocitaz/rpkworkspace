@@ -500,6 +500,7 @@ export default function FinanceIndex({
                                     canTransition={can.invoiceTransition}
                                     canCreate={can.invoice}
                                     onCreate={() => setModal('invoice')}
+                                    actionLabel="Buat Invoice Baru"
                                     emptyTitle="Belum Ada Invoice Tagihan"
                                     emptyDescription="Belum ada tagihan yang diterbitkan untuk perkara atau klien terpilih. Terbitkan invoice baru untuk mencatat honorarium dan termin pembayaran."
                                     onCancel={setCancelInvoice}
@@ -521,6 +522,7 @@ export default function FinanceIndex({
                                     canTransition={can.invoiceTransition}
                                     canCreate={can.quotation}
                                     onCreate={() => setModal('quotation')}
+                                    actionLabel="Buat Quotation Baru"
                                     emptyTitle="Belum Ada Quotation Terdaftar"
                                     emptyDescription="Belum ada proposal penawaran tarif jasa hukum atau estimasi biaya perkara yang diajukan ke calon klien."
                                 />
@@ -540,6 +542,7 @@ export default function FinanceIndex({
                                     date={(i) => i.incurred_at}
                                     canCreate={can.expense}
                                     onCreate={() => setModal('expense')}
+                                    actionLabel="Catat Biaya Perkara"
                                     emptyTitle="Belum Ada Catatan Biaya Perkara"
                                     emptyDescription="Belum ada pengeluaran operasional perkara seperti panjar pengadilan, materai, akomodasi, atau transportasi yang dicatat."
                                 />
@@ -554,6 +557,7 @@ export default function FinanceIndex({
                                     currency={currency}
                                     canManage={can.payment}
                                     onCreate={() => setModal('payment')}
+                                    actionLabel="Catat Penerimaan Kas"
                                     emptyTitle="Belum Ada Penerimaan Kas"
                                     emptyDescription="Belum ada riwayat transaksi pembayaran invoice, penerimaan retainer fee, atau transfer kas dari klien yang dicatat."
                                     onReverse={setReversePayment}
@@ -601,6 +605,7 @@ function Ledger({
     canTransition = false,
     canCreate = false,
     onCreate,
+    actionLabel,
     emptyTitle = 'Belum ada catatan transaksi',
     emptyDescription = 'Belum ada data pada bagian ini.',
     onCancel,
@@ -616,6 +621,7 @@ function Ledger({
     canTransition?: boolean;
     canCreate?: boolean;
     onCreate?: () => void;
+    actionLabel?: string;
     emptyTitle?: string;
     emptyDescription?: string;
     onCancel?: (invoice: LedgerItem) => void;
@@ -631,21 +637,9 @@ function Ledger({
                         {title}
                     </h3>
                 </div>
-                <div className="flex items-center gap-2">
-                    <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
-                        {items.length} data
-                    </span>
-                    {canCreate && onCreate && (
-                        <button
-                            type="button"
-                            onClick={onCreate}
-                            title={`Tambah ${title}`}
-                            className="flex size-6 items-center justify-center rounded-md border border-slate-200 text-slate-500 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 dark:border-white/10 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
-                        >
-                            <Plus className="size-3.5" />
-                        </button>
-                    )}
-                </div>
+                <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                    {items.length} data
+                </span>
             </div>
 
             {items.length > 0 ? (
@@ -786,8 +780,8 @@ function Ledger({
                                 onClick={onCreate}
                                 className="h-7 rounded-lg bg-slate-900 px-3 text-[11px] font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                             >
-                                <Plus className="mr-1 size-3" />
-                                + {title.split(' ')[0]} Baru
+                                <Plus className="mr-1.5 size-3.5" />
+                                {actionLabel || `Buat ${title.split(' ')[0]} Baru`}
                             </Button>
                         </div>
                     )}
@@ -802,6 +796,7 @@ function PaymentLedger({
     currency,
     canManage,
     onCreate,
+    actionLabel,
     emptyTitle = 'Belum Ada Penerimaan Kas',
     emptyDescription = 'Belum ada riwayat transaksi pembayaran invoice, penerimaan retainer fee, atau transfer kas dari klien yang dicatat.',
     onReverse,
@@ -811,6 +806,7 @@ function PaymentLedger({
     currency: string;
     canManage: boolean;
     onCreate?: () => void;
+    actionLabel?: string;
     emptyTitle?: string;
     emptyDescription?: string;
     onReverse: (payment: LedgerItem) => void;
@@ -827,21 +823,9 @@ function PaymentLedger({
                         Riwayat Penerimaan Pembayaran
                     </h3>
                 </div>
-                <div className="flex items-center gap-2">
-                    <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
-                        {items.length} pembayaran
-                    </span>
-                    {canManage && onCreate && (
-                        <button
-                            type="button"
-                            onClick={onCreate}
-                            title="Catat Pembayaran"
-                            className="flex size-6 items-center justify-center rounded-md border border-slate-200 text-slate-500 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 dark:border-white/10 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
-                        >
-                            <Plus className="size-3.5" />
-                        </button>
-                    )}
-                </div>
+                <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                    {items.length} pembayaran
+                </span>
             </div>
 
             {items.length > 0 ? (
@@ -947,8 +931,8 @@ function PaymentLedger({
                                 onClick={onCreate}
                                 className="h-7 rounded-lg bg-emerald-600 px-3 text-[11px] font-semibold text-white shadow-2xs hover:bg-emerald-700"
                             >
-                                <Plus className="mr-1 size-3" />
-                                + Catat Penerimaan Kas
+                                <Plus className="mr-1.5 size-3.5" />
+                                {actionLabel || 'Catat Penerimaan Kas'}
                             </Button>
                         </div>
                     )}
