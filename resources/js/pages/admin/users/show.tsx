@@ -3,6 +3,7 @@ import {
     AlertTriangle,
     ArrowLeft,
     Banknote,
+    BookOpen,
     Briefcase,
     Building2,
     Calendar,
@@ -12,6 +13,7 @@ import {
     CreditCard,
     ExternalLink,
     FileBadge,
+    FileCheck,
     FileText,
     GraduationCap,
     Mail,
@@ -22,6 +24,7 @@ import {
     Plus,
     Scale,
     Shield,
+    ShieldAlert,
     ShieldCheck,
     Smartphone,
     Sparkles,
@@ -204,77 +207,67 @@ export default function UserShow({
             <Head title={`${staff.name} - Profil Staf & Advokat`} />
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
-                <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-4 px-4 py-5 sm:px-6 lg:px-8">
                     {/* 1. Header Navigation & Client Cockpit Bar */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 lg:flex-row lg:items-center dark:border-white/[0.06]">
-                        <div className="space-y-1.5">
-                            <div className="flex flex-wrap items-center gap-2">
-                                <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
-                                    {displayId}
-                                </span>
-                                <span className="text-slate-300 dark:text-zinc-700">
-                                    •
-                                </span>
-                                <StatusBadge
-                                    value={
-                                        staff.is_active ? 'active' : 'inactive'
-                                    }
-                                />
-                                {staff.advocate_license_no && (
-                                    <span className="rounded-md border border-amber-200/70 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:border-amber-800/40 dark:bg-amber-950/50 dark:text-amber-300">
-                                        Advokat Resmi (NIA:{' '}
-                                        {staff.advocate_license_no})
-                                    </span>
+                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/70 pb-4 lg:flex-row lg:items-center dark:border-white/[0.06]">
+                        <div className="flex items-center gap-3.5">
+                            <div className="relative shrink-0">
+                                <Avatar className="size-12 rounded-xl border border-slate-200/80 shadow-2xs dark:border-white/10">
+                                    <AvatarImage
+                                        src={staff.avatar_url ?? undefined}
+                                        className="object-cover"
+                                    />
+                                    <AvatarFallback className="rounded-xl bg-slate-900 text-sm font-bold text-white dark:bg-zinc-800 dark:text-zinc-200">
+                                        {getInitials(staff.name)}
+                                    </AvatarFallback>
+                                </Avatar>
+                                {staff.is_active && (
+                                    <span
+                                        className="absolute -right-1 -bottom-1 flex size-3.5 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#0c0d10]"
+                                        title="Akun Aktif"
+                                    />
                                 )}
                             </div>
 
-                            <div className="flex items-center gap-3">
-                                <div className="relative">
-                                    <Avatar className="size-11 rounded-xl border border-slate-200/80 shadow-2xs dark:border-white/10">
-                                        <AvatarImage
-                                            src={staff.avatar_url ?? undefined}
-                                            className="object-cover"
-                                        />
-                                        <AvatarFallback className="rounded-xl bg-slate-900 text-sm font-bold text-white dark:bg-zinc-800 dark:text-zinc-200">
-                                            {getInitials(staff.name)}
-                                        </AvatarFallback>
-                                    </Avatar>
-                                    {staff.is_active && (
-                                        <span
-                                            className="absolute -right-1 -bottom-1 flex size-3.5 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#0c0d10]"
-                                            title="Aktif"
-                                        />
-                                    )}
-                                </div>
-
-                                <div>
-                                    <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                            <div className="min-w-0 space-y-0.5">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <h1 className="truncate text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
                                         {staff.name}
                                     </h1>
-                                    <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-zinc-400">
-                                        <span className="font-semibold text-slate-700 dark:text-zinc-200">
-                                            {staff.position_title ||
-                                                'Staf Kantor Hukum'}
-                                        </span>
-                                        {staff.department && (
-                                            <>
-                                                <span className="text-slate-300 dark:text-zinc-700">
-                                                    •
-                                                </span>
-                                                <span>{staff.department}</span>
-                                            </>
-                                        )}
-                                        {staff.education && (
-                                            <>
-                                                <span className="text-slate-300 dark:text-zinc-700">
-                                                    •
-                                                </span>
-                                                <span className="text-purple-700 dark:text-purple-400">
-                                                    {staff.education}
-                                                </span>
-                                            </>
-                                        )}
-                                    </div>
+                                    <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
+                                        {displayId}
+                                    </span>
+                                    <StatusBadge
+                                        value={
+                                            staff.is_active
+                                                ? 'active'
+                                                : 'inactive'
+                                        }
+                                    />
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 dark:text-zinc-400">
+                                    <span className="font-medium text-slate-700 dark:text-zinc-200">
+                                        {staff.position_title || 'Staf Hukum'}
+                                    </span>
+                                    {staff.department && (
+                                        <>
+                                            <span className="text-slate-300 dark:text-zinc-700">
+                                                •
+                                            </span>
+                                            <span>{staff.department}</span>
+                                        </>
+                                    )}
+                                    {staff.education && (
+                                        <>
+                                            <span className="text-slate-300 dark:text-zinc-700">
+                                                •
+                                            </span>
+                                            <span className="text-purple-700 dark:text-purple-400">
+                                                {staff.education}
+                                            </span>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -420,12 +413,12 @@ export default function UserShow({
                                             </button>
                                         </div>
 
-                                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                            <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                                            <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                                 <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                    NOMOR INDUK ADVOKAT (NIA)
+                                                    Nomor Induk Advokat (NIA)
                                                 </span>
-                                                <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
                                                     {staff.advocate_license_no || (
                                                         <span className="font-sans font-normal text-slate-400">
                                                             Belum dilengkapi
@@ -434,11 +427,11 @@ export default function UserShow({
                                                 </p>
                                             </div>
 
-                                            <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                            <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                                 <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                    NO. BAS PENGADILAN TINGGI
+                                                    No. BAS Pengadilan Tinggi
                                                 </span>
-                                                <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
                                                     {staff.bas_number || (
                                                         <span className="font-sans font-normal text-slate-400">
                                                             Belum dilengkapi
@@ -447,11 +440,11 @@ export default function UserShow({
                                                 </p>
                                             </div>
 
-                                            <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                            <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                                 <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                    TANGGAL SUMPAH (BAS)
+                                                    Tanggal Sumpah (BAS)
                                                 </span>
-                                                <p className="mt-1 text-xs font-bold text-slate-900 dark:text-white">
+                                                <p className="mt-0.5 text-xs font-bold text-slate-900 dark:text-white">
                                                     {staff.bas_date ? (
                                                         formatDate(
                                                             staff.bas_date,
@@ -464,10 +457,10 @@ export default function UserShow({
                                                 </p>
                                             </div>
 
-                                            <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                            <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                        MASA BERLAKU KTA
+                                                        Masa Berlaku KTA
                                                     </span>
                                                     {ktaStatus && (
                                                         <span
@@ -477,7 +470,7 @@ export default function UserShow({
                                                         </span>
                                                     )}
                                                 </div>
-                                                <p className="mt-1 text-xs font-bold text-slate-900 dark:text-white">
+                                                <p className="mt-0.5 text-xs font-bold text-slate-900 dark:text-white">
                                                     {staff.kta_expiry_date ? (
                                                         formatDate(
                                                             staff.kta_expiry_date,
@@ -492,12 +485,12 @@ export default function UserShow({
                                         </div>
 
                                         {/* Practice Areas */}
-                                        <div className="mt-3 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <div className="mt-2.5 rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                             <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                BIDANG SPESIALISASI HUKUM
-                                                (PRACTICE AREAS)
+                                                Bidang Spesialisasi Hukum
+                                                (Practice Areas)
                                             </span>
-                                            <div className="mt-2 flex flex-wrap gap-1.5">
+                                            <div className="mt-1.5 flex flex-wrap gap-1.5">
                                                 {practiceAreasList.length >
                                                 0 ? (
                                                     practiceAreasList.map(
@@ -603,10 +596,20 @@ export default function UserShow({
                                                 ))}
                                             </div>
                                         ) : (
-                                            <p className="text-xs text-slate-400">
-                                                Staf ini belum ditugaskan pada
-                                                perkara aktif saat ini.
-                                            </p>
+                                            <div className="flex flex-col items-center justify-center py-5 text-center">
+                                                <div className="mb-2 flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500">
+                                                    <Briefcase className="size-4.5" />
+                                                </div>
+                                                <p className="text-xs font-medium text-slate-600 dark:text-zinc-400">
+                                                    Belum ada penugasan perkara
+                                                    aktif
+                                                </p>
+                                                <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500">
+                                                    Staf ini belum ditugaskan
+                                                    pada perkara yang sedang
+                                                    berjalan.
+                                                </p>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -644,38 +647,38 @@ export default function UserShow({
                                     </div>
 
                                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                             <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                 Nomor Induk Advokat (NIA)
                                             </span>
-                                            <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
                                                 {staff.advocate_license_no ||
                                                     'Belum dilengkapi'}
                                             </p>
                                         </div>
 
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                             <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                 No. Berita Acara Sumpah (BAS)
                                             </span>
-                                            <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
                                                 {staff.bas_number ||
                                                     'Belum dilengkapi'}
                                             </p>
                                         </div>
 
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                             <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                 Tanggal Sumpah Pengadilan (BAS)
                                             </span>
-                                            <p className="mt-1 text-xs font-bold text-slate-900 dark:text-white">
+                                            <p className="mt-0.5 text-xs font-bold text-slate-900 dark:text-white">
                                                 {staff.bas_date
                                                     ? formatDate(staff.bas_date)
                                                     : 'Belum dilengkapi'}
                                             </p>
                                         </div>
 
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                             <div className="flex items-center justify-between">
                                                 <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                     Masa Berlaku KTA Advokat
@@ -688,7 +691,7 @@ export default function UserShow({
                                                     </span>
                                                 )}
                                             </div>
-                                            <p className="mt-1 text-xs font-bold text-slate-900 dark:text-white">
+                                            <p className="mt-0.5 text-xs font-bold text-slate-900 dark:text-white">
                                                 {staff.kta_expiry_date
                                                     ? formatDate(
                                                           staff.kta_expiry_date,
@@ -698,22 +701,22 @@ export default function UserShow({
                                         </div>
                                     </div>
 
-                                    <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                    <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                         <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                             Riwayat Pendidikan &amp; Almamater
                                         </span>
-                                        <p className="mt-1 text-xs font-semibold text-slate-800 dark:text-zinc-200">
+                                        <p className="mt-0.5 text-xs font-semibold text-slate-800 dark:text-zinc-200">
                                             {staff.education ||
                                                 'Belum dilengkapi (Contoh: S.H. - Universitas Indonesia, LL.M. - Leiden)'}
                                         </p>
                                     </div>
 
-                                    <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                    <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                         <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                             Bidang Spesialisasi Hukum (Practice
                                             Areas)
                                         </span>
-                                        <div className="mt-2 flex flex-wrap gap-1.5">
+                                        <div className="mt-1.5 flex flex-wrap gap-1.5">
                                             {practiceAreasList.length > 0 ? (
                                                 practiceAreasList.map(
                                                     (area, idx) => (
@@ -792,9 +795,15 @@ export default function UserShow({
                                             ))}
                                         </div>
                                     ) : (
-                                        <p className="text-xs text-slate-400">
-                                            Belum ada perkara terkait staf ini.
-                                        </p>
+                                        <div className="flex flex-col items-center justify-center py-6 text-center">
+                                            <div className="mb-2 flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500">
+                                                <Briefcase className="size-4.5" />
+                                            </div>
+                                            <p className="text-xs font-medium text-slate-600 dark:text-zinc-400">
+                                                Belum ada perkara terkait staf
+                                                ini
+                                            </p>
+                                        </div>
                                     )}
                                 </div>
                             )}
@@ -822,40 +831,40 @@ export default function UserShow({
                                     </div>
 
                                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                             <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                 EMAIL KERJA RESMI
                                             </span>
-                                            <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
                                                 {staff.email}
                                             </p>
                                         </div>
 
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                             <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                 WHATSAPP / NO. HP
                                             </span>
-                                            <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
                                                 {staff.phone || 'Belum diisi'}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                    <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                         <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                             ALAMAT DOMISILI SAAT INI
                                         </span>
-                                        <p className="mt-1 text-xs text-slate-800 dark:text-zinc-200">
+                                        <p className="mt-0.5 text-xs text-slate-800 dark:text-zinc-200">
                                             {staff.address ||
                                                 'Belum dilengkapi'}
                                         </p>
                                     </div>
 
-                                    <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                    <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                         <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                             ALAMAT SESUAI KTP
                                         </span>
-                                        <p className="mt-1 text-xs text-slate-800 dark:text-zinc-200">
+                                        <p className="mt-0.5 text-xs text-slate-800 dark:text-zinc-200">
                                             {staff.ktp_address ||
                                                 'Belum dilengkapi'}
                                         </p>
@@ -887,41 +896,41 @@ export default function UserShow({
                                     </div>
 
                                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                             <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                 NAMA BANK
                                             </span>
-                                            <p className="mt-1 font-bold text-slate-900 dark:text-white">
+                                            <p className="mt-0.5 font-bold text-slate-900 dark:text-white">
                                                 {staff.bank_name ||
                                                     'Belum diisi'}
                                             </p>
                                         </div>
 
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                             <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                 NOMOR REKENING
                                             </span>
-                                            <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
                                                 {staff.bank_account_number ||
                                                     '-'}
                                             </p>
                                         </div>
 
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                             <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                 ATAS NAMA REKENING
                                             </span>
-                                            <p className="mt-1 text-xs font-semibold text-slate-900 dark:text-white">
+                                            <p className="mt-0.5 text-xs font-semibold text-slate-900 dark:text-white">
                                                 {staff.bank_account_holder ||
                                                     '-'}
                                             </p>
                                         </div>
 
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                                             <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                 NOMOR POKOK WAJIB PAJAK (NPWP)
                                             </span>
-                                            <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
                                                 {staff.npwp ||
                                                     'Belum dilengkapi'}
                                             </p>
@@ -957,7 +966,7 @@ export default function UserShow({
                                         {staff.roles.map((role) => (
                                             <div
                                                 key={role.id}
-                                                className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]"
+                                                className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]"
                                             >
                                                 <div className="flex items-center gap-2">
                                                     <Shield className="size-3.5 text-purple-600 dark:text-purple-400" />
@@ -1002,13 +1011,16 @@ export default function UserShow({
                                     </button>
                                 </div>
 
-                                <div className="space-y-2.5 text-xs">
-                                    <div className="flex items-center justify-between">
+                                <div className="space-y-2 text-xs">
+                                    <div className="flex items-center justify-between gap-2">
                                         <span className="text-[11px] text-slate-500 dark:text-zinc-400">
                                             Email
                                         </span>
-                                        <div className="flex items-center gap-1.5">
-                                            <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                        <div className="flex items-center gap-1.5 overflow-hidden">
+                                            <span
+                                                className="truncate font-mono text-xs font-medium text-slate-900 dark:text-white"
+                                                title={staff.email}
+                                            >
                                                 {staff.email}
                                             </span>
                                             <button
@@ -1019,7 +1031,7 @@ export default function UserShow({
                                                         'email',
                                                     )
                                                 }
-                                                className="text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200"
+                                                className="shrink-0 text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200"
                                             >
                                                 {copiedField === 'email' ? (
                                                     <Check className="size-3 text-emerald-600" />
@@ -1030,11 +1042,11 @@ export default function UserShow({
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between gap-2">
                                         <span className="text-[11px] text-slate-500 dark:text-zinc-400">
                                             WhatsApp
                                         </span>
-                                        <span className="font-mono font-bold text-slate-900 dark:text-white">
+                                        <span className="font-mono font-medium text-slate-900 dark:text-white">
                                             {staff.phone || (
                                                 <span className="font-sans font-normal text-slate-400">
                                                     -
@@ -1043,7 +1055,7 @@ export default function UserShow({
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between gap-2">
                                         <span className="text-[11px] text-slate-500 dark:text-zinc-400">
                                             Tanggal Lahir
                                         </span>
@@ -1055,10 +1067,10 @@ export default function UserShow({
                                     </div>
 
                                     <div className="border-t border-slate-100 pt-2 dark:border-white/[0.04]">
-                                        <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                        <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                             Domisili Saat Ini
                                         </span>
-                                        <p className="mt-0.5 text-xs text-slate-800 dark:text-zinc-200">
+                                        <p className="mt-0.5 text-xs text-slate-700 dark:text-zinc-300">
                                             {staff.address || (
                                                 <span className="text-slate-400">
                                                     Belum dilengkapi
@@ -1089,26 +1101,26 @@ export default function UserShow({
                                     </button>
                                 </div>
 
-                                <div className="space-y-2.5 text-xs">
-                                    <div className="flex items-center justify-between">
+                                <div className="space-y-2 text-xs">
+                                    <div className="flex items-center justify-between gap-2">
                                         <span className="text-[11px] text-slate-500 dark:text-zinc-400">
                                             Bank
                                         </span>
-                                        <span className="font-bold text-slate-900 dark:text-white">
+                                        <span className="font-medium text-slate-900 dark:text-white">
                                             {staff.bank_name || '-'}
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between gap-2">
                                         <span className="text-[11px] text-slate-500 dark:text-zinc-400">
                                             No. Rekening
                                         </span>
-                                        <span className="font-mono font-bold text-slate-900 dark:text-white">
+                                        <span className="font-mono font-medium text-slate-900 dark:text-white">
                                             {staff.bank_account_number || '-'}
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between gap-2">
                                         <span className="text-[11px] text-slate-500 dark:text-zinc-400">
                                             Atas Nama
                                         </span>
@@ -1118,11 +1130,11 @@ export default function UserShow({
                                     </div>
 
                                     <div className="border-t border-slate-100 pt-2 dark:border-white/[0.04]">
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex items-center justify-between gap-2">
                                             <span className="text-[11px] text-slate-500 dark:text-zinc-400">
                                                 NPWP
                                             </span>
-                                            <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                            <span className="font-mono text-xs font-medium text-slate-900 dark:text-white">
                                                 {staff.npwp || '-'}
                                             </span>
                                         </div>
@@ -1139,19 +1151,19 @@ export default function UserShow({
                                             Otorisasi Sistem
                                         </span>
                                     </div>
-                                    <span className="text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
+                                    <span className="font-mono text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
                                         {staff.roles.length} Role
                                     </span>
                                 </div>
 
-                                <div className="space-y-2 text-xs">
-                                    <div className="flex flex-wrap gap-1">
+                                <div className="space-y-2.5 text-xs">
+                                    <div className="flex flex-wrap gap-1.5">
                                         {staff.roles.map((r) => (
                                             <span
                                                 key={r.id}
-                                                className="inline-flex items-center gap-1 rounded bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300"
+                                                className="inline-flex items-center gap-1 rounded-md border border-slate-200/80 bg-slate-50/70 px-2 py-0.5 text-[10.5px] font-medium text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300"
                                             >
-                                                <Shield className="size-2.5" />
+                                                <Shield className="size-2.5 text-purple-600 dark:text-purple-400" />
                                                 {r.name}
                                             </span>
                                         ))}
@@ -1160,15 +1172,20 @@ export default function UserShow({
                                     <div className="border-t border-slate-100 pt-2 text-[11px] text-slate-400 dark:border-white/[0.04]">
                                         <div className="flex items-center justify-between">
                                             <span>Email Terverifikasi</span>
-                                            <span className="font-semibold text-slate-700 dark:text-zinc-300">
-                                                {staff.email_verified_at
-                                                    ? 'Ya'
-                                                    : 'Belum'}
+                                            <span className="flex items-center gap-1 font-medium text-slate-700 dark:text-zinc-300">
+                                                {staff.email_verified_at ? (
+                                                    <>
+                                                        <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
+                                                        Terverifikasi
+                                                    </>
+                                                ) : (
+                                                    'Belum'
+                                                )}
                                             </span>
                                         </div>
                                         <div className="mt-1 flex items-center justify-between">
                                             <span>Terdaftar Sejak</span>
-                                            <span className="font-semibold text-slate-700 dark:text-zinc-300">
+                                            <span className="font-medium text-slate-700 dark:text-zinc-300">
                                                 {staff.created_at
                                                     ? formatDate(
                                                           staff.created_at,
