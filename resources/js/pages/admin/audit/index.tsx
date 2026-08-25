@@ -9,16 +9,11 @@ import {
     Code2,
     Copy,
     Download,
-    Eye,
-    FileText,
     Filter,
     Layers,
     RotateCcw,
-    Scale,
-    ShieldAlert,
     ShieldCheck,
     Trash2,
-    User as UserIcon,
     Users,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -44,6 +39,7 @@ type Log = {
     actor?: { id: number; name: string; email: string };
     subject_type?: string;
     subject_id?: string;
+    subject?: Record<string, unknown> | null;
     metadata?: Record<string, unknown>;
     entry_hash?: string;
     previous_hash?: string;
@@ -61,7 +57,7 @@ type Page = {
 // Indonesian translations for subject models
 const subjectTypeLabels: Record<string, string> = {
     Matter: 'Perkara Hukum',
-    Client: 'Data Klien',
+    Client: 'Klien',
     Document: 'Dokumen / Berkas',
     Task: 'Tugas Perkara',
     Invoice: 'Tagihan Invoice',
@@ -70,7 +66,7 @@ const subjectTypeLabels: Record<string, string> = {
     Event: 'Agenda Kalender',
     Chronology: 'Kronologi Fakta',
     EvidencePhysicalAsset: 'Alat Bukti Fisik',
-    Correspondence: 'Surat Korespondensi',
+    Correspondence: 'Korespondensi Resmi',
     User: 'Akun Pengguna',
     Staff: 'Staf / Advokat',
     Compliance: 'Kepatuhan & Izin',
@@ -158,7 +154,7 @@ const fieldLabels: Record<string, string> = {
     title: 'Judul',
     name: 'Nama',
     display_name: 'Nama Tampilan',
-    email: 'Alamat Email',
+    email: 'Email',
     phone: 'No. Telepon',
     address: 'Alamat',
     status: 'Status',
@@ -196,8 +192,12 @@ const fieldLabels: Record<string, string> = {
     judge_panel: 'Majelis Hakim',
     location: 'Lokasi',
     retention: 'Durasi Retensi',
+    retention_option: 'Opsi Retensi',
+    records_deleted: 'Jumlah Log Dihapus',
     reason: 'Alasan',
     action: 'Tindakan',
+    client_number: 'No. Klien',
+    employee_code: 'Kode Pegawai',
 };
 
 // Status and value dictionary
@@ -229,6 +229,12 @@ const valueLabels: Record<string, string> = {
     medium: 'Sedang',
     low: 'Rendah',
     critical: 'Kritis',
+    all: 'Semua Riwayat',
+    '7': 'Lebih dari 7 Hari',
+    '30': 'Lebih dari 30 Hari',
+    '90': 'Lebih dari 90 Hari',
+    '180': 'Lebih dari 180 Hari',
+    '365': 'Lebih dari 1 Tahun',
     true: 'Ya / Aktif',
     false: 'Tidak / Non-aktif',
 };
@@ -251,7 +257,6 @@ function formatValue(val: unknown): string {
         if (valueLabels[trimmed.toLowerCase()]) {
             return valueLabels[trimmed.toLowerCase()];
         }
-        // If it looks like ISO date
         if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) {
             return formatDate(trimmed);
         }
@@ -555,8 +560,8 @@ export default function AuditIndex({
                                     <thead>
                                         <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
                                             <th className="py-3 pr-3 pl-4">Waktu (WIB)</th>
-                                            <th className="px-3 py-3">Aktivitas &amp; Objek</th>
-                                            <th className="px-3 py-3">Pelaku / Aktor</th>
+                                            <th className="px-3 py-3 min-w-[160px]">Aktivitas &amp; Objek</th>
+                                            <th className="px-3 py-3 min-w-[160px]">Pelaku / Aktor</th>
                                             <th className="px-3 py-3 min-w-[340px]">Detail Perubahan</th>
                                             <th className="py-3 pr-4 pl-3 text-right">IP &amp; Audit</th>
                                         </tr>
@@ -566,7 +571,7 @@ export default function AuditIndex({
                                             const rawSubjectType = log.subject_type
                                                 ? log.subject_type.split('\\').pop() ?? 'System'
                                                 : 'System';
-                                            const friendlySubject = subjectTypeLabels[rawSubjectType] || rawSubjectType;
+                                            const friendlySubjectType = subjectTypeLabels[rawSubjectType] || rawSubjectType;
                                             const eventKey = log.event.split('.').pop() || log.event;
                                             const theme = eventThemeMap[eventKey] || {
                                                 label: eventKey.replace(/_/g, ' '),
@@ -574,6 +579,29 @@ export default function AuditIndex({
                                                 text: 'text-slate-700 dark:text-zinc-300',
                                                 border: 'border-slate-200 dark:border-white/10',
                                             };
+
+                                            // Determine real readable subject name
+                                            let realSubjectName = friendlySubjectType;
+                                            if (log.event === 'audit.pruned') {
+                                                realSubjectName = 'Sistem Log Audit';
+                                            } else if (log.subject) {
+                                                const s = log.subject as Record<string, unknown>;
+                                                if (s.name && typeof s.name === 'string') {
+                                                    realSubjectName = s.name;
+                                                } else if (s.title && typeof s.title === 'string') {
+                                                    realSubjectName = s.title;
+                                                } else if (s.invoice_number) {
+                                                    realSubjectName = `Invoice #${s.invoice_number}`;
+                                                } else if (s.payment_number) {
+                                                    realSubjectName = `Pembayaran #${s.payment_number}`;
+                                                } else if (s.reference_number) {
+                                                    realSubjectName = `Surat #${s.reference_number}`;
+                                                } else if (s.court_name) {
+                                                    realSubjectName = String(s.court_name);
+                                                }
+                                            } else if (rawSubjectType === 'User' && log.actor?.name) {
+                                                realSubjectName = log.actor.name;
+                                            }
 
                                             return (
                                                 <tr
@@ -586,9 +614,9 @@ export default function AuditIndex({
                                                     </td>
 
                                                     {/* Event & Target Object */}
-                                                    <td className="px-3 py-3 align-top whitespace-nowrap">
-                                                        <div className="space-y-1.5 min-w-[140px]">
-                                                            <div className="flex items-center gap-1.5">
+                                                    <td className="px-3 py-3 align-top">
+                                                        <div className="space-y-1">
+                                                            <div>
                                                                 <span
                                                                     className={`inline-block rounded-md border px-2 py-0.5 text-[10px] font-bold tracking-tight ${theme.bg} ${theme.text} ${theme.border}`}
                                                                 >
@@ -596,12 +624,15 @@ export default function AuditIndex({
                                                                 </span>
                                                             </div>
                                                             <div>
-                                                                <span className="font-semibold text-slate-900 dark:text-white">
-                                                                    {friendlySubject}
+                                                                <span
+                                                                    className="font-semibold text-slate-900 dark:text-white block line-clamp-1"
+                                                                    title={realSubjectName}
+                                                                >
+                                                                    {realSubjectName}
                                                                 </span>
-                                                                {log.subject_id && (
-                                                                    <span className="block font-mono text-[10px] text-slate-400 dark:text-zinc-500">
-                                                                        #{log.subject_id.slice(-8)}
+                                                                {log.event !== 'audit.pruned' && (
+                                                                    <span className="text-[10.5px] text-slate-400 dark:text-zinc-500 block">
+                                                                        {friendlySubjectType}
                                                                     </span>
                                                                 )}
                                                             </div>
@@ -611,18 +642,16 @@ export default function AuditIndex({
                                                     {/* Actor */}
                                                     <td className="px-3 py-3 align-top whitespace-nowrap">
                                                         <div className="space-y-0.5">
-                                                            <div className="flex items-center gap-1.5">
-                                                                <span className="font-semibold text-slate-900 dark:text-white">
-                                                                    {log.actor?.name ?? 'Sistem Otomatis'}
-                                                                </span>
-                                                            </div>
+                                                            <span className="font-semibold text-slate-900 dark:text-white block">
+                                                                {log.actor?.name ?? 'Sistem Otomatis'}
+                                                            </span>
                                                             <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
                                                                 {log.actor?.email ?? 'system@internal'}
                                                             </p>
                                                         </div>
                                                     </td>
 
-                                                    {/* Human-Readable Narrative Detail */}
+                                                    {/* Simple Human-Readable Narrative Detail */}
                                                     <td className="px-3 py-3 align-top">
                                                         <AuditDetailCell log={log} />
                                                     </td>
@@ -694,18 +723,29 @@ export default function AuditIndex({
 function AuditDetailCell({ log }: { log: Log }) {
     const metadata = log.metadata ?? {};
 
-    // 1. Workflow Transition (from -> to)
+    // 1. Audit Log Pruned Event
+    if (log.event === 'audit.pruned') {
+        const deleted = metadata.records_deleted ?? 0;
+        const opt = String(metadata.retention_option ?? 'all');
+        const optLabel = valueLabels[opt] || (opt === 'all' ? 'Semua Riwayat' : `Lebih dari ${opt} Hari`);
+
+        return (
+            <p className="text-xs text-slate-800 dark:text-zinc-200 leading-relaxed">
+                Membersihkan <strong>{deleted}</strong> rekaman log audit lama (Opsi: {optLabel}).
+            </p>
+        );
+    }
+
+    // 2. Workflow Transition (from -> to)
     if (metadata.workflow && typeof metadata.workflow === 'object') {
         const wf = metadata.workflow as { from?: string; to?: string };
         const fromLabel = wf.from ? valueLabels[wf.from] || wf.from : 'Awal';
         const toLabel = wf.to ? valueLabels[wf.to] || wf.to : 'Tujuan';
 
         return (
-            <div className="space-y-1.5">
-                <p className="text-xs text-slate-600 dark:text-zinc-400">
-                    Mengubah status alur kerja:
-                </p>
-                <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200/80 bg-slate-50/90 px-2.5 py-1 text-xs dark:border-white/10 dark:bg-white/[0.03]">
+            <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-800 dark:text-zinc-200">
+                <span>Mengubah status alur kerja:</span>
+                <div className="inline-flex items-center gap-1.5 rounded-md border border-slate-200/80 bg-slate-50/90 px-2 py-0.5 dark:border-white/10 dark:bg-white/[0.03]">
                     <span className="font-semibold text-slate-600 dark:text-zinc-400">{fromLabel}</span>
                     <ArrowRight className="size-3 text-blue-600 dark:text-blue-400 shrink-0" />
                     <span className="font-bold text-slate-900 dark:text-white">{toLabel}</span>
@@ -714,17 +754,15 @@ function AuditDetailCell({ log }: { log: Log }) {
         );
     }
 
-    // 2. Monetary Change (before -> after, currency)
+    // 3. Monetary Change (before -> after, currency)
     if (metadata.amount && typeof metadata.amount === 'object') {
         const amt = metadata.amount as { before?: number; after?: number; currency?: string };
         const curr = amt.currency || 'IDR';
 
         return (
-            <div className="space-y-1.5">
-                <p className="text-xs text-slate-600 dark:text-zinc-400">
-                    Memperbarui nilai nominal keuangan:
-                </p>
-                <div className="inline-flex items-center gap-2 rounded-lg border border-slate-200/80 bg-slate-50/90 px-2.5 py-1 text-xs dark:border-white/10 dark:bg-white/[0.03]">
+            <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-800 dark:text-zinc-200">
+                <span>Menyesuaikan nilai nominal:</span>
+                <div className="inline-flex items-center gap-1.5 rounded-md border border-slate-200/80 bg-slate-50/90 px-2 py-0.5 dark:border-white/10 dark:bg-white/[0.03]">
                     <span className="font-medium text-slate-500 dark:text-zinc-400">
                         {formatCurrency(amt.before, curr)}
                     </span>
@@ -737,7 +775,7 @@ function AuditDetailCell({ log }: { log: Log }) {
         );
     }
 
-    // 3. Field Changes (before -> after)
+    // 4. Field Changes (before -> after)
     if (metadata.changes && typeof metadata.changes === 'object') {
         const ch = metadata.changes as {
             before?: Record<string, unknown>;
@@ -746,23 +784,30 @@ function AuditDetailCell({ log }: { log: Log }) {
         const beforeObj = ch.before ?? {};
         const afterObj = ch.after ?? {};
 
-        // Find all keys that differ
         const allKeys = Array.from(
             new Set([...Object.keys(beforeObj), ...Object.keys(afterObj)])
         ).filter((k) => {
-            // Ignore internal timestamp / ID fields
-            if (['updated_at', 'created_at', 'id'].includes(k)) return false;
+            if (['updated_at', 'created_at', 'id', 'remember_token'].includes(k)) return false;
             return JSON.stringify(beforeObj[k]) !== JSON.stringify(afterObj[k]);
         });
 
-        if (allKeys.length > 0) {
+        if (allKeys.length === 1) {
+            const k = allKeys[0];
             return (
-                <div className="space-y-1.5">
+                <p className="text-xs text-slate-800 dark:text-zinc-200 leading-relaxed">
+                    Memperbarui <strong>{formatFieldKey(k)}</strong> dari <em>"{formatValue(beforeObj[k])}"</em> menjadi <strong>"{formatValue(afterObj[k])}"</strong>.
+                </p>
+            );
+        }
+
+        if (allKeys.length > 1) {
+            return (
+                <div className="space-y-1">
                     <p className="text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
                         Memperbarui {allKeys.length} rincian:
                     </p>
-                    <div className="space-y-1">
-                        {allKeys.slice(0, 4).map((k) => (
+                    <div className="space-y-0.5">
+                        {allKeys.slice(0, 3).map((k) => (
                             <div
                                 key={k}
                                 className="flex flex-wrap items-center gap-1.5 text-xs"
@@ -779,9 +824,9 @@ function AuditDetailCell({ log }: { log: Log }) {
                                 </span>
                             </div>
                         ))}
-                        {allKeys.length > 4 && (
+                        {allKeys.length > 3 && (
                             <span className="block text-[10.5px] italic text-slate-400 dark:text-zinc-500">
-                                + {allKeys.length - 4} rincian perubahan lainnya
+                                + {allKeys.length - 3} rincian perubahan lainnya
                             </span>
                         )}
                     </div>
@@ -790,10 +835,73 @@ function AuditDetailCell({ log }: { log: Log }) {
         }
     }
 
-    // 4. Direct narrative strings
-    if (metadata.message || metadata.reason || metadata.description || metadata.action) {
+    // 5. Named Common System Events
+    const namedEvents: Record<string, string> = {
+        'client.created': 'Mendaftarkan data profil klien baru.',
+        'client.updated': 'Memperbarui rincian informasi klien.',
+        'client.compliance_added': 'Menambahkan dokumen kepatuhan / izin berusaha klien.',
+        'client.compliance_updated': 'Memperbarui dokumen kepatuhan klien.',
+        'client.compliance_deleted': 'Menghapus dokumen kepatuhan klien.',
+        'matter.created': 'Membuka berkas perkara hukum baru.',
+        'matter.archived': 'Menutup dan mengarsipkan berkas perkara.',
+        'matter.party_added': 'Menambahkan pihak terkait pada perkara.',
+        'matter.deadline_added': 'Menambahkan tenggat waktu proses perkara.',
+        'matter.event_added': 'Menambahkan agenda kegiatan perkara.',
+        'matter.note_added': 'Menambahkan catatan hukum pada perkara.',
+        'matter.evidence_added': 'Menambahkan alat bukti berkas perkara.',
+        'matter.evidence_updated': 'Memperbarui data alat bukti perkara.',
+        'matter.evidence_deleted': 'Menghapus alat bukti berkas perkara.',
+        'matter.chronology_added': 'Menambahkan kronologi peristiwa hukum perkara.',
+        'matter.chronology_deleted': 'Menghapus catatan kronologi perkara.',
+        'matter.legal_hold_placed': 'Menerapkan status Legal Hold pada berkas perkara.',
+        'matter.legal_hold_released': 'Mencabut status Legal Hold pada berkas perkara.',
+        'document.uploaded': 'Mengunggah berkas dokumen baru.',
+        'document.downloaded': 'Mengunduh salinan berkas dokumen.',
+        'document.approved': 'Menyetujui draf dokumen hukum.',
+        'document.revision_requested': 'Mengajukan permintaan revisi pada draf dokumen.',
+        'document.approval_requested': 'Mengajukan permohonan persetujuan draf dokumen.',
+        'signature.request_sent': 'Mengirimkan permohonan tanda tangan digital kepada pihak terkait.',
+        'signature.signer_completed': 'Penandatangan telah menyelesaikan proses tanda tangan digital.',
+        'signature.signed_final_processed': 'Menghasilkan berkas final bertanda tangan digital tersertifikasi.',
+        'signature.reminder_resent': 'Mengirimkan ulang notifikasi pengingat tanda tangan.',
+        'invoice.generated': 'Menerbitkan tagihan invoice baru kepada klien.',
+        'invoice.cancelled': 'Membatalkan tagihan invoice.',
+        'payment.recorded': 'Mencatat penerimaan pembayaran tagihan klien.',
+        'payment.verified': 'Memverifikasi bukti transfer pembayaran klien.',
+        'payment.refunded': 'Melakukan pengembalian pembayaran klien (refund).',
+        'payment.reversed': 'Membatalkan pencatatan pembayaran (reversal).',
+        'correspondence.logged': 'Mencatat surat korespondensi resmi baru.',
+        'correspondence.dispatched': 'Mendistribusikan surat korespondensi keluar.',
+        'staff.created': 'Mendaftarkan akun staf / advokat baru.',
+        'staff.updated': 'Memperbarui data akun staf / advokat.',
+        'user.invited': 'Mengundang pengguna baru ke dalam workspace.',
+        'user.deleted': 'Menghapus akun pengguna dari workspace.',
+        'conflict.checked': 'Menjalankan pemeriksaan potensi konflik kepentingan.',
+        'conflict.resolved': 'Menyelesaikan pemeriksaan konflik kepentingan.',
+        'template.created': 'Membuat template draf hukum baru.',
+        'template.duplicated': 'Menduplikasi template draf hukum.',
+        'template.document_generated': 'Menghasilkan draf dokumen otomatis dari template.',
+    };
+
+    if (namedEvents[log.event]) {
+        let extraNote = '';
+        if (metadata.title) extraNote = ` (${metadata.title})`;
+        else if (metadata.client_number) extraNote = ` (No. ${metadata.client_number})`;
+        else if (metadata.version_number) extraNote = ` (Versi ${metadata.version_number})`;
+        else if (metadata.reason) extraNote = ` (Alasan: ${metadata.reason})`;
+
+        return (
+            <p className="text-xs text-slate-800 dark:text-zinc-200 leading-relaxed font-medium">
+                {namedEvents[log.event]}
+                {extraNote}
+            </p>
+        );
+    }
+
+    // 6. Direct narrative strings (message, reason, note, description)
+    if (metadata.message || metadata.reason || metadata.description || metadata.note || metadata.action) {
         const text = String(
-            metadata.message || metadata.reason || metadata.description || metadata.action
+            metadata.message || metadata.reason || metadata.description || metadata.note || metadata.action
         );
         return (
             <p className="text-xs font-medium leading-relaxed text-slate-800 dark:text-zinc-200">
@@ -802,9 +910,9 @@ function AuditDetailCell({ log }: { log: Log }) {
         );
     }
 
-    // 5. Arbitrary Key-Value Badges (clean pairs)
+    // 7. Arbitrary Key-Value Badges (clean pairs)
     const rawKeys = Object.keys(metadata).filter(
-        (k) => !['ip', 'user_agent', 'browser'].includes(k)
+        (k) => !['ip', 'user_agent', 'browser', 'pruned_at'].includes(k)
     );
 
     if (rawKeys.length > 0) {

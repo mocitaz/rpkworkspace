@@ -32,7 +32,7 @@ class AuditLogController extends Controller
 
         return Inertia::render('admin/audit/index', [
             'auditLogs' => AuditLog::query()
-                ->with('actor:id,name,email')
+                ->with(['actor:id,name,email', 'subject'])
                 ->when($request->string('event')->toString(), fn ($query, $event) => $query->where('event', $event))
                 ->when($request->integer('actor_id'), fn ($query, $actorId) => $query->where('actor_id', $actorId))
                 ->when($request->date('from'), fn ($query, $from) => $query->where('created_at', '>=', $from->startOfDay()))
