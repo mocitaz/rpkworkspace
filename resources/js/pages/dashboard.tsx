@@ -20,6 +20,7 @@ import {
     Receipt,
     Scale,
     ShieldAlert,
+    ShieldCheck,
     Sparkles,
     TrendingUp,
     UploadCloud,
@@ -454,6 +455,124 @@ export default function Dashboard({
                         </div>
                     </section>
 
+                    {/* Empty Workspace Quick Start Onboarding Banner */}
+                    {activeMattersCount === 0 && openTasksCount === 0 && totalDocsCount === 0 && (
+                        <section className="relative overflow-hidden rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50/80 via-white to-slate-50 p-5 shadow-sm dark:border-white/[0.08] dark:from-[#161922] dark:via-[#13151b] dark:to-[#101217]">
+                            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className="flex size-6 items-center justify-center rounded-lg bg-blue-600 text-white shadow-2xs">
+                                            <Sparkles className="size-3.5" />
+                                        </span>
+                                        <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                                            Workspace Siap Digunakan
+                                        </h2>
+                                        <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:bg-blue-950/80 dark:text-blue-300">
+                                            Langkah Awal
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-slate-600 dark:text-zinc-400">
+                                        Data operasional saat ini kosong. Anda dapat memulai dengan mendaftarkan Klien, membuka Perkara baru, atau menugaskan Tugas tim.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                                <Link
+                                    href={mattersRoutes.create()}
+                                    className="group flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white/90 p-3.5 shadow-2xs transition-all hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-white/10 dark:bg-[#181a22] dark:hover:border-blue-500/40"
+                                >
+                                    <div className="space-y-2">
+                                        <div className="flex size-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-600 group-hover:text-white dark:bg-blue-950/60 dark:text-blue-400">
+                                            <Briefcase className="size-4" />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
+                                                Registrasi Perkara
+                                            </p>
+                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400 line-clamp-2">
+                                                Buka berkas perkara Litigasi atau Korporasi / Non-Litigasi baru.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] font-semibold text-blue-600 dark:border-white/[0.05] dark:text-blue-400">
+                                        <span>+ Buka Perkara</span>
+                                        <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+                                    </div>
+                                </Link>
+
+                                <Link
+                                    href={clientsRoutes.create()}
+                                    className="group flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white/90 p-3.5 shadow-2xs transition-all hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-md dark:border-white/10 dark:bg-[#181a22] dark:hover:border-emerald-500/40"
+                                >
+                                    <div className="space-y-2">
+                                        <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 transition-colors group-hover:bg-emerald-600 group-hover:text-white dark:bg-emerald-950/60 dark:text-emerald-400">
+                                            <Users className="size-4" />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-bold text-slate-900 group-hover:text-emerald-600 transition-colors dark:text-white dark:group-hover:text-emerald-400">
+                                                Daftarkan Klien
+                                            </p>
+                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400 line-clamp-2">
+                                                Simpan data profil klien perusahaan, individu, atau perwakilan hukum.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] font-semibold text-emerald-600 dark:border-white/[0.05] dark:text-emerald-400">
+                                        <span>+ Tambah Klien</span>
+                                        <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+                                    </div>
+                                </Link>
+
+                                <Link
+                                    href={tasksRoutes.index({ query: { create: 1 } })}
+                                    className="group flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white/90 p-3.5 shadow-2xs transition-all hover:-translate-y-0.5 hover:border-purple-300 hover:shadow-md dark:border-white/10 dark:bg-[#181a22] dark:hover:border-purple-500/40"
+                                >
+                                    <div className="space-y-2">
+                                        <div className="flex size-8 items-center justify-center rounded-lg bg-purple-50 text-purple-600 transition-colors group-hover:bg-purple-600 group-hover:text-white dark:bg-purple-950/60 dark:text-purple-400">
+                                            <CheckSquare className="size-4" />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-bold text-slate-900 group-hover:text-purple-600 transition-colors dark:text-white dark:group-hover:text-purple-400">
+                                                Delegasikan Tugas
+                                            </p>
+                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400 line-clamp-2">
+                                                Buat tugas tim, atur prioritas, dan tetapkan tenggat pengerjaan staf.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] font-semibold text-purple-600 dark:border-white/[0.05] dark:text-purple-400">
+                                        <span>+ Buat Tugas</span>
+                                        <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+                                    </div>
+                                </Link>
+
+                                <Link
+                                    href={documentsRoutes.index()}
+                                    className="group flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white/90 p-3.5 shadow-2xs transition-all hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md dark:border-white/10 dark:bg-[#181a22] dark:hover:border-amber-500/40"
+                                >
+                                    <div className="space-y-2">
+                                        <div className="flex size-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600 transition-colors group-hover:bg-amber-600 group-hover:text-white dark:bg-amber-950/60 dark:text-amber-400">
+                                            <FileText className="size-4" />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-bold text-slate-900 group-hover:text-amber-600 transition-colors dark:text-white dark:group-hover:text-amber-400">
+                                                Kelola Berkas &amp; E-Sign
+                                            </p>
+                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400 line-clamp-2">
+                                                Unggah draf kontrak, ajukan approval internal, atau kirim tanda tangan.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] font-semibold text-amber-600 dark:border-white/[0.05] dark:text-amber-400">
+                                        <span>+ Buka Dokumen</span>
+                                        <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+                                    </div>
+                                </Link>
+                            </div>
+                        </section>
+                    )}
+
                     {/* 3. Main Bento Hub: 2 Balanced Symmetrical Columns */}
                     <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                         {/* Left Column (1/2): Work Queue & Executive Priority */}
@@ -510,9 +629,33 @@ export default function Dashboard({
 
                                     <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
                                         {currentQueueItems.length === 0 ? (
-                                            <p className="py-6 text-center text-xs text-slate-400 dark:text-zinc-500">
-                                                Tidak ada tugas dalam status ini.
-                                            </p>
+                                            <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
+                                                <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
+                                                    <CheckCircle2 className="size-4.5 text-slate-400 dark:text-zinc-500" />
+                                                </div>
+                                                <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                                    Antrean Tugas Bersih
+                                                </p>
+                                                <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                                    {queueTab === 'completed'
+                                                        ? 'Belum ada tugas yang selesai tercatat.'
+                                                        : queueTab === 'in_progress'
+                                                          ? 'Tidak ada tugas yang sedang dalam tahap review.'
+                                                          : 'Tidak ada tugas yang menunggu pengerjaan saat ini.'}
+                                                </p>
+                                                {queueTab === 'pending' && (
+                                                    <Button
+                                                        asChild
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="mt-2 h-7 rounded-lg text-[11px] font-bold text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
+                                                    >
+                                                        <Link href={tasksRoutes.index({ query: { create: 1 } })}>
+                                                            <Plus className="mr-1 size-3" /> Buat Tugas Baru
+                                                        </Link>
+                                                    </Button>
+                                                )}
+                                            </div>
                                         ) : (
                                             currentQueueItems.slice(0, 4).map((item, idx) => {
                                                 const isUrgent = item.priority === 'high';
@@ -616,9 +759,17 @@ export default function Dashboard({
 
                                     <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
                                         {!executive_actions || executive_actions.length === 0 ? (
-                                            <p className="py-6 text-center text-xs text-slate-400 dark:text-zinc-500">
-                                                Tidak ada tindakan prioritas mendesak saat ini.
-                                            </p>
+                                            <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
+                                                <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+                                                    <ShieldCheck className="size-4.5" />
+                                                </div>
+                                                <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                                    Kondisi Operasional Aman
+                                                </p>
+                                                <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                                    Tidak ada perkara atau tenggat kritis yang memerlukan tindakan darurat saat ini.
+                                                </p>
+                                            </div>
                                         ) : (
                                             executive_actions.slice(0, 4).map((action, idx) => {
                                                 return (
@@ -727,9 +878,17 @@ export default function Dashboard({
 
                                     <div className="space-y-2 pt-2">
                                         {filteredDayEvents.length === 0 ? (
-                                            <p className="py-4 text-center text-xs text-slate-400 dark:text-zinc-500">
-                                                Tidak ada agenda sidang pada tanggal ini.
-                                            </p>
+                                            <div className="flex flex-col items-center justify-center py-6 px-4 text-center">
+                                                <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+                                                    <CalendarIcon className="size-4.5" />
+                                                </div>
+                                                <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                                    Agenda Lengang
+                                                </p>
+                                                <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                                    Tidak ada jadwal sidang pengadilan atau agenda pada tanggal ini.
+                                                </p>
+                                            </div>
                                         ) : (
                                             filteredDayEvents.slice(0, 3).map((ev, idx) => (
                                                 <div
@@ -782,9 +941,17 @@ export default function Dashboard({
 
                                     <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
                                         {!activities || activities.length === 0 ? (
-                                            <p className="py-6 text-center text-xs text-slate-400 dark:text-zinc-500">
-                                                Belum ada aktivitas tercatat di audit log.
-                                            </p>
+                                            <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
+                                                <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
+                                                    <Clock className="size-4.5" />
+                                                </div>
+                                                <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                                    Log Siap Merekam
+                                                </p>
+                                                <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                                    Setiap aktivitas tim pada perkara, berkas, dan penagihan akan otomatis tercatat di sini.
+                                                </p>
+                                            </div>
                                         ) : (
                                             activities.slice(0, 4).map((act, idx) => {
                                                 const badgeColorClass =
