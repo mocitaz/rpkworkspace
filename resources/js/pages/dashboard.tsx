@@ -455,11 +455,11 @@ export default function Dashboard({
                         </div>
                     </section>
 
-                    {/* 3. Main Bento Hub: Symmetrical 2x2 Grid (Equal Heights & Perfectly Aligned) */}
+                    {/* 3. Main Bento Hub: Symmetrical 2x2 Grid (Equal Heights & Internal Scroll on Overflow) */}
                     <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                         {/* [Row 1, Col 1] Widget 1: Work Queue & Tugas */}
-                        <div className="flex h-full flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                        <div className="flex h-[390px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
                                 <div className="flex items-center gap-2">
                                     <h2 className="text-xs font-bold text-slate-900 dark:text-white">
                                         Work Queue &amp; Tugas
@@ -506,9 +506,9 @@ export default function Dashboard({
                                 </div>
                             </div>
 
-                            <div className="flex flex-1 flex-col justify-center py-3">
+                            <div className="flex flex-1 flex-col overflow-hidden py-1">
                                 {currentQueueItems.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center py-4 px-4 text-center">
+                                    <div className="flex flex-1 flex-col items-center justify-center py-4 px-4 text-center">
                                         <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
                                             <CheckCircle2 className="size-4.5 text-slate-400 dark:text-zinc-500" />
                                         </div>
@@ -536,8 +536,8 @@ export default function Dashboard({
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                                        {currentQueueItems.slice(0, 4).map((item, idx) => {
+                                    <div className="flex-1 overflow-y-auto pr-1 divide-y divide-slate-100 [scrollbar-width:thin] dark:divide-white/[0.04]">
+                                        {currentQueueItems.map((item, idx) => {
                                             const isUrgent = item.priority === 'high';
 
                                             return (
@@ -607,7 +607,7 @@ export default function Dashboard({
                                 )}
                             </div>
 
-                            <div className="mt-auto border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
+                            <div className="mt-auto shrink-0 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
                                 <Link
                                     href={tasksRoutes.index()}
                                     className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
@@ -618,8 +618,8 @@ export default function Dashboard({
                         </div>
 
                         {/* [Row 1, Col 2] Widget 2: Jadwal Sidang & Agenda */}
-                        <div className="flex h-full flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                        <div className="flex h-[390px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
                                 <h2 className="text-xs font-bold text-slate-900 dark:text-white">
                                     Jadwal Sidang &amp; Agenda
                                 </h2>
@@ -632,7 +632,7 @@ export default function Dashboard({
                             </div>
 
                             {/* Mini 7-Day Clean Strip */}
-                            <div className="mt-3 grid grid-cols-7 gap-1 rounded-lg bg-slate-50 p-1 text-center dark:bg-white/[0.03]">
+                            <div className="shrink-0 mt-3 grid grid-cols-7 gap-1 rounded-lg bg-slate-50 p-1 text-center dark:bg-white/[0.03]">
                                 {weekDays.map((d, index) => (
                                     <button
                                         key={index}
@@ -650,7 +650,7 @@ export default function Dashboard({
                                 ))}
                             </div>
 
-                            <div className="mt-3 flex items-center justify-between border-b border-slate-100 pb-2 text-[11px] dark:border-white/[0.04]">
+                            <div className="shrink-0 mt-2.5 flex items-center justify-between border-b border-slate-100 pb-1.5 text-[11px] dark:border-white/[0.04]">
                                 <span className="font-semibold text-slate-800 dark:text-zinc-200">
                                     {activeDayFormatted}
                                 </span>
@@ -659,9 +659,9 @@ export default function Dashboard({
                                 </span>
                             </div>
 
-                            <div className="flex flex-1 flex-col justify-center py-3">
+                            <div className="flex flex-1 flex-col overflow-hidden py-1">
                                 {filteredDayEvents.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center py-4 px-4 text-center">
+                                    <div className="flex flex-1 flex-col items-center justify-center py-2 px-4 text-center">
                                         <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
                                             <CalendarIcon className="size-4.5" />
                                         </div>
@@ -673,8 +673,8 @@ export default function Dashboard({
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="space-y-2">
-                                        {filteredDayEvents.slice(0, 3).map((ev, idx) => (
+                                    <div className="flex-1 overflow-y-auto pr-1 space-y-2 py-1.5 [scrollbar-width:thin]">
+                                        {filteredDayEvents.map((ev, idx) => (
                                             <div
                                                 key={ev.id || idx}
                                                 className="flex items-center justify-between gap-2 text-xs"
@@ -702,7 +702,7 @@ export default function Dashboard({
                                 )}
                             </div>
 
-                            <div className="mt-auto border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
+                            <div className="mt-auto shrink-0 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
                                 <Link
                                     href={calendarRoutes.index()}
                                     className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
@@ -713,8 +713,8 @@ export default function Dashboard({
                         </div>
 
                         {/* [Row 2, Col 1] Widget 3: Prioritas & Tindakan Kemitraan */}
-                        <div className="flex h-full flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                        <div className="flex h-[390px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
                                 <div className="flex items-center gap-2">
                                     <h2 className="text-xs font-bold text-slate-900 dark:text-white">
                                         Prioritas &amp; Tindakan Kemitraan
@@ -731,9 +731,9 @@ export default function Dashboard({
                                 </Link>
                             </div>
 
-                            <div className="flex flex-1 flex-col justify-center py-3">
+                            <div className="flex flex-1 flex-col overflow-hidden py-1">
                                 {!executive_actions || executive_actions.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center py-4 px-4 text-center">
+                                    <div className="flex flex-1 flex-col items-center justify-center py-4 px-4 text-center">
                                         <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
                                             <ShieldCheck className="size-4.5" />
                                         </div>
@@ -745,8 +745,8 @@ export default function Dashboard({
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                                        {executive_actions.slice(0, 4).map((action, idx) => {
+                                    <div className="flex-1 overflow-y-auto pr-1 divide-y divide-slate-100 [scrollbar-width:thin] dark:divide-white/[0.04]">
+                                        {executive_actions.map((action, idx) => {
                                             return (
                                                 <div
                                                     key={action.id || idx}
@@ -804,7 +804,7 @@ export default function Dashboard({
                                 )}
                             </div>
 
-                            <div className="mt-auto border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
+                            <div className="mt-auto shrink-0 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
                                 <Link
                                     href={tasksRoutes.index({ query: { priority: 'high' } })}
                                     className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
@@ -815,8 +815,8 @@ export default function Dashboard({
                         </div>
 
                         {/* [Row 2, Col 2] Widget 4: Recent Audit Activity */}
-                        <div className="flex h-full flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                        <div className="flex h-[390px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
                                 <div className="flex items-center gap-2">
                                     <h2 className="text-xs font-bold text-slate-900 dark:text-white">
                                         Aktivitas &amp; Log Terkini
@@ -833,9 +833,9 @@ export default function Dashboard({
                                 </Link>
                             </div>
 
-                            <div className="flex flex-1 flex-col justify-center py-3">
+                            <div className="flex flex-1 flex-col overflow-hidden py-1">
                                 {!activities || activities.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center py-4 px-4 text-center">
+                                    <div className="flex flex-1 flex-col items-center justify-center py-4 px-4 text-center">
                                         <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
                                             <Clock className="size-4.5" />
                                         </div>
@@ -847,8 +847,8 @@ export default function Dashboard({
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                                        {activities.slice(0, 4).map((act, idx) => {
+                                    <div className="flex-1 overflow-y-auto pr-1 divide-y divide-slate-100 [scrollbar-width:thin] dark:divide-white/[0.04]">
+                                        {activities.map((act, idx) => {
                                             const badgeColorClass =
                                                 act.badge_color === 'blue'
                                                     ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
@@ -919,7 +919,7 @@ export default function Dashboard({
                                 )}
                             </div>
 
-                            <div className="mt-auto border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
+                            <div className="mt-auto shrink-0 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
                                 <Link
                                     href={auditRoutes.index()}
                                     className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
