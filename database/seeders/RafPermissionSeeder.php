@@ -45,8 +45,6 @@ class RafPermissionSeeder extends Seeder
             'quotation.manage' => 'Membuat & merancang draf penawaran honorarium',
             'quotation.approve' => 'Persetujuan resmi penawaran biaya jasa hukum',
 
-            'template.view' => 'Mengakses pustaka template dokumen otomatis',
-            'template.manage' => 'Mengunggah & memperbarui template dokumen DOCX',
             'signature.view' => 'Melihat status dan verifikasi tanda tangan digital',
             'signature.manage' => 'Mengajukan permohonan e-sign & kirim pengingat',
 
@@ -62,6 +60,8 @@ class RafPermissionSeeder extends Seeder
             'audit.view' => 'Mengakses rekaman jejak audit aktivitas sistem',
             'admin.users.manage' => 'Mengelola akun staf, peran (role), & hak akses',
         ];
+
+        Permission::query()->whereNotIn('name', array_keys($permissionDefinitions))->delete();
 
         $permissions = [];
         foreach ($permissionDefinitions as $name => $description) {
@@ -97,7 +97,7 @@ class RafPermissionSeeder extends Seeder
                     'document.view', 'document.upload', 'document.download',
                     'correspondence.view', 'correspondence.manage',
                     'conflict.view', 'conflict.manage',
-                    'template.view', 'signature.view',
+                    'signature.view',
                 ]), ARRAY_FILTER_USE_BOTH)),
             ],
             'finance' => [
@@ -120,7 +120,6 @@ class RafPermissionSeeder extends Seeder
                     'client.view', 'contact.view',
                     'task.view', 'task.manage',
                     'document.view', 'document.upload', 'document.download',
-                    'template.view',
                     'correspondence.view',
                 ]), ARRAY_FILTER_USE_BOTH)),
             ],

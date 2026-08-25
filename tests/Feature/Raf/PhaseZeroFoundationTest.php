@@ -75,7 +75,7 @@ it('seeds the complete phase zero permission catalogue idempotently', function (
             'expense.manage',
             'payment.manage',
             'quotation.approve',
-            'template.manage',
+            'document.approve',
             'signature.manage',
             'correspondence.manage',
             'conflict.manage',

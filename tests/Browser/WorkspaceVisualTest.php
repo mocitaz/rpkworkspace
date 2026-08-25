@@ -73,7 +73,7 @@ test('the operational workspace pages render without browser errors', function (
     $user = rafUser([
         'matter.view',
         'billing.view',
-        'template.view',
+        'document.view',
         'correspondence.view',
         'conflict.view',
         'archive.view',

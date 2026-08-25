@@ -987,11 +987,11 @@ const PERMISSION_GROUPS = [
     },
     {
         id: 'documents',
-        title: 'Dokumen, E-Sign & Template',
-        subtitle: 'Repositori berkas perkara, persetujuan review, tanda tangan digital, & template DOCX',
+        title: 'Dokumen & E-Sign',
+        subtitle: 'Repositori berkas perkara, persetujuan review, & tanda tangan digital',
         icon: FileText,
         color: 'bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400 border-amber-200/60 dark:border-amber-900/40',
-        match: (name: string) => name.startsWith('document.') || name.startsWith('template.') || name.startsWith('signature.'),
+        match: (name: string) => name.startsWith('document.') || name.startsWith('signature.'),
     },
     {
         id: 'finance',
