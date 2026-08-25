@@ -1,7 +1,9 @@
 import { Form, Head } from '@inertiajs/react';
 import {
+    Check,
     CheckCircle2,
     ChevronDown,
+    Copy,
     KeyRound,
     Pencil,
     Plus,
@@ -79,6 +81,12 @@ export default function UsersIndex({
     const [tab, setTab] = useState<'users' | 'roles'>('users');
     const [editing, setEditing] = useState<User | null>(null);
     const [inviteOpen, setInviteOpen] = useState(false);
+    const [createdCreds, setCreatedCreds] = useState<{
+        name: string;
+        email: string;
+        password: string;
+    } | null>(null);
+    const [copied, setCopied] = useState(false);
 
     return (
         <>
@@ -367,109 +375,97 @@ export default function UsersIndex({
                     )}
                 </main>
             </div>
+            {/* Modal: Tambah / Undang Pengguna Baru */}
+            <InviteUserDialog
+                open={inviteOpen}
+                roles={roles}
+                onOpenChange={setInviteOpen}
+                onCreated={(creds) => setCreatedCreds(creds)}
+            />
 
-            {/* Modal: Undang Pengguna Baru */}
-            <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
-                <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+            {/* Modal: Kredensial Pengguna yang Baru Dibuat */}
+            <Dialog open={!!createdCreds} onOpenChange={(open) => !open && setCreatedCreds(null)}>
+                <DialogContent className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
                     <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                        <div className="flex items-center gap-2.5">
-                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                                <UserPlus className="size-4" />
+                        <div className="flex items-center gap-3">
+                            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+                                <CheckCircle2 className="size-5" />
                             </div>
                             <div>
                                 <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                    Undang Anggota Tim Baru
+                                    Akun Staf Berhasil Dibuat!
                                 </DialogTitle>
-                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Tautan aktivasi akun akan dikirimkan ke email anggota.
+                                <DialogDescription className="text-xs text-slate-500">
+                                    Kredensial login untuk anggota tim baru telah aktif.
                                 </DialogDescription>
                             </div>
                         </div>
                     </DialogHeader>
 
-                    <Form
-                        {...userRoutes.store.form()}
-                        className="space-y-3.5 pt-1"
-                        onSuccess={() => setInviteOpen(false)}
-                    >
-                        {({ errors, processing }) => (
-                            <>
-                                <Field
-                                    name="name"
-                                    label="Nama Lengkap"
-                                    placeholder="Contoh: Rian Anggara, S.H."
-                                    required
-                                />
-                                <Field
-                                    name="email"
-                                    label="Alamat Email Resmi"
-                                    type="email"
-                                    placeholder="rian@rpklawoffice.com"
-                                    required
-                                />
-                                <Field
-                                    name="position_title"
-                                    label="Jabatan / Posisi"
-                                    placeholder="Contoh: Senior Associate"
-                                />
-                                <Field
-                                    name="password"
-                                    label="Password Akun"
-                                    type="password"
-                                    placeholder="Default: password (atau tentukan password khusus)"
-                                />
-
-                                <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
-                                    <Label className="text-xs font-semibold text-slate-900 dark:text-white">
-                                        Pilih Role Kewenangan *
-                                    </Label>
-                                    <div className="space-y-1.5 pt-0.5">
-                                        {roles.map((role) => (
-                                            <label
-                                                key={role.id}
-                                                className="flex cursor-pointer items-center gap-2 rounded-md p-1 text-xs hover:bg-white dark:hover:bg-zinc-800"
-                                            >
-                                                <input
-                                                    type="checkbox"
-                                                    name="role_ids[]"
-                                                    value={role.id}
-                                                    className="size-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                                                />
-                                                <span className="font-semibold text-slate-900 dark:text-white">{role.name}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                    <InputError message={errors.role_ids} />
+                    {createdCreds && (
+                        <div className="space-y-3.5 pt-2 text-xs">
+                            <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-[#121418]">
+                                <div className="flex items-center justify-between border-b border-slate-200/60 pb-2 dark:border-white/5">
+                                    <span className="text-slate-500">Nama Pengguna</span>
+                                    <span className="font-bold text-slate-900 dark:text-white">{createdCreds.name}</span>
                                 </div>
-
-                                <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setInviteOpen(false)}
-                                        className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                                    >
-                                        Batal
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        disabled={processing}
-                                        className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
-                                    >
-                                        {processing ? (
-                                            <>
-                                                <Spinner className="mr-1.5 size-3.5" />
-                                                Mengirim...
-                                            </>
-                                        ) : (
-                                            'Kirim Undangan'
-                                        )}
-                                    </Button>
+                                <div className="flex items-center justify-between border-b border-slate-200/60 pb-2 dark:border-white/5">
+                                    <span className="text-slate-500">Email Login</span>
+                                    <span className="font-mono font-bold text-blue-600 dark:text-blue-400">{createdCreds.email}</span>
                                 </div>
-                            </>
-                        )}
-                    </Form>
+                                <div className="flex items-center justify-between border-b border-slate-200/60 pb-2 dark:border-white/5">
+                                    <span className="text-slate-500">Password</span>
+                                    <span className="rounded bg-white px-2 py-0.5 font-mono font-bold text-slate-900 border border-slate-200 shadow-2xs dark:bg-zinc-800 dark:border-white/10 dark:text-white">
+                                        {createdCreds.password}
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-slate-500">Portal Login</span>
+                                    <span className="text-[11px] font-medium text-slate-700 dark:text-zinc-300">
+                                        {typeof window !== 'undefined' ? `${window.location.origin}/login` : 'https://lmis.teknalogi.id/login'}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                Berikan rincian akun di atas kepada anggota tim agar dapat langsung masuk ke sistem.
+                            </p>
+
+                            <div className="flex items-center gap-2 pt-1">
+                                <Button
+                                    type="button"
+                                    onClick={() => {
+                                        const origin = typeof window !== 'undefined' ? window.location.origin : 'https://lmis.teknalogi.id';
+                                        const text = `Halo ${createdCreds.name},\nAkun RPK Law Firm Workspace Anda telah aktif:\n\n• Email: ${createdCreds.email}\n• Password: ${createdCreds.password}\n• Tautan Login: ${origin}/login\n\nSilakan login dan ganti password Anda jika diperlukan.`;
+                                        navigator.clipboard.writeText(text);
+                                        setCopied(true);
+                                        setTimeout(() => setCopied(false), 2500);
+                                    }}
+                                    className="flex-1 h-8.5 rounded-lg bg-blue-600 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
+                                >
+                                    {copied ? (
+                                        <>
+                                            <Check className="mr-1.5 size-3.5" />
+                                            Tersalin ke Clipboard!
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Copy className="mr-1.5 size-3.5" />
+                                            Salin Rincian Login
+                                        </>
+                                    )}
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setCreatedCreds(null)}
+                                    className="h-8.5 rounded-lg border-slate-200 px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                                >
+                                    Tutup
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                 </DialogContent>
             </Dialog>
 
@@ -565,6 +561,200 @@ function RolePermissions({
                 </div>
             ))}
         </div>
+    );
+}
+
+function InviteUserDialog({
+    open,
+    roles,
+    onOpenChange,
+    onCreated,
+}: {
+    open: boolean;
+    roles: Role[];
+    onOpenChange: (open: boolean) => void;
+    onCreated: (creds: { name: string; email: string; password: string }) => void;
+}) {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    return (
+        <Dialog
+            open={open}
+            onOpenChange={(nextOpen) => {
+                if (!nextOpen) {
+                    setName('');
+                    setEmail('');
+                    setPassword('');
+                }
+                onOpenChange(nextOpen);
+            }}
+        >
+            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                            <UserPlus className="size-4" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                Tambah Anggota Tim / Staf Baru
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                Akun staf akan langsung aktif dan dapat digunakan untuk login.
+                            </DialogDescription>
+                        </div>
+                    </div>
+                </DialogHeader>
+
+                <Form
+                    {...userRoutes.store.form()}
+                    className="space-y-3.5 pt-1"
+                    onSuccess={() => {
+                        onCreated({
+                            name,
+                            email,
+                            password: password || 'password',
+                        });
+                        setName('');
+                        setEmail('');
+                        setPassword('');
+                        onOpenChange(false);
+                    }}
+                >
+                    {({ errors, processing }) => (
+                        <>
+                            <div className="grid gap-1">
+                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                    Nama Lengkap <span className="text-rose-500">*</span>
+                                </Label>
+                                <Input
+                                    name="name"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    placeholder="Contoh: Rian Anggara, S.H."
+                                    required
+                                    className="h-8 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                />
+                                <InputError message={errors.name} />
+                            </div>
+
+                            <div className="grid gap-1">
+                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                    Alamat Email Resmi <span className="text-rose-500">*</span>
+                                </Label>
+                                <Input
+                                    name="email"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="rian@rpklawoffice.com"
+                                    required
+                                    className="h-8 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                />
+                                <InputError message={errors.email} />
+                            </div>
+
+                            <Field
+                                name="position_title"
+                                label="Jabatan / Posisi"
+                                placeholder="Contoh: Senior Associate"
+                            />
+
+                            <div className="grid gap-1">
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                        Password Akun
+                                    </Label>
+                                    <span className="text-[10.5px] font-mono font-medium text-slate-400">
+                                        Default: password
+                                    </span>
+                                </div>
+                                <Input
+                                    name="password"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="Kosongkan jika ingin default: password"
+                                    className="h-8 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                />
+                                <InputError message={errors.password} />
+                            </div>
+
+                            {/* Live Informative Auth Preview Box */}
+                            <div className="rounded-lg border border-blue-100 bg-blue-50/80 p-3 text-xs dark:border-blue-900/40 dark:bg-blue-950/30 space-y-1.5">
+                                <div className="flex items-center gap-1.5 font-bold text-blue-900 dark:text-blue-200 text-[11.5px]">
+                                    <KeyRound className="size-3.5 text-blue-600 dark:text-blue-400" />
+                                    <span>Informasi Akses Login Staf:</span>
+                                </div>
+                                <div className="space-y-1 text-[11px] text-blue-800/90 dark:text-blue-300">
+                                    <p className="flex items-center justify-between">
+                                        <span>• Email Login:</span>
+                                        <strong className="font-mono text-blue-950 dark:text-blue-100">{email || '(isi email di atas)'}</strong>
+                                    </p>
+                                    <p className="flex items-center justify-between">
+                                        <span>• Password Login:</span>
+                                        <code className="rounded bg-white px-1.5 py-0.2 font-mono font-bold text-blue-900 border border-blue-200/60 dark:bg-zinc-800 dark:text-blue-200 dark:border-white/10">
+                                            {password || 'password'}
+                                        </code>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
+                                <Label className="text-xs font-semibold text-slate-900 dark:text-white">
+                                    Pilih Role Kewenangan *
+                                </Label>
+                                <div className="space-y-1.5 pt-0.5">
+                                    {roles.map((role) => (
+                                        <label
+                                            key={role.id}
+                                            className="flex cursor-pointer items-center gap-2 rounded-md p-1 text-xs hover:bg-white dark:hover:bg-zinc-800"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                name="role_ids[]"
+                                                value={role.id}
+                                                className="size-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                            />
+                                            <span className="font-semibold text-slate-900 dark:text-white">{role.name}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                                <InputError message={errors.role_ids} />
+                            </div>
+
+                            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => onOpenChange(false)}
+                                    className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                                >
+                                    Batal
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    disabled={processing}
+                                    className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
+                                >
+                                    {processing ? (
+                                        <>
+                                            <Spinner className="mr-1.5 size-3.5" />
+                                            Menyimpan...
+                                        </>
+                                    ) : (
+                                        'Simpan & Buat Akun'
+                                    )}
+                                </Button>
+                            </div>
+                        </>
+                    )}
+                </Form>
+            </DialogContent>
+        </Dialog>
     );
 }
 
