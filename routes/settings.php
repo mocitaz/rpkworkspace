@@ -12,6 +12,9 @@ Route::middleware(['auth', EnsureUserIsActive::class])->group(function () {
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::get('settings/security', [SecurityController::class, 'edit'])->name('security.edit');
+    Route::post('settings/security/verify-current-password', [SecurityController::class, 'verifyCurrentPassword'])
+        ->middleware('throttle:30,1')
+        ->name('security.verify-current-password');
     Route::put('settings/password', [SecurityController::class, 'update'])
         ->middleware('throttle:6,1')
         ->name('user-password.update');

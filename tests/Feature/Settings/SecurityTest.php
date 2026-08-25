@@ -115,4 +115,49 @@ class SecurityTest extends TestCase
             ->assertSessionHasErrors('current_password')
             ->assertRedirect(route('security.edit'));
     }
+
+    public function test_verify_current_password_returns_true_for_valid_password()
+    {
+        $user = User::factory()->create([
+            'password' => Hash::make('secret123!'),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->postJson(route('security.verify-current-password'), [
+                'current_password' => 'secret123!',
+            ]);
+
+        $response
+            ->assertOk()
+            ->assertJson(['valid' => true]);
+    }
+
+    public function test_verify_current_password_returns_false_for_invalid_password()
+    {
+        $user = User::factory()->create([
+            'password' => Hash::make('secret123!'),
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->postJson(route('security.verify-current-password'), [
+                'current_password' => 'wrong-password',
+            ]);
+
+        $response
+            ->assertOk()
+            ->assertJson(['valid' => false]);
+    }
+
+    public function test_verify_current_password_validates_input()
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->postJson(route('security.verify-current-password'), []);
+
+        $response->assertJsonValidationErrors(['current_password']);
+    }
 }

@@ -1,6 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
-import { KeyRound, Lock, Shield, ShieldCheck } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { AlertCircle, CheckCircle2, KeyRound, Lock, Shield, ShieldCheck } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
 import InputError from '@/components/input-error';
 import type { Props as ManagePasskeysProps } from '@/components/manage-passkeys';
@@ -23,7 +23,68 @@ type Props = {
 export default function Security(props: Props) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [currentPasswordStatus, setCurrentPasswordStatus] = useState<'idle' | 'checking' | 'valid' | 'invalid'>('idle');
     const [newPassword, setNewPassword] = useState('');
+    const [confirmationPassword, setConfirmationPassword] = useState('');
+    const verifyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    useEffect(() => {
+        return () => {
+            if (verifyTimeoutRef.current) {
+                clearTimeout(verifyTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    const handleCurrentPasswordChange = (val: string) => {
+        setCurrentPassword(val);
+        if (!val.trim()) {
+            setCurrentPasswordStatus('idle');
+            if (verifyTimeoutRef.current) {
+                clearTimeout(verifyTimeoutRef.current);
+            }
+            return;
+        }
+
+        setCurrentPasswordStatus('checking');
+        if (verifyTimeoutRef.current) {
+            clearTimeout(verifyTimeoutRef.current);
+        }
+
+        verifyTimeoutRef.current = setTimeout(async () => {
+            try {
+                const res = await fetch('/settings/security/verify-current-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN':
+                            (
+                                document.querySelector(
+                                    'meta[name="csrf-token"]'
+                                ) as HTMLMetaElement
+                            )?.content || '',
+                    },
+                    body: JSON.stringify({ current_password: val }),
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    setCurrentPasswordStatus(data.valid ? 'valid' : 'invalid');
+                } else {
+                    setCurrentPasswordStatus('idle');
+                }
+            } catch {
+                setCurrentPasswordStatus('idle');
+            }
+        }, 400);
+    };
+
+    const hasConfirmation = confirmationPassword.length > 0;
+    const isConfirmationMatching = hasConfirmation && newPassword.length > 0 && confirmationPassword === newPassword;
+    const isConfirmationMismatch = hasConfirmation && (!newPassword.length || confirmationPassword !== newPassword);
 
     return (
         <>
@@ -77,10 +138,31 @@ export default function Security(props: Props) {
                                         id="current_password"
                                         ref={currentPasswordInput}
                                         name="current_password"
+                                        value={currentPassword}
+                                        onChange={(e) => handleCurrentPasswordChange(e.target.value)}
                                         className="h-8 rounded-lg border border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                         autoComplete="current-password"
                                         placeholder="Masukkan kata sandi saat ini"
                                     />
+
+                                    {currentPasswordStatus === 'checking' && (
+                                        <div className="mt-0.5 inline-flex items-center gap-1.5 text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                            <Spinner className="size-3" />
+                                            <span>Memeriksa kata sandi saat ini...</span>
+                                        </div>
+                                    )}
+                                    {currentPasswordStatus === 'valid' && (
+                                        <div className="mt-0.5 inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50/80 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:border-emerald-800/40 dark:bg-emerald-950/30 dark:text-emerald-300">
+                                            <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
+                                            <span>Kata sandi saat ini sesuai</span>
+                                        </div>
+                                    )}
+                                    {currentPasswordStatus === 'invalid' && (
+                                        <div className="mt-0.5 inline-flex items-center gap-1 rounded-md border border-rose-200 bg-rose-50/80 px-2 py-0.5 text-[11px] font-semibold text-rose-700 dark:border-rose-800/40 dark:bg-rose-950/30 dark:text-rose-300">
+                                            <AlertCircle className="size-3 text-rose-600 dark:text-rose-400" />
+                                            <span>Kata sandi saat ini tidak cocok</span>
+                                        </div>
+                                    )}
 
                                     <InputError
                                         message={errors.current_password}
@@ -122,11 +204,26 @@ export default function Security(props: Props) {
                                         <PasswordInput
                                             id="password_confirmation"
                                             name="password_confirmation"
+                                            value={confirmationPassword}
+                                            onChange={(e) => setConfirmationPassword(e.target.value)}
                                             className="h-8 rounded-lg border border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                             autoComplete="new-password"
                                             placeholder="Ketik ulang kata sandi baru"
                                             passwordrules={props.passwordRules}
                                         />
+
+                                        {isConfirmationMatching && (
+                                            <div className="mt-0.5 inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50/80 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:border-emerald-800/40 dark:bg-emerald-950/30 dark:text-emerald-300">
+                                                <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
+                                                <span>Konfirmasi kata sandi cocok</span>
+                                            </div>
+                                        )}
+                                        {isConfirmationMismatch && (
+                                            <div className="mt-0.5 inline-flex items-center gap-1 rounded-md border border-rose-200 bg-rose-50/80 px-2 py-0.5 text-[11px] font-semibold text-rose-700 dark:border-rose-800/40 dark:bg-rose-950/30 dark:text-rose-300">
+                                                <AlertCircle className="size-3 text-rose-600 dark:text-rose-400" />
+                                                <span>Konfirmasi kata sandi belum sama</span>
+                                            </div>
+                                        )}
 
                                         <InputError
                                             message={

@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\PasswordUpdateRequest;
 use App\Http\Requests\Settings\TwoFactorAuthenticationRequest;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -72,5 +75,24 @@ class SecurityController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Password updated.')]);
 
         return back();
+    }
+
+    /**
+     * Verify if the provided current password is valid for the authenticated user.
+     */
+    public function verifyCurrentPassword(Request $request): JsonResponse
+    {
+        $request->validate([
+            'current_password' => ['required', 'string'],
+        ]);
+
+        $valid = Hash::check(
+            $request->input('current_password'),
+            $request->user()->password
+        );
+
+        return response()->json([
+            'valid' => $valid,
+        ]);
     }
 }

@@ -1,5 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
-import { Lock, Mail } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Lock, Mail } from 'lucide-react';
 import { useState } from 'react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
@@ -18,6 +18,11 @@ type Props = {
 
 export default function ResetPassword({ token, email, passwordRules }: Props) {
     const [newPassword, setNewPassword] = useState('');
+    const [confirmationPassword, setConfirmationPassword] = useState('');
+
+    const hasConfirmation = confirmationPassword.length > 0;
+    const isConfirmationMatching = hasConfirmation && newPassword.length > 0 && confirmationPassword === newPassword;
+    const isConfirmationMismatch = hasConfirmation && (!newPassword.length || confirmationPassword !== newPassword);
 
     return (
         <>
@@ -83,12 +88,26 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                                 <PasswordInput
                                     id="password_confirmation"
                                     name="password_confirmation"
+                                    value={confirmationPassword}
+                                    onChange={(e) => setConfirmationPassword(e.target.value)}
                                     autoComplete="new-password"
                                     placeholder="Ulangi kata sandi baru"
                                     passwordrules={passwordRules}
                                     className="h-11 w-full rounded-xl border-slate-200/80 bg-[#f8fafc] pl-10 pr-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
                                 />
                             </div>
+                            {isConfirmationMatching && (
+                                <div className="mt-0.5 inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50/80 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 dark:border-emerald-800/40 dark:bg-emerald-950/30 dark:text-emerald-300">
+                                    <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
+                                    <span>Konfirmasi kata sandi cocok</span>
+                                </div>
+                            )}
+                            {isConfirmationMismatch && (
+                                <div className="mt-0.5 inline-flex items-center gap-1 rounded-md border border-rose-200 bg-rose-50/80 px-2 py-0.5 text-[11px] font-semibold text-rose-700 dark:border-rose-800/40 dark:bg-rose-950/30 dark:text-rose-300">
+                                    <AlertCircle className="size-3 text-rose-600 dark:text-rose-400" />
+                                    <span>Konfirmasi kata sandi belum sama</span>
+                                </div>
+                            )}
                             <InputError message={errors.password_confirmation} />
                         </div>
 
