@@ -1026,141 +1026,206 @@ function RolePermissions({
     roles: Role[];
     permissions: Permission[];
 }) {
+    const [selectedRoleId, setSelectedRoleId] = useState<number>(roles[0]?.id ?? 0);
+    const selectedRole = roles.find((r) => r.id === selectedRoleId) ?? roles[0];
+
+    if (!selectedRole) {
+        return null;
+    }
+
     return (
         <div className="space-y-4">
-            {roles.map((role) => (
-                <div
-                    key={role.id}
-                    className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]"
-                >
-                    {/* Header Role */}
-                    <div className="flex flex-col gap-2 border-b border-slate-100 bg-slate-50/50 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.04] dark:bg-white/[0.02]">
-                        <div className="space-y-1">
-                            <div className="flex flex-wrap items-center gap-2">
-                                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                                    {role.name}
-                                </h3>
-                                <span className="rounded-md bg-slate-200/70 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                    {role.slug}
-                                </span>
-                                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
-                                    {role.permissions.length} dari {permissions.length} izin aktif
-                                </span>
-                            </div>
-                            {role.description && (
-                                <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                    {role.description}
-                                </p>
-                            )}
-                        </div>
+            {/* 1. Selector Peran / Role Tabs */}
+            <div className="rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                    <div>
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-zinc-200">
+                            Pilih Peran (Role) untuk Dikonfigurasi
+                        </h3>
+                        <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                            Klik salah satu peran di bawah untuk mengelola izin akses dan otorisasi secara terfokus.
+                        </p>
                     </div>
-
-                    <Form
-                        {...roleRoutes.update.form(role.id)}
-                        className="space-y-4 p-4"
-                    >
-                        {({ processing }) => (
-                            <>
-                                <div className="space-y-4">
-                                    {PERMISSION_GROUPS.map((group) => {
-                                        const groupPermissions = permissions.filter((p) =>
-                                            group.match(p.name),
-                                        );
-                                        if (groupPermissions.length === 0) return null;
-
-                                        const activeInGroup = groupPermissions.filter((p) =>
-                                            role.permissions.some((rp) => rp.id === p.id),
-                                        ).length;
-                                        const IconComp = group.icon;
-
-                                        return (
-                                            <div
-                                                key={group.id}
-                                                className="rounded-xl border border-slate-200/60 bg-slate-50/30 p-3.5 dark:border-white/[0.04] dark:bg-[#101216]"
-                                            >
-                                                {/* Group Header */}
-                                                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/50 pb-2.5 dark:border-white/[0.04]">
-                                                    <div className="flex items-center gap-2.5">
-                                                        <div
-                                                            className={`flex size-7 shrink-0 items-center justify-center rounded-lg border shadow-2xs ${group.color}`}
-                                                        >
-                                                            <IconComp className="size-3.5" />
-                                                        </div>
-                                                        <div>
-                                                            <h4 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                                {group.title}
-                                                            </h4>
-                                                            <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                                                {group.subtitle}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10.5px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                        {activeInGroup} / {groupPermissions.length} Aktif
-                                                    </span>
-                                                </div>
-
-                                                {/* Permission Checkbox Grid */}
-                                                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                                                    {groupPermissions.map((permission) => {
-                                                        const isAssigned = role.permissions.some(
-                                                            (p) => p.id === permission.id,
-                                                        );
-
-                                                        return (
-                                                            <label
-                                                                key={permission.id}
-                                                                className={`group flex cursor-pointer items-start gap-2.5 rounded-lg border p-2.5 text-xs transition-all ${
-                                                                    isAssigned
-                                                                        ? 'border-slate-300/90 bg-white shadow-2xs dark:border-white/10 dark:bg-[#16181e]'
-                                                                        : 'border-slate-200/60 bg-white/50 opacity-75 hover:border-slate-300 hover:bg-white hover:opacity-100 dark:border-white/[0.03] dark:bg-zinc-900/30 dark:hover:bg-zinc-900'
-                                                                }`}
-                                                            >
-                                                                <input
-                                                                    type="checkbox"
-                                                                    name="permission_ids[]"
-                                                                    value={permission.id}
-                                                                    defaultChecked={isAssigned}
-                                                                    className="mt-0.5 size-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900 dark:border-zinc-700 dark:bg-zinc-900"
-                                                                />
-                                                                <div className="min-w-0 flex-1 space-y-0.5">
-                                                                    <p className="font-semibold text-slate-900 group-hover:text-blue-600 dark:text-zinc-100 dark:group-hover:text-blue-400">
-                                                                        {permission.description || permission.name}
-                                                                    </p>
-                                                                    <span className="inline-block font-mono text-[10px] text-slate-400 dark:text-zinc-500">
-                                                                        {permission.name}
-                                                                    </span>
-                                                                </div>
-                                                            </label>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-
-                                <div className="flex items-center justify-end border-t border-slate-100 pt-3 dark:border-white/[0.04]">
-                                    <Button
-                                        size="sm"
-                                        disabled={processing}
-                                        className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
-                                    >
-                                        {processing ? (
-                                            <>
-                                                <Spinner className="mr-1.5 size-3.5" />
-                                                Menyimpan Izin...
-                                            </>
-                                        ) : (
-                                            `Simpan Izin Peran ${role.name}`
-                                        )}
-                                    </Button>
-                                </div>
-                            </>
-                        )}
-                    </Form>
+                    <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10.5px] font-bold text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
+                        {roles.length} Peran Tersedia
+                    </span>
                 </div>
-            ))}
+
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+                    {roles.map((role) => {
+                        const isSelected = role.id === selectedRole.id;
+                        return (
+                            <button
+                                key={role.id}
+                                type="button"
+                                onClick={() => setSelectedRoleId(role.id)}
+                                className={`flex flex-col items-start justify-between rounded-xl border p-2.5 text-left transition-all ${
+                                    isSelected
+                                        ? 'border-slate-900 bg-slate-900 text-white shadow-sm dark:border-white dark:bg-white dark:text-slate-900'
+                                        : 'border-slate-200/70 bg-slate-50/50 text-slate-800 hover:border-slate-300 hover:bg-white dark:border-white/[0.04] dark:bg-[#101216] dark:text-zinc-200 dark:hover:bg-zinc-800/60'
+                                }`}
+                            >
+                                <div className="w-full min-w-0">
+                                    <p className="truncate text-xs font-bold">
+                                        {role.name}
+                                    </p>
+                                    <span
+                                        className={`mt-0.5 block truncate font-mono text-[9.5px] ${
+                                            isSelected
+                                                ? 'text-slate-300 dark:text-slate-600'
+                                                : 'text-slate-400 dark:text-zinc-500'
+                                        }`}
+                                    >
+                                        {role.slug}
+                                    </span>
+                                </div>
+                                <div className="mt-2 flex w-full items-center justify-between border-t border-current/10 pt-1.5 text-[10px]">
+                                    <span className="opacity-80">Izin:</span>
+                                    <span className="font-mono font-bold">
+                                        {role.permissions.length}/{permissions.length}
+                                    </span>
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* 2. Formulir Konfigurasi Izin untuk Peran Terpilih */}
+            <div
+                key={selectedRole.id}
+                className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]"
+            >
+                {/* Header Role Terpilih */}
+                <div className="flex flex-col gap-2 border-b border-slate-100 bg-slate-50/50 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.04] dark:bg-white/[0.02]">
+                    <div className="space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">
+                                Konfigurasi Matriks:
+                            </span>
+                            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                {selectedRole.name}
+                            </h3>
+                            <span className="rounded-md bg-slate-200/70 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                {selectedRole.slug}
+                            </span>
+                            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+                                · {selectedRole.permissions.length} dari {permissions.length} izin aktif
+                            </span>
+                        </div>
+                        {selectedRole.description && (
+                            <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                {selectedRole.description}
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                <Form
+                    {...roleRoutes.update.form(selectedRole.id)}
+                    className="space-y-4 p-4"
+                >
+                    {({ processing }) => (
+                        <>
+                            <div className="space-y-4">
+                                {PERMISSION_GROUPS.map((group) => {
+                                    const groupPermissions = permissions.filter((p) =>
+                                        group.match(p.name),
+                                    );
+                                    if (groupPermissions.length === 0) return null;
+
+                                    const activeInGroup = groupPermissions.filter((p) =>
+                                        selectedRole.permissions.some((rp) => rp.id === p.id),
+                                    ).length;
+                                    const IconComp = group.icon;
+
+                                    return (
+                                        <div
+                                            key={group.id}
+                                            className="rounded-xl border border-slate-200/60 bg-slate-50/30 p-3.5 dark:border-white/[0.04] dark:bg-[#101216]"
+                                        >
+                                            {/* Group Header */}
+                                            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/50 pb-2.5 dark:border-white/[0.04]">
+                                                <div className="flex items-center gap-2.5">
+                                                    <div
+                                                        className={`flex size-7 shrink-0 items-center justify-center rounded-lg border shadow-2xs ${group.color}`}
+                                                    >
+                                                        <IconComp className="size-3.5" />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                            {group.title}
+                                                        </h4>
+                                                        <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                            {group.subtitle}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10.5px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                    {activeInGroup} / {groupPermissions.length} Aktif
+                                                </span>
+                                            </div>
+
+                                            {/* Permission Checkbox Grid */}
+                                            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                                                {groupPermissions.map((permission) => {
+                                                    const isAssigned = selectedRole.permissions.some(
+                                                        (p) => p.id === permission.id,
+                                                    );
+
+                                                    return (
+                                                        <label
+                                                            key={permission.id}
+                                                            className={`group flex cursor-pointer items-start gap-2.5 rounded-lg border p-2.5 text-xs transition-all ${
+                                                                isAssigned
+                                                                    ? 'border-slate-300/90 bg-white shadow-2xs dark:border-white/10 dark:bg-[#16181e]'
+                                                                    : 'border-slate-200/60 bg-white/50 opacity-75 hover:border-slate-300 hover:bg-white hover:opacity-100 dark:border-white/[0.03] dark:bg-zinc-900/30 dark:hover:bg-zinc-900'
+                                                            }`}
+                                                        >
+                                                            <input
+                                                                type="checkbox"
+                                                                name="permission_ids[]"
+                                                                value={permission.id}
+                                                                defaultChecked={isAssigned}
+                                                                className="mt-0.5 size-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900 dark:border-zinc-700 dark:bg-zinc-900"
+                                                            />
+                                                            <div className="min-w-0 flex-1 space-y-0.5">
+                                                                <p className="font-semibold text-slate-900 group-hover:text-blue-600 dark:text-zinc-100 dark:group-hover:text-blue-400">
+                                                                    {permission.description || permission.name}
+                                                                </p>
+                                                                <span className="inline-block font-mono text-[10px] text-slate-400 dark:text-zinc-500">
+                                                                    {permission.name}
+                                                                </span>
+                                                            </div>
+                                                        </label>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            <div className="flex items-center justify-end border-t border-slate-100 pt-3 dark:border-white/[0.04]">
+                                <Button
+                                    size="sm"
+                                    disabled={processing}
+                                    className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                                >
+                                    {processing ? (
+                                        <>
+                                            <Spinner className="mr-1.5 size-3.5" />
+                                            Menyimpan Izin...
+                                        </>
+                                    ) : (
+                                        `Simpan Izin Peran ${selectedRole.name}`
+                                    )}
+                                </Button>
+                            </div>
+                        </>
+                    )}
+                </Form>
+            </div>
         </div>
     );
 }
