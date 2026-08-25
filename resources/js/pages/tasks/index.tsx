@@ -732,36 +732,42 @@ export default function TasksIndex({
             {/* Modal Dialog: Detail Ringkasan Tugas & Kolaborasi */}
             <Dialog open={!!selectedTask} onOpenChange={(open) => !open && setSelectedTask(null)}>
                 {selectedTask && (
-                    <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
+                    <DialogContent className="max-h-[90vh] overflow-hidden flex flex-col p-0 rounded-2xl border border-slate-200/90 bg-white shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
                         {/* Header: Title, Badges & Action Controls */}
-                        <DialogHeader className="border-b border-slate-100 pb-4 dark:border-white/[0.06] space-y-3.5">
+                        <div className="shrink-0 border-b border-slate-100 bg-slate-50/60 px-6 pt-5 pb-4 pr-14 dark:border-white/[0.06] dark:bg-white/[0.02]">
                             <div className="flex items-start justify-between gap-3">
-                                <div className="flex items-start gap-3">
+                                <div className="flex items-start gap-3 min-w-0">
                                     <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400 mt-0.5">
                                         <ListTodo className="size-4.5" />
                                     </div>
-                                    <div className="space-y-1">
+                                    <div className="min-w-0 space-y-1.5">
                                         <div className="flex flex-wrap items-center gap-2">
                                             <StatusBadge value={selectedTask.priority} />
                                             <StatusBadge value={selectedTask.status} />
                                             {selectedTask.due_at && isTaskOverdue(selectedTask) && (
-                                                <span className="inline-flex items-center rounded-full bg-rose-50 px-2.5 py-0.5 text-[10px] font-bold text-rose-700 uppercase dark:bg-rose-950/60 dark:text-rose-300">
+                                                <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 uppercase dark:bg-rose-950/60 dark:text-rose-300">
+                                                    <AlertCircle className="size-3" />
                                                     Lewat Tenggat
                                                 </span>
                                             )}
                                         </div>
-                                        <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug">
+                                        <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug break-words">
                                             {selectedTask.title}
                                         </DialogTitle>
                                         <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
                                             {selectedTask.matter ? (
-                                                <span>
-                                                    Terkait Perkara{' '}
+                                                <Link
+                                                    href={matterRoutes.show(selectedTask.matter.id)}
+                                                    className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400 transition-colors"
+                                                >
+                                                    <Briefcase className="size-3 text-blue-600 dark:text-blue-400" />
+                                                    <span>Terkait Perkara:</span>
                                                     <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
                                                         {selectedTask.matter.matter_number}
-                                                    </span>{' '}
-                                                    · {selectedTask.matter.title}
-                                                </span>
+                                                    </span>
+                                                    <span>· {selectedTask.matter.title}</span>
+                                                    <ArrowUpRight className="size-3 text-slate-400" />
+                                                </Link>
                                             ) : (
                                                 <span>Tugas internal &amp; instruksi umum kantor</span>
                                             )}
@@ -785,80 +791,74 @@ export default function TasksIndex({
                                     </Button>
                                 )}
                             </div>
+                        </div>
 
-                            {/* Symmetrical Quick Status Switcher Segment */}
-                            <div className="flex items-center justify-between rounded-xl bg-slate-100/80 p-1.5 dark:bg-white/[0.04]">
-                                <span className="pl-2 text-xs font-semibold text-slate-500 dark:text-zinc-400">
-                                    Ubah Status Alur Kerja:
+                        {/* Interactive Workflow Status Pipeline */}
+                        <div className="shrink-0 border-b border-slate-100 bg-slate-100/60 px-6 py-2.5 dark:border-white/[0.04] dark:bg-white/[0.02]">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
+                                    Alur Kerja:
                                 </span>
-                                <div className="flex items-center gap-1.5">
-                                    {selectedTask.status !== 'in_progress' && (
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() => changeStatus(selectedTask, 'in_progress')}
-                                            className="h-7.5 rounded-lg bg-white px-3 text-xs font-bold text-blue-600 shadow-2xs hover:bg-blue-50 dark:bg-[#20232a] dark:text-blue-400"
-                                        >
-                                            Kerjakan
-                                        </Button>
-                                    )}
-                                    {selectedTask.status !== 'review' && (
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() => changeStatus(selectedTask, 'review')}
-                                            className="h-7.5 rounded-lg bg-white px-3 text-xs font-bold text-amber-600 shadow-2xs hover:bg-amber-50 dark:bg-[#20232a] dark:text-amber-400"
-                                        >
-                                            Minta Review
-                                        </Button>
-                                    )}
-                                    {selectedTask.status !== 'completed' && (
-                                        <Button
-                                            size="sm"
-                                            onClick={() => changeStatus(selectedTask, 'completed')}
-                                            className="h-7.5 rounded-lg bg-emerald-600 px-3.5 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-95"
-                                        >
-                                            <Check className="mr-1 size-3.5" />
-                                            Tandai Selesai
-                                        </Button>
-                                    )}
+                                <div className="grid grid-cols-4 gap-1.5">
+                                    {[
+                                        { key: 'pending', label: 'To Do', activeBg: 'bg-slate-700 text-white dark:bg-zinc-200 dark:text-slate-900' },
+                                        { key: 'in_progress', label: 'Dikerjakan', activeBg: 'bg-blue-600 text-white shadow-xs' },
+                                        { key: 'review', label: 'Review', activeBg: 'bg-amber-600 text-white shadow-xs' },
+                                        { key: 'completed', label: 'Selesai', activeBg: 'bg-emerald-600 text-white shadow-xs' },
+                                    ].map((step) => {
+                                        const isActive = selectedTask.status === step.key;
+                                        return (
+                                            <button
+                                                key={step.key}
+                                                type="button"
+                                                onClick={() => changeStatus(selectedTask, step.key)}
+                                                className={`flex items-center justify-center gap-1 rounded-lg px-2.5 py-1.5 text-center text-xs font-bold transition-all cursor-pointer ${
+                                                    isActive
+                                                        ? step.activeBg
+                                                        : 'bg-white text-slate-600 hover:bg-slate-200/80 dark:bg-white/[0.06] dark:text-zinc-300 dark:hover:bg-white/[0.1]'
+                                                }`}
+                                            >
+                                                {step.key === 'completed' && <Check className="size-3" />}
+                                                {step.label}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
-                        </DialogHeader>
+                        </div>
 
-                        <div className="space-y-4 pt-2">
-                            {/* Symmetric 2x2 Grid Cockpit */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        {/* Scrollable Content Body */}
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                            {/* Symmetric 2x2 Metadata Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {/* 1. Perkara Terkait */}
-                                <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#121418]">
-                                    <div className="space-y-1.5">
+                                <div className="flex flex-col justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/[0.04] dark:bg-white/[0.02]">
+                                    <div className="space-y-1">
                                         <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
                                             <Briefcase className="size-3.5 text-blue-600 dark:text-blue-400" />
-                                            <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
                                                 Perkara Terkait
                                             </span>
                                         </div>
                                         {selectedTask.matter ? (
-                                            <div className="pt-0.5">
-                                                <p className="line-clamp-2 text-xs font-semibold text-slate-900 dark:text-white">
-                                                    <span className="font-mono text-blue-600 dark:text-blue-400">{selectedTask.matter.matter_number}</span> · {selectedTask.matter.title}
-                                                </p>
-                                            </div>
+                                            <p className="line-clamp-2 text-xs font-semibold text-slate-900 dark:text-white pt-0.5">
+                                                <span className="font-mono text-blue-600 dark:text-blue-400">{selectedTask.matter.matter_number}</span> · {selectedTask.matter.title}
+                                            </p>
                                         ) : (
-                                            <p className="pt-0.5 text-xs text-slate-400 italic">Tugas independen (tanpa perkara)</p>
+                                            <p className="text-xs text-slate-400 italic pt-0.5">Tugas independen (tanpa perkara)</p>
                                         )}
                                     </div>
                                     {selectedTask.matter && (
-                                        <div className="pt-3">
+                                        <div className="pt-2">
                                             <Button
                                                 size="sm"
                                                 variant="outline"
-                                                className="h-7.5 w-full rounded-xl border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-200"
+                                                className="h-7 w-full rounded-lg border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-200"
                                                 asChild
                                             >
                                                 <Link href={matterRoutes.show(selectedTask.matter.id)}>
                                                     Buka Perkara
-                                                    <ArrowUpRight className="ml-1 size-3.5 text-slate-400" />
+                                                    <ArrowUpRight className="ml-1 size-3 text-slate-400" />
                                                 </Link>
                                             </Button>
                                         </div>
@@ -866,18 +866,18 @@ export default function TasksIndex({
                                 </div>
 
                                 {/* 2. Batas Waktu (Tenggat) */}
-                                <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#121418]">
-                                    <div className="space-y-1.5">
+                                <div className="flex flex-col justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/[0.04] dark:bg-white/[0.02]">
+                                    <div className="space-y-1">
                                         <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
                                             <Clock className="size-3.5 text-amber-600 dark:text-amber-400" />
-                                            <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
                                                 Batas Waktu (Tenggat)
                                             </span>
                                         </div>
                                         <div className="pt-0.5">
                                             {selectedTask.due_at ? (
                                                 <div className="space-y-0.5">
-                                                    <p className="font-mono text-sm font-bold text-slate-900 dark:text-white">
+                                                    <p className="font-mono text-xs font-bold text-slate-900 dark:text-white">
                                                         {formatDate(selectedTask.due_at, true)}
                                                     </p>
                                                     <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
@@ -889,30 +889,25 @@ export default function TasksIndex({
                                                     </p>
                                                 </div>
                                             ) : (
-                                                <p className="text-xs text-slate-400 italic">Tidak ditentukan</p>
+                                                <p className="text-xs text-slate-400 italic">Tidak ditentukan (fleksibel)</p>
                                             )}
-                                        </div>
-                                    </div>
-                                    <div className="pt-3">
-                                        <div className="flex h-7.5 items-center justify-center rounded-xl bg-slate-200/50 px-2 text-[11px] font-medium text-slate-600 dark:bg-white/[0.04] dark:text-zinc-400">
-                                            {selectedTask.due_at ? 'Target penyelesaian deliverable' : 'Fleksibel'}
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* 3. Pelaksana (Assignee) */}
-                                <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#121418]">
-                                    <div className="space-y-1.5">
+                                <div className="flex flex-col justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/[0.04] dark:bg-white/[0.02]">
+                                    <div className="space-y-1">
                                         <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
                                             <UserCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                            <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
                                                 Pelaksana (Assignee)
                                             </span>
                                         </div>
                                         <div className="pt-1">
                                             {selectedTask.assignee ? (
                                                 <div className="flex items-center gap-2.5">
-                                                    <Avatar className="size-8.5 rounded-full border border-slate-200 dark:border-white/10">
+                                                    <Avatar className="size-8 rounded-full border border-slate-200 dark:border-white/10">
                                                         <AvatarImage src={selectedTask.assignee.avatar_url ?? undefined} />
                                                         <AvatarFallback className="text-[10px] font-bold">
                                                             {getInitials(selectedTask.assignee.name)}
@@ -922,7 +917,7 @@ export default function TasksIndex({
                                                         <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
                                                             {selectedTask.assignee.name}
                                                         </p>
-                                                        <p className="truncate text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                        <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
                                                             {selectedTask.assignee.position_title ?? 'Advokat Pelaksana'}
                                                         </p>
                                                     </div>
@@ -935,18 +930,18 @@ export default function TasksIndex({
                                 </div>
 
                                 {/* 4. Reviewer (Partner) */}
-                                <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#121418]">
-                                    <div className="space-y-1.5">
+                                <div className="flex flex-col justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/[0.04] dark:bg-white/[0.02]">
+                                    <div className="space-y-1">
                                         <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
                                             <User className="size-3.5 text-indigo-600 dark:text-indigo-400" />
-                                            <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
                                                 Reviewer (Partner)
                                             </span>
                                         </div>
                                         <div className="pt-1">
                                             {selectedTask.reviewer ? (
                                                 <div className="flex items-center gap-2.5">
-                                                    <Avatar className="size-8.5 rounded-full border border-slate-200 dark:border-white/10">
+                                                    <Avatar className="size-8 rounded-full border border-slate-200 dark:border-white/10">
                                                         <AvatarImage src={selectedTask.reviewer.avatar_url ?? undefined} />
                                                         <AvatarFallback className="text-[10px] font-bold">
                                                             {getInitials(selectedTask.reviewer.name)}
@@ -956,7 +951,7 @@ export default function TasksIndex({
                                                         <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
                                                             {selectedTask.reviewer.name}
                                                         </p>
-                                                        <p className="truncate text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                        <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
                                                             {selectedTask.reviewer.position_title ?? 'Supervising Partner'}
                                                         </p>
                                                     </div>
@@ -970,21 +965,21 @@ export default function TasksIndex({
                             </div>
 
                             {/* Instruksi Kerja & Catatan Teknis */}
-                            <div className="rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#121418] space-y-2">
+                            <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 dark:border-white/[0.04] dark:bg-white/[0.02] space-y-1.5">
                                 <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
                                     <FileText className="size-3.5 text-slate-600 dark:text-zinc-300" />
-                                    <span className="text-[10.5px] font-bold uppercase tracking-wider text-slate-700 dark:text-zinc-300">
+                                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-zinc-300">
                                         Instruksi Kerja &amp; Catatan Teknis
                                     </span>
                                 </div>
-                                <div className="text-xs leading-relaxed text-slate-700 dark:text-zinc-300 whitespace-pre-wrap">
+                                <div className="text-xs leading-relaxed text-slate-700 dark:text-zinc-300 whitespace-pre-wrap pt-0.5">
                                     {selectedTask.description ||
                                         'Tidak ada instruksi kerja tambahan. Kerjakan tugas sesuai SOP dan arahan Partner penanggung jawab.'}
                                 </div>
                             </div>
 
                             {/* Task Collaboration Discussion Box */}
-                            <div className="rounded-2xl border border-slate-200/80 bg-white overflow-hidden dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="rounded-xl border border-slate-200/80 bg-white overflow-hidden dark:border-white/[0.06] dark:bg-[#14161b]">
                                 <DiscussionBox
                                     commentableType="task"
                                     commentableId={selectedTask.id}
@@ -1001,7 +996,7 @@ export default function TasksIndex({
 
             {/* Modal Dialog: Buat Tugas Baru */}
             <Dialog open={openCreate} onOpenChange={setOpenCreate}>
-                <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
+                <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-6 pr-10 shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
                     <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
                         <div className="flex items-center gap-3">
                             <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
@@ -1217,7 +1212,7 @@ export default function TasksIndex({
             {/* Modal Dialog: Edit Tugas In-Place */}
             <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
                 {editingTask && (
-                    <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
+                    <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-6 pr-10 shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
                         <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
                             <div className="flex items-center gap-3">
                                 <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
