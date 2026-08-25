@@ -130,13 +130,18 @@ type MatterHealthItem = {
 type ActivityItem = {
     id: string;
     event: string;
+    badge?: string;
+    badge_color?: string;
     title: string;
+    detail?: string;
     subject: string;
     actor: string;
     actor_avatar?: string;
     icon_type?: string;
     color?: string;
     time: string;
+    created_at?: string;
+    url?: string | null;
 };
 
 type Task = {
@@ -752,40 +757,92 @@ export default function Dashboard({
                             {/* Widget 4: Recent Audit Activity */}
                             <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
-                                    <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                        Aktivitas &amp; Log Terkini
-                                    </h2>
+                                    <div className="flex items-center gap-2">
+                                        <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                            Aktivitas &amp; Log Terkini
+                                        </h2>
+                                        <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[9px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-400">
+                                            Audit Trail
+                                        </span>
+                                    </div>
                                     <Link
                                         href={auditRoutes.index()}
-                                        className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                        className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                                     >
-                                        Log →
+                                        Semua Log →
                                     </Link>
                                 </div>
 
-                                <div className="relative space-y-3 pt-3 before:absolute before:top-4 before:bottom-3 before:left-1 before:w-px before:bg-slate-200 dark:before:bg-zinc-800">
+                                <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
                                     {!activities || activities.length === 0 ? (
                                         <p className="py-6 text-center text-xs text-slate-400 dark:text-zinc-500">
                                             Belum ada aktivitas tercatat di audit log.
                                         </p>
                                     ) : (
-                                        activities.slice(0, 5).map((act, idx) => {
-                                            return (
-                                                <div key={act.id || idx} className="relative flex items-start gap-2.5 pl-4">
-                                                    <span className="absolute top-1.5 left-0 size-2 -translate-x-1/2 rounded-full bg-slate-400 ring-2 ring-white dark:ring-[#14161b]" />
-                                                    <div className="min-w-0 flex-1 space-y-0.5">
-                                                        <div className="flex items-center justify-between gap-2">
-                                                            <p className="truncate text-xs font-semibold text-slate-800 dark:text-zinc-200" title={act.title}>
+                                        activities.slice(0, 6).map((act, idx) => {
+                                            const badgeColorClass =
+                                                act.badge_color === 'blue'
+                                                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
+                                                    : act.badge_color === 'purple'
+                                                      ? 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300'
+                                                      : act.badge_color === 'emerald'
+                                                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
+                                                        : act.badge_color === 'amber'
+                                                          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
+                                                          : act.badge_color === 'indigo'
+                                                            ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300'
+                                                            : act.badge_color === 'cyan'
+                                                              ? 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-300'
+                                                              : act.badge_color === 'teal'
+                                                                ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300'
+                                                                : 'bg-slate-100 text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300';
+
+                                            const content = (
+                                                <div className="min-w-0 flex-1 space-y-1">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <div className="flex items-center gap-1.5 min-w-0">
+                                                            <span className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold shrink-0 ${badgeColorClass}`}>
+                                                                {act.badge || 'Aktivitas'}
+                                                            </span>
+                                                            <span className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
                                                                 {act.title}
-                                                            </p>
-                                                            <span className="font-mono text-[10px] text-slate-400 shrink-0">
-                                                                {act.time}
                                                             </span>
                                                         </div>
-                                                        <p className="truncate text-[11px] text-slate-400 dark:text-zinc-500" title={act.subject}>
-                                                            {act.subject}
-                                                        </p>
+                                                        <span className="font-mono text-[10px] text-slate-400 shrink-0 whitespace-nowrap">
+                                                            {act.time}
+                                                        </span>
                                                     </div>
+                                                    <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400" title={act.detail || act.subject}>
+                                                        {act.detail || act.subject}
+                                                    </p>
+                                                    <div className="flex items-center gap-1.5 pt-0.5">
+                                                        <Avatar className="size-4 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                            <AvatarImage src={act.actor_avatar} />
+                                                            <AvatarFallback className="text-[6.5px] font-bold">
+                                                                {getInitials(act.actor)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <span className="truncate text-[10px] font-medium text-slate-600 dark:text-zinc-400">
+                                                            {act.actor}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            );
+
+                                            return act.url ? (
+                                                <Link
+                                                    key={act.id || idx}
+                                                    href={act.url}
+                                                    className="group flex items-start gap-2.5 py-2.5 transition-colors hover:bg-slate-50/70 rounded-lg px-1.5 -mx-1.5 dark:hover:bg-white/[0.02]"
+                                                >
+                                                    {content}
+                                                </Link>
+                                            ) : (
+                                                <div
+                                                    key={act.id || idx}
+                                                    className="group flex items-start gap-2.5 py-2.5 px-1.5 -mx-1.5"
+                                                >
+                                                    {content}
                                                 </div>
                                             );
                                         })

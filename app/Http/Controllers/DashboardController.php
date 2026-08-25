@@ -160,60 +160,184 @@ class DashboardController extends Controller
                 ];
             });
 
-        // 6. Recent Activities (Real DB AuditLog records with intelligent categorization & styling)
-        $activities = AuditLog::query()->with('actor')->latest('created_at')->limit(4)->get()
+        // 6. Recent Activities (Real DB AuditLog records with rich contextual metadata, categorization & direct links)
+        $activities = AuditLog::query()->with('actor')->latest('created_at')->limit(6)->get()
             ->map(function ($log) {
                 $evt = strtolower($log->event ?? '');
                 $cat = strtolower($log->category ?? '');
+                $meta = (array) ($log->metadata ?? []);
+                $subjectId = (string) ($log->subject_id ?? '');
 
-                // Intelligent legal activity title & icon category
-                if (str_contains($evt, 'signature') || str_contains($cat, 'signature')) {
-                    $title = 'Permintaan Tanda Tangan';
-                    $subject = 'E-Signature Terkirim';
-                    $iconType = 'signature';
-                    $color = 'indigo';
-                } elseif (str_contains($evt, 'invoice') || str_contains($cat, 'invoice')) {
-                    $title = 'Unduh Berkas Invoice';
-                    $subject = 'Faktur & Billing Klien';
-                    $iconType = 'invoice';
-                    $color = 'emerald';
-                } elseif (str_contains($evt, 'quotation') || str_contains($cat, 'quotation')) {
-                    $title = 'Persetujuan Penawaran';
-                    $subject = 'Proposal Jasa Disetujui';
-                    $iconType = 'quotation';
-                    $color = 'blue';
-                } elseif (str_contains($evt, 'matter') || str_contains($cat, 'matter')) {
-                    $title = 'Pembaruan Perkara';
-                    $subject = 'Status Kasus Hukum';
+                $badge = 'Aktivitas';
+                $badgeColor = 'slate';
+                $title = 'Aktivitas Tercatat';
+                $detail = 'Aktivitas sistem operasional';
+                $iconType = 'system';
+                $url = null;
+
+                if (str_contains($evt, 'matter') || str_contains($cat, 'matter')) {
+                    $badge = 'Perkara';
+                    $badgeColor = 'blue';
                     $iconType = 'matter';
-                    $color = 'cyan';
-                } elseif (str_contains($evt, 'task') || str_contains($cat, 'task')) {
-                    $title = 'Penyelesaian Tugas';
-                    $subject = 'Alur Kerja Tim';
-                    $iconType = 'task';
-                    $color = 'teal';
+                    $code = $meta['matter_number'] ?? '';
+                    $mTitle = $meta['title'] ?? 'Perkara Hukum';
+
+                    if (str_contains($evt, 'created')) {
+                        $title = 'Registrasi Perkara Baru';
+                    } elseif (str_contains($evt, 'stage') || str_contains($evt, 'status')) {
+                        $title = 'Pembaruan Status Perkara';
+                    } elseif (str_contains($evt, 'legal_hold')) {
+                        $title = 'Aktivasi Legal Hold';
+                    } else {
+                        $title = 'Pembaruan Berkas Perkara';
+                    }
+
+                    $detail = ($code ? "{$code} · " : '').$mTitle;
+                    $url = $subjectId ? route('matters.show', $subjectId) : route('matters.index');
                 } elseif (str_contains($evt, 'document') || str_contains($cat, 'document')) {
-                    $title = 'Unggah Dokumen Baru';
-                    $subject = 'Arsip Berkas Digital';
+                    $badge = 'Dokumen';
+                    $badgeColor = 'purple';
                     $iconType = 'document';
-                    $color = 'purple';
+                    $docTitle = $meta['title'] ?? $meta['filename'] ?? $meta['original_filename'] ?? 'Berkas Dokumen';
+                    $vNum = isset($meta['version_number']) ? " (v{$meta['version_number']})" : '';
+
+                    if (str_contains($evt, 'preview')) {
+                        $title = 'Pratinjau Dokumen Vault';
+                        $detail = "Membuka berkas {$docTitle}{$vNum}";
+                    } elseif (str_contains($evt, 'upload') || str_contains($evt, 'created')) {
+                        $title = 'Unggah Dokumen Baru';
+                        $detail = "Menambahkan berkas {$docTitle}{$vNum}";
+                    } elseif (str_contains($evt, 'download')) {
+                        $title = 'Unduh Berkas Dokumen';
+                        $detail = "Mengunduh {$docTitle}{$vNum}";
+                    } else {
+                        $title = 'Pembaruan Dokumen';
+                        $detail = "{$docTitle}{$vNum}";
+                    }
+
+                    $url = $subjectId ? route('documents.show', $subjectId) : route('documents.index');
+                } elseif (str_contains($evt, 'client') || str_contains($cat, 'client')) {
+                    $badge = 'Klien';
+                    $badgeColor = 'emerald';
+                    $iconType = 'client';
+                    $clientName = $meta['display_name'] ?? $meta['legal_name'] ?? 'Klien Kantor';
+                    $clientNum = $meta['client_number'] ?? '';
+
+                    if (str_contains($evt, 'created')) {
+                        $title = 'Registrasi Profil Klien';
+                    } else {
+                        $title = 'Pembaruan Data Klien';
+                    }
+
+                    $detail = ($clientNum ? "{$clientNum} · " : '').$clientName;
+                    $url = $subjectId ? route('clients.show', $subjectId) : route('clients.index');
+                } elseif (str_contains($evt, 'invoice') || str_contains($cat, 'invoice')) {
+                    $badge = 'Invoice';
+                    $badgeColor = 'amber';
+                    $iconType = 'invoice';
+                    $invNum = $meta['invoice_number'] ?? '';
+
+                    if (str_contains($evt, 'paid')) {
+                        $title = 'Pelunasan Invoice';
+                        $detail = 'Invoice terbayar lunas '.($invNum ? "#{$invNum}" : '');
+                    } elseif (str_contains($evt, 'pdf')) {
+                        $title = 'Unduh PDF Invoice';
+                        $detail = 'Mencetak salinan invoice '.($invNum ? "#{$invNum}" : '');
+                    } else {
+                        $title = 'Penerbitan Invoice';
+                        $detail = 'Faktur tagihan jasa hukum '.($invNum ? "#{$invNum}" : '');
+                    }
+
+                    $url = $subjectId ? route('finance.invoices.show', $subjectId) : route('finance.index');
+                } elseif (str_contains($evt, 'quotation') || str_contains($cat, 'quotation')) {
+                    $badge = 'Penawaran';
+                    $badgeColor = 'blue';
+                    $iconType = 'quotation';
+                    $qtNum = $meta['quotation_number'] ?? '';
+
+                    if (str_contains($evt, 'approved')) {
+                        $title = 'Persetujuan Proposal Jasa';
+                        $detail = 'Penawaran honorarium disetujui '.($qtNum ? "#{$qtNum}" : '');
+                    } elseif (str_contains($evt, 'pdf')) {
+                        $title = 'Unduh PDF Penawaran';
+                        $detail = 'Mencetak proposal penawaran '.($qtNum ? "#{$qtNum}" : '');
+                    } else {
+                        $title = 'Pembuatan Penawaran';
+                        $detail = 'Proposal penawaran honorarium '.($qtNum ? "#{$qtNum}" : '');
+                    }
+
+                    $url = route('finance.index');
+                } elseif (str_contains($evt, 'payment') || str_contains($cat, 'payment')) {
+                    $badge = 'Pembayaran';
+                    $badgeColor = 'emerald';
+                    $iconType = 'payment';
+                    $title = 'Penerimaan Pembayaran';
+                    $detail = 'Pencatatan kuitansi & penerimaan dana klien';
+                    $url = $subjectId ? route('finance.payments.show', $subjectId) : route('finance.index');
+                } elseif (str_contains($evt, 'task') || str_contains($cat, 'task')) {
+                    $badge = 'Tugas';
+                    $badgeColor = 'teal';
+                    $iconType = 'task';
+                    $taskTitle = $meta['title'] ?? 'Tugas Tim';
+
+                    if (str_contains($evt, 'completed')) {
+                        $title = 'Penyelesaian Tugas';
+                    } else {
+                        $title = 'Pembaruan Tugas Kerja';
+                    }
+
+                    $detail = $taskTitle;
+                    $url = route('tasks.index');
+                } elseif (str_contains($evt, 'signature') || str_contains($cat, 'signature')) {
+                    $badge = 'E-Signature';
+                    $badgeColor = 'indigo';
+                    $iconType = 'signature';
+                    $title = 'Tanda Tangan Digital';
+                    $detail = 'Sertifikasi digital dokumen hukum terproses';
+                    $url = route('documents.index');
+                } elseif (str_contains($evt, 'correspondence') || str_contains($cat, 'correspondence')) {
+                    $badge = 'Surat';
+                    $badgeColor = 'cyan';
+                    $iconType = 'correspondence';
+                    $title = 'Korespondensi Hukum';
+                    $detail = $meta['subject'] ?? 'Pencatatan surat keluar / masuk';
+                    $url = $subjectId ? route('governance.correspondences.show', $subjectId) : route('governance.index');
+                } elseif (str_contains($evt, 'user') || str_contains($cat, 'user')) {
+                    $badge = 'Keamanan';
+                    $badgeColor = 'slate';
+                    $iconType = 'system';
+                    $targetUser = $meta['name'] ?? $meta['email'] ?? 'akun staf';
+
+                    if (str_contains($evt, 'login')) {
+                        $title = 'Autentikasi Pengguna';
+                        $detail = 'Sesi login berhasil diverifikasi';
+                    } else {
+                        $title = 'Pembaruan Profil & Akses';
+                        $detail = "Penyesuaian konfigurasi akun {$targetUser}";
+                    }
+
+                    $url = route('admin.users.index');
                 } else {
                     $title = ucwords(str_replace(['.', '_'], ' ', $log->event));
-                    $subject = $log->category ? ucwords(str_replace('_', ' ', $log->category)) : 'Aktivitas Kantor';
-                    $iconType = 'system';
-                    $color = 'slate';
+                    $detail = $log->category ? ucwords(str_replace('_', ' ', $log->category)) : 'Aktivitas kantor tercatat';
+                    $url = route('admin.audit.index');
                 }
 
                 return [
                     'id' => $log->id,
                     'event' => $log->event,
+                    'badge' => $badge,
+                    'badge_color' => $badgeColor,
                     'title' => $title,
-                    'subject' => $subject,
+                    'detail' => $detail,
+                    'subject' => $detail,
                     'icon_type' => $iconType,
-                    'color' => $color,
-                    'actor' => $log->actor?->name ?? 'System',
+                    'color' => $badgeColor,
+                    'actor' => $log->actor?->name ?? 'Sistem Otomatis',
                     'actor_avatar' => $log->actor?->avatar_url ?? $log->actor?->avatar_path,
                     'time' => $log->created_at ? $log->created_at->diffForHumans() : 'Baru saja',
+                    'created_at' => $log->created_at?->toIso8601String(),
+                    'url' => $url,
                 ];
             });
 
