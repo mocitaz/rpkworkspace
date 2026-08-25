@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Models\Document;
 use App\Models\DocumentApproval;
 use App\Models\User;
+use App\Notifications\DocumentApprovalRequestedNotification;
 use App\Services\AuditService;
 use Illuminate\Support\Facades\DB;
 
@@ -32,6 +33,7 @@ class SubmitDocumentForApproval
         }, 3);
 
         $this->audit->record($approval, 'document.approval_requested', ['document_id' => $document->getKey()], $requester);
+        $reviewer->notify(new DocumentApprovalRequestedNotification($approval, $document, $requester));
 
         return $approval;
     }

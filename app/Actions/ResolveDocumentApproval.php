@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Models\DocumentApproval;
 use App\Models\User;
+use App\Notifications\DocumentApprovalResolvedNotification;
 use App\Services\AuditService;
 use Illuminate\Support\Facades\DB;
 
@@ -32,6 +33,15 @@ class ResolveDocumentApproval
 
         $approval->refresh();
         $this->audit->record($approval, $approved ? 'document.approved' : 'document.revision_requested', ['document_id' => $approval->document_id], $reviewer);
+
+        if ($approval->requester) {
+            $approval->requester->notify(new DocumentApprovalResolvedNotification(
+                $approval,
+                $approval->document,
+                $reviewer,
+                $approved
+            ));
+        }
 
         return $approval;
     }

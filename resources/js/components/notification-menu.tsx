@@ -61,6 +61,17 @@ export function NotificationMenu() {
         setLocalNotifications(initialNotifications);
     }, [auth.notifications]);
 
+    // Background auto-refresh every 30s to keep notifications real-time
+    React.useEffect(() => {
+        const interval = setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                router.reload({ only: ['auth'] });
+            }
+        }, 30000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     const unreadLocalCount = useMemo(() => {
         return localNotifications.filter((n) => !n.read_at).length;
     }, [localNotifications]);
