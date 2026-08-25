@@ -204,134 +204,161 @@ export default function UserShow({
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-4 px-4 py-5 sm:px-6 lg:px-8">
-                    {/* 1. Header Navigation & Client Cockpit Bar */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/70 pb-4 lg:flex-row lg:items-center dark:border-white/[0.06]">
-                        <div className="flex items-center gap-3.5">
-                            <div className="relative shrink-0">
-                                <Avatar className="size-12 rounded-xl border border-slate-200/80 shadow-2xs dark:border-white/10">
-                                    <AvatarImage
-                                        src={staff.avatar_url ?? undefined}
-                                        className="object-cover"
-                                    />
-                                    <AvatarFallback className="rounded-xl bg-slate-900 text-sm font-bold text-white dark:bg-zinc-800 dark:text-zinc-200">
-                                        {getInitials(staff.name)}
-                                    </AvatarFallback>
-                                </Avatar>
-                                {staff.is_active && (
-                                    <span
-                                        className="absolute -right-1 -bottom-1 flex size-3.5 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#0c0d10]"
-                                        title="Akun Aktif"
-                                    />
-                                )}
-                            </div>
+                    {/* 1. Executive Partner Dossier Header Card */}
+                    <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs sm:p-6 dark:border-white/[0.08] dark:bg-[#14161b]">
+                        {/* Subtle Luxury Ambient Radial Glow */}
+                        <div className="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-linear-to-br from-blue-500/8 via-indigo-500/5 to-purple-500/5 blur-3xl dark:from-blue-500/10 dark:to-indigo-500/5" />
 
-                            <div className="min-w-0 space-y-0.5">
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <h1 className="truncate text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
-                                        {staff.name}
-                                    </h1>
-                                    <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
-                                        {displayId}
-                                    </span>
-                                    <StatusBadge
-                                        value={
-                                            staff.is_active
-                                                ? 'active'
-                                                : 'inactive'
-                                        }
-                                    />
-                                </div>
+                        {/* Top Utility & Navigation Row */}
+                        <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 dark:border-white/[0.04]">
+                            <Link
+                                href={userRoutes.index()}
+                                className="group inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition-colors hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                            >
+                                <ArrowLeft className="size-3.5 transition-transform group-hover:-translate-x-0.5" />
+                                <span>Direktori Tim &amp; Staf</span>
+                            </Link>
 
-                                <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 dark:text-zinc-400">
-                                    <span className="font-medium text-slate-700 dark:text-zinc-200">
-                                        {staff.position_title || 'Staf Hukum'}
-                                    </span>
-                                    {staff.department && (
-                                        <>
-                                            <span className="text-slate-300 dark:text-zinc-700">
-                                                •
-                                            </span>
-                                            <span>{staff.department}</span>
-                                        </>
-                                    )}
-                                    {staff.education && (
-                                        <>
-                                            <span className="text-slate-300 dark:text-zinc-700">
-                                                •
-                                            </span>
-                                            <span className="text-purple-700 dark:text-purple-400">
-                                                {staff.education}
-                                            </span>
-                                        </>
-                                    )}
-                                </div>
+                            <div className="flex items-center gap-2">
+                                <span className="font-mono text-[11px] font-medium text-slate-400 dark:text-zinc-500">
+                                    NIP / ID:
+                                </span>
+                                <span className="inline-flex items-center rounded-md border border-slate-200/80 bg-slate-50 px-2 py-0.5 font-mono text-[11px] font-bold text-slate-800 shadow-2xs dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-200">
+                                    {displayId}
+                                </span>
                             </div>
                         </div>
 
-                        {/* Cockpit Action Buttons */}
-                        <div className="flex shrink-0 flex-wrap items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
-                                asChild
-                            >
-                                <Link href={userRoutes.index()}>
-                                    <ArrowLeft className="mr-1 size-3 text-slate-400" />
-                                    Kembali
-                                </Link>
-                            </Button>
+                        {/* Main Identity & Actions */}
+                        <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+                            {/* Left: Luxury Avatar & Executive Details */}
+                            <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
+                                {/* Luxury Beveled Profile Avatar without green dot */}
+                                <div className="relative shrink-0">
+                                    <div className="relative size-18 rounded-2xl bg-linear-to-b from-slate-200 via-slate-100 to-slate-300 p-0.5 shadow-md sm:size-20 dark:from-white/20 dark:via-white/5 dark:to-white/15">
+                                        <Avatar className="size-full rounded-[14px] bg-slate-900 shadow-inner dark:bg-zinc-800">
+                                            <AvatarImage
+                                                src={
+                                                    staff.avatar_url ??
+                                                    undefined
+                                                }
+                                                className="object-cover"
+                                                alt={staff.name}
+                                            />
+                                            <AvatarFallback className="rounded-[14px] bg-linear-to-br from-slate-900 via-slate-800 to-indigo-950 text-xl font-bold tracking-wider text-white shadow-inner sm:text-2xl">
+                                                {getInitials(staff.name)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </div>
+                                </div>
 
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={handleOpenChat}
-                                className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
-                            >
-                                <MessageSquare className="mr-1 size-3 text-blue-500" />
-                                Kirim Pesan
-                            </Button>
+                                {/* Name, Active Pill, & Attribute Tags */}
+                                <div className="min-w-0 space-y-2">
+                                    <div className="flex flex-wrap items-center gap-2.5">
+                                        <h1 className="truncate text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                                            {staff.name}
+                                        </h1>
+                                        <span
+                                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                                                staff.is_active
+                                                    ? 'border border-emerald-200/80 bg-emerald-50 text-emerald-700 dark:border-emerald-800/60 dark:bg-emerald-950/50 dark:text-emerald-300'
+                                                    : 'border border-slate-200/80 bg-slate-100 text-slate-600 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-400'
+                                            }`}
+                                        >
+                                            <span
+                                                className={`size-1.5 rounded-full ${
+                                                    staff.is_active
+                                                        ? 'bg-emerald-500'
+                                                        : 'bg-slate-400'
+                                                }`}
+                                            />
+                                            {staff.is_active
+                                                ? 'Aktif'
+                                                : 'Non-aktif'}
+                                        </span>
+                                    </div>
 
-                            {staff.phone && (
+                                    {/* Executive Pills Row */}
+                                    <div className="flex flex-wrap items-center gap-2 pt-0.5 text-xs">
+                                        {/* Position Title Pill */}
+                                        <span className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200/70 bg-blue-50/80 px-2.5 py-1 text-xs font-semibold text-blue-700 shadow-2xs dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-300">
+                                            <Scale className="size-3 text-blue-600 dark:text-blue-400" />
+                                            {staff.position_title ||
+                                                'Staf Hukum'}
+                                        </span>
+
+                                        {/* Department / Division Pill */}
+                                        {staff.department && (
+                                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-50/90 px-2.5 py-1 text-xs font-medium text-slate-700 shadow-2xs dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300">
+                                                <Building2 className="size-3 text-slate-400 dark:text-zinc-500" />
+                                                {staff.department}
+                                            </span>
+                                        )}
+
+                                        {/* Education / Honorific Pill */}
+                                        {staff.education && (
+                                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-purple-200/70 bg-purple-50/80 px-2.5 py-1 text-xs font-medium text-purple-700 shadow-2xs dark:border-purple-900/40 dark:bg-purple-950/40 dark:text-purple-300">
+                                                <GraduationCap className="size-3.5 text-purple-600 dark:text-purple-400" />
+                                                {staff.education}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right: Quick Action Controls */}
+                            <div className="flex shrink-0 flex-wrap items-center gap-2 pt-2 lg:pt-0">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleOpenChat}
+                                    className="h-9 rounded-xl border-slate-200/80 bg-white px-3.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                                >
+                                    <MessageSquare className="mr-1.5 size-3.5 text-blue-500" />
+                                    Kirim Pesan
+                                </Button>
+
+                                {staff.phone && (
+                                    <Button
+                                        asChild
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-9 rounded-xl border-emerald-200/80 bg-emerald-50/70 px-3.5 text-xs font-semibold text-emerald-700 shadow-2xs hover:bg-emerald-100 dark:border-emerald-900/40 dark:bg-emerald-950/50 dark:text-emerald-300"
+                                    >
+                                        <a
+                                            href={`https://wa.me/${staff.phone.replace(/[^0-9]/g, '')}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <Smartphone className="mr-1.5 size-3.5" />
+                                            WhatsApp
+                                        </a>
+                                    </Button>
+                                )}
+
                                 <Button
                                     asChild
                                     variant="outline"
                                     size="sm"
-                                    className="h-8 rounded-lg border-emerald-200 bg-emerald-50/70 px-3 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900/40 dark:bg-emerald-950/50 dark:text-emerald-300"
+                                    className="h-9 rounded-xl border-slate-200/80 bg-white px-3.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                                 >
-                                    <a
-                                        href={`https://wa.me/${staff.phone.replace(/[^0-9]/g, '')}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        <Smartphone className="mr-1 size-3" />
-                                        WhatsApp
+                                    <a href={`mailto:${staff.email}`}>
+                                        <Mail className="mr-1.5 size-3.5 text-slate-400" />
+                                        Email
                                     </a>
                                 </Button>
-                            )}
 
-                            <Button
-                                asChild
-                                variant="outline"
-                                size="sm"
-                                className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
-                            >
-                                <a href={`mailto:${staff.email}`}>
-                                    <Mail className="mr-1 size-3 text-slate-400" />
-                                    Email
-                                </a>
-                            </Button>
-
-                            <Button
-                                type="button"
-                                size="sm"
-                                onClick={() => openEditWithTab('account')}
-                                className="h-8 cursor-pointer rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
-                            >
-                                <Pencil className="mr-1 size-3" />
-                                Edit Profil
-                            </Button>
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={() => openEditWithTab('account')}
+                                    className="h-9 cursor-pointer rounded-xl bg-slate-900 px-4 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                                >
+                                    <Pencil className="mr-1.5 size-3.5" />
+                                    Edit Profil
+                                </Button>
+                            </div>
                         </div>
                     </div>
 
