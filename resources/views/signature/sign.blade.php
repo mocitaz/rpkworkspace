@@ -6,18 +6,23 @@
     <title>Penandatanganan Dokumen Elektronik Resmi | RPK Law Firm</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css'])
     <!-- PDF.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+        body { 
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background-color: #f8fafc;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         
         .pdf-studio-bg {
             background-color: #0f172a;
             background-image: 
-                radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.25) 0%, transparent 60%),
+                radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.3) 0%, transparent 70%),
                 radial-gradient(#334155 1px, transparent 1px);
             background-size: 100% 100%, 20px 20px;
         }
@@ -30,8 +35,8 @@
         }
         .placement-stamp:active, .placement-stamp.is-dragging {
             cursor: grabbing;
-            transform: scale(1.025);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.4), 0 25px 30px -5px rgba(15, 23, 42, 0.4);
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.4), 0 20px 25px -5px rgba(15, 23, 42, 0.4);
         }
         
         .sig-baseline {
@@ -56,12 +61,12 @@
         }
     </style>
 </head>
-<body class="min-h-full bg-slate-50 text-slate-900 flex flex-col justify-between selection:bg-blue-600 selection:text-white">
+<body class="min-h-screen text-slate-900 py-6 sm:py-10 px-4 sm:px-6 lg:px-8 selection:bg-blue-600 selection:text-white">
 
-    <!-- Top Corporate Header -->
-    <header class="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur-md px-4 py-3 sm:px-6 lg:px-8 shadow-xs">
-        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4">
-            <!-- Brand Info -->
+    <div class="mx-auto w-full max-w-3xl space-y-5">
+        
+        <!-- Corporate Header -->
+        <header class="flex items-center justify-between rounded-2xl border border-slate-200/90 bg-white/95 backdrop-blur-md p-4 sm:px-6 shadow-xs">
             <div class="flex items-center gap-3">
                 <img 
                     src="/logo/logo.png" 
@@ -69,506 +74,488 @@
                     class="h-8 sm:h-9 w-auto max-w-[140px] object-contain"
                     onerror="this.onerror=null; this.src='/logo/raf-law-firm-transparent.png';"
                 />
-                <div class="hidden sm:block border-l border-slate-200 pl-3">
-                    <span class="text-xs font-black tracking-tight text-slate-900 uppercase">RPK LAW FIRM</span>
-                    <p class="text-[10px] font-medium text-slate-500">Legal Practice Workspace</p>
+                <div class="border-l border-slate-200 pl-3">
+                    <span class="text-xs font-black tracking-tight text-slate-900 uppercase block">RPK LAW FIRM</span>
+                    <p class="text-[10px] font-semibold text-slate-500">Advocates &amp; Legal Consultants</p>
                 </div>
             </div>
 
-            <!-- Header Right: Security Status -->
-            <div class="flex items-center gap-2 sm:gap-3">
-                <div class="hidden md:flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+            <div class="flex items-center gap-2">
+                <div class="hidden sm:flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-600">
                     <svg class="size-3.5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
-                    <span>UU ITE &amp; SHA-256 Valid</span>
+                    <span>UU ITE &amp; SHA-256</span>
                 </div>
-
                 <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 font-mono text-[11px] font-bold text-emerald-700">
                     <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     VERIFIKASI AKTIF
                 </span>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Main Content Area -->
-    <main class="mx-auto w-full max-w-7xl flex-1 px-4 py-5 sm:px-6 lg:px-8">
-        
-        <!-- Document Overview Banner -->
-        <div class="mb-5 rounded-2xl border border-blue-100 bg-gradient-to-r from-blue-50/80 via-white to-slate-50 p-4 sm:p-5 shadow-xs">
-            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div class="space-y-1">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <span class="rounded-md bg-blue-600 px-2 py-0.5 font-mono text-[9px] font-extrabold tracking-wider text-white uppercase">
-                            PERMINTAAN TANDA TANGAN
+        <!-- Document Overview Hero Banner -->
+        <div class="rounded-2xl border border-blue-100 bg-gradient-to-r from-blue-50/80 via-white to-slate-50 p-4 sm:p-5 shadow-xs space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="rounded-md bg-blue-600 px-2.5 py-0.5 font-mono text-[9.5px] font-extrabold tracking-wider text-white uppercase">
+                        PERMINTAAN TANDA TANGAN ELEKTRONIK
+                    </span>
+                    @if ($signer->signatureRequest->document->matter)
+                        <span class="rounded-md bg-white border border-slate-200 px-2.5 py-0.5 font-mono text-[11px] font-bold text-slate-700">
+                            Perkara: {{ $signer->signatureRequest->document->matter->matter_number }}
                         </span>
-                        @if ($signer->signatureRequest->document->matter)
-                            <span class="rounded-md bg-white border border-slate-200 px-2 py-0.5 font-mono text-[10.5px] font-bold text-slate-700">
-                                Perkara: {{ $signer->signatureRequest->document->matter->matter_number }}
-                            </span>
-                        @endif
-                    </div>
-                    <h1 class="text-base sm:text-lg font-black tracking-tight text-slate-900">
-                        {{ $signer->signatureRequest->document->title }}
-                    </h1>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-3 text-xs">
-                    <div class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 shadow-2xs">
-                        <span class="text-[10px] uppercase font-bold text-slate-400 block">Penandatangan</span>
-                        <strong class="font-bold text-slate-900">{{ $signer->name }}</strong>
-                    </div>
-                    @if ($signer->signatureRequest->expires_at)
-                        <div class="rounded-xl border border-amber-200 bg-amber-50/70 px-3 py-1.5 text-amber-900 shadow-2xs">
-                            <span class="text-[10px] uppercase font-bold text-amber-600 block">Batas Waktu</span>
-                            <strong class="font-mono font-bold">{{ $signer->signatureRequest->expires_at->translatedFormat('d M Y, H:i') }} WIB</strong>
-                        </div>
                     @endif
                 </div>
+
+                @if ($signer->signatureRequest->expires_at)
+                    <span class="rounded-md bg-amber-50 border border-amber-200 px-2.5 py-0.5 font-mono text-[11px] font-bold text-amber-900">
+                        Batas Waktu: {{ $signer->signatureRequest->expires_at->translatedFormat('d M Y, H:i') }} WIB
+                    </span>
+                @endif
+            </div>
+
+            <h1 class="text-lg sm:text-xl font-black tracking-tight text-slate-900 leading-snug">
+                {{ $signer->signatureRequest->document->title }}
+            </h1>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-medium text-slate-600 pt-1 border-t border-slate-100">
+                <div class="flex items-center gap-2">
+                    <span class="text-slate-400">Penandatangan:</span>
+                    <strong class="text-slate-900">{{ $signer->name }}</strong>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-slate-400">Email:</span>
+                    <strong class="font-mono text-slate-800">{{ $signer->email }}</strong>
+                </div>
             </div>
         </div>
 
-        <!-- 2-Column Split Workspace Form -->
-        <form id="signingForm" method="post" action="{{ route('signature.sign.store', $signer->signing_token) }}">
+        <!-- Main Signing Form -->
+        <form id="signingForm" method="post" action="{{ route('signature.sign.store', $signer->signing_token) }}" class="space-y-4">
             @csrf
 
-            <div class="grid grid-cols-1 gap-5 lg:grid-cols-12 items-start">
-                
-                <!-- LEFT COLUMN: Interactive PDF Placement Studio (Col 1-7) -->
-                <div class="lg:col-span-7 space-y-3">
-                    <div class="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-sm">
-                        
-                        <!-- Studio Header & Controls -->
-                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                            <div class="flex items-center gap-2">
-                                <div class="flex size-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
-                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-900">
-                                        Posisi Stempel pada Dokumen PDF
-                                    </h2>
-                                    <p class="text-[10.5px] text-slate-500">
-                                        Klik lembar dokumen atau geser stempel ke kolom tanda tangan Anda.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <!-- Page Navigator -->
-                            <div class="flex items-center gap-1">
-                                <button 
-                                    type="button" 
-                                    id="btnPrevPage" 
-                                    onclick="prevPage()"
-                                    class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-35 transition-colors cursor-pointer shadow-2xs"
-                                    title="Halaman Sebelumnya"
-                                >
-                                    ◀
-                                </button>
-                                <span class="font-mono text-xs font-bold text-slate-800 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs">
-                                    <span id="pageNum">1</span> / <span id="pageCount">1</span>
-                                </span>
-                                <button 
-                                    type="button" 
-                                    id="btnNextPage" 
-                                    onclick="nextPage()"
-                                    class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-35 transition-colors cursor-pointer shadow-2xs"
-                                    title="Halaman Selanjutnya"
-                                >
-                                    ▶
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Presets & Coordinates Bar -->
-                        <div class="mt-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
-                            <div class="flex flex-wrap items-center gap-1.5">
-                                <span class="text-[10.5px] font-semibold text-slate-500">Posisi Cepat:</span>
-                                <button 
-                                    type="button" 
-                                    onclick="setPresetPosition('bottom-right')"
-                                    class="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10.5px] font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors cursor-pointer shadow-2xs"
-                                >
-                                    Kanan Bawah
-                                </button>
-                                <button 
-                                    type="button" 
-                                    onclick="setPresetPosition('bottom-left')"
-                                    class="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10.5px] font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors cursor-pointer shadow-2xs"
-                                >
-                                    Kiri Bawah
-                                </button>
-                                <button 
-                                    type="button" 
-                                    onclick="setPresetPosition('bottom-center')"
-                                    class="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10.5px] font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors cursor-pointer shadow-2xs"
-                                >
-                                    Tengah Bawah
-                                </button>
-                            </div>
-
-                            <span class="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-mono font-bold text-slate-600">
-                                Hal <span id="displayPage">1</span> (<span id="displayX">60</span>% X, <span id="displayY">75</span>% Y)
-                            </span>
-                        </div>
-
-                        <!-- PDF Viewport Drafting Canvas -->
-                        <div class="relative mt-3 overflow-auto rounded-xl border border-slate-700/80 pdf-studio-bg p-3 sm:p-5 flex justify-center min-h-[500px] max-h-[680px] custom-scroll" id="pdfViewportContainer">
-                            
-                            <!-- Loading Indicator -->
-                            <div id="pdfLoadingSpinner" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 z-20 space-y-2 text-white">
-                                <div class="size-8 animate-spin rounded-full border-3 border-blue-500 border-t-transparent"></div>
-                                <span class="text-xs font-bold tracking-wide">Memuat berkas PDF...</span>
-                            </div>
-
-                            <!-- Page Wrapper -->
-                            <div class="relative shadow-2xl rounded-sm" id="pageWrapper">
-                                <canvas id="pdfCanvas" class="bg-white block rounded-sm shadow-xl"></canvas>
-                                
-                                <!-- Premium Interactive Movable Stamp Box -->
-                                <div 
-                                    id="placementStamp" 
-                                    class="placement-stamp absolute z-10 rounded-xl border-2 border-blue-600 bg-white/98 backdrop-blur-md p-2.5 shadow-2xl ring-4 ring-blue-500/20 select-none cursor-grab"
-                                    style="width: 220px; height: 92px; left: 60%; top: 75%;"
-                                    title="Klik &amp; Geser untuk memindahkan posisi stempel"
-                                >
-                                    <!-- Stamp Header Badge -->
-                                    <div class="flex items-center justify-between border-b border-slate-100 pb-1 mb-1">
-                                        <span class="text-[7.5px] font-extrabold uppercase tracking-wider text-blue-700 flex items-center gap-1">
-                                            <span class="size-1.5 rounded-full bg-blue-600"></span>
-                                            RPK OFFICIAL E-STAMP
-                                        </span>
-                                        <span class="text-[7px] font-mono text-slate-400">UU ITE</span>
-                                    </div>
-
-                                    <div id="stampInnerFlex" class="flex items-center justify-between gap-2 h-[calc(100%-16px)] w-full">
-                                        
-                                        <!-- Left/Right Signature Text Block -->
-                                        <div id="stampSigBlock" class="flex flex-col justify-between h-full flex-1 min-w-0">
-                                            <!-- Top Name Block -->
-                                            <div id="stampNameTop" class="hidden">
-                                                <p class="text-[9px] font-black text-slate-900 leading-tight truncate stamp-display-name">
-                                                    {{ $signer->name }}
-                                                </p>
-                                                <p class="text-[7px] font-semibold text-slate-500 leading-none truncate stamp-display-title"></p>
-                                            </div>
-
-                                            <!-- Signature Stroke Preview -->
-                                            <div id="stampSigPreview" class="flex-1 flex items-center justify-center overflow-hidden min-h-[34px]">
-                                                <span class="text-[9px] italic text-slate-400 font-medium">
-                                                    [Goresan Tanda Tangan]
-                                                </span>
-                                            </div>
-
-                                            <!-- Bottom Name Block -->
-                                            <div id="stampNameBottom" class="border-t border-slate-100 pt-0.5">
-                                                <p class="text-[9px] font-black text-slate-900 leading-tight truncate stamp-display-name">
-                                                    {{ $signer->name }}
-                                                </p>
-                                                <p class="text-[7px] font-semibold text-slate-500 leading-none truncate stamp-display-title"></p>
-                                            </div>
-                                        </div>
-
-                                        <!-- Official QR Verification Seal Block -->
-                                        <div id="stampQrBlock" class="shrink-0 flex flex-col items-center justify-center p-1 rounded-lg border border-blue-100 bg-blue-50/60 size-15">
-                                            <img 
-                                                src="{{ route('signature.qr', $signer->signatureRequest->verification_code) }}" 
-                                                alt="QR" 
-                                                class="size-13 object-contain"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-2 flex items-center justify-between text-[11px] text-slate-500 font-medium">
-                            <span>💡 Tips: Klik sembarang area lembar PDF untuk memindahkan stempel secara instan.</span>
-                        </div>
-
-                    </div>
+            <!-- Section 01: Identitas & Gelar Penandatangan -->
+            <div class="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs space-y-3">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-2.5">
+                    <span class="flex size-5.5 items-center justify-center rounded-full bg-blue-600 font-mono text-[10px] font-bold text-white shadow-xs">1</span>
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-800">
+                        Identitas &amp; Keterangan Jabatan
+                    </label>
                 </div>
 
-                <!-- RIGHT COLUMN: Interactive Signing Console (Col 8-12) -->
-                <div class="lg:col-span-5 space-y-4">
-                    
-                    <!-- Console Card Container -->
-                    <div class="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-sm space-y-4">
-                        
-                        <!-- 1. Signer Identity -->
-                        <div class="space-y-2.5 border-b border-slate-100 pb-4">
-                            <div class="flex items-center gap-2">
-                                <span class="flex size-5 items-center justify-center rounded-full bg-blue-600 font-mono text-[10px] font-bold text-white shadow-xs">1</span>
-                                <label class="text-xs font-bold uppercase tracking-wider text-slate-800">
-                                    Identitas &amp; Gelar Penandatangan
-                                </label>
-                            </div>
-
-                            <div class="space-y-2">
-                                <div>
-                                    <label for="accepted_name" class="text-[11px] font-bold text-slate-700 block mb-1">
-                                        Nama Lengkap (Sesuai KTP/Akta) *
-                                    </label>
-                                    <input 
-                                        id="accepted_name" 
-                                        name="accepted_name" 
-                                        type="text"
-                                        value="{{ old('accepted_name', $signer->name) }}" 
-                                        required
-                                        placeholder="Nama lengkap penandatangan"
-                                        class="h-9 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3 text-xs font-bold text-slate-900 outline-hidden transition-all focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/10"
-                                    >
-                                    @error('accepted_name')
-                                        <p class="mt-1 text-xs text-rose-600 font-bold">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <div>
-                                    <label for="signer_title" class="text-[11px] font-bold text-slate-700 block mb-1">
-                                        Jabatan / Gelar / Keterangan (Opsional)
-                                    </label>
-                                    <input 
-                                        id="signer_title" 
-                                        name="signer_title" 
-                                        type="text"
-                                        value="{{ old('signer_title') }}" 
-                                        placeholder="Contoh: Advokat &amp; Konsultan Hukum / Direktur"
-                                        class="h-9 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3 text-xs font-medium text-slate-900 outline-hidden transition-all focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/10"
-                                    >
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 2. Stamp Layout & Format Customization -->
-                        <div class="space-y-2.5 border-b border-slate-100 pb-4">
-                            <div class="flex items-center gap-2">
-                                <span class="flex size-5 items-center justify-center rounded-full bg-blue-600 font-mono text-[10px] font-bold text-white shadow-xs">2</span>
-                                <label class="text-xs font-bold uppercase tracking-wider text-slate-800">
-                                    Tata Letak Stempel Resmi (Layout)
-                                </label>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-2 text-xs">
-                                <button 
-                                    type="button" 
-                                    id="btnLayoutSigLeft" 
-                                    onclick="setStampLayout('sig_left')" 
-                                    class="rounded-xl border-2 border-blue-600 bg-blue-50/80 p-2 text-left font-bold text-blue-950 transition-all cursor-pointer shadow-xs"
-                                >
-                                    <div class="flex items-center justify-between text-[11px]">
-                                        <span>Tanda Tangan Kiri</span>
-                                        <span class="size-2 rounded-full bg-blue-600"></span>
-                                    </div>
-                                    <div class="text-[9.5px] font-normal text-slate-500 mt-0.5">QR Code di Kanan</div>
-                                </button>
-                                <button 
-                                    type="button" 
-                                    id="btnLayoutQrLeft" 
-                                    onclick="setStampLayout('qr_left')" 
-                                    class="rounded-xl border border-slate-200 bg-white p-2 text-left font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
-                                >
-                                    <div class="flex items-center justify-between text-[11px]">
-                                        <span>QR Code Kiri</span>
-                                        <span class="size-2 rounded-full bg-transparent"></span>
-                                    </div>
-                                    <div class="text-[9.5px] font-normal text-slate-400 mt-0.5">Tanda Tangan di Kanan</div>
-                                </button>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-2 text-xs pt-1">
-                                <button 
-                                    type="button" 
-                                    id="btnNameBottom" 
-                                    onclick="setNamePosition('bottom')" 
-                                    class="rounded-xl border-2 border-blue-600 bg-blue-50/80 p-2 text-left font-bold text-blue-950 transition-all cursor-pointer shadow-xs"
-                                >
-                                    <div class="text-[11px]">Nama di Bawah</div>
-                                    <div class="text-[9.5px] font-normal text-slate-500 mt-0.5">Format Standar Akta</div>
-                                </button>
-                                <button 
-                                    type="button" 
-                                    id="btnNameTop" 
-                                    onclick="setNamePosition('top')" 
-                                    class="rounded-xl border border-slate-200 bg-white p-2 text-left font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
-                                >
-                                    <div class="text-[11px]">Nama di Atas</div>
-                                    <div class="text-[9.5px] font-normal text-slate-400 mt-0.5">Format Header Akta</div>
-                                </button>
-                            </div>
-
-                            <input type="hidden" name="stamp_layout" id="stampLayoutInput" value="sig_left">
-                            <input type="hidden" name="name_position" id="namePositionInput" value="bottom">
-                        </div>
-
-                        <!-- 3. Interactive Signature Pad -->
-                        <div class="space-y-2.5 border-b border-slate-100 pb-4">
-                            <div class="flex items-center justify-between gap-2">
-                                <div class="flex items-center gap-2">
-                                    <span class="flex size-5 items-center justify-center rounded-full bg-blue-600 font-mono text-[10px] font-bold text-white shadow-xs">3</span>
-                                    <label class="text-xs font-bold uppercase tracking-wider text-slate-800">
-                                        Goresan Tanda Tangan Visual
-                                    </label>
-                                </div>
-
-                                <div class="flex items-center gap-1 rounded-lg bg-slate-100 p-0.5 text-xs">
-                                    <button 
-                                        type="button" 
-                                        id="btnModeDraw" 
-                                        onclick="switchSignatureMode('draw')" 
-                                        class="rounded-md px-2 py-0.5 font-bold text-[10px] bg-white text-slate-900 shadow-2xs transition-all cursor-pointer"
-                                    >
-                                        Gores Pad
-                                    </button>
-                                    <button 
-                                        type="button" 
-                                        id="btnModeUpload" 
-                                        onclick="switchSignatureMode('upload')" 
-                                        class="rounded-md px-2 py-0.5 font-semibold text-[10px] text-slate-600 hover:text-slate-900 transition-all cursor-pointer"
-                                    >
-                                        Unggah Foto
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Ink Color Selector & Tool Bar -->
-                            <div id="drawToolbar" class="flex items-center justify-between text-xs">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-[10px] font-bold text-slate-400">Warna Tinta:</span>
-                                    <button 
-                                        type="button" 
-                                        onclick="setPenColor('#1e3a8a')" 
-                                        id="btnColorBlue"
-                                        class="size-5 rounded-full bg-blue-900 ring-2 ring-blue-600 ring-offset-1 transition-all cursor-pointer" 
-                                        title="Biru Legal Resmi"
-                                    ></button>
-                                    <button 
-                                        type="button" 
-                                        onclick="setPenColor('#0f172a')" 
-                                        id="btnColorNavy"
-                                        class="size-5 rounded-full bg-slate-900 transition-all cursor-pointer" 
-                                        title="Hitam Navy"
-                                    ></button>
-                                    <button 
-                                        type="button" 
-                                        onclick="setPenColor('#000000')" 
-                                        id="btnColorBlack"
-                                        class="size-5 rounded-full bg-black transition-all cursor-pointer" 
-                                        title="Hitam Pekat"
-                                    ></button>
-                                </div>
-
-                                <button 
-                                    type="button" 
-                                    onclick="clearCanvas()" 
-                                    class="cursor-pointer text-[11px] font-bold text-rose-600 hover:text-rose-700 hover:underline flex items-center gap-1"
-                                >
-                                    <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                    <span>Hapus / Ulangi</span>
-                                </button>
-                            </div>
-
-                            <!-- Canvas Area -->
-                            <div id="drawContainer" class="space-y-1.5">
-                                <div class="relative overflow-hidden rounded-xl border border-slate-300/90 bg-white shadow-inner sig-baseline">
-                                    <canvas 
-                                        id="signatureCanvas" 
-                                        class="w-full h-32 touch-none cursor-crosshair bg-transparent"
-                                    ></canvas>
-                                    <div class="pointer-events-none absolute bottom-2.5 left-3 flex items-center gap-2">
-                                        <span class="font-mono text-xs font-bold text-slate-300">X</span>
-                                        <span class="h-px w-24 bg-slate-200"></span>
-                                        <span class="text-[9.5px] font-mono font-medium text-slate-400">Gores tanda tangan Anda di sini</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Upload Area -->
-                            <div id="uploadContainer" class="hidden space-y-2">
-                                <input 
-                                    type="file" 
-                                    id="signatureFileInput" 
-                                    accept="image/png,image/jpeg,image/webp" 
-                                    class="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-700 file:mr-2 file:rounded-lg file:border-0 file:bg-blue-600 file:px-2.5 file:py-1 file:text-xs file:font-bold file:text-white"
-                                    onchange="handleSignatureFileUpload(event)"
-                                >
-                                <div id="uploadPreviewWrapper" class="hidden overflow-hidden rounded-xl border border-slate-200 bg-white p-3 text-center">
-                                    <img id="uploadPreview" src="" alt="Pratinjau Tanda Tangan" class="mx-auto max-h-20 object-contain">
-                                </div>
-                            </div>
-
-                            <input type="hidden" name="signature_data" id="signatureDataInput" value="">
-                        </div>
-
-                        <!-- 4. Terms Checkbox & Legal Declaration -->
-                        <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-3 text-xs leading-relaxed">
-                            <label class="flex items-start gap-2.5 cursor-pointer">
-                                <input 
-                                    type="checkbox" 
-                                    name="accept_terms" 
-                                    value="1" 
-                                    required
-                                    class="mt-0.5 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600"
-                                >
-                                <span class="text-[11px] text-slate-700 font-medium">
-                                    Saya telah meninjau isi dokumen dan secara sah menyetujui pembubuhan tanda tangan elektronik resmi pada dokumen <strong>{{ $signer->signatureRequest->document->title }}</strong> ini sesuai UU ITE.
-                                </span>
-                            </label>
-                            @error('accept_terms')
-                                <p class="mt-1.5 text-xs text-rose-600 font-bold">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- 5. Submit Action Button -->
-                        <button 
-                            type="submit"
-                            id="submitBtn"
-                            class="h-11 w-full rounded-xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 font-bold text-xs text-white shadow-lg shadow-blue-600/25 transition-all hover:from-blue-800 hover:to-indigo-800 hover:shadow-blue-600/35 active:scale-98 cursor-pointer flex items-center justify-center gap-2"
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="space-y-1">
+                        <label for="accepted_name" class="text-xs font-bold text-slate-700 block">
+                            Nama Lengkap (Sesuai KTP / Akta Resmi) *
+                        </label>
+                        <input 
+                            id="accepted_name" 
+                            name="accepted_name" 
+                            type="text"
+                            value="{{ old('accepted_name', $signer->name) }}" 
+                            required
+                            placeholder="Nama lengkap penandatangan"
+                            class="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-xs font-bold text-slate-900 outline-hidden transition-all focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/10"
                         >
-                            <svg class="size-4 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span>Bubuhkan &amp; Sahkan Dokumen Sekarang</span>
-                        </button>
-
+                        @error('accepted_name')
+                            <p class="mt-1 text-xs text-rose-600 font-bold">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    <!-- Security & Audit Note -->
-                    <div class="rounded-xl border border-slate-200/80 bg-white p-3 text-[10.5px] text-slate-500 leading-relaxed shadow-2xs font-medium">
-                        <div class="flex items-center gap-1.5 font-bold text-slate-800 mb-0.5">
-                            <svg class="size-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span>Jejak Audit Kriptografi RPK Workspace</span>
-                        </div>
-                        Setiap tanda tangan diverifikasi melalui kode QR unik, hash SHA-256 dokumen, dan stempel waktu resmi WIB.
+                    <div class="space-y-1">
+                        <label for="signer_title" class="text-xs font-bold text-slate-700 block">
+                            Jabatan / Gelar / Keterangan (Opsional)
+                        </label>
+                        <input 
+                            id="signer_title" 
+                            name="signer_title" 
+                            type="text"
+                            value="{{ old('signer_title') }}" 
+                            placeholder="Contoh: Advokat &amp; Konsultan Hukum / Direktur Utama"
+                            class="h-10 w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 text-xs font-medium text-slate-900 outline-hidden transition-all focus:border-blue-600 focus:bg-white focus:ring-2 focus:ring-blue-500/10"
+                        >
                     </div>
-
                 </div>
-
             </div>
 
-            <!-- Hidden Coordinate Form Inputs -->
-            <input type="hidden" name="page_number" id="inputPageNumber" value="1">
-            <input type="hidden" name="position_x" id="inputPositionX" value="60">
-            <input type="hidden" name="position_y" id="inputPositionY" value="75">
+            <!-- Section 02: Pilihan Format & Tata Letak Stempel (Layout) -->
+            <div class="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs space-y-3">
+                <div class="flex items-center gap-2 border-b border-slate-100 pb-2.5">
+                    <span class="flex size-5.5 items-center justify-center rounded-full bg-blue-600 font-mono text-[10px] font-bold text-white shadow-xs">2</span>
+                    <label class="text-xs font-bold uppercase tracking-wider text-slate-800">
+                        Tata Letak Stempel Resmi (Layout)
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <!-- Layout Posisi Kolom -->
+                    <div class="space-y-1.5">
+                        <span class="text-xs font-bold text-slate-700">Posisi Kolom Tanda Tangan:</span>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button 
+                                type="button" 
+                                id="btnLayoutSigLeft" 
+                                onclick="setStampLayout('sig_left')" 
+                                class="rounded-xl border-2 border-blue-600 bg-blue-50/90 p-2.5 text-left font-bold text-blue-950 transition-all cursor-pointer shadow-xs"
+                            >
+                                <div class="flex items-center justify-between text-[11px]">
+                                    <span>Tanda Tangan Kiri</span>
+                                    <span class="size-2 rounded-full bg-blue-600"></span>
+                                </div>
+                                <div class="text-[9.5px] font-normal text-slate-500 mt-0.5">QR Code di Kanan</div>
+                            </button>
+                            <button 
+                                type="button" 
+                                id="btnLayoutQrLeft" 
+                                onclick="setStampLayout('qr_left')" 
+                                class="rounded-xl border border-slate-200 bg-white p-2.5 text-left font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                            >
+                                <div class="flex items-center justify-between text-[11px]">
+                                    <span>QR Code Kiri</span>
+                                    <span class="size-2 rounded-full bg-transparent"></span>
+                                </div>
+                                <div class="text-[9.5px] font-normal text-slate-400 mt-0.5">Tanda Tangan di Kanan</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Posisi Nama -->
+                    <div class="space-y-1.5">
+                        <span class="text-xs font-bold text-slate-700">Posisi Nama Penandatangan:</span>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button 
+                                type="button" 
+                                id="btnNameBottom" 
+                                onclick="setNamePosition('bottom')" 
+                                class="rounded-xl border-2 border-blue-600 bg-blue-50/90 p-2.5 text-left font-bold text-blue-950 transition-all cursor-pointer shadow-xs"
+                            >
+                                <div class="text-[11px]">Nama di Bawah</div>
+                                <div class="text-[9.5px] font-normal text-slate-500 mt-0.5">Format Standar Akta</div>
+                            </button>
+                            <button 
+                                type="button" 
+                                id="btnNameTop" 
+                                onclick="setNamePosition('top')" 
+                                class="rounded-xl border border-slate-200 bg-white p-2.5 text-left font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                            >
+                                <div class="text-[11px]">Nama di Atas</div>
+                                <div class="text-[9.5px] font-normal text-slate-400 mt-0.5">Format Header Akta</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="stamp_layout" id="stampLayoutInput" value="sig_left">
+                <input type="hidden" name="name_position" id="namePositionInput" value="bottom">
+            </div>
+
+            <!-- Section 03: Goresan Tanda Tangan Visual (Pad) -->
+            <div class="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+                    <div class="flex items-center gap-2">
+                        <span class="flex size-5.5 items-center justify-center rounded-full bg-blue-600 font-mono text-[10px] font-bold text-white shadow-xs">3</span>
+                        <div>
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-800">
+                                Goresan Tanda Tangan Visual
+                            </label>
+                            <p class="text-[11px] text-slate-500">
+                                Goresan tanda tangan akan otomatis disinkronkan ke stempel dokumen.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-1 rounded-xl bg-slate-100 p-0.5 text-xs self-start sm:self-auto">
+                        <button 
+                            type="button" 
+                            id="btnModeDraw" 
+                            onclick="switchSignatureMode('draw')" 
+                            class="rounded-lg px-3 py-1 font-bold text-[11px] bg-white text-slate-900 shadow-2xs transition-all cursor-pointer"
+                        >
+                            Gores Pad
+                        </button>
+                        <button 
+                            type="button" 
+                            id="btnModeUpload" 
+                            onclick="switchSignatureMode('upload')" 
+                            class="rounded-lg px-3 py-1 font-semibold text-[11px] text-slate-600 hover:text-slate-900 transition-all cursor-pointer"
+                        >
+                            Unggah Foto
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Ink Color Selector & Tool Bar -->
+                <div id="drawToolbar" class="flex items-center justify-between text-xs pt-0.5">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[11px] font-bold text-slate-500">Pilihan Warna Tinta:</span>
+                        <button 
+                            type="button" 
+                            onclick="setPenColor('#1e3a8a')" 
+                            id="btnColorBlue"
+                            class="size-6 rounded-full bg-blue-900 ring-2 ring-blue-600 ring-offset-2 transition-all cursor-pointer" 
+                            title="Biru Dokumen Legal Resmi"
+                        ></button>
+                        <button 
+                            type="button" 
+                            onclick="setPenColor('#0f172a')" 
+                            id="btnColorNavy"
+                            class="size-6 rounded-full bg-slate-900 transition-all cursor-pointer" 
+                            title="Hitam Navy"
+                        ></button>
+                        <button 
+                            type="button" 
+                            onclick="setPenColor('#000000')" 
+                            id="btnColorBlack"
+                            class="size-6 rounded-full bg-black transition-all cursor-pointer" 
+                            title="Hitam Pekat"
+                        ></button>
+                    </div>
+
+                    <button 
+                        type="button" 
+                        onclick="clearCanvas()" 
+                        class="cursor-pointer text-xs font-bold text-rose-600 hover:text-rose-700 hover:underline flex items-center gap-1"
+                    >
+                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        <span>Hapus / Ulangi Goresan</span>
+                    </button>
+                </div>
+
+                <!-- Canvas Area -->
+                <div id="drawContainer" class="space-y-1.5">
+                    <div class="relative overflow-hidden rounded-xl border border-slate-300 bg-white shadow-inner sig-baseline">
+                        <canvas 
+                            id="signatureCanvas" 
+                            class="w-full h-36 touch-none cursor-crosshair bg-transparent"
+                        ></canvas>
+                        <div class="pointer-events-none absolute bottom-3 left-4 flex items-center gap-2">
+                            <span class="font-mono text-xs font-bold text-slate-300">X</span>
+                            <span class="h-px w-28 bg-slate-300"></span>
+                            <span class="text-[10px] font-mono font-medium text-slate-400">Goreskan tanda tangan Anda di atas garis</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Area -->
+                <div id="uploadContainer" class="hidden space-y-2">
+                    <input 
+                        type="file" 
+                        id="signatureFileInput" 
+                        accept="image/png,image/jpeg,image/webp" 
+                        class="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-600 file:px-3 file:py-1 file:text-xs file:font-bold file:text-white"
+                        onchange="handleSignatureFileUpload(event)"
+                    >
+                    <div id="uploadPreviewWrapper" class="hidden overflow-hidden rounded-xl border border-slate-200 bg-white p-4 text-center">
+                        <img id="uploadPreview" src="" alt="Pratinjau Tanda Tangan" class="mx-auto max-h-24 object-contain">
+                    </div>
+                </div>
+
+                <input type="hidden" name="signature_data" id="signatureDataInput" value="">
+            </div>
+
+            <!-- Section 04: Interactive PDF Placement Studio -->
+            <div class="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs space-y-3">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="flex size-5.5 items-center justify-center rounded-full bg-blue-600 font-mono text-[10px] font-bold text-white shadow-xs">4</span>
+                        <div>
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-800">
+                                Posisi Stempel pada Dokumen PDF
+                            </label>
+                            <p class="text-[11px] text-slate-500">
+                                Klik lembar dokumen atau geser kotak stempel ke posisi tanda tangan yang diinginkan.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Page Navigator -->
+                    <div class="flex items-center gap-1.5 self-start sm:self-auto">
+                        <button 
+                            type="button" 
+                            id="btnPrevPage" 
+                            onclick="prevPage()"
+                            class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-35 transition-colors cursor-pointer shadow-2xs"
+                        >
+                            ◀ Sebelumnya
+                        </button>
+                        <span class="font-mono text-xs font-bold text-slate-800 bg-white px-3 py-1 rounded-lg border border-slate-200 shadow-2xs">
+                            Halaman <span id="pageNum">1</span> / <span id="pageCount">1</span>
+                        </span>
+                        <button 
+                            type="button" 
+                            id="btnNextPage" 
+                            onclick="nextPage()"
+                            class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-35 transition-colors cursor-pointer shadow-2xs"
+                        >
+                            Selanjutnya ▶
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Presets & Coordinates Bar -->
+                <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <span class="text-[11px] font-semibold text-slate-500">Pilihan Posisi Cepat:</span>
+                        <button 
+                            type="button" 
+                            onclick="setPresetPosition('bottom-right')"
+                            class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors cursor-pointer shadow-2xs"
+                        >
+                            Kanan Bawah
+                        </button>
+                        <button 
+                            type="button" 
+                            onclick="setPresetPosition('bottom-left')"
+                            class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors cursor-pointer shadow-2xs"
+                        >
+                            Kiri Bawah
+                        </button>
+                        <button 
+                            type="button" 
+                            onclick="setPresetPosition('bottom-center')"
+                            class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors cursor-pointer shadow-2xs"
+                        >
+                            Tengah Bawah
+                        </button>
+                    </div>
+
+                    <span class="rounded-lg bg-slate-100 border border-slate-200/80 px-2.5 py-1 text-[10.5px] font-mono font-bold text-slate-700">
+                        Hal <span id="displayPage">1</span> (<span id="displayX">60</span>% X, <span id="displayY">75</span>% Y)
+                    </span>
+                </div>
+
+                <!-- PDF Viewport Drafting Area -->
+                <div class="relative overflow-auto rounded-xl border border-slate-700 pdf-studio-bg p-4 sm:p-6 flex justify-center min-h-[480px] max-h-[640px] custom-scroll" id="pdfViewportContainer">
+                    
+                    <!-- Loading Spinner -->
+                    <div id="pdfLoadingSpinner" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 z-20 space-y-2 text-white">
+                        <div class="size-8 animate-spin rounded-full border-3 border-blue-500 border-t-transparent"></div>
+                        <span class="text-xs font-bold tracking-wide">Memuat berkas PDF...</span>
+                    </div>
+
+                    <!-- Render Wrapper -->
+                    <div class="relative shadow-2xl rounded-sm" id="pageWrapper">
+                        <canvas id="pdfCanvas" class="bg-white block rounded-sm shadow-xl"></canvas>
+                        
+                        <!-- High-End Interactive Stamp Box -->
+                        <div 
+                            id="placementStamp" 
+                            class="placement-stamp absolute z-10 rounded-xl border-2 border-blue-600 bg-white/98 backdrop-blur-md p-2.5 shadow-2xl ring-4 ring-blue-500/20 select-none cursor-grab"
+                            style="width: 220px; height: 92px; left: 60%; top: 75%;"
+                            title="Klik &amp; Geser untuk memindahkan posisi stempel"
+                        >
+                            <!-- Stamp Header Badge -->
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-1 mb-1">
+                                <span class="text-[7.5px] font-extrabold uppercase tracking-wider text-blue-700 flex items-center gap-1">
+                                    <span class="size-1.5 rounded-full bg-blue-600"></span>
+                                    RPK OFFICIAL E-STAMP
+                                </span>
+                                <span class="text-[7px] font-mono text-slate-400">UU ITE</span>
+                            </div>
+
+                            <div id="stampInnerFlex" class="flex items-center justify-between gap-2 h-[calc(100%-16px)] w-full">
+                                
+                                <!-- Signature & Signer Text Block -->
+                                <div id="stampSigBlock" class="flex flex-col justify-between h-full flex-1 min-w-0">
+                                    <!-- Top Name Block -->
+                                    <div id="stampNameTop" class="hidden">
+                                        <p class="text-[9px] font-black text-slate-900 leading-tight truncate stamp-display-name">
+                                            {{ $signer->name }}
+                                        </p>
+                                        <p class="text-[7px] font-semibold text-slate-500 leading-none truncate stamp-display-title"></p>
+                                    </div>
+
+                                    <!-- Signature Preview Area -->
+                                    <div id="stampSigPreview" class="flex-1 flex items-center justify-center overflow-hidden min-h-[34px]">
+                                        <span class="text-[9px] italic text-slate-400 font-medium">
+                                            [Goresan Tanda Tangan]
+                                        </span>
+                                    </div>
+
+                                    <!-- Bottom Name Block -->
+                                    <div id="stampNameBottom" class="border-t border-slate-100 pt-0.5">
+                                        <p class="text-[9px] font-black text-slate-900 leading-tight truncate stamp-display-name">
+                                            {{ $signer->name }}
+                                        </p>
+                                        <p class="text-[7px] font-semibold text-slate-500 leading-none truncate stamp-display-title"></p>
+                                    </div>
+                                </div>
+
+                                <!-- Official QR Verification Seal Block -->
+                                <div id="stampQrBlock" class="shrink-0 flex flex-col items-center justify-center p-1 rounded-lg border border-blue-100 bg-blue-50/60 size-15">
+                                    <img 
+                                        src="{{ route('signature.qr', $signer->signatureRequest->verification_code) }}" 
+                                        alt="QR" 
+                                        class="size-13 object-contain"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Hidden Coordinate Form Inputs -->
+                <input type="hidden" name="page_number" id="inputPageNumber" value="1">
+                <input type="hidden" name="position_x" id="inputPositionX" value="60">
+                <input type="hidden" name="position_y" id="inputPositionY" value="75">
+
+                <p class="text-[11px] text-slate-500 font-medium">
+                    💡 Tips: Klik sembarang area lembar PDF untuk menempatkan stempel secara presisi pada kolom tanda tangan Anda.
+                </p>
+            </div>
+
+            <!-- Section 05: Pernyataan Hukum & Persetujuan -->
+            <div class="rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs space-y-4">
+                <label class="flex items-start gap-3 cursor-pointer text-xs leading-relaxed text-slate-800">
+                    <input 
+                        type="checkbox" 
+                        name="accept_terms" 
+                        value="1" 
+                        required
+                        class="mt-0.5 size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600"
+                    >
+                    <span class="text-xs text-slate-700 font-medium leading-relaxed">
+                        Saya menyatakan bahwa saya telah membaca, memahami isi dokumen, dan secara sah menyetujui pembubuhan tanda tangan elektronik resmi pada dokumen <strong>{{ $signer->signatureRequest->document->title }}</strong> ini sesuai ketentuan peraturan perundang-undangan (UU ITE).
+                    </span>
+                </label>
+                @error('accept_terms')
+                    <p class="text-xs text-rose-600 font-bold">{{ $message }}</p>
+                @enderror
+
+                <!-- Primary Submit Action Button -->
+                <button 
+                    type="submit"
+                    id="submitBtn"
+                    class="h-12 w-full rounded-xl bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 font-bold text-xs text-white shadow-lg shadow-blue-600/25 transition-all hover:from-blue-800 hover:to-indigo-800 hover:shadow-blue-600/35 active:scale-98 cursor-pointer flex items-center justify-center gap-2"
+                >
+                    <svg class="size-4 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Konfirmasi &amp; Bubuhkan Tanda Tangan Resmi</span>
+                </button>
+            </div>
         </form>
 
-    </main>
+        <!-- Cryptographic Assurance Badge -->
+        <div class="rounded-xl border border-slate-200/80 bg-white/80 p-3.5 text-[11px] text-slate-500 leading-relaxed shadow-2xs font-medium">
+            <strong>Integritas Kriptografi &amp; Audit Trail:</strong> Pembubuhan tanda tangan visual dan QR Code verifikasi pada koordinat terpilih akan dicatat secara permanen dengan hash SHA-256 dan stempel waktu resmi WIB pada sistem RPK Law Firm Workspace.
+        </div>
 
-    <!-- Footer -->
-    <footer class="border-t border-slate-200/60 bg-white py-4 text-center space-y-1 text-xs text-slate-400">
-        <p class="font-semibold text-slate-600">&copy; {{ date('Y') }} RPK Law Firm · Advocates &amp; Legal Consultants.</p>
-        <p class="font-mono text-[10px]">Secure Digital Signature Protocol · UU ITE Compliant</p>
-    </footer>
+        <!-- Footer -->
+        <footer class="text-center space-y-1 text-xs text-slate-400 pt-2 pb-6">
+            <p class="font-semibold text-slate-600">&copy; {{ date('Y') }} RPK Law Firm · Advocates &amp; Legal Consultants.</p>
+            <p class="font-mono text-[10px]">Secure Digital Signature Protocol · UU ITE Compliant</p>
+        </footer>
 
-    <!-- Scripts: Smooth Signature Pad, Layout Customizer & PDF.js Drag-and-Drop Placement Engine -->
+    </div>
+
+    <!-- Scripts: Signature Pad, Layout Customizer & PDF.js Drag-and-Drop Placement Engine -->
     <script>
-        // 1. Signature Pad Logic with Smooth Bezier Splines
+        // 1. Signature Pad Logic
         const canvas = document.getElementById('signatureCanvas');
         const ctx = canvas.getContext('2d');
         const signatureDataInput = document.getElementById('signatureDataInput');
@@ -604,9 +591,9 @@
             const btnNavy = document.getElementById('btnColorNavy');
             const btnBlack = document.getElementById('btnColorBlack');
 
-            btnBlue.className = 'size-5 rounded-full bg-blue-900 transition-all cursor-pointer ' + (color === '#1e3a8a' ? 'ring-2 ring-blue-600 ring-offset-1' : '');
-            btnNavy.className = 'size-5 rounded-full bg-slate-900 transition-all cursor-pointer ' + (color === '#0f172a' ? 'ring-2 ring-blue-600 ring-offset-1' : '');
-            btnBlack.className = 'size-5 rounded-full bg-black transition-all cursor-pointer ' + (color === '#000000' ? 'ring-2 ring-blue-600 ring-offset-1' : '');
+            btnBlue.className = 'size-6 rounded-full bg-blue-900 transition-all cursor-pointer ' + (color === '#1e3a8a' ? 'ring-2 ring-blue-600 ring-offset-2' : '');
+            btnNavy.className = 'size-6 rounded-full bg-slate-900 transition-all cursor-pointer ' + (color === '#0f172a' ? 'ring-2 ring-blue-600 ring-offset-2' : '');
+            btnBlack.className = 'size-6 rounded-full bg-black transition-all cursor-pointer ' + (color === '#000000' ? 'ring-2 ring-blue-600 ring-offset-2' : '');
 
             if (hasDrawn) {
                 syncCanvasData();
@@ -748,15 +735,15 @@
             const uploadContainer = document.getElementById('uploadContainer');
 
             if (mode === 'draw') {
-                btnDraw.className = 'rounded-md px-2 py-0.5 font-bold text-[10px] bg-white text-slate-900 shadow-2xs transition-all cursor-pointer';
-                btnUpload.className = 'rounded-md px-2 py-0.5 font-semibold text-[10px] text-slate-600 hover:text-slate-900 transition-all cursor-pointer';
+                btnDraw.className = 'rounded-lg px-3 py-1 font-bold text-[11px] bg-white text-slate-900 shadow-2xs transition-all cursor-pointer';
+                btnUpload.className = 'rounded-lg px-3 py-1 font-semibold text-[11px] text-slate-600 hover:text-slate-900 transition-all cursor-pointer';
                 drawContainer.classList.remove('hidden');
                 drawToolbar.classList.remove('hidden');
                 uploadContainer.classList.add('hidden');
                 syncCanvasData();
             } else {
-                btnUpload.className = 'rounded-md px-2 py-0.5 font-bold text-[10px] bg-white text-slate-900 shadow-2xs transition-all cursor-pointer';
-                btnDraw.className = 'rounded-md px-2 py-0.5 font-semibold text-[10px] text-slate-600 hover:text-slate-900 transition-all cursor-pointer';
+                btnUpload.className = 'rounded-lg px-3 py-1 font-bold text-[11px] bg-white text-slate-900 shadow-2xs transition-all cursor-pointer';
+                btnDraw.className = 'rounded-lg px-3 py-1 font-semibold text-[11px] text-slate-600 hover:text-slate-900 transition-all cursor-pointer';
                 uploadContainer.classList.remove('hidden');
                 drawContainer.classList.add('hidden');
                 drawToolbar.classList.add('hidden');
@@ -819,14 +806,14 @@
             const qrBlock = document.getElementById('stampQrBlock');
 
             if (layout === 'sig_left') {
-                btnSigLeft.className = 'rounded-xl border-2 border-blue-600 bg-blue-50/80 p-2 text-left font-bold text-blue-950 transition-all cursor-pointer shadow-xs';
-                btnQrLeft.className = 'rounded-xl border border-slate-200 bg-white p-2 text-left font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer';
+                btnSigLeft.className = 'rounded-xl border-2 border-blue-600 bg-blue-50/90 p-2.5 text-left font-bold text-blue-950 transition-all cursor-pointer shadow-xs';
+                btnQrLeft.className = 'rounded-xl border border-slate-200 bg-white p-2.5 text-left font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer';
                 stampInner.innerHTML = '';
                 stampInner.appendChild(sigBlock);
                 stampInner.appendChild(qrBlock);
             } else {
-                btnQrLeft.className = 'rounded-xl border-2 border-blue-600 bg-blue-50/80 p-2 text-left font-bold text-blue-950 transition-all cursor-pointer shadow-xs';
-                btnSigLeft.className = 'rounded-xl border border-slate-200 bg-white p-2 text-left font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer';
+                btnQrLeft.className = 'rounded-xl border-2 border-blue-600 bg-blue-50/90 p-2.5 text-left font-bold text-blue-950 transition-all cursor-pointer shadow-xs';
+                btnSigLeft.className = 'rounded-xl border border-slate-200 bg-white p-2.5 text-left font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer';
                 stampInner.innerHTML = '';
                 stampInner.appendChild(qrBlock);
                 stampInner.appendChild(sigBlock);
@@ -843,13 +830,13 @@
             const nameBottomEl = document.getElementById('stampNameBottom');
 
             if (pos === 'bottom') {
-                btnBottom.className = 'rounded-xl border-2 border-blue-600 bg-blue-50/80 p-2 text-left font-bold text-blue-950 transition-all cursor-pointer shadow-xs';
-                btnTop.className = 'rounded-xl border border-slate-200 bg-white p-2 text-left font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer';
+                btnBottom.className = 'rounded-xl border-2 border-blue-600 bg-blue-50/90 p-2.5 text-left font-bold text-blue-950 transition-all cursor-pointer shadow-xs';
+                btnTop.className = 'rounded-xl border border-slate-200 bg-white p-2.5 text-left font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer';
                 nameTopEl.classList.add('hidden');
                 nameBottomEl.classList.remove('hidden');
             } else {
-                btnTop.className = 'rounded-xl border-2 border-blue-600 bg-blue-50/80 p-2 text-left font-bold text-blue-950 transition-all cursor-pointer shadow-xs';
-                btnBottom.className = 'rounded-xl border border-slate-200 bg-white p-2 text-left font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer';
+                btnTop.className = 'rounded-xl border-2 border-blue-600 bg-blue-50/90 p-2.5 text-left font-bold text-blue-950 transition-all cursor-pointer shadow-xs';
+                btnBottom.className = 'rounded-xl border border-slate-200 bg-white p-2.5 text-left font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer';
                 nameBottomEl.classList.add('hidden');
                 nameTopEl.classList.remove('hidden');
             }
@@ -896,7 +883,7 @@
         function renderPage(pageNum) {
             if (!pdfDoc) return;
             pdfDoc.getPage(pageNum).then(function(page) {
-                const containerWidth = Math.min(680, document.getElementById('pdfViewportContainer').clientWidth - 30);
+                const containerWidth = Math.min(640, document.getElementById('pdfViewportContainer').clientWidth - 40);
                 const unscaledViewport = page.getViewport({ scale: 1 });
                 const scale = containerWidth / unscaledViewport.width;
                 const viewport = page.getViewport({ scale: scale });
