@@ -78,6 +78,18 @@ class RafPermissionSeeder extends Seeder
                     'document.view', 'document.download',
                 ]), ARRAY_FILTER_USE_BOTH)),
             ],
+            'intern' => [
+                'name' => 'Magang (Legal Intern)',
+                'description' => 'Mahasiswa atau staf magang pelaksana riset yuridis, telaah pustaka, dan draf awal berkas.',
+                'permissions' => array_values(array_filter($permissions, fn ($id, $name) => in_array($name, [
+                    'matter.view',
+                    'client.view', 'contact.view',
+                    'task.view', 'task.manage',
+                    'document.view', 'document.upload', 'document.download',
+                    'template.view',
+                    'correspondence.view',
+                ]), ARRAY_FILTER_USE_BOTH)),
+            ],
         ];
 
         foreach ($rolesData as $slug => $data) {
