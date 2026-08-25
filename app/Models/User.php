@@ -30,7 +30,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'position_title', 'employee_code', 'department', 'employment_type', 'employment_status', 'work_mode', 'joined_at', 'contract_end', 'leave_balance', 'utilization', 'performance_score', 'next_review', 'avatar_path', 'email', 'password', 'locale', 'timezone', 'is_active', 'disabled_at', 'last_seen_at'])]
+#[Fillable(['name', 'position_title', 'employee_code', 'department', 'employment_type', 'employment_status', 'work_mode', 'joined_at', 'contract_end', 'leave_balance', 'utilization', 'performance_score', 'next_review', 'avatar_path', 'email', 'email_verified_at', 'password', 'locale', 'timezone', 'is_active', 'disabled_at', 'last_seen_at'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {

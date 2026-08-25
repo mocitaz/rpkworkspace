@@ -61,6 +61,7 @@ class UserController extends Controller
             $user = User::query()->create([
                 ...$request->safe()->except(['role_ids', 'password']),
                 'password' => $initialPassword,
+                'email_verified_at' => now(),
                 'is_active' => true,
             ]);
             $user->roles()->sync($this->roleAssignments($request->validated('role_ids'), $request->user()));
