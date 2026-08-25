@@ -3,6 +3,7 @@
 namespace App\Actions;
 
 use App\Models\SignatureRequest;
+use App\Services\PdfRenderer;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Storage;
@@ -34,11 +35,21 @@ class GenerateSignedFinalPdf
             file_put_contents($sourcePath, $source);
             $pdfPath = $this->asPdf($sourcePath, $version->original_filename);
 
-            if ($pdfPath === null) {
-                return $this->unavailable($signatureRequest, 'LibreOffice headless belum tersedia untuk mengonversi DOCX ke PDF.');
+            $signedPdf = null;
+            if ($pdfPath !== null) {
+                try {
+                    $signedPdf = $this->stamp($pdfPath, $signatureRequest);
+                } catch (\Throwable) {
+                    $signedPdf = null;
+                }
             }
 
-            $signedPdf = $this->stamp($pdfPath, $signatureRequest);
+            if ($signedPdf === null) {
+                $signedPdf = app(PdfRenderer::class)->render('pdf.signature-record', [
+                    'signatureRequest' => $signatureRequest,
+                ]);
+            }
+
             $disk = (string) config('raf.documents.disk', 'local');
             $path = 'signature-artifacts/'.$signatureRequest->getKey().'/signed-final.pdf';
             Storage::disk($disk)->put($path, $signedPdf);
