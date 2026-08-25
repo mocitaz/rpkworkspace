@@ -170,37 +170,52 @@ class GenerateSignedFinalPdf
                     $y = $size['height'] - $stampH - 12;
                 }
 
-                // Draw sleek signature badge frame
+                // Draw outer sleek stamp frame
                 $pdf->SetFillColor(255, 255, 255);
                 $pdf->SetDrawColor(30, 41, 59); // slate-800
                 $pdf->SetLineWidth(0.3);
                 $pdf->Rect($x, $y, $stampW, $stampH, 'DF');
 
+                // Draw Dark Top Header Ribbon (4mm height)
+                $pdf->SetFillColor(15, 23, 42); // slate-900
+                $pdf->Rect($x, $y, $stampW, 4.2, 'F');
+
                 // Header in stamp box
-                $pdf->SetTextColor(15, 23, 42);
-                $pdf->SetFont('Helvetica', 'B', 5.5);
-                $pdf->SetXY($x + 2, $y + 1.2);
-                $pdf->Cell(34, 3, 'RPK LAW FIRM · E-SIGNATURE', 0, 0, 'L');
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->SetFont('Helvetica', 'B', 5);
+                $pdf->SetXY($x + 2, $y + 0.6);
+                $pdf->Cell(28, 3, 'RPK DIGITAL SEAL', 0, 0, 'L');
+
+                $pdf->SetFont('Helvetica', '', 4.5);
+                $pdf->SetTextColor(203, 213, 225); // slate-300
+                $pdf->SetXY($x + $stampW - 22, $y + 0.6);
+                $pdf->Cell(20, 3, 'UU ITE TERVERIFIKASI', 0, 0, 'R');
 
                 // If visual signature image exists, draw it
                 if ($signerItem['sig_path'] && is_file($signerItem['sig_path'])) {
-                    $pdf->Image($signerItem['sig_path'], $x + 2, $y + 4.5, 34, 11, 'PNG');
+                    $pdf->Image($signerItem['sig_path'], $x + 2, $y + 4.8, 32, 10.5, 'PNG');
                 }
 
                 // Signer name and date caption
                 $pdf->SetTextColor(15, 23, 42);
-                $pdf->SetFont('Helvetica', 'B', 6.5);
-                $pdf->SetXY($x + 2, $y + 16);
+                $pdf->SetFont('Helvetica', 'B', 6);
+                $pdf->SetXY($x + 2, $y + 15.8);
                 $pdf->Cell(34, 3, substr($signerItem['name'], 0, 24), 0, 0, 'L');
 
-                $pdf->SetFont('Helvetica', '', 5);
+                $pdf->SetFont('Helvetica', '', 4.8);
                 $pdf->SetTextColor(100, 116, 139);
-                $pdf->SetXY($x + 2, $y + 19.5);
-                $pdf->Cell(34, 3, 'Ditandatangani WIB: '.$signerItem['signed_at'], 0, 0, 'L');
+                $pdf->SetXY($x + 2, $y + 19.4);
+                $pdf->Cell(34, 3, 'Ditandatangani: '.$signerItem['signed_at'], 0, 0, 'L');
 
-                // Draw Official QR Code on right of badge
-                $qrSize = 18;
-                $pdf->Image($qrPath, $x + $stampW - $qrSize - 2.5, $y + ($stampH - $qrSize) / 2, $qrSize, $qrSize, 'PNG');
+                // Draw QR Code background container and QR
+                $qrContainerSize = 16.5;
+                $pdf->SetFillColor(248, 250, 252);
+                $pdf->SetDrawColor(226, 232, 240);
+                $pdf->SetLineWidth(0.2);
+                $pdf->Rect($x + $stampW - $qrContainerSize - 1.8, $y + 5.5, $qrContainerSize, $qrContainerSize, 'DF');
+
+                $qrSize = 15;
+                $pdf->Image($qrPath, $x + $stampW - $qrSize - 2.5, $y + 6.2, $qrSize, $qrSize, 'PNG');
             }
 
             // If last page and no signers were placed, or for corporate seal

@@ -285,39 +285,58 @@
                         <div class="relative shadow-2xl rounded-sm" id="pageWrapper">
                             <canvas id="pdfCanvas" class="bg-white block rounded-sm"></canvas>
                             
-                            <!-- Movable Corporate Stamp Box -->
+                            <!-- Movable Executive Corporate Stamp Seal -->
                             <div 
                                 id="placementStamp" 
-                                class="placement-stamp absolute z-10 flex items-center justify-between rounded-lg border-2 border-dashed border-slate-800 bg-white/95 p-2 shadow-2xl ring-1 ring-black/10 backdrop-blur-xs"
-                                style="width: 180px; height: 72px; left: 60%; top: 75%;"
+                                class="placement-stamp absolute z-10 rounded-xl border border-slate-300 bg-white shadow-2xl ring-2 ring-blue-600/30 overflow-hidden cursor-move select-none"
+                                style="width: 200px; height: 84px; left: 60%; top: 75%;"
                                 title="Klik &amp; Geser untuk memindahkan posisi stempel"
                             >
-                                <div class="flex flex-col justify-between h-full pr-1.5 overflow-hidden flex-1">
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-[7.5px] font-black uppercase tracking-wider text-slate-900 font-mono">
-                                            RPK E-SIGN
-                                        </span>
-                                        <span class="text-[7px] font-mono text-slate-400">
-                                            UU ITE
-                                        </span>
-                                    </div>
-                                    <div id="stampSigPreview" class="flex-1 flex items-center justify-center py-0.5">
-                                        <span class="text-[9px] italic text-slate-400 font-medium">
-                                            [Tanda Tangan]
-                                        </span>
-                                    </div>
-                                    <div class="border-t border-slate-200/80 pt-0.5">
-                                        <p class="text-[7.5px] font-bold text-slate-900 truncate" id="stampSignerName">
-                                            {{ $signer->name }}
-                                        </p>
-                                    </div>
+                                <!-- Drag Handle Indicator Badge -->
+                                <div class="absolute -top-2 left-1/2 -translate-x-1/2 rounded-full bg-blue-600 px-2 py-0.5 font-mono text-[7px] font-extrabold tracking-wide text-white shadow-sm pointer-events-none uppercase">
+                                    Geser Posisi
                                 </div>
-                                <div class="shrink-0 flex items-center justify-center size-13 bg-slate-50 rounded border border-slate-200 p-0.5">
-                                    <img 
-                                        src="{{ route('signature.qr', $signer->signatureRequest->verification_code) }}" 
-                                        alt="QR" 
-                                        class="size-11 object-contain"
-                                    />
+
+                                <!-- Stamp Header Bar -->
+                                <div class="bg-slate-900 px-2.5 py-0.8 flex items-center justify-between text-white border-b border-slate-800">
+                                    <div class="flex items-center gap-1">
+                                        <span class="size-1 rounded-full bg-emerald-400 animate-pulse"></span>
+                                        <span class="text-[7.5px] font-black uppercase tracking-wider font-mono">
+                                            RPK DIGITAL SEAL
+                                        </span>
+                                    </div>
+                                    <span class="text-[6.5px] font-mono text-slate-300 font-semibold tracking-tight">
+                                        UU ITE TERVERIFIKASI
+                                    </span>
+                                </div>
+
+                                <!-- Stamp Content Body -->
+                                <div class="p-1.5 px-2 flex items-center justify-between gap-2 h-[calc(100%-19px)] bg-white">
+                                    <!-- Left: Visual Signature & Signer Info -->
+                                    <div class="flex flex-col justify-between h-full flex-1 min-w-0 pr-1">
+                                        <div id="stampSigPreview" class="flex-1 flex items-center justify-start min-h-[30px] overflow-hidden">
+                                            <span class="text-[8.5px] italic text-slate-400 font-medium">
+                                                [Goresan Tanda Tangan]
+                                            </span>
+                                        </div>
+                                        <div class="border-t border-slate-100 pt-0.5">
+                                            <p class="text-[8.5px] font-extrabold text-slate-900 leading-tight truncate" id="stampSignerName">
+                                                {{ $signer->name }}
+                                            </p>
+                                            <p class="text-[6.5px] font-medium text-slate-400 leading-none truncate">
+                                                Digital Signature Verified
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Right: Official Verification QR Code -->
+                                    <div class="shrink-0 flex flex-col items-center justify-center p-0.5 rounded-lg border border-slate-200 bg-slate-50 size-13">
+                                        <img 
+                                            src="{{ route('signature.qr', $signer->signatureRequest->verification_code) }}" 
+                                            alt="QR" 
+                                            class="size-11 object-contain"
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
