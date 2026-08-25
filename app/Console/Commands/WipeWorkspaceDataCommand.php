@@ -14,14 +14,18 @@ class WipeWorkspaceDataCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'workspace:wipe-data {--force : Lewati konfirmasi interaktif} {--clean-storage : Hapus juga berkas dokumen/lampiran yang tersimpan di storage}';
+    protected $signature = 'workspace:wipe-data 
+                            {--force : Lewati konfirmasi interaktif} 
+                            {--clean-storage : Hapus juga berkas dokumen/lampiran yang tersimpan di storage}
+                            {--preserve-clients= : Kode/nomor atau nama klien yang dikecualikan (default otomatis melindungi RPK-C-2026-YNGZAW / PT KKG)}
+                            {--wipe-all-clients : Paksa hapus seluruh klien tanpa pengecualian}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Mengosongkan seluruh data operasional, perkara, klien, dokumen, dan keuangan, KECUALI data Staff, Akun, Role, dan Hak Akses (Auth)';
+    protected $description = 'Mengosongkan seluruh data operasional dan seeder (perkara, dokumen, keuangan, dummy clients), KECUALI data Staff, Akun, Role, Hak Akses (Auth), dan Klien Nyata Tim (PT KKG)';
 
     /**
      * Tables that MUST NEVER be wiped (Auth & Staff integrity).
@@ -47,31 +51,68 @@ class WipeWorkspaceDataCommand extends Command
     public function handle(): int
     {
         $this->warn('================================================================');
-        $this->warn('  PERINGATAN: PEMBERSIHAN DATA OPERASIONAL RPK LAW FIRM         ');
+        $this->warn('  PEMBERSIHAN DATA SEEDER & OPERASIONAL RPK WORKSPACE           ');
         $this->warn('================================================================');
-        $this->line('Perintah ini akan MENGOSONGKAN SELURUH data operasional:');
-        $this->line(' - Data Klien & Kontak');
+        $this->line('Perintah ini akan MENGOSONGKAN data hasil seeder:');
+        $this->line(' - Data Klien & Kontak dummy seeder');
         $this->line(' - Seluruh Perkara (Matters), Kronologi, Bukti, & Pihak');
-        $this->line(' - Seluruh Dokumen, Versi, & Template');
-        $this->line(' - Seluruh Permintaan Tanda Tangan Elektronik (E-Sign) & Approval');
+        $this->line(' - Seluruh Dokumen, Versi, & Permintaan E-Sign');
         $this->line(' - Seluruh Tugas, Agenda Kalender, & Tenggat Waktu (Deadlines)');
         $this->line(' - Seluruh Data Keuangan (Invoice, Pembayaran, Pengeluaran, Trust)');
-        $this->line(' - Diskusi Internal, Komentar, Direct Messages, & Audit Log');
+        $this->line(' - Riwayat Percakapan, Komentar, Korespondensi, & Conflict Checks');
         $this->newLine();
         $this->info('DATA YANG TETAP AMAN & DIPERTAHANKAN:');
         $this->info(' ✓ Seluruh Akun Staf / Pengguna (Tabel users)');
         $this->info(' ✓ Seluruh Role & Hak Akses Kewenangan (Tabel roles & permissions)');
         $this->info(' ✓ Relasi Role Pengguna (role_user & permission_role)');
-        $this->info(' ✓ Passkey & Kredensial Login');
+        $this->info(' ✓ Passkey, Token Login, & Bidang Praktik (practice_areas)');
+
+        $preservedClientIds = [];
+        $preservedMatterIds = [];
+
+        if (! $this->option('wipe-all-clients') && Schema::hasTable('clients')) {
+            $customQuery = $this->option('preserve-clients');
+
+            $preservedClients = DB::table('clients')
+                ->where(function ($query) use ($customQuery) {
+                    $query->where('client_number', 'like', '%YNGZAW%')
+                        ->orWhere('legal_name', 'like', '%KEMBANG KEMBAR%')
+                        ->orWhere('display_name', 'like', '%KKG%');
+
+                    if ($customQuery) {
+                        $query->orWhere('client_number', 'like', "%{$customQuery}%")
+                            ->orWhere('legal_name', 'like', "%{$customQuery}%")
+                            ->orWhere('display_name', 'like', "%{$customQuery}%");
+                    }
+                })
+                ->get();
+
+            if ($preservedClients->isNotEmpty()) {
+                $preservedClientIds = $preservedClients->pluck('id')->all();
+                $this->newLine();
+                $this->info(' ✓ Klien Nyata yang Dikecualikan & Dipertahankan:');
+                foreach ($preservedClients as $c) {
+                    $this->line("   - [{$c->client_number}] {$c->legal_name} ({$c->display_name})");
+                }
+
+                if (Schema::hasTable('matters')) {
+                    $preservedMatterIds = DB::table('matters')
+                        ->whereIn('client_id', $preservedClientIds)
+                        ->pluck('id')
+                        ->all();
+                }
+            }
+        }
+
         $this->newLine();
 
-        if (! $this->option('force') && ! $this->confirm('Apakah Anda YAKIN ingin mengosongkan seluruh data operasional di atas?')) {
+        if (! $this->option('force') && ! $this->confirm('Apakah Anda YAKIN ingin membersihkan data seeder di atas?')) {
             $this->info('Operasi dibatalkan.');
 
             return self::SUCCESS;
         }
 
-        $this->info('Memulai pengosongan data operasional...');
+        $this->info('Memulai proses pembersihan data seeder...');
 
         $driver = DB::getDriverName();
 
@@ -82,10 +123,12 @@ class WipeWorkspaceDataCommand extends Command
             DB::statement('PRAGMA foreign_keys = OFF;');
         }
 
+        // 2. Clear Tables with Preserved Client / Matter Filters
         $tablesToWipe = [
             // Collaboration & Chat
+            'comment_reactions',
             'comments',
-            'reactions',
+            'direct_message_reactions',
             'direct_messages',
 
             // Finance
@@ -112,15 +155,12 @@ class WipeWorkspaceDataCommand extends Command
             // Matter Details
             'matter_chronologies',
             'matter_evidences',
-            'matter_notes',
-            'matter_time_entries',
-            'matter_disbursements',
-            'matter_trust_transactions',
+            'notes',
             'matter_events',
             'matter_members',
             'matter_parties',
             'deadline_reminder_deliveries',
-            'matter_deadlines',
+            'deadlines',
             'matter_exports',
             'tasks',
 
@@ -136,7 +176,6 @@ class WipeWorkspaceDataCommand extends Command
             // Clients, Contacts & Compliance
             'client_compliance_documents',
             'contacts',
-            'client_contacts',
             'clients',
 
             // Audit & Notifications
@@ -151,23 +190,48 @@ class WipeWorkspaceDataCommand extends Command
 
         $wipedCount = 0;
         foreach ($tablesToWipe as $table) {
-            if (Schema::hasTable($table)) {
+            if (! Schema::hasTable($table)) {
+                continue;
+            }
+
+            // Client & Matter aware deletion
+            if ($table === 'clients' && ! empty($preservedClientIds)) {
+                $deleted = DB::table('clients')->whereNotIn('id', $preservedClientIds)->delete();
+                $this->line(" [✓] Dihapus klien dummy: {$deleted} data (Klien PT KKG dipertahankan)");
+            } elseif ($table === 'contacts' && ! empty($preservedClientIds)) {
+                $deleted = DB::table('contacts')->whereNotIn('client_id', $preservedClientIds)->delete();
+                $this->line(" [✓] Dihapus kontak dummy: {$deleted} data");
+            } elseif ($table === 'client_compliance_documents' && ! empty($preservedClientIds)) {
+                $deleted = DB::table('client_compliance_documents')->whereNotIn('client_id', $preservedClientIds)->delete();
+                $this->line(" [✓] Dihapus dokumen kepatuhan dummy: {$deleted} data");
+            } elseif ($table === 'matters' && ! empty($preservedMatterIds)) {
+                $deleted = DB::table('matters')->whereNotIn('id', $preservedMatterIds)->delete();
+                $this->line(" [✓] Dihapus perkara dummy: {$deleted} data");
+            } elseif (in_array($table, ['matter_chronologies', 'matter_evidences', 'matter_events', 'matter_members', 'matter_parties', 'deadlines', 'tasks', 'documents'], true) && ! empty($preservedMatterIds)) {
+                if (Schema::hasColumn($table, 'matter_id')) {
+                    DB::table($table)->whereNotIn('matter_id', $preservedMatterIds)->delete();
+                } else {
+                    DB::table($table)->delete();
+                }
+                $this->line(" [✓] Dikosongkan: {$table}");
+            } else {
                 DB::table($table)->delete();
                 $this->line(" [✓] Dikosongkan: {$table}");
-                $wipedCount++;
             }
+
+            $wipedCount++;
         }
 
-        // 2. Re-enable Foreign Key Checks
+        // 3. Re-enable Foreign Key Checks
         if ($driver === 'mysql') {
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         } elseif ($driver === 'sqlite') {
             DB::statement('PRAGMA foreign_keys = ON;');
         }
 
-        // 3. Clean physical storage if requested
+        // 4. Clean physical storage if requested
         if ($this->option('clean-storage')) {
-            $this->info('Membersihkan berkas penyimpanan fisik...');
+            $this->info('Membersihkan berkas penyimpanan fisik storage...');
             $directoriesToClean = [
                 'documents',
                 'signatures',
@@ -189,7 +253,10 @@ class WipeWorkspaceDataCommand extends Command
         }
 
         $this->newLine();
-        $this->info("BERHASIL! {$wipedCount} tabel operasional telah dikosongkan.");
+        $this->info("BERHASIL! {$wipedCount} tabel operasional telah dibersihkan.");
+        if (! empty($preservedClientIds)) {
+            $this->info('Klien tim (PT KEMBANG KEMBAR GRUP - RPK-C-2026-YNGZAW) tetap tersimpan dengan aman.');
+        }
         $this->info('Seluruh akun staf dan hak akses auth tetap utuh dan siap digunakan.');
 
         return self::SUCCESS;
