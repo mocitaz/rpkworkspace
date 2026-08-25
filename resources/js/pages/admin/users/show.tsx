@@ -2,8 +2,6 @@ import { Form, Head, Link, router } from '@inertiajs/react';
 import {
     AlertTriangle,
     ArrowLeft,
-    Banknote,
-    BookOpen,
     Briefcase,
     Building2,
     Calendar,
@@ -24,12 +22,10 @@ import {
     Plus,
     Scale,
     Shield,
-    ShieldAlert,
     ShieldCheck,
     Smartphone,
     Sparkles,
     Trash2,
-    User,
     UserCheck,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -395,7 +391,7 @@ export default function UserShow({
                                 <div className="space-y-4">
                                     {/* Kredensial & Legalitas Advokat Card */}
                                     <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                        <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                        <div className="mb-2 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
                                             <div className="flex items-center gap-1.5">
                                                 <Scale className="size-3.5 text-slate-500 dark:text-zinc-400" />
                                                 <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
@@ -413,55 +409,56 @@ export default function UserShow({
                                             </button>
                                         </div>
 
-                                        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                                            <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                                <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                        {/* Specification List */}
+                                        <div className="divide-y divide-slate-100 text-xs dark:divide-white/[0.04]">
+                                            <div className="flex items-center justify-between py-2">
+                                                <span className="text-slate-500 dark:text-zinc-400">
                                                     Nomor Induk Advokat (NIA)
                                                 </span>
-                                                <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                <span className="font-mono font-semibold text-slate-900 dark:text-white">
                                                     {staff.advocate_license_no || (
                                                         <span className="font-sans font-normal text-slate-400">
-                                                            Belum dilengkapi
+                                                            -
                                                         </span>
                                                     )}
-                                                </p>
+                                                </span>
                                             </div>
 
-                                            <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                                <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                            <div className="flex items-center justify-between py-2">
+                                                <span className="text-slate-500 dark:text-zinc-400">
                                                     No. BAS Pengadilan Tinggi
                                                 </span>
-                                                <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                <span className="font-mono font-semibold text-slate-900 dark:text-white">
                                                     {staff.bas_number || (
                                                         <span className="font-sans font-normal text-slate-400">
-                                                            Belum dilengkapi
+                                                            -
                                                         </span>
                                                     )}
-                                                </p>
+                                                </span>
                                             </div>
 
-                                            <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                                <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                            <div className="flex items-center justify-between py-2">
+                                                <span className="text-slate-500 dark:text-zinc-400">
                                                     Tanggal Sumpah (BAS)
                                                 </span>
-                                                <p className="mt-0.5 text-xs font-bold text-slate-900 dark:text-white">
+                                                <span className="font-medium text-slate-900 dark:text-white">
                                                     {staff.bas_date ? (
                                                         formatDate(
                                                             staff.bas_date,
                                                         )
                                                     ) : (
                                                         <span className="font-normal text-slate-400">
-                                                            Belum dilengkapi
+                                                            -
                                                         </span>
                                                     )}
-                                                </p>
+                                                </span>
                                             </div>
 
-                                            <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                        Masa Berlaku KTA
-                                                    </span>
+                                            <div className="flex items-center justify-between py-2">
+                                                <span className="text-slate-500 dark:text-zinc-400">
+                                                    Masa Berlaku KTA Advokat
+                                                </span>
+                                                <div className="flex items-center gap-2">
                                                     {ktaStatus && (
                                                         <span
                                                             className={`py-0.2 rounded px-1.5 font-mono text-[9px] font-bold ${ktaStatus.color}`}
@@ -469,48 +466,41 @@ export default function UserShow({
                                                             {ktaStatus.label}
                                                         </span>
                                                     )}
+                                                    <span className="font-medium text-slate-900 dark:text-white">
+                                                        {staff.kta_expiry_date ? (
+                                                            formatDate(
+                                                                staff.kta_expiry_date,
+                                                            )
+                                                        ) : (
+                                                            <span className="font-normal text-slate-400">
+                                                                -
+                                                            </span>
+                                                        )}
+                                                    </span>
                                                 </div>
-                                                <p className="mt-0.5 text-xs font-bold text-slate-900 dark:text-white">
-                                                    {staff.kta_expiry_date ? (
-                                                        formatDate(
-                                                            staff.kta_expiry_date,
-                                                        )
-                                                    ) : (
+                                            </div>
+
+                                            <div className="flex items-center justify-between py-2">
+                                                <span className="text-slate-500 dark:text-zinc-400">
+                                                    Pendidikan &amp; Almamater
+                                                </span>
+                                                <span className="font-medium text-slate-900 dark:text-white">
+                                                    {staff.education || (
                                                         <span className="font-normal text-slate-400">
-                                                            Belum ditentukan
+                                                            -
                                                         </span>
                                                     )}
-                                                </p>
+                                                </span>
                                             </div>
-                                        </div>
 
-                                        {/* Practice Areas */}
-                                        <div className="mt-2.5 rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                Bidang Spesialisasi Hukum
-                                                (Practice Areas)
-                                            </span>
-                                            <div className="mt-1.5 flex flex-wrap gap-1.5">
-                                                {practiceAreasList.length >
-                                                0 ? (
-                                                    practiceAreasList.map(
-                                                        (area, idx) => (
-                                                            <span
-                                                                key={idx}
-                                                                className="inline-flex items-center gap-1 rounded-md border border-slate-200/80 bg-white px-2 py-0.5 text-xs font-medium text-slate-800 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
-                                                            >
-                                                                <Sparkles className="size-3 text-amber-500" />
-                                                                {area}
-                                                            </span>
-                                                        ),
-                                                    )
-                                                ) : (
-                                                    <div className="flex items-center justify-between text-xs text-slate-400">
-                                                        <span>
-                                                            Belum ada
-                                                            spesialisasi hukum
-                                                            yang ditambahkan.
-                                                        </span>
+                                            <div className="pt-2.5 pb-0.5">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-slate-500 dark:text-zinc-400">
+                                                        Bidang Spesialisasi
+                                                        Hukum
+                                                    </span>
+                                                    {practiceAreasList.length ===
+                                                        0 && (
                                                         <button
                                                             type="button"
                                                             onClick={() =>
@@ -518,12 +508,32 @@ export default function UserShow({
                                                                     'advocate',
                                                                 )
                                                             }
-                                                            className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                                            className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                                         >
                                                             + Tambah
                                                         </button>
-                                                    </div>
-                                                )}
+                                                    )}
+                                                </div>
+                                                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                                                    {practiceAreasList.length >
+                                                    0 ? (
+                                                        practiceAreasList.map(
+                                                            (area, idx) => (
+                                                                <span
+                                                                    key={idx}
+                                                                    className="inline-flex items-center gap-1 rounded-md border border-slate-200/80 bg-slate-50/70 px-2 py-0.5 text-xs font-medium text-slate-800 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                                >
+                                                                    <Sparkles className="size-3 text-amber-500" />
+                                                                    {area}
+                                                                </span>
+                                                            ),
+                                                        )
+                                                    ) : (
+                                                        <span className="text-slate-400">
+                                                            -
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -646,43 +656,43 @@ export default function UserShow({
                                         </Button>
                                     </div>
 
-                                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                    {/* Detailed Specification List */}
+                                    <div className="divide-y divide-slate-100 text-xs dark:divide-white/[0.04]">
+                                        <div className="flex items-center justify-between py-2.5">
+                                            <span className="text-slate-500 dark:text-zinc-400">
                                                 Nomor Induk Advokat (NIA)
                                             </span>
-                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                            <span className="font-mono font-semibold text-slate-900 dark:text-white">
                                                 {staff.advocate_license_no ||
-                                                    'Belum dilengkapi'}
-                                            </p>
+                                                    '-'}
+                                            </span>
                                         </div>
 
-                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                        <div className="flex items-center justify-between py-2.5">
+                                            <span className="text-slate-500 dark:text-zinc-400">
                                                 No. Berita Acara Sumpah (BAS)
                                             </span>
-                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                {staff.bas_number ||
-                                                    'Belum dilengkapi'}
-                                            </p>
+                                            <span className="font-mono font-semibold text-slate-900 dark:text-white">
+                                                {staff.bas_number || '-'}
+                                            </span>
                                         </div>
 
-                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                        <div className="flex items-center justify-between py-2.5">
+                                            <span className="text-slate-500 dark:text-zinc-400">
                                                 Tanggal Sumpah Pengadilan (BAS)
                                             </span>
-                                            <p className="mt-0.5 text-xs font-bold text-slate-900 dark:text-white">
+                                            <span className="font-medium text-slate-900 dark:text-white">
                                                 {staff.bas_date
                                                     ? formatDate(staff.bas_date)
-                                                    : 'Belum dilengkapi'}
-                                            </p>
+                                                    : '-'}
+                                            </span>
                                         </div>
 
-                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                    Masa Berlaku KTA Advokat
-                                                </span>
+                                        <div className="flex items-center justify-between py-2.5">
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                Masa Berlaku KTA Advokat
+                                            </span>
+                                            <div className="flex items-center gap-2">
                                                 {ktaStatus && (
                                                     <span
                                                         className={`py-0.2 rounded px-1.5 font-mono text-[9px] font-bold ${ktaStatus.color}`}
@@ -690,51 +700,51 @@ export default function UserShow({
                                                         {ktaStatus.label}
                                                     </span>
                                                 )}
+                                                <span className="font-medium text-slate-900 dark:text-white">
+                                                    {staff.kta_expiry_date
+                                                        ? formatDate(
+                                                              staff.kta_expiry_date,
+                                                          )
+                                                        : '-'}
+                                                </span>
                                             </div>
-                                            <p className="mt-0.5 text-xs font-bold text-slate-900 dark:text-white">
-                                                {staff.kta_expiry_date
-                                                    ? formatDate(
-                                                          staff.kta_expiry_date,
-                                                      )
-                                                    : 'Belum ditentukan'}
-                                            </p>
                                         </div>
-                                    </div>
 
-                                    <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                        <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                            Riwayat Pendidikan &amp; Almamater
-                                        </span>
-                                        <p className="mt-0.5 text-xs font-semibold text-slate-800 dark:text-zinc-200">
-                                            {staff.education ||
-                                                'Belum dilengkapi (Contoh: S.H. - Universitas Indonesia, LL.M. - Leiden)'}
-                                        </p>
-                                    </div>
+                                        <div className="flex items-center justify-between py-2.5">
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                Riwayat Pendidikan &amp;
+                                                Almamater
+                                            </span>
+                                            <span className="font-medium text-slate-900 dark:text-white">
+                                                {staff.education || '-'}
+                                            </span>
+                                        </div>
 
-                                    <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                        <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                            Bidang Spesialisasi Hukum (Practice
-                                            Areas)
-                                        </span>
-                                        <div className="mt-1.5 flex flex-wrap gap-1.5">
-                                            {practiceAreasList.length > 0 ? (
-                                                practiceAreasList.map(
-                                                    (area, idx) => (
-                                                        <span
-                                                            key={idx}
-                                                            className="inline-flex items-center gap-1 rounded-md border border-slate-200/80 bg-white px-2 py-0.5 text-xs font-medium text-slate-800 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
-                                                        >
-                                                            <Sparkles className="size-3 text-amber-500" />
-                                                            {area}
-                                                        </span>
-                                                    ),
-                                                )
-                                            ) : (
-                                                <p className="text-xs text-slate-400">
-                                                    Belum ada spesialisasi
-                                                    hukum.
-                                                </p>
-                                            )}
+                                        <div className="pt-3 pb-1">
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                Bidang Spesialisasi Hukum
+                                                (Practice Areas)
+                                            </span>
+                                            <div className="mt-2 flex flex-wrap gap-1.5">
+                                                {practiceAreasList.length >
+                                                0 ? (
+                                                    practiceAreasList.map(
+                                                        (area, idx) => (
+                                                            <span
+                                                                key={idx}
+                                                                className="inline-flex items-center gap-1 rounded-md border border-slate-200/80 bg-slate-50/70 px-2 py-0.5 text-xs font-medium text-slate-800 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                            >
+                                                                <Sparkles className="size-3 text-amber-500" />
+                                                                {area}
+                                                            </span>
+                                                        ),
+                                                    )
+                                                ) : (
+                                                    <span className="text-slate-400">
+                                                        -
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -830,44 +840,55 @@ export default function UserShow({
                                         </Button>
                                     </div>
 
-                                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                EMAIL KERJA RESMI
+                                    <div className="divide-y divide-slate-100 text-xs dark:divide-white/[0.04]">
+                                        <div className="flex items-center justify-between py-2.5">
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                Email Kerja Resmi
                                             </span>
-                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                            <span className="font-mono font-medium text-slate-900 dark:text-white">
                                                 {staff.email}
-                                            </p>
-                                        </div>
-
-                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                WHATSAPP / NO. HP
                                             </span>
-                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                {staff.phone || 'Belum diisi'}
-                                            </p>
                                         </div>
-                                    </div>
 
-                                    <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                        <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                            ALAMAT DOMISILI SAAT INI
-                                        </span>
-                                        <p className="mt-0.5 text-xs text-slate-800 dark:text-zinc-200">
-                                            {staff.address ||
-                                                'Belum dilengkapi'}
-                                        </p>
-                                    </div>
+                                        <div className="flex items-center justify-between py-2.5">
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                WhatsApp / No. HP
+                                            </span>
+                                            <span className="font-mono font-medium text-slate-900 dark:text-white">
+                                                {staff.phone || '-'}
+                                            </span>
+                                        </div>
 
-                                    <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                        <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                            ALAMAT SESUAI KTP
-                                        </span>
-                                        <p className="mt-0.5 text-xs text-slate-800 dark:text-zinc-200">
-                                            {staff.ktp_address ||
-                                                'Belum dilengkapi'}
-                                        </p>
+                                        <div className="flex items-center justify-between py-2.5">
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                Tanggal Lahir
+                                            </span>
+                                            <span className="font-medium text-slate-900 dark:text-white">
+                                                {staff.birth_date
+                                                    ? formatDate(
+                                                          staff.birth_date,
+                                                      )
+                                                    : '-'}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex items-center justify-between py-2.5">
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                Alamat Domisili Saat Ini
+                                            </span>
+                                            <span className="text-right font-medium text-slate-900 dark:text-white">
+                                                {staff.address || '-'}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex items-center justify-between py-2.5">
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                Alamat Sesuai KTP
+                                            </span>
+                                            <span className="text-right font-medium text-slate-900 dark:text-white">
+                                                {staff.ktp_address || '-'}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             )}
@@ -895,45 +916,43 @@ export default function UserShow({
                                         </Button>
                                     </div>
 
-                                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                NAMA BANK
+                                    <div className="divide-y divide-slate-100 text-xs dark:divide-white/[0.04]">
+                                        <div className="flex items-center justify-between py-2.5">
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                Nama Bank
                                             </span>
-                                            <p className="mt-0.5 font-bold text-slate-900 dark:text-white">
-                                                {staff.bank_name ||
-                                                    'Belum diisi'}
-                                            </p>
+                                            <span className="font-medium text-slate-900 dark:text-white">
+                                                {staff.bank_name || '-'}
+                                            </span>
                                         </div>
 
-                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                NOMOR REKENING
+                                        <div className="flex items-center justify-between py-2.5">
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                Nomor Rekening
                                             </span>
-                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                            <span className="font-mono font-medium text-slate-900 dark:text-white">
                                                 {staff.bank_account_number ||
                                                     '-'}
-                                            </p>
+                                            </span>
                                         </div>
 
-                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                ATAS NAMA REKENING
+                                        <div className="flex items-center justify-between py-2.5">
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                Atas Nama Rekening
                                             </span>
-                                            <p className="mt-0.5 text-xs font-semibold text-slate-900 dark:text-white">
+                                            <span className="font-medium text-slate-900 dark:text-white">
                                                 {staff.bank_account_holder ||
                                                     '-'}
-                                            </p>
+                                            </span>
                                         </div>
 
-                                        <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                NOMOR POKOK WAJIB PAJAK (NPWP)
+                                        <div className="flex items-center justify-between py-2.5">
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                Nomor Pokok Wajib Pajak (NPWP)
                                             </span>
-                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                {staff.npwp ||
-                                                    'Belum dilengkapi'}
-                                            </p>
+                                            <span className="font-mono font-medium text-slate-900 dark:text-white">
+                                                {staff.npwp || '-'}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -962,26 +981,28 @@ export default function UserShow({
                                         </Button>
                                     </div>
 
-                                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                    <div className="divide-y divide-slate-100 text-xs dark:divide-white/[0.04]">
                                         {staff.roles.map((role) => (
                                             <div
                                                 key={role.id}
-                                                className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]"
+                                                className="flex items-center justify-between py-3"
                                             >
-                                                <div className="flex items-center gap-2">
-                                                    <Shield className="size-3.5 text-purple-600 dark:text-purple-400" />
-                                                    <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                                        {role.name}
-                                                    </span>
-                                                    <span className="py-0.2 rounded bg-slate-200/80 px-1.5 font-mono text-[9px] font-semibold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                                        {role.slug}
-                                                    </span>
+                                                <div className="space-y-0.5">
+                                                    <div className="flex items-center gap-2">
+                                                        <Shield className="size-3.5 text-purple-600 dark:text-purple-400" />
+                                                        <span className="text-xs font-bold text-slate-900 dark:text-white">
+                                                            {role.name}
+                                                        </span>
+                                                        <span className="py-0.2 rounded bg-slate-100 px-1.5 font-mono text-[9px] font-semibold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                                            {role.slug}
+                                                        </span>
+                                                    </div>
+                                                    {role.description && (
+                                                        <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                            {role.description}
+                                                        </p>
+                                                    )}
                                                 </div>
-                                                {role.description && (
-                                                    <p className="mt-1 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                        {role.description}
-                                                    </p>
-                                                )}
                                             </div>
                                         ))}
                                     </div>
@@ -993,7 +1014,7 @@ export default function UserShow({
                         <div className="space-y-4 lg:col-span-4">
                             {/* Kontak Langsung */}
                             <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2 dark:border-white/[0.04]">
+                                <div className="mb-2 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
                                     <div className="flex items-center gap-1.5">
                                         <Phone className="size-3.5 text-slate-500 dark:text-zinc-400" />
                                         <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
@@ -1011,14 +1032,14 @@ export default function UserShow({
                                     </button>
                                 </div>
 
-                                <div className="space-y-2 text-xs">
-                                    <div className="flex items-center justify-between gap-2">
-                                        <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                <div className="divide-y divide-slate-100 text-xs dark:divide-white/[0.04]">
+                                    <div className="flex items-center justify-between py-2">
+                                        <span className="text-slate-500 dark:text-zinc-400">
                                             Email
                                         </span>
                                         <div className="flex items-center gap-1.5 overflow-hidden">
                                             <span
-                                                className="truncate font-mono text-xs font-medium text-slate-900 dark:text-white"
+                                                className="truncate font-mono font-medium text-slate-900 dark:text-white"
                                                 title={staff.email}
                                             >
                                                 {staff.email}
@@ -1042,8 +1063,8 @@ export default function UserShow({
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center justify-between gap-2">
-                                        <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                    <div className="flex items-center justify-between py-2">
+                                        <span className="text-slate-500 dark:text-zinc-400">
                                             WhatsApp
                                         </span>
                                         <span className="font-mono font-medium text-slate-900 dark:text-white">
@@ -1055,35 +1076,35 @@ export default function UserShow({
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between gap-2">
-                                        <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                    <div className="flex items-center justify-between py-2">
+                                        <span className="text-slate-500 dark:text-zinc-400">
                                             Tanggal Lahir
                                         </span>
-                                        <span className="font-medium text-slate-700 dark:text-zinc-300">
+                                        <span className="font-medium text-slate-900 dark:text-white">
                                             {staff.birth_date
                                                 ? formatDate(staff.birth_date)
                                                 : '-'}
                                         </span>
                                     </div>
 
-                                    <div className="border-t border-slate-100 pt-2 dark:border-white/[0.04]">
-                                        <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                    <div className="flex items-center justify-between py-2">
+                                        <span className="text-slate-500 dark:text-zinc-400">
                                             Domisili Saat Ini
                                         </span>
-                                        <p className="mt-0.5 text-xs text-slate-700 dark:text-zinc-300">
+                                        <span className="text-right font-medium text-slate-900 dark:text-white">
                                             {staff.address || (
-                                                <span className="text-slate-400">
-                                                    Belum dilengkapi
+                                                <span className="font-normal text-slate-400">
+                                                    -
                                                 </span>
                                             )}
-                                        </p>
+                                        </span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Rekening & Pajak */}
                             <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2 dark:border-white/[0.04]">
+                                <div className="mb-2 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
                                     <div className="flex items-center gap-1.5">
                                         <CreditCard className="size-3.5 text-slate-500 dark:text-zinc-400" />
                                         <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
@@ -1101,9 +1122,9 @@ export default function UserShow({
                                     </button>
                                 </div>
 
-                                <div className="space-y-2 text-xs">
-                                    <div className="flex items-center justify-between gap-2">
-                                        <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                <div className="divide-y divide-slate-100 text-xs dark:divide-white/[0.04]">
+                                    <div className="flex items-center justify-between py-2">
+                                        <span className="text-slate-500 dark:text-zinc-400">
                                             Bank
                                         </span>
                                         <span className="font-medium text-slate-900 dark:text-white">
@@ -1111,8 +1132,8 @@ export default function UserShow({
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between gap-2">
-                                        <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                    <div className="flex items-center justify-between py-2">
+                                        <span className="text-slate-500 dark:text-zinc-400">
                                             No. Rekening
                                         </span>
                                         <span className="font-mono font-medium text-slate-900 dark:text-white">
@@ -1120,8 +1141,8 @@ export default function UserShow({
                                         </span>
                                     </div>
 
-                                    <div className="flex items-center justify-between gap-2">
-                                        <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                    <div className="flex items-center justify-between py-2">
+                                        <span className="text-slate-500 dark:text-zinc-400">
                                             Atas Nama
                                         </span>
                                         <span className="font-medium text-slate-700 dark:text-zinc-300">
@@ -1129,22 +1150,20 @@ export default function UserShow({
                                         </span>
                                     </div>
 
-                                    <div className="border-t border-slate-100 pt-2 dark:border-white/[0.04]">
-                                        <div className="flex items-center justify-between gap-2">
-                                            <span className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                NPWP
-                                            </span>
-                                            <span className="font-mono text-xs font-medium text-slate-900 dark:text-white">
-                                                {staff.npwp || '-'}
-                                            </span>
-                                        </div>
+                                    <div className="flex items-center justify-between py-2">
+                                        <span className="text-slate-500 dark:text-zinc-400">
+                                            NPWP
+                                        </span>
+                                        <span className="font-mono font-medium text-slate-900 dark:text-white">
+                                            {staff.npwp || '-'}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Otorisasi & Sistem */}
                             <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2 dark:border-white/[0.04]">
+                                <div className="mb-2 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
                                     <div className="flex items-center gap-1.5">
                                         <ShieldCheck className="size-3.5 text-slate-500 dark:text-zinc-400" />
                                         <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
@@ -1157,7 +1176,7 @@ export default function UserShow({
                                 </div>
 
                                 <div className="space-y-2.5 text-xs">
-                                    <div className="flex flex-wrap gap-1.5">
+                                    <div className="flex flex-wrap gap-1.5 pt-0.5">
                                         {staff.roles.map((r) => (
                                             <span
                                                 key={r.id}
@@ -1169,8 +1188,8 @@ export default function UserShow({
                                         ))}
                                     </div>
 
-                                    <div className="border-t border-slate-100 pt-2 text-[11px] text-slate-400 dark:border-white/[0.04]">
-                                        <div className="flex items-center justify-between">
+                                    <div className="divide-y divide-slate-100 border-t border-slate-100 pt-1 text-[11px] text-slate-500 dark:divide-white/[0.04] dark:border-white/[0.04] dark:text-zinc-400">
+                                        <div className="flex items-center justify-between py-1.5">
                                             <span>Email Terverifikasi</span>
                                             <span className="flex items-center gap-1 font-medium text-slate-700 dark:text-zinc-300">
                                                 {staff.email_verified_at ? (
@@ -1183,7 +1202,7 @@ export default function UserShow({
                                                 )}
                                             </span>
                                         </div>
-                                        <div className="mt-1 flex items-center justify-between">
+                                        <div className="flex items-center justify-between py-1.5">
                                             <span>Terdaftar Sejak</span>
                                             <span className="font-medium text-slate-700 dark:text-zinc-300">
                                                 {staff.created_at
