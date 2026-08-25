@@ -3,13 +3,63 @@ export const formatDate = (value?: string | null, withTime = false) => {
         return '-';
     }
 
-    return new Intl.DateTimeFormat('id-ID', {
+    const formatted = new Intl.DateTimeFormat('id-ID', {
         day: '2-digit',
         month: 'short',
         year: 'numeric',
-        ...(withTime ? { hour: '2-digit', minute: '2-digit' } : {}),
+        ...(withTime ? { hour: '2-digit', minute: '2-digit', hour12: false } : {}),
         timeZone: 'Asia/Jakarta',
     }).format(new Date(value));
+
+    return withTime ? `${formatted} WIB` : formatted;
+};
+
+export const formatDateTime = (value?: string | null, withSeconds = false) => {
+    if (!value) {
+        return '-';
+    }
+
+    const formatted = new Intl.DateTimeFormat('id-ID', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        ...(withSeconds ? { second: '2-digit' } : {}),
+        hour12: false,
+        timeZone: 'Asia/Jakarta',
+    }).format(new Date(value));
+
+    return `${formatted} WIB`;
+};
+
+export const formatTime = (value?: string | null, withWib = true) => {
+    if (!value) {
+        return '-';
+    }
+
+    const formatted = new Intl.DateTimeFormat('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        timeZone: 'Asia/Jakarta',
+    }).format(new Date(value));
+
+    return withWib ? `${formatted} WIB` : formatted;
+};
+
+export const formatRelativeTime = (value?: string | null): string => {
+    if (!value) return '-';
+    const now = new Date();
+    const date = new Date(value);
+    const diffSec = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diffSec < 45 && diffSec >= -5) return 'Baru saja';
+    if (diffSec < 3600 && diffSec > 0) return `${Math.max(1, Math.floor(diffSec / 60))} menit lalu`;
+    if (diffSec < 86400 && diffSec > 0) return `${Math.floor(diffSec / 3600)} jam lalu`;
+    if (diffSec < 172800 && diffSec > 0) return `Kemarin, ${formatTime(value)}`;
+
+    return formatDate(value, true);
 };
 
 export const formatChatTime = (value?: string | null) => {

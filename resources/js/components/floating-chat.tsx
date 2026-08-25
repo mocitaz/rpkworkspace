@@ -87,16 +87,27 @@ function getRealPresence(contact: { is_online: boolean; status_text: string; las
 
         const diffDays = Math.floor(diffHours / 24);
         if (diffDays === 1) {
-            const date = new Date(contact.last_seen_at);
-            const timeStr = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-            return { isOnline: false, statusText: `Aktif kemarin pukul ${timeStr}` };
+            const timeStr = new Intl.DateTimeFormat('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                timeZone: 'Asia/Jakarta',
+            }).format(new Date(contact.last_seen_at));
+            return { isOnline: false, statusText: `Aktif kemarin pukul ${timeStr} WIB` };
         }
 
         if (diffDays < 7) {
             return { isOnline: false, statusText: `Aktif ${diffDays} hari lalu` };
         }
 
-        return { isOnline: false, statusText: `Aktif ${new Date(contact.last_seen_at).toLocaleDateString('id-ID')}` };
+        const dateStr = new Intl.DateTimeFormat('id-ID', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            timeZone: 'Asia/Jakarta',
+        }).format(new Date(contact.last_seen_at));
+
+        return { isOnline: false, statusText: `Aktif ${dateStr}` };
     }
 
     return { isOnline: contact.is_online, statusText: contact.status_text || 'Offline' };
