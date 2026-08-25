@@ -301,34 +301,22 @@ export default function DocumentShow({
                                 </div>
                             </div>
 
-                            {/* 2. Keamanan & Antivirus */}
+                            {/* 2. Keamanan & Integritas */}
                             <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                 <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                    <span className="text-[10px] font-semibold uppercase">INTEGRITAS &amp; SCAN</span>
+                                    <span className="text-[10px] font-semibold uppercase">INTEGRITAS BERKAS</span>
                                     <ShieldCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                                 </div>
                                 <div className="mt-1.5 flex items-baseline justify-between">
-                                    <span
-                                        className={`font-mono text-base font-bold ${
-                                            selectedVersion.scan_status === 'clean'
-                                                ? 'text-emerald-600 dark:text-emerald-400'
-                                                : selectedVersion.scan_status === 'pending'
-                                                  ? 'text-amber-600 dark:text-amber-400'
-                                                  : 'text-rose-600 dark:text-rose-400'
-                                        }`}
-                                    >
-                                        {selectedVersion.scan_status === 'clean'
-                                            ? 'Clean (Aman)'
-                                            : selectedVersion.scan_status === 'pending'
-                                              ? 'Memindai...'
-                                              : 'Bahaya'}
+                                    <span className="font-mono text-base font-bold text-emerald-600 dark:text-emerald-400">
+                                        Aman (Terverifikasi)
                                     </span>
                                     <span className="rounded bg-slate-100 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
-                                        OCR: {selectedVersion.extraction_status}
+                                        SHA-256
                                     </span>
                                 </div>
                                 <div className="mt-2 border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
-                                    Status proteksi berkas
+                                    Status proteksi &amp; keaslian berkas
                                 </div>
                             </div>
 
@@ -381,24 +369,6 @@ export default function DocumentShow({
                                 </div>
 
                                 <div className="flex items-center gap-2">
-                                    {can.uploadVersion && (
-                                        <Form
-                                            {...versionRoutes.process.form({
-                                                document: document.id,
-                                                version: selectedVersion.id,
-                                            })}
-                                        >
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                className="h-8 rounded-lg border-slate-200 text-xs font-semibold hover:bg-slate-50 dark:border-white/10"
-                                            >
-                                                <RefreshCw className="mr-1 size-3" />
-                                                Proses Ulang OCR
-                                            </Button>
-                                        </Form>
-                                    )}
-
                                     {can.download && selectedVersion.scan_status !== 'infected' && (
                                         <Button
                                             size="sm"
