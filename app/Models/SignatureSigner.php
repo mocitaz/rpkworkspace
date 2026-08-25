@@ -13,13 +13,20 @@ class SignatureSigner extends Model
 
     protected $fillable = ['signature_request_id', 'name', 'email', 'signing_order', 'signing_token', 'status', 'signed_at', 'last_reminded_at', 'signed_ip_address', 'signed_user_agent', 'accepted_name', 'signature_data'];
 
-    protected $hidden = ['signing_token', 'signed_ip_address', 'signed_user_agent'];
+    protected $hidden = ['signed_ip_address', 'signed_user_agent', 'signature_data'];
 
     protected $attributes = ['signing_order' => 1, 'status' => 'pending'];
+
+    protected $appends = ['signing_url'];
 
     protected function casts(): array
     {
         return ['signed_at' => 'datetime', 'last_reminded_at' => 'datetime'];
+    }
+
+    public function getSigningUrlAttribute(): string
+    {
+        return route('signature.sign.show', (string) $this->signing_token);
     }
 
     /** @return BelongsTo<SignatureRequest, $this> */

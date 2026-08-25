@@ -95,7 +95,7 @@ class DocumentController extends Controller
                 'matter:id,matter_number,title,legal_hold_at', 'client:id,client_number,display_name',
                 'creator:id,name', 'versions.uploader:id,name',
                 'approvals.reviewer:id,name', 'approvals.requester:id,name',
-                'signatureRequests.signers:id,signature_request_id,name,email,status,signed_at',
+                'signatureRequests.signers:id,signature_request_id,name,email,status,signed_at,signing_token',
                 'comments' => fn ($query) => $query->whereNull('parent_id')->with([
                     'user:id,name,position_title,avatar_path',
                     'reactions.user:id,name',

@@ -3,11 +3,15 @@ import {
     ArrowLeft,
     ArrowUpRight,
     Building2,
+    Check,
     CheckCircle2,
     ChevronDown,
+    Copy,
     Download,
+    ExternalLink,
     Eye,
     FileCheck,
+    FileCheck2,
     FileClock,
     FileText,
     FileUp,
@@ -566,24 +570,90 @@ export default function DocumentShow({
                             <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
                                 {document.signature_requests.length ? (
                                     document.signature_requests.map((request) => (
-                                        <div key={request.id} className="space-y-1.5 py-3 text-xs">
+                                        <div key={request.id} className="space-y-3 py-3 text-xs">
                                             <div className="flex items-center justify-between gap-2">
-                                                <span className="font-semibold text-slate-900 dark:text-white">
-                                                    Alur: {request.mode === 'sequential' ? 'Berurutan' : 'Paralel'}
-                                                </span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-bold text-slate-900 dark:text-white">
+                                                        Alur: {request.mode === 'sequential' ? 'Berurutan (Sequential)' : 'Paralel (Serentak)'}
+                                                    </span>
+                                                </div>
                                                 <StatusBadge value={request.status} />
                                             </div>
 
-                                            <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                                {request.signers.map((s) => `${s.name} (${s.status})`).join(' · ')}
-                                            </p>
+                                            {/* Signers List with direct signing actions */}
+                                            <div className="space-y-2">
+                                                {request.signers.map((s, idx) => (
+                                                    <div
+                                                        key={s.id || idx}
+                                                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border border-slate-200/80 bg-slate-50/70 p-2.5 dark:border-white/10 dark:bg-zinc-800/40"
+                                                    >
+                                                        <div className="min-w-0 space-y-0.5">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span className="font-bold text-slate-900 dark:text-white">
+                                                                    {s.name}
+                                                                </span>
+                                                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                                    ({s.email})
+                                                                </span>
+                                                            </div>
+                                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                                {s.status === 'signed' ? (
+                                                                    <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
+                                                                        <Check className="size-3" />
+                                                                        Ditandatangani {s.signed_at ? formatDate(s.signed_at) : 'Selesai'}
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="text-amber-600 font-medium dark:text-amber-400">
+                                                                        Menunggu penandatanganan
+                                                                    </span>
+                                                                )}
+                                                            </p>
+                                                        </div>
 
-                                            <div className="flex items-center gap-2 pt-0.5">
+                                                        {s.status === 'pending' && (
+                                                            <div className="flex items-center gap-1.5 shrink-0">
+                                                                {s.signing_token && (
+                                                                    <>
+                                                                        <a
+                                                                            href={`/sign/${s.signing_token}`}
+                                                                            target="_blank"
+                                                                            rel="noreferrer"
+                                                                            className="inline-flex h-7 items-center gap-1 rounded-lg bg-purple-600 px-2.5 text-xs font-bold text-white shadow-2xs hover:bg-purple-700 active:scale-95 transition-all"
+                                                                        >
+                                                                            <PenLine className="size-3" />
+                                                                            Tanda Tangani
+                                                                            <ExternalLink className="size-2.5 opacity-70" />
+                                                                        </a>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                const url = `${window.location.origin}/sign/${s.signing_token}`;
+                                                                                navigator.clipboard.writeText(url);
+                                                                                alert(`Tautan tanda tangan disalin:\n${url}`);
+                                                                            }}
+                                                                            className="inline-flex h-7 items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                                                            title="Salin link tanda tangan signer"
+                                                                        >
+                                                                            <Copy className="size-3" />
+                                                                            Salin Link
+                                                                        </button>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-slate-100/70 px-2.5 py-1.5 dark:bg-zinc-800/60">
+                                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                    QR Code Verifikasi Publik:
+                                                </span>
                                                 <a
                                                     href={signatureVerificationRoutes.verify.url(request.verification_code)}
                                                     target="_blank"
                                                     rel="noreferrer"
-                                                    className="inline-flex items-center gap-1 font-mono text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                                    className="inline-flex items-center gap-1 font-mono text-[11px] font-bold text-blue-600 hover:underline dark:text-blue-400"
                                                 >
                                                     Kode: {request.verification_code}
                                                     <ArrowUpRight className="size-3" />
@@ -592,23 +662,31 @@ export default function DocumentShow({
 
                                             {/* Download Artifacts when completed */}
                                             {request.status === 'completed' && (
-                                                <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
-                                                    {request.signed_final_path && request.signed_final_status === 'completed' && (
-                                                        <a
-                                                            href={signatureArtifactRoutes.signedFinal.url(request.id)}
-                                                            className="rounded border border-slate-200 bg-slate-50 px-2 py-1 font-semibold text-blue-600 hover:bg-slate-100 dark:bg-zinc-800"
-                                                        >
-                                                            Unduh Signed-Final PDF
-                                                        </a>
-                                                    )}
-                                                    {request.certificate_path && (
-                                                        <a
-                                                            href={signatureArtifactRoutes.certificate.url(request.id)}
-                                                            className="rounded border border-slate-200 bg-slate-50 px-2 py-1 font-semibold text-blue-600 hover:bg-slate-100 dark:bg-zinc-800"
-                                                        >
-                                                            Unduh Sertifikat PDF
-                                                        </a>
-                                                    )}
+                                                <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3 dark:border-emerald-900/40 dark:bg-emerald-950/20 space-y-2">
+                                                    <p className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                                                        <FileCheck2 className="size-3.5" />
+                                                        Dokumen telah selesai ditandatangani! Berkas PDF resmi telah dibubuhi QR Code sertifikasi dan stempel digital.
+                                                    </p>
+                                                    <div className="flex flex-wrap gap-2 text-xs pt-1">
+                                                        {request.signed_final_path && request.signed_final_status === 'completed' && (
+                                                            <a
+                                                                href={signatureArtifactRoutes.signedFinal.url(request.id)}
+                                                                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 font-bold text-white shadow-2xs hover:bg-emerald-700"
+                                                            >
+                                                                <Download className="size-3.5" />
+                                                                Unduh Signed-Final PDF (QR Code)
+                                                            </a>
+                                                        )}
+                                                        {request.certificate_path && (
+                                                            <a
+                                                                href={signatureArtifactRoutes.certificate.url(request.id)}
+                                                                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                            >
+                                                                <FileCheck className="size-3.5 text-blue-600" />
+                                                                Unduh Sertifikat PDF
+                                                            </a>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
