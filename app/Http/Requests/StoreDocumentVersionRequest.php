@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\File;
 
 class StoreDocumentVersionRequest extends FormRequest
 {
@@ -24,7 +23,7 @@ class StoreDocumentVersionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required', File::types(['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'jpg', 'jpeg', 'png'])->max(25 * 1024)],
+            'file' => ['required', 'file', 'max:51200'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ];
     }

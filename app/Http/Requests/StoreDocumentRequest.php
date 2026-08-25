@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use App\Models\Document;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rules\File;
 
 class StoreDocumentRequest extends FormRequest
 {
@@ -31,7 +30,7 @@ class StoreDocumentRequest extends FormRequest
             'document_type' => ['nullable', 'string', 'max:100'],
             'status' => ['nullable', 'string', 'in:draft,under_review,revision_requested,approved,final,signed'],
             'confidentiality_level' => ['nullable', 'string', 'in:standard,confidential,restricted,strictly_confidential'],
-            'file' => ['required', File::types(['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'jpg', 'jpeg', 'png'])->max(50 * 1024)],
+            'file' => ['required', 'file', 'max:51200'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ];
     }

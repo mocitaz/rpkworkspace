@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head, Link, useForm } from '@inertiajs/react';
 import {
     ArrowLeft,
     ArrowUpRight,
@@ -26,7 +26,7 @@ import {
     Upload,
     User,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { DiscussionBox, type DiscussionComment, type DiscussionStaff } from '@/components/comments/discussion-box';
 import { EmptyState } from '@/components/empty-state';
 import InputError from '@/components/input-error';
@@ -763,83 +763,11 @@ export default function DocumentShow({
             </div>
 
             {/* Modal: Unggah Versi Baru */}
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
-                    <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                        <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                            Unggah Versi Dokumen Baru
-                        </DialogTitle>
-                        <DialogDescription className="text-xs text-slate-500">
-                            Versi sebelumnya tetap tersimpan utuh dalam audit log.
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <Form
-                        {...versionRoutes.store.form(document.id)}
-                        encType="multipart/form-data"
-                        className="space-y-3.5 pt-1"
-                        onSuccess={() => setOpen(false)}
-                    >
-                        {({ errors, processing }) => (
-                            <>
-                                <div className="grid gap-1">
-                                    <Label htmlFor="version-file" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                        Pilih Berkas Baru *
-                                    </Label>
-                                    <Input
-                                        id="version-file"
-                                        name="file"
-                                        type="file"
-                                        required
-                                        className="h-8 rounded-lg border border-slate-200 bg-slate-50/60 text-xs file:mr-2 file:rounded file:border-0 file:bg-slate-100 file:px-2 file:py-0.5 file:text-xs file:font-semibold focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418]"
-                                    />
-                                    <InputError message={errors.file} />
-                                </div>
-
-                                <div className="grid gap-1">
-                                    <Label htmlFor="version-notes" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                        Catatan Perubahan / Rilis
-                                    </Label>
-                                    <textarea
-                                        id="version-notes"
-                                        name="notes"
-                                        rows={2}
-                                        placeholder="Keterangan perbaikan draf, masukan partner, dll..."
-                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
-                                    />
-                                    <InputError message={errors.notes} />
-                                </div>
-
-                                <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setOpen(false)}
-                                        className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                                    >
-                                        Batal
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        disabled={processing}
-                                        className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
-                                    >
-                                        {processing ? (
-                                            <>
-                                                <Spinner className="mr-1.5 size-3.5" />
-                                                Mengunggah...
-                                            </>
-                                        ) : (
-                                            'Unggah Versi'
-                                        )}
-                                    </Button>
-                                </div>
-                            </>
-                        )}
-                    </Form>
-                </DialogContent>
-            </Dialog>
+            <UploadVersionModal
+                isOpen={open}
+                onClose={() => setOpen(false)}
+                documentId={document.id}
+            />
 
             {/* Modal: Ajukan Review */}
             <Dialog
@@ -1225,6 +1153,141 @@ export default function DocumentShow({
                 </DialogContent>
             </Dialog>
         </>
+    );
+}
+
+function UploadVersionModal({
+    isOpen,
+    onClose,
+    documentId,
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    documentId: string;
+}) {
+    const { data, setData, post, processing, errors, reset, clearErrors } = useForm<{
+        file: File | null;
+        notes: string;
+    }>({
+        file: null,
+        notes: '',
+    });
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post(versionRoutes.store.url(documentId), {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                reset();
+                onClose();
+            },
+        });
+    };
+
+    return (
+        <Dialog
+            open={isOpen}
+            onOpenChange={(nextOpen) => {
+                if (!nextOpen) {
+                    reset();
+                    clearErrors();
+                    onClose();
+                }
+            }}
+        >
+            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                    <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                        Unggah Versi Dokumen Baru
+                    </DialogTitle>
+                    <DialogDescription className="text-xs text-slate-500">
+                        Versi sebelumnya tetap tersimpan utuh dalam audit log.
+                    </DialogDescription>
+                </DialogHeader>
+
+                {Object.keys(errors).length > 0 && (
+                    <div className="my-2 rounded-xl border border-rose-200 bg-rose-50/80 p-3 text-xs text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
+                        <div className="flex items-center gap-2 font-bold">
+                            <ShieldAlert className="size-4 shrink-0 text-rose-600" />
+                            <span>Gagal mengunggah versi baru:</span>
+                        </div>
+                        <ul className="mt-1 list-inside list-disc space-y-0.5 pl-1 text-[11px]">
+                            {Object.entries(errors).map(([key, msg]) => (
+                                <li key={key}>{msg}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-3.5 pt-1">
+                    <div className="grid gap-1">
+                        <Label htmlFor="version-file" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            Pilih Berkas Baru <span className="text-rose-500">*</span>
+                        </Label>
+                        <Input
+                            id="version-file"
+                            ref={fileInputRef}
+                            type="file"
+                            required
+                            onChange={(e) => setData('file', e.target.files?.[0] || null)}
+                            className="h-8 rounded-lg border border-slate-200 bg-slate-50/60 text-xs file:mr-2 file:rounded file:border-0 file:bg-slate-100 file:px-2 file:py-0.5 file:text-xs file:font-semibold focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418]"
+                        />
+                        {data.file && (
+                            <p className="text-[11px] font-mono text-blue-600 dark:text-blue-400">
+                                Berkas terpilih: {data.file.name} ({Math.round(data.file.size / 1024)} KB)
+                            </p>
+                        )}
+                        <InputError message={errors.file} />
+                    </div>
+
+                    <div className="grid gap-1">
+                        <Label htmlFor="version-notes" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            Catatan Perubahan / Rilis
+                        </Label>
+                        <textarea
+                            id="version-notes"
+                            value={data.notes}
+                            onChange={(e) => setData('notes', e.target.value)}
+                            rows={2}
+                            placeholder="Keterangan perbaikan draf, masukan partner, dll..."
+                            className="w-full rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                        />
+                        <InputError message={errors.notes} />
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={onClose}
+                            disabled={processing}
+                            className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                        >
+                            Batal
+                        </Button>
+                        <Button
+                            type="submit"
+                            size="sm"
+                            disabled={processing}
+                            className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
+                        >
+                            {processing ? (
+                                <>
+                                    <Spinner className="mr-1.5 size-3.5" />
+                                    Mengunggah...
+                                </>
+                            ) : (
+                                'Unggah Versi'
+                            )}
+                        </Button>
+                    </div>
+                </form>
+            </DialogContent>
+        </Dialog>
     );
 }
 

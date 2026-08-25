@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import {
     Building2,
     ChevronDown,
@@ -14,7 +14,7 @@ import {
     ShieldAlert,
     ShieldCheck,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { DocumentPreviewModal, type PreviewableDocument } from '@/components/documents/document-preview-modal';
 import { EmptyState } from '@/components/empty-state';
 import InputError from '@/components/input-error';
@@ -509,180 +509,273 @@ export default function DocumentsIndex({
             />
 
             {/* Modal Dialog: Unggah Dokumen Privat */}
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-6 pr-10 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
-                    <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
-                        <div className="flex items-center gap-2.5">
-                            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                                <FileUp className="size-4.5" />
-                            </div>
-                            <div>
-                                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
-                                    Unggah Dokumen Privat
-                                </DialogTitle>
-                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Simpan berkas legal dengan kontrol akses, scan antivirus, dan ekstraksi teks.
-                                </DialogDescription>
-                            </div>
-                        </div>
-                    </DialogHeader>
-
-                    <Form
-                        {...documentRoutes.store.form()}
-                        encType="multipart/form-data"
-                        className="space-y-3.5 pt-1"
-                        resetOnSuccess
-                        onSuccess={() => setOpen(false)}
-                    >
-                        {({ errors, processing }) => (
-                            <>
-                                <input type="hidden" name="status" value="draft" />
-
-                                <Field
-                                    label="Judul Dokumen"
-                                    name="title"
-                                    error={errors.title}
-                                    placeholder="Contoh: Perjanjian Kerjasama Distribusi Eksklusif"
-                                    required
-                                />
-
-                                <div className="grid gap-2.5 sm:grid-cols-2">
-                                    <div className="grid gap-1">
-                                        <Label htmlFor="matter_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                            Terkait Perkara (Matter)
-                                        </Label>
-                                        <div className="relative">
-                                            <select
-                                                id="matter_id"
-                                                name="matter_id"
-                                                defaultValue={initialMatterId}
-                                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
-                                            >
-                                                <option value="">Dokumen Umum (Tanpa Matter)</option>
-                                                {matters.map((matter) => (
-                                                    <option key={matter.id} value={matter.id}>
-                                                        {matter.matter_number} - {matter.title}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
-                                        </div>
-                                        <InputError message={errors.matter_id} />
-                                    </div>
-
-                                    <div className="grid gap-1">
-                                        <Label htmlFor="client_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                            Terkait Klien
-                                        </Label>
-                                        <div className="relative">
-                                            <select
-                                                id="client_id"
-                                                name="client_id"
-                                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
-                                            >
-                                                <option value="">Pilih Klien (Opsional)</option>
-                                                {clients.map((client) => (
-                                                    <option key={client.id} value={client.id}>
-                                                        {client.display_name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
-                                        </div>
-                                        <InputError message={errors.client_id} />
-                                    </div>
-                                </div>
-
-                                <div className="grid gap-2.5 sm:grid-cols-2">
-                                    <Field
-                                        label="Kategori / Tipe Dokumen"
-                                        name="document_type"
-                                        error={errors.document_type}
-                                        placeholder="Contoh: Kontrak, Alat Bukti, Surat Kuasa"
-                                    />
-
-                                    <div className="grid gap-1">
-                                        <Label htmlFor="confidentiality_level" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                            Tingkat Kerahasiaan
-                                        </Label>
-                                        <div className="relative">
-                                            <select
-                                                id="confidentiality_level"
-                                                name="confidentiality_level"
-                                                defaultValue="standard"
-                                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
-                                            >
-                                                <option value="standard">Standar Internal</option>
-                                                <option value="confidential">Confidential (Rahasia)</option>
-                                                <option value="restricted">Restricted (Terbatas)</option>
-                                                <option value="strictly_confidential">Strictly Confidential (Sangat Rahasia)</option>
-                                            </select>
-                                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
-                                        </div>
-                                        <InputError message={errors.confidentiality_level} />
-                                    </div>
-                                </div>
-
-                                <div className="grid gap-1">
-                                    <Label htmlFor="file" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                        Pilih Berkas Dokumen (PDF, DOCX, XLSX, dll) *
-                                    </Label>
-                                    <Input
-                                        id="file"
-                                        name="file"
-                                        type="file"
-                                        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png"
-                                        required
-                                        className="h-8 rounded-lg border border-slate-200 bg-slate-50/60 text-xs file:mr-2 file:rounded file:border-0 file:bg-slate-100 file:px-2 file:py-0.5 file:text-xs file:font-semibold focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418]"
-                                    />
-                                    <InputError message={errors.file} />
-                                </div>
-
-                                <div className="grid gap-1">
-                                    <Label htmlFor="notes" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                        Catatan Dokumen / Keterangan (Opsional)
-                                    </Label>
-                                    <textarea
-                                        id="notes"
-                                        name="notes"
-                                        rows={2}
-                                        placeholder="Keterangan draf, ringkasan berkas, atau instruksi..."
-                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
-                                    />
-                                    <InputError message={errors.notes} />
-                                </div>
-
-                                <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setOpen(false)}
-                                        className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                                    >
-                                        Batal
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        disabled={processing}
-                                        className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
-                                    >
-                                        {processing ? (
-                                            <>
-                                                <Spinner className="mr-1.5 size-3.5" />
-                                                Mengunggah...
-                                            </>
-                                        ) : (
-                                            'Unggah Dokumen'
-                                        )}
-                                    </Button>
-                                </div>
-                            </>
-                        )}
-                    </Form>
-                </DialogContent>
-            </Dialog>
+            <UploadDocumentModal
+                isOpen={open}
+                onClose={() => setOpen(false)}
+                matters={matters}
+                clients={clients}
+                initialMatterId={initialMatterId}
+            />
         </>
+    );
+}
+
+function UploadDocumentModal({
+    isOpen,
+    onClose,
+    matters,
+    clients,
+    initialMatterId = '',
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    matters: { id: string; matter_number: string; title: string; client_id: string }[];
+    clients: { id: string; display_name: string }[];
+    initialMatterId?: string;
+}) {
+    const { data, setData, post, processing, errors, reset, clearErrors } = useForm<{
+        title: string;
+        matter_id: string;
+        client_id: string;
+        document_type: string;
+        confidentiality_level: string;
+        status: string;
+        file: File | null;
+        notes: string;
+    }>({
+        title: '',
+        matter_id: initialMatterId,
+        client_id: '',
+        document_type: '',
+        confidentiality_level: 'standard',
+        status: 'draft',
+        file: null,
+        notes: '',
+    });
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post(documentRoutes.store.url(), {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                reset();
+                onClose();
+            },
+        });
+    };
+
+    return (
+        <Dialog
+            open={isOpen}
+            onOpenChange={(nextOpen) => {
+                if (!nextOpen) {
+                    reset();
+                    clearErrors();
+                    onClose();
+                }
+            }}
+        >
+            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                            <FileUp className="size-4.5" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                Unggah Dokumen Privat
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                Simpan berkas legal dengan kontrol akses, scan antivirus, dan ekstraksi teks.
+                            </DialogDescription>
+                        </div>
+                    </div>
+                </DialogHeader>
+
+                {Object.keys(errors).length > 0 && (
+                    <div className="rounded-xl border border-rose-200 bg-rose-50/80 p-3 text-xs text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
+                        <div className="flex items-center gap-2 font-bold">
+                            <ShieldAlert className="size-4 shrink-0 text-rose-600" />
+                            <span>Gagal mengunggah dokumen:</span>
+                        </div>
+                        <ul className="mt-1 list-inside list-disc space-y-0.5 pl-1 text-[11px]">
+                            {Object.entries(errors).map(([key, msg]) => (
+                                <li key={key}>{msg}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-3.5 pt-1">
+                    <div className="grid gap-1">
+                        <Label htmlFor="title" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            Judul Dokumen <span className="text-rose-500">*</span>
+                        </Label>
+                        <Input
+                            id="title"
+                            value={data.title}
+                            onChange={(e) => setData('title', e.target.value)}
+                            placeholder="Contoh: Perjanjian Kerjasama Distribusi Eksklusif"
+                            required
+                            className="h-8 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                        />
+                        <InputError message={errors.title} />
+                    </div>
+
+                    <div className="grid gap-2.5 sm:grid-cols-2">
+                        <div className="grid gap-1">
+                            <Label htmlFor="matter_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Terkait Perkara (Matter)
+                            </Label>
+                            <div className="relative">
+                                <select
+                                    id="matter_id"
+                                    value={data.matter_id}
+                                    onChange={(e) => setData('matter_id', e.target.value)}
+                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                >
+                                    <option value="">Dokumen Umum (Tanpa Matter)</option>
+                                    {matters.map((matter) => (
+                                        <option key={matter.id} value={matter.id}>
+                                            {matter.matter_number} - {matter.title}
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                            </div>
+                            <InputError message={errors.matter_id} />
+                        </div>
+
+                        <div className="grid gap-1">
+                            <Label htmlFor="client_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Terkait Klien
+                            </Label>
+                            <div className="relative">
+                                <select
+                                    id="client_id"
+                                    value={data.client_id}
+                                    onChange={(e) => setData('client_id', e.target.value)}
+                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                >
+                                    <option value="">Pilih Klien (Opsional)</option>
+                                    {clients.map((client) => (
+                                        <option key={client.id} value={client.id}>
+                                            {client.display_name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                            </div>
+                            <InputError message={errors.client_id} />
+                        </div>
+                    </div>
+
+                    <div className="grid gap-2.5 sm:grid-cols-2">
+                        <div className="grid gap-1">
+                            <Label htmlFor="document_type" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Kategori / Tipe Dokumen
+                            </Label>
+                            <Input
+                                id="document_type"
+                                value={data.document_type}
+                                onChange={(e) => setData('document_type', e.target.value)}
+                                placeholder="Contoh: Kontrak, Alat Bukti, Surat Kuasa"
+                                className="h-8 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                            />
+                            <InputError message={errors.document_type} />
+                        </div>
+
+                        <div className="grid gap-1">
+                            <Label htmlFor="confidentiality_level" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Tingkat Kerahasiaan
+                            </Label>
+                            <div className="relative">
+                                <select
+                                    id="confidentiality_level"
+                                    value={data.confidentiality_level}
+                                    onChange={(e) => setData('confidentiality_level', e.target.value)}
+                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                >
+                                    <option value="standard">Standar Internal</option>
+                                    <option value="confidential">Confidential (Rahasia)</option>
+                                    <option value="restricted">Restricted (Terbatas)</option>
+                                    <option value="strictly_confidential">Strictly Confidential (Sangat Rahasia)</option>
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                            </div>
+                            <InputError message={errors.confidentiality_level} />
+                        </div>
+                    </div>
+
+                    <div className="grid gap-1">
+                        <Label htmlFor="file" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            Pilih Berkas Dokumen (PDF, DOCX, XLSX, dll) <span className="text-rose-500">*</span>
+                        </Label>
+                        <Input
+                            id="file"
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png"
+                            required
+                            onChange={(e) => setData('file', e.target.files?.[0] || null)}
+                            className="h-8 rounded-lg border border-slate-200 bg-slate-50/60 text-xs file:mr-2 file:rounded file:border-0 file:bg-slate-100 file:px-2 file:py-0.5 file:text-xs file:font-semibold focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418]"
+                        />
+                        {data.file && (
+                            <p className="text-[11px] font-mono text-blue-600 dark:text-blue-400">
+                                Berkas terpilih: {data.file.name} ({Math.round(data.file.size / 1024)} KB)
+                            </p>
+                        )}
+                        <InputError message={errors.file} />
+                    </div>
+
+                    <div className="grid gap-1">
+                        <Label htmlFor="notes" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            Catatan Dokumen / Keterangan (Opsional)
+                        </Label>
+                        <textarea
+                            id="notes"
+                            value={data.notes}
+                            onChange={(e) => setData('notes', e.target.value)}
+                            rows={2}
+                            placeholder="Keterangan draf, ringkasan berkas, atau instruksi..."
+                            className="w-full rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                        />
+                        <InputError message={errors.notes} />
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={onClose}
+                            disabled={processing}
+                            className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                        >
+                            Batal
+                        </Button>
+                        <Button
+                            type="submit"
+                            size="sm"
+                            disabled={processing}
+                            className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
+                        >
+                            {processing ? (
+                                <>
+                                    <Spinner className="mr-1.5 size-3.5" />
+                                    Mengunggah...
+                                </>
+                            ) : (
+                                'Unggah Dokumen'
+                            )}
+                        </Button>
+                    </div>
+                </form>
+            </DialogContent>
+        </Dialog>
     );
 }
 
