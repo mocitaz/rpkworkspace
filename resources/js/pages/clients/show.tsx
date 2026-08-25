@@ -1,4 +1,4 @@
-import { Form, Head, Link, router } from '@inertiajs/react';
+import { Form, Head, Link, router, useForm } from '@inertiajs/react';
 import {
     AlertTriangle,
     ArrowLeft,
@@ -13,6 +13,7 @@ import {
     ExternalLink,
     FileBadge,
     FileText,
+    FileUp,
     Globe,
     Mail,
     MapPin,
@@ -27,7 +28,7 @@ import {
     User,
     Users,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { ClientEditDialog } from '@/components/client-edit-dialog';
 import { EmptyState } from '@/components/empty-state';
 import { StatusBadge } from '@/components/status-badge';
@@ -185,6 +186,8 @@ export default function ClientShow({
     const [copiedTax, setCopiedTax] = useState(false);
     const [isAddingCompliance, setIsAddingCompliance] = useState(false);
     const [editingCompliance, setEditingCompliance] = useState<ComplianceDocument | null>(null);
+    const [isAddingContact, setIsAddingContact] = useState(false);
+    const [isUploadingDocument, setIsUploadingDocument] = useState(false);
     const allMatters = useMemo(() => [...activeMatters, ...closedMatters], [activeMatters, closedMatters]);
 
     const handleCopyTax = () => {
@@ -498,12 +501,21 @@ export default function ClientShow({
                                             <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                 Kontak Person ({client.contacts.length})
                                             </span>
-                                            {client.contacts.length > 2 && (
+                                            {client.contacts.length > 2 ? (
                                                 <button
                                                     onClick={() => setTab('Kontak')}
-                                                    className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                                    className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400 cursor-pointer"
                                                 >
                                                     Lihat Semua →
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setIsAddingContact(true)}
+                                                    className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400 cursor-pointer"
+                                                >
+                                                    <Plus className="size-3" />
+                                                    Tambah Kontak
                                                 </button>
                                             )}
                                         </div>
@@ -540,9 +552,26 @@ export default function ClientShow({
                                                 ))}
                                             </div>
                                         ) : (
-                                            <p className="text-xs text-slate-400">
-                                                Belum ada kontak perwakilan yang didaftarkan.
-                                            </p>
+                                            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200/80 bg-slate-50/50 p-5 text-center dark:border-white/10 dark:bg-white/[0.01]">
+                                                <div className="mb-2 flex size-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                                                    <ContactRound className="size-4" />
+                                                </div>
+                                                <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200">
+                                                    Belum ada kontak perwakilan
+                                                </p>
+                                                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                                    Daftarkan narahubung PIC, direksi, atau kuasa klien.
+                                                </p>
+                                                <Button
+                                                    type="button"
+                                                    size="sm"
+                                                    onClick={() => setIsAddingContact(true)}
+                                                    className="mt-3 h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900 cursor-pointer"
+                                                >
+                                                    <Plus className="mr-1.5 size-3.5" />
+                                                    Tambah Kontak Person
+                                                </Button>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -854,6 +883,15 @@ export default function ClientShow({
                                                 Personil yang dapat dihubungi terkait administrasi dan komunikasi perkara.
                                             </p>
                                         </div>
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            onClick={() => setIsAddingContact(true)}
+                                            className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900 cursor-pointer"
+                                        >
+                                            <Plus className="mr-1.5 size-3.5" />
+                                            Tambah Kontak
+                                        </Button>
                                     </div>
 
                                     {client.contacts.length ? (
@@ -901,8 +939,25 @@ export default function ClientShow({
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="flex min-h-[200px] items-center justify-center p-6 text-center">
-                                            <EmptyState title="Belum ada kontak perwakilan terdaftar" />
+                                        <div className="flex min-h-[220px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-200/80 bg-slate-50/50 p-8 text-center dark:border-white/10 dark:bg-white/[0.01]">
+                                            <div className="mb-3 flex size-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                                                <Users className="size-5.5" />
+                                            </div>
+                                            <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                Belum Ada Kontak Perwakilan Terdaftar
+                                            </h4>
+                                            <p className="mt-1 max-w-sm text-[11px] text-slate-500 dark:text-zinc-400">
+                                                Tambahkan kontak personil perwakilan seperti Direksi, Legal Counsel, Finance, atau PIC operasional klien.
+                                            </p>
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                onClick={() => setIsAddingContact(true)}
+                                                className="mt-4 h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900 cursor-pointer"
+                                            >
+                                                <Plus className="mr-1.5 size-3.5" />
+                                                Tambah Kontak Person Baru
+                                            </Button>
                                         </div>
                                     )}
                                 </div>
@@ -1077,6 +1132,15 @@ export default function ClientShow({
                                                 Arsip legalitas, surat kuasa, dan dokumen perkara terkait.
                                             </p>
                                         </div>
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            onClick={() => setIsUploadingDocument(true)}
+                                            className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900 cursor-pointer"
+                                        >
+                                            <FileUp className="mr-1.5 size-3.5" />
+                                            Unggah Dokumen
+                                        </Button>
                                     </div>
 
                                     {documents.length ? (
@@ -1146,8 +1210,25 @@ export default function ClientShow({
                                             </table>
                                         </div>
                                     ) : (
-                                        <div className="flex min-h-[200px] items-center justify-center p-6 text-center">
-                                            <EmptyState title="Belum ada dokumen yang dapat diakses" />
+                                        <div className="flex min-h-[220px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-200/80 bg-slate-50/50 p-8 text-center dark:border-white/10 dark:bg-white/[0.01]">
+                                            <div className="mb-3 flex size-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                                                <FileText className="size-5.5" />
+                                            </div>
+                                            <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                Belum Ada Dokumen Terkait Klien
+                                            </h4>
+                                            <p className="mt-1 max-w-sm text-[11px] text-slate-500 dark:text-zinc-400">
+                                                Unggah berkas perjanjian, surat kuasa, berkas permohonan, atau dokumen perkara yang terafiliasi dengan klien ini.
+                                            </p>
+                                            <Button
+                                                type="button"
+                                                size="sm"
+                                                onClick={() => setIsUploadingDocument(true)}
+                                                className="mt-4 h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900 cursor-pointer"
+                                            >
+                                                <FileUp className="mr-1.5 size-3.5" />
+                                                Unggah Dokumen Klien
+                                            </Button>
                                         </div>
                                     )}
                                 </div>
@@ -1306,6 +1387,23 @@ export default function ClientShow({
                     </div>
                 </main>
             </div>
+
+            {/* Modal Tambah Kontak Perwakilan */}
+            <AddContactModal
+                isOpen={isAddingContact}
+                onClose={() => setIsAddingContact(false)}
+                clientId={client.id}
+                clientName={client.display_name}
+            />
+
+            {/* Modal Unggah Dokumen Terkait Klien */}
+            <UploadClientDocModal
+                isOpen={isUploadingDocument}
+                onClose={() => setIsUploadingDocument(false)}
+                clientId={client.id}
+                clientName={client.display_name}
+                matters={allMatters}
+            />
 
             {/* Modal Tambah Dokumen Legalitas */}
             {isAddingCompliance && (
@@ -1515,10 +1613,443 @@ function ComplianceDocumentDialog({
     );
 }
 
+function AddContactModal({
+    isOpen,
+    onClose,
+    clientId,
+    clientName,
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    clientId: string;
+    clientName: string;
+}) {
+    const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
+        client_id: clientId,
+        first_name: '',
+        last_name: '',
+        job_title: '',
+        organization_name: clientName,
+        email: '',
+        phone: '',
+        mobile: '',
+        notes: '',
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post('/contacts', {
+            preserveScroll: true,
+            onSuccess: () => {
+                reset();
+                onClose();
+            },
+        });
+    };
+
+    return (
+        <Dialog
+            open={isOpen}
+            onOpenChange={(open) => {
+                if (!open) {
+                    reset();
+                    clearErrors();
+                    onClose();
+                }
+            }}
+        >
+            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                            <ContactRound className="size-4.5" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                Tambah Kontak Perwakilan
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                Daftarkan PIC, Direksi, Legal Officer, atau Perwakilan Resmi untuk {clientName}.
+                            </DialogDescription>
+                        </div>
+                    </div>
+                </DialogHeader>
+
+                <form onSubmit={handleSubmit} className="space-y-3.5 pt-1">
+                    <div className="grid gap-2.5 sm:grid-cols-2">
+                        <div className="grid gap-1">
+                            <Label htmlFor="first_name" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Nama Depan <span className="text-rose-500">*</span>
+                            </Label>
+                            <Input
+                                id="first_name"
+                                value={data.first_name}
+                                onChange={(e) => setData('first_name', e.target.value)}
+                                placeholder="Contoh: Hendra / Siti"
+                                required
+                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                            />
+                            {errors.first_name && <p className="text-[11px] text-rose-500">{errors.first_name}</p>}
+                        </div>
+                        <div className="grid gap-1">
+                            <Label htmlFor="last_name" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Nama Belakang
+                            </Label>
+                            <Input
+                                id="last_name"
+                                value={data.last_name}
+                                onChange={(e) => setData('last_name', e.target.value)}
+                                placeholder="Contoh: Wijaya / Rahmawati"
+                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                            />
+                            {errors.last_name && <p className="text-[11px] text-rose-500">{errors.last_name}</p>}
+                        </div>
+                    </div>
+
+                    <div className="grid gap-2.5 sm:grid-cols-2">
+                        <div className="grid gap-1">
+                            <Label htmlFor="job_title" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Jabatan / Posisi
+                            </Label>
+                            <Input
+                                id="job_title"
+                                value={data.job_title}
+                                onChange={(e) => setData('job_title', e.target.value)}
+                                placeholder="Contoh: Direktur Utama / Legal Counsel"
+                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                            />
+                            {errors.job_title && <p className="text-[11px] text-rose-500">{errors.job_title}</p>}
+                        </div>
+                        <div className="grid gap-1">
+                            <Label htmlFor="organization_name" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Nama Instansi / Perusahaan
+                            </Label>
+                            <Input
+                                id="organization_name"
+                                value={data.organization_name}
+                                onChange={(e) => setData('organization_name', e.target.value)}
+                                placeholder="Nama perusahaan"
+                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                            />
+                            {errors.organization_name && <p className="text-[11px] text-rose-500">{errors.organization_name}</p>}
+                        </div>
+                    </div>
+
+                    <div className="grid gap-2.5 sm:grid-cols-2">
+                        <div className="grid gap-1">
+                            <Label htmlFor="email" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Alamat Email
+                            </Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                value={data.email}
+                                onChange={(e) => setData('email', e.target.value)}
+                                placeholder="nama@perusahaan.co.id"
+                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                            />
+                            {errors.email && <p className="text-[11px] text-rose-500">{errors.email}</p>}
+                        </div>
+                        <div className="grid gap-1">
+                            <Label htmlFor="mobile" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Nomor Handphone / WhatsApp
+                            </Label>
+                            <Input
+                                id="mobile"
+                                value={data.mobile}
+                                onChange={(e) => setData('mobile', e.target.value)}
+                                placeholder="0812-xxxx-xxxx"
+                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                            />
+                            {errors.mobile && <p className="text-[11px] text-rose-500">{errors.mobile}</p>}
+                        </div>
+                    </div>
+
+                    <div className="grid gap-1">
+                        <Label htmlFor="notes" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            Catatan Narahubung
+                        </Label>
+                        <textarea
+                            id="notes"
+                            value={data.notes}
+                            onChange={(e) => setData('notes', e.target.value)}
+                            rows={2}
+                            placeholder="Catatan wewenang, kuasa penandatanganan, waktu hubungi..."
+                            className="rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs leading-relaxed text-slate-900 outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                        />
+                        {errors.notes && <p className="text-[11px] text-rose-500">{errors.notes}</p>}
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.04]">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={onClose}
+                            className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                        >
+                            Batal
+                        </Button>
+                        <Button
+                            type="submit"
+                            size="sm"
+                            disabled={processing}
+                            className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 cursor-pointer"
+                        >
+                            {processing ? (
+                                <>
+                                    <Spinner className="mr-1.5 size-3" />
+                                    Menyimpan...
+                                </>
+                            ) : (
+                                'Simpan Kontak'
+                            )}
+                        </Button>
+                    </div>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function UploadClientDocModal({
+    isOpen,
+    onClose,
+    clientId,
+    clientName,
+    matters,
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    clientId: string;
+    clientName: string;
+    matters: Matter[];
+}) {
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const { data, setData, post, processing, errors, reset, clearErrors } = useForm<{
+        title: string;
+        client_id: string;
+        matter_id: string;
+        document_type: string;
+        confidentiality_level: string;
+        status: string;
+        file: File | null;
+        notes: string;
+    }>({
+        title: '',
+        client_id: clientId,
+        matter_id: '',
+        document_type: 'Dokumen Legalitas Klien',
+        confidentiality_level: 'standard',
+        status: 'draft',
+        file: null,
+        notes: '',
+    });
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post('/documents', {
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                reset();
+                onClose();
+            },
+        });
+    };
+
+    return (
+        <Dialog
+            open={isOpen}
+            onOpenChange={(open) => {
+                if (!open) {
+                    reset();
+                    clearErrors();
+                    onClose();
+                }
+            }}
+        >
+            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                            <FileUp className="size-4.5" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                Unggah Dokumen Terkait Klien
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                Berkas legalitas, surat kuasa, atau dokumen perkara untuk {clientName}.
+                            </DialogDescription>
+                        </div>
+                    </div>
+                </DialogHeader>
+
+                <form onSubmit={handleSubmit} className="space-y-3.5 pt-1">
+                    <div className="grid gap-1">
+                        <Label htmlFor="doc_title" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            Judul / Nama Dokumen <span className="text-rose-500">*</span>
+                        </Label>
+                        <Input
+                            id="doc_title"
+                            value={data.title}
+                            onChange={(e) => setData('title', e.target.value)}
+                            placeholder="Contoh: Surat Kuasa Khusus Litigasi / Perjanjian Kerjasama"
+                            required
+                            className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                        />
+                        {errors.title && <p className="text-[11px] text-rose-500">{errors.title}</p>}
+                    </div>
+
+                    <div className="grid gap-2.5 sm:grid-cols-2">
+                        <div className="grid gap-1">
+                            <Label htmlFor="doc_matter" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Terkait Perkara (Matter)
+                            </Label>
+                            <div className="relative">
+                                <select
+                                    id="doc_matter"
+                                    value={data.matter_id}
+                                    onChange={(e) => setData('matter_id', e.target.value)}
+                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs text-slate-900 outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                >
+                                    <option value="">Dokumen Umum Klien (Tanpa Perkara)</option>
+                                    {matters.map((m) => (
+                                        <option key={m.id} value={m.id}>
+                                            {m.matter_number} - {m.title}
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
+                            </div>
+                        </div>
+
+                        <div className="grid gap-1">
+                            <Label htmlFor="doc_type" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Kategori / Tipe Dokumen
+                            </Label>
+                            <Input
+                                id="doc_type"
+                                value={data.document_type}
+                                onChange={(e) => setData('document_type', e.target.value)}
+                                placeholder="Surat Kuasa, Kontrak, Salinan Akta"
+                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid gap-2.5 sm:grid-cols-2">
+                        <div className="grid gap-1">
+                            <Label htmlFor="doc_confidentiality" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Tingkat Kerahasiaan
+                            </Label>
+                            <div className="relative">
+                                <select
+                                    id="doc_confidentiality"
+                                    value={data.confidentiality_level}
+                                    onChange={(e) => setData('confidentiality_level', e.target.value)}
+                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs text-slate-900 outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                >
+                                    <option value="standard">Standar Internal</option>
+                                    <option value="confidential">Confidential (Rahasia)</option>
+                                    <option value="restricted">Restricted (Terbatas)</option>
+                                    <option value="strictly_confidential">Strictly Confidential (Sangat Rahasia)</option>
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
+                            </div>
+                        </div>
+
+                        <div className="grid gap-1">
+                            <Label htmlFor="doc_status" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Status Dokumen
+                            </Label>
+                            <div className="relative">
+                                <select
+                                    id="doc_status"
+                                    value={data.status}
+                                    onChange={(e) => setData('status', e.target.value)}
+                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs text-slate-900 outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                >
+                                    <option value="draft">Draft Awal</option>
+                                    <option value="under_review">Dalam Telaah (Review)</option>
+                                    <option value="final">Final / Sah</option>
+                                    <option value="signed">Ditandatangani (Signed)</option>
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid gap-1">
+                        <Label htmlFor="doc_file" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            Pilih Berkas File (PDF, DOCX, XLSX, max 50MB) <span className="text-rose-500">*</span>
+                        </Label>
+                        <Input
+                            id="doc_file"
+                            ref={fileInputRef}
+                            type="file"
+                            required
+                            onChange={(e) => {
+                                const file = e.target.files?.[0] ?? null;
+                                setData('file', file);
+                            }}
+                            className="h-9 cursor-pointer rounded-lg border-slate-200 bg-slate-50/70 text-xs file:mr-3 file:rounded-md file:border-0 file:bg-slate-900 file:px-2.5 file:py-1 file:text-xs file:font-semibold file:text-white dark:border-white/10 dark:bg-[#121418] dark:file:bg-white dark:file:text-slate-900"
+                        />
+                        {errors.file && <p className="text-[11px] text-rose-500">{errors.file}</p>}
+                    </div>
+
+                    <div className="grid gap-1">
+                        <Label htmlFor="doc_notes" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            Catatan Dokumen / Versi
+                        </Label>
+                        <textarea
+                            id="doc_notes"
+                            value={data.notes}
+                            onChange={(e) => setData('notes', e.target.value)}
+                            rows={2}
+                            placeholder="Keterangan singkat berkas..."
+                            className="rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs leading-relaxed text-slate-900 outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                        />
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.04]">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={onClose}
+                            className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                        >
+                            Batal
+                        </Button>
+                        <Button
+                            type="submit"
+                            size="sm"
+                            disabled={processing}
+                            className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 cursor-pointer"
+                        >
+                            {processing ? (
+                                <>
+                                    <Spinner className="mr-1.5 size-3" />
+                                    Mengunggah...
+                                </>
+                            ) : (
+                                'Unggah Dokumen'
+                            )}
+                        </Button>
+                    </div>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 ClientShow.layout = {
     breadcrumbs: [
         { title: 'Klien', href: clientRoutes.index() },
         { title: 'Detail Klien', href: '#' },
     ],
 };
+
 
