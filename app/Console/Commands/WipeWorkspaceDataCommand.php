@@ -240,13 +240,22 @@ class WipeWorkspaceDataCommand extends Command
                 'exports',
             ];
             foreach ($directoriesToClean as $dir) {
-                if (Storage::disk('public')->exists($dir)) {
-                    Storage::disk('public')->deleteDirectory($dir);
-                    Storage::disk('public')->makeDirectory($dir);
+                try {
+                    if (Storage::disk('public')->exists($dir)) {
+                        Storage::disk('public')->deleteDirectory($dir);
+                        Storage::disk('public')->makeDirectory($dir);
+                    }
+                } catch (\Throwable $e) {
+                    $this->warn(" [!] Dilewati pembersihan public storage disk ({$dir}): ".$e->getMessage());
                 }
-                if (Storage::disk('local')->exists($dir)) {
-                    Storage::disk('local')->deleteDirectory($dir);
-                    Storage::disk('local')->makeDirectory($dir);
+
+                try {
+                    if (Storage::disk('local')->exists($dir)) {
+                        Storage::disk('local')->deleteDirectory($dir);
+                        Storage::disk('local')->makeDirectory($dir);
+                    }
+                } catch (\Throwable $e) {
+                    // Ignore permission warnings on private storage
                 }
             }
             $this->line(' [✓] Direktori berkas storage dibersihkan.');
