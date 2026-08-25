@@ -439,11 +439,11 @@ export default function DocumentShow({
                         </div>
                     )}
 
-                    {/* 4. Row: Approval & Review + Riwayat Versi + Verifikasi E-Sign (3-in-a-row) */}
+                    {/* 4. Row: Approval & Review + Riwayat Versi + Verifikasi E-Sign (3-in-a-row with uniform height & scroll) */}
                     <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 items-stretch">
                         {/* 1. Approval Dokumen */}
-                        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                        <div className="flex flex-col h-[350px] rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
                                 <div className="flex items-center gap-2">
                                     <div className="flex size-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
                                         <PenLine className="size-3.5" />
@@ -457,7 +457,7 @@ export default function DocumentShow({
                                 </span>
                             </div>
 
-                            <div className="flex-1 divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
+                            <div className="flex-1 min-h-0 overflow-y-auto custom-scroll pr-1 divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
                                 {document.approvals.length ? (
                                     document.approvals.map((approval) => (
                                         <div key={approval.id} className="space-y-2 py-3 text-xs">
@@ -521,8 +521,8 @@ export default function DocumentShow({
                         </div>
 
                         {/* 2. Version History */}
-                        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                        <div className="flex flex-col h-[350px] rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
                                 <div className="flex items-center gap-2">
                                     <div className="flex size-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
                                         <FileClock className="size-3.5" />
@@ -536,7 +536,7 @@ export default function DocumentShow({
                                 </span>
                             </div>
 
-                            <div className="flex-1 divide-y divide-slate-100 dark:divide-white/[0.04]">
+                            <div className="flex-1 min-h-0 overflow-y-auto custom-scroll pr-1 divide-y divide-slate-100 dark:divide-white/[0.04]">
                                 {document.versions.map((v, index) => (
                                     <div
                                         key={v.id}
@@ -605,8 +605,8 @@ export default function DocumentShow({
                         </div>
 
                         {/* 3. Penerimaan Internal & Verifikasi E-Sign */}
-                        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                        <div className="flex flex-col h-[350px] rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
                                 <div className="flex items-center gap-2">
                                     <div className="flex size-7 items-center justify-center rounded-lg bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-zinc-100">
                                         <QrCode className="size-3.5" />
@@ -622,7 +622,7 @@ export default function DocumentShow({
                                 </span>
                             </div>
 
-                            <div className="flex-1 divide-y divide-slate-100 pt-1 dark:divide-white/[0.04] space-y-3">
+                            <div className="flex-1 min-h-0 overflow-y-auto custom-scroll pr-1 pt-1 space-y-3">
                                 {document.signature_requests.length ? (
                                     document.signature_requests.map((request) => (
                                         <div
