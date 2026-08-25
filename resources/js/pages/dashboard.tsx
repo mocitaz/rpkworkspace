@@ -455,456 +455,477 @@ export default function Dashboard({
                         </div>
                     </section>
 
-                    {/* 3. Main Bento Hub: 2 Balanced Symmetrical Columns */}
+                    {/* 3. Main Bento Hub: Symmetrical 2x2 Grid (Equal Heights & Perfectly Aligned) */}
                     <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-                        {/* Left Column (1/2): Work Queue & Executive Priority */}
-                        <div className="space-y-5 flex flex-col">
-                            {/* Widget 1: Work Queue (Tugas Aktif & Review) */}
-                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b] flex flex-col justify-between">
-                                <div>
-                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
-                                        <div className="flex items-center gap-2">
-                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Work Queue &amp; Tugas
-                                            </h2>
-                                            <span className="font-mono text-[10px] text-slate-400">
-                                                ({currentQueueItems.length})
-                                            </span>
-                                        </div>
-                                        {/* Sleek Segmented Switch */}
-                                        <div className="flex items-center rounded-lg bg-slate-100 p-0.5 text-xs dark:bg-white/[0.04]">
-                                            <button
-                                                type="button"
-                                                onClick={() => setQueueTab('pending')}
-                                                className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
-                                                    queueTab === 'pending'
-                                                        ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
-                                                        : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
-                                                }`}
-                                            >
-                                                Menunggu ({pendingCount})
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setQueueTab('in_progress')}
-                                                className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
-                                                    queueTab === 'in_progress'
-                                                        ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
-                                                        : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
-                                                }`}
-                                            >
-                                                Review ({reviewCount})
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setQueueTab('completed')}
-                                                className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
-                                                    queueTab === 'completed'
-                                                        ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
-                                                        : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
-                                                }`}
-                                            >
-                                                Selesai ({completedCount})
-                                            </button>
-                                        </div>
+                        {/* [Row 1, Col 1] Widget 1: Work Queue & Tugas */}
+                        <div className="flex h-full flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div>
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                    <div className="flex items-center gap-2">
+                                        <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                            Work Queue &amp; Tugas
+                                        </h2>
+                                        <span className="font-mono text-[10px] text-slate-400">
+                                            ({currentQueueItems.length})
+                                        </span>
                                     </div>
-
-                                    <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
-                                        {currentQueueItems.length === 0 ? (
-                                            <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
-                                                <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
-                                                    <CheckCircle2 className="size-4.5 text-slate-400 dark:text-zinc-500" />
-                                                </div>
-                                                <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
-                                                    Antrean Tugas Bersih
-                                                </p>
-                                                <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
-                                                    {queueTab === 'completed'
-                                                        ? 'Belum ada tugas yang selesai tercatat.'
-                                                        : queueTab === 'in_progress'
-                                                          ? 'Tidak ada tugas yang sedang dalam tahap review.'
-                                                          : 'Tidak ada tugas yang menunggu pengerjaan saat ini.'}
-                                                </p>
-                                                {queueTab === 'pending' && (
-                                                    <Button
-                                                        asChild
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        className="mt-2 h-7 rounded-lg text-[11px] font-bold text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
-                                                    >
-                                                        <Link href={tasksRoutes.index({ query: { create: 1 } })}>
-                                                            <Plus className="mr-1 size-3" /> Buat Tugas Baru
-                                                        </Link>
-                                                    </Button>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            currentQueueItems.slice(0, 4).map((item, idx) => {
-                                                const isUrgent = item.priority === 'high';
-
-                                                return (
-                                                    <div
-                                                        key={item.id || idx}
-                                                        className="group flex items-center justify-between gap-3 py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
-                                                    >
-                                                        <div className="min-w-0 flex-1 space-y-0.5">
-                                                            <div className="flex items-center gap-2">
-                                                                <span
-                                                                    className={`size-1.5 shrink-0 rounded-full ${
-                                                                        isUrgent
-                                                                            ? 'bg-rose-500'
-                                                                            : queueTab === 'completed'
-                                                                              ? 'bg-emerald-500'
-                                                                              : 'bg-blue-500'
-                                                                    }`}
-                                                                />
-                                                                <p
-                                                                    className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400"
-                                                                    title={item.title}
-                                                                >
-                                                                    {item.title}
-                                                                </p>
-                                                            </div>
-                                                            <div className="flex items-center gap-1.5 pl-3.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                                <span className="font-mono text-slate-700 dark:text-zinc-300">
-                                                                    {item.matter?.matter_number ?? 'RPK-TASK'}
-                                                                </span>
-                                                                <span>·</span>
-                                                                <span className="truncate">
-                                                                    {item.matter?.client?.display_name ?? item.matter?.title ?? 'Internal'}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="flex shrink-0 items-center gap-2.5 text-right">
-                                                            <span
-                                                                className={`font-mono text-[10px] font-semibold rounded-md px-1.5 py-0.5 ${
-                                                                    isUrgent
-                                                                        ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
-                                                                        : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-300'
-                                                                }`}
-                                                            >
-                                                                {item.due_at ? formatDate(item.due_at) : 'Hari ini'}
-                                                            </span>
-                                                            <TooltipProvider delayDuration={100}>
-                                                                <Tooltip>
-                                                                    <TooltipTrigger asChild>
-                                                                        <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                                            <AvatarImage src={item.assignee?.avatar_url} />
-                                                                            <AvatarFallback className="text-[8px] font-bold">
-                                                                                {getInitials(item.assignee?.name ?? 'FR')}
-                                                                            </AvatarFallback>
-                                                                        </Avatar>
-                                                                    </TooltipTrigger>
-                                                                    <TooltipContent side="top" className="bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800">
-                                                                        {item.assignee?.name ?? 'Fajar Roni'}
-                                                                    </TooltipContent>
-                                                                </Tooltip>
-                                                            </TooltipProvider>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })
-                                        )}
+                                    {/* Sleek Segmented Switch */}
+                                    <div className="flex items-center rounded-lg bg-slate-100 p-0.5 text-xs dark:bg-white/[0.04]">
+                                        <button
+                                            type="button"
+                                            onClick={() => setQueueTab('pending')}
+                                            className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
+                                                queueTab === 'pending'
+                                                    ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
+                                                    : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
+                                            }`}
+                                        >
+                                            Menunggu ({pendingCount})
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setQueueTab('in_progress')}
+                                            className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
+                                                queueTab === 'in_progress'
+                                                    ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
+                                                    : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
+                                            }`}
+                                        >
+                                            Review ({reviewCount})
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setQueueTab('completed')}
+                                            className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
+                                                queueTab === 'completed'
+                                                    ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
+                                                    : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
+                                            }`}
+                                        >
+                                            Selesai ({completedCount})
+                                        </button>
                                     </div>
                                 </div>
 
-                                <div className="mt-2 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
-                                    <Link
-                                        href={tasksRoutes.index()}
-                                        className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
-                                    >
-                                        Buka Seluruh Daftar Tugas →
-                                    </Link>
+                                <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
+                                    {currentQueueItems.length === 0 ? (
+                                        <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
+                                            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
+                                                <CheckCircle2 className="size-4.5 text-slate-400 dark:text-zinc-500" />
+                                            </div>
+                                            <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                                Antrean Tugas Bersih
+                                            </p>
+                                            <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                                {queueTab === 'completed'
+                                                    ? 'Belum ada tugas yang selesai tercatat.'
+                                                    : queueTab === 'in_progress'
+                                                      ? 'Tidak ada tugas yang sedang dalam tahap review.'
+                                                      : 'Tidak ada tugas yang menunggu pengerjaan saat ini.'}
+                                            </p>
+                                            {queueTab === 'pending' && (
+                                                <Button
+                                                    asChild
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="mt-2 h-7 rounded-lg text-[11px] font-bold text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
+                                                >
+                                                    <Link href={tasksRoutes.index({ query: { create: 1 } })}>
+                                                        <Plus className="mr-1 size-3" /> Buat Tugas Baru
+                                                    </Link>
+                                                </Button>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        currentQueueItems.slice(0, 4).map((item, idx) => {
+                                            const isUrgent = item.priority === 'high';
+
+                                            return (
+                                                <div
+                                                    key={item.id || idx}
+                                                    className="group flex items-center justify-between gap-3 py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                >
+                                                    <div className="min-w-0 flex-1 space-y-0.5">
+                                                        <div className="flex items-center gap-2">
+                                                            <span
+                                                                className={`size-1.5 shrink-0 rounded-full ${
+                                                                    isUrgent
+                                                                        ? 'bg-rose-500'
+                                                                        : queueTab === 'completed'
+                                                                          ? 'bg-emerald-500'
+                                                                          : 'bg-blue-500'
+                                                                }`}
+                                                            />
+                                                            <p
+                                                                className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400"
+                                                                title={item.title}
+                                                            >
+                                                                {item.title}
+                                                            </p>
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5 pl-3.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                                            <span className="font-mono text-slate-700 dark:text-zinc-300">
+                                                                {item.matter?.matter_number ?? 'RPK-TASK'}
+                                                            </span>
+                                                            <span>·</span>
+                                                            <span className="truncate">
+                                                                {item.matter?.client?.display_name ?? item.matter?.title ?? 'Internal'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex shrink-0 items-center gap-2.5 text-right">
+                                                        <span
+                                                            className={`font-mono text-[10px] font-semibold rounded-md px-1.5 py-0.5 ${
+                                                                isUrgent
+                                                                    ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
+                                                                    : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-300'
+                                                            }`}
+                                                        >
+                                                            {item.due_at ? formatDate(item.due_at) : 'Hari ini'}
+                                                        </span>
+                                                        <TooltipProvider delayDuration={100}>
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                        <AvatarImage src={item.assignee?.avatar_url} />
+                                                                        <AvatarFallback className="text-[8px] font-bold">
+                                                                            {getInitials(item.assignee?.name ?? 'FR')}
+                                                                        </AvatarFallback>
+                                                                    </Avatar>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent side="top" className="bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800">
+                                                                    {item.assignee?.name ?? 'Fajar Roni'}
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    )}
                                 </div>
                             </div>
 
-                            {/* Widget 2: Executive Actions & High Priority */}
-                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b] flex flex-col justify-between">
-                                <div>
-                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
-                                        <div className="flex items-center gap-2">
-                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Prioritas &amp; Tindakan Kemitraan
-                                            </h2>
-                                            <span className="rounded-full bg-rose-50 px-2 py-0.5 font-mono text-[9px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
-                                                {executive_actions?.length ?? 0} MENDESAK
-                                            </span>
-                                        </div>
-                                        <Link
-                                            href={tasksRoutes.index({ query: { priority: 'high' } })}
-                                            className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
-                                        >
-                                            Semua →
-                                        </Link>
-                                    </div>
-
-                                    <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
-                                        {!executive_actions || executive_actions.length === 0 ? (
-                                            <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
-                                                <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
-                                                    <ShieldCheck className="size-4.5" />
-                                                </div>
-                                                <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
-                                                    Kondisi Operasional Aman
-                                                </p>
-                                                <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
-                                                    Tidak ada perkara atau tenggat kritis yang memerlukan tindakan darurat saat ini.
-                                                </p>
-                                            </div>
-                                        ) : (
-                                            executive_actions.slice(0, 4).map((action, idx) => {
-                                                return (
-                                                    <div
-                                                        key={action.id || idx}
-                                                        className="group flex items-start justify-between gap-3 py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
-                                                    >
-                                                        <div className="min-w-0 flex-1 space-y-1">
-                                                            <div className="flex items-center gap-2">
-                                                                <span
-                                                                    className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold ${
-                                                                        action.badge_color === 'rose'
-                                                                            ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300'
-                                                                            : action.badge_color === 'amber'
-                                                                              ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
-                                                                              : 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
-                                                                    }`}
-                                                                >
-                                                                    {action.badge_label}
-                                                                </span>
-                                                                <span className="font-mono text-[10px] text-slate-500 dark:text-zinc-400">
-                                                                    {action.due_text}
-                                                                </span>
-                                                            </div>
-                                                            <p
-                                                                className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400"
-                                                                title={action.title}
-                                                            >
-                                                                {action.title}
-                                                            </p>
-                                                            <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400">
-                                                                {action.matter}
-                                                            </p>
-                                                        </div>
-
-                                                        <div className="flex shrink-0 items-center gap-1.5 pt-1">
-                                                            <TooltipProvider delayDuration={100}>
-                                                                <Tooltip>
-                                                                    <TooltipTrigger asChild>
-                                                                        <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                                            <AvatarImage src={action.assignee_avatar ?? undefined} />
-                                                                            <AvatarFallback className="text-[7px] font-bold">
-                                                                                {getInitials(action.assignee_name)}
-                                                                            </AvatarFallback>
-                                                                        </Avatar>
-                                                                    </TooltipTrigger>
-                                                                    <TooltipContent side="top" className="bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800">
-                                                                        {action.assignee_name}
-                                                                    </TooltipContent>
-                                                                </Tooltip>
-                                                            </TooltipProvider>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })
-                                        )}
-                                    </div>
-                                </div>
+                            <div className="mt-2 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
+                                <Link
+                                    href={tasksRoutes.index()}
+                                    className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                >
+                                    Buka Seluruh Daftar Tugas →
+                                </Link>
                             </div>
                         </div>
 
-                        {/* Right Column (1/2): Calendar Agenda, Briefing & Activity */}
-                        <div className="space-y-5 flex flex-col">
-                            {/* Widget 3: Agenda & Calendar Strip */}
-                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b] flex flex-col justify-between">
-                                <div>
-                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
-                                        <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                            Jadwal Sidang &amp; Agenda
-                                        </h2>
-                                        <Link
-                                            href={calendarRoutes.index()}
-                                            className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                        {/* [Row 1, Col 2] Widget 2: Jadwal Sidang & Agenda */}
+                        <div className="flex h-full flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div>
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                    <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                        Jadwal Sidang &amp; Agenda
+                                    </h2>
+                                    <Link
+                                        href={calendarRoutes.index()}
+                                        className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                    >
+                                        Buka Kalender →
+                                    </Link>
+                                </div>
+
+                                {/* Mini 7-Day Clean Strip */}
+                                <div className="mt-3 grid grid-cols-7 gap-1 rounded-lg bg-slate-50 p-1 text-center dark:bg-white/[0.03]">
+                                    {weekDays.map((d, index) => (
+                                        <button
+                                            key={index}
+                                            type="button"
+                                            onClick={() => setSelectedDateIndex(index)}
+                                            className={`flex flex-col items-center justify-center rounded-md py-1 text-xs transition-all cursor-pointer ${
+                                                selectedDateIndex === index
+                                                    ? 'bg-slate-900 text-white font-bold shadow-2xs dark:bg-white dark:text-slate-900'
+                                                    : 'text-slate-600 hover:bg-white hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/[0.06]'
+                                            }`}
                                         >
-                                            Buka Kalender →
-                                        </Link>
-                                    </div>
+                                            <span className="text-[9px] uppercase opacity-75">{d.dayName}</span>
+                                            <span className="font-mono text-xs font-semibold">{d.dayNum}</span>
+                                        </button>
+                                    ))}
+                                </div>
 
-                                    {/* Mini 7-Day Clean Strip */}
-                                    <div className="mt-3 grid grid-cols-7 gap-1 rounded-lg bg-slate-50 p-1 text-center dark:bg-white/[0.03]">
-                                        {weekDays.map((d, index) => (
-                                            <button
-                                                key={index}
-                                                type="button"
-                                                onClick={() => setSelectedDateIndex(index)}
-                                                className={`flex flex-col items-center justify-center rounded-md py-1 text-xs transition-all cursor-pointer ${
-                                                    selectedDateIndex === index
-                                                        ? 'bg-slate-900 text-white font-bold shadow-2xs dark:bg-white dark:text-slate-900'
-                                                        : 'text-slate-600 hover:bg-white hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/[0.06]'
-                                                }`}
-                                            >
-                                                <span className="text-[9px] uppercase opacity-75">{d.dayName}</span>
-                                                <span className="font-mono text-xs font-semibold">{d.dayNum}</span>
-                                            </button>
-                                        ))}
-                                    </div>
+                                <div className="mt-3 flex items-center justify-between border-b border-slate-100 pb-2 text-[11px] dark:border-white/[0.04]">
+                                    <span className="font-semibold text-slate-800 dark:text-zinc-200">
+                                        {activeDayFormatted}
+                                    </span>
+                                    <span className="text-slate-400 font-mono text-[10px]">
+                                        {filteredDayEvents.length} Agenda
+                                    </span>
+                                </div>
 
-                                    <div className="mt-3 flex items-center justify-between border-b border-slate-100 pb-2 text-[11px] dark:border-white/[0.04]">
-                                        <span className="font-semibold text-slate-800 dark:text-zinc-200">
-                                            {activeDayFormatted}
-                                        </span>
-                                        <span className="text-slate-400 font-mono text-[10px]">
-                                            {filteredDayEvents.length} Agenda
-                                        </span>
-                                    </div>
-
-                                    <div className="space-y-2 pt-2">
-                                        {filteredDayEvents.length === 0 ? (
-                                            <div className="flex flex-col items-center justify-center py-6 px-4 text-center">
-                                                <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
-                                                    <CalendarIcon className="size-4.5" />
-                                                </div>
-                                                <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
-                                                    Agenda Lengang
-                                                </p>
-                                                <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
-                                                    Tidak ada jadwal sidang pengadilan atau agenda pada tanggal ini.
-                                                </p>
+                                <div className="space-y-2 pt-2">
+                                    {filteredDayEvents.length === 0 ? (
+                                        <div className="flex flex-col items-center justify-center py-6 px-4 text-center">
+                                            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+                                                <CalendarIcon className="size-4.5" />
                                             </div>
-                                        ) : (
-                                            filteredDayEvents.slice(0, 3).map((ev, idx) => (
-                                                <div
-                                                    key={ev.id || idx}
-                                                    className="flex items-center justify-between gap-2 text-xs"
-                                                >
-                                                    <div className="flex min-w-0 items-center gap-2">
-                                                        <span className="size-1.5 shrink-0 rounded-full bg-blue-600" />
-                                                        <span className="font-mono text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
-                                                            {ev.time}
-                                                        </span>
-                                                        <div className="min-w-0 truncate">
-                                                            <p className="truncate font-medium text-slate-900 dark:text-white" title={ev.title}>
-                                                                {ev.title}
-                                                            </p>
-                                                            <p className="truncate text-[10px] text-slate-400">
-                                                                {ev.subtitle}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                    <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                        {ev.category}
+                                            <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                                Agenda Lengang
+                                            </p>
+                                            <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                                Tidak ada jadwal sidang pengadilan atau agenda pada tanggal ini.
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        filteredDayEvents.slice(0, 3).map((ev, idx) => (
+                                            <div
+                                                key={ev.id || idx}
+                                                className="flex items-center justify-between gap-2 text-xs"
+                                            >
+                                                <div className="flex min-w-0 items-center gap-2">
+                                                    <span className="size-1.5 shrink-0 rounded-full bg-blue-600" />
+                                                    <span className="font-mono text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
+                                                        {ev.time}
                                                     </span>
+                                                    <div className="min-w-0 truncate">
+                                                        <p className="truncate font-medium text-slate-900 dark:text-white" title={ev.title}>
+                                                            {ev.title}
+                                                        </p>
+                                                        <p className="truncate text-[10px] text-slate-400">
+                                                            {ev.subtitle}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                            ))
-                                        )}
-                                    </div>
+                                                <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                    {ev.category}
+                                                </span>
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
                             </div>
 
-                            {/* Widget 4: Recent Audit Activity */}
-                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b] flex flex-col justify-between">
-                                <div>
-                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
-                                        <div className="flex items-center gap-2">
-                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Aktivitas &amp; Log Terkini
-                                            </h2>
-                                            <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[9px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-400">
-                                                Audit Trail
-                                            </span>
-                                        </div>
-                                        <Link
-                                            href={auditRoutes.index()}
-                                            className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                                        >
-                                            Semua Log →
-                                        </Link>
+                            <div className="mt-2 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
+                                <Link
+                                    href={calendarRoutes.index()}
+                                    className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                >
+                                    Buka Kalender &amp; Agenda →
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* [Row 2, Col 1] Widget 3: Prioritas & Tindakan Kemitraan */}
+                        <div className="flex h-full flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div>
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                    <div className="flex items-center gap-2">
+                                        <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                            Prioritas &amp; Tindakan Kemitraan
+                                        </h2>
+                                        <span className="rounded-full bg-rose-50 px-2 py-0.5 font-mono text-[9px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
+                                            {executive_actions?.length ?? 0} MENDESAK
+                                        </span>
                                     </div>
-
-                                    <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
-                                        {!activities || activities.length === 0 ? (
-                                            <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
-                                                <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
-                                                    <Clock className="size-4.5" />
-                                                </div>
-                                                <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
-                                                    Log Siap Merekam
-                                                </p>
-                                                <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
-                                                    Setiap aktivitas tim pada perkara, berkas, dan penagihan akan otomatis tercatat di sini.
-                                                </p>
-                                            </div>
-                                        ) : (
-                                            activities.slice(0, 4).map((act, idx) => {
-                                                const badgeColorClass =
-                                                    act.badge_color === 'blue'
-                                                        ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
-                                                        : act.badge_color === 'purple'
-                                                          ? 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300'
-                                                          : act.badge_color === 'emerald'
-                                                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
-                                                            : act.badge_color === 'amber'
-                                                              ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
-                                                              : act.badge_color === 'indigo'
-                                                                ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300'
-                                                                : act.badge_color === 'cyan'
-                                                                  ? 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-300'
-                                                                  : act.badge_color === 'teal'
-                                                                    ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300'
-                                                                    : 'bg-slate-100 text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300';
-
-                                                const content = (
-                                                    <div className="min-w-0 flex-1 space-y-1">
-                                                        <div className="flex items-center justify-between gap-2">
-                                                            <div className="flex items-center gap-1.5 min-w-0">
-                                                                <span className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold shrink-0 ${badgeColorClass}`}>
-                                                                    {act.badge || 'Aktivitas'}
-                                                                </span>
-                                                                <span className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
-                                                                    {act.title}
-                                                                </span>
-                                                            </div>
-                                                            <span className="font-mono text-[10px] text-slate-400 shrink-0 whitespace-nowrap">
-                                                                {act.time}
-                                                            </span>
-                                                        </div>
-                                                        <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400" title={act.detail || act.subject}>
-                                                            {act.detail || act.subject}
-                                                        </p>
-                                                        <div className="flex items-center gap-1.5 pt-0.5">
-                                                            <Avatar className="size-4 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                                <AvatarImage src={act.actor_avatar} />
-                                                                <AvatarFallback className="text-[6.5px] font-bold">
-                                                                    {getInitials(act.actor)}
-                                                                </AvatarFallback>
-                                                            </Avatar>
-                                                            <span className="truncate text-[10px] font-medium text-slate-600 dark:text-zinc-400">
-                                                                {act.actor}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                );
-
-                                                return act.url ? (
-                                                    <Link
-                                                        key={act.id || idx}
-                                                        href={act.url}
-                                                        className="group flex items-start gap-2.5 py-2.5 transition-colors hover:bg-slate-50/70 rounded-lg px-1.5 -mx-1.5 dark:hover:bg-white/[0.02]"
-                                                    >
-                                                        {content}
-                                                    </Link>
-                                                ) : (
-                                                    <div
-                                                        key={act.id || idx}
-                                                        className="group flex items-start gap-2.5 py-2.5 px-1.5 -mx-1.5"
-                                                    >
-                                                        {content}
-                                                    </div>
-                                                );
-                                            })
-                                        )}
-                                    </div>
+                                    <Link
+                                        href={tasksRoutes.index({ query: { priority: 'high' } })}
+                                        className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                    >
+                                        Semua →
+                                    </Link>
                                 </div>
+
+                                <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
+                                    {!executive_actions || executive_actions.length === 0 ? (
+                                        <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
+                                            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+                                                <ShieldCheck className="size-4.5" />
+                                            </div>
+                                            <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                                Kondisi Operasional Aman
+                                            </p>
+                                            <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                                Tidak ada perkara atau tenggat kritis yang memerlukan tindakan darurat saat ini.
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        executive_actions.slice(0, 4).map((action, idx) => {
+                                            return (
+                                                <div
+                                                    key={action.id || idx}
+                                                    className="group flex items-start justify-between gap-3 py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                >
+                                                    <div className="min-w-0 flex-1 space-y-1">
+                                                        <div className="flex items-center gap-2">
+                                                            <span
+                                                                className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold ${
+                                                                    action.badge_color === 'rose'
+                                                                        ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300'
+                                                                        : action.badge_color === 'amber'
+                                                                          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
+                                                                          : 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
+                                                                }`}
+                                                            >
+                                                                {action.badge_label}
+                                                            </span>
+                                                            <span className="font-mono text-[10px] text-slate-500 dark:text-zinc-400">
+                                                                {action.due_text}
+                                                            </span>
+                                                        </div>
+                                                        <p
+                                                            className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400"
+                                                            title={action.title}
+                                                        >
+                                                            {action.title}
+                                                        </p>
+                                                        <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400">
+                                                            {action.matter}
+                                                        </p>
+                                                    </div>
+
+                                                    <div className="flex shrink-0 items-center gap-1.5 pt-1">
+                                                        <TooltipProvider delayDuration={100}>
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                        <AvatarImage src={action.assignee_avatar ?? undefined} />
+                                                                        <AvatarFallback className="text-[7px] font-bold">
+                                                                            {getInitials(action.assignee_name)}
+                                                                        </AvatarFallback>
+                                                                    </Avatar>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent side="top" className="bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800">
+                                                                    {action.assignee_name}
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="mt-2 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
+                                <Link
+                                    href={tasksRoutes.index({ query: { priority: 'high' } })}
+                                    className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                >
+                                    Buka Daftar Prioritas →
+                                </Link>
+                            </div>
+                        </div>
+
+                        {/* [Row 2, Col 2] Widget 4: Recent Audit Activity */}
+                        <div className="flex h-full flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div>
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                    <div className="flex items-center gap-2">
+                                        <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                            Aktivitas &amp; Log Terkini
+                                        </h2>
+                                        <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[9px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-400">
+                                            Audit Trail
+                                        </span>
+                                    </div>
+                                    <Link
+                                        href={auditRoutes.index()}
+                                        className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                                    >
+                                        Semua Log →
+                                    </Link>
+                                </div>
+
+                                <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
+                                    {!activities || activities.length === 0 ? (
+                                        <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
+                                            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
+                                                <Clock className="size-4.5" />
+                                            </div>
+                                            <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                                Log Siap Merekam
+                                            </p>
+                                            <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                                Setiap aktivitas tim pada perkara, berkas, dan penagihan akan otomatis tercatat di sini.
+                                            </p>
+                                        </div>
+                                    ) : (
+                                        activities.slice(0, 4).map((act, idx) => {
+                                            const badgeColorClass =
+                                                act.badge_color === 'blue'
+                                                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
+                                                    : act.badge_color === 'purple'
+                                                      ? 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300'
+                                                      : act.badge_color === 'emerald'
+                                                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
+                                                        : act.badge_color === 'amber'
+                                                          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
+                                                          : act.badge_color === 'indigo'
+                                                            ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300'
+                                                            : act.badge_color === 'cyan'
+                                                              ? 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-300'
+                                                              : act.badge_color === 'teal'
+                                                                ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300'
+                                                                : 'bg-slate-100 text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300';
+
+                                            const content = (
+                                                <div className="min-w-0 flex-1 space-y-1">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <div className="flex items-center gap-1.5 min-w-0">
+                                                            <span className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold shrink-0 ${badgeColorClass}`}>
+                                                                {act.badge || 'Aktivitas'}
+                                                            </span>
+                                                            <span className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
+                                                                {act.title}
+                                                            </span>
+                                                        </div>
+                                                        <span className="font-mono text-[10px] text-slate-400 shrink-0 whitespace-nowrap">
+                                                            {act.time}
+                                                        </span>
+                                                    </div>
+                                                    <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400" title={act.detail || act.subject}>
+                                                        {act.detail || act.subject}
+                                                    </p>
+                                                    <div className="flex items-center gap-1.5 pt-0.5">
+                                                        <Avatar className="size-4 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                            <AvatarImage src={act.actor_avatar} />
+                                                            <AvatarFallback className="text-[6.5px] font-bold">
+                                                                {getInitials(act.actor)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <span className="truncate text-[10px] font-medium text-slate-600 dark:text-zinc-400">
+                                                            {act.actor}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            );
+
+                                            return act.url ? (
+                                                <Link
+                                                    key={act.id || idx}
+                                                    href={act.url}
+                                                    className="group flex items-start gap-2.5 py-2.5 transition-colors hover:bg-slate-50/70 rounded-lg px-1.5 -mx-1.5 dark:hover:bg-white/[0.02]"
+                                                >
+                                                    {content}
+                                                </Link>
+                                            ) : (
+                                                <div
+                                                    key={act.id || idx}
+                                                    className="group flex items-start gap-2.5 py-2.5 px-1.5 -mx-1.5"
+                                                >
+                                                    {content}
+                                                </div>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="mt-2 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
+                                <Link
+                                    href={auditRoutes.index()}
+                                    className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                >
+                                    Buka Audit Trail Lengkap →
+                                </Link>
                             </div>
                         </div>
                     </div>
