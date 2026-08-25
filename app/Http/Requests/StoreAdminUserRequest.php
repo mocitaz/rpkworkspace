@@ -30,8 +30,6 @@ class StoreAdminUserRequest extends FormRequest
             'position_title' => ['nullable', 'string', 'max:150'],
             'employee_code' => ['nullable', 'string', 'max:50', Rule::unique((new User)->getTable(), 'employee_code')],
             'department' => ['nullable', 'string', 'max:100'],
-            'employment_type' => ['nullable', 'string', 'max:50'],
-            'work_mode' => ['nullable', 'string', 'max:50'],
             'password' => ['nullable', 'string', 'min:8'],
             'role_ids' => ['required', 'array', 'min:1'],
             'role_ids.*' => ['integer', 'distinct', 'exists:roles,id'],

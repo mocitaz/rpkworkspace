@@ -2,21 +2,13 @@ import { Form, Head, Link, router } from '@inertiajs/react';
 import {
     AlertTriangle,
     ArrowLeft,
-    Award,
-    Banknote,
-    Briefcase,
     Building2,
     Calendar,
     Check,
-    CheckCheck,
-    CheckCircle2,
-    Clock,
-    Copy,
     CreditCard,
     ExternalLink,
     FileText,
     GraduationCap,
-    KeyRound,
     Mail,
     MapPin,
     MessageSquare,
@@ -24,14 +16,11 @@ import {
     Phone,
     Scale,
     Shield,
-    ShieldAlert,
     ShieldCheck,
     Smartphone,
     Sparkles,
     Trash2,
-    User as UserIcon,
     UserCheck,
-    Users,
 } from 'lucide-react';
 import { useState } from 'react';
 import InputError from '@/components/input-error';
@@ -77,15 +66,6 @@ type UserDetail = {
     position_title?: string | null;
     employee_code?: string | null;
     department?: string | null;
-    employment_type?: string | null;
-    employment_status?: string | null;
-    work_mode?: string | null;
-    joined_at?: string | null;
-    contract_end?: string | null;
-    leave_balance?: number | null;
-    utilization?: number | null;
-    performance_score?: number | null;
-    next_review?: string | null;
     avatar_url?: string | null;
     is_active: boolean;
     email_verified_at?: string | null;
@@ -101,13 +81,10 @@ type UserDetail = {
     kta_expiry_date?: string | null;
     practice_areas?: string | null;
     education?: string | null;
-    hourly_rate?: number | string | null;
     bank_name?: string | null;
     bank_account_number?: string | null;
     bank_account_holder?: string | null;
     npwp?: string | null;
-    matter_capacity_limit?: number | null;
-    supervisor_name?: string | null;
     roles: Role[];
     matters?: MatterBrief[];
 };
@@ -159,12 +136,6 @@ export default function UserShow({
               .map((p) => p.trim())
               .filter(Boolean)
         : [];
-
-    const capacityLimit = staff.matter_capacity_limit ?? 10;
-    const capacityPercent = Math.min(
-        Math.round((metrics.active_matters_count / capacityLimit) * 100),
-        100,
-    );
 
     return (
         <>
@@ -310,12 +281,6 @@ export default function UserShow({
                                             </span>
                                         )}
 
-                                        {staff.work_mode && (
-                                            <span className="inline-flex items-center gap-1 rounded-lg border border-slate-200/70 bg-slate-50/80 px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:border-white/5 dark:bg-zinc-800/80 dark:text-zinc-300">
-                                                {staff.work_mode}
-                                            </span>
-                                        )}
-
                                         {staff.advocate_license_no && (
                                             <span className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200/70 bg-amber-50/70 px-2.5 py-1 text-[10.5px] font-semibold text-amber-800 dark:border-amber-800/40 dark:bg-amber-950/40 dark:text-amber-300">
                                                 <Scale className="size-3 text-amber-600" />
@@ -328,43 +293,22 @@ export default function UserShow({
                             </div>
 
                             {/* Right: Quick Stat Tiles */}
-                            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:w-auto">
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:w-auto">
                                 <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
                                     <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                        Tarif Billing
-                                    </span>
-                                    <p className="mt-1 font-mono text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                                        {staff.hourly_rate
-                                            ? `Rp ${Number(staff.hourly_rate).toLocaleString('id-ID')}/jam`
-                                            : 'Belum diatur'}
-                                    </p>
-                                </div>
-
-                                <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                    <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                        Beban Perkara
+                                        Perkara Ditangani
                                     </span>
                                     <p className="mt-1 font-mono text-sm font-bold text-slate-900 dark:text-white">
-                                        {metrics.active_matters_count} /{' '}
-                                        {capacityLimit}
+                                        {metrics.active_matters_count} Perkara
+                                        Aktif
                                     </p>
-                                    <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-zinc-700">
-                                        <div
-                                            className={`h-full rounded-full transition-all ${
-                                                capacityPercent >= 90
-                                                    ? 'bg-rose-500'
-                                                    : capacityPercent >= 70
-                                                      ? 'bg-amber-500'
-                                                      : 'bg-blue-600'
-                                            }`}
-                                            style={{
-                                                width: `${capacityPercent}%`,
-                                            }}
-                                        />
-                                    </div>
+                                    <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500">
+                                        Total {metrics.total_matters_count}{' '}
+                                        riwayat perkara
+                                    </p>
                                 </div>
 
-                                <div className="col-span-2 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 sm:col-span-1 dark:border-white/5 dark:bg-[#15171e]">
+                                <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
                                     <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                         Role Otorisasi
                                     </span>
@@ -372,6 +316,9 @@ export default function UserShow({
                                         {staff.roles
                                             .map((r) => r.name)
                                             .join(', ') || 'Staff Biasa'}
+                                    </p>
+                                    <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500">
+                                        Hak akses modul workspace
                                     </p>
                                 </div>
                             </div>
@@ -513,12 +460,12 @@ export default function UserShow({
                                 </div>
                             </div>
 
-                            {/* SECTION B: Riwayat Perkara & Beban Kasus */}
+                            {/* SECTION B: Riwayat Perkara */}
                             <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
                                     <div className="flex items-center gap-2.5">
                                         <div className="flex size-8 items-center justify-center rounded-xl bg-blue-50 text-blue-700 shadow-2xs dark:bg-blue-950/50 dark:text-blue-300">
-                                            <Briefcase className="size-4" />
+                                            <Scale className="size-4" />
                                         </div>
                                         <div>
                                             <h2 className="text-sm font-bold text-slate-900 dark:text-white">
@@ -569,7 +516,7 @@ export default function UserShow({
                                         ))
                                     ) : (
                                         <div className="rounded-2xl border border-dashed border-slate-200 p-6 text-center text-xs text-slate-400 dark:border-white/10 dark:text-zinc-500">
-                                            <Briefcase className="mx-auto mb-1.5 size-6 opacity-40" />
+                                            <Scale className="mx-auto mb-1.5 size-6 opacity-40" />
                                             Belum ada perkara aktif yang
                                             ditugaskan kepada staf ini.
                                         </div>
@@ -648,7 +595,7 @@ export default function UserShow({
                             </div>
                         </div>
 
-                        {/* RIGHT COLUMN: 5 Cols (Contact, Finance & Bank, HR Details) */}
+                        {/* RIGHT COLUMN: 5 Cols (Contact, Bank & NPWP) */}
                         <div className="space-y-6 lg:col-span-5">
                             {/* SECTION D: Kontak & Lokasi Domisili */}
                             <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
@@ -692,7 +639,7 @@ export default function UserShow({
                                             {copiedField === 'email' ? (
                                                 <Check className="size-3 text-emerald-600" />
                                             ) : (
-                                                <Copy className="size-3" />
+                                                <CreditCard className="size-3" />
                                             )}
                                         </Button>
                                     </div>
@@ -734,7 +681,7 @@ export default function UserShow({
                                                     {copiedField === 'phone' ? (
                                                         <Check className="size-3 text-emerald-600" />
                                                     ) : (
-                                                        <Copy className="size-3" />
+                                                        <CreditCard className="size-3" />
                                                     )}
                                                 </button>
                                             </div>
@@ -788,41 +735,26 @@ export default function UserShow({
                                 </div>
                             </div>
 
-                            {/* SECTION E: Keuangan, Payroll & Pajak */}
+                            {/* SECTION E: Rekening Bank & Pajak */}
                             <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
                                     <div className="flex items-center gap-2.5">
                                         <div className="flex size-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 shadow-2xs dark:bg-emerald-950/50 dark:text-emerald-300">
-                                            <Banknote className="size-4" />
+                                            <CreditCard className="size-4" />
                                         </div>
                                         <div>
                                             <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                                                Keuangan &amp; Payroll
+                                                Rekening Bank &amp; Pajak
                                             </h2>
                                             <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Tarif billing perkara, rekening
-                                                bank, dan NPWP
+                                                Informasi transfer honorarium
+                                                dan NPWP
                                             </p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div className="mt-4 space-y-3">
-                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                        <span className="text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                            Tarif Billing per Jam (Hourly Rate)
-                                        </span>
-                                        <p className="mt-1 font-mono text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                                            {staff.hourly_rate ? (
-                                                `Rp ${Number(staff.hourly_rate).toLocaleString('id-ID')} / jam`
-                                            ) : (
-                                                <span className="font-sans font-normal text-slate-400 italic">
-                                                    Belum diatur
-                                                </span>
-                                            )}
-                                        </p>
-                                    </div>
-
                                     <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
                                         <span className="text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
                                             Informasi Rekening Bank
@@ -858,61 +790,6 @@ export default function UserShow({
                                                 </span>
                                             )}
                                         </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* SECTION F: Struktur Manajemen & Kepegawaian */}
-                            <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
-                                <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
-                                    <div className="flex items-center gap-2.5">
-                                        <div className="flex size-8 items-center justify-center rounded-xl bg-slate-100 text-slate-700 shadow-2xs dark:bg-zinc-800 dark:text-zinc-300">
-                                            <Users className="size-4" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                                                Manajemen &amp; Penugasan
-                                            </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Atasan langsung dan alokasi
-                                                kapasitas kerja
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4 space-y-3">
-                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                        <span className="text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                            Atasan Langsung / Lead Partner
-                                        </span>
-                                        <p className="mt-1 text-xs font-bold text-slate-900 dark:text-white">
-                                            {staff.supervisor_name || (
-                                                <span className="font-normal text-slate-400 italic">
-                                                    Belum ditentukan
-                                                </span>
-                                            )}
-                                        </p>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-2">
-                                        <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3 dark:border-white/5 dark:bg-[#15171e]">
-                                            <span className="text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                                Tipe Staf
-                                            </span>
-                                            <p className="mt-1 text-xs font-semibold text-slate-800 dark:text-zinc-200">
-                                                {staff.employment_type ||
-                                                    'Full-time'}
-                                            </p>
-                                        </div>
-                                        <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3 dark:border-white/5 dark:bg-[#15171e]">
-                                            <span className="text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                                Batas Perkara
-                                            </span>
-                                            <p className="mt-1 text-xs font-semibold text-slate-800 dark:text-zinc-200">
-                                                {capacityLimit} Perkara Max
-                                            </p>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1048,8 +925,8 @@ function EditUserDialog({
                                     : 'text-slate-600 hover:bg-slate-200/60 dark:text-zinc-400 dark:hover:bg-zinc-800'
                             }`}
                         >
-                            <Banknote className="size-3.5" />
-                            Billing &amp; Keuangan
+                            <CreditCard className="size-3.5" />
+                            Rekening &amp; Pajak
                         </button>
                     </div>
                 </div>
@@ -1098,28 +975,12 @@ function EditUserDialog({
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
-                                        <Field
-                                            name="department"
-                                            label="Departemen / Divisi"
-                                            defaultValue={user.department ?? ''}
-                                            placeholder="Litigasi & Arbitrase"
-                                        />
-                                        <Field
-                                            name="employment_type"
-                                            label="Tipe Kepegawaian"
-                                            defaultValue={
-                                                user.employment_type ?? ''
-                                            }
-                                            placeholder="Full-time / Of Counsel"
-                                        />
-                                        <Field
-                                            name="work_mode"
-                                            label="Mode Kerja"
-                                            defaultValue={user.work_mode ?? ''}
-                                            placeholder="WFO / Hybrid / Remote"
-                                        />
-                                    </div>
+                                    <Field
+                                        name="department"
+                                        label="Departemen / Divisi"
+                                        defaultValue={user.department ?? ''}
+                                        placeholder="Litigasi & Arbitrase / Corporate"
+                                    />
 
                                     <Field
                                         name="password"
@@ -1286,24 +1147,12 @@ function EditUserDialog({
 
                             {activeTab === 'billing' && (
                                 <div className="space-y-3">
-                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                                        <Field
-                                            name="hourly_rate"
-                                            label="Tarif Billing per Jam (Hourly Rate Rp)"
-                                            type="number"
-                                            defaultValue={
-                                                user.hourly_rate ?? ''
-                                            }
-                                            placeholder="Contoh: 1500000"
-                                            helperText="Digunakan untuk kalkulasi otomatis timesheet & invoice"
-                                        />
-                                        <Field
-                                            name="npwp"
-                                            label="Nomor Pokok Wajib Pajak (NPWP)"
-                                            defaultValue={user.npwp ?? ''}
-                                            placeholder="Contoh: 01.234.567.8-901.000"
-                                        />
-                                    </div>
+                                    <Field
+                                        name="npwp"
+                                        label="Nomor Pokok Wajib Pajak (NPWP)"
+                                        defaultValue={user.npwp ?? ''}
+                                        placeholder="Contoh: 01.234.567.8-901.000"
+                                    />
 
                                     <div className="space-y-2 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/[0.06] dark:bg-[#121418]">
                                         <Label className="text-xs font-semibold text-slate-900 dark:text-white">
@@ -1338,27 +1187,6 @@ function EditUserDialog({
                                                 placeholder="Nama Pemilik Rekening"
                                             />
                                         </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                                        <Field
-                                            name="matter_capacity_limit"
-                                            label="Batas Maksimal Beban Perkara Aktif"
-                                            type="number"
-                                            defaultValue={
-                                                user.matter_capacity_limit ?? 10
-                                            }
-                                            placeholder="10"
-                                            helperText="Jumlah maksimal perkara simultan yang dapat ditangani"
-                                        />
-                                        <Field
-                                            name="supervisor_name"
-                                            label="Atasan Langsung / Lead Partner"
-                                            defaultValue={
-                                                user.supervisor_name ?? ''
-                                            }
-                                            placeholder="Nama Managing Partner / Supervisor"
-                                        />
                                     </div>
                                 </div>
                             )}

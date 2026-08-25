@@ -1082,8 +1082,8 @@ function EditUserDialog({
                                     : 'text-slate-600 hover:bg-slate-200/60 dark:text-zinc-400 dark:hover:bg-zinc-800'
                             }`}
                         >
-                            <Banknote className="size-3.5" />
-                            Billing &amp; Keuangan
+                            <CreditCard className="size-3.5" />
+                            Rekening &amp; Pajak
                         </button>
                     </div>
                 </div>
@@ -1132,28 +1132,12 @@ function EditUserDialog({
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
-                                        <Field
-                                            name="department"
-                                            label="Departemen / Divisi"
-                                            defaultValue={user.department ?? ''}
-                                            placeholder="Litigasi & Arbitrase"
-                                        />
-                                        <Field
-                                            name="employment_type"
-                                            label="Tipe Kepegawaian"
-                                            defaultValue={
-                                                user.employment_type ?? ''
-                                            }
-                                            placeholder="Full-time / Of Counsel"
-                                        />
-                                        <Field
-                                            name="work_mode"
-                                            label="Mode Kerja"
-                                            defaultValue={user.work_mode ?? ''}
-                                            placeholder="WFO / Hybrid / Remote"
-                                        />
-                                    </div>
+                                    <Field
+                                        name="department"
+                                        label="Departemen / Divisi"
+                                        defaultValue={user.department ?? ''}
+                                        placeholder="Litigasi & Arbitrase / Corporate"
+                                    />
 
                                     <Field
                                         name="password"
@@ -1320,24 +1304,12 @@ function EditUserDialog({
 
                             {activeTab === 'billing' && (
                                 <div className="space-y-3">
-                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                                        <Field
-                                            name="hourly_rate"
-                                            label="Tarif Billing per Jam (Hourly Rate Rp)"
-                                            type="number"
-                                            defaultValue={
-                                                user.hourly_rate ?? ''
-                                            }
-                                            placeholder="Contoh: 1500000"
-                                            helperText="Digunakan untuk kalkulasi otomatis timesheet & invoice"
-                                        />
-                                        <Field
-                                            name="npwp"
-                                            label="Nomor Pokok Wajib Pajak (NPWP)"
-                                            defaultValue={user.npwp ?? ''}
-                                            placeholder="Contoh: 01.234.567.8-901.000"
-                                        />
-                                    </div>
+                                    <Field
+                                        name="npwp"
+                                        label="Nomor Pokok Wajib Pajak (NPWP)"
+                                        defaultValue={user.npwp ?? ''}
+                                        placeholder="Contoh: 01.234.567.8-901.000"
+                                    />
 
                                     <div className="space-y-2 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/[0.06] dark:bg-[#121418]">
                                         <Label className="text-xs font-semibold text-slate-900 dark:text-white">
@@ -1372,27 +1344,6 @@ function EditUserDialog({
                                                 placeholder="Nama Pemilik Rekening"
                                             />
                                         </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                                        <Field
-                                            name="matter_capacity_limit"
-                                            label="Batas Maksimal Beban Perkara Aktif"
-                                            type="number"
-                                            defaultValue={
-                                                user.matter_capacity_limit ?? 10
-                                            }
-                                            placeholder="10"
-                                            helperText="Jumlah maksimal perkara simultan yang dapat ditangani"
-                                        />
-                                        <Field
-                                            name="supervisor_name"
-                                            label="Atasan Langsung / Lead Partner"
-                                            defaultValue={
-                                                user.supervisor_name ?? ''
-                                            }
-                                            placeholder="Nama Managing Partner / Supervisor"
-                                        />
                                     </div>
                                 </div>
                             )}
