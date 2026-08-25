@@ -11,6 +11,7 @@ use App\Models\Document;
 use App\Models\DocumentTemplate;
 use App\Models\DocumentVersion;
 use App\Models\Matter;
+use App\Models\SignatureRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
@@ -105,4 +106,25 @@ it('queues a signature reminder and records its cooldown timestamp', function ()
 
     expect($count)->toBe(1)
         ->and($signatureRequest->signers()->sole()->last_reminded_at)->not->toBeNull();
+});
+
+it('allows sending internal e-sign requests via HTTP on any document with versions', function () {
+    $actor = rafUser(['document.view', 'document.upload', 'matter.view', 'matter.view.all', 'signature.manage']);
+    $document = Document::factory()->recycle($actor)->create(['status' => 'draft']);
+    $version = DocumentVersion::factory()->recycle($document)->recycle($actor)->create(['document_id' => $document->getKey(), 'uploaded_by' => $actor->getKey()]);
+    $document->update(['current_version_id' => $version->getKey()]);
+
+    $response = $this->actingAs($actor)->post(route('documents.signature-requests.store', $document), [
+        'mode' => 'sequential',
+        'signers' => [
+            ['name' => 'Muhamad Fajar Roni', 'email' => 'fajaroni@rpklawoffice.local', 'signing_order' => 1],
+        ],
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $signatureRequest = SignatureRequest::query()->where('document_id', $document->getKey())->firstOrFail();
+    expect($signatureRequest->status)->toBe('sent')
+        ->and($signatureRequest->mode)->toBe('sequential')
+        ->and($signatureRequest->signers)->toHaveCount(1)
+        ->and($signatureRequest->signers->first()->email)->toBe('fajaroni@rpklawoffice.local');
 });

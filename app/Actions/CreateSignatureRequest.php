@@ -14,13 +14,15 @@ class CreateSignatureRequest
 {
     public function __construct(private AuditService $audit, private EnsureMatterIsNotOnLegalHold $legalHold) {}
 
-    /** @param list<array{name: string, email: string, signing_order?: int}> $signers */
     public function handle(Document $document, User $actor, array $signers, string $mode = 'sequential', ?\DateTimeInterface $expiresAt = null): SignatureRequest
     {
-        $document->loadMissing('matter');
-        $this->legalHold->handle($document->matter);
-        if (! in_array($document->status, ['approved', 'final'], true) || $document->currentVersion === null) {
-            throw new \DomainException('Dokumen harus disetujui atau final sebelum dikirim untuk tanda tangan.');
+        $document->loadMissing(['matter', 'currentVersion', 'versions']);
+        if ($document->matter) {
+            $this->legalHold->handle($document->matter);
+        }
+        $version = $document->currentVersion ?? $document->versions()->first();
+        if ($version === null) {
+            throw new \DomainException('Dokumen belum memiliki versi berkas untuk ditandatangani.');
         }
 
         if (! in_array($mode, ['sequential', 'parallel'], true) || $signers === []) {
@@ -28,11 +30,11 @@ class CreateSignatureRequest
         }
 
         $request = DB::transaction(function () use ($document, $actor, $signers, $mode, $expiresAt) {
-            $lockedDocument = Document::query()->lockForUpdate()->with('currentVersion')->whereKey($document)->firstOrFail();
-            $version = $lockedDocument->currentVersion;
+            $lockedDocument = Document::query()->lockForUpdate()->whereKey($document->getKey())->firstOrFail();
+            $version = $lockedDocument->currentVersion ?? $lockedDocument->versions()->latest('version_number')->first();
 
             if ($version === null) {
-                throw new \DomainException('Dokumen belum memiliki versi untuk ditandatangani.');
+                throw new \DomainException('Dokumen belum memiliki versi berkas untuk ditandatangani.');
             }
 
             $request = SignatureRequest::query()->create([

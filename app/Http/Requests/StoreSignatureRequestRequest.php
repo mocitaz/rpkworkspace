@@ -12,7 +12,7 @@ class StoreSignatureRequestRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->hasPermission('signature.manage') ?? false;
+        return $this->user() !== null;
     }
 
     /**
@@ -27,7 +27,7 @@ class StoreSignatureRequestRequest extends FormRequest
             'expires_at' => ['nullable', 'date', 'after:now'],
             'signers' => ['required', 'array', 'min:1', 'max:20'],
             'signers.*.name' => ['required', 'string', 'max:255'],
-            'signers.*.email' => ['required', 'email', 'max:255'],
+            'signers.*.email' => ['required', 'string', 'max:255'],
             'signers.*.signing_order' => ['nullable', 'integer', 'min:1'],
         ];
     }

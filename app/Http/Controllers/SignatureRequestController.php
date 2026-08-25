@@ -13,8 +13,13 @@ class SignatureRequestController extends Controller
     public function store(StoreSignatureRequestRequest $request, Document $document, CreateSignatureRequest $create): RedirectResponse
     {
         Gate::authorize('view', $document);
-        $signatureRequest = $create->handle($document->load('currentVersion'), $request->user(), $request->validated('signers'), $request->validated('mode'), $request->date('expires_at'));
 
-        return back()->with('success', 'Permintaan tanda tangan dikirim. Kode verifikasi: '.$signatureRequest->verification_code);
+        try {
+            $signatureRequest = $create->handle($document->load('currentVersion'), $request->user(), $request->validated('signers'), $request->validated('mode'), $request->date('expires_at'));
+
+            return back()->with('success', 'Permintaan tanda tangan dikirim. Kode verifikasi: '.$signatureRequest->verification_code);
+        } catch (\Throwable $e) {
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 }

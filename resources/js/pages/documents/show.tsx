@@ -890,14 +890,21 @@ export default function DocumentShow({
                 open={workflowOpen === 'signature'}
                 onOpenChange={(value) => !value && setWorkflowOpen(null)}
             >
-                <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
-                    <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                        <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                            Kirim E-Sign Internal RPK
-                        </DialogTitle>
-                        <DialogDescription className="text-xs text-slate-500">
-                            Penerimaan internal dan verifikasi digital dengan QR code tersertifikasi.
-                        </DialogDescription>
+                <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-6 pr-10 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
+                    <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400">
+                                <ShieldCheck className="size-4.5" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                    Kirim E-Sign Internal RPK
+                                </DialogTitle>
+                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                    Penerimaan internal dan verifikasi digital dengan QR code tersertifikasi.
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
 
                     <Form
@@ -910,6 +917,12 @@ export default function DocumentShow({
                     >
                         {({ processing, errors }) => (
                             <>
+                                {(errors.error || (errors as any).general) && (
+                                    <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-700 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300">
+                                        {errors.error || (errors as any).general}
+                                    </div>
+                                )}
+
                                 <div className="grid gap-1">
                                     <Label htmlFor="mode" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
                                         Alur Penandatanganan
@@ -936,7 +949,7 @@ export default function DocumentShow({
                                             type="button"
                                             size="sm"
                                             variant="outline"
-                                            className="h-7 rounded-lg border-slate-200 px-2.5 text-xs font-semibold text-purple-700 hover:bg-purple-50"
+                                            className="h-7 rounded-lg border-slate-200 px-2.5 text-xs font-semibold text-purple-700 hover:bg-purple-50 dark:border-white/10 dark:text-purple-400"
                                             onClick={() =>
                                                 setSigners((c) => [
                                                     ...c,
@@ -948,62 +961,65 @@ export default function DocumentShow({
                                         </Button>
                                     </div>
 
-                                    <div className="space-y-1.5">
+                                    <div className="space-y-2">
                                         {signers.map((signer, index) => (
                                             <div
                                                 key={index}
-                                                className="flex flex-col gap-1.5 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 sm:flex-row sm:items-center dark:border-white/10 dark:bg-zinc-800/40"
+                                                className="flex flex-col gap-1.5 rounded-xl border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/10 dark:bg-zinc-800/40"
                                             >
-                                                <Input
-                                                    name={`signers[${index}][name]`}
-                                                    placeholder="Nama lengkap"
-                                                    required
-                                                    value={signer.name}
-                                                    onChange={(e) =>
-                                                        setSigners((cur) =>
-                                                            cur.map((item, i) =>
-                                                                i === index ? { ...item, name: e.target.value } : item,
-                                                            ),
-                                                        )
-                                                    }
-                                                    className="h-8 rounded-lg border-slate-200 bg-white text-xs dark:bg-[#121418]"
-                                                />
-                                                <Input
-                                                    name={`signers[${index}][email]`}
-                                                    type="email"
-                                                    placeholder="email@perusahaan.com"
-                                                    required
-                                                    value={signer.email}
-                                                    onChange={(e) =>
-                                                        setSigners((cur) =>
-                                                            cur.map((item, i) =>
-                                                                i === index ? { ...item, email: e.target.value } : item,
-                                                            ),
-                                                        )
-                                                    }
-                                                    className="h-8 rounded-lg border-slate-200 bg-white text-xs dark:bg-[#121418]"
-                                                />
-                                                <input
-                                                    name={`signers[${index}][signing_order]`}
-                                                    type="hidden"
-                                                    value={index + 1}
-                                                />
-                                                {signers.length > 1 && (
-                                                    <Button
-                                                        type="button"
-                                                        size="sm"
-                                                        variant="ghost"
-                                                        onClick={() =>
-                                                            setSigners((cur) => cur.filter((_, i) => i !== index))
+                                                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                                                    <Input
+                                                        name={`signers[${index}][name]`}
+                                                        placeholder="Nama lengkap penandatangan"
+                                                        required
+                                                        value={signer.name}
+                                                        onChange={(e) =>
+                                                            setSigners((cur) =>
+                                                                cur.map((item, i) =>
+                                                                    i === index ? { ...item, name: e.target.value } : item,
+                                                                ),
+                                                            )
                                                         }
-                                                        className="h-8 shrink-0 px-2 text-xs font-semibold text-rose-500 hover:bg-rose-50 hover:text-rose-700"
-                                                    >
-                                                        Hapus
-                                                    </Button>
-                                                )}
+                                                        className="h-8 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-[#121418]"
+                                                    />
+                                                    <Input
+                                                        name={`signers[${index}][email]`}
+                                                        placeholder="email@perusahaan.com"
+                                                        required
+                                                        value={signer.email}
+                                                        onChange={(e) =>
+                                                            setSigners((cur) =>
+                                                                cur.map((item, i) =>
+                                                                    i === index ? { ...item, email: e.target.value } : item,
+                                                                ),
+                                                            )
+                                                        }
+                                                        className="h-8 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-[#121418]"
+                                                    />
+                                                    <input
+                                                        name={`signers[${index}][signing_order]`}
+                                                        type="hidden"
+                                                        value={index + 1}
+                                                    />
+                                                    {signers.length > 1 && (
+                                                        <Button
+                                                            type="button"
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            onClick={() =>
+                                                                setSigners((cur) => cur.filter((_, i) => i !== index))
+                                                            }
+                                                            className="h-8 shrink-0 px-2 text-xs font-semibold text-rose-500 hover:bg-rose-50 hover:text-rose-700"
+                                                        >
+                                                            Hapus
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                                <InputError message={(errors as any)[`signers.${index}.name`] || (errors as any)[`signers.${index}.email`]} />
                                             </div>
                                         ))}
                                     </div>
+                                    <InputError message={errors.signers} />
                                 </div>
 
                                 <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
@@ -1019,9 +1035,16 @@ export default function DocumentShow({
                                     <Button
                                         size="sm"
                                         disabled={processing}
-                                        className="h-8 rounded-lg bg-purple-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-purple-700"
+                                        className="h-8 rounded-lg bg-purple-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-purple-700 active:scale-95"
                                     >
-                                        Kirim Permintaan
+                                        {processing ? (
+                                            <>
+                                                <Spinner className="mr-1.5 size-3.5" />
+                                                Mengirim...
+                                            </>
+                                        ) : (
+                                            'Kirim Permintaan'
+                                        )}
                                     </Button>
                                 </div>
                             </>
