@@ -1,7 +1,7 @@
 import type { UrlMethodPair } from '@inertiajs/core';
 import { router } from '@inertiajs/react';
 import { usePasskeyVerify } from '@laravel/passkeys/react';
-import { KeyRound } from 'lucide-react';
+import { AlertCircle, KeyRound } from 'lucide-react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -17,6 +17,34 @@ type Props = {
     separator?: string;
     separatorPosition?: 'top' | 'bottom';
 };
+
+function formatPasskeyErrorMessage(err?: string): string {
+    if (!err) {
+        return '';
+    }
+    if (err.includes('RP ID') && err.includes('invalid')) {
+        return 'Konfigurasi Domain Passkey (RP ID) tidak cocok dengan domain saat ini. Pastikan APP_URL di server adalah https://app.rpklawoffice.com.';
+    }
+    if (
+        err.includes('not allowed') ||
+        err.includes('cancelled') ||
+        err.includes('NotAllowedError') ||
+        err.includes('abort')
+    ) {
+        return 'Proses autentikasi biometrik/passkey dibatalkan atau waktu habis.';
+    }
+    if (err.includes('timed out') || err.includes('TimeoutError')) {
+        return 'Waktu verifikasi biometrik telah habis. Silakan coba kembali.';
+    }
+    if (
+        err.includes('no credentials') ||
+        err.includes('not found') ||
+        err.includes('No available authenticator')
+    ) {
+        return 'Tidak ditemukan kunci sandi (passkey) yang terdaftar untuk perangkat ini.';
+    }
+    return err;
+}
 
 export default function PasskeyVerify({
     routes,
@@ -54,6 +82,8 @@ export default function PasskeyVerify({
         </div>
     );
 
+    const friendlyError = formatPasskeyErrorMessage(error);
+
     return (
         <>
             {separatorPosition === 'top' && separatorElement}
@@ -66,13 +96,20 @@ export default function PasskeyVerify({
                     onClick={verify}
                     disabled={isLoading}
                 >
-                    {isLoading ? <Spinner className="mr-1.5 size-4" /> : <KeyRound className="mr-1.5 size-4 text-slate-400" />}
+                    {isLoading ? (
+                        <Spinner className="mr-1.5 size-4" />
+                    ) : (
+                        <KeyRound className="mr-1.5 size-4 text-slate-400" />
+                    )}
                     {isLoading
                         ? (loadingLabel ?? 'Authenticating...')
                         : (label ?? 'Sign in with a passkey')}
                 </Button>
-                {error && (
-                    <InputError message={error} className="text-center" />
+                {friendlyError && (
+                    <div className="flex items-start gap-2 rounded-lg border border-rose-200/80 bg-rose-50/80 p-2.5 text-left text-[11px] font-medium text-rose-700 dark:border-rose-900/40 dark:bg-rose-950/40 dark:text-rose-300 animate-in fade-in duration-150">
+                        <AlertCircle className="mt-0.5 size-3.5 shrink-0 text-rose-600 dark:text-rose-400" />
+                        <span>{friendlyError}</span>
+                    </div>
                 )}
             </div>
 

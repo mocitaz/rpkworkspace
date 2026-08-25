@@ -143,8 +143,21 @@ return [
     */
 
     'passkeys' => [
-        'relying_party_id' => parse_url(config('app.url'), PHP_URL_HOST),
-        'allowed_origins' => [config('app.url')],
+        'relying_party_id' => env('PASSKEYS_RELYING_PARTY_ID', (function () {
+            $host = parse_url(config('app.url'), PHP_URL_HOST);
+            if ($host === 'apk.rpklawoffice.com') {
+                return 'app.rpklawoffice.com';
+            }
+
+            return $host ?: 'app.rpklawoffice.com';
+        })()),
+        'allowed_origins' => array_values(array_unique(array_filter([
+            config('app.url') === 'https://apk.rpklawoffice.com' ? 'https://app.rpklawoffice.com' : config('app.url'),
+            env('PASSKEYS_ALLOWED_ORIGINS'),
+            'https://app.rpklawoffice.com',
+            'http://localhost:8000',
+            'http://127.0.0.1:8000',
+        ]))),
         'user_handle_secret' => env('PASSKEYS_USER_HANDLE_SECRET', config('app.key')),
         'timeout' => 60000,
     ],
