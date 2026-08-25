@@ -1,19 +1,24 @@
-import { Head, Link } from '@inertiajs/react';
+import { Form, Head, Link } from '@inertiajs/react';
 import {
     AlertCircle,
     ArrowUpRight,
     Calendar as CalendarIcon,
     CalendarClock,
+    Check,
     CheckCircle2,
     ChevronLeft,
     ChevronRight,
     Clock,
+    Copy,
     Download,
+    ExternalLink,
     Gavel,
     Grid3X3,
     List,
     ListTodo,
+    RefreshCw,
     Scale,
+    Smartphone,
     TrendingUp,
     Users,
 } from 'lucide-react';
@@ -31,6 +36,7 @@ import {
 import { formatDate } from '@/lib/format';
 import * as calendarRoutes from '@/routes/calendar';
 import * as calendarExportRoutes from '@/routes/calendar/export';
+import * as calendarFeedRoutes from '@/routes/calendar/feed';
 import * as matterRoutes from '@/routes/matters';
 
 type Item = {
@@ -49,6 +55,13 @@ type CalendarItem = Item & {
     icon: typeof Gavel;
 };
 
+type CalendarFeed = {
+    token: string;
+    url: string;
+    webcal_url: string;
+    google_url: string;
+};
+
 export default function CalendarIndex({
     deadlines,
     events,
@@ -56,6 +69,7 @@ export default function CalendarIndex({
     range,
     month,
     timezone,
+    feed,
 }: {
     deadlines: Item[];
     events: Item[];
@@ -63,10 +77,12 @@ export default function CalendarIndex({
     range: { from: string; until: string };
     month: string;
     timezone: string;
+    feed?: CalendarFeed;
 }) {
     const [view, setView] = useState<'month' | 'list'>('month');
     const [selectedCategory, setSelectedCategory] = useState<'all' | 'Agenda' | 'Tenggat' | 'Tugas'>('all');
     const [selectedItem, setSelectedItem] = useState<CalendarItem | null>(null);
+    const [liveSyncOpen, setLiveSyncOpen] = useState(false);
 
     const allItems: CalendarItem[] = useMemo(() => {
         return [
@@ -200,7 +216,17 @@ export default function CalendarIndex({
                                 </button>
                             </div>
 
-                            {/* iCal .ics Sync Export Button */}
+                            {/* Live Calendar Subscription (WebCal) Button */}
+                            <Button
+                                size="sm"
+                                onClick={() => setLiveSyncOpen(true)}
+                                className="h-8 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
+                            >
+                                <Smartphone className="mr-1.5 size-3.5 text-blue-200" />
+                                Langganan di HP / Google
+                            </Button>
+
+                            {/* iCal .ics Download Button */}
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -210,9 +236,10 @@ export default function CalendarIndex({
                                 <a
                                     href={calendarExportRoutes.ics.url()}
                                     download="RPK-Law-Firm-Calendar.ics"
+                                    title="Unduh file kalender (.ics) secara manual"
                                 >
-                                    <Download className="mr-1 size-3 text-blue-600 dark:text-blue-400" />
-                                    Sync (.ics)
+                                    <Download className="mr-1 size-3 text-slate-400" />
+                                    Unduh .ics
                                 </a>
                             </Button>
                         </div>
@@ -454,7 +481,183 @@ export default function CalendarIndex({
                     </DialogContent>
                 )}
             </Dialog>
+
+            {/* Live Calendar Subscription (WebCal) Modal */}
+            <LiveCalendarSyncModal
+                open={liveSyncOpen}
+                onOpenChange={setLiveSyncOpen}
+                feed={feed}
+            />
         </>
+    );
+}
+
+function LiveCalendarSyncModal({
+    open,
+    onOpenChange,
+    feed,
+}: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    feed?: CalendarFeed;
+}) {
+    const [copied, setCopied] = useState(false);
+    if (!feed) return null;
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(feed.url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-5 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-3">
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                            <Smartphone className="size-5" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                Langganan Kalender Otomatis (Live Sync)
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                Cukup setup 1x saja — jadwal sidang, mediasi, &amp; tenggat perkara akan otomatis masuk ke HP Anda.
+                            </DialogDescription>
+                        </div>
+                    </div>
+                </DialogHeader>
+
+                <div className="space-y-3.5 pt-2 text-xs">
+                    {/* Opsi 1: Apple Calendar (iPhone / Mac / iPad) */}
+                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 transition-all hover:border-blue-400 hover:bg-white dark:border-white/[0.06] dark:bg-[#121418] dark:hover:border-blue-700">
+                        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="space-y-0.5">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="font-bold text-slate-900 dark:text-white">
+                                        🍏 iPhone / iPad / Mac
+                                    </span>
+                                    <span className="rounded bg-blue-100 px-1.5 py-0.2 text-[9.5px] font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                        Apple Calendar
+                                    </span>
+                                </div>
+                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                    Buka aplikasi Kalender bawaan &amp; klik Berlangganan langsung.
+                                </p>
+                            </div>
+                            <Button
+                                size="sm"
+                                className="h-8 shrink-0 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                asChild
+                            >
+                                <a href={feed.webcal_url}>
+                                    <ExternalLink className="mr-1.5 size-3.5" />
+                                    Buka di iPhone
+                                </a>
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Opsi 2: Google Calendar (Android / Web) */}
+                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 transition-all hover:border-emerald-400 hover:bg-white dark:border-white/[0.06] dark:bg-[#121418] dark:hover:border-emerald-700">
+                        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="space-y-0.5">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="font-bold text-slate-900 dark:text-white">
+                                        🌐 Google Calendar
+                                    </span>
+                                    <span className="rounded bg-emerald-100 px-1.5 py-0.2 text-[9.5px] font-semibold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                                        Android &amp; Web
+                                    </span>
+                                </div>
+                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                    Tambahkan ke Google Calendar untuk sinkron ke HP Android Anda.
+                                </p>
+                            </div>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                asChild
+                            >
+                                <a href={feed.google_url} target="_blank" rel="noreferrer">
+                                    <ExternalLink className="mr-1.5 size-3.5 text-emerald-600" />
+                                    Buka Google Calendar
+                                </a>
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Opsi 3: Tautan Langganan Langsung (iCal / WebCal URL) */}
+                    <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-900 dark:text-white">
+                            Tautan Langganan Kalender Pribadi (URL Feed):
+                        </label>
+                        <div className="flex gap-1.5">
+                            <input
+                                type="text"
+                                readOnly
+                                value={feed.url}
+                                className="h-8 flex-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 font-mono text-[11px] text-slate-700 select-all dark:border-white/10 dark:bg-[#121418] dark:text-zinc-300"
+                            />
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={handleCopy}
+                                className="h-8 shrink-0 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                            >
+                                {copied ? (
+                                    <>
+                                        <Check className="mr-1 size-3.5 text-emerald-600" />
+                                        Tersalin!
+                                    </>
+                                ) : (
+                                    <>
+                                        <Copy className="mr-1 size-3.5" />
+                                        Salin URL
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Panduan Singkat */}
+                    <div className="space-y-1 rounded-lg border border-slate-200/60 bg-blue-50/40 p-3 text-[11px] text-slate-600 dark:border-blue-900/30 dark:bg-blue-950/20 dark:text-zinc-400">
+                        <p className="font-semibold text-slate-900 dark:text-zinc-200">
+                            💡 Cara Menempelkan URL di Google Calendar (Manual):
+                        </p>
+                        <ol className="list-decimal pl-4 space-y-0.5 leading-relaxed">
+                            <li>Buka <strong>calendar.google.com</strong> di komputer/browser.</li>
+                            <li>Di bilah kiri pada <strong>Kalender lainnya (Other calendars)</strong>, klik tanda <strong>+</strong>.</li>
+                            <li>Pilih <strong>"Dari URL (From URL)"</strong> ➔ tempelkan link di atas ➔ klik <strong>Tambahkan Kalender</strong>.</li>
+                        </ol>
+                    </div>
+
+                    {/* Keamanan & Rotate Token */}
+                    <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                        <span className="text-[10.5px] text-slate-400 dark:text-zinc-500">
+                            🔒 Tautan khusus untuk akun Anda.
+                        </span>
+                        <Form {...calendarFeedRoutes.rotate.form()} onSuccess={() => {}}>
+                            {({ processing }) => (
+                                <Button
+                                    type="submit"
+                                    variant="ghost"
+                                    size="sm"
+                                    disabled={processing}
+                                    className="h-7 rounded text-[11px] font-semibold text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/30"
+                                >
+                                    <RefreshCw className="mr-1 size-3" />
+                                    Buat Ulang Token Kalender
+                                </Button>
+                            )}
+                        </Form>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 }
 

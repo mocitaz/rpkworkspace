@@ -30,5 +30,48 @@ it('returns a complete calendar grid range for the requested month and only visi
             ->where('range.until', '2026-10-04')
             ->has('deadlines', 1)
             ->has('events', 1)
-            ->has('tasks', 1));
+            ->has('tasks', 1)
+            ->has('feed.token')
+            ->has('feed.url')
+            ->has('feed.webcal_url')
+            ->has('feed.google_url'));
+});
+
+it('serves live ics subscription feed for valid user calendar token', function () {
+    $user = rafUser(['matter.view', 'task.view']);
+    $token = $user->ensureCalendarToken();
+
+    $matter = Matter::factory()->recycle($user)->create();
+    $matter->members()->attach($user, ['role' => 'member']);
+
+    MatterEvent::factory()->recycle($matter)->create([
+        'matter_id' => $matter->getKey(),
+        'title' => 'Sidang Pembuktian Lanjutan',
+        'starts_at' => now()->addDays(2),
+    ]);
+
+    $response = $this->get(route('calendar.feed', ['token' => $token]));
+
+    $response->assertSuccessful();
+    $response->assertHeader('Content-Type', 'text/calendar; charset=utf-8');
+    expect($response->getContent())
+        ->toContain('BEGIN:VCALENDAR')
+        ->toContain('Sidang Pembuktian Lanjutan')
+        ->toContain('END:VCALENDAR');
+});
+
+it('rotates user calendar token on demand', function () {
+    $user = rafUser();
+    $oldToken = $user->ensureCalendarToken();
+
+    $this->actingAs($user)->post(route('calendar.feed.rotate'))
+        ->assertRedirect();
+
+    $user->refresh();
+    expect($user->calendar_token)->not->toBe($oldToken);
+});
+
+it('returns 404 for invalid calendar feed token', function () {
+    $this->get(route('calendar.feed', ['token' => 'invalid-token-12345']))
+        ->assertNotFound();
 });

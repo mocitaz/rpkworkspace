@@ -43,6 +43,7 @@ Route::get('verify/signature/{verificationCode}/download-certificate', [Signatur
 Route::get('sign/{token}', [SignatureSigningController::class, 'show'])->middleware('throttle:signature-sign')->name('signature.sign.show');
 Route::get('sign/{token}/preview-pdf', [SignatureSigningController::class, 'pdf'])->middleware('throttle:signature-sign')->name('signature.sign.pdf');
 Route::post('sign/{token}', [SignatureSigningController::class, 'store'])->middleware('throttle:signature-sign')->name('signature.sign.store');
+Route::get('calendar/feed/{token}.ics', [CalendarController::class, 'feed'])->name('calendar.feed');
 Route::post('inbound/email', [InboundEmailController::class, 'store'])->middleware('throttle:30,1')->name('inbound.email.store');
 
 Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(function () {
@@ -74,6 +75,7 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::delete('comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     Route::get('calendar', CalendarController::class)->name('calendar.index');
     Route::get('calendar/export/ics', [CalendarController::class, 'exportIcs'])->name('calendar.export.ics');
+    Route::post('calendar/feed/rotate', [CalendarController::class, 'rotateToken'])->name('calendar.feed.rotate');
     Route::get('finance', [FinanceController::class, 'index'])->name('finance.index');
     Route::get('finance/invoices/{invoice}', [FinanceDetailController::class, 'invoice'])->name('finance.invoices.show');
     Route::get('finance/payments/{payment}', [FinanceDetailController::class, 'payment'])->name('finance.payments.show');

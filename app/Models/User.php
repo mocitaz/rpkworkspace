@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -30,7 +31,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'position_title', 'employee_code', 'department', 'employment_type', 'employment_status', 'work_mode', 'joined_at', 'contract_end', 'leave_balance', 'utilization', 'performance_score', 'next_review', 'avatar_path', 'email', 'email_verified_at', 'password', 'locale', 'timezone', 'is_active', 'disabled_at', 'last_seen_at'])]
+#[Fillable(['name', 'position_title', 'employee_code', 'department', 'employment_type', 'employment_status', 'work_mode', 'joined_at', 'contract_end', 'leave_balance', 'utilization', 'performance_score', 'next_review', 'avatar_path', 'email', 'email_verified_at', 'password', 'calendar_token', 'locale', 'timezone', 'is_active', 'disabled_at', 'last_seen_at'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
@@ -95,6 +96,15 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     public function hasRole(string ...$roles): bool
     {
         return $this->roles()->whereIn('slug', $roles)->exists();
+    }
+
+    public function ensureCalendarToken(): string
+    {
+        if (empty($this->calendar_token)) {
+            $this->forceFill(['calendar_token' => Str::random(48)])->saveQuietly();
+        }
+
+        return $this->calendar_token;
     }
 
     /**
