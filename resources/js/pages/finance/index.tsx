@@ -8,6 +8,7 @@ import {
     CheckCircle2,
     ChevronDown,
     ChevronRight,
+    ChevronUp,
     DollarSign,
     FileDown,
     FilePlus2,
@@ -135,6 +136,7 @@ export default function FinanceIndex({
     const [refundPayment, setRefundPayment] = useState<LedgerItem | null>(null);
     const [cancelInvoice, setCancelInvoice] = useState<LedgerItem | null>(null);
     const [activeTab, setActiveTab] = useState<'all' | 'invoices' | 'quotations' | 'expenses' | 'payments'>('all');
+    const [showDetailedAnalytics, setShowDetailedAnalytics] = useState(false);
 
     const currency = overview?.currency ?? 'IDR';
 
@@ -316,101 +318,128 @@ export default function FinanceIndex({
                                 </div>
                             </section>
 
-                            {/* Secondary Operational Metrics Bar */}
-                            <section className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
-                                        Anggaran (Budget)
-                                    </p>
-                                    <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                        {formatMoney(overview.budget_amount, currency)}
-                                    </p>
-                                </div>
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
-                                        Biaya Perkara (Expense)
-                                    </p>
-                                    <p className="mt-0.5 font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
-                                        {formatMoney(overview.expense_amount, currency)}
-                                    </p>
-                                </div>
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
-                                        Quotation Diajukan
-                                    </p>
-                                    <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                        {formatMoney(overview.quotation_amount, currency)}
-                                    </p>
-                                </div>
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
-                                        Lewat Jatuh Tempo
-                                    </p>
-                                    <p className="mt-0.5 font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
-                                        {formatMoney(overview.overdue_amount ?? 0, currency)}
-                                    </p>
-                                </div>
-                            </section>
+                            {/* Toggle Button for Operational & Aging Analytics */}
+                            <div className="flex items-center justify-between pt-0.5">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowDetailedAnalytics((prev) => !prev)}
+                                    className="group inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300 dark:hover:bg-zinc-800/60 cursor-pointer"
+                                >
+                                    <span className="flex size-4 items-center justify-center rounded bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                                        {showDetailedAnalytics ? (
+                                            <ChevronUp className="size-3" />
+                                        ) : (
+                                            <ChevronDown className="size-3" />
+                                        )}
+                                    </span>
+                                    <span>
+                                        {showDetailedAnalytics
+                                            ? 'Sembunyikan Rincian Anggaran & Umur Piutang'
+                                            : 'Tampilkan Rincian Anggaran & Umur Piutang (Aging Report)'}
+                                    </span>
+                                </button>
+                            </div>
 
-                            {/* Aging Analysis Breakdown Bar */}
-                            {overview.aging && (
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="mb-2 flex items-center justify-between">
-                                        <div className="flex items-center gap-1.5">
-                                            <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-slate-700 uppercase dark:bg-zinc-800 dark:text-zinc-300">
-                                                AGING REPORT
-                                            </span>
-                                            <h3 className="text-xs font-semibold text-slate-900 dark:text-white">
-                                                Analisis Umur Piutang (Receivables Schedule)
-                                            </h3>
+                            {/* Collapsible Secondary Operational Metrics & Aging Report */}
+                            {showDetailedAnalytics && (
+                                <div className="space-y-2.5 animate-in fade-in-50 duration-200">
+                                    {/* Secondary Operational Metrics Bar */}
+                                    <section className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                                        <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                            <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
+                                                Anggaran (Budget)
+                                            </p>
+                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                {formatMoney(overview.budget_amount, currency)}
+                                            </p>
                                         </div>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-5">
-                                        {[
-                                            [
-                                                'Belum Jatuh Tempo',
-                                                overview.aging.current,
-                                                'text-slate-900 dark:text-white',
-                                                'border-slate-200 bg-slate-50/60 dark:border-white/5 dark:bg-[#121418]',
-                                            ],
-                                            [
-                                                '1-30 Hari',
-                                                overview.aging['1_30'],
-                                                'text-amber-600 dark:text-amber-400',
-                                                'border-amber-100 bg-amber-50/40 dark:border-amber-900/20 dark:bg-amber-950/10',
-                                            ],
-                                            [
-                                                '31-60 Hari',
-                                                overview.aging['31_60'],
-                                                'text-amber-700 dark:text-amber-300',
-                                                'border-amber-200 bg-amber-50/60 dark:border-amber-900/30 dark:bg-amber-950/20',
-                                            ],
-                                            [
-                                                '61-90 Hari',
-                                                overview.aging['61_90'],
-                                                'text-rose-600 dark:text-rose-400',
-                                                'border-rose-100 bg-rose-50/40 dark:border-rose-900/20 dark:bg-rose-950/10',
-                                            ],
-                                            [
-                                                '>90 Hari (Kritis)',
-                                                overview.aging.over_90,
-                                                'text-rose-700 dark:text-rose-300 font-bold',
-                                                'border-rose-200 bg-rose-50/70 dark:border-rose-900/40 dark:bg-rose-950/30',
-                                            ],
-                                        ].map(([label, val, textCls, cardCls]) => (
-                                            <div
-                                                key={String(label)}
-                                                className={`rounded-lg border p-2 ${cardCls}`}
-                                            >
-                                                <p className="truncate text-[9.5px] font-semibold text-slate-500 dark:text-zinc-400">
-                                                    {label}
-                                                </p>
-                                                <p className={`mt-0.5 font-mono text-xs font-bold ${textCls}`}>
-                                                    {formatMoney(Number(val), currency)}
-                                                </p>
+                                        <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                            <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
+                                                Biaya Perkara (Expense)
+                                            </p>
+                                            <p className="mt-0.5 font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
+                                                {formatMoney(overview.expense_amount, currency)}
+                                            </p>
+                                        </div>
+                                        <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                            <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
+                                                Quotation Diajukan
+                                            </p>
+                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                {formatMoney(overview.quotation_amount, currency)}
+                                            </p>
+                                        </div>
+                                        <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                            <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
+                                                Lewat Jatuh Tempo
+                                            </p>
+                                            <p className="mt-0.5 font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
+                                                {formatMoney(overview.overdue_amount ?? 0, currency)}
+                                            </p>
+                                        </div>
+                                    </section>
+
+                                    {/* Aging Analysis Breakdown Bar */}
+                                    {overview.aging && (
+                                        <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                            <div className="mb-2 flex items-center justify-between">
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-slate-700 uppercase dark:bg-zinc-800 dark:text-zinc-300">
+                                                        AGING REPORT
+                                                    </span>
+                                                    <h3 className="text-xs font-semibold text-slate-900 dark:text-white">
+                                                        Analisis Umur Piutang (Receivables Schedule)
+                                                    </h3>
+                                                </div>
                                             </div>
-                                        ))}
-                                    </div>
+                                            <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-5">
+                                                {[
+                                                    [
+                                                        'Belum Jatuh Tempo',
+                                                        overview.aging.current,
+                                                        'text-slate-900 dark:text-white',
+                                                        'border-slate-200 bg-slate-50/60 dark:border-white/5 dark:bg-[#121418]',
+                                                    ],
+                                                    [
+                                                        '1-30 Hari',
+                                                        overview.aging['1_30'],
+                                                        'text-amber-600 dark:text-amber-400',
+                                                        'border-amber-100 bg-amber-50/40 dark:border-amber-900/20 dark:bg-amber-950/10',
+                                                    ],
+                                                    [
+                                                        '31-60 Hari',
+                                                        overview.aging['31_60'],
+                                                        'text-amber-700 dark:text-amber-300',
+                                                        'border-amber-200 bg-amber-50/60 dark:border-amber-900/30 dark:bg-amber-950/20',
+                                                    ],
+                                                    [
+                                                        '61-90 Hari',
+                                                        overview.aging['61_90'],
+                                                        'text-rose-600 dark:text-rose-400',
+                                                        'border-rose-100 bg-rose-50/40 dark:border-rose-900/20 dark:bg-rose-950/10',
+                                                    ],
+                                                    [
+                                                        '>90 Hari (Kritis)',
+                                                        overview.aging.over_90,
+                                                        'text-rose-700 dark:text-rose-300 font-bold',
+                                                        'border-rose-200 bg-rose-50/70 dark:border-rose-900/40 dark:bg-rose-950/30',
+                                                    ],
+                                                ].map(([label, val, textCls, cardCls]) => (
+                                                    <div
+                                                        key={String(label)}
+                                                        className={`rounded-lg border p-2 ${cardCls}`}
+                                                    >
+                                                        <p className="truncate text-[9.5px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                            {label}
+                                                        </p>
+                                                        <p className={`mt-0.5 font-mono text-xs font-bold ${textCls}`}>
+                                                            {formatMoney(Number(val), currency)}
+                                                        </p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
