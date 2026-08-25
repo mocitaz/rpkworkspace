@@ -494,7 +494,7 @@
             canvas.height = rect.height * dpr;
             ctx.scale(dpr, dpr);
             ctx.strokeStyle = '#0f172a';
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = 3.2;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
         }
@@ -548,11 +548,62 @@
             document.getElementById('stampSigPreview').innerHTML = '<span class="text-[9.5px] italic text-slate-400 font-medium">[Tanda Tangan]</span>';
         }
 
+        // Bounding box auto-trim function to remove empty whitespace
+        function getTrimmedSignatureDataUrl(srcCanvas) {
+            const w = srcCanvas.width;
+            const h = srcCanvas.height;
+            const context = srcCanvas.getContext('2d');
+            const imgData = context.getImageData(0, 0, w, h);
+            const data = imgData.data;
+
+            let minX = w, minY = h, maxX = 0, maxY = 0;
+            let found = false;
+
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const alpha = data[(y * w + x) * 4 + 3];
+                    if (alpha > 15) {
+                        found = true;
+                        if (x < minX) minX = x;
+                        if (x > maxX) maxX = x;
+                        if (y < minY) minY = y;
+                        if (y > maxY) maxY = y;
+                    }
+                }
+            }
+
+            if (!found) {
+                return srcCanvas.toDataURL('image/png');
+            }
+
+            const pad = 12;
+            minX = Math.max(0, minX - pad);
+            minY = Math.max(0, minY - pad);
+            maxX = Math.min(w, maxX + pad);
+            maxY = Math.min(h, maxY + pad);
+
+            const trimWidth = maxX - minX;
+            const trimHeight = maxY - minY;
+
+            const trimCanvas = document.createElement('canvas');
+            trimCanvas.width = trimWidth;
+            trimCanvas.height = trimHeight;
+            const trimCtx = trimCanvas.getContext('2d');
+
+            trimCtx.drawImage(
+                srcCanvas,
+                minX, minY, trimWidth, trimHeight,
+                0, 0, trimWidth, trimHeight
+            );
+
+            return trimCanvas.toDataURL('image/png');
+        }
+
         function syncCanvasData() {
             if (hasDrawn && currentMode === 'draw') {
-                const base64 = canvas.toDataURL('image/png');
-                signatureDataInput.value = base64;
-                document.getElementById('stampSigPreview').innerHTML = `<img src="${base64}" alt="Sig" style="max-height: 38px; max-width: 100%; object-fit: contain;">`;
+                const trimmedBase64 = getTrimmedSignatureDataUrl(canvas);
+                signatureDataInput.value = trimmedBase64;
+                document.getElementById('stampSigPreview').innerHTML = `<img src="${trimmedBase64}" alt="Sig" class="w-full h-full max-h-[48px] object-contain drop-shadow-2xs">`;
             }
         }
 
@@ -582,13 +633,24 @@
             if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
-                const base64 = e.target.result;
-                signatureDataInput.value = base64;
-                const previewImg = document.getElementById('uploadPreview');
-                const previewWrapper = document.getElementById('uploadPreviewWrapper');
-                previewImg.src = base64;
-                previewWrapper.classList.remove('hidden');
-                document.getElementById('stampSigPreview').innerHTML = `<img src="${base64}" alt="Sig" style="max-height: 38px; max-width: 100%; object-fit: contain;">`;
+                const rawBase64 = e.target.result;
+                const img = new Image();
+                img.onload = function() {
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = img.naturalWidth;
+                    tempCanvas.height = img.naturalHeight;
+                    const tempCtx = tempCanvas.getContext('2d');
+                    tempCtx.drawImage(img, 0, 0);
+                    const trimmedBase64 = getTrimmedSignatureDataUrl(tempCanvas);
+
+                    signatureDataInput.value = trimmedBase64;
+                    const previewImg = document.getElementById('uploadPreview');
+                    const previewWrapper = document.getElementById('uploadPreviewWrapper');
+                    previewImg.src = trimmedBase64;
+                    previewWrapper.classList.remove('hidden');
+                    document.getElementById('stampSigPreview').innerHTML = `<img src="${trimmedBase64}" alt="Sig" class="w-full h-full max-h-[48px] object-contain">`;
+                };
+                img.src = rawBase64;
             };
             reader.readAsDataURL(file);
         }

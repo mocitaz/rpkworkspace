@@ -120,7 +120,20 @@ class GenerateSignedFinalPdf
                 $decoded = base64_decode($base64);
                 if ($decoded !== false && strlen($decoded) > 50) {
                     $sigPath = $outputDir.'/visual_sig_'.$signer->getKey().'.png';
-                    file_put_contents($sigPath, $decoded);
+                    $im = @imagecreatefromstring($decoded);
+                    if ($im !== false) {
+                        imagesavealpha($im, true);
+                        $cropped = function_exists('imagecropauto') ? @imagecropauto($im, IMG_CROP_TRANSPARENT) : false;
+                        if ($cropped !== false) {
+                            imagedestroy($im);
+                            $im = $cropped;
+                            imagesavealpha($im, true);
+                        }
+                        imagepng($im, $sigPath);
+                        imagedestroy($im);
+                    } else {
+                        file_put_contents($sigPath, $decoded);
+                    }
                 }
             }
 
