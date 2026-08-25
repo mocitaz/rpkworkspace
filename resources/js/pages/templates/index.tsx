@@ -30,6 +30,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { FileInput } from '@/components/ui/file-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
@@ -571,13 +572,13 @@ function UploadModal({ onClose }: { onClose: () => void }) {
                                 <Label htmlFor="file" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
                                     Pilih Berkas DOCX (.docx) <span className="text-rose-500">*</span>
                                 </Label>
-                                <Input
+                                <FileInput
                                     id="file"
                                     name="file"
-                                    type="file"
                                     accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                     required
-                                    className="h-9.5 cursor-pointer rounded-xl border-slate-200 bg-slate-50/70 text-xs text-slate-900 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-slate-800 dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    buttonText="Pilih File DOCX"
+                                    placeholder="Klik atau seret template .docx ke sini..."
                                 />
                                 {errors.file && (
                                     <p className="text-xs text-rose-500">{errors.file}</p>

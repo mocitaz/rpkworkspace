@@ -21,6 +21,7 @@ import {
     Users,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { FileInput } from '@/components/ui/file-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
@@ -347,12 +348,12 @@ export default function CorrespondenceShow({
                                                         >
                                                             Unggah Lampiran Baru
                                                         </Label>
-                                                        <Input
+                                                        <FileInput
                                                             id="attachment-file"
                                                             name="file"
-                                                            type="file"
                                                             required
-                                                            className="h-8 rounded-lg border border-slate-200 bg-white text-xs file:mr-2 file:rounded file:border-0 file:bg-slate-100 file:px-2 file:py-0.5 file:text-xs file:font-semibold dark:border-white/10 dark:bg-zinc-800"
+                                                            buttonText="Pilih Lampiran"
+                                                            placeholder="Pilih berkas surat / bukti..."
                                                         />
                                                         {errors.file && (
                                                             <p className="text-xs font-semibold text-rose-500">

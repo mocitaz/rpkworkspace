@@ -34,13 +34,8 @@ import { EmptyState } from '@/components/empty-state';
 import { StatusBadge } from '@/components/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { FileInput } from '@/components/ui/file-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
@@ -1959,16 +1954,15 @@ function UploadClientDocModal({
                         <Label htmlFor="doc_file" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
                             Pilih Berkas File (PDF, DOCX, XLSX, max 50MB) <span className="text-rose-500">*</span>
                         </Label>
-                        <Input
+                        <FileInput
                             id="doc_file"
                             ref={fileInputRef}
-                            type="file"
                             required
-                            onChange={(e) => {
-                                const file = e.target.files?.[0] ?? null;
-                                setData('file', file);
-                            }}
-                            className="h-9 cursor-pointer rounded-lg border-slate-200 bg-slate-50/70 text-xs file:mr-3 file:rounded-md file:border-0 file:bg-slate-900 file:px-2.5 file:py-1 file:text-xs file:font-semibold file:text-white dark:border-white/10 dark:bg-[#121418] dark:file:bg-white dark:file:text-slate-900"
+                            accept=".pdf,.docx,.doc,.xlsx,.xls,.png,.jpg,.jpeg"
+                            buttonText="Pilih Berkas"
+                            placeholder="Klik atau seret berkas dokumen ke sini..."
+                            value={data.file}
+                            onFileSelect={(file) => setData('file', file)}
                         />
                         {errors.file && <p className="text-[11px] text-rose-500">{errors.file}</p>}
                     </div>

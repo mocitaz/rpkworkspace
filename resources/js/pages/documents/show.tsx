@@ -39,6 +39,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { FileInput } from '@/components/ui/file-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
@@ -1227,19 +1228,15 @@ function UploadVersionModal({
                         <Label htmlFor="version-file" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
                             Pilih Berkas Baru <span className="text-rose-500">*</span>
                         </Label>
-                        <Input
+                        <FileInput
                             id="version-file"
                             ref={fileInputRef}
-                            type="file"
                             required
-                            onChange={(e) => setData('file', e.target.files?.[0] || null)}
-                            className="h-8 rounded-lg border border-slate-200 bg-slate-50/60 text-xs file:mr-2 file:rounded file:border-0 file:bg-slate-100 file:px-2 file:py-0.5 file:text-xs file:font-semibold focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418]"
+                            buttonText="Pilih Berkas Baru"
+                            placeholder="Klik atau seret revisi berkas baru..."
+                            value={data.file}
+                            onFileSelect={(file) => setData('file', file)}
                         />
-                        {data.file && (
-                            <p className="text-[11px] font-mono text-blue-600 dark:text-blue-400">
-                                Berkas terpilih: {data.file.name} ({Math.round(data.file.size / 1024)} KB)
-                            </p>
-                        )}
                         <InputError message={errors.file} />
                     </div>
 

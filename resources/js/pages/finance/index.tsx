@@ -36,6 +36,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { FileInput } from '@/components/ui/file-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
@@ -1718,12 +1719,12 @@ function FinanceDialog({
                                         >
                                             Unggah Bukti / Kuitansi
                                         </Label>
-                                        <Input
+                                        <FileInput
                                             id="expense-proof"
                                             name="proof"
-                                            type="file"
                                             accept="application/pdf,image/png,image/jpeg,image/webp"
-                                            className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs file:mr-2.5 file:rounded file:border-0 file:bg-slate-200 file:px-2 file:py-0.5 file:text-xs file:font-semibold dark:border-white/10 dark:bg-[#121418]"
+                                            buttonText="Unggah Berkas"
+                                            placeholder="Pilih berkas kuitansi / nota..."
                                         />
                                     </div>
                                     <input type="hidden" name="status" value="draft" />
@@ -1760,12 +1761,12 @@ function FinanceDialog({
                                         >
                                             Unggah Bukti Transfer
                                         </Label>
-                                        <Input
+                                        <FileInput
                                             id="payment-proof"
                                             name="proof"
-                                            type="file"
                                             accept="application/pdf,image/png,image/jpeg,image/webp"
-                                            className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs file:mr-2.5 file:rounded file:border-0 file:bg-slate-200 file:px-2 file:py-0.5 file:text-xs file:font-semibold dark:border-white/10 dark:bg-[#121418]"
+                                            buttonText="Unggah Bukti"
+                                            placeholder="Pilih slip / screenshot transfer..."
                                         />
                                     </div>
 
