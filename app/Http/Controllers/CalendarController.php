@@ -79,7 +79,14 @@ class CalendarController extends Controller
             ->orderBy('due_at')
             ->get();
 
-        $ics = $generator->generate($events, $deadlines);
+        $tasks = Task::query()->with('matter:id,matter_number,title')
+            ->where('assignee_id', $user->getKey())
+            ->whereBetween('due_at', [$from, $until])
+            ->whereNotIn('status', ['cancelled'])
+            ->orderBy('due_at')
+            ->get();
+
+        $ics = $generator->generate($events, $deadlines, $tasks);
 
         return response($ics, 200, [
             'Content-Type' => 'text/calendar; charset=utf-8',
@@ -116,7 +123,14 @@ class CalendarController extends Controller
             ->orderBy('due_at')
             ->get();
 
-        $ics = $generator->generate($events, $deadlines);
+        $tasks = Task::query()->with('matter:id,matter_number,title')
+            ->where('assignee_id', $request->user()->getKey())
+            ->whereBetween('due_at', [$from, $until])
+            ->whereNotIn('status', ['cancelled'])
+            ->orderBy('due_at')
+            ->get();
+
+        $ics = $generator->generate($events, $deadlines, $tasks);
 
         return response($ics, 200, [
             'Content-Type' => 'text/calendar; charset=utf-8',

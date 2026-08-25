@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Deadline;
 use App\Models\MatterEvent;
+use App\Models\Task;
 use Illuminate\Support\Collection;
 
 class IcsCalendarGenerator
@@ -11,8 +12,9 @@ class IcsCalendarGenerator
     /**
      * @param  Collection<int, MatterEvent>  $events
      * @param  Collection<int, Deadline>  $deadlines
+     * @param  Collection<int, Task>|null  $tasks
      */
-    public function generate(Collection $events, Collection $deadlines): string
+    public function generate(Collection $events, Collection $deadlines, ?Collection $tasks = null): string
     {
         $lines = [
             'BEGIN:VCALENDAR',
@@ -20,7 +22,7 @@ class IcsCalendarGenerator
             'PRODID:-//RPK Law Firm//Legal Practice Workspace//ID',
             'CALSCALE:GREGORIAN',
             'METHOD:PUBLISH',
-            'X-WR-CALNAME:RPK Law Firm — Sidang & Agenda Perkara',
+            'X-WR-CALNAME:RPK Law Firm — Sidang, Tenggat & Tugas',
             'X-WR-TIMEZONE:Asia/Jakarta',
         ];
 
@@ -58,6 +60,25 @@ class IcsCalendarGenerator
             $lines[] = 'DESCRIPTION:'.$this->escapeIcs($description);
             $lines[] = 'STATUS:CONFIRMED';
             $lines[] = 'END:VEVENT';
+        }
+
+        if ($tasks) {
+            foreach ($tasks as $task) {
+                $start = $task->due_at?->utc()->format('Ymd\THis\Z') ?? now()->utc()->format('Ymd\THis\Z');
+                $end = $task->due_at?->addHour()->utc()->format('Ymd\THis\Z') ?? now()->utc()->format('Ymd\THis\Z');
+                $summary = '📝 [TUGAS '.($task->matter->matter_number ?? 'RPK').'] '.$task->title;
+                $description = ($task->description ? $task->description."\n\n" : '').'Perkara: '.($task->matter->title ?? '-').' | Prioritas: '.ucfirst($task->priority ?? 'Normal');
+
+                $lines[] = 'BEGIN:VEVENT';
+                $lines[] = 'UID:task-'.$task->id.'@rpklaw.co.id';
+                $lines[] = 'DTSTAMP:'.now()->utc()->format('Ymd\THis\Z');
+                $lines[] = 'DTSTART:'.$start;
+                $lines[] = 'DTEND:'.$end;
+                $lines[] = 'SUMMARY:'.$this->escapeIcs($summary);
+                $lines[] = 'DESCRIPTION:'.$this->escapeIcs($description);
+                $lines[] = 'STATUS:'.($task->status === 'completed' ? 'COMPLETED' : 'CONFIRMED');
+                $lines[] = 'END:VEVENT';
+            }
         }
 
         $lines[] = 'END:VCALENDAR';
