@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { ClientEditDialog } from '@/components/client-edit-dialog';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { EmptyState } from '@/components/empty-state';
 import { StatusBadge } from '@/components/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -184,6 +185,8 @@ export default function ClientShow({
     const [editingCompliance, setEditingCompliance] = useState<ComplianceDocument | null>(null);
     const [isAddingContact, setIsAddingContact] = useState(false);
     const [isUploadingDocument, setIsUploadingDocument] = useState(false);
+    const [complianceToDelete, setComplianceToDelete] = useState<ComplianceDocument | null>(null);
+    const [isDeletingCompliance, setIsDeletingCompliance] = useState(false);
     const allMatters = useMemo(() => [...activeMatters, ...closedMatters], [activeMatters, closedMatters]);
 
     const handleCopyTax = () => {
@@ -825,11 +828,7 @@ export default function ClientShow({
                                                                         type="button"
                                                                         variant="ghost"
                                                                         size="sm"
-                                                                        onClick={() => {
-                                                                            if (confirm(`Hapus pencatatan dokumen legalitas "${doc.title}"?`)) {
-                                                                                router.delete(`/clients/${client.id}/compliance-documents/${doc.id}`);
-                                                                            }
-                                                                        }}
+                                                                        onClick={() => setComplianceToDelete(doc)}
                                                                         className="size-7.5 p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400"
                                                                         title="Hapus Dokumen Legalitas"
                                                                     >
@@ -1421,6 +1420,31 @@ export default function ClientShow({
                     onClose={() => setEditingCompliance(null)}
                 />
             )}
+
+            {/* Modal Konfirmasi Hapus Dokumen Legalitas */}
+            <ConfirmDialog
+                open={!!complianceToDelete}
+                onOpenChange={(open) => !open && setComplianceToDelete(null)}
+                title="Hapus Dokumen Legalitas"
+                description={
+                    complianceToDelete
+                        ? `Apakah Anda yakin ingin menghapus pencatatan dokumen "${complianceToDelete.title}"? Tindakan ini akan dicatat dalam riwayat audit kepatuhan.`
+                        : ''
+                }
+                confirmLabel="Hapus Dokumen"
+                variant="danger"
+                processing={isDeletingCompliance}
+                onConfirm={() => {
+                    if (!complianceToDelete) return;
+                    setIsDeletingCompliance(true);
+                    router.delete(`/clients/${client.id}/compliance-documents/${complianceToDelete.id}`, {
+                        onFinish: () => {
+                            setIsDeletingCompliance(false);
+                            setComplianceToDelete(null);
+                        },
+                    });
+                }}
+            />
         </>
     );
 }

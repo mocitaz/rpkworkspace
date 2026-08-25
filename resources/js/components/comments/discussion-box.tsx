@@ -18,6 +18,7 @@ import {
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import {
     Tooltip,
     TooltipContent,
@@ -117,6 +118,7 @@ export function DiscussionBox({
     const [mentionSearch, setMentionSearch] = useState<string | null>(null);
     const [mentionIndex, setMentionIndex] = useState<number>(-1);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     // Keep in sync when fresh Inertia props arrive
@@ -292,7 +294,13 @@ export function DiscussionBox({
 
     // Instant Optimistic Delete
     const handleDelete = (commentId: string) => {
-        if (!confirm('Hapus catatan diskusi ini?')) return;
+        setCommentToDelete(commentId);
+    };
+
+    const confirmDeleteComment = () => {
+        if (!commentToDelete) return;
+        const commentId = commentToDelete;
+        setCommentToDelete(null);
 
         setLocalComments((prev) =>
             prev
@@ -499,6 +507,17 @@ export function DiscussionBox({
                     </div>
                 </form>
             </div>
+
+            {/* Modal Konfirmasi Hapus Komentar */}
+            <ConfirmDialog
+                open={!!commentToDelete}
+                onOpenChange={(open) => !open && setCommentToDelete(null)}
+                title="Hapus Catatan Diskusi"
+                description="Apakah Anda yakin ingin menghapus catatan diskusi strategi perkara ini? Catatan dan balasan terkait akan dihapus."
+                confirmLabel="Hapus Catatan"
+                variant="danger"
+                onConfirm={confirmDeleteComment}
+            />
         </div>
     );
 }

@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { DiscussionBox, type DiscussionComment, type DiscussionStaff } from '@/components/comments/discussion-box';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { DocumentPreviewModal, type PreviewableDocument } from '@/components/documents/document-preview-modal';
 import { EmptyState } from '@/components/empty-state';
 import { MatterEditDialog } from '@/components/matter-edit-dialog';
@@ -282,6 +283,9 @@ export default function MatterShow({
         'party' | 'deadline' | 'event' | 'note' | 'chronology' | 'evidence' | null
     >(null);
     const [editingEvidence, setEditingEvidence] = useState<MatterEvidence | null>(null);
+    const [chronologyToDelete, setChronologyToDelete] = useState<MatterChronologyItem | null>(null);
+    const [evidenceToDelete, setEvidenceToDelete] = useState<MatterEvidence | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
     const nextDeadline = matter.deadlines[0];
 
     const upcomingHearing = useMemo(() => {
@@ -1134,10 +1138,7 @@ export default function MatterShow({
                                                                             if (matter.legal_hold_at) {
                                                                                 return;
                                                                             }
-
-                                                                            if (confirm('Hapus rekaman kronologi fakta ini?')) {
-                                                                                router.delete(chronologyRoutes.destroy({ matter: matter.id, chronology: item.id }));
-                                                                            }
+                                                                            setChronologyToDelete(item);
                                                                         }}
                                                                         className="text-slate-400 hover:text-red-600 disabled:cursor-not-allowed disabled:text-amber-500 disabled:opacity-60 dark:hover:text-red-400"
                                                                         title={matter.legal_hold_at ? 'Dikunci karena Legal Hold aktif' : 'Hapus Fakta'}
@@ -1319,10 +1320,7 @@ export default function MatterShow({
                                                                             if (matter.legal_hold_at) {
                                                                                 return;
                                                                             }
-
-                                                                            if (confirm(`Hapus pencatatan alat bukti ${ev.evidence_code}?`)) {
-                                                                                router.delete(`/matters/${matter.id}/evidences/${ev.id}`);
-                                                                            }
+                                                                            setEvidenceToDelete(ev);
                                                                         }}
                                                                         className="size-7.5 p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:bg-amber-50 disabled:text-amber-600 disabled:opacity-70 dark:hover:bg-rose-950/30 dark:hover:text-rose-400 dark:disabled:bg-amber-950/30"
                                                                         title={matter.legal_hold_at ? 'Dikunci karena Legal Hold aktif' : 'Hapus Bukti'}
@@ -1726,6 +1724,59 @@ export default function MatterShow({
                 isOpen={!!previewDoc}
                 onClose={() => setPreviewDoc(null)}
                 document={previewDoc}
+            />
+
+            {/* Delete Chronology Confirmation Dialog */}
+            <ConfirmDialog
+                open={!!chronologyToDelete}
+                onOpenChange={(open) => !open && setChronologyToDelete(null)}
+                title="Hapus Kronologi Fakta"
+                description={
+                    chronologyToDelete
+                        ? `Apakah Anda yakin ingin menghapus catatan peristiwa "${chronologyToDelete.title}"? Tindakan ini akan dicatat dalam riwayat audit.`
+                        : ''
+                }
+                confirmLabel="Hapus Fakta"
+                variant="danger"
+                processing={isDeleting}
+                onConfirm={() => {
+                    if (!chronologyToDelete) return;
+                    setIsDeleting(true);
+                    router.delete(
+                        chronologyRoutes.destroy({ matter: matter.id, chronology: chronologyToDelete.id }),
+                        {
+                            onFinish: () => {
+                                setIsDeleting(false);
+                                setChronologyToDelete(null);
+                            },
+                        }
+                    );
+                }}
+            />
+
+            {/* Delete Evidence Confirmation Dialog */}
+            <ConfirmDialog
+                open={!!evidenceToDelete}
+                onOpenChange={(open) => !open && setEvidenceToDelete(null)}
+                title="Hapus Pencatatan Alat Bukti"
+                description={
+                    evidenceToDelete
+                        ? `Apakah Anda yakin ingin menghapus alat bukti "${evidenceToDelete.evidence_code} - ${evidenceToDelete.title}"? Tindakan ini akan dicatat dalam riwayat audit.`
+                        : ''
+                }
+                confirmLabel="Hapus Bukti"
+                variant="danger"
+                processing={isDeleting}
+                onConfirm={() => {
+                    if (!evidenceToDelete) return;
+                    setIsDeleting(true);
+                    router.delete(`/matters/${matter.id}/evidences/${evidenceToDelete.id}`, {
+                        onFinish: () => {
+                            setIsDeleting(false);
+                            setEvidenceToDelete(null);
+                        },
+                    });
+                }}
             />
         </>
     );
