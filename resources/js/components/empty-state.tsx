@@ -1,23 +1,42 @@
-import type { ReactNode } from 'react';
+import type { ElementType, ReactNode } from 'react';
+import { Inbox } from 'lucide-react';
 
 export function EmptyState({
+    icon: Icon = Inbox,
     title,
     description,
     action,
+    className = '',
 }: {
+    icon?: ElementType | ReactNode;
     title: string;
     description?: string;
     action?: ReactNode;
+    className?: string;
 }) {
+    const isIconComponent =
+        typeof Icon === 'function' ||
+        (typeof Icon === 'object' && Icon !== null && 'render' in Icon);
+
     return (
-        <div className="flex min-h-36 flex-col items-center justify-center gap-1.5 rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 px-6 py-8 text-center dark:border-zinc-800 dark:bg-zinc-900/30">
-            <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200">{title}</p>
+        <div className={`flex flex-col items-center justify-center py-10 px-4 text-center ${className}`}>
+            <div className="flex size-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 shadow-2xs dark:bg-white/[0.06] dark:text-zinc-300">
+                {isIconComponent ? (
+                    // @ts-ignore
+                    <Icon className="size-5.5 stroke-[1.75]" />
+                ) : (
+                    Icon
+                )}
+            </div>
+            <h3 className="mt-3.5 text-sm font-bold text-slate-900 dark:text-white">
+                {title}
+            </h3>
             {description && (
-                <p className="max-w-md text-xs text-slate-500 dark:text-zinc-400">
+                <p className="mt-1 max-w-sm text-xs text-slate-500 dark:text-zinc-400 leading-relaxed">
                     {description}
                 </p>
             )}
-            {action && <div className="mt-3">{action}</div>}
+            {action && <div className="mt-4">{action}</div>}
         </div>
     );
 }

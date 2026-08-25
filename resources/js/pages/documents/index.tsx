@@ -267,10 +267,43 @@ export default function DocumentsIndex({
                     {/* 4. Documents Database Table */}
                     <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                         {documents.data.length === 0 ? (
-                            <div className="flex min-h-[320px] items-center justify-center p-8 text-center">
+                            <div className="flex min-h-[340px] items-center justify-center p-8 text-center">
                                 <EmptyState
-                                    title="Belum ada dokumen yang sesuai pencarian"
-                                    description="Seluruh dokumen legal disimpan secara privat dengan enkripsi ketat. Unggah berkas baru untuk memulai."
+                                    icon={FileText}
+                                    title={
+                                        filters.search || filters.status || filters.matter_id || filters.document_type
+                                            ? 'Belum ada dokumen yang sesuai pencarian'
+                                            : 'Vault Dokumen Kosong'
+                                    }
+                                    description={
+                                        filters.search || filters.status || filters.matter_id || filters.document_type
+                                            ? 'Tidak ditemukan berkas dengan kriteria filter yang Anda pilih. Coba sesuaikan kata kunci atau reset filter.'
+                                            : 'Seluruh berkas perkara, draf kontrak, dan dokumen legal disimpan secara privat dengan enkripsi ketat.'
+                                    }
+                                    action={
+                                        <div className="flex flex-wrap items-center justify-center gap-2">
+                                            {can.upload && (
+                                                <Button
+                                                    type="button"
+                                                    onClick={() => setOpen(true)}
+                                                    className="h-8 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 cursor-pointer"
+                                                >
+                                                    <Plus className="mr-1 size-3.5" /> Unggah Dokumen Baru
+                                                </Button>
+                                            )}
+                                            {(filters.search || filters.status || filters.matter_id || filters.document_type) && (
+                                                <Button
+                                                    asChild
+                                                    variant="outline"
+                                                    className="h-8 rounded-lg border-slate-200 px-3.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                                >
+                                                    <Link href={documentRoutes.index.url()}>
+                                                        Reset Filter
+                                                    </Link>
+                                                </Button>
+                                            )}
+                                        </div>
+                                    }
                                 />
                             </div>
                         ) : (

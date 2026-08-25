@@ -318,10 +318,44 @@ export default function ClientsIndex({
                     {/* 4. Precision Data Table */}
                     <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                         {clients.data.length === 0 ? (
-                            <div className="flex min-h-[300px] items-center justify-center p-8 text-center">
+                            <div className="flex min-h-[340px] items-center justify-center p-8 text-center">
                                 <EmptyState
-                                    title="Belum ada data klien yang cocok"
-                                    description="Coba sesuaikan kata kunci pencarian atau registrasi profil klien baru."
+                                    icon={Users}
+                                    title={
+                                        filters.search || filters.type || filters.status
+                                            ? 'Belum ada data klien yang cocok'
+                                            : 'Belum Ada Klien Terdaftar'
+                                    }
+                                    description={
+                                        filters.search || filters.type || filters.status
+                                            ? 'Coba sesuaikan kata kunci pencarian atau reset filter untuk menampilkan semua klien.'
+                                            : 'Simpan data profil klien perusahaan, individu, atau perwakilan hukum Anda di sini.'
+                                    }
+                                    action={
+                                        <div className="flex flex-wrap items-center justify-center gap-2">
+                                            {can.create && (
+                                                <Button
+                                                    asChild
+                                                    className="h-8 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 cursor-pointer"
+                                                >
+                                                    <Link href={clientRoutes.create()}>
+                                                        <Plus className="mr-1 size-3.5" /> Tambah Klien Baru
+                                                    </Link>
+                                                </Button>
+                                            )}
+                                            {(filters.search || filters.type || filters.status) && (
+                                                <Button
+                                                    asChild
+                                                    variant="outline"
+                                                    className="h-8 rounded-lg border-slate-200 px-3.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                                >
+                                                    <Link href={clientRoutes.index.url()}>
+                                                        Reset Filter
+                                                    </Link>
+                                                </Button>
+                                            )}
+                                        </div>
+                                    }
                                 />
                             </div>
                         ) : (

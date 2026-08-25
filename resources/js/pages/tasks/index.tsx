@@ -7,6 +7,7 @@ import {
     CalendarClock,
     Check,
     CheckCircle2,
+    CheckSquare,
     ChevronDown,
     ChevronRight,
     Clock,
@@ -391,10 +392,43 @@ export default function TasksIndex({
 
                     {/* 4. Tasks Content */}
                     {tasks.data.length === 0 ? (
-                        <div className="flex min-h-[300px] items-center justify-center rounded-xl border border-slate-200/70 bg-white p-8 text-center shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="flex min-h-[340px] items-center justify-center rounded-xl border border-slate-200/70 bg-white p-8 text-center shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                             <EmptyState
-                                title="Tidak ada tugas pada filter ini"
-                                description="Seluruh instruksi kerja telah dituntaskan atau silakan sesuaikan filter pilihan Anda."
+                                icon={CheckSquare}
+                                title={
+                                    filters.status || filters.matter_id || filters.view
+                                        ? 'Tidak ada tugas pada filter ini'
+                                        : 'Belum Ada Tugas Terdaftar'
+                                }
+                                description={
+                                    filters.status || filters.matter_id || filters.view
+                                        ? 'Seluruh instruksi kerja pada filter ini telah dituntaskan atau silakan sesuaikan filter pilihan Anda.'
+                                        : 'Delegasikan tugas baru kepada staf atau associate untuk memulai alur kerja perkara.'
+                                }
+                                action={
+                                    <div className="flex flex-wrap items-center justify-center gap-2">
+                                        {can.create && (
+                                            <Button
+                                                type="button"
+                                                onClick={() => setOpenCreate(true)}
+                                                className="h-8 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 cursor-pointer"
+                                            >
+                                                <Plus className="mr-1 size-3.5" /> Buat Tugas Baru
+                                            </Button>
+                                        )}
+                                        {(filters.status || filters.matter_id || filters.view) && (
+                                            <Button
+                                                asChild
+                                                variant="outline"
+                                                className="h-8 rounded-lg border-slate-200 px-3.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                            >
+                                                <Link href={taskRoutes.index.url()}>
+                                                    Reset Filter
+                                                </Link>
+                                            </Button>
+                                        )}
+                                    </div>
+                                }
                             />
                         </div>
                     ) : viewMode === 'table' ? (

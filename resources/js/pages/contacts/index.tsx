@@ -332,10 +332,43 @@ export default function ContactsIndex({
 
                     {/* 4. Contacts Content */}
                     {contacts.data.length === 0 ? (
-                        <div className="flex min-h-[300px] items-center justify-center rounded-xl border border-slate-200/70 bg-white p-8 text-center shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="flex min-h-[340px] items-center justify-center rounded-xl border border-slate-200/70 bg-white p-8 text-center shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                             <EmptyState
-                                title="Belum ada kontak yang sesuai pencarian"
-                                description="Tambahkan kontak perwakilan baru atau sesuaikan filter pencarian Anda."
+                                icon={UserPlus}
+                                title={
+                                    filters.search || filters.client_id
+                                        ? 'Belum ada kontak yang sesuai pencarian'
+                                        : 'Buku Kontak Kosong'
+                                }
+                                description={
+                                    filters.search || filters.client_id
+                                        ? 'Coba sesuaikan kata kunci pencarian atau reset filter untuk melihat semua kontak.'
+                                        : 'Simpan data kontak PIC, pengacara eksternal, saksi, dan perwakilan hukum di sini.'
+                                }
+                                action={
+                                    <div className="flex flex-wrap items-center justify-center gap-2">
+                                        {can.create && (
+                                            <Button
+                                                type="button"
+                                                onClick={() => setOpenCreate(true)}
+                                                className="h-8 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 cursor-pointer"
+                                            >
+                                                <Plus className="mr-1 size-3.5" /> Tambah Kontak Baru
+                                            </Button>
+                                        )}
+                                        {(filters.search || filters.client_id) && (
+                                            <Button
+                                                asChild
+                                                variant="outline"
+                                                className="h-8 rounded-lg border-slate-200 px-3.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                            >
+                                                <Link href={contactRoutes.index.url()}>
+                                                    Reset Filter
+                                                </Link>
+                                            </Button>
+                                        )}
+                                    </div>
+                                }
                             />
                         </div>
                     ) : viewMode === 'table' ? (

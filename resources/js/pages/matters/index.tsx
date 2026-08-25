@@ -333,10 +333,44 @@ export default function MattersIndex({
                     {/* 4. Precision Data Table (Notion Minimalist Style) */}
                     <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                         {matters.data.length === 0 ? (
-                            <div className="flex min-h-[300px] items-center justify-center p-8 text-center">
+                            <div className="flex min-h-[340px] items-center justify-center p-8 text-center">
                                 <EmptyState
-                                    title="Tidak ada perkara yang sesuai"
-                                    description="Coba ubah kata kunci filter pencarian atau registrasi perkara baru."
+                                    icon={Briefcase}
+                                    title={
+                                        filters.search || filters.practice_area || filters.status || filters.stage
+                                            ? 'Tidak ada perkara yang sesuai filter'
+                                            : 'Belum Ada Perkara Terdaftar'
+                                    }
+                                    description={
+                                        filters.search || filters.practice_area || filters.status || filters.stage
+                                            ? 'Coba sesuaikan kata kunci filter pencarian atau reset filter untuk melihat semua perkara.'
+                                            : 'Mulai dengan membuka berkas perkara Litigasi atau Non-Litigasi / Korporasi baru.'
+                                    }
+                                    action={
+                                        <div className="flex flex-wrap items-center justify-center gap-2">
+                                            {can.create && (
+                                                <Button
+                                                    asChild
+                                                    className="h-8 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 cursor-pointer"
+                                                >
+                                                    <Link href={matterRoutes.create()}>
+                                                        <Plus className="mr-1 size-3.5" /> Buka Perkara Baru
+                                                    </Link>
+                                                </Button>
+                                            )}
+                                            {(filters.search || filters.practice_area || filters.status || filters.stage) && (
+                                                <Button
+                                                    asChild
+                                                    variant="outline"
+                                                    className="h-8 rounded-lg border-slate-200 px-3.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                                >
+                                                    <Link href={matterRoutes.index.url()}>
+                                                        Reset Filter
+                                                    </Link>
+                                                </Button>
+                                            )}
+                                        </div>
+                                    }
                                 />
                             </div>
                         ) : (
