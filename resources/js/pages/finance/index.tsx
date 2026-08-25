@@ -7,6 +7,7 @@ import {
     CalendarClock,
     CheckCircle2,
     ChevronDown,
+    ChevronRight,
     DollarSign,
     FileDown,
     FilePlus2,
@@ -16,6 +17,8 @@ import {
     Plus,
     Receipt,
     ReceiptText,
+    RotateCcw,
+    Search,
     Trash2,
     TrendingUp,
     Undo2,
@@ -626,167 +629,256 @@ function Ledger({
     emptyDescription?: string;
     onCancel?: (invoice: LedgerItem) => void;
 }) {
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredItems = useMemo(() => {
+        if (!searchQuery) return items;
+        const q = searchQuery.toLowerCase();
+        return items.filter((i) => {
+            return (
+                i.invoice_number?.toLowerCase().includes(q) ||
+                i.quotation_number?.toLowerCase().includes(q) ||
+                i.title?.toLowerCase().includes(q) ||
+                i.description?.toLowerCase().includes(q) ||
+                i.category?.toLowerCase().includes(q) ||
+                i.matter?.matter_number.toLowerCase().includes(q) ||
+                i.matter?.title.toLowerCase().includes(q)
+            );
+        });
+    }, [items, searchQuery]);
+
     return (
-        <div className="flex h-[380px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3 dark:border-white/[0.04]">
+                <div className="flex items-center gap-2.5">
+                    <div className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${iconBg}`}>
+                        <IconComp className="size-4" />
+                    </div>
+                    <div>
+                        <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                            {title}
+                        </h3>
+                        <p className="text-[10.5px] text-slate-400 dark:text-zinc-500">
+                            Log transaksi &amp; status pembukuan keuangan
+                        </p>
+                    </div>
+                </div>
                 <div className="flex items-center gap-2">
-                    <div className={`flex size-7 items-center justify-center rounded-lg ${iconBg}`}>
-                        <IconComp className="size-3.5" />
-                    </div>
-                    <h3 className="text-xs font-bold tracking-tight text-slate-900 dark:text-white">
-                        {title}
-                    </h3>
-                </div>
-                <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
-                    {items.length} data
-                </span>
-            </div>
-
-            {items.length > 0 ? (
-                <div className="flex-1 overflow-y-auto pr-1 divide-y divide-slate-100 [scrollbar-width:thin] dark:divide-white/[0.04]">
-                    {items.map((i) => (
-                        <div
-                            key={i.id}
-                            className="group flex flex-col justify-between gap-2 py-2.5 transition-colors hover:bg-slate-50/50 sm:flex-row sm:items-center dark:hover:bg-white/[0.02]"
-                        >
-                            <div className="min-w-0 flex-1">
-                                <div className="flex flex-wrap items-center gap-1.5">
-                                    {i.invoice_number ? (
-                                        <Link
-                                            href={invoiceRoutes.show.url(i.id)}
-                                            className="font-mono text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
-                                        >
-                                            {i.invoice_number}
-                                        </Link>
-                                    ) : (
-                                        <p className="truncate text-xs font-semibold text-slate-900 dark:text-white">
-                                            {i.quotation_number ?? i.title ?? i.description}
-                                        </p>
-                                    )}
-                                    <StatusBadge value={i.status} />
-                                </div>
-                                <p className="mt-0.5 truncate font-mono text-[10px] text-slate-500 dark:text-zinc-400">
-                                    {i.matter?.matter_number
-                                        ? `${i.matter.matter_number} · ${i.matter.title}`
-                                        : 'Tanpa Matter Terpilih'}
-                                    {date?.(i) ? ` · Jatuh Tempo: ${formatDate(date(i)!)}` : ''}
-                                </p>
-                            </div>
-
-                            <div className="flex shrink-0 items-center gap-2 text-right">
-                                <div className="text-right">
-                                    <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                        {formatMoney(value(i), i.currency || currency)}
-                                    </span>
-                                </div>
-
-                                {/* Action Links */}
-                                {i.invoice_number && (
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="size-7 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
-                                        asChild
-                                    >
-                                        <a
-                                            href={invoiceRoutes.pdf.url(i.id)}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            title="Download Dokumen PDF Invoice"
-                                        >
-                                            <FileDown className="size-3.5 text-blue-600 dark:text-blue-400" />
-                                        </a>
-                                    </Button>
-                                )}
-
-                                {i.quotation_number && (
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="size-7 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
-                                        asChild
-                                    >
-                                        <a
-                                            href={quotationRoutes.pdf.url(i.id)}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            title="Download Dokumen PDF Quotation"
-                                        >
-                                            <FileDown className="size-3.5 text-slate-700 dark:text-zinc-300" />
-                                        </a>
-                                    </Button>
-                                )}
-
-                                {/* Transitions & Approvals */}
-                                {canTransition &&
-                                    i.invoice_number &&
-                                    i.status === 'draft' && (
-                                        <Form {...invoiceRoutes.transition.form(i.id)}>
-                                            <input type="hidden" name="status" value="sent" />
-                                            <Button
-                                                size="sm"
-                                                className="h-7 rounded-lg bg-slate-900 px-2.5 text-[10.5px] font-semibold text-white hover:bg-black dark:bg-white dark:text-slate-900"
-                                            >
-                                                Kirim
-                                            </Button>
-                                        </Form>
-                                    )}
-
-                                {canTransition &&
-                                    i.invoice_number &&
-                                    ['draft', 'sent', 'overdue'].includes(i.status) &&
-                                    (i.paid_amount ?? 0) === 0 && (
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() => onCancel?.(i)}
-                                            className="h-7 rounded-lg text-[10.5px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
-                                        >
-                                            Batal
-                                        </Button>
-                                    )}
-
-                                {approveQuotations &&
-                                    i.quotation_number &&
-                                    ['draft', 'pending_approval'].includes(i.status) && (
-                                        <Form {...quotationRoutes.approve.form(i.id)}>
-                                            <Button
-                                                size="sm"
-                                                className="h-7 rounded-lg bg-emerald-600 px-2.5 text-[10.5px] font-semibold text-white hover:bg-emerald-700"
-                                            >
-                                                Setujui
-                                            </Button>
-                                        </Form>
-                                    )}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <div className="flex flex-1 flex-col items-center justify-center py-4 px-2 text-center">
-                    <div className="flex size-11 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 shadow-2xs dark:bg-white/[0.06] dark:text-zinc-300">
-                        <IconComp className="size-5 stroke-[1.75]" />
-                    </div>
-                    <h4 className="mt-3 text-xs font-bold text-slate-900 dark:text-white">
-                        {emptyTitle}
-                    </h4>
-                    <p className="mt-1 max-w-[260px] text-[11px] text-slate-500 leading-relaxed dark:text-zinc-400">
-                        {emptyDescription}
-                    </p>
+                    <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10.5px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                        {items.length} entri
+                    </span>
                     {canCreate && onCreate && (
-                        <div className="mt-3.5">
-                            <Button
-                                size="sm"
-                                onClick={onCreate}
-                                className="h-7 rounded-lg bg-slate-900 px-3 text-[11px] font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
-                            >
-                                <Plus className="mr-1.5 size-3.5" />
-                                {actionLabel || `Buat ${title.split(' ')[0]} Baru`}
-                            </Button>
-                        </div>
+                        <Button
+                            size="sm"
+                            onClick={onCreate}
+                            className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                        >
+                            <Plus className="mr-1 size-3.5" />
+                            {actionLabel ? actionLabel.replace('Baru', '').trim() : 'Tambah'}
+                        </Button>
                     )}
                 </div>
-            )}
+            </div>
+
+            {/* Quick Search Toolbar */}
+            <div className="my-3 flex gap-2">
+                <div className="relative flex-1">
+                    <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                    <Input
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder={`Cari nomor, perihal, atau perkara ${title.toLowerCase()}...`}
+                        className="h-8 rounded-lg border-slate-200/80 bg-slate-50/50 pl-8 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-100"
+                    />
+                </div>
+                {searchQuery && (
+                    <button
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        className="flex h-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                        title="Reset Pencarian"
+                    >
+                        <RotateCcw className="size-3.5 text-slate-400" />
+                    </button>
+                )}
+            </div>
+
+            {/* Feed List */}
+            <div className="mt-1">
+                {filteredItems.length > 0 ? (
+                    <div className="max-h-[520px] overflow-y-auto space-y-2 pr-1">
+                        {filteredItems.map((i) => (
+                            <div
+                                key={i.id}
+                                className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50/20 hover:shadow-xs dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-white/10 dark:hover:bg-white/[0.02]"
+                            >
+                                <div className="flex items-start gap-3 min-w-0 flex-1">
+                                    <div
+                                        className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl border transition-transform group-hover:scale-105 ${iconBg} border-slate-200/60 dark:border-white/10`}
+                                    >
+                                        <IconComp className="size-4" />
+                                    </div>
+
+                                    <div className="min-w-0 flex-1 space-y-1">
+                                        <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
+                                            {i.matter?.matter_number && (
+                                                <span className="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
+                                                    {i.matter.matter_number}
+                                                </span>
+                                            )}
+                                            <StatusBadge value={i.status} />
+                                            {i.category && (
+                                                <span className="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600 capitalize dark:bg-zinc-800 dark:text-zinc-400">
+                                                    {i.category}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white line-clamp-1">
+                                            {i.invoice_number ? (
+                                                <Link
+                                                    href={invoiceRoutes.show.url(i.id)}
+                                                    className="transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+                                                >
+                                                    {i.invoice_number}
+                                                </Link>
+                                            ) : (
+                                                i.quotation_number ?? i.title ?? i.description
+                                            )}
+                                        </h4>
+
+                                        <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-slate-500 dark:text-zinc-400">
+                                            {i.matter?.title && (
+                                                <span className="truncate max-w-[260px] font-medium text-slate-600 dark:text-zinc-300">
+                                                    {i.matter.title}
+                                                </span>
+                                            )}
+                                            {date?.(i) && (
+                                                <>
+                                                    <span>·</span>
+                                                    <span className="font-mono text-slate-500 dark:text-zinc-400">
+                                                        Jatuh Tempo: {formatDate(date(i)!)}
+                                                    </span>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between sm:flex-col sm:items-end sm:justify-center gap-1.5 shrink-0 pl-11 sm:pl-0 border-t sm:border-t-0 border-slate-100 pt-2 sm:pt-0 dark:border-white/[0.04]">
+                                    <span className="font-mono text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                                        {formatMoney(value(i), i.currency || currency)}
+                                    </span>
+
+                                    <div className="flex items-center gap-1">
+                                        {i.invoice_number && (
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="size-7 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                                asChild
+                                            >
+                                                <a
+                                                    href={invoiceRoutes.pdf.url(i.id)}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    title="Download Dokumen PDF Invoice"
+                                                >
+                                                    <FileDown className="size-3.5 text-blue-600 dark:text-blue-400" />
+                                                </a>
+                                            </Button>
+                                        )}
+
+                                        {i.quotation_number && (
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="size-7 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                                asChild
+                                            >
+                                                <a
+                                                    href={quotationRoutes.pdf.url(i.id)}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    title="Download Dokumen PDF Quotation"
+                                                >
+                                                    <FileDown className="size-3.5 text-slate-700 dark:text-zinc-300" />
+                                                </a>
+                                            </Button>
+                                        )}
+
+                                        {canTransition &&
+                                            i.invoice_number &&
+                                            i.status === 'draft' && (
+                                                <Form {...invoiceRoutes.transition.form(i.id)}>
+                                                    <input type="hidden" name="status" value="sent" />
+                                                    <Button
+                                                        size="sm"
+                                                        className="h-7 rounded-lg bg-slate-900 px-2.5 text-[10.5px] font-semibold text-white hover:bg-black dark:bg-white dark:text-slate-900"
+                                                    >
+                                                        Kirim
+                                                    </Button>
+                                                </Form>
+                                            )}
+
+                                        {canTransition &&
+                                            i.invoice_number &&
+                                            ['draft', 'sent', 'overdue'].includes(i.status) &&
+                                            (i.paid_amount ?? 0) === 0 && (
+                                                <Button
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    onClick={() => onCancel?.(i)}
+                                                    className="h-7 rounded-lg text-[10.5px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
+                                                >
+                                                    Batal
+                                                </Button>
+                                            )}
+
+                                        {approveQuotations &&
+                                            i.quotation_number &&
+                                            ['draft', 'pending_approval'].includes(i.status) && (
+                                                <Form {...quotationRoutes.approve.form(i.id)}>
+                                                    <Button
+                                                        size="sm"
+                                                        className="h-7 rounded-lg bg-emerald-600 px-2.5 text-[10.5px] font-semibold text-white hover:bg-emerald-700"
+                                                    >
+                                                        Setujui
+                                                    </Button>
+                                                </Form>
+                                            )}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                        <div className="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
+                            <IconComp className="size-5" />
+                        </div>
+                        <p className="mt-3 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                            {searchQuery ? 'Tidak Ada Hasil Pencarian' : emptyTitle}
+                        </p>
+                        <p className="mt-1 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                            {searchQuery
+                                ? 'Sesuaikan kata kunci pencarian Anda.'
+                                : emptyDescription}
+                        </p>
+                        {canCreate && onCreate && !searchQuery && (
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={onCreate}
+                                className="mt-3.5 h-8 rounded-lg text-xs font-semibold text-slate-900 border-slate-200 hover:bg-slate-50 dark:border-white/10 dark:text-white dark:hover:bg-zinc-800"
+                            >
+                                <Plus className="mr-1 size-3.5" /> {actionLabel || `Buat ${title.split(' ')[0]} Baru`}
+                            </Button>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
@@ -812,78 +904,156 @@ function PaymentLedger({
     onReverse: (payment: LedgerItem) => void;
     onRefund: (payment: LedgerItem) => void;
 }) {
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredItems = useMemo(() => {
+        if (!searchQuery) return items;
+        const q = searchQuery.toLowerCase();
+        return items.filter((p) => {
+            return (
+                p.matter?.matter_number.toLowerCase().includes(q) ||
+                p.matter?.title.toLowerCase().includes(q) ||
+                p.reversal_reason?.toLowerCase().includes(q) ||
+                p.refund_reason?.toLowerCase().includes(q) ||
+                p.allocations?.some((a) => a.invoice?.invoice_number?.toLowerCase().includes(q))
+            );
+        });
+    }, [items, searchQuery]);
+
     return (
-        <div className="flex h-[380px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                <div className="flex items-center gap-2">
-                    <div className="flex size-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
-                        <Banknote className="size-3.5" />
+        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3 dark:border-white/[0.04]">
+                <div className="flex items-center gap-2.5">
+                    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+                        <Banknote className="size-4" />
                     </div>
-                    <h3 className="text-xs font-bold tracking-tight text-slate-900 dark:text-white">
-                        Riwayat Penerimaan Pembayaran
-                    </h3>
+                    <div>
+                        <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                            Riwayat Penerimaan Pembayaran
+                        </h3>
+                        <p className="text-[10.5px] text-slate-400 dark:text-zinc-500">
+                            Log transfer kas masuk, pelunasan invoice &amp; deposit klien
+                        </p>
+                    </div>
                 </div>
-                <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
-                    {items.length} pembayaran
-                </span>
+                <div className="flex items-center gap-2">
+                    <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10.5px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                        {items.length} pembayaran
+                    </span>
+                    {canManage && onCreate && (
+                        <Button
+                            size="sm"
+                            onClick={onCreate}
+                            className="h-7.5 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-emerald-700"
+                        >
+                            <Plus className="mr-1 size-3.5" />
+                            Catat Kas
+                        </Button>
+                    )}
+                </div>
             </div>
 
-            {items.length > 0 ? (
-                <div className="flex-1 overflow-y-auto pr-1 divide-y divide-slate-100 [scrollbar-width:thin] dark:divide-white/[0.04]">
-                    {items.map((payment) => (
-                        <div key={payment.id} className="py-2.5">
-                            <div className="flex items-start justify-between gap-3">
-                                <div className="min-w-0">
-                                    <Link
-                                        href={paymentRoutes.show.url(payment.id)}
-                                        className="font-mono text-xs font-bold text-emerald-600 hover:underline dark:text-emerald-400"
-                                    >
-                                        {formatMoney(payment.amount ?? 0, payment.currency || currency)}
-                                    </Link>
-                                    <p className="mt-0.5 font-mono text-[10px] text-slate-500 dark:text-zinc-400">
-                                        {payment.matter?.matter_number ? (
-                                            <span>
-                                                <span className="font-semibold text-slate-700 dark:text-zinc-300">
+            {/* Quick Search Toolbar */}
+            <div className="my-3 flex gap-2">
+                <div className="relative flex-1">
+                    <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                    <Input
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Cari perkara atau alokasi invoice pembayaran..."
+                        className="h-8 rounded-lg border-slate-200/80 bg-slate-50/50 pl-8 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-100"
+                    />
+                </div>
+                {searchQuery && (
+                    <button
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        className="flex h-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                        title="Reset Pencarian"
+                    >
+                        <RotateCcw className="size-3.5 text-slate-400" />
+                    </button>
+                )}
+            </div>
+
+            {/* Feed List */}
+            <div className="mt-1">
+                {filteredItems.length > 0 ? (
+                    <div className="max-h-[520px] overflow-y-auto space-y-2 pr-1">
+                        {filteredItems.map((payment) => (
+                            <div
+                                key={payment.id}
+                                className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-emerald-300 hover:bg-emerald-50/20 hover:shadow-xs dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-emerald-800/50 dark:hover:bg-white/[0.02]"
+                            >
+                                <div className="flex items-start gap-3 min-w-0 flex-1">
+                                    <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl border border-emerald-200/60 bg-emerald-50 text-emerald-600 transition-transform group-hover:scale-105 dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-400">
+                                        <Banknote className="size-4" />
+                                    </div>
+
+                                    <div className="min-w-0 flex-1 space-y-1">
+                                        <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
+                                            {payment.matter?.matter_number && (
+                                                <span className="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
                                                     {payment.matter.matter_number}
-                                                </span>{' '}
-                                                · {payment.matter.title}
+                                                </span>
+                                            )}
+                                            <span className="inline-flex items-center rounded-md bg-emerald-50 px-1.5 py-0.5 font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
+                                                {payment.reversed_at
+                                                    ? 'Dikoreksi'
+                                                    : payment.refunded_at
+                                                      ? 'Direfund'
+                                                      : 'Tercatat Sah'}
                                             </span>
-                                        ) : (
-                                            'Tanpa Terikat Perkara Khusus'
-                                        )}{' '}
-                                        · {payment.received_at ? formatDate(payment.received_at) : ''}
-                                    </p>
-                                    {payment.allocations?.map((allocation) => (
-                                        <p
-                                            className="mt-0.5 font-mono text-[10px] text-slate-500 dark:text-zinc-400"
-                                            key={allocation.id}
-                                        >
-                                            → Alokasi{' '}
-                                            <span className="font-semibold text-slate-700 dark:text-zinc-300">
-                                                {allocation.invoice?.invoice_number ?? 'Invoice'}
+                                            {payment.received_at && (
+                                                <span className="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                                                    {formatDate(payment.received_at)}
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white line-clamp-1">
+                                            <Link
+                                                href={paymentRoutes.show.url(payment.id)}
+                                                className="transition-colors hover:text-emerald-600 dark:hover:text-emerald-400"
+                                            >
+                                                Penerimaan: {formatMoney(payment.amount ?? 0, payment.currency || currency)}
+                                            </Link>
+                                        </h4>
+
+                                        <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-slate-500 dark:text-zinc-400">
+                                            <span>
+                                                {payment.matter?.title
+                                                    ? payment.matter.title
+                                                    : 'Tanpa Terikat Perkara Khusus'}
                                             </span>
-                                            : {formatMoney(allocation.amount, allocation.invoice?.currency ?? currency)}
-                                        </p>
-                                    ))}
-                                    {payment.reversed_at && (
-                                        <p className="mt-0.5 text-[10px] font-semibold text-rose-600 dark:text-rose-400">
-                                            Dikoreksi: {payment.reversal_reason}
-                                        </p>
-                                    )}
-                                    {payment.refunded_at && (
-                                        <p className="mt-0.5 text-[10px] font-semibold text-rose-600 dark:text-rose-400">
-                                            Direfund: {payment.refund_reason}
-                                        </p>
-                                    )}
+                                            {payment.allocations?.map((allocation) => (
+                                                <span
+                                                    key={allocation.id}
+                                                    className="font-mono text-slate-600 dark:text-zinc-300"
+                                                >
+                                                    · Alokasi: {allocation.invoice?.invoice_number ?? 'Invoice'} (
+                                                    {formatMoney(allocation.amount, allocation.invoice?.currency ?? currency)})
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                        {payment.reversed_at && (
+                                            <p className="mt-0.5 text-[10px] font-semibold text-rose-600 dark:text-rose-400">
+                                                Dikoreksi: {payment.reversal_reason}
+                                            </p>
+                                        )}
+                                        {payment.refunded_at && (
+                                            <p className="mt-0.5 text-[10px] font-semibold text-rose-600 dark:text-rose-400">
+                                                Direfund: {payment.refund_reason}
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
 
-                                <div className="flex flex-col items-end gap-1 text-right">
-                                    <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
-                                        {payment.reversed_at
-                                            ? 'Dikoreksi'
-                                            : payment.refunded_at
-                                              ? 'Direfund'
-                                              : 'Tercatat Sah'}
+                                <div className="flex items-center justify-between sm:flex-col sm:items-end sm:justify-center gap-1.5 shrink-0 pl-11 sm:pl-0 border-t sm:border-t-0 border-slate-100 pt-2 sm:pt-0 dark:border-white/[0.04]">
+                                    <span className="font-mono text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                                        {formatMoney(payment.amount ?? 0, payment.currency || currency)}
                                     </span>
 
                                     {canManage &&
@@ -910,34 +1080,34 @@ function PaymentLedger({
                                         )}
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                <div className="flex flex-1 flex-col items-center justify-center py-4 px-2 text-center">
-                    <div className="flex size-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 shadow-2xs dark:bg-emerald-950/40 dark:text-emerald-400">
-                        <Banknote className="size-5 stroke-[1.75]" />
+                        ))}
                     </div>
-                    <h4 className="mt-3 text-xs font-bold text-slate-900 dark:text-white">
-                        {emptyTitle}
-                    </h4>
-                    <p className="mt-1 max-w-[260px] text-[11px] text-slate-500 leading-relaxed dark:text-zinc-400">
-                        {emptyDescription}
-                    </p>
-                    {canManage && onCreate && (
-                        <div className="mt-3.5">
+                ) : (
+                    <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                        <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+                            <Banknote className="size-5" />
+                        </div>
+                        <p className="mt-3 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                            {searchQuery ? 'Tidak Ada Hasil Pencarian' : emptyTitle}
+                        </p>
+                        <p className="mt-1 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                            {searchQuery
+                                ? 'Sesuaikan kata kunci pencarian Anda.'
+                                : emptyDescription}
+                        </p>
+                        {canManage && onCreate && !searchQuery && (
                             <Button
+                                variant="outline"
                                 size="sm"
                                 onClick={onCreate}
-                                className="h-7 rounded-lg bg-emerald-600 px-3 text-[11px] font-semibold text-white shadow-2xs hover:bg-emerald-700"
+                                className="mt-3.5 h-8 rounded-lg text-xs font-semibold text-emerald-600 border-emerald-200 hover:bg-emerald-50 dark:border-emerald-900/40 dark:text-emerald-400"
                             >
-                                <Plus className="mr-1.5 size-3.5" />
-                                {actionLabel || 'Catat Penerimaan Kas'}
+                                <Plus className="mr-1 size-3.5" /> Catat Kas Masuk
                             </Button>
-                        </div>
-                    )}
-                </div>
-            )}
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

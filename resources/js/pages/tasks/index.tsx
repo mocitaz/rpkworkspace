@@ -914,7 +914,10 @@ export default function TasksIndex({
                                                 </p>
                                                 <p className="text-[10.5px] text-slate-500 dark:text-zinc-400 pt-0.5">
                                                     {isTaskOverdue(selectedTask) ? (
-                                                        <span className="font-semibold text-rose-600 dark:text-rose-400">⚠️ Melewati batas waktu</span>
+                                                        <span className="inline-flex items-center gap-1 font-semibold text-rose-600 dark:text-rose-400">
+                                                            <AlertCircle className="size-3 text-rose-500" />
+                                                            Melewati batas waktu
+                                                        </span>
                                                     ) : (
                                                         <span>Jadwal deliverable perkara</span>
                                                     )}
