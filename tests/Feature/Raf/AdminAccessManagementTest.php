@@ -91,3 +91,51 @@ it('prevents an administrator from deleting themselves', function () {
 
     expect(User::query()->whereKey($administrator->getKey())->exists())->toBeTrue();
 });
+
+it('supports creating and updating users with staff hr fields and searching by them', function () {
+    $administrator = rafUser(['admin.users.manage']);
+    $role = Role::query()->create(['name' => 'Senior Associate', 'slug' => 'senior-associate']);
+
+    $this->actingAs($administrator)->post(route('admin.users.store'), [
+        'name' => 'Citra Dewi, S.H.',
+        'email' => 'citra@example.test',
+        'position_title' => 'Senior Associate',
+        'employee_code' => 'RPK-2026-077',
+        'department' => 'Litigasi & Arbitrase',
+        'employment_type' => 'Tetap',
+        'work_mode' => 'Hybrid',
+        'role_ids' => [$role->getKey()],
+    ])->assertSessionHasNoErrors();
+
+    $user = User::query()->where('email', 'citra@example.test')->firstOrFail();
+    expect($user->employee_code)->toBe('RPK-2026-077')
+        ->and($user->department)->toBe('Litigasi & Arbitrase')
+        ->and($user->work_mode)->toBe('Hybrid');
+
+    // Update HR fields
+    $this->actingAs($administrator)->put(route('admin.users.update', $user), [
+        'name' => 'Citra Dewi, S.H., LL.M.',
+        'email' => 'citra@example.test',
+        'position_title' => 'Junior Partner',
+        'employee_code' => 'RPK-2026-077',
+        'department' => 'Hukum Korporasi',
+        'employment_type' => 'Partner',
+        'work_mode' => 'WFO',
+        'is_active' => true,
+        'role_ids' => [$role->getKey()],
+    ])->assertSessionHasNoErrors();
+
+    $updated = $user->fresh();
+    expect($updated->name)->toBe('Citra Dewi, S.H., LL.M.')
+        ->and($updated->position_title)->toBe('Junior Partner')
+        ->and($updated->department)->toBe('Hukum Korporasi')
+        ->and($updated->work_mode)->toBe('WFO');
+
+    // Search by employee code
+    $this->actingAs($administrator)->get(route('admin.users.index', ['search' => 'RPK-2026-077']))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('admin/users/index')
+            ->has('users.data', 1)
+            ->where('users.data.0.name', 'Citra Dewi, S.H., LL.M.')
+        );
+});

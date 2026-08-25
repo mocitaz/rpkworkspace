@@ -1,11 +1,18 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import {
     AlertTriangle,
+    Briefcase,
+    Building2,
     Check,
     CheckCircle2,
     ChevronDown,
+    Contact,
     Copy,
+    IdCard,
     KeyRound,
+    Mail,
+    MapPin,
+    MessageSquare,
     Pencil,
     Plus,
     RotateCcw,
@@ -13,6 +20,7 @@ import {
     Shield,
     ShieldCheck,
     Trash2,
+    UserCheck,
     UserPlus,
     Users,
 } from 'lucide-react';
@@ -22,7 +30,6 @@ import { Pagination } from '@/components/pagination';
 import { StatusBadge } from '@/components/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useInitials } from '@/hooks/use-initials';
 import {
     Dialog,
@@ -49,8 +56,20 @@ type User = {
     name: string;
     email: string;
     position_title?: string;
+    employee_code?: string;
+    department?: string;
+    employment_type?: string;
+    employment_status?: string;
+    work_mode?: string;
+    joined_at?: string;
+    contract_end?: string;
+    leave_balance?: number;
+    utilization?: number;
+    performance_score?: number;
+    next_review?: string;
     avatar_url?: string | null;
     is_active: boolean;
+    created_at?: string;
     roles: Role[];
 };
 type Page = {
@@ -81,7 +100,8 @@ export default function UsersIndex({
     };
 }) {
     const getInitials = useInitials();
-    const [tab, setTab] = useState<'users' | 'roles'>('users');
+    const [tab, setTab] = useState<'cards' | 'users' | 'roles'>('cards');
+    const [selectedStaff, setSelectedStaff] = useState<User | null>(null);
     const [editing, setEditing] = useState<User | null>(null);
     const [deleting, setDeleting] = useState<User | null>(null);
     const [inviteOpen, setInviteOpen] = useState(false);
@@ -97,15 +117,15 @@ export default function UsersIndex({
             <Head title="Manajemen Pengguna & Hak Akses" />
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
-                <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-4 px-4 py-4 sm:px-6 lg:px-8">
                     {/* 1. Header Navigation & Action Bar */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
-                        <div className="space-y-1">
-                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                Pengguna &amp; Hak Akses
+                    <div className="flex flex-col justify-between gap-3 border-b border-slate-200/60 pb-3 sm:flex-row sm:items-center dark:border-white/[0.06]">
+                        <div className="space-y-0.5">
+                            <h1 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
+                                Personel &amp; Hak Akses
                             </h1>
-                            <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Undang anggota tim kantor hukum, atur jabatan, dan konfigurasi matriks perizinan (permissions).
+                            <p className="text-[11px] text-slate-500 sm:text-xs dark:text-zinc-400">
+                                Direktori staf firma, kartu identitas pegawai digital, dan matriks hak akses perizinan (permissions).
                             </p>
                         </div>
 
@@ -114,91 +134,91 @@ export default function UsersIndex({
                             <Button
                                 size="sm"
                                 onClick={() => setInviteOpen(true)}
-                                className="h-8 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
+                                className="h-7.5 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
                             >
                                 <UserPlus className="mr-1.5 size-3.5" />
-                                + Undang Pengguna Baru
+                                Tambah Staf Baru
                             </Button>
                         </div>
                     </div>
 
                     {/* 2. Top 4 Compact Bento KPI Cards */}
-                    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
                         {/* 1. Total Pengguna */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">TOTAL PENGGUNA</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider">TOTAL PERSONEL</span>
                                 <Users className="size-3.5 text-blue-600 dark:text-blue-400" />
                             </div>
-                            <div className="mt-2 flex items-baseline gap-1.5">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            <div className="mt-1.5 flex items-baseline gap-1.5">
+                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                                     {metrics.total}
                                 </span>
-                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                    anggota
+                                <span className="text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                    anggota tim
                                 </span>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Terdaftar Sistem</span>
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">Personel</span>
+                            <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Terdaftar Resmi</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">Firma Hukum</span>
                             </div>
                         </div>
 
                         {/* 2. Pengguna Aktif */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">PENGGUNA AKTIF</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider">PERSONEL AKTIF</span>
                                 <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                             </div>
-                            <div className="mt-2 flex items-baseline gap-1.5">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+                            <div className="mt-1.5 flex items-baseline gap-1.5">
+                                <span className="font-mono text-xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
                                     {metrics.active}
                                 </span>
-                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                    aktif
+                                <span className="text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                    aktif login
                                 </span>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Dapat Login</span>
-                                <span className="font-semibold text-emerald-600">Operasional</span>
+                            <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Status Operasional</span>
+                                <span className="font-semibold text-emerald-600">Aktif</span>
                             </div>
                         </div>
 
                         {/* 3. Struktur Role */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">STRUKTUR ROLE</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider">STRUKTUR ROLE</span>
                                 <ShieldCheck className="size-3.5 text-purple-600 dark:text-purple-400" />
                             </div>
-                            <div className="mt-2 flex items-baseline gap-1.5">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-purple-600 dark:text-purple-400">
+                            <div className="mt-1.5 flex items-baseline gap-1.5">
+                                <span className="font-mono text-xl font-bold tracking-tight text-purple-600 dark:text-purple-400">
                                     {metrics.roles_count}
                                 </span>
-                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                    role
+                                <span className="text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                    tingkat akses
                                 </span>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                            <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Hirarki Posisi</span>
                                 <span className="font-semibold text-purple-600">Partner &amp; Staf</span>
                             </div>
                         </div>
 
                         {/* 4. Hak Akses Terdefinisi */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">MATRIKS PERMISSION</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wider">MATRIKS PERMISSION</span>
                                 <KeyRound className="size-3.5 text-amber-500" />
                             </div>
-                            <div className="mt-2 flex items-baseline gap-1.5">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
+                            <div className="mt-1.5 flex items-baseline gap-1.5">
+                                <span className="font-mono text-xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
                                     {metrics.permissions_count}
                                 </span>
-                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                    izin
+                                <span className="text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                    izin sistem
                                 </span>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                            <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Hak Akses Fitur</span>
                                 <span className="font-semibold text-amber-600">Granular</span>
                             </div>
@@ -209,20 +229,32 @@ export default function UsersIndex({
                     <div className="flex items-center gap-1 border-b border-slate-200/60 pb-2 dark:border-white/[0.06]">
                         <button
                             type="button"
+                            onClick={() => setTab('cards')}
+                            className={`flex h-7.5 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all ${
+                                tab === 'cards'
+                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300'
+                            }`}
+                        >
+                            <Contact className="size-3.5 text-blue-500" />
+                            Kartu Pegawai ({users.total})
+                        </button>
+                        <button
+                            type="button"
                             onClick={() => setTab('users')}
-                            className={`flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-colors ${
+                            className={`flex h-7.5 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all ${
                                 tab === 'users'
                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                     : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300'
                             }`}
                         >
                             <Users className="size-3.5" />
-                            Daftar Pengguna ({users.total})
+                            Tabel Pengguna ({users.total})
                         </button>
                         <button
                             type="button"
                             onClick={() => setTab('roles')}
-                            className={`flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-colors ${
+                            className={`flex h-7.5 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all ${
                                 tab === 'roles'
                                     ? 'bg-purple-600 text-white shadow-2xs'
                                     : 'border border-slate-200/70 bg-white text-purple-700 hover:bg-purple-50 dark:border-white/10 dark:bg-[#14161b] dark:text-purple-300'
@@ -233,12 +265,12 @@ export default function UsersIndex({
                         </button>
                     </div>
 
-                    {tab === 'users' ? (
+                    {tab === 'cards' || tab === 'users' ? (
                         <>
                             {/* Search & Filter Bar */}
                             <Form
                                 {...userRoutes.index.form()}
-                                className="rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 space-y-2 dark:border-white/[0.04] dark:bg-[#121418]"
+                                className="rounded-xl border border-slate-200/60 bg-slate-50/50 p-2 space-y-2 dark:border-white/[0.04] dark:bg-[#121418]"
                             >
                                 {/* Row 1: Search, Reset, Count */}
                                 <div className="flex items-center gap-2">
@@ -247,8 +279,8 @@ export default function UsersIndex({
                                         <Input
                                             name="search"
                                             defaultValue={filters.search}
-                                            placeholder="Cari nama, email, atau jabatan advokat / staf..."
-                                            className="h-8 w-full rounded-lg border-slate-200 bg-white pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
+                                            placeholder="Cari nama, NIP, email, jabatan, atau departemen..."
+                                            className="h-7.5 w-full rounded-lg border-slate-200 bg-white pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
                                         />
                                     </div>
                                     {(filters.search || filters.role_id) && (
@@ -256,7 +288,7 @@ export default function UsersIndex({
                                             asChild
                                             variant="outline"
                                             size="sm"
-                                            className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                            className="h-7.5 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
                                             title="Reset Semua Filter"
                                         >
                                             <Link href={userRoutes.index.url()}>
@@ -264,8 +296,8 @@ export default function UsersIndex({
                                             </Link>
                                         </Button>
                                     )}
-                                    <span className="shrink-0 rounded-md bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 border border-slate-200/70 shadow-2xs dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-300">
-                                        {users.total} pengguna
+                                    <span className="shrink-0 rounded-md bg-white px-2 py-0.5 font-mono text-[10.5px] font-semibold text-slate-700 border border-slate-200/70 shadow-2xs dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-300">
+                                        {users.total} personel
                                     </span>
                                 </div>
 
@@ -275,7 +307,7 @@ export default function UsersIndex({
                                         <select
                                             name="role_id"
                                             defaultValue={filters.role_id ?? ''}
-                                            className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                            className="h-7.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                         >
                                             <option value="">Semua Role / Kewenangan</option>
                                             {roles.map((r) => (
@@ -290,119 +322,204 @@ export default function UsersIndex({
                                     <Button
                                         type="submit"
                                         size="sm"
-                                        className="h-8 shrink-0 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                        className="h-7.5 shrink-0 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                     >
                                         Terapkan Filter
                                     </Button>
                                 </div>
                             </Form>
 
-                            {/* Users Table Card */}
-                            <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="overflow-x-auto">
-                                    <table className="w-full text-left text-xs">
-                                        <thead>
-                                            <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                                <th className="py-2.5 pr-3 pl-4">Pengguna / Identitas</th>
-                                                <th className="px-3 py-2.5">Role Kewenangan</th>
-                                                <th className="px-3 py-2.5 text-center">Status</th>
-                                                <th className="py-2.5 pr-4 pl-3 text-right">Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                            {/* TAB 1: KARTU PEGAWAI / STAFF DIRECTORY CARDS */}
+                            {tab === 'cards' && (
+                                <div>
+                                    {users.data.length > 0 ? (
+                                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                                             {users.data.map((user) => (
-                                                <tr
+                                                <StaffCard
                                                     key={user.id}
-                                                    className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                    user={user}
+                                                    onViewDetail={(u) => setSelectedStaff(u)}
+                                                    onEdit={(u) => setEditing(u)}
+                                                />
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center rounded-xl border border-slate-200/70 bg-white py-12 px-4 text-center shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                            <div className="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 dark:bg-white/[0.06] dark:text-zinc-400">
+                                                <Contact className="size-5" />
+                                            </div>
+                                            <p className="mt-3 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                                Tidak Ada Data Personel
+                                            </p>
+                                            <p className="mt-1 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                                {filters.search || filters.role_id
+                                                    ? 'Sesuaikan kata kunci pencarian atau filter role Anda.'
+                                                    : 'Belum ada anggota staf yang terdaftar di workspace firma.'}
+                                            </p>
+                                            {!filters.search && !filters.role_id && (
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => setInviteOpen(true)}
+                                                    className="mt-3.5 h-7.5 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
                                                 >
-                                                    {/* Avatar & User Info */}
-                                                    <td className="py-2.5 pr-3 pl-4">
-                                                        <div className="flex items-center gap-2.5">
-                                                            <Avatar className="size-8 shrink-0 rounded-lg border border-slate-200 shadow-2xs dark:border-white/10">
-                                                                <AvatarImage src={user.avatar_url ?? undefined} />
-                                                                <AvatarFallback className="rounded-lg bg-blue-50 text-[11px] font-bold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                                                                    {getInitials(user.name)}
-                                                                </AvatarFallback>
-                                                            </Avatar>
-                                                            <div className="min-w-0">
-                                                                <span className="font-semibold text-slate-900 dark:text-white">
-                                                                    {user.name}
+                                                    <UserPlus className="mr-1 size-3" /> Tambah Staf Baru
+                                                </Button>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Pagination Footer */}
+                                    <div className="mt-3 flex flex-col justify-between gap-2 rounded-xl border border-slate-200/70 bg-white px-3.5 py-2.5 sm:flex-row sm:items-center shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                        <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                            Menampilkan{' '}
+                                            <span className="font-semibold text-slate-900 dark:text-white">
+                                                {users.data.length}
+                                            </span>{' '}
+                                            dari{' '}
+                                            <span className="font-semibold text-slate-900 dark:text-white">
+                                                {users.total}
+                                            </span>{' '}
+                                            personel
+                                        </span>
+                                        <Pagination links={users.links} />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* TAB 2: TABEL PENGGUNA */}
+                            {tab === 'users' && (
+                                <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left text-xs">
+                                            <thead>
+                                                <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
+                                                    <th className="py-2.5 pr-3 pl-4">Pengguna / Identitas</th>
+                                                    <th className="px-3 py-2.5">Departemen &amp; NIP</th>
+                                                    <th className="px-3 py-2.5">Role Kewenangan</th>
+                                                    <th className="px-3 py-2.5 text-center">Status</th>
+                                                    <th className="py-2.5 pr-4 pl-3 text-right">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                                {users.data.map((user) => (
+                                                    <tr
+                                                        key={user.id}
+                                                        className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                    >
+                                                        {/* Avatar & User Info */}
+                                                        <td className="py-2.5 pr-3 pl-4">
+                                                            <div className="flex items-center gap-2.5">
+                                                                <Avatar className="size-8 shrink-0 rounded-lg border border-slate-200 shadow-2xs dark:border-white/10">
+                                                                    <AvatarImage src={user.avatar_url ?? undefined} />
+                                                                    <AvatarFallback className="rounded-lg bg-blue-50 text-[11px] font-bold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                                                        {getInitials(user.name)}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+                                                                <div className="min-w-0">
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => setSelectedStaff(user)}
+                                                                        className="text-left font-semibold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 transition-colors"
+                                                                    >
+                                                                        {user.name}
+                                                                    </button>
+                                                                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                                        {user.email}
+                                                                        {user.position_title ? ` · ${user.position_title}` : ''}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+
+                                                        {/* Department & NIP */}
+                                                        <td className="px-3 py-2.5 whitespace-nowrap">
+                                                            <div className="space-y-0.5">
+                                                                <span className="font-mono text-[10.5px] font-semibold text-slate-700 dark:text-zinc-300">
+                                                                    {user.employee_code || `RPK-${user.id.toString().padStart(3, '0')}`}
                                                                 </span>
-                                                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                                    {user.email}
-                                                                    {user.position_title ? ` · ${user.position_title}` : ''}
+                                                                <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                                    {user.department || '-'}
                                                                 </p>
                                                             </div>
-                                                        </div>
-                                                    </td>
+                                                        </td>
 
-                                                    {/* Roles */}
-                                                    <td className="px-3 py-2.5 whitespace-nowrap">
-                                                        <div className="flex flex-wrap gap-1">
-                                                            {user.roles.length > 0 ? (
-                                                                user.roles.map((r) => (
-                                                                    <span
-                                                                        key={r.id}
-                                                                        className="rounded bg-purple-50 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-purple-700 dark:bg-purple-950/40 dark:text-purple-300"
-                                                                    >
-                                                                        {r.name}
-                                                                    </span>
-                                                                ))
-                                                            ) : (
-                                                                <span className="text-slate-400 dark:text-zinc-500">Tanpa Role</span>
-                                                            )}
-                                                        </div>
-                                                    </td>
+                                                        {/* Roles */}
+                                                        <td className="px-3 py-2.5 whitespace-nowrap">
+                                                            <div className="flex flex-wrap gap-1">
+                                                                {user.roles.length > 0 ? (
+                                                                    user.roles.map((r) => (
+                                                                        <span
+                                                                            key={r.id}
+                                                                            className="rounded bg-purple-50 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-purple-700 dark:bg-purple-950/40 dark:text-purple-300"
+                                                                        >
+                                                                            {r.name}
+                                                                        </span>
+                                                                    ))
+                                                                ) : (
+                                                                    <span className="text-slate-400 dark:text-zinc-500">Tanpa Role</span>
+                                                                )}
+                                                            </div>
+                                                        </td>
 
-                                                    {/* Status */}
-                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                        <StatusBadge value={user.is_active ? 'active' : 'inactive'} />
-                                                    </td>
+                                                        {/* Status */}
+                                                        <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                                                            <StatusBadge value={user.is_active ? 'active' : 'inactive'} />
+                                                        </td>
 
-                                                    {/* Actions */}
-                                                    <td className="py-2.5 pr-4 pl-3 text-right whitespace-nowrap">
-                                                        <div className="flex items-center justify-end gap-1.5">
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={() => setEditing(user)}
-                                                                className="h-7 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
-                                                            >
-                                                                <Pencil className="mr-1 size-3 text-slate-400" />
-                                                                Kelola
-                                                            </Button>
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                onClick={() => setDeleting(user)}
-                                                                className="h-7 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-rose-600 shadow-2xs hover:border-rose-200 hover:bg-rose-50 dark:border-white/10 dark:bg-zinc-800 dark:text-rose-400 dark:hover:bg-rose-950/30"
-                                                                title="Hapus Pengguna"
-                                                            >
-                                                                <Trash2 className="size-3" />
-                                                            </Button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                                        {/* Actions */}
+                                                        <td className="py-2.5 pr-4 pl-3 text-right whitespace-nowrap">
+                                                            <div className="flex items-center justify-end gap-1.5">
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    onClick={() => setSelectedStaff(user)}
+                                                                    className="h-7 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-blue-600 shadow-2xs hover:bg-blue-50 dark:border-white/10 dark:bg-zinc-800 dark:text-blue-400"
+                                                                    title="Lihat Kartu Pegawai Digital"
+                                                                >
+                                                                    <Contact className="size-3" />
+                                                                </Button>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    onClick={() => setEditing(user)}
+                                                                    className="h-7 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                                >
+                                                                    <Pencil className="mr-1 size-3 text-slate-400" />
+                                                                    Kelola
+                                                                </Button>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="sm"
+                                                                    onClick={() => setDeleting(user)}
+                                                                    className="h-7 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-rose-600 shadow-2xs hover:border-rose-200 hover:bg-rose-50 dark:border-white/10 dark:bg-zinc-800 dark:text-rose-400 dark:hover:bg-rose-950/30"
+                                                                    title="Hapus Pengguna"
+                                                                >
+                                                                    <Trash2 className="size-3" />
+                                                                </Button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div className="flex flex-col justify-between gap-2.5 border-t border-slate-100 bg-slate-50/60 px-4 py-2.5 sm:flex-row sm:items-center dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                            Menampilkan{' '}
+                                            <span className="font-semibold text-slate-900 dark:text-white">
+                                                {users.data.length}
+                                            </span>{' '}
+                                            dari{' '}
+                                            <span className="font-semibold text-slate-900 dark:text-white">
+                                                {users.total}
+                                            </span>{' '}
+                                            pengguna
+                                        </span>
+                                        <Pagination links={users.links} />
+                                    </div>
                                 </div>
-
-                                <div className="flex flex-col justify-between gap-2.5 border-t border-slate-100 bg-slate-50/60 px-4 py-3 sm:flex-row sm:items-center dark:border-white/[0.04] dark:bg-[#121418]">
-                                    <span className="text-xs text-slate-500 dark:text-zinc-400">
-                                        Menampilkan{' '}
-                                        <span className="font-semibold text-slate-900 dark:text-white">
-                                            {users.data.length}
-                                        </span>{' '}
-                                        dari{' '}
-                                        <span className="font-semibold text-slate-900 dark:text-white">
-                                            {users.total}
-                                        </span>{' '}
-                                        pengguna
-                                    </span>
-                                    <Pagination links={users.links} />
-                                </div>
-                            </div>
+                            )}
                         </>
                     ) : (
                         <RolePermissions
@@ -412,6 +529,17 @@ export default function UsersIndex({
                     )}
                 </main>
             </div>
+
+            {/* Modal: Detail ID Card Staf Interaktif */}
+            <StaffDetailModal
+                user={selectedStaff}
+                onClose={() => setSelectedStaff(null)}
+                onEdit={(user) => {
+                    setSelectedStaff(null);
+                    setEditing(user);
+                }}
+            />
+
             {/* Modal: Tambah / Undang Pengguna Baru */}
             <InviteUserDialog
                 open={inviteOpen}
@@ -526,6 +654,377 @@ export default function UsersIndex({
     );
 }
 
+function StaffCard({
+    user,
+    onViewDetail,
+    onEdit,
+}: {
+    user: User;
+    onViewDetail: (user: User) => void;
+    onEdit: (user: User) => void;
+}) {
+    const getInitials = useInitials();
+    const displayId = user.employee_code || `RPK-${user.id.toString().padStart(3, '0')}`;
+
+    return (
+        <div
+            onClick={() => onViewDetail(user)}
+            className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:-translate-y-0.5 hover:border-blue-400 hover:shadow-md cursor-pointer dark:border-white/[0.06] dark:bg-[#14161b] dark:hover:border-blue-500/50"
+        >
+            {/* Top decorative gradient bar */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-slate-900 dark:from-blue-500 dark:via-indigo-400 dark:to-white" />
+
+            <div>
+                {/* Header ribbon & status */}
+                <div className="flex items-center justify-between gap-1.5 pt-0.5">
+                    <span className="font-mono text-[9.5px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                        {displayId}
+                    </span>
+                    <span
+                        className={`inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[9.5px] font-semibold ${
+                            user.is_active
+                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+                                : 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
+                        }`}
+                    >
+                        <span
+                            className={`size-1.5 rounded-full ${
+                                user.is_active ? 'bg-emerald-500' : 'bg-rose-500'
+                            }`}
+                        />
+                        {user.is_active ? 'Aktif' : 'Nonaktif'}
+                    </span>
+                </div>
+
+                {/* Avatar & Core Profile Info */}
+                <div className="mt-3 flex items-start gap-3">
+                    <div className="relative">
+                        <Avatar className="size-12 shrink-0 rounded-xl border border-slate-200 shadow-2xs dark:border-white/10">
+                            <AvatarImage src={user.avatar_url ?? undefined} />
+                            <AvatarFallback className="rounded-xl bg-gradient-to-br from-blue-50 to-indigo-100 text-xs font-bold text-blue-800 dark:from-blue-950 dark:to-indigo-900 dark:text-blue-200">
+                                {getInitials(user.name)}
+                            </AvatarFallback>
+                        </Avatar>
+                        {user.is_active && (
+                            <span className="absolute -bottom-0.5 -right-0.5 flex size-3.5 items-center justify-center rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#14161b]">
+                                <Check className="size-2 text-white stroke-[3]" />
+                            </span>
+                        )}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                        <h4 className="text-xs font-bold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400 line-clamp-1">
+                            {user.name}
+                        </h4>
+                        <p className="mt-0.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400 line-clamp-1">
+                            {user.position_title || 'Staf Kantor Hukum'}
+                        </p>
+                        {user.department && (
+                            <div className="mt-0.5 flex items-center gap-1 text-[10px] text-slate-500 dark:text-zinc-400 truncate">
+                                <Building2 className="size-3 shrink-0 text-slate-400" />
+                                <span className="truncate">{user.department}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Email line */}
+                <div className="mt-3 rounded-lg border border-slate-100 bg-slate-50/70 px-2.5 py-1.5 text-[10.5px] text-slate-600 dark:border-white/[0.04] dark:bg-[#121418] dark:text-zinc-300">
+                    <div className="flex items-center gap-1.5 truncate">
+                        <Mail className="size-3 shrink-0 text-slate-400" />
+                        <span className="font-mono truncate">{user.email}</span>
+                    </div>
+                </div>
+
+                {/* Role pills & work mode */}
+                <div className="mt-2 flex flex-wrap items-center gap-1">
+                    {user.roles.length > 0 ? (
+                        user.roles.map((r) => (
+                            <span
+                                key={r.id}
+                                className="rounded bg-purple-50 px-1.5 py-0.5 font-mono text-[9.5px] font-semibold text-purple-700 dark:bg-purple-950/40 dark:text-purple-300"
+                            >
+                                {r.name}
+                            </span>
+                        ))
+                    ) : (
+                        <span className="text-[10px] text-slate-400">Tanpa Role</span>
+                    )}
+                    {user.work_mode && (
+                        <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[9.5px] font-medium text-slate-600 dark:bg-zinc-800 dark:text-zinc-300">
+                            {user.work_mode}
+                        </span>
+                    )}
+                    {user.employment_type && (
+                        <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[9.5px] font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                            {user.employment_type}
+                        </span>
+                    )}
+                </div>
+            </div>
+
+            {/* Bottom action bar */}
+            <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 dark:border-white/[0.04]">
+                <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-blue-600 group-hover:underline dark:text-blue-400">
+                    <Contact className="size-3" />
+                    Buka Kartu Staf
+                </span>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(user);
+                    }}
+                    className="h-6.5 rounded-md px-2 text-[10.5px] font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
+                >
+                    <Pencil className="mr-1 size-2.5" />
+                    Kelola
+                </Button>
+            </div>
+        </div>
+    );
+}
+
+function StaffDetailModal({
+    user,
+    onClose,
+    onEdit,
+}: {
+    user: User | null;
+    onClose: () => void;
+    onEdit: (user: User) => void;
+}) {
+    const getInitials = useInitials();
+    const [copied, setCopied] = useState(false);
+
+    if (!user) return null;
+
+    const displayId = user.employee_code || `RPK-${user.id.toString().padStart(3, '0')}`;
+
+    return (
+        <Dialog open={!!user} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
+                {/* 1. Executive ID Badge Top Header Banner */}
+                <div className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 p-5 text-white">
+                    {/* Watermark Logo Pattern & Shield */}
+                    <div className="pointer-events-none absolute right-2 top-2 opacity-10">
+                        <ShieldCheck className="size-36 text-white" />
+                    </div>
+                    <div className="relative z-10 flex items-center justify-between border-b border-white/10 pb-3">
+                        <div className="flex items-center gap-2">
+                            <div className="flex size-7 items-center justify-center rounded-lg bg-blue-600/30 border border-blue-400/30 text-blue-300">
+                                <Shield className="size-3.5" />
+                            </div>
+                            <div>
+                                <span className="block text-[10px] font-bold uppercase tracking-widest text-blue-300">
+                                    RPK LAW FIRM WORKSPACE
+                                </span>
+                                <span className="block text-[9px] text-slate-300">
+                                    Kartu Identitas Staf &amp; Anggota Tim Digital
+                                </span>
+                            </div>
+                        </div>
+                        <span className="rounded-md border border-white/20 bg-white/10 px-2 py-0.5 font-mono text-[10px] font-bold text-white shadow-2xs">
+                            {displayId}
+                        </span>
+                    </div>
+
+                    {/* Staff Profile Hero in ID Badge */}
+                    <div className="relative z-10 mt-4 flex items-center gap-3.5">
+                        <Avatar className="size-16 shrink-0 rounded-2xl border-2 border-white/20 shadow-lg">
+                            <AvatarImage src={user.avatar_url ?? undefined} />
+                            <AvatarFallback className="rounded-2xl bg-blue-800 text-sm font-bold text-white">
+                                {getInitials(user.name)}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0 flex-1 space-y-0.5">
+                            <div className="flex items-center gap-1.5">
+                                <h3 className="text-base font-bold tracking-tight text-white line-clamp-1">
+                                    {user.name}
+                                </h3>
+                                {user.is_active && (
+                                    <span title="Akun Aktif & Terverifikasi">
+                                        <CheckCircle2 className="size-4 text-emerald-400 shrink-0" />
+                                    </span>
+                                )}
+                            </div>
+                            <p className="text-xs font-semibold text-blue-200">
+                                {user.position_title || 'Staf Kantor Hukum'}
+                            </p>
+                            <p className="text-[11px] text-slate-300 flex items-center gap-1">
+                                <Building2 className="size-3 shrink-0 text-blue-300" />
+                                <span>{user.department || 'Divisi Hukum & Operasional'}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 2. Structured Staff Details */}
+                <div className="p-5 space-y-3.5 text-xs">
+                    {/* Section: Kontak & Akun */}
+                    <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 dark:border-white/[0.06] dark:bg-[#121418] space-y-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                            KONTAK &amp; KREDENSIAL RESMI
+                        </span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-0.5">
+                            <div className="flex flex-col gap-0.5">
+                                <span className="text-[10px] text-slate-400">Email Resmi</span>
+                                <div className="flex items-center justify-between gap-1 rounded-lg border border-slate-200/70 bg-white px-2 py-1 dark:border-white/10 dark:bg-zinc-800">
+                                    <span className="font-mono text-xs font-semibold text-slate-900 dark:text-white truncate">
+                                        {user.email}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(user.email);
+                                            setCopied(true);
+                                            setTimeout(() => setCopied(false), 2000);
+                                        }}
+                                        className="shrink-0 p-0.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer"
+                                        title="Salin Email"
+                                    >
+                                        {copied ? (
+                                            <Check className="size-3 text-emerald-600" />
+                                        ) : (
+                                            <Copy className="size-3" />
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-0.5">
+                                <span className="text-[10px] text-slate-400">Status Akun Login</span>
+                                <div className="flex items-center gap-1.5 rounded-lg border border-slate-200/70 bg-white px-2 py-1 text-xs font-semibold dark:border-white/10 dark:bg-zinc-800">
+                                    <span
+                                        className={`size-2 rounded-full ${
+                                            user.is_active ? 'bg-emerald-500' : 'bg-rose-500'
+                                        }`}
+                                    />
+                                    <span className={user.is_active ? 'text-emerald-700 dark:text-emerald-300' : 'text-rose-700 dark:text-rose-300'}>
+                                        {user.is_active ? 'Aktif (Dapat Login)' : 'Nonaktif'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Section: Kepegawaian */}
+                    <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 dark:border-white/[0.06] dark:bg-[#121418] space-y-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                            STATUS KEPEGAWAIAN &amp; OPERASIONAL
+                        </span>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-0.5">
+                            <div className="rounded-lg border border-slate-200/70 bg-white p-2 dark:border-white/10 dark:bg-zinc-800">
+                                <span className="text-[10px] text-slate-400 block">Tipe Pegawai</span>
+                                <span className="font-semibold text-slate-900 dark:text-white mt-0.5 block">
+                                    {user.employment_type || 'Karyawan Tetap'}
+                                </span>
+                            </div>
+                            <div className="rounded-lg border border-slate-200/70 bg-white p-2 dark:border-white/10 dark:bg-zinc-800">
+                                <span className="text-[10px] text-slate-400 block">Mode Kerja</span>
+                                <span className="font-semibold text-slate-900 dark:text-white mt-0.5 block">
+                                    {user.work_mode || 'WFO (Kantor)'}
+                                </span>
+                            </div>
+                            <div className="rounded-lg border border-slate-200/70 bg-white p-2 dark:border-white/10 dark:bg-zinc-800 col-span-2 sm:col-span-1">
+                                <span className="text-[10px] text-slate-400 block">Nomor NIP / ID</span>
+                                <span className="font-mono font-semibold text-blue-600 dark:text-blue-400 mt-0.5 block">
+                                    {displayId}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Section: Roles & Hak Akses */}
+                    <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 dark:border-white/[0.06] dark:bg-[#121418] space-y-2">
+                        <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                ROLE &amp; OTORISASI AKSES
+                            </span>
+                            <span className="font-mono text-[10px] font-semibold text-purple-600 dark:text-purple-400">
+                                {user.roles.length} Role Terpasang
+                            </span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5 pt-0.5">
+                            {user.roles.length > 0 ? (
+                                user.roles.map((r) => (
+                                    <div
+                                        key={r.id}
+                                        className="flex items-center gap-1.5 rounded-lg border border-purple-200/80 bg-purple-50 px-2.5 py-1 text-xs font-semibold text-purple-800 dark:border-purple-900/40 dark:bg-purple-950/40 dark:text-purple-300"
+                                    >
+                                        <KeyRound className="size-3 text-purple-600 dark:text-purple-400" />
+                                        <span>{r.name}</span>
+                                        <span className="font-mono text-[10px] text-purple-500">
+                                            ({r.permissions?.length ?? 0} izin)
+                                        </span>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-xs text-slate-400 italic">
+                                    Pengguna belum memiliki penetapan role khusus.
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Footer Action Buttons */}
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                        <div className="flex items-center gap-1.5 w-full sm:w-auto">
+                            <Button
+                                asChild
+                                size="sm"
+                                className="h-7.5 flex-1 sm:flex-initial rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white hover:bg-blue-700 shadow-2xs"
+                            >
+                                <Link href={`/chat?user_id=${user.id}`}>
+                                    <MessageSquare className="mr-1.5 size-3.5" />
+                                    Kirim Pesan
+                                </Link>
+                            </Button>
+                            <Button
+                                asChild
+                                variant="outline"
+                                size="sm"
+                                className="h-7.5 flex-1 sm:flex-initial rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                            >
+                                <a href={`mailto:${user.email}`}>
+                                    <Mail className="mr-1.5 size-3.5" />
+                                    Email
+                                </a>
+                            </Button>
+                        </div>
+
+                        <div className="flex items-center gap-1.5 w-full sm:w-auto justify-end">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                    onClose();
+                                    onEdit(user);
+                                }}
+                                className="h-7.5 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200"
+                            >
+                                <Pencil className="mr-1.5 size-3.5 text-slate-400" />
+                                Edit Staf
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={onClose}
+                                className="h-7.5 rounded-lg px-3 text-xs font-semibold text-slate-500 hover:bg-slate-100 dark:hover:bg-zinc-800"
+                            >
+                                Tutup
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 function RolePermissions({
     roles,
     permissions,
@@ -538,7 +1037,7 @@ function RolePermissions({
             {roles.map((role) => (
                 <div
                     key={role.id}
-                    className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]"
+                    className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]"
                 >
                     <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
                         <div className="flex items-center gap-2">
@@ -556,7 +1055,7 @@ function RolePermissions({
 
                     <Form
                         {...roleRoutes.update.form(role.id)}
-                        className="space-y-3 pt-3"
+                        className="space-y-3 pt-2.5"
                     >
                         {({ processing }) => (
                             <>
@@ -597,7 +1096,7 @@ function RolePermissions({
                                     <Button
                                         size="sm"
                                         disabled={processing}
-                                        className="h-8 rounded-lg bg-purple-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-purple-700"
+                                        className="h-7.5 rounded-lg bg-purple-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-purple-700"
                                     >
                                         Simpan Izin Role {role.name}
                                     </Button>
@@ -657,7 +1156,7 @@ function InviteUserDialog({
 
                 <Form
                     {...userRoutes.store.form()}
-                    className="space-y-3.5 pt-1"
+                    className="space-y-3 pt-1"
                     onSuccess={() => {
                         onCreated({
                             name,
@@ -682,7 +1181,7 @@ function InviteUserDialog({
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="Contoh: Rian Anggara, S.H."
                                     required
-                                    className="h-8 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    className="h-7.5 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                 />
                                 <InputError message={errors.name} />
                             </div>
@@ -698,23 +1197,51 @@ function InviteUserDialog({
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="rian@rpklawoffice.com"
                                     required
-                                    className="h-8 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    className="h-7.5 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                 />
                                 <InputError message={errors.email} />
                             </div>
 
-                            <Field
-                                name="position_title"
-                                label="Jabatan / Posisi"
-                                placeholder="Contoh: Senior Associate"
-                            />
+                            <div className="grid grid-cols-2 gap-2">
+                                <Field
+                                    name="position_title"
+                                    label="Jabatan / Posisi"
+                                    placeholder="Senior Associate"
+                                />
+                                <Field
+                                    name="employee_code"
+                                    label="Nomor NIP / ID"
+                                    placeholder="RPK-2026-001"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2">
+                                <Field
+                                    name="department"
+                                    label="Departemen / Divisi"
+                                    placeholder="Litigasi & Arbitrase"
+                                />
+                                <div className="grid gap-1">
+                                    <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                        Mode Kerja
+                                    </Label>
+                                    <select
+                                        name="work_mode"
+                                        className="h-7.5 w-full rounded-lg border border-slate-200 bg-slate-50/60 px-2 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    >
+                                        <option value="WFO">WFO (Kantor)</option>
+                                        <option value="Hybrid">Hybrid</option>
+                                        <option value="Remote">Remote (WFH)</option>
+                                    </select>
+                                </div>
+                            </div>
 
                             <div className="grid gap-1">
                                 <div className="flex items-center justify-between">
                                     <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
                                         Password Akun
                                     </Label>
-                                    <span className="text-[10.5px] font-mono font-medium text-slate-400">
+                                    <span className="text-[10px] font-mono font-medium text-slate-400">
                                         Default: password
                                     </span>
                                 </div>
@@ -724,18 +1251,18 @@ function InviteUserDialog({
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Kosongkan jika ingin default: password"
-                                    className="h-8 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    className="h-7.5 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                 />
                                 <InputError message={errors.password} />
                             </div>
 
                             {/* Live Informative Auth Preview Box */}
-                            <div className="rounded-lg border border-blue-100 bg-blue-50/80 p-3 text-xs dark:border-blue-900/40 dark:bg-blue-950/30 space-y-1.5">
-                                <div className="flex items-center gap-1.5 font-bold text-blue-900 dark:text-blue-200 text-[11.5px]">
-                                    <KeyRound className="size-3.5 text-blue-600 dark:text-blue-400" />
+                            <div className="rounded-lg border border-blue-100 bg-blue-50/80 p-2.5 text-xs dark:border-blue-900/40 dark:bg-blue-950/30 space-y-1">
+                                <div className="flex items-center gap-1.5 font-bold text-blue-900 dark:text-blue-200 text-[11px]">
+                                    <KeyRound className="size-3 text-blue-600 dark:text-blue-400" />
                                     <span>Informasi Akses Login Staf:</span>
                                 </div>
-                                <div className="space-y-1 text-[11px] text-blue-800/90 dark:text-blue-300">
+                                <div className="space-y-0.5 text-[10.5px] text-blue-800/90 dark:text-blue-300">
                                     <p className="flex items-center justify-between">
                                         <span>• Email Login:</span>
                                         <strong className="font-mono text-blue-950 dark:text-blue-100">{email || '(isi email di atas)'}</strong>
@@ -749,11 +1276,11 @@ function InviteUserDialog({
                                 </div>
                             </div>
 
-                            <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
+                            <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/[0.06] dark:bg-[#121418]">
                                 <Label className="text-xs font-semibold text-slate-900 dark:text-white">
                                     Pilih Role Kewenangan *
                                 </Label>
-                                <div className="space-y-1.5 pt-0.5">
+                                <div className="space-y-1 pt-0.5">
                                     {roles.map((role) => (
                                         <label
                                             key={role.id}
@@ -778,14 +1305,14 @@ function InviteUserDialog({
                                     variant="outline"
                                     size="sm"
                                     onClick={() => onOpenChange(false)}
-                                    className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                                    className="h-7.5 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                                 >
                                     Batal
                                 </Button>
                                 <Button
                                     size="sm"
                                     disabled={processing}
-                                    className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
+                                    className="h-7.5 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
                                 >
                                     {processing ? (
                                         <>
@@ -829,13 +1356,13 @@ function EditUserDialog({
                         Kelola Pengguna: {user.name}
                     </DialogTitle>
                     <DialogDescription className="text-xs text-slate-500">
-                        Perbarui role kewenangan, jabatan, dan status aktif akun.
+                        Perbarui role kewenangan, jabatan, departemen, dan status aktif akun.
                     </DialogDescription>
                 </DialogHeader>
 
                 <Form
                     {...userRoutes.update.form(user.id)}
-                    className="space-y-3.5 pt-1"
+                    className="space-y-3 pt-1"
                     onSuccess={() => onOpenChange(false)}
                 >
                     {({ errors, processing }) => (
@@ -876,11 +1403,42 @@ function EditUserDialog({
                                 defaultValue={user.email}
                                 required
                             />
-                            <Field
-                                name="position_title"
-                                label="Jabatan / Posisi"
-                                defaultValue={user.position_title ?? ''}
-                            />
+
+                            <div className="grid grid-cols-2 gap-2">
+                                <Field
+                                    name="position_title"
+                                    label="Jabatan / Posisi"
+                                    defaultValue={user.position_title ?? ''}
+                                />
+                                <Field
+                                    name="employee_code"
+                                    label="Nomor NIP / ID"
+                                    defaultValue={user.employee_code ?? ''}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2">
+                                <Field
+                                    name="department"
+                                    label="Departemen / Divisi"
+                                    defaultValue={user.department ?? ''}
+                                />
+                                <div className="grid gap-1">
+                                    <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                        Mode Kerja
+                                    </Label>
+                                    <select
+                                        name="work_mode"
+                                        defaultValue={user.work_mode ?? 'WFO'}
+                                        className="h-7.5 w-full rounded-lg border border-slate-200 bg-slate-50/60 px-2 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    >
+                                        <option value="WFO">WFO (Kantor)</option>
+                                        <option value="Hybrid">Hybrid</option>
+                                        <option value="Remote">Remote (WFH)</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <Field
                                 name="password"
                                 label="Ubah Password (Opsional)"
@@ -888,11 +1446,11 @@ function EditUserDialog({
                                 placeholder="Kosongkan jika tidak ingin mengubah password saat ini"
                             />
 
-                            <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
+                            <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/[0.06] dark:bg-[#121418]">
                                 <Label className="text-xs font-semibold text-slate-900 dark:text-white">
                                     Role Kewenangan
                                 </Label>
-                                <div className="space-y-1.5 pt-0.5">
+                                <div className="space-y-1 pt-0.5">
                                     {roles.map((role) => (
                                         <label
                                             key={role.id}
@@ -912,7 +1470,7 @@ function EditUserDialog({
                                 <InputError message={errors.role_ids} />
                             </div>
 
-                            <div className="flex items-center gap-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/5 dark:bg-zinc-800/40">
+                            <div className="flex items-center gap-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2 dark:border-white/5 dark:bg-zinc-800/40">
                                 <input
                                     type="checkbox"
                                     id="is_active"
@@ -939,7 +1497,7 @@ function EditUserDialog({
                                         onOpenChange(false);
                                         onDeleteClick?.(target);
                                     }}
-                                    className="h-8 rounded-lg px-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/30"
+                                    className="h-7.5 rounded-lg px-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/30"
                                 >
                                     <Trash2 className="mr-1 size-3.5" />
                                     Hapus
@@ -950,14 +1508,14 @@ function EditUserDialog({
                                         variant="outline"
                                         size="sm"
                                         onClick={() => onOpenChange(false)}
-                                        className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                                        className="h-7.5 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                                     >
                                         Batal
                                     </Button>
                                     <Button
                                         size="sm"
                                         disabled={processing}
-                                        className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
+                                        className="h-7.5 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
                                     >
                                         Simpan Perubahan
                                     </Button>
@@ -1035,7 +1593,7 @@ function DeleteUserDialog({
                                     variant="outline"
                                     size="sm"
                                     onClick={() => onOpenChange(false)}
-                                    className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                                    className="h-7.5 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                                 >
                                     Batal
                                 </Button>
@@ -1044,7 +1602,7 @@ function DeleteUserDialog({
                                     variant="destructive"
                                     size="sm"
                                     disabled={processing}
-                                    className="h-8 rounded-lg bg-rose-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-rose-700"
+                                    className="h-7.5 rounded-lg bg-rose-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-rose-700"
                                 >
                                     {processing ? (
                                         <Spinner className="size-3.5" />
@@ -1094,7 +1652,7 @@ function Field({
                 placeholder={placeholder}
                 defaultValue={defaultValue}
                 required={required}
-                className="h-8 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                className="h-7.5 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
             />
         </div>
     );

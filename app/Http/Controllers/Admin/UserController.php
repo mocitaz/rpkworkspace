@@ -37,10 +37,16 @@ class UserController extends Controller
 
         $users = User::query()
             ->with('roles:id,name,slug')
-            ->when($search, fn ($query) => $query->where(fn ($nested) => $nested->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%")->orWhere('position_title', 'like', "%{$search}%")))
+            ->when($search, fn ($query) => $query->where(fn ($nested) => $nested
+                ->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('position_title', 'like', "%{$search}%")
+                ->orWhere('employee_code', 'like', "%{$search}%")
+                ->orWhere('department', 'like', "%{$search}%")
+            ))
             ->when($roleId, fn ($query) => $query->whereHas('roles', fn ($r) => $r->where('roles.id', $roleId)))
             ->orderBy('name')
-            ->paginate(20)
+            ->paginate(24)
             ->withQueryString();
 
         return Inertia::render('admin/users/index', [
