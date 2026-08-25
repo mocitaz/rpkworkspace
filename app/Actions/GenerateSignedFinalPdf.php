@@ -155,15 +155,15 @@ class GenerateSignedFinalPdf
 
             foreach ($pageSigners as $signerItem) {
                 // Determine placement coordinates
-                $stampW = 54; // mm
-                $stampH = 22; // mm
+                $stampW = 56; // mm
+                $stampH = 24; // mm
 
                 if ($signerItem['pos_x'] !== null && $signerItem['pos_y'] !== null) {
                     // Convert percentage to mm coordinates bounded inside printable area
                     $x = ($size['width'] * ((float) $signerItem['pos_x'])) / 100;
                     $y = ($size['height'] * ((float) $signerItem['pos_y'])) / 100;
-                    $x = max(8, min($size['width'] - $stampW - 8, $x));
-                    $y = max(8, min($size['height'] - $stampH - 8, $y));
+                    $x = max(6, min($size['width'] - $stampW - 6, $x));
+                    $y = max(6, min($size['height'] - $stampH - 6, $y));
                 } else {
                     // Default to bottom right
                     $x = $size['width'] - $stampW - 12;
@@ -172,28 +172,35 @@ class GenerateSignedFinalPdf
 
                 // Draw sleek signature badge frame
                 $pdf->SetFillColor(255, 255, 255);
-                $pdf->SetDrawColor(15, 23, 42); // slate-900
+                $pdf->SetDrawColor(30, 41, 59); // slate-800
+                $pdf->SetLineWidth(0.3);
                 $pdf->Rect($x, $y, $stampW, $stampH, 'DF');
 
-                // Draw Official QR Code on right of badge
-                $qrSize = 15;
-                $pdf->Image($qrPath, $x + $stampW - $qrSize - 2, $y + ($stampH - $qrSize) / 2, $qrSize, $qrSize, 'PNG');
+                // Header in stamp box
+                $pdf->SetTextColor(15, 23, 42);
+                $pdf->SetFont('Helvetica', 'B', 5.5);
+                $pdf->SetXY($x + 2, $y + 1.2);
+                $pdf->Cell(34, 3, 'RPK LAW FIRM · E-SIGNATURE', 0, 0, 'L');
 
                 // If visual signature image exists, draw it
                 if ($signerItem['sig_path'] && is_file($signerItem['sig_path'])) {
-                    $pdf->Image($signerItem['sig_path'], $x + 2, $y + 1.5, 33, 12, 'PNG');
+                    $pdf->Image($signerItem['sig_path'], $x + 2, $y + 4.5, 34, 11, 'PNG');
                 }
 
                 // Signer name and date caption
                 $pdf->SetTextColor(15, 23, 42);
                 $pdf->SetFont('Helvetica', 'B', 6.5);
-                $pdf->SetXY($x + 2, $y + $stampH - 8);
-                $pdf->Cell(34, 3, substr($signerItem['name'], 0, 22), 0, 0, 'L');
+                $pdf->SetXY($x + 2, $y + 16);
+                $pdf->Cell(34, 3, substr($signerItem['name'], 0, 24), 0, 0, 'L');
 
-                $pdf->SetFont('Helvetica', '', 5.5);
+                $pdf->SetFont('Helvetica', '', 5);
                 $pdf->SetTextColor(100, 116, 139);
-                $pdf->SetXY($x + 2, $y + $stampH - 4.5);
-                $pdf->Cell(34, 3, 'RPK E-Sign: '.$signerItem['signed_at'], 0, 0, 'L');
+                $pdf->SetXY($x + 2, $y + 19.5);
+                $pdf->Cell(34, 3, 'Ditandatangani WIB: '.$signerItem['signed_at'], 0, 0, 'L');
+
+                // Draw Official QR Code on right of badge
+                $qrSize = 18;
+                $pdf->Image($qrPath, $x + $stampW - $qrSize - 2.5, $y + ($stampH - $qrSize) / 2, $qrSize, $qrSize, 'PNG');
             }
 
             // If last page and no signers were placed, or for corporate seal
