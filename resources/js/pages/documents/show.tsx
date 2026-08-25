@@ -454,23 +454,14 @@ export default function DocumentShow({
                                             />
                                         </div>
                                     )
-                                ) : selectedVersion.extracted_text ? (
-                                    <div className="rounded-lg border border-slate-200 bg-slate-50 dark:border-white/10 dark:bg-zinc-900">
-                                        <div className="flex items-center gap-1.5 border-b border-slate-200 bg-slate-100/70 px-3 py-2 text-xs font-semibold text-slate-700 dark:border-white/5 dark:bg-zinc-800/60 dark:text-zinc-300">
-                                            <ScanText className="size-3.5 text-slate-500" />
-                                            Teks Hasil Ekstraksi / OCR
-                                        </div>
-                                        <pre className="max-h-[45vh] overflow-auto p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap text-slate-800 dark:text-zinc-200">
-                                            {selectedVersion.extracted_text}
-                                        </pre>
-                                    </div>
                                 ) : (
                                     <div className="rounded-lg border border-dashed border-slate-200 bg-slate-50/60 p-8 text-center text-xs dark:border-white/10 dark:bg-zinc-800/30">
+                                        <FileText className="mx-auto size-8 text-slate-300 dark:text-zinc-600 mb-2" />
                                         <p className="font-semibold text-slate-800 dark:text-white">
-                                            Pratinjau visual belum tersedia untuk format file ini.
+                                            Pratinjau langsung tersedia untuk format PDF dan gambar.
                                         </p>
                                         <p className="mt-0.5 text-slate-500 dark:text-zinc-400">
-                                            Status ekstraksi: {selectedVersion.extraction_status}. Gunakan tombol Unduh Berkas untuk membukanya.
+                                            Gunakan tombol <strong>Unduh Berkas</strong> di atas untuk membuka dan meninjau dokumen ini di perangkat Anda.
                                         </p>
                                     </div>
                                 )}
