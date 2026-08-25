@@ -404,9 +404,27 @@ export default function GovernanceIndex({
                                                 </Link>
                                             ))
                                         ) : (
-                                            <p className="py-6 text-center text-xs font-medium text-slate-400 dark:text-zinc-500">
-                                                Belum ada catatan korespondensi resmi.
-                                            </p>
+                                            <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
+                                                <div className="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                                                    <Mail className="size-4.5" />
+                                                </div>
+                                                <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                                    Belum Ada Log Korespondensi
+                                                </p>
+                                                <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                                    Catat surat masuk, surat keluar, panggilan pengadilan, atau email resmi perkara.
+                                                </p>
+                                                {can.correspondence && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => setCorrespondenceModal(true)}
+                                                        className="mt-2 h-7 rounded-lg text-[11px] font-bold text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
+                                                    >
+                                                        <Plus className="mr-1 size-3" /> Catat Korespondensi Baru
+                                                    </Button>
+                                                )}
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -441,9 +459,27 @@ export default function GovernanceIndex({
                                                 />
                                             ))
                                         ) : (
-                                            <p className="py-6 text-center text-xs font-medium text-slate-400 dark:text-zinc-500">
-                                                Belum ada catatan pemeriksaan conflict check.
-                                            </p>
+                                            <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
+                                                <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                    <Scale className="size-4.5" />
+                                                </div>
+                                                <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                                    Uji Benturan Kepentingan Bersih
+                                                </p>
+                                                <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                                    Uji kepatuhan etika profesi advokat terhadap calon klien atau pihak lawan perkara.
+                                                </p>
+                                                {can.conflict && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => setConflictModal(true)}
+                                                        className="mt-2 h-7 rounded-lg text-[11px] font-bold text-slate-900 hover:bg-slate-100 dark:text-zinc-200 dark:hover:bg-white/[0.08]"
+                                                    >
+                                                        <Scale className="mr-1 size-3" /> Jalankan Conflict Check
+                                                    </Button>
+                                                )}
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -556,9 +592,27 @@ export default function GovernanceIndex({
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="py-6 text-center text-xs font-medium text-slate-400 dark:text-zinc-500">
-                                        Belum ada data perkara.
-                                    </p>
+                                    <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
+                                        <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+                                            <ShieldCheck className="size-4.5" />
+                                        </div>
+                                        <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                            Tata Kelola &amp; Arsip Tertib
+                                        </p>
+                                        <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                            Belum ada perkara terdaftar. Perkara aktif dapat diatur status Legal Hold atau diekspor sebagai bundel serah terima (handover) di sini.
+                                        </p>
+                                        <Button
+                                            asChild
+                                            variant="ghost"
+                                            size="sm"
+                                            className="mt-2 h-7 rounded-lg text-[11px] font-bold text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/40"
+                                        >
+                                            <Link href={matterRoutes.create()}>
+                                                <Plus className="mr-1 size-3" /> Registrasi Perkara Baru
+                                            </Link>
+                                        </Button>
+                                    </div>
                                 )}
                             </div>
 
