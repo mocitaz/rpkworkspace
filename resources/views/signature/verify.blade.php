@@ -69,7 +69,7 @@
                             <svg class="size-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                             </svg>
-                            Dokumen Sah Selesai Ditandatangani
+                            Dokumen telah ditandatangani
                         </span>
                     @elseif ($signatureRequest->status === 'sent' || $signatureRequest->status === 'pending')
                         <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3 py-0.5 text-xs font-bold text-amber-800">

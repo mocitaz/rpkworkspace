@@ -8,6 +8,7 @@ use App\Services\AuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SignatureArtifactController extends Controller
@@ -51,7 +52,14 @@ class SignatureArtifactController extends Controller
 
         $audit->record($signatureRequest, 'signature.'.$artifact.'_downloaded', [], $request->user(), $request);
 
-        return Storage::disk($disk)->download($path, $filenamePrefix.'-'.$signatureRequest->verification_code.'.pdf', [
+        $safeTitle = Str::slug($signatureRequest->document->title ?: 'dokumen');
+        $filename = match ($artifact) {
+            'signed_final' => "{$safeTitle}-signed-{$signatureRequest->verification_code}.pdf",
+            'signed_record' => "{$safeTitle}-record-{$signatureRequest->verification_code}.pdf",
+            default => "{$safeTitle}-sertifikat-{$signatureRequest->verification_code}.pdf",
+        };
+
+        return Storage::disk($disk)->download($path, $filename, [
             'Content-Type' => 'application/pdf',
             'X-Content-Type-Options' => 'nosniff',
         ]);

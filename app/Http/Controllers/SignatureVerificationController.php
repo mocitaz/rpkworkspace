@@ -8,6 +8,7 @@ use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\SvgWriter;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -43,7 +44,10 @@ class SignatureVerificationController extends Controller
 
     public function downloadSigned(string $verificationCode): StreamedResponse
     {
-        $signatureRequest = SignatureRequest::query()->where('verification_code', $verificationCode)->firstOrFail();
+        $signatureRequest = SignatureRequest::query()
+            ->with('document')
+            ->where('verification_code', $verificationCode)
+            ->firstOrFail();
         abort_unless($signatureRequest->status === 'completed', 404);
 
         if ($signatureRequest->signed_final_status !== 'completed' || empty($signatureRequest->signed_final_path) || ! Storage::disk((string) $signatureRequest->signed_final_disk)->exists((string) $signatureRequest->signed_final_path)) {
@@ -60,7 +64,10 @@ class SignatureVerificationController extends Controller
 
         abort_unless(is_string($disk) && is_string($path) && Storage::disk($disk)->exists($path), 404);
 
-        return Storage::disk($disk)->download($path, 'signed-final-'.$signatureRequest->verification_code.'.pdf', [
+        $safeTitle = Str::slug($signatureRequest->document?->title ?: 'dokumen');
+        $filename = "{$safeTitle}-signed-{$signatureRequest->verification_code}.pdf";
+
+        return Storage::disk($disk)->download($path, $filename, [
             'Content-Type' => 'application/pdf',
             'X-Content-Type-Options' => 'nosniff',
         ]);
@@ -68,14 +75,20 @@ class SignatureVerificationController extends Controller
 
     public function downloadCertificate(string $verificationCode): StreamedResponse
     {
-        $signatureRequest = SignatureRequest::query()->where('verification_code', $verificationCode)->firstOrFail();
+        $signatureRequest = SignatureRequest::query()
+            ->with('document')
+            ->where('verification_code', $verificationCode)
+            ->firstOrFail();
         abort_unless($signatureRequest->status === 'completed', 404);
 
         $disk = (string) $signatureRequest->certificate_disk;
         $path = (string) $signatureRequest->certificate_path;
         abort_unless(is_string($disk) && is_string($path) && Storage::disk($disk)->exists($path), 404);
 
-        return Storage::disk($disk)->download($path, 'signature-certificate-'.$signatureRequest->verification_code.'.pdf', [
+        $safeTitle = Str::slug($signatureRequest->document?->title ?: 'dokumen');
+        $filename = "{$safeTitle}-sertifikat-{$signatureRequest->verification_code}.pdf";
+
+        return Storage::disk($disk)->download($path, $filename, [
             'Content-Type' => 'application/pdf',
             'X-Content-Type-Options' => 'nosniff',
         ]);

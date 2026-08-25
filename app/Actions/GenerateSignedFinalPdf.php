@@ -105,7 +105,7 @@ class GenerateSignedFinalPdf
         $result = (new PngWriter)->write(new QrCode(data: $verificationUrl, size: 260, margin: 0));
         $result->saveToFile($qrPath);
 
-        $signatureRequest->loadMissing('signers');
+        $signatureRequest->loadMissing(['document', 'signers']);
 
         // Extract visual signature PNGs for all signed signers
         $signerData = [];
@@ -138,6 +138,12 @@ class GenerateSignedFinalPdf
         }
 
         $pdf = new Fpdi;
+        $docTitle = $signatureRequest->document?->title ?: 'Dokumen Bertanda Tangan';
+        $pdf->SetTitle($docTitle, true);
+        $pdf->SetAuthor('RPK Law Firm', true);
+        $pdf->SetCreator('RPK Law Firm Workspace', true);
+        $pdf->SetSubject('Dokumen Resmi Bertanda Tangan Digital - '.$signatureRequest->verification_code, true);
+
         $pageCount = $pdf->setSourceFile($sourcePath);
 
         for ($page = 1; $page <= $pageCount; $page++) {
