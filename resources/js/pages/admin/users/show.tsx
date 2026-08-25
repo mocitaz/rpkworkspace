@@ -2,27 +2,39 @@ import { Form, Head, Link, router } from '@inertiajs/react';
 import {
     AlertTriangle,
     ArrowLeft,
+    Award,
+    Banknote,
+    Briefcase,
     Building2,
     Calendar,
+    CalendarCheck,
     Check,
+    CheckCircle2,
+    Copy,
     CreditCard,
     ExternalLink,
+    FileBadge,
+    FileCheck2,
     FileText,
     GraduationCap,
+    Info,
     Mail,
     MapPin,
     MessageSquare,
     Pencil,
     Phone,
+    Plus,
     Scale,
     Shield,
     ShieldCheck,
     Smartphone,
     Sparkles,
     Trash2,
+    User,
     UserCheck,
+    Users,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import InputError from '@/components/input-error';
 import { StatusBadge } from '@/components/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -37,7 +49,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { useInitials } from '@/hooks/use-initials';
+import { formatDate } from '@/lib/format';
 import * as matterRoutes from '@/routes/matters';
 import * as userRoutes from '@/routes/admin/users';
 
@@ -89,6 +108,15 @@ type UserDetail = {
     matters?: MatterBrief[];
 };
 
+const navigationTabs = [
+    { id: 'Overview', label: 'Ringkasan Eksekutif', icon: Building2 },
+    { id: 'Legalitas', label: 'Legalitas & Kredensial', icon: Scale },
+    { id: 'Matters', label: 'Perkara Ditangani', icon: Briefcase },
+    { id: 'Kontak', label: 'Kontak & Domisili', icon: Phone },
+    { id: 'Rekening', label: 'Rekening & Pajak', icon: CreditCard },
+    { id: 'Akses', label: 'Hak Akses & Peran', icon: ShieldCheck },
+] as const;
+
 export default function UserShow({
     staff,
     roles,
@@ -102,7 +130,12 @@ export default function UserShow({
     };
 }) {
     const getInitials = useInitials();
+    const [tab, setTab] =
+        useState<(typeof navigationTabs)[number]['id']>('Overview');
     const [isEditing, setIsEditing] = useState(false);
+    const [initialEditTab, setInitialEditTab] = useState<
+        'account' | 'advocate' | 'contact' | 'billing'
+    >('account');
     const [isDeleting, setIsDeleting] = useState(false);
     const [copiedField, setCopiedField] = useState<string | null>(null);
 
@@ -129,34 +162,89 @@ export default function UserShow({
         );
     };
 
-    // Practice areas list
-    const practiceAreasList = staff.practice_areas
-        ? staff.practice_areas
-              .split(/[\n,;]+/)
-              .map((p) => p.trim())
-              .filter(Boolean)
-        : [];
+    const openEditWithTab = (
+        editTab: 'account' | 'advocate' | 'contact' | 'billing',
+    ) => {
+        setInitialEditTab(editTab);
+        setIsEditing(true);
+    };
+
+    // Practice areas list parser
+    const practiceAreasList = useMemo(() => {
+        if (!staff.practice_areas) return [];
+        return staff.practice_areas
+            .split(/[\n,;]+/)
+            .map((p) => p.trim())
+            .filter(Boolean);
+    }, [staff.practice_areas]);
+
+    // KTA Expiry status check
+    const ktaStatus = useMemo(() => {
+        if (!staff.kta_expiry_date) return null;
+        const expiry = new Date(staff.kta_expiry_date);
+        const today = new Date();
+        const diffDays = Math.ceil(
+            (expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+        );
+
+        if (diffDays < 0) {
+            return {
+                label: 'Kadaluwarsa',
+                color: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800',
+            };
+        }
+        if (diffDays <= 60) {
+            return {
+                label: `Perlu Perpanjangan (${diffDays} hari lagi)`,
+                color: 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800',
+            };
+        }
+        return {
+            label: 'Aktif Berlaku',
+            color: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800',
+        };
+    }, [staff.kta_expiry_date]);
 
     return (
-        <>
+        <TooltipProvider>
             <Head title={`${staff.name} - Profil Staf & Advokat`} />
 
             <div className="min-h-screen bg-[#fafafc] pb-24 text-slate-900 dark:bg-[#0c0d10] dark:text-zinc-100">
                 <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-                    {/* 1. Header Navigation Bar */}
-                    <div className="flex flex-col gap-4 border-b border-slate-200/70 pb-5 sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.06]">
-                        <div className="flex items-center gap-3">
+                    {/* 1. Header Navigation & Cockpit Bar */}
+                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
+                        <div className="flex flex-wrap items-center gap-2.5">
                             <Button
                                 asChild
                                 variant="outline"
                                 size="sm"
-                                className="h-8.5 rounded-xl border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300 dark:hover:bg-zinc-800"
+                                className="h-8.5 rounded-xl border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300 dark:hover:bg-zinc-800"
                             >
                                 <Link href={userRoutes.index()}>
-                                    <ArrowLeft className="mr-1.5 size-3.5" />
+                                    <ArrowLeft className="mr-1.5 size-3.5 text-slate-400" />
                                     Kembali ke Pengguna &amp; Akses
                                 </Link>
                             </Button>
+
+                            <span className="hidden text-slate-300 sm:inline dark:text-zinc-700">
+                                |
+                            </span>
+
+                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/70 bg-white px-2.5 py-1 font-mono text-xs font-bold text-slate-800 shadow-2xs dark:border-white/5 dark:bg-[#14161b] dark:text-zinc-300">
+                                <Shield className="size-3 text-slate-400" />
+                                {displayId}
+                            </span>
+
+                            <span
+                                className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+                                    staff.is_active
+                                        ? 'border border-emerald-200/70 bg-emerald-50 text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/40 dark:text-emerald-300'
+                                        : 'border border-rose-200/70 bg-rose-50 text-rose-700 dark:border-rose-800/50 dark:bg-rose-950/40 dark:text-rose-300'
+                                }`}
+                            >
+                                <span className="size-1.5 rounded-full bg-current" />
+                                {staff.is_active ? 'Akun Aktif' : 'Nonaktif'}
+                            </span>
                         </div>
 
                         {/* Top Action Buttons */}
@@ -166,7 +254,7 @@ export default function UserShow({
                                 variant="outline"
                                 size="sm"
                                 onClick={handleOpenChat}
-                                className="h-8.5 rounded-xl border-slate-200 bg-white px-3.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300 dark:hover:bg-zinc-800"
+                                className="h-8.5 rounded-xl border-slate-200/80 bg-white px-3.5 text-xs font-semibold text-slate-700 shadow-2xs hover:border-slate-300 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300 dark:hover:bg-zinc-800"
                             >
                                 <MessageSquare className="mr-1.5 size-3.5 text-blue-500" />
                                 Kirim Pesan
@@ -177,7 +265,7 @@ export default function UserShow({
                                     asChild
                                     variant="outline"
                                     size="sm"
-                                    className="h-8.5 rounded-xl border-emerald-200 bg-emerald-50/60 px-3.5 text-xs font-semibold text-emerald-700 shadow-2xs hover:bg-emerald-100/70 dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-300"
+                                    className="h-8.5 rounded-xl border-emerald-200 bg-emerald-50/70 px-3.5 text-xs font-semibold text-emerald-700 shadow-2xs hover:bg-emerald-100 dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-300"
                                 >
                                     <a
                                         href={`https://wa.me/${staff.phone.replace(/[^0-9]/g, '')}`}
@@ -194,7 +282,7 @@ export default function UserShow({
                                 asChild
                                 variant="outline"
                                 size="sm"
-                                className="h-8.5 rounded-xl border-slate-200 bg-white px-3.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300"
+                                className="h-8.5 rounded-xl border-slate-200/80 bg-white px-3.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300"
                             >
                                 <a href={`mailto:${staff.email}`}>
                                     <Mail className="mr-1.5 size-3.5 text-slate-400" />
@@ -205,8 +293,8 @@ export default function UserShow({
                             <Button
                                 type="button"
                                 size="sm"
-                                onClick={() => setIsEditing(true)}
-                                className="h-8.5 rounded-xl bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
+                                onClick={() => openEditWithTab('account')}
+                                className="h-8.5 cursor-pointer rounded-xl bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
                             >
                                 <Pencil className="mr-1.5 size-3.5" />
                                 Edit Profil Staf
@@ -214,10 +302,134 @@ export default function UserShow({
                         </div>
                     </div>
 
-                    {/* 2. Executive CV Hero Profile Card */}
+                    {/* 2. Top 4 Executive Stat Cards */}
+                    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        {/* 1. Kredensial Advokat */}
+                        <div
+                            onClick={() => setTab('Legalitas')}
+                            className="group cursor-pointer rounded-2xl border border-slate-200/70 bg-white p-4 shadow-2xs transition-all hover:border-slate-300 hover:shadow-xs dark:border-white/[0.06] dark:bg-[#14161b] dark:hover:border-white/10"
+                        >
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[10px] font-bold tracking-wider uppercase">
+                                    Kredensial Advokat
+                                </span>
+                                <Scale className="size-4 text-slate-400 transition-colors group-hover:text-amber-600 dark:text-zinc-500" />
+                            </div>
+                            <div className="mt-2.5">
+                                <p className="truncate font-mono text-sm font-bold text-slate-900 dark:text-white">
+                                    {staff.advocate_license_no
+                                        ? `NIA: ${staff.advocate_license_no}`
+                                        : 'Legal / Associate Staff'}
+                                </p>
+                                <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-zinc-400">
+                                    {staff.bas_number
+                                        ? `BAS No. ${staff.bas_number}`
+                                        : 'Belum terdaftar sumpah advokat'}
+                                </p>
+                            </div>
+                            <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-[10.5px] text-slate-400 dark:border-white/[0.04]">
+                                <span>Status Keabsahan</span>
+                                <span className="font-semibold text-amber-700 dark:text-amber-400">
+                                    {staff.advocate_license_no
+                                        ? 'Advokat Resmi'
+                                        : 'Staf Hukum'}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* 2. Portofolio Perkara */}
+                        <div
+                            onClick={() => setTab('Matters')}
+                            className="group cursor-pointer rounded-2xl border border-slate-200/70 bg-white p-4 shadow-2xs transition-all hover:border-slate-300 hover:shadow-xs dark:border-white/[0.06] dark:bg-[#14161b] dark:hover:border-white/10"
+                        >
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[10px] font-bold tracking-wider uppercase">
+                                    Portofolio Perkara
+                                </span>
+                                <Briefcase className="size-4 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
+                            </div>
+                            <div className="mt-2 flex items-baseline justify-between">
+                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                    {metrics.active_matters_count}
+                                </span>
+                                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+                                    perkara aktif
+                                </span>
+                            </div>
+                            <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-[10.5px] text-slate-400 dark:border-white/[0.04]">
+                                <span>Total Ditangani</span>
+                                <span className="font-semibold text-slate-700 dark:text-zinc-300">
+                                    {metrics.total_matters_count} Riwayat Kasus
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* 3. Pendidikan & Almamater */}
+                        <div
+                            onClick={() => setTab('Legalitas')}
+                            className="group cursor-pointer rounded-2xl border border-slate-200/70 bg-white p-4 shadow-2xs transition-all hover:border-slate-300 hover:shadow-xs dark:border-white/[0.06] dark:bg-[#14161b] dark:hover:border-white/10"
+                        >
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[10px] font-bold tracking-wider uppercase">
+                                    Pendidikan &amp; Gelar
+                                </span>
+                                <GraduationCap className="size-4 text-slate-400 transition-colors group-hover:text-purple-600 dark:text-zinc-500" />
+                            </div>
+                            <div className="mt-2.5">
+                                <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                    {staff.education ||
+                                        'Gelar belum dicantumkan'}
+                                </p>
+                                <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-zinc-400">
+                                    {practiceAreasList.length > 0
+                                        ? `${practiceAreasList.length} Bidang Keahlian`
+                                        : 'Spesialisasi hukum umum'}
+                                </p>
+                            </div>
+                            <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-[10.5px] text-slate-400 dark:border-white/[0.04]">
+                                <span>Kualifikasi Akademik</span>
+                                <span className="font-semibold text-purple-700 dark:text-purple-400">
+                                    {staff.education
+                                        ? 'Lengkap'
+                                        : 'Perlu Diisi'}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* 4. Otorisasi Sistem */}
+                        <div
+                            onClick={() => setTab('Akses')}
+                            className="group cursor-pointer rounded-2xl border border-slate-200/70 bg-white p-4 shadow-2xs transition-all hover:border-slate-300 hover:shadow-xs dark:border-white/[0.06] dark:bg-[#14161b] dark:hover:border-white/10"
+                        >
+                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                <span className="text-[10px] font-bold tracking-wider uppercase">
+                                    Role &amp; Otorisasi
+                                </span>
+                                <ShieldCheck className="size-4 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
+                            </div>
+                            <div className="mt-2.5">
+                                <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                    {staff.roles[0]?.name || 'Staf Biasa'}
+                                </p>
+                                <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-zinc-400">
+                                    {staff.roles.length > 1
+                                        ? `+${staff.roles.length - 1} peran tambahan lainnya`
+                                        : 'Akses modul standar'}
+                                </p>
+                            </div>
+                            <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-[10.5px] text-slate-400 dark:border-white/[0.04]">
+                                <span>Izin Sistem</span>
+                                <span className="font-semibold text-emerald-700 dark:text-emerald-400">
+                                    {staff.roles.length} Role Terdaftar
+                                </span>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* 3. Hero Identity Card with Rich Lawyer Persona */}
                     <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
                         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-                            {/* Left: Persona info */}
+                            {/* Left: Persona details */}
                             <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
                                 <div className="relative shrink-0">
                                     <div className="rounded-2xl bg-gradient-to-b from-slate-200 to-slate-100 p-1 shadow-md dark:from-white/15 dark:to-white/5">
@@ -244,565 +456,1088 @@ export default function UserShow({
                                     )}
                                 </div>
 
-                                <div className="space-y-1.5">
-                                    <div className="flex flex-wrap items-center gap-2">
+                                <div className="space-y-2">
+                                    <div className="flex flex-wrap items-center gap-2.5">
                                         <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                             {staff.name}
                                         </h1>
-                                        <span
-                                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10.5px] font-semibold ${
-                                                staff.is_active
-                                                    ? 'border border-emerald-200/70 bg-emerald-50 text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/40 dark:text-emerald-300'
-                                                    : 'border border-rose-200/70 bg-rose-50 text-rose-700 dark:border-rose-800/50 dark:bg-rose-950/40 dark:text-rose-300'
-                                            }`}
-                                        >
-                                            <span className="size-1.5 rounded-full bg-current" />
-                                            {staff.is_active
-                                                ? 'Aktif'
-                                                : 'Nonaktif'}
-                                        </span>
-                                    </div>
-
-                                    <p className="text-sm font-semibold text-slate-600 dark:text-zinc-300">
-                                        {staff.position_title ||
-                                            'Staf Kantor Hukum'}
-                                    </p>
-
-                                    <div className="flex flex-wrap items-center gap-2 pt-1">
-                                        <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/70 bg-slate-50/80 px-2.5 py-1 font-mono text-[10.5px] font-bold text-slate-700 dark:border-white/5 dark:bg-zinc-800/80 dark:text-zinc-300">
-                                            <Shield className="size-3 text-slate-400" />
-                                            NIP: {displayId}
-                                        </span>
-
-                                        {staff.department && (
-                                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/70 bg-slate-50/80 px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:border-white/5 dark:bg-zinc-800/80 dark:text-zinc-300">
-                                                <Building2 className="size-3 text-slate-400" />
-                                                {staff.department}
-                                            </span>
-                                        )}
 
                                         {staff.advocate_license_no && (
-                                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200/70 bg-amber-50/70 px-2.5 py-1 text-[10.5px] font-semibold text-amber-800 dark:border-amber-800/40 dark:bg-amber-950/40 dark:text-amber-300">
+                                            <span className="inline-flex items-center gap-1 rounded-full border border-amber-200/70 bg-amber-50/80 px-2.5 py-0.5 text-[11px] font-bold text-amber-800 dark:border-amber-800/40 dark:bg-amber-950/40 dark:text-amber-300">
                                                 <Scale className="size-3 text-amber-600" />
-                                                Advokat (NIA:{' '}
-                                                {staff.advocate_license_no})
+                                                Advokat
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:text-zinc-300">
+                                        <span className="font-bold text-slate-900 dark:text-white">
+                                            {staff.position_title ||
+                                                'Staf Kantor Hukum'}
+                                        </span>
+                                        {staff.department && (
+                                            <>
+                                                <span className="text-slate-300 dark:text-zinc-700">
+                                                    •
+                                                </span>
+                                                <span className="inline-flex items-center gap-1 text-slate-600 dark:text-zinc-400">
+                                                    <Building2 className="size-3" />
+                                                    {staff.department}
+                                                </span>
+                                            </>
+                                        )}
+                                    </div>
+
+                                    {/* Quick Micro Contact Chips */}
+                                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                handleCopy(staff.email, 'email')
+                                            }
+                                            className="group inline-flex items-center gap-1.5 rounded-lg border border-slate-200/70 bg-slate-50/80 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition-colors hover:border-slate-300 hover:bg-white dark:border-white/5 dark:bg-zinc-800/70 dark:text-zinc-300"
+                                        >
+                                            <Mail className="size-3 text-slate-400 group-hover:text-blue-500" />
+                                            <span className="font-mono">
+                                                {staff.email}
+                                            </span>
+                                            {copiedField === 'email' ? (
+                                                <Check className="size-3 text-emerald-600" />
+                                            ) : (
+                                                <Copy className="size-2.5 opacity-40 group-hover:opacity-100" />
+                                            )}
+                                        </button>
+
+                                        {staff.phone && (
+                                            <a
+                                                href={`https://wa.me/${staff.phone.replace(/[^0-9]/g, '')}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200/70 bg-emerald-50/60 px-2.5 py-1 text-[11px] font-medium text-emerald-800 transition-colors hover:bg-emerald-100 dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-300"
+                                            >
+                                                <Smartphone className="size-3 text-emerald-600" />
+                                                <span className="font-mono">
+                                                    {staff.phone}
+                                                </span>
+                                            </a>
+                                        )}
+
+                                        {staff.education && (
+                                            <span className="inline-flex items-center gap-1 rounded-lg border border-purple-200/70 bg-purple-50/60 px-2.5 py-1 text-[11px] font-medium text-purple-800 dark:border-purple-900/40 dark:bg-purple-950/40 dark:text-purple-300">
+                                                <GraduationCap className="size-3 text-purple-600" />
+                                                {staff.education}
                                             </span>
                                         )}
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Right: Quick Stat Tiles */}
-                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:w-auto">
-                                <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                    <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                        Perkara Ditangani
-                                    </span>
-                                    <p className="mt-1 font-mono text-sm font-bold text-slate-900 dark:text-white">
-                                        {metrics.active_matters_count} Perkara
-                                        Aktif
-                                    </p>
-                                    <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500">
-                                        Total {metrics.total_matters_count}{' '}
-                                        riwayat perkara
-                                    </p>
-                                </div>
+                            {/* Right: Quick Action Banner */}
+                            <div className="flex shrink-0 flex-wrap items-center gap-2 lg:flex-col lg:items-end">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => openEditWithTab('advocate')}
+                                    className="h-8.5 rounded-xl border-slate-200 bg-slate-50/80 px-3 text-xs font-semibold text-slate-700 hover:bg-white dark:border-white/10 dark:bg-[#181a20] dark:text-zinc-300"
+                                >
+                                    <Award className="mr-1.5 size-3.5 text-amber-600" />
+                                    Kelola Kredensial Advokat
+                                </Button>
 
-                                <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                    <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                        Role Otorisasi
-                                    </span>
-                                    <p className="mt-1 truncate text-xs font-bold text-slate-900 dark:text-white">
-                                        {staff.roles
-                                            .map((r) => r.name)
-                                            .join(', ') || 'Staff Biasa'}
-                                    </p>
-                                    <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500">
-                                        Hak akses modul workspace
-                                    </p>
-                                </div>
+                                <span className="text-[10.5px] text-slate-400 dark:text-zinc-500">
+                                    Terdaftar sejak:{' '}
+                                    {staff.created_at
+                                        ? formatDate(staff.created_at)
+                                        : '-'}
+                                </span>
                             </div>
                         </div>
                     </div>
 
-                    {/* 3. Main Bento & CV Structured Layout */}
-                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-                        {/* LEFT COLUMN: 7 Cols (Credentials, Matters, Roles) */}
-                        <div className="space-y-6 lg:col-span-7">
-                            {/* SECTION A: Kredensial Advokat & Legalitas */}
+                    {/* 4. Segmented Navigation Tabs */}
+                    <div className="flex flex-wrap items-center gap-1 rounded-2xl border border-slate-200/70 bg-slate-100/70 p-1.5 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        {navigationTabs.map((item) => {
+                            const isActive = tab === item.id;
+                            const Icon = item.icon;
+                            const count =
+                                item.id === 'Matters'
+                                    ? metrics.total_matters_count
+                                    : item.id === 'Akses'
+                                      ? staff.roles.length
+                                      : null;
+
+                            return (
+                                <button
+                                    key={item.id}
+                                    type="button"
+                                    onClick={() => setTab(item.id)}
+                                    className={`flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all ${
+                                        isActive
+                                            ? 'bg-white text-slate-900 shadow-2xs dark:bg-[#20232a] dark:text-white'
+                                            : 'text-slate-600 hover:bg-white/60 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
+                                    }`}
+                                >
+                                    <Icon
+                                        className={`size-3.5 shrink-0 ${
+                                            isActive
+                                                ? 'text-blue-600 dark:text-blue-400'
+                                                : 'text-slate-400 dark:text-zinc-500'
+                                        }`}
+                                    />
+                                    <span>{item.label}</span>
+                                    {count !== null && count > 0 && (
+                                        <span
+                                            className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] font-bold ${
+                                                isActive
+                                                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
+                                                    : 'bg-slate-200/80 text-slate-700 dark:bg-zinc-800 dark:text-zinc-400'
+                                            }`}
+                                        >
+                                            {count}
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* 5. Tab Content Sections */}
+
+                    {/* TAB 1: EXECUTIVE OVERVIEW BENTO */}
+                    {tab === 'Overview' && (
+                        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+                            {/* LEFT COLUMN (8 cols): Legalitas & Matters */}
+                            <div className="space-y-6 lg:col-span-8">
+                                {/* Legalitas Advokat Card */}
+                                <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="flex size-8 items-center justify-center rounded-xl bg-amber-50 text-amber-700 shadow-2xs dark:bg-amber-950/50 dark:text-amber-300">
+                                                <Scale className="size-4" />
+                                            </div>
+                                            <div>
+                                                <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                                                    Legalitas &amp; Kredensial
+                                                    Advokat
+                                                </h2>
+                                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                    Otorisasi resmi beracara dan
+                                                    surat sumpah pengadilan
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() =>
+                                                openEditWithTab('advocate')
+                                            }
+                                            className="h-7 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                        >
+                                            <Pencil className="mr-1 size-3" />
+                                            Edit Kredensial
+                                        </Button>
+                                    </div>
+
+                                    <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                        <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
+                                            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-400">
+                                                Nomor Induk Advokat (NIA)
+                                            </span>
+                                            <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                {staff.advocate_license_no || (
+                                                    <span className="font-sans font-normal text-slate-400 italic">
+                                                        Belum dilengkapi
+                                                    </span>
+                                                )}
+                                            </p>
+                                        </div>
+
+                                        <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
+                                            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-400">
+                                                No. BAS Pengadilan Tinggi
+                                            </span>
+                                            <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                {staff.bas_number || (
+                                                    <span className="font-sans font-normal text-slate-400 italic">
+                                                        Belum dilengkapi
+                                                    </span>
+                                                )}
+                                            </p>
+                                        </div>
+
+                                        <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
+                                            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-400">
+                                                Tanggal Sumpah (BAS)
+                                            </span>
+                                            <p className="mt-1 text-xs font-semibold text-slate-900 dark:text-white">
+                                                {staff.bas_date
+                                                    ? formatDate(staff.bas_date)
+                                                    : 'Belum dilengkapi'}
+                                            </p>
+                                        </div>
+
+                                        <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-400">
+                                                    Masa Berlaku KTA
+                                                </span>
+                                                {ktaStatus && (
+                                                    <span
+                                                        className={`py-0.2 rounded-full border px-2 text-[9.5px] font-bold ${ktaStatus.color}`}
+                                                    >
+                                                        {ktaStatus.label}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="mt-1 text-xs font-semibold text-slate-900 dark:text-white">
+                                                {staff.kta_expiry_date
+                                                    ? formatDate(
+                                                          staff.kta_expiry_date,
+                                                      )
+                                                    : 'Belum ditentukan'}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Practice areas */}
+                                    <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
+                                        <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-400">
+                                            Bidang Spesialisasi Hukum (Practice
+                                            Areas)
+                                        </span>
+                                        <div className="mt-2 flex flex-wrap gap-1.5">
+                                            {practiceAreasList.length > 0 ? (
+                                                practiceAreasList.map(
+                                                    (area, idx) => (
+                                                        <span
+                                                            key={idx}
+                                                            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200/80 bg-white px-3 py-1 text-xs font-semibold text-slate-800 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                        >
+                                                            <Sparkles className="size-3 text-amber-500" />
+                                                            {area}
+                                                        </span>
+                                                    ),
+                                                )
+                                            ) : (
+                                                <div className="flex items-center justify-between py-1 text-xs text-slate-400">
+                                                    <span>
+                                                        Belum ada spesialisasi
+                                                        hukum yang ditambahkan.
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            openEditWithTab(
+                                                                'advocate',
+                                                            )
+                                                        }
+                                                        className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                                    >
+                                                        + Tambah
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Perkara Aktif */}
+                                <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="flex size-8 items-center justify-center rounded-xl bg-blue-50 text-blue-700 shadow-2xs dark:bg-blue-950/50 dark:text-blue-300">
+                                                <Briefcase className="size-4" />
+                                            </div>
+                                            <div>
+                                                <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                                                    Perkara Sedang Ditangani (
+                                                    {staff.matters?.length ?? 0}
+                                                    )
+                                                </h2>
+                                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                    Kasus aktif yang melibatkan
+                                                    staf sebagai advokat /
+                                                    anggota tim
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4 space-y-2.5">
+                                        {staff.matters &&
+                                        staff.matters.length > 0 ? (
+                                            staff.matters.map((matter) => (
+                                                <Link
+                                                    key={matter.id}
+                                                    href={matterRoutes.show.url(
+                                                        matter.id,
+                                                    )}
+                                                    className="group flex items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 transition-all hover:border-slate-300 hover:bg-white dark:border-white/5 dark:bg-[#15171e] dark:hover:border-white/10 dark:hover:bg-zinc-800/60"
+                                                >
+                                                    <div className="min-w-0 space-y-0.5">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-mono text-[11px] font-bold text-blue-600 dark:text-blue-400">
+                                                                {
+                                                                    matter.matter_number
+                                                                }
+                                                            </span>
+                                                            <span className="text-slate-300 dark:text-zinc-700">
+                                                                ·
+                                                            </span>
+                                                            <StatusBadge
+                                                                value={
+                                                                    matter.status
+                                                                }
+                                                            />
+                                                        </div>
+                                                        <h3 className="truncate text-xs font-bold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                                                            {matter.title}
+                                                        </h3>
+                                                    </div>
+                                                    <ExternalLink className="size-4 shrink-0 text-slate-400 opacity-0 transition-opacity group-hover:opacity-100 dark:text-zinc-500" />
+                                                </Link>
+                                            ))
+                                        ) : (
+                                            <div className="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-xs text-slate-400 dark:border-white/10 dark:text-zinc-500">
+                                                <Briefcase className="mx-auto mb-2 size-6 opacity-40" />
+                                                <p className="font-semibold text-slate-700 dark:text-zinc-300">
+                                                    Belum Ada Penugasan Perkara
+                                                </p>
+                                                <p className="mt-1 text-[11px]">
+                                                    Staf ini belum ditugaskan
+                                                    pada perkara aktif.
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* RIGHT COLUMN (4 cols): Kontak, Bank, Security */}
+                            <div className="space-y-6 lg:col-span-4">
+                                {/* Kontak & Komunikasi */}
+                                <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="flex size-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 shadow-2xs dark:bg-emerald-950/50 dark:text-emerald-300">
+                                                <Phone className="size-4" />
+                                            </div>
+                                            <div>
+                                                <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                                                    Kontak Staf
+                                                </h2>
+                                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                    Saluran komunikasi langsung
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() =>
+                                                openEditWithTab('contact')
+                                            }
+                                            className="h-7 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400"
+                                        >
+                                            <Pencil className="mr-1 size-3" />
+                                            Edit
+                                        </Button>
+                                    </div>
+
+                                    <div className="mt-4 space-y-3">
+                                        {/* Email */}
+                                        <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 p-3 dark:border-white/5 dark:bg-[#15171e]">
+                                            <div className="min-w-0">
+                                                <span className="text-[10px] font-bold text-slate-400 uppercase dark:text-zinc-400">
+                                                    Email Resmi
+                                                </span>
+                                                <p className="truncate font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                    {staff.email}
+                                                </p>
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() =>
+                                                    handleCopy(
+                                                        staff.email,
+                                                        'email',
+                                                    )
+                                                }
+                                                className="h-7 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400"
+                                            >
+                                                {copiedField === 'email' ? (
+                                                    <Check className="size-3 text-emerald-600" />
+                                                ) : (
+                                                    <Copy className="size-3" />
+                                                )}
+                                            </Button>
+                                        </div>
+
+                                        {/* WhatsApp */}
+                                        <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 p-3 dark:border-white/5 dark:bg-[#15171e]">
+                                            <div className="min-w-0">
+                                                <span className="text-[10px] font-bold text-slate-400 uppercase dark:text-zinc-400">
+                                                    WhatsApp / HP
+                                                </span>
+                                                <p className="truncate font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                    {staff.phone || (
+                                                        <span className="font-sans font-normal text-slate-400 italic">
+                                                            Belum diisi
+                                                        </span>
+                                                    )}
+                                                </p>
+                                            </div>
+                                            {staff.phone && (
+                                                <div className="flex items-center gap-1">
+                                                    <a
+                                                        href={`https://wa.me/${staff.phone.replace(/[^0-9]/g, '')}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="flex h-7 w-7 items-center justify-center rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
+                                                        title="Buka Chat WhatsApp"
+                                                    >
+                                                        <Smartphone className="size-3.5" />
+                                                    </a>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            handleCopy(
+                                                                staff.phone!,
+                                                                'phone',
+                                                            )
+                                                        }
+                                                        className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200"
+                                                    >
+                                                        {copiedField ===
+                                                        'phone' ? (
+                                                            <Check className="size-3 text-emerald-600" />
+                                                        ) : (
+                                                            <Copy className="size-3" />
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Alamat Domisili */}
+                                        <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3 dark:border-white/5 dark:bg-[#15171e]">
+                                            <span className="flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase dark:text-zinc-400">
+                                                <MapPin className="size-3" />
+                                                Alamat Domisili
+                                            </span>
+                                            <p className="mt-1 text-xs text-slate-800 dark:text-zinc-200">
+                                                {staff.address || (
+                                                    <span className="text-slate-400 italic">
+                                                        Belum dilengkapi
+                                                    </span>
+                                                )}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Rekening & Pajak Widget */}
+                                <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="flex size-8 items-center justify-center rounded-xl bg-purple-50 text-purple-700 shadow-2xs dark:bg-purple-950/50 dark:text-purple-300">
+                                                <CreditCard className="size-4" />
+                                            </div>
+                                            <div>
+                                                <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                                                    Rekening &amp; Pajak
+                                                </h2>
+                                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                    Informasi payroll dan pajak
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() =>
+                                                openEditWithTab('billing')
+                                            }
+                                            className="h-7 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400"
+                                        >
+                                            <Pencil className="mr-1 size-3" />
+                                            Edit
+                                        </Button>
+                                    </div>
+
+                                    <div className="mt-4 space-y-3">
+                                        <div className="rounded-2xl border border-slate-200/70 bg-gradient-to-br from-slate-900 to-slate-800 p-4 text-white shadow-md dark:border-white/10 dark:from-zinc-900 dark:to-zinc-950">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+                                                    {staff.bank_name ||
+                                                        'BANK FIRMA'}
+                                                </span>
+                                                <CreditCard className="size-4 text-slate-400" />
+                                            </div>
+                                            <p className="mt-3 font-mono text-sm font-bold tracking-wider">
+                                                {staff.bank_account_number ||
+                                                    '•••• •••• ••••'}
+                                            </p>
+                                            <p className="mt-1 truncate text-[11px] text-slate-300">
+                                                a.n.{' '}
+                                                {staff.bank_account_holder ||
+                                                    staff.name}
+                                            </p>
+                                        </div>
+
+                                        <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3 dark:border-white/5 dark:bg-[#15171e]">
+                                            <span className="text-[10px] font-bold text-slate-400 uppercase dark:text-zinc-400">
+                                                Nomor Pokok Wajib Pajak (NPWP)
+                                            </span>
+                                            <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                {staff.npwp || (
+                                                    <span className="font-sans font-normal text-slate-400 italic">
+                                                        Belum dilengkapi
+                                                    </span>
+                                                )}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Peran Sistem */}
+                                <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                                        <div className="flex items-center gap-2">
+                                            <ShieldCheck className="size-4 text-emerald-600" />
+                                            <h2 className="text-xs font-bold text-slate-900 uppercase dark:text-white">
+                                                Role Otorisasi (
+                                                {staff.roles.length})
+                                            </h2>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-3 flex flex-wrap gap-1.5">
+                                        {staff.roles.map((r) => (
+                                            <span
+                                                key={r.id}
+                                                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-50/80 px-2.5 py-1 text-xs font-semibold text-slate-800 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                            >
+                                                <Shield className="size-3 text-purple-600" />
+                                                {r.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* TAB 2: LEGALITAS & KREDENSIAL ADVOKAT */}
+                    {tab === 'Legalitas' && (
+                        <div className="space-y-6">
                             <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
-                                    <div className="flex items-center gap-2.5">
-                                        <div className="flex size-8 items-center justify-center rounded-xl bg-amber-50 text-amber-700 shadow-2xs dark:bg-amber-950/50 dark:text-amber-300">
-                                            <Scale className="size-4" />
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex size-10 items-center justify-center rounded-2xl bg-amber-50 text-amber-700 shadow-2xs dark:bg-amber-950/50 dark:text-amber-300">
+                                            <Scale className="size-5" />
                                         </div>
                                         <div>
-                                            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                                                Legalitas &amp; Kredensial
-                                                Profesi Advokat
+                                            <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                                                Kredensial &amp; Keabsahan
+                                                Beracara Advokat
                                             </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Informasi surat sumpah, kartu
-                                                advokat, dan keabsahan beracara
+                                            <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                                Dokumen legalitas advokat, nomor
+                                                induk, dan berita acara sumpah
+                                                pengadilan
                                             </p>
                                         </div>
                                     </div>
 
                                     <Button
-                                        type="button"
-                                        variant="ghost"
                                         size="sm"
-                                        onClick={() => setIsEditing(true)}
-                                        className="h-7 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                        onClick={() =>
+                                            openEditWithTab('advocate')
+                                        }
+                                        className="h-8 rounded-xl bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                     >
-                                        <Pencil className="mr-1 size-3" />
-                                        Edit
+                                        <Pencil className="mr-1.5 size-3.5" />
+                                        Perbarui Kredensial
                                     </Button>
                                 </div>
 
-                                <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                        <span className="text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
+                                <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/5 dark:bg-[#15171e]">
+                                        <span className="text-[10.5px] font-bold text-slate-400 uppercase dark:text-zinc-400">
                                             Nomor Induk Advokat (NIA)
                                         </span>
-                                        <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                            {staff.advocate_license_no || (
-                                                <span className="font-sans font-normal text-slate-400 italic">
-                                                    Belum dilengkapi
-                                                </span>
-                                            )}
+                                        <p className="mt-1.5 font-mono text-sm font-bold text-slate-900 dark:text-white">
+                                            {staff.advocate_license_no ||
+                                                'Belum dilengkapi'}
+                                        </p>
+                                        <p className="mt-1 text-[11px] text-slate-500">
+                                            Keanggotaan Organisasi Advokat Resmi
                                         </p>
                                     </div>
 
-                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                        <span className="text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                            No. BAS Pengadilan Tinggi
+                                    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/5 dark:bg-[#15171e]">
+                                        <span className="text-[10.5px] font-bold text-slate-400 uppercase dark:text-zinc-400">
+                                            No. Surat BAS Pengadilan
                                         </span>
-                                        <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                            {staff.bas_number || (
-                                                <span className="font-sans font-normal text-slate-400 italic">
-                                                    Belum dilengkapi
-                                                </span>
-                                            )}
+                                        <p className="mt-1.5 font-mono text-sm font-bold text-slate-900 dark:text-white">
+                                            {staff.bas_number ||
+                                                'Belum dilengkapi'}
+                                        </p>
+                                        <p className="mt-1 text-[11px] text-slate-500">
+                                            Pengadilan Tinggi Penyumpah
                                         </p>
                                     </div>
 
-                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                        <span className="text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                            Tanggal Pengambilan Sumpah (BAS)
+                                    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/5 dark:bg-[#15171e]">
+                                        <span className="text-[10.5px] font-bold text-slate-400 uppercase dark:text-zinc-400">
+                                            Tanggal Pengambilan Sumpah
                                         </span>
-                                        <p className="mt-1 text-xs font-semibold text-slate-900 dark:text-white">
-                                            {staff.bas_date || (
-                                                <span className="font-normal text-slate-400 italic">
-                                                    Belum dilengkapi
-                                                </span>
-                                            )}
+                                        <p className="mt-1.5 text-sm font-bold text-slate-900 dark:text-white">
+                                            {staff.bas_date
+                                                ? formatDate(staff.bas_date)
+                                                : 'Belum ditentukan'}
+                                        </p>
+                                        <p className="mt-1 text-[11px] text-slate-500">
+                                            Tanggal Resmi Dilantik Advokat
                                         </p>
                                     </div>
 
-                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                        <span className="text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
+                                    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/5 dark:bg-[#15171e]">
+                                        <span className="text-[10.5px] font-bold text-slate-400 uppercase dark:text-zinc-400">
                                             Masa Berlaku KTA Advokat
                                         </span>
-                                        <p className="mt-1 text-xs font-semibold text-slate-900 dark:text-white">
-                                            {staff.kta_expiry_date || (
-                                                <span className="font-normal text-slate-400 italic">
-                                                    Belum dilengkapi
+                                        <p className="mt-1.5 text-sm font-bold text-slate-900 dark:text-white">
+                                            {staff.kta_expiry_date
+                                                ? formatDate(
+                                                      staff.kta_expiry_date,
+                                                  )
+                                                : 'Belum diatur'}
+                                        </p>
+                                        <div className="mt-1">
+                                            {ktaStatus ? (
+                                                <span
+                                                    className={`py-0.2 inline-block rounded-full border px-2 text-[9.5px] font-bold ${ktaStatus.color}`}
+                                                >
+                                                    {ktaStatus.label}
+                                                </span>
+                                            ) : (
+                                                <span className="text-[11px] text-slate-500">
+                                                    Pengingat perpanjangan kartu
                                                 </span>
                                             )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Pendidikan & Practice areas deep card */}
+                                <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+                                    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/50 p-5 dark:border-white/5 dark:bg-[#15171e]">
+                                        <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                                            <GraduationCap className="size-4.5 text-purple-600" />
+                                            <h3 className="text-xs font-bold uppercase">
+                                                Riwayat Pendidikan &amp;
+                                                Almamater
+                                            </h3>
+                                        </div>
+                                        <p className="mt-3 text-sm font-semibold text-slate-800 dark:text-zinc-200">
+                                            {staff.education ||
+                                                'Belum ada informasi almamater dan gelar akademik.'}
+                                        </p>
+                                        <p className="mt-1 text-xs text-slate-500">
+                                            Gelar hukum, universitas asal, dan
+                                            pelatihan keahlian profesi advokat.
                                         </p>
                                     </div>
-                                </div>
 
-                                {/* Gelar & Pendidikan */}
-                                <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                    <span className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                        <GraduationCap className="size-3.5 text-slate-500" />
-                                        Riwayat Pendidikan &amp; Almamater
-                                    </span>
-                                    <p className="mt-1 text-xs font-semibold text-slate-800 dark:text-zinc-200">
-                                        {staff.education || (
-                                            <span className="font-normal text-slate-400 italic">
-                                                Belum dilengkapi (Contoh: S.H. -
-                                                Universitas Indonesia, LL.M. -
-                                                Leiden)
-                                            </span>
-                                        )}
-                                    </p>
-                                </div>
-
-                                {/* Practice Areas Badges */}
-                                <div className="mt-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                    <span className="text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                        Bidang Spesialisasi Hukum (Practice
-                                        Areas)
-                                    </span>
-                                    <div className="mt-2 flex flex-wrap gap-1.5">
-                                        {practiceAreasList.length > 0 ? (
-                                            practiceAreasList.map(
-                                                (area, idx) => (
-                                                    <span
-                                                        key={idx}
-                                                        className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-800 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
-                                                    >
-                                                        <Sparkles className="size-3 text-blue-500" />
-                                                        {area}
-                                                    </span>
-                                                ),
-                                            )
-                                        ) : (
-                                            <p className="text-xs text-slate-400 italic">
-                                                Belum ada spesialisasi hukum
-                                                yang ditambahkan.
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* SECTION B: Riwayat Perkara */}
-                            <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
-                                <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
-                                    <div className="flex items-center gap-2.5">
-                                        <div className="flex size-8 items-center justify-center rounded-xl bg-blue-50 text-blue-700 shadow-2xs dark:bg-blue-950/50 dark:text-blue-300">
-                                            <Scale className="size-4" />
+                                    <div className="rounded-2xl border border-slate-200/70 bg-slate-50/50 p-5 dark:border-white/5 dark:bg-[#15171e]">
+                                        <div className="flex items-center gap-2 text-slate-900 dark:text-white">
+                                            <Sparkles className="size-4.5 text-amber-600" />
+                                            <h3 className="text-xs font-bold uppercase">
+                                                Bidang Keahlian Hukum
+                                            </h3>
                                         </div>
-                                        <div>
-                                            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                                                Daftar Perkara yang Ditangani (
-                                                {staff.matters?.length ?? 0})
-                                            </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Perkara aktif dan arsip perkara
-                                                di bawah tanggung jawab staf
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4 space-y-2.5">
-                                    {staff.matters &&
-                                    staff.matters.length > 0 ? (
-                                        staff.matters.map((matter) => (
-                                            <Link
-                                                key={matter.id}
-                                                href={matterRoutes.show.url(
-                                                    matter.id,
-                                                )}
-                                                className="group flex items-center justify-between gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 transition-all hover:border-slate-300 hover:bg-white dark:border-white/5 dark:bg-[#15171e] dark:hover:border-white/10 dark:hover:bg-zinc-800/60"
-                                            >
-                                                <div className="min-w-0 space-y-0.5">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="font-mono text-[11px] font-bold text-blue-600 dark:text-blue-400">
-                                                            {
-                                                                matter.matter_number
-                                                            }
+                                        <div className="mt-3 flex flex-wrap gap-2">
+                                            {practiceAreasList.length > 0 ? (
+                                                practiceAreasList.map(
+                                                    (area, idx) => (
+                                                        <span
+                                                            key={idx}
+                                                            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                        >
+                                                            <CheckCircle2 className="size-3 text-emerald-600" />
+                                                            {area}
                                                         </span>
-                                                        <span className="text-slate-300 dark:text-zinc-700">
-                                                            ·
-                                                        </span>
-                                                        <StatusBadge
-                                                            value={
-                                                                matter.status
-                                                            }
-                                                        />
-                                                    </div>
-                                                    <h3 className="truncate text-xs font-bold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
-                                                        {matter.title}
-                                                    </h3>
-                                                </div>
-                                                <ExternalLink className="size-4 shrink-0 text-slate-400 opacity-0 transition-opacity group-hover:opacity-100 dark:text-zinc-500" />
-                                            </Link>
-                                        ))
-                                    ) : (
-                                        <div className="rounded-2xl border border-dashed border-slate-200 p-6 text-center text-xs text-slate-400 dark:border-white/10 dark:text-zinc-500">
-                                            <Scale className="mx-auto mb-1.5 size-6 opacity-40" />
-                                            Belum ada perkara aktif yang
-                                            ditugaskan kepada staf ini.
+                                                    ),
+                                                )
+                                            ) : (
+                                                <p className="text-xs text-slate-400 italic">
+                                                    Belum ada bidang
+                                                    spesialisasi yang
+                                                    didaftarkan.
+                                                </p>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* SECTION C: Peran & Hak Otorisasi Sistem */}
-                            <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
-                                <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
-                                    <div className="flex items-center gap-2.5">
-                                        <div className="flex size-8 items-center justify-center rounded-xl bg-purple-50 text-purple-700 shadow-2xs dark:bg-purple-950/50 dark:text-purple-300">
-                                            <ShieldCheck className="size-4" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                                                Peran &amp; Hak Akses Sistem
-                                            </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Role permission yang mengatur
-                                                hak akses modul workspace
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-4 space-y-3">
-                                    <div className="flex flex-wrap gap-2">
-                                        {staff.roles.map((role) => (
-                                            <div
-                                                key={role.id}
-                                                className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3 dark:border-white/10 dark:bg-[#15171e]"
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <Shield className="size-3.5 text-purple-600 dark:text-purple-400" />
-                                                    <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                                        {role.name}
-                                                    </span>
-                                                    <span className="py-0.2 rounded bg-slate-200/70 px-1.5 font-mono text-[9px] font-semibold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                                        {role.slug}
-                                                    </span>
-                                                </div>
-                                                {role.description && (
-                                                    <p className="mt-1 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                        {role.description}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    {/* System metadata */}
-                                    <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 text-[11px] text-slate-400 dark:border-white/5 dark:text-zinc-500">
-                                        <span>
-                                            Email Terverifikasi:{' '}
-                                            <strong className="text-slate-700 dark:text-zinc-300">
-                                                {staff.email_verified_at
-                                                    ? 'Ya'
-                                                    : 'Belum'}
-                                            </strong>
-                                        </span>
-                                        <span>
-                                            Dibuat:{' '}
-                                            <strong className="text-slate-700 dark:text-zinc-300">
-                                                {staff.created_at
-                                                    ? new Date(
-                                                          staff.created_at,
-                                                      ).toLocaleDateString(
-                                                          'id-ID',
-                                                      )
-                                                    : '-'}
-                                            </strong>
-                                        </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    )}
 
-                        {/* RIGHT COLUMN: 5 Cols (Contact, Bank & NPWP) */}
-                        <div className="space-y-6 lg:col-span-5">
-                            {/* SECTION D: Kontak & Lokasi Domisili */}
+                    {/* TAB 3: PERKARA DITANGANI */}
+                    {tab === 'Matters' && (
+                        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex size-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-700 shadow-2xs dark:bg-blue-950/50 dark:text-blue-300">
+                                        <Briefcase className="size-5" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                                            Portofolio &amp; Penugasan Perkara (
+                                            {staff.matters?.length ?? 0})
+                                        </h2>
+                                        <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                            Daftar perkara hukum yang ditugaskan
+                                            kepada {staff.name}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-6 space-y-3">
+                                {staff.matters && staff.matters.length > 0 ? (
+                                    staff.matters.map((matter) => (
+                                        <Link
+                                            key={matter.id}
+                                            href={matterRoutes.show.url(
+                                                matter.id,
+                                            )}
+                                            className="group flex items-center justify-between gap-4 rounded-2xl border border-slate-200/70 bg-slate-50/50 p-4 transition-all hover:border-slate-300 hover:bg-white dark:border-white/5 dark:bg-[#15171e] dark:hover:border-white/10 dark:hover:bg-zinc-800/60"
+                                        >
+                                            <div className="min-w-0 space-y-1">
+                                                <div className="flex items-center gap-2.5">
+                                                    <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
+                                                        {matter.matter_number}
+                                                    </span>
+                                                    <span className="text-slate-300 dark:text-zinc-700">
+                                                        ·
+                                                    </span>
+                                                    <StatusBadge
+                                                        value={matter.status}
+                                                    />
+                                                    {matter.priority && (
+                                                        <span className="rounded bg-slate-200/80 px-2 py-0.5 text-[10px] font-bold text-slate-700 uppercase dark:bg-zinc-800 dark:text-zinc-300">
+                                                            {matter.priority}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <h3 className="truncate text-sm font-bold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                                                    {matter.title}
+                                                </h3>
+                                            </div>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="h-8 shrink-0 rounded-xl text-xs font-semibold group-hover:border-blue-300"
+                                            >
+                                                Buka Berkas
+                                                <ExternalLink className="ml-1.5 size-3" />
+                                            </Button>
+                                        </Link>
+                                    ))
+                                ) : (
+                                    <div className="rounded-2xl border border-dashed border-slate-200 p-12 text-center text-xs text-slate-400 dark:border-white/10 dark:text-zinc-500">
+                                        <Briefcase className="mx-auto mb-2 size-8 opacity-40" />
+                                        <p className="text-sm font-bold text-slate-700 dark:text-zinc-300">
+                                            Tidak Ada Perkara Terdaftar
+                                        </p>
+                                        <p className="mt-1">
+                                            Staf ini belum memiliki riwayat
+                                            perkara atau penugasan aktif.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* TAB 4: KONTAK & DOMISILI */}
+                    {tab === 'Kontak' && (
+                        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                             <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
                                     <div className="flex items-center gap-2.5">
                                         <div className="flex size-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 shadow-2xs dark:bg-emerald-950/50 dark:text-emerald-300">
                                             <Phone className="size-4" />
                                         </div>
-                                        <div>
-                                            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                                                Kontak &amp; Domisili
-                                            </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Saluran komunikasi dan alamat
-                                                tempat tinggal
-                                            </p>
-                                        </div>
+                                        <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                                            Saluran Komunikasi Resmi
+                                        </h2>
                                     </div>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                            openEditWithTab('contact')
+                                        }
+                                        className="h-7 text-xs font-semibold text-slate-500"
+                                    >
+                                        <Pencil className="mr-1 size-3" /> Edit
+                                    </Button>
                                 </div>
 
                                 <div className="mt-4 space-y-3">
-                                    {/* Email */}
-                                    <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                        <div className="min-w-0">
-                                            <span className="text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                                Email Kerja Resmi
-                                            </span>
-                                            <p className="truncate font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                {staff.email}
-                                            </p>
-                                        </div>
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() =>
-                                                handleCopy(staff.email, 'email')
-                                            }
-                                            className="h-7 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400"
-                                        >
-                                            {copiedField === 'email' ? (
-                                                <Check className="size-3 text-emerald-600" />
-                                            ) : (
-                                                <CreditCard className="size-3" />
-                                            )}
-                                        </Button>
+                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 dark:border-white/5 dark:bg-[#15171e]">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase">
+                                            Alamat Email
+                                        </span>
+                                        <p className="mt-1 font-mono text-sm font-bold text-slate-900 dark:text-white">
+                                            {staff.email}
+                                        </p>
                                     </div>
 
-                                    {/* WhatsApp / Phone */}
-                                    <div className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                        <div className="min-w-0">
-                                            <span className="text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                                WhatsApp / No. HP
-                                            </span>
-                                            <p className="truncate font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                {staff.phone || (
-                                                    <span className="font-sans font-normal text-slate-400 italic">
-                                                        Belum diisi
-                                                    </span>
-                                                )}
-                                            </p>
-                                        </div>
-                                        {staff.phone && (
-                                            <div className="flex items-center gap-1">
-                                                <a
-                                                    href={`https://wa.me/${staff.phone.replace(/[^0-9]/g, '')}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex h-7 w-7 items-center justify-center rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
-                                                >
-                                                    <Smartphone className="size-3.5" />
-                                                </a>
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        handleCopy(
-                                                            staff.phone!,
-                                                            'phone',
-                                                        )
-                                                    }
-                                                    className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200"
-                                                >
-                                                    {copiedField === 'phone' ? (
-                                                        <Check className="size-3 text-emerald-600" />
-                                                    ) : (
-                                                        <CreditCard className="size-3" />
-                                                    )}
-                                                </button>
-                                            </div>
-                                        )}
+                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 dark:border-white/5 dark:bg-[#15171e]">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase">
+                                            Nomor WhatsApp / HP
+                                        </span>
+                                        <p className="mt-1 font-mono text-sm font-bold text-slate-900 dark:text-white">
+                                            {staff.phone || 'Belum diisi'}
+                                        </p>
                                     </div>
 
-                                    {/* Tanggal Lahir */}
-                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                        <span className="flex items-center gap-1 text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                            <Calendar className="size-3" />
+                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 dark:border-white/5 dark:bg-[#15171e]">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase">
                                             Tanggal Lahir
                                         </span>
-                                        <p className="mt-1 text-xs font-semibold text-slate-900 dark:text-white">
-                                            {staff.birth_date || (
-                                                <span className="font-normal text-slate-400 italic">
-                                                    Belum dilengkapi
-                                                </span>
-                                            )}
-                                        </p>
-                                    </div>
-
-                                    {/* Alamat Domisili */}
-                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                        <span className="flex items-center gap-1 text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                            <MapPin className="size-3" />
-                                            Alamat Domisili Saat Ini
-                                        </span>
-                                        <p className="mt-1 text-xs text-slate-800 dark:text-zinc-200">
-                                            {staff.address || (
-                                                <span className="text-slate-400 italic">
-                                                    Belum dilengkapi
-                                                </span>
-                                            )}
-                                        </p>
-                                    </div>
-
-                                    {/* Alamat KTP */}
-                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                        <span className="flex items-center gap-1 text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                            <FileText className="size-3" />
-                                            Alamat Sesuai KTP
-                                        </span>
-                                        <p className="mt-1 text-xs text-slate-800 dark:text-zinc-200">
-                                            {staff.ktp_address || (
-                                                <span className="text-slate-400 italic">
-                                                    Belum dilengkapi
-                                                </span>
-                                            )}
+                                        <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">
+                                            {staff.birth_date
+                                                ? formatDate(staff.birth_date)
+                                                : 'Belum dilengkapi'}
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* SECTION E: Rekening Bank & Pajak */}
                             <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
                                     <div className="flex items-center gap-2.5">
-                                        <div className="flex size-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 shadow-2xs dark:bg-emerald-950/50 dark:text-emerald-300">
-                                            <CreditCard className="size-4" />
+                                        <div className="flex size-8 items-center justify-center rounded-xl bg-blue-50 text-blue-700 shadow-2xs dark:bg-blue-950/50 dark:text-blue-300">
+                                            <MapPin className="size-4" />
                                         </div>
-                                        <div>
-                                            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                                                Rekening Bank &amp; Pajak
-                                            </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Informasi transfer honorarium
-                                                dan NPWP
-                                            </p>
-                                        </div>
+                                        <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                                            Alamat &amp; Lokasi Domisili
+                                        </h2>
                                     </div>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                            openEditWithTab('contact')
+                                        }
+                                        className="h-7 text-xs font-semibold text-slate-500"
+                                    >
+                                        <Pencil className="mr-1 size-3" /> Edit
+                                    </Button>
                                 </div>
 
                                 <div className="mt-4 space-y-3">
-                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                        <span className="text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                            Informasi Rekening Bank
+                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 dark:border-white/5 dark:bg-[#15171e]">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase">
+                                            Alamat Domisili Saat Ini
                                         </span>
-                                        <div className="mt-1.5 space-y-1 text-xs">
-                                            <p className="font-bold text-slate-900 dark:text-white">
-                                                {staff.bank_name || (
-                                                    <span className="font-normal text-slate-400 italic">
-                                                        Bank belum diisi
-                                                    </span>
-                                                )}
-                                            </p>
-                                            <p className="font-mono text-slate-700 dark:text-zinc-300">
-                                                {staff.bank_account_number ||
-                                                    '-'}
-                                            </p>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                a.n.{' '}
-                                                {staff.bank_account_holder ||
-                                                    '-'}
-                                            </p>
-                                        </div>
+                                        <p className="mt-1.5 text-xs leading-relaxed text-slate-800 dark:text-zinc-200">
+                                            {staff.address ||
+                                                'Belum ada alamat tempat tinggal saat ini yang dicatat.'}
+                                        </p>
                                     </div>
 
-                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/5 dark:bg-[#15171e]">
-                                        <span className="text-[10px] font-semibold text-slate-400 uppercase dark:text-zinc-400">
-                                            Nomor Pokok Wajib Pajak (NPWP)
+                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 dark:border-white/5 dark:bg-[#15171e]">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase">
+                                            Alamat Sesuai KTP
                                         </span>
-                                        <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                            {staff.npwp || (
-                                                <span className="font-sans font-normal text-slate-400 italic">
-                                                    Belum dilengkapi
-                                                </span>
-                                            )}
+                                        <p className="mt-1.5 text-xs leading-relaxed text-slate-800 dark:text-zinc-200">
+                                            {staff.ktp_address ||
+                                                'Belum ada alamat KTP yang dicatat.'}
                                         </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    )}
+
+                    {/* TAB 5: REKENING & PAJAK */}
+                    {tab === 'Rekening' && (
+                        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                            <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="flex size-8 items-center justify-center rounded-xl bg-purple-50 text-purple-700 shadow-2xs dark:bg-purple-950/50 dark:text-purple-300">
+                                            <CreditCard className="size-4" />
+                                        </div>
+                                        <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                                            Rekening Bank Payroll / Honorarium
+                                        </h2>
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                            openEditWithTab('billing')
+                                        }
+                                        className="h-7 text-xs font-semibold text-slate-500"
+                                    >
+                                        <Pencil className="mr-1 size-3" /> Edit
+                                    </Button>
+                                </div>
+
+                                <div className="mt-4 space-y-4">
+                                    <div className="rounded-3xl border border-slate-200/80 bg-gradient-to-tr from-slate-900 via-slate-800 to-slate-900 p-6 text-white shadow-xl dark:border-white/10">
+                                        <div className="flex items-center justify-between">
+                                            <span className="font-mono text-xs font-bold tracking-widest text-slate-400">
+                                                {staff.bank_name || 'BANK BCA'}
+                                            </span>
+                                            <CreditCard className="size-5 text-slate-300" />
+                                        </div>
+                                        <div className="my-6">
+                                            <span className="text-[10px] text-slate-400 uppercase">
+                                                Nomor Rekening
+                                            </span>
+                                            <p className="font-mono text-lg font-bold tracking-widest text-white">
+                                                {staff.bank_account_number ||
+                                                    '•••• •••• •••• ••••'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span className="text-[10px] text-slate-400 uppercase">
+                                                Nama Pemilik Rekening
+                                            </span>
+                                            <p className="text-xs font-bold tracking-wider text-slate-200 uppercase">
+                                                {staff.bank_account_holder ||
+                                                    staff.name}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
+                                <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="flex size-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 shadow-2xs dark:bg-emerald-950/50 dark:text-emerald-300">
+                                            <FileBadge className="size-4" />
+                                        </div>
+                                        <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                                            Identitas Perpajakan
+                                        </h2>
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                            openEditWithTab('billing')
+                                        }
+                                        className="h-7 text-xs font-semibold text-slate-500"
+                                    >
+                                        <Pencil className="mr-1 size-3" /> Edit
+                                    </Button>
+                                </div>
+
+                                <div className="mt-4 space-y-3">
+                                    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4 dark:border-white/5 dark:bg-[#15171e]">
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase">
+                                            Nomor Pokok Wajib Pajak (NPWP)
+                                        </span>
+                                        <p className="mt-1.5 font-mono text-sm font-bold text-slate-900 dark:text-white">
+                                            {staff.npwp || 'Belum dilengkapi'}
+                                        </p>
+                                        <p className="mt-1 text-xs text-slate-500">
+                                            Digunakan untuk pelaporan bukti
+                                            potong PPh 21 / honorarium advokat.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* TAB 6: HAK AKSES & PERAN */}
+                    {tab === 'Akses' && (
+                        <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-xs dark:border-white/[0.08] dark:bg-[#12141a]">
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/[0.06]">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex size-10 items-center justify-center rounded-2xl bg-purple-50 text-purple-700 shadow-2xs dark:bg-purple-950/50 dark:text-purple-300">
+                                        <ShieldCheck className="size-5" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                                            Peran &amp; Otorisasi Sistem (
+                                            {staff.roles.length})
+                                        </h2>
+                                        <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                            Hak akses modul, kewenangan
+                                            operasional, dan hak izin workspace
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <Button
+                                    size="sm"
+                                    onClick={() => openEditWithTab('account')}
+                                    className="h-8 rounded-xl bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                >
+                                    <Pencil className="mr-1.5 size-3.5" />
+                                    Kelola Role
+                                </Button>
+                            </div>
+
+                            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                {staff.roles.map((role) => (
+                                    <div
+                                        key={role.id}
+                                        className="rounded-2xl border border-slate-200/70 bg-slate-50/60 p-4 dark:border-white/5 dark:bg-[#15171e]"
+                                    >
+                                        <div className="flex items-center gap-2.5">
+                                            <Shield className="size-4 text-purple-600 dark:text-purple-400" />
+                                            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                                {role.name}
+                                            </h3>
+                                            <span className="rounded bg-slate-200/80 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                                {role.slug}
+                                            </span>
+                                        </div>
+                                        <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-zinc-400">
+                                            {role.description ||
+                                                'Memiliki izin operasional sesuai konfigurasi role.'}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </main>
             </div>
 
-            {/* Modal: Edit User (Reused & Refined) */}
+            {/* Modal: Edit User (Tabbed & Refined) */}
             <EditUserDialog
                 user={staff as any}
                 roles={roles}
                 open={isEditing}
+                defaultTab={initialEditTab}
                 onOpenChange={setIsEditing}
                 onDeleteClick={() => {
                     setIsEditing(false);
@@ -819,7 +1554,7 @@ export default function UserShow({
                     router.visit(userRoutes.index());
                 }}
             />
-        </>
+        </TooltipProvider>
     );
 }
 
@@ -827,19 +1562,26 @@ function EditUserDialog({
     user,
     roles,
     open,
+    defaultTab = 'account',
     onOpenChange,
     onDeleteClick,
 }: {
     user: UserDetail | null;
     roles: Role[];
     open: boolean;
+    defaultTab?: 'account' | 'advocate' | 'contact' | 'billing';
     onOpenChange: (open: boolean) => void;
     onDeleteClick?: () => void;
 }) {
     const getInitials = useInitials();
     const [activeTab, setActiveTab] = useState<
         'account' | 'advocate' | 'contact' | 'billing'
-    >('account');
+    >(defaultTab);
+
+    // Sync active tab when defaultTab changes
+    useMemo(() => {
+        setActiveTab(defaultTab);
+    }, [defaultTab, open]);
 
     if (!user) return null;
 
