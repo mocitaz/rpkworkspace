@@ -90,26 +90,26 @@ export function PasswordStrengthIndicator({
                 className
             )}
         >
-            {/* Top Row: Title, Shield Indicator & Dynamic Strength Badge */}
+            {/* Top Row: Title, Security Icon & Strength Badge */}
             <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                     <div
                         className={cn(
-                            'flex size-7 items-center justify-center rounded-xl border transition-all duration-300',
+                            'flex size-8 items-center justify-center rounded-xl border transition-colors duration-200',
                             !hasInput && 'border-slate-200/80 bg-slate-100/80 text-slate-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-400',
                             strengthTone === 'very-weak' && 'border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-400',
                             strengthTone === 'weak' && 'border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-400',
                             strengthTone === 'fair' && 'border-yellow-200 bg-yellow-50 text-yellow-600 dark:border-yellow-900/50 dark:bg-yellow-950/40 dark:text-yellow-400',
                             strengthTone === 'strong' && 'border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-400',
-                            strengthTone === 'very-strong' && 'border-emerald-200 bg-emerald-50 text-emerald-600 shadow-[0_0_12px_rgba(16,185,129,0.2)] dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-400'
+                            strengthTone === 'very-strong' && 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-400'
                         )}
                     >
-                        {strengthTone === 'very-strong' ? (
-                            <Sparkles className="size-3.5 animate-pulse text-emerald-600 dark:text-emerald-400" />
-                        ) : strengthTone === 'strong' ? (
-                            <ShieldCheck className="size-3.5 text-blue-600 dark:text-blue-400" />
+                        {score >= 4 ? (
+                            <ShieldCheck className="size-4 stroke-[2.2]" />
+                        ) : score >= 1 ? (
+                            <Shield className="size-4 stroke-[2]" />
                         ) : (
-                            <Shield className="size-3.5" />
+                            <Lock className="size-4 stroke-[2]" />
                         )}
                     </div>
                     <div>
@@ -121,7 +121,7 @@ export function PasswordStrengthIndicator({
                         <p className="text-[10px] font-medium text-slate-500 dark:text-zinc-400">
                             {hasInput
                                 ? `${score} dari 5 syarat keamanan terpenuhi`
-                                : 'Masukkan sandi kombinasi aman'}
+                                : 'Gunakan kombinasi yang aman'}
                         </p>
                     </div>
                 </div>
@@ -129,24 +129,24 @@ export function PasswordStrengthIndicator({
                 {/* Badge Status */}
                 <div
                     className={cn(
-                        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wide transition-all duration-300',
+                        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wide transition-all duration-200',
                         !hasInput && 'border-slate-200 bg-slate-100/70 text-slate-500 dark:border-white/10 dark:bg-white/[0.03] dark:text-zinc-400',
-                        strengthTone === 'very-weak' && 'border-rose-200 bg-rose-50/90 text-rose-700 dark:border-rose-800/40 dark:bg-rose-950/50 dark:text-rose-300',
-                        strengthTone === 'weak' && 'border-amber-200 bg-amber-50/90 text-amber-700 dark:border-amber-800/40 dark:bg-amber-950/50 dark:text-amber-300',
-                        strengthTone === 'fair' && 'border-yellow-200 bg-yellow-50/90 text-yellow-800 dark:border-yellow-800/40 dark:bg-yellow-950/50 dark:text-yellow-300',
-                        strengthTone === 'strong' && 'border-blue-200 bg-blue-50/90 text-blue-700 dark:border-blue-800/40 dark:bg-blue-950/50 dark:text-blue-300',
-                        strengthTone === 'very-strong' && 'border-emerald-200 bg-emerald-50/90 text-emerald-800 shadow-[0_0_12px_rgba(16,185,129,0.25)] dark:border-emerald-800/50 dark:bg-emerald-950/50 dark:text-emerald-300'
+                        strengthTone === 'very-weak' && 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-800/40 dark:bg-rose-950/50 dark:text-rose-300',
+                        strengthTone === 'weak' && 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800/40 dark:bg-amber-950/50 dark:text-amber-300',
+                        strengthTone === 'fair' && 'border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-800/40 dark:bg-yellow-950/50 dark:text-yellow-300',
+                        strengthTone === 'strong' && 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800/40 dark:bg-blue-950/50 dark:text-blue-300',
+                        strengthTone === 'very-strong' && 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800/50 dark:bg-emerald-950/50 dark:text-emerald-300'
                     )}
                 >
                     <span
                         className={cn(
-                            'size-1.5 rounded-full transition-all duration-300',
+                            'size-1.5 rounded-full',
                             !hasInput && 'bg-slate-400 dark:bg-zinc-500',
-                            strengthTone === 'very-weak' && 'bg-rose-500 animate-pulse',
+                            strengthTone === 'very-weak' && 'bg-rose-500',
                             strengthTone === 'weak' && 'bg-amber-500',
                             strengthTone === 'fair' && 'bg-yellow-500',
                             strengthTone === 'strong' && 'bg-blue-500',
-                            strengthTone === 'very-strong' && 'bg-emerald-500 shadow-[0_0_6px_#10b981]'
+                            strengthTone === 'very-strong' && 'bg-emerald-500'
                         )}
                     />
                     <span>{hasInput ? strengthLabel : 'Belum Diisi'}</span>
