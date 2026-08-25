@@ -8,20 +8,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TaskAssignedNotification extends Notification implements ShouldQueue
+class TaskDueReminderNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    /**
-     * Create a new notification instance.
-     */
     public function __construct(public Task $task) {}
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
+    /** @return array<int, string> */
     public function via(object $notifiable): array
     {
         return ['database', 'mail'];
@@ -36,31 +29,24 @@ class TaskAssignedNotification extends Notification implements ShouldQueue
         ];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('[Tugas Baru] '.$this->task->title)
-            ->view('mail.task-assigned', [
+            ->subject('[Pengingat Tenggat] '.$this->task->title)
+            ->view('mail.task-due-reminder', [
                 'task' => $this->task,
                 'recipientName' => $notifiable->name ?? 'Rekan Kerja',
                 'actionUrl' => route('tasks.index', ['view' => 'mine']),
             ]);
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function toArray(object $notifiable): array
     {
         return [
-            'kind' => 'task_assigned',
-            'title' => 'Tugas baru ditugaskan kepada Anda',
-            'message' => $this->task->title,
+            'kind' => 'task_due_reminder',
+            'title' => 'Pengingat Tenggat Tugas: '.$this->task->title,
+            'message' => 'Batas waktu pengerjaan tugas mendekati tenggat.',
             'url' => route('tasks.index', ['view' => 'mine']),
             'task_id' => $this->task->getKey(),
             'matter_id' => $this->task->matter_id,
@@ -69,6 +55,6 @@ class TaskAssignedNotification extends Notification implements ShouldQueue
 
     public function databaseType(object $notifiable): string
     {
-        return 'task-assigned';
+        return 'task-due-reminder';
     }
 }

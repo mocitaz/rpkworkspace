@@ -9,6 +9,7 @@ use App\Http\Requests\StoreMatterNoteRequest;
 use App\Http\Requests\StoreMatterPartyRequest;
 use App\Models\Matter;
 use App\Models\MatterEvidence;
+use App\Notifications\HearingScheduledNotification;
 use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,6 +43,18 @@ class MatterOperationController extends Controller
         $hold->handle($matter);
         $event = $matter->events()->create([...$request->validated(), 'owner_id' => $request->user()->getKey(), 'created_by' => $request->user()->getKey()]);
         $audit->record($event, 'matter.event_added', ['matter_id' => $matter->getKey()], $request->user(), $request);
+
+        $members = $matter->members()->where('users.id', '!=', $request->user()->getKey())->get();
+        foreach ($members as $member) {
+            $member->notify((new HearingScheduledNotification(
+                hearingTitle: $event->title,
+                hearingDate: $event->starts_at?->translatedFormat('l, d F Y') ?? now()->translatedFormat('l, d F Y'),
+                hearingTime: $event->starts_at ? $event->starts_at->format('H:i').' WIB' : '09:00 WIB',
+                courtName: $event->location ?? 'Pengadilan',
+                matter: $matter,
+                scheduledBy: $request->user()->name
+            ))->afterCommit());
+        }
 
         return back()->with('success', 'Agenda ditambahkan.');
     }

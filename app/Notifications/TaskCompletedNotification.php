@@ -8,20 +8,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class TaskAssignedNotification extends Notification implements ShouldQueue
+class TaskCompletedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    /**
-     * Create a new notification instance.
-     */
     public function __construct(public Task $task) {}
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
+    /** @return array<int, string> */
     public function via(object $notifiable): array
     {
         return ['database', 'mail'];
@@ -36,32 +29,25 @@ class TaskAssignedNotification extends Notification implements ShouldQueue
         ];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('[Tugas Baru] '.$this->task->title)
-            ->view('mail.task-assigned', [
+            ->subject('[Tugas Selesai] '.$this->task->title)
+            ->view('mail.task-completed', [
                 'task' => $this->task,
-                'recipientName' => $notifiable->name ?? 'Rekan Kerja',
-                'actionUrl' => route('tasks.index', ['view' => 'mine']),
+                'recipientName' => $notifiable->name ?? 'Bapak/Ibu Partner',
+                'actionUrl' => route('tasks.index'),
             ]);
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function toArray(object $notifiable): array
     {
         return [
-            'kind' => 'task_assigned',
-            'title' => 'Tugas baru ditugaskan kepada Anda',
-            'message' => $this->task->title,
-            'url' => route('tasks.index', ['view' => 'mine']),
+            'kind' => 'task_completed',
+            'title' => 'Tugas Diselesaikan: '.$this->task->title,
+            'message' => ($this->task->assignee?->name ?? 'Pelaksana tugas').' telah menyelesaikan tugas ini.',
+            'url' => route('tasks.index'),
             'task_id' => $this->task->getKey(),
             'matter_id' => $this->task->matter_id,
         ];
@@ -69,6 +55,6 @@ class TaskAssignedNotification extends Notification implements ShouldQueue
 
     public function databaseType(object $notifiable): string
     {
-        return 'task-assigned';
+        return 'task-completed';
     }
 }

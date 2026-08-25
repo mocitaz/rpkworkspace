@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Models\Matter;
 use App\Models\User;
 use App\Notifications\MatterAssignedNotification;
+use App\Notifications\MatterStageChangedNotification;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
@@ -43,6 +44,15 @@ class UpdateMatter
         User::query()->where('is_active', true)->whereKey($addedMemberIds)->each(
             fn (User $user) => $user->notify((new MatterAssignedNotification($matter))->afterCommit()),
         );
+
+        if ($matter->wasChanged('status')) {
+            $newStage = strtoupper(str_replace('_', ' ', (string) $matter->status));
+            $oldStage = strtoupper(str_replace('_', ' ', (string) $matter->getOriginal('status')));
+            $notifyMembers = $matter->members()->where('users.id', '!=', $actor->getKey())->get();
+            foreach ($notifyMembers as $member) {
+                $member->notify((new MatterStageChangedNotification($matter, $newStage, $oldStage, $actor->name))->afterCommit());
+            }
+        }
 
         return $matter;
     }

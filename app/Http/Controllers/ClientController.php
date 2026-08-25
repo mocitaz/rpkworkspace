@@ -9,6 +9,7 @@ use App\Models\ClientComplianceDocument;
 use App\Models\Document;
 use App\Models\Matter;
 use App\Models\User;
+use App\Notifications\ClientPartnerAssignedNotification;
 use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -63,6 +64,11 @@ class ClientController extends Controller
             'created_by' => $request->user()->getKey(),
         ]);
         $audit->record($client, 'client.created', ['client_number' => $client->client_number], $request->user(), $request);
+
+        if ($client->relationship_partner_id && $client->relationship_partner_id !== $request->user()->getKey()) {
+            $partner = User::query()->where('is_active', true)->find($client->relationship_partner_id);
+            $partner?->notify((new ClientPartnerAssignedNotification($client))->afterCommit());
+        }
 
         return to_route('clients.show', $client)->with('success', 'Klien berhasil dibuat.');
     }
@@ -122,12 +128,19 @@ class ClientController extends Controller
     public function update(UpdateClientRequest $request, Client $client, AuditService $audit): RedirectResponse
     {
         $attributes = $request->validated();
+        $previousPartnerId = $client->relationship_partner_id;
 
         if (($attributes['tax_identifier'] ?? null) === null || $attributes['tax_identifier'] === '') {
             unset($attributes['tax_identifier']);
         }
 
         $client->update($attributes);
+
+        if ($client->relationship_partner_id && $client->relationship_partner_id !== $previousPartnerId && $client->relationship_partner_id !== $request->user()->getKey()) {
+            $partner = User::query()->where('is_active', true)->find($client->relationship_partner_id);
+            $partner?->notify((new ClientPartnerAssignedNotification($client))->afterCommit());
+        }
+
         $audit->record($client, 'client.updated', ['changed' => array_keys($client->getChanges())], $request->user(), $request);
 
         return to_route('clients.show', $client)->with('success', 'Data klien berhasil diperbarui.');

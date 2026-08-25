@@ -26,6 +26,7 @@ use App\Models\Invoice;
 use App\Models\Matter;
 use App\Models\Payment;
 use App\Models\Quotation;
+use App\Notifications\PaymentVerificationRequestedNotification;
 use App\Services\AuditService;
 use App\Services\MatterFinancialOverview;
 use App\Services\PdfRenderer;
@@ -155,7 +156,18 @@ class FinanceController extends Controller
             $proof = $createProof->handle($request->file('proof'), $request->user(), 'Bukti pembayaran '.$attributes['amount'], $matter, $client);
             $attributes['proof_document_id'] = $proof->getKey();
         }
-        $record->handle($attributes, $request->user(), $audit);
+        $payment = $record->handle($attributes, $request->user(), $audit);
+
+        $financeUsers = User::query()->where('is_active', true)->where('id', '!=', $request->user()->getKey())->get();
+        foreach ($financeUsers as $financeUser) {
+            $financeUser->notify((new PaymentVerificationRequestedNotification(
+                invoiceNumber: 'PAY-'.($payment->payment_number ?? $payment->id),
+                clientName: $client->display_name,
+                amountPaid: 'Rp '.number_format((float) ($attributes['amount'] ?? 0), 0, ',', '.'),
+                paymentMethod: ucfirst(str_replace('_', ' ', $attributes['payment_method'] ?? 'Transfer Bank')),
+                paymentDate: now()->translatedFormat('d F Y')
+            ))->afterCommit());
+        }
 
         return back()->with('success', 'Pembayaran berhasil dicatat.');
     }

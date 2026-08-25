@@ -8,6 +8,7 @@ use App\Models\Document;
 use App\Models\Matter;
 use App\Models\Task;
 use App\Models\User;
+use App\Notifications\DocumentCommentAddedNotification;
 use App\Notifications\UserMentionedNotification;
 use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
@@ -58,6 +59,11 @@ class CommentController extends Controller
         ]);
 
         $this->notifyMentionedUsers($comment, $request->user());
+
+        if ($target instanceof Document && $target->created_by && $target->created_by !== $request->user()->getKey()) {
+            $creator = User::query()->where('is_active', true)->find($target->created_by);
+            $creator?->notify((new DocumentCommentAddedNotification($target, $comment->body, $request->user()->name))->afterCommit());
+        }
 
         $this->audit->record($target, 'comment.created', [
             'comment_id' => $comment->id,

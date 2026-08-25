@@ -8,6 +8,7 @@ use App\Models\Matter;
 use App\Models\Task;
 use App\Models\User;
 use App\Notifications\TaskAssignedNotification;
+use App\Notifications\TaskCompletedNotification;
 use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -85,6 +86,7 @@ class TaskController extends Controller
     public function update(UpdateTaskRequest $request, Task $task, AuditService $audit): RedirectResponse
     {
         $previousAssigneeId = $task->assignee_id;
+        $previousStatus = $task->status;
         $attributes = $request->validated();
         $attributes['completed_at'] = $attributes['status'] === 'completed' ? ($task->completed_at ?: now()) : null;
         $task->update($attributes);
@@ -92,6 +94,12 @@ class TaskController extends Controller
         if ($task->assignee_id !== $previousAssigneeId) {
             $this->notifyAssignee($task, $request->user());
         }
+
+        if ($task->status === 'completed' && $previousStatus !== 'completed' && $task->reporter_id && $task->reporter_id !== $request->user()->getKey()) {
+            $reporter = User::query()->where('is_active', true)->find($task->reporter_id);
+            $reporter?->notify((new TaskCompletedNotification($task))->afterCommit());
+        }
+
         $audit->record($task, 'task.updated', ['status' => $task->status, 'assignee_id' => $task->assignee_id], $request->user(), $request);
 
         return back()->with('success', 'Tugas diperbarui.');

@@ -4,6 +4,8 @@ namespace App\Actions;
 
 use App\Models\SignatureRequest;
 use App\Models\SignatureSigner;
+use App\Models\User;
+use App\Notifications\DocumentSignedExecutedNotification;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -77,6 +79,24 @@ class SignSignatureRequest
             $this->audit->record($signatureRequest, 'signature.artifacts_generated', [
                 'verification_code' => $signatureRequest->verification_code,
             ], null, $request);
+
+            if ($signatureRequest->document->matter) {
+                $members = $signatureRequest->document->matter->members()->get();
+                foreach ($members as $member) {
+                    $member->notify((new DocumentSignedExecutedNotification(
+                        $signatureRequest->document,
+                        $signer->accepted_name ?? $signer->name,
+                        $signatureRequest->verification_code
+                    ))->afterCommit());
+                }
+            } elseif ($signatureRequest->created_by) {
+                $creator = User::query()->find($signatureRequest->created_by);
+                $creator?->notify((new DocumentSignedExecutedNotification(
+                    $signatureRequest->document,
+                    $signer->accepted_name ?? $signer->name,
+                    $signatureRequest->verification_code
+                ))->afterCommit());
+            }
         }
 
         return $signatureRequest;

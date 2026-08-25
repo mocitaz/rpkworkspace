@@ -6,10 +6,12 @@ use App\Models\Document;
 use App\Models\DocumentApproval;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Str;
 
-class DocumentApprovalRequestedNotification extends Notification
+class DocumentApprovalRequestedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -22,7 +24,32 @@ class DocumentApprovalRequestedNotification extends Notification
     /** @return array<int, string> */
     public function via(object $notifiable): array
     {
-        return ['database'];
+        return ['database', 'mail'];
+    }
+
+    /** @return array<string, string> */
+    public function viaQueues(): array
+    {
+        return [
+            'database' => config('raf.queues.notifications', 'notifications'),
+            'mail' => config('raf.queues.notifications', 'notifications'),
+        ];
+    }
+
+    /**
+     * Get the mail representation of the notification.
+     */
+    public function toMail(object $notifiable): MailMessage
+    {
+        return (new MailMessage)
+            ->subject('[Permintaan Telaah Dokumen] '.$this->document->title)
+            ->view('mail.document-review-requested', [
+                'document' => $this->document,
+                'requestedBy' => $this->requester->name,
+                'reviewNotes' => $this->approval->request_note,
+                'recipientName' => $notifiable->name ?? 'Bapak/Ibu Reviewer',
+                'actionUrl' => route('documents.show', $this->document->getKey()),
+            ]);
     }
 
     /** @return array<string, mixed> */

@@ -8,20 +8,19 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class MatterAssignedNotification extends Notification implements ShouldQueue
+class MatterStageChangedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    /**
-     * Create a new notification instance.
-     */
-    public function __construct(public Matter $matter) {}
+    public function __construct(
+        public Matter $matter,
+        public string $newStage,
+        public ?string $oldStage = null,
+        public ?string $updatedBy = null,
+        public ?string $notes = null
+    ) {}
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
+    /** @return array<int, string> */
     public function via(object $notifiable): array
     {
         return ['database', 'mail'];
@@ -36,31 +35,28 @@ class MatterAssignedNotification extends Notification implements ShouldQueue
         ];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('[Penugasan Perkara] '.$this->matter->matter_number.' - '.$this->matter->title)
-            ->view('mail.matter-team-assigned', [
+            ->subject('[Update Tahapan Perkara] '.$this->matter->matter_number.' - '.$this->newStage)
+            ->view('mail.matter-stage-changed', [
                 'matter' => $this->matter,
-                'recipientName' => $notifiable->name ?? 'Rekan Advokat',
+                'newStage' => $this->newStage,
+                'oldStage' => $this->oldStage,
+                'updatedBy' => $this->updatedBy,
+                'notes' => $this->notes,
+                'recipientName' => $notifiable->name ?? 'Tim Kuasa Hukum',
                 'actionUrl' => route('matters.show', $this->matter),
             ]);
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
+    /** @return array<string, mixed> */
     public function toArray(object $notifiable): array
     {
         return [
-            'kind' => 'matter_assigned',
-            'title' => 'Anda ditambahkan ke tim matter',
-            'message' => $this->matter->matter_number.' — '.$this->matter->title,
+            'kind' => 'matter_stage_changed',
+            'title' => 'Tahapan Perkara Diperbarui: '.$this->matter->matter_number,
+            'message' => 'Tahapan perkara berpindah ke "'.$this->newStage.'".',
             'url' => route('matters.show', $this->matter),
             'matter_id' => $this->matter->getKey(),
         ];
@@ -68,6 +64,6 @@ class MatterAssignedNotification extends Notification implements ShouldQueue
 
     public function databaseType(object $notifiable): string
     {
-        return 'matter-assigned';
+        return 'matter-stage-changed';
     }
 }
