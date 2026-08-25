@@ -127,14 +127,18 @@ class GovernanceController extends Controller
 
     public function storeConflictCheck(StoreConflictCheckRequest $request, RunConflictCheck $run): RedirectResponse
     {
-        $matter = $request->validated('matter_id') ? Matter::query()->whereKey($request->validated('matter_id'))->firstOrFail() : null;
-        if ($matter !== null) {
-            Gate::authorize('view', $matter);
-        }
-        $client = $request->validated('client_id') ? Client::query()->whereKey($request->validated('client_id'))->firstOrFail() : $matter?->client;
-        $check = $run->handle($request->user(), $request->validated('names'), $client, $matter);
+        try {
+            $matter = $request->validated('matter_id') ? Matter::query()->whereKey($request->validated('matter_id'))->firstOrFail() : null;
+            if ($matter !== null) {
+                Gate::authorize('view', $matter);
+            }
+            $client = $request->validated('client_id') ? Client::query()->whereKey($request->validated('client_id'))->firstOrFail() : $matter?->client;
+            $check = $run->handle($request->user(), (array) $request->validated('names'), $client, $matter);
 
-        return back()->with('success', 'Conflict check selesai: '.str($check->status)->replace('_', ' ')->title().'.');
+            return back()->with('success', 'Conflict check selesai: '.str($check->status)->replace('_', ' ')->title().'.');
+        } catch (\Throwable $e) {
+            return back()->withErrors(['names' => $e->getMessage()]);
+        }
     }
 
     public function resolveConflictCheck(ResolveConflictCheckRequest $request, ConflictCheck $conflictCheck, ResolveConflictCheck $resolve): RedirectResponse

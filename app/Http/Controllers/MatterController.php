@@ -88,11 +88,15 @@ class MatterController extends Controller
 
     public function storeConflictCheck(StoreMatterConflictCheckRequest $request, RunConflictCheck $run): RedirectResponse
     {
-        $client = Client::query()->whereKey($request->validated('client_id'))->sole();
-        $check = $run->handle($request->user(), $request->validated('names'), $client);
+        try {
+            $client = Client::query()->whereKey($request->validated('client_id'))->firstOrFail();
+            $check = $run->handle($request->user(), (array) $request->validated('names'), $client);
 
-        return to_route('matters.create', ['conflict_check' => $check->getKey()])
-            ->with('success', 'Conflict check selesai. Lengkapi data matter untuk melanjutkan intake.');
+            return to_route('matters.create', ['conflict_check' => $check->getKey()])
+                ->with('success', 'Conflict check selesai. Lengkapi data matter untuk melanjutkan intake.');
+        } catch (\Throwable $e) {
+            return back()->withErrors(['names' => $e->getMessage()]);
+        }
     }
 
     /**

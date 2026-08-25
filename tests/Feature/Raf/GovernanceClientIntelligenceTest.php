@@ -9,6 +9,8 @@ use App\Actions\RequestMatterExport;
 use App\Actions\ResolveConflictCheck;
 use App\Actions\RunConflictCheck;
 use App\Jobs\GenerateMatterHandoverExport;
+use App\Models\Client;
+use App\Models\ConflictCheck;
 use App\Models\Document;
 use App\Models\DocumentVersion;
 use App\Models\Matter;
@@ -125,4 +127,22 @@ it('builds a private handover bundle containing clean documents only', function 
     expect($export->refresh()->status)->toBe('completed')
         ->and($export->storage_path)->not->toBeNull();
     Storage::disk('local')->assertExists($export->storage_path);
+});
+
+it('processes conflict check via HTTP on matter intake and redirects back to create form with results', function () {
+    $actor = rafUser(['matter.create', 'conflict.manage', 'client.view']);
+    $client = Client::factory()->create(['status' => 'active']);
+
+    $response = $this->actingAs($actor)->post(route('matters.conflict-checks.store'), [
+        'client_id' => $client->id,
+        'names' => ['tes', '', '', ''],
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $conflictCheck = ConflictCheck::query()->where('client_id', $client->id)->firstOrFail();
+    $response->assertRedirect(route('matters.create', ['conflict_check' => $conflictCheck->id]));
+
+    // Now visit the create page with the conflict check param
+    $createPage = $this->actingAs($actor)->get(route('matters.create', ['conflict_check' => $conflictCheck->id]));
+    $createPage->assertOk();
 });

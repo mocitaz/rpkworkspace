@@ -16,13 +16,18 @@ class RunConflictCheck
 {
     public function __construct(private AuditService $audit) {}
 
-    /** @param list<string> $names */
+    /** @param list<string|null> $names */
     public function handle(User $actor, array $names, ?Client $client = null, ?Matter $matter = null): ConflictCheck
     {
-        $searchedNames = collect($names)->map(fn (string $name) => str($name)->squish()->toString())->filter()->unique()->values();
+        $searchedNames = collect($names)
+            ->filter(fn ($name) => filled($name))
+            ->map(fn ($name) => str((string) $name)->squish()->toString())
+            ->filter()
+            ->unique()
+            ->values();
 
         if ($searchedNames->isEmpty()) {
-            throw new \DomainException('Conflict check memerlukan setidaknya satu nama pihak.');
+            throw new \DomainException('Conflict check memerlukan setidaknya satu nama pihak yang sah.');
         }
 
         $matches = $searchedNames->flatMap(fn (string $name) => $this->findMatches($name))->values();
