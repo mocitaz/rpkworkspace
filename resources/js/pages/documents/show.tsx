@@ -776,6 +776,7 @@ export default function DocumentShow({
 
                     <Form
                         {...versionRoutes.store.form(document.id)}
+                        encType="multipart/form-data"
                         className="space-y-3.5 pt-1"
                         onSuccess={() => setOpen(false)}
                     >

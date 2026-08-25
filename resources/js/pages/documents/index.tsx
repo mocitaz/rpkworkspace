@@ -529,6 +529,7 @@ export default function DocumentsIndex({
 
                     <Form
                         {...documentRoutes.store.form()}
+                        encType="multipart/form-data"
                         className="space-y-3.5 pt-1"
                         resetOnSuccess
                         onSuccess={() => setOpen(false)}

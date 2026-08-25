@@ -1262,6 +1262,7 @@ function FinanceDialog({
 
                 <Form
                     {...route.form()}
+                    encType="multipart/form-data"
                     className="space-y-3 pt-1"
                     onSuccess={onClose}
                 >

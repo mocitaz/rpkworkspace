@@ -335,6 +335,7 @@ export default function CorrespondenceShow({
                                     {canUploadAttachment && (
                                         <Form
                                             {...attachmentRoutes.store.form(correspondence.id)}
+                                            encType="multipart/form-data"
                                             className="rounded-lg border border-slate-200/60 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]"
                                         >
                                             {({ processing, errors }) => (
