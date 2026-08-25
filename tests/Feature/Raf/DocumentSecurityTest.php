@@ -77,4 +77,8 @@ it('uploads general pdf documents seamlessly without matter_id and with strictly
         ->and($version->notes)->toBe('Draf surat kuasa asli ditandatangani basah.');
 
     Storage::disk('local')->assertExists($version->storage_path);
+
+    $previewResponse = $this->actingAs($user)->get(route('documents.versions.preview', [$document, $version]));
+    $previewResponse->assertOk()
+        ->assertHeader('Content-Type', 'application/pdf');
 });

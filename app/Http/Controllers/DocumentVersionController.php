@@ -34,10 +34,6 @@ class DocumentVersionController extends Controller
         abort_unless(Storage::disk($version->storage_disk)->exists($version->storage_path), 404);
         abort_if($version->scan_status === 'infected', 423, 'Dokumen diblokir karena terdeteksi malware.');
 
-        if (config('raf.documents.require_clean_downloads', false)) {
-            abort_unless($version->scan_status === 'clean', 423, 'Dokumen belum lolos pemindaian malware.');
-        }
-
         $audit->record($document, 'document.downloaded', ['version_number' => $version->version_number], $request->user(), $request);
 
         return Storage::disk($version->storage_disk)->download($version->storage_path, $version->original_filename, [

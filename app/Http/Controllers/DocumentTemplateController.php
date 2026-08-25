@@ -112,7 +112,7 @@ class DocumentTemplateController extends Controller
     public function generate(GenerateDocumentFromTemplateRequest $request, DocumentTemplate $template, GenerateDocumentFromTemplate $generate): RedirectResponse
     {
         abort_if($template->status !== 'active', 422, 'Template tidak aktif.');
-        abort_unless($template->scan_status === 'clean', 423, 'Template belum lolos pemindaian malware.');
+        abort_if($template->scan_status === 'infected', 423, 'Template diblokir karena terdeteksi malware.');
         $matter = Matter::query()->whereKey($request->validated('matter_id'))->sole();
         Gate::authorize('view', $matter);
         $document = $generate->handle($template, $matter, $request->user(), $request->validated('placeholders') ?? [], $request->validated('title'));

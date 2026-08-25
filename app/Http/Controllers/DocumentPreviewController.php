@@ -62,9 +62,5 @@ class DocumentPreviewController extends Controller
         abort_unless($version->document_id === $document->getKey(), 404);
         abort_unless(Storage::disk($version->storage_disk)->exists($version->storage_path), 404);
         abort_if($version->scan_status === 'infected', 423, 'Dokumen diblokir karena terdeteksi malware.');
-
-        if (config('raf.documents.require_clean_downloads', false)) {
-            abort_unless($version->scan_status === 'clean', 423, 'Dokumen belum lolos pemindaian malware.');
-        }
     }
 }
