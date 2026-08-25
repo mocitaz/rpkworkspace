@@ -99,6 +99,12 @@ class UserController extends Controller
                 $data['password'] = (string) $request->input('password');
             }
             $data['disabled_at'] = $validated['is_active'] ? null : now();
+            $data['email_verified_at'] = $user->email_verified_at ?? now();
+
+            // If email is modified by admin, auto-verify immediately
+            if (isset($data['email']) && $data['email'] !== $user->email) {
+                $data['email_verified_at'] = now();
+            }
 
             $user->update($data);
             $user->roles()->sync($this->roleAssignments($validated['role_ids'], $request->user()));
