@@ -100,11 +100,15 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 
     public function ensureCalendarToken(): string
     {
-        if (empty($this->calendar_token)) {
-            $this->forceFill(['calendar_token' => Str::random(48)])->saveQuietly();
-        }
+        try {
+            if (empty($this->calendar_token)) {
+                $this->forceFill(['calendar_token' => Str::random(48)])->saveQuietly();
+            }
 
-        return $this->calendar_token;
+            return $this->calendar_token ?? hash_hmac('sha256', (string) $this->id, (string) config('app.key'));
+        } catch (\Throwable) {
+            return hash_hmac('sha256', (string) $this->id, (string) config('app.key'));
+        }
     }
 
     /**

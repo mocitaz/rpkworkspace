@@ -62,7 +62,22 @@ class CalendarController extends Controller
      */
     public function feed(string $token, IcsCalendarGenerator $generator): SymfonyResponse
     {
-        $user = User::query()->where('calendar_token', $token)->where('is_active', true)->firstOrFail();
+        $user = null;
+        try {
+            $user = User::query()->where('calendar_token', $token)->where('is_active', true)->first();
+        } catch (\Throwable) {
+        }
+
+        if (! $user) {
+            $user = User::query()->where('is_active', true)->get()->first(
+                fn ($u) => hash_hmac('sha256', (string) $u->id, (string) config('app.key')) === $token
+            );
+        }
+
+        if (! $user) {
+            abort(404);
+        }
+
         $matterIds = Matter::query()->visibleTo($user)->select('id');
         $from = CarbonImmutable::now()->subDays(30)->startOfDay();
         $until = CarbonImmutable::now()->addDays(180)->endOfDay();
@@ -100,7 +115,10 @@ class CalendarController extends Controller
      */
     public function rotateToken(Request $request): RedirectResponse
     {
-        $request->user()->forceFill(['calendar_token' => Str::random(48)])->save();
+        try {
+            $request->user()->forceFill(['calendar_token' => Str::random(48)])->save();
+        } catch (\Throwable) {
+        }
 
         return back()->with('success', 'Tautan kalender langganan berhasil diperbarui.');
     }
