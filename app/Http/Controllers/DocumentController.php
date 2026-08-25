@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\CreateDocumentVersion;
+use App\Actions\GenerateSignedFinalPdf;
 use App\Http\Requests\StoreDocumentRequest;
 use App\Models\Client;
 use App\Models\Document;
@@ -90,8 +91,26 @@ class DocumentController extends Controller
     {
         Gate::authorize('view', $document);
 
+        $document->load([
+            'matter:id,matter_number,title,legal_hold_at', 'client:id,client_number,display_name',
+            'creator:id,name', 'versions.uploader:id,name',
+            'approvals.reviewer:id,name', 'approvals.requester:id,name',
+            'signatureRequests.signers:id,signature_request_id,name,email,status,signed_at,signing_token',
+            'comments' => fn ($query) => $query->whereNull('parent_id')->with([
+                'user:id,name,position_title,avatar_path',
+                'reactions.user:id,name',
+                'replies' => fn ($r) => $r->with(['user:id,name,position_title,avatar_path', 'reactions.user:id,name'])->oldest(),
+            ])->orderByDesc('is_pinned')->latest(),
+        ]);
+
+        foreach ($document->signatureRequests as $sigReq) {
+            if ($sigReq->status === 'completed' && ($sigReq->signed_final_status !== 'completed' || empty($sigReq->signed_final_path))) {
+                app(GenerateSignedFinalPdf::class)->handle($sigReq);
+            }
+        }
+
         return Inertia::render('documents/show', [
-            'document' => $document->load([
+            'document' => $document->fresh([
                 'matter:id,matter_number,title,legal_hold_at', 'client:id,client_number,display_name',
                 'creator:id,name', 'versions.uploader:id,name',
                 'approvals.reviewer:id,name', 'approvals.requester:id,name',

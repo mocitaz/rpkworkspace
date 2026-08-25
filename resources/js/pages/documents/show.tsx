@@ -659,19 +659,17 @@ export default function DocumentShow({
                                                         Dokumen telah selesai ditandatangani! Berkas PDF resmi telah dibubuhi QR Code sertifikasi dan stempel digital.
                                                     </p>
                                                     <div className="flex flex-wrap gap-2 text-xs pt-1">
-                                                        {request.signed_final_path && request.signed_final_status === 'completed' && (
-                                                            <a
-                                                                href={signatureArtifactRoutes.signedFinal.url(request.id)}
-                                                                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 font-bold text-white shadow-2xs hover:bg-emerald-700"
-                                                            >
-                                                                <Download className="size-3.5" />
-                                                                Unduh Signed-Final PDF (QR Code)
-                                                            </a>
-                                                        )}
+                                                        <a
+                                                            href={signatureArtifactRoutes.signedFinal.url(request.id)}
+                                                            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-95 transition-all"
+                                                        >
+                                                            <Download className="size-3.5" />
+                                                            Unduh Berkas PDF (Dibubuhi TTD &amp; QR Code)
+                                                        </a>
                                                         {request.certificate_path && (
                                                             <a
                                                                 href={signatureArtifactRoutes.certificate.url(request.id)}
-                                                                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200 active:scale-95 transition-all"
                                                             >
                                                                 <FileCheck className="size-3.5 text-blue-600" />
                                                                 Unduh Sertifikat PDF

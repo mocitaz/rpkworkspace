@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\GenerateSignedFinalPdf;
 use App\Models\SignatureRequest;
 use App\Services\AuditService;
 use Illuminate\Http\Request;
@@ -23,6 +24,11 @@ class SignatureArtifactController extends Controller
 
     public function signedFinal(Request $request, SignatureRequest $signatureRequest, AuditService $audit): StreamedResponse
     {
+        if ($signatureRequest->status === 'completed' && ($signatureRequest->signed_final_status !== 'completed' || empty($signatureRequest->signed_final_path) || ! Storage::disk((string) $signatureRequest->signed_final_disk)->exists((string) $signatureRequest->signed_final_path))) {
+            app(GenerateSignedFinalPdf::class)->handle($signatureRequest);
+            $signatureRequest->refresh();
+        }
+
         return $this->download($request, $signatureRequest, 'signed_final', 'signed-final', $audit);
     }
 

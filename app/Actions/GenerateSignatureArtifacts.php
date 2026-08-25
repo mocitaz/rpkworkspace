@@ -37,7 +37,7 @@ class GenerateSignatureArtifacts
 
         $signatureRequest->update([
             'signed_final_status' => 'queued',
-            'signed_final_message' => 'Signed-final PDF sedang diproses di background.',
+            'signed_final_message' => 'Signed-final PDF sedang diproses.',
             'signed_final_started_at' => null,
             'signed_final_completed_at' => null,
         ]);
