@@ -3,7 +3,6 @@
 namespace App\Actions;
 
 use App\Models\SignatureRequest;
-use App\Services\PdfRenderer;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Storage;
@@ -36,18 +35,14 @@ class GenerateSignedFinalPdf
             $pdfPath = $this->asPdf($sourcePath, $version->original_filename);
 
             $signedPdf = null;
-            if ($pdfPath !== null) {
-                try {
-                    $signedPdf = $this->stamp($pdfPath, $signatureRequest);
-                } catch (\Throwable) {
-                    $signedPdf = null;
-                }
+            if ($pdfPath === null) {
+                return $this->unavailable($signatureRequest, 'Konversi dokumen sumber ke PDF tidak tersedia.');
             }
 
-            if ($signedPdf === null) {
-                $signedPdf = app(PdfRenderer::class)->render('pdf.signature-record', [
-                    'signatureRequest' => $signatureRequest,
-                ]);
+            try {
+                $signedPdf = $this->stamp($pdfPath, $signatureRequest);
+            } catch (\Throwable $e) {
+                return $this->unavailable($signatureRequest, 'Gagal menyematkan tanda tangan ke berkas PDF: '.$e->getMessage());
             }
 
             $disk = (string) config('raf.documents.disk', 'local');
