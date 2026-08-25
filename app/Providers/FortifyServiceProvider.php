@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
@@ -44,15 +45,38 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
         Fortify::authenticateUsing(function (Request $request) {
-            $user = User::query()->where('email', $request->string('email')->lower())->first();
+            $email = $request->string('email')->lower()->trim()->toString();
+            $password = $request->string('password')->toString();
 
-            if ($user && $user->is_active && Hash::check($request->string('password'), $user->password)) {
-                $request->session()->put('auth.password_confirmed_at', time());
-
-                return $user;
+            if (empty($email)) {
+                throw ValidationException::withMessages([
+                    'email' => ['Alamat email wajib diisi.'],
+                ]);
             }
 
-            return null;
+            $user = User::query()->where('email', $email)->first();
+
+            if (! $user) {
+                throw ValidationException::withMessages([
+                    'email' => ['Alamat email ini belum terdaftar di sistem. Silakan periksa kembali.'],
+                ]);
+            }
+
+            if (! $user->is_active) {
+                throw ValidationException::withMessages([
+                    'email' => ['Akun Anda berstatus non-aktif. Silakan hubungi Administrator untuk mengaktifkan akun.'],
+                ]);
+            }
+
+            if (! Hash::check($password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'password' => ['Kata sandi yang Anda masukkan salah. Periksa tombol Caps Lock atau coba lagi.'],
+                ]);
+            }
+
+            $request->session()->put('auth.password_confirmed_at', time());
+
+            return $user;
         });
     }
 

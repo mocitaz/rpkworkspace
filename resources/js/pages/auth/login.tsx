@@ -1,12 +1,5 @@
 import { Form, Head } from '@inertiajs/react';
-import {
-    AlertCircle,
-    AlertTriangle,
-    CheckCircle2,
-    Fingerprint,
-    Lock,
-    Mail,
-} from 'lucide-react';
+import { Lock, Mail } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import InputError from '@/components/input-error';
 import PasskeyVerify from '@/components/passkey-verify';
@@ -27,84 +20,23 @@ type Props = {
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-function formatAuthErrorMessage(msg?: string): string {
-    if (!msg) {
-        return 'Email atau kata sandi yang Anda masukkan salah. Silakan periksa kembali.';
-    }
-    if (
-        msg.includes('credentials do not match') ||
-        msg.includes('tidak cocok') ||
-        msg.includes('These credentials')
-    ) {
-        return 'Email atau kata sandi yang Anda masukkan tidak sesuai. Pastikan alamat email dan kata sandi sudah benar.';
-    }
-    if (
-        msg.includes('Too many login attempts') ||
-        msg.includes('terlalu banyak')
-    ) {
-        return 'Terlalu banyak percobaan masuk yang gagal. Demi keamanan akun, silakan tunggu beberapa saat sebelum mencoba kembali.';
-    }
-    if (msg.includes('email field is required') || msg.includes('email wajib')) {
-        return 'Alamat email wajib diisi.';
-    }
-    if (
-        msg.includes('password field is required') ||
-        msg.includes('password wajib')
-    ) {
-        return 'Kata sandi wajib diisi.';
-    }
-    return msg;
-}
-
-function getEmailFormatWarning(val: string): string | null {
-    const trimmed = val.trim();
-    if (!trimmed) {
-        return null;
-    }
-    if (/\s/.test(trimmed)) {
-        return 'Email tidak boleh mengandung spasi.';
-    }
-    if (!trimmed.includes('@')) {
-        return 'Format email harus menyertakan simbol "@" (contoh: nama@perusahaan.com).';
-    }
-    const [local, domain] = trimmed.split('@');
-    if (!local) {
-        return 'Ketik nama akun sebelum tanda "@".';
-    }
-    if (!domain) {
-        return 'Sertakan domain email setelah tanda "@" (contoh: @gmail.com atau @rpklawoffice.com).';
-    }
-    if (!domain.includes('.')) {
-        return 'Domain harus menyertakan tanda titik "." dan ekstensi (contoh: .com, .id).';
-    }
-    const parts = domain.split('.');
-    const ext = parts[parts.length - 1];
-    if (ext.length < 2) {
-        return 'Ekstensi domain belum lengkap (contoh: .com, .co.id, .id).';
-    }
-    if (!emailRegex.test(trimmed)) {
-        return 'Format email belum valid (contoh: nama@perusahaan.com).';
-    }
-    return null;
-}
-
 export default function Login({ status, canResetPassword }: Props) {
     const [email, setEmail] = useState('');
     const [emailTouched, setEmailTouched] = useState(false);
 
-    const emailWarning = useMemo(() => {
+    const emailFormatError = useMemo(() => {
         if (!emailTouched || !email) {
             return null;
         }
-        return getEmailFormatWarning(email);
-    }, [email, emailTouched]);
-
-    const isEmailValid = useMemo(() => {
-        if (!email) {
-            return false;
+        const trimmed = email.trim();
+        if (/\s/.test(trimmed)) {
+            return 'Email tidak boleh mengandung spasi.';
         }
-        return emailRegex.test(email.trim());
-    }, [email]);
+        if (!trimmed.includes('@') || !emailRegex.test(trimmed)) {
+            return 'Format email tidak valid (contoh: nama@perusahaan.com).';
+        }
+        return null;
+    }, [email, emailTouched]);
 
     return (
         <>
@@ -116,42 +48,14 @@ export default function Login({ status, canResetPassword }: Props) {
                 className="space-y-4"
             >
                 {({ processing, errors }) => {
-                    const hasAuthError = Boolean(errors.email || errors.password);
-                    const authErrorMessage = formatAuthErrorMessage(
-                        errors.email || errors.password,
-                    );
+                    const emailErrorMessage = errors.email || emailFormatError;
 
                     return (
                         <>
-                            {/* Alert Banner Autentikasi Gagal */}
-                            {hasAuthError && (
-                                <div className="flex items-start gap-2.5 rounded-xl border border-rose-200/90 bg-rose-50/90 p-3 text-xs text-rose-900 shadow-2xs dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-200">
-                                    <AlertTriangle className="mt-0.5 size-4 shrink-0 text-rose-600 dark:text-rose-400" />
-                                    <div className="flex-1 space-y-0.5">
-                                        <p className="font-bold text-rose-950 dark:text-rose-200">
-                                            Autentikasi Gagal
-                                        </p>
-                                        <p className="text-[11px] leading-relaxed text-rose-700 dark:text-rose-300/90">
-                                            {authErrorMessage}
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Email Input with Prepended Icon & Format Detection */}
-                            <div className="space-y-1.5">
+                            {/* Email Input */}
+                            <div className="space-y-1">
                                 <div className="relative flex items-center">
-                                    <Mail
-                                        className={`pointer-events-none absolute left-3.5 size-4 transition-colors ${
-                                            errors.email
-                                                ? 'text-rose-500'
-                                                : emailWarning
-                                                  ? 'text-amber-500'
-                                                  : isEmailValid && emailTouched
-                                                    ? 'text-emerald-500'
-                                                    : 'text-slate-400 dark:text-zinc-500'
-                                        }`}
-                                    />
+                                    <Mail className="pointer-events-none absolute left-3.5 size-4 text-slate-400 dark:text-zinc-500" />
                                     <Input
                                         id="email"
                                         type="email"
@@ -159,62 +63,31 @@ export default function Login({ status, canResetPassword }: Props) {
                                         value={email}
                                         onChange={(e) => {
                                             setEmail(e.target.value);
-                                            if (!emailTouched) {
+                                        }}
+                                        onBlur={() => {
+                                            if (email.length > 0) {
                                                 setEmailTouched(true);
                                             }
                                         }}
-                                        onBlur={() => setEmailTouched(true)}
                                         required
                                         autoFocus
                                         tabIndex={1}
                                         autoComplete="email"
                                         placeholder="Email Address"
-                                        className={`h-11 rounded-xl bg-[#f8fafc] pl-10 pr-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 transition-all dark:bg-white/[0.03] dark:text-white ${
-                                            errors.email
-                                                ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20 dark:border-rose-800'
-                                                : emailWarning
-                                                  ? 'border-amber-300 focus:border-amber-500 focus:ring-amber-500/20 dark:border-amber-700'
-                                                  : isEmailValid && emailTouched
-                                                    ? 'border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500/20 dark:border-emerald-800'
-                                                    : 'border-slate-200/80 focus:border-blue-600 focus:bg-white dark:border-white/10'
+                                        className={`h-11 rounded-xl bg-[#f8fafc] pl-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 transition-colors focus:bg-white dark:bg-white/[0.03] dark:text-white ${
+                                            emailErrorMessage
+                                                ? 'border-red-300 focus:border-red-500 dark:border-red-800'
+                                                : 'border-slate-200/80 focus:border-blue-600 dark:border-white/10'
                                         }`}
                                     />
-                                    {isEmailValid && emailTouched && !errors.email && (
-                                        <CheckCircle2 className="pointer-events-none absolute right-3.5 size-4 text-emerald-500" />
-                                    )}
-                                    {emailWarning && !errors.email && (
-                                        <AlertCircle className="pointer-events-none absolute right-3.5 size-4 text-amber-500" />
-                                    )}
                                 </div>
-
-                                {/* Peringatan Format Email Saat Mengetik */}
-                                {emailWarning && !errors.email && (
-                                    <div className="flex items-center gap-1.5 rounded-lg border border-amber-200/80 bg-amber-50/90 px-2.5 py-1 text-[11px] font-medium text-amber-700 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-300">
-                                        <AlertCircle className="size-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
-                                        <span>{emailWarning}</span>
-                                    </div>
-                                )}
-
-                                {isEmailValid && emailTouched && !errors.email && !hasAuthError && (
-                                    <div className="flex items-center gap-1 text-[10.5px] font-medium text-emerald-600 dark:text-emerald-400">
-                                        <CheckCircle2 className="size-3" />
-                                        <span>Format email siap digunakan</span>
-                                    </div>
-                                )}
-
-                                <InputError message={errors.email} />
+                                <InputError message={emailErrorMessage ?? undefined} />
                             </div>
 
-                            {/* Password Input with Prepended Icon */}
-                            <div className="space-y-1.5">
+                            {/* Password Input */}
+                            <div className="space-y-1">
                                 <div className="relative w-full">
-                                    <Lock
-                                        className={`pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 z-10 transition-colors ${
-                                            errors.password || (hasAuthError && !errors.email)
-                                                ? 'text-rose-500'
-                                                : 'text-slate-400 dark:text-zinc-500'
-                                        }`}
-                                    />
+                                    <Lock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 dark:text-zinc-500 z-10" />
                                     <PasswordInput
                                         id="password"
                                         name="password"
@@ -222,10 +95,10 @@ export default function Login({ status, canResetPassword }: Props) {
                                         tabIndex={2}
                                         autoComplete="current-password"
                                         placeholder="Password"
-                                        className={`h-11 w-full rounded-xl bg-[#f8fafc] pl-10 pr-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 transition-all dark:bg-white/[0.03] dark:text-white ${
-                                            errors.password || (hasAuthError && !errors.email)
-                                                ? 'border-rose-300 focus:border-rose-500 focus:ring-rose-500/20 dark:border-rose-800'
-                                                : 'border-slate-200/80 focus:border-blue-600 focus:bg-white dark:border-white/10'
+                                        className={`h-11 w-full rounded-xl bg-[#f8fafc] pl-10 pr-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 transition-colors focus:bg-white dark:bg-white/[0.03] dark:text-white ${
+                                            errors.password
+                                                ? 'border-red-300 focus:border-red-500 dark:border-red-800'
+                                                : 'border-slate-200/80 focus:border-blue-600 dark:border-white/10'
                                         }`}
                                     />
                                 </div>
