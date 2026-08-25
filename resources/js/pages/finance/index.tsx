@@ -142,26 +142,26 @@ export default function FinanceIndex({
         <>
             <Head title="Keuangan & Billing Operasional - RPK Legal Workspace" />
 
-            <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
-                <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+            <div className="min-h-screen bg-[#fafafc] pb-16 dark:bg-[#0c0d10]">
+                <main className="mx-auto max-w-7xl space-y-3.5 px-4 py-3.5 sm:px-6 lg:px-8">
                     {/* 1. Header & Actions */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
-                        <div className="space-y-1">
-                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                    <div className="flex flex-col justify-between gap-3 border-b border-slate-200/60 pb-3 sm:flex-row sm:items-center dark:border-white/[0.06]">
+                        <div className="space-y-0.5">
+                            <h1 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
                                 Keuangan &amp; Billing Operasional
                             </h1>
-                            <p className="text-xs text-slate-500 dark:text-zinc-400">
+                            <p className="text-[11px] text-slate-500 sm:text-xs dark:text-zinc-400">
                                 Manajemen invoice tagihan klien, quotation tarif perkara, pengeluaran (disbursement), dan arus kas firma.
                             </p>
                         </div>
 
                         {/* Right: Actions */}
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-1.5">
                             {can.quotation && (
                                 <Button
                                     variant="outline"
                                     onClick={() => setModal('quotation')}
-                                    className="h-8 rounded-lg border-slate-200/70 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                    className="h-7.5 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
                                 >
                                     <FilePlus2 className="mr-1 size-3.5 text-blue-600 dark:text-blue-400" />
                                     Quotation
@@ -171,7 +171,7 @@ export default function FinanceIndex({
                                 <Button
                                     variant="outline"
                                     onClick={() => setModal('expense')}
-                                    className="h-8 rounded-lg border-slate-200/70 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                    className="h-7.5 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
                                 >
                                     <WalletCards className="mr-1 size-3.5 text-rose-600 dark:text-rose-400" />
                                     Catat Biaya
@@ -181,7 +181,7 @@ export default function FinanceIndex({
                                 <Button
                                     variant="outline"
                                     onClick={() => setModal('payment')}
-                                    className="h-8 rounded-lg border-slate-200/70 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                    className="h-7.5 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
                                 >
                                     <Banknote className="mr-1 size-3.5 text-emerald-600 dark:text-emerald-400" />
                                     Pembayaran
@@ -190,7 +190,7 @@ export default function FinanceIndex({
                             {can.invoice && (
                                 <Button
                                     onClick={() => setModal('invoice')}
-                                    className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                                    className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                 >
                                     <ReceiptText className="mr-1 size-3.5" />
                                     Buat Invoice
@@ -202,7 +202,7 @@ export default function FinanceIndex({
                     {/* Filter / Matter Selector Bar */}
                     <Form
                         {...financeRoutes.index.form()}
-                        className="flex flex-col gap-2.5 rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:flex-row sm:items-center dark:border-white/[0.06] dark:bg-[#14161b]"
+                        className="flex flex-col gap-2 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs sm:flex-row sm:items-center dark:border-white/[0.06] dark:bg-[#14161b]"
                     >
                         <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
                             <FolderKanban className="size-3.5 shrink-0" />
@@ -212,7 +212,7 @@ export default function FinanceIndex({
                             <select
                                 name="matter_id"
                                 defaultValue={selectedMatterId}
-                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                className="h-7.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                             >
                                 <option value="">
                                     Semua Lingkup Perkara (Ringkasan Finansial Global)
@@ -229,7 +229,7 @@ export default function FinanceIndex({
                         <Button
                             type="submit"
                             size="sm"
-                            className="h-8 w-full shrink-0 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white hover:bg-slate-800 sm:w-auto dark:bg-white dark:text-slate-900"
+                            className="h-7.5 w-full shrink-0 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white hover:bg-slate-800 sm:w-auto dark:bg-white dark:text-slate-900"
                         >
                             Filter Ringkasan
                         </Button>
@@ -237,38 +237,38 @@ export default function FinanceIndex({
 
                     {/* Bento Metric Cards */}
                     {overview ? (
-                        <div className="space-y-3">
+                        <div className="space-y-2.5">
                             {/* Primary 4 Financial Metrics */}
-                            <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                            <section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
                                 {/* 1. Invoice Diterbitkan */}
-                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                        <span className="text-[11px] font-semibold">TOTAL TAGIHAN</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider">TOTAL TAGIHAN</span>
                                         <Receipt className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                                     </div>
-                                    <div className="mt-2 flex items-baseline justify-between">
-                                        <span className="font-mono text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                    <div className="mt-1.5 flex items-baseline justify-between">
+                                        <span className="font-mono text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                                             {formatMoney(overview.invoiced_amount, currency)}
                                         </span>
                                     </div>
-                                    <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                    <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
                                         <span>Invoice Diterbitkan</span>
                                         <span className="font-semibold text-blue-600 dark:text-blue-400">Aktif</span>
                                     </div>
                                 </div>
 
                                 {/* 2. Pembayaran Diterima (Total Kas Masuk) */}
-                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                        <span className="text-[11px] font-semibold">TOTAL KAS MASUK</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider">TOTAL KAS MASUK</span>
                                         <Banknote className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                                     </div>
-                                    <div className="mt-2 flex items-baseline justify-between">
-                                        <span className="font-mono text-xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+                                    <div className="mt-1.5 flex items-baseline justify-between">
+                                        <span className="font-mono text-lg sm:text-xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
                                             {formatMoney(overview.total_cash_inflow ?? overview.payment_received_amount, currency)}
                                         </span>
                                     </div>
-                                    <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 dark:border-white/[0.04]">
+                                    <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
                                         <span className="truncate">
                                             Teralokasi: {formatMoney(overview.payment_received_amount, currency)}
                                             {(overview.unallocated_payment_amount ?? 0) > 0 && (
@@ -282,34 +282,34 @@ export default function FinanceIndex({
                                 </div>
 
                                 {/* 3. Piutang Berjalan */}
-                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                        <span className="text-[11px] font-semibold">PIUTANG (OUTSTANDING)</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider">PIUTANG (OUTSTANDING)</span>
                                         <CalendarClock className="size-3.5 text-amber-500 dark:text-amber-400" />
                                     </div>
-                                    <div className="mt-2 flex items-baseline justify-between">
-                                        <span className="font-mono text-xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
+                                    <div className="mt-1.5 flex items-baseline justify-between">
+                                        <span className="font-mono text-lg sm:text-xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
                                             {formatMoney(overview.receivable_amount, currency)}
                                         </span>
                                     </div>
-                                    <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                    <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
                                         <span>Belum Dilunasi</span>
                                         <span className="font-semibold text-amber-600 dark:text-amber-400">Berjalan</span>
                                     </div>
                                 </div>
 
                                 {/* 4. Net Margin */}
-                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                        <span className="text-[11px] font-semibold">MARGIN &amp; PROFIT</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider">MARGIN &amp; PROFIT</span>
                                         <DollarSign className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                                     </div>
-                                    <div className="mt-2 flex items-baseline justify-between">
-                                        <span className="font-mono text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                    <div className="mt-1.5 flex items-baseline justify-between">
+                                        <span className="font-mono text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
                                             {formatMoney(overview.margin_amount, currency)}
                                         </span>
                                     </div>
-                                    <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                                    <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
                                         <span>Net Margin</span>
                                         <span className="font-semibold text-slate-700 dark:text-zinc-300">Setelah Biaya</span>
                                     </div>
@@ -317,33 +317,33 @@ export default function FinanceIndex({
                             </section>
 
                             {/* Secondary Operational Metrics Bar */}
-                            <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <p className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                            <section className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
                                         Anggaran (Budget)
                                     </p>
                                     <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
                                         {formatMoney(overview.budget_amount, currency)}
                                     </p>
                                 </div>
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <p className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
                                         Biaya Perkara (Expense)
                                     </p>
                                     <p className="mt-0.5 font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
                                         {formatMoney(overview.expense_amount, currency)}
                                     </p>
                                 </div>
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <p className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
                                         Quotation Diajukan
                                     </p>
                                     <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
                                         {formatMoney(overview.quotation_amount, currency)}
                                     </p>
                                 </div>
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <p className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
                                         Lewat Jatuh Tempo
                                     </p>
                                     <p className="mt-0.5 font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
@@ -354,9 +354,9 @@ export default function FinanceIndex({
 
                             {/* Aging Analysis Breakdown Bar */}
                             {overview.aging && (
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="mb-2.5 flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="mb-2 flex items-center justify-between">
+                                        <div className="flex items-center gap-1.5">
                                             <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-slate-700 uppercase dark:bg-zinc-800 dark:text-zinc-300">
                                                 AGING REPORT
                                             </span>
@@ -365,7 +365,7 @@ export default function FinanceIndex({
                                             </h3>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+                                    <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-5">
                                         {[
                                             [
                                                 'Belum Jatuh Tempo',
@@ -400,9 +400,9 @@ export default function FinanceIndex({
                                         ].map(([label, val, textCls, cardCls]) => (
                                             <div
                                                 key={String(label)}
-                                                className={`rounded-lg border p-2.5 ${cardCls}`}
+                                                className={`rounded-lg border p-2 ${cardCls}`}
                                             >
-                                                <p className="truncate text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                <p className="truncate text-[9.5px] font-semibold text-slate-500 dark:text-zinc-400">
                                                     {label}
                                                 </p>
                                                 <p className={`mt-0.5 font-mono text-xs font-bold ${textCls}`}>
@@ -415,7 +415,7 @@ export default function FinanceIndex({
                             )}
                         </div>
                     ) : (
-                        <div className="flex min-h-[200px] items-center justify-center rounded-xl border border-slate-200/70 bg-white p-6 text-center shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="flex min-h-[160px] items-center justify-center rounded-xl border border-slate-200/70 bg-white p-5 text-center shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                             <EmptyState
                                 title="Pilih perkara untuk melihat ringkasan keuangan"
                                 description="Pilih perkara melalui menu di atas untuk menampilkan rincian budget, invoice, dan penerimaan."
@@ -424,11 +424,11 @@ export default function FinanceIndex({
                     )}
 
                     {/* Segmented Tab Navigation for Ledgers */}
-                    <div className="flex items-center gap-1.5 overflow-x-auto border-b border-slate-200/60 pb-2.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden dark:border-white/[0.06]">
+                    <div className="flex items-center gap-1 overflow-x-auto border-b border-slate-200/60 pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden dark:border-white/[0.06]">
                         <button
                             type="button"
                             onClick={() => setActiveTab('all')}
-                            className={`flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
                                 activeTab === 'all'
                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                     : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
@@ -440,7 +440,7 @@ export default function FinanceIndex({
                         <button
                             type="button"
                             onClick={() => setActiveTab('invoices')}
-                            className={`flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
                                 activeTab === 'invoices'
                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                     : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
@@ -452,7 +452,7 @@ export default function FinanceIndex({
                         <button
                             type="button"
                             onClick={() => setActiveTab('quotations')}
-                            className={`flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
                                 activeTab === 'quotations'
                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                     : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
@@ -464,7 +464,7 @@ export default function FinanceIndex({
                         <button
                             type="button"
                             onClick={() => setActiveTab('expenses')}
-                            className={`flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
                                 activeTab === 'expenses'
                                     ? 'bg-rose-600 text-white shadow-2xs'
                                     : 'border border-slate-200/70 bg-white text-rose-700 hover:bg-rose-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-rose-400'
@@ -476,7 +476,7 @@ export default function FinanceIndex({
                         <button
                             type="button"
                             onClick={() => setActiveTab('payments')}
-                            className={`flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
                                 activeTab === 'payments'
                                     ? 'bg-emerald-600 text-white shadow-2xs'
                                     : 'border border-slate-200/70 bg-white text-emerald-700 hover:bg-emerald-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-emerald-400'
@@ -488,7 +488,7 @@ export default function FinanceIndex({
                     </div>
 
                     {/* 4 Ledgers Grid */}
-                    <div className="grid gap-4 lg:grid-cols-2">
+                    <div className="grid gap-3 lg:grid-cols-2">
                         {/* 1. Invoice Terbaru */}
                         {(activeTab === 'all' || activeTab === 'invoices') && (
                             <div className={activeTab === 'invoices' ? 'lg:col-span-2' : ''}>
@@ -648,33 +648,33 @@ function Ledger({
     }, [items, searchQuery]);
 
     return (
-        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-3 sm:p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3 dark:border-white/[0.04]">
-                <div className="flex items-center gap-2.5">
-                    <div className={`flex size-8 shrink-0 items-center justify-center rounded-lg ${iconBg}`}>
-                        <IconComp className="size-4" />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                <div className="flex items-center gap-2">
+                    <div className={`flex size-7 shrink-0 items-center justify-center rounded-lg ${iconBg}`}>
+                        <IconComp className="size-3.5" />
                     </div>
                     <div>
-                        <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                        <h3 className="text-xs font-bold text-slate-900 dark:text-white">
                             {title}
                         </h3>
-                        <p className="text-[10.5px] text-slate-400 dark:text-zinc-500">
+                        <p className="text-[10px] text-slate-400 dark:text-zinc-500">
                             Log transaksi &amp; status pembukuan keuangan
                         </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10.5px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                <div className="flex items-center gap-1.5">
+                    <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
                         {items.length} entri
                     </span>
                     {canCreate && onCreate && (
                         <Button
                             size="sm"
                             onClick={onCreate}
-                            className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                            className="h-7 rounded-lg bg-slate-900 px-2.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                         >
-                            <Plus className="mr-1 size-3.5" />
+                            <Plus className="mr-1 size-3" />
                             {actionLabel ? actionLabel.replace('Baru', '').trim() : 'Tambah'}
                         </Button>
                     )}
@@ -682,60 +682,60 @@ function Ledger({
             </div>
 
             {/* Quick Search Toolbar */}
-            <div className="my-3 flex gap-2">
+            <div className="my-2.5 flex gap-1.5">
                 <div className="relative flex-1">
                     <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                     <Input
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder={`Cari nomor, perihal, atau perkara ${title.toLowerCase()}...`}
-                        className="h-8 rounded-lg border-slate-200/80 bg-slate-50/50 pl-8 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-100"
+                        className="h-7.5 rounded-lg border-slate-200/80 bg-slate-50/50 pl-8 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-100"
                     />
                 </div>
                 {searchQuery && (
                     <button
                         type="button"
                         onClick={() => setSearchQuery('')}
-                        className="flex h-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                        className="flex h-7.5 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white px-2 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
                         title="Reset Pencarian"
                     >
-                        <RotateCcw className="size-3.5 text-slate-400" />
+                        <RotateCcw className="size-3 text-slate-400" />
                     </button>
                 )}
             </div>
 
             {/* Feed List */}
-            <div className="mt-1">
+            <div className="mt-0.5">
                 {filteredItems.length > 0 ? (
-                    <div className="max-h-[520px] overflow-y-auto space-y-2 pr-1">
+                    <div className="max-h-[460px] overflow-y-auto space-y-1.5 pr-1">
                         {filteredItems.map((i) => (
                             <div
                                 key={i.id}
-                                className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50/20 hover:shadow-xs dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-white/10 dark:hover:bg-white/[0.02]"
+                                className="group flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-xl border border-slate-200/70 bg-white p-2.5 sm:p-3 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50/20 hover:shadow-xs dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-white/10 dark:hover:bg-white/[0.02]"
                             >
-                                <div className="flex items-start gap-3 min-w-0 flex-1">
+                                <div className="flex items-start gap-2.5 min-w-0 flex-1">
                                     <div
-                                        className={`mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl border transition-transform group-hover:scale-105 ${iconBg} border-slate-200/60 dark:border-white/10`}
+                                        className={`mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg border transition-transform group-hover:scale-105 ${iconBg} border-slate-200/60 dark:border-white/10`}
                                     >
-                                        <IconComp className="size-4" />
+                                        <IconComp className="size-3.5" />
                                     </div>
 
-                                    <div className="min-w-0 flex-1 space-y-1">
-                                        <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
+                                    <div className="min-w-0 flex-1 space-y-0.5">
+                                        <div className="flex flex-wrap items-center gap-1 text-[9.5px]">
                                             {i.matter?.matter_number && (
-                                                <span className="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
+                                                <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
                                                     {i.matter.matter_number}
                                                 </span>
                                             )}
                                             <StatusBadge value={i.status} />
                                             {i.category && (
-                                                <span className="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600 capitalize dark:bg-zinc-800 dark:text-zinc-400">
+                                                <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600 capitalize dark:bg-zinc-800 dark:text-zinc-400">
                                                     {i.category}
                                                 </span>
                                             )}
                                         </div>
 
-                                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white line-clamp-1">
+                                        <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
                                             {i.invoice_number ? (
                                                 <Link
                                                     href={invoiceRoutes.show.url(i.id)}
@@ -748,7 +748,7 @@ function Ledger({
                                             )}
                                         </h4>
 
-                                        <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-slate-500 dark:text-zinc-400">
+                                        <div className="flex flex-wrap items-center gap-x-1.5 text-[10.5px] text-slate-500 dark:text-zinc-400">
                                             {i.matter?.title && (
                                                 <span className="truncate max-w-[260px] font-medium text-slate-600 dark:text-zinc-300">
                                                     {i.matter.title}
@@ -766,8 +766,8 @@ function Ledger({
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between sm:flex-col sm:items-end sm:justify-center gap-1.5 shrink-0 pl-11 sm:pl-0 border-t sm:border-t-0 border-slate-100 pt-2 sm:pt-0 dark:border-white/[0.04]">
-                                    <span className="font-mono text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                                <div className="flex items-center justify-between sm:flex-col sm:items-end sm:justify-center gap-1 shrink-0 pl-9.5 sm:pl-0 border-t sm:border-t-0 border-slate-100 pt-1.5 sm:pt-0 dark:border-white/[0.04]">
+                                    <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
                                         {formatMoney(value(i), i.currency || currency)}
                                     </span>
 
@@ -776,7 +776,7 @@ function Ledger({
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="size-7 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                                className="size-6.5 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
                                                 asChild
                                             >
                                                 <a
@@ -794,7 +794,7 @@ function Ledger({
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="size-7 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                                className="size-6.5 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
                                                 asChild
                                             >
                                                 <a
@@ -815,7 +815,7 @@ function Ledger({
                                                     <input type="hidden" name="status" value="sent" />
                                                     <Button
                                                         size="sm"
-                                                        className="h-7 rounded-lg bg-slate-900 px-2.5 text-[10.5px] font-semibold text-white hover:bg-black dark:bg-white dark:text-slate-900"
+                                                        className="h-6.5 rounded-lg bg-slate-900 px-2 text-[10px] font-semibold text-white hover:bg-black dark:bg-white dark:text-slate-900"
                                                     >
                                                         Kirim
                                                     </Button>
@@ -830,7 +830,7 @@ function Ledger({
                                                     size="sm"
                                                     variant="ghost"
                                                     onClick={() => onCancel?.(i)}
-                                                    className="h-7 rounded-lg text-[10.5px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
+                                                    className="h-6.5 rounded-lg text-[10px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
                                                 >
                                                     Batal
                                                 </Button>
@@ -842,7 +842,7 @@ function Ledger({
                                                 <Form {...quotationRoutes.approve.form(i.id)}>
                                                     <Button
                                                         size="sm"
-                                                        className="h-7 rounded-lg bg-emerald-600 px-2.5 text-[10.5px] font-semibold text-white hover:bg-emerald-700"
+                                                        className="h-6.5 rounded-lg bg-emerald-600 px-2 text-[10px] font-semibold text-white hover:bg-emerald-700"
                                                     >
                                                         Setujui
                                                     </Button>
@@ -854,14 +854,14 @@ function Ledger({
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-                        <div className="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                            <IconComp className="size-5" />
+                    <div className="flex flex-col items-center justify-center py-8 px-3 text-center">
+                        <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
+                            <IconComp className="size-4.5" />
                         </div>
-                        <p className="mt-3 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                        <p className="mt-2.5 text-xs font-bold text-slate-800 dark:text-zinc-200">
                             {searchQuery ? 'Tidak Ada Hasil Pencarian' : emptyTitle}
                         </p>
-                        <p className="mt-1 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                        <p className="mt-0.5 text-[10.5px] text-slate-400 dark:text-zinc-500 max-w-xs">
                             {searchQuery
                                 ? 'Sesuaikan kata kunci pencarian Anda.'
                                 : emptyDescription}
@@ -871,9 +871,9 @@ function Ledger({
                                 variant="outline"
                                 size="sm"
                                 onClick={onCreate}
-                                className="mt-3.5 h-8 rounded-lg text-xs font-semibold text-slate-900 border-slate-200 hover:bg-slate-50 dark:border-white/10 dark:text-white dark:hover:bg-zinc-800"
+                                className="mt-3 h-7.5 rounded-lg text-xs font-semibold text-slate-900 border-slate-200 hover:bg-slate-50 dark:border-white/10 dark:text-white dark:hover:bg-zinc-800"
                             >
-                                <Plus className="mr-1 size-3.5" /> {actionLabel || `Buat ${title.split(' ')[0]} Baru`}
+                                <Plus className="mr-1 size-3" /> {actionLabel || `Buat ${title.split(' ')[0]} Baru`}
                             </Button>
                         )}
                     </div>
@@ -921,33 +921,33 @@ function PaymentLedger({
     }, [items, searchQuery]);
 
     return (
-        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-3 sm:p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3 dark:border-white/[0.04]">
-                <div className="flex items-center gap-2.5">
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
-                        <Banknote className="size-4" />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                <div className="flex items-center gap-2">
+                    <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+                        <Banknote className="size-3.5" />
                     </div>
                     <div>
-                        <h3 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white">
+                        <h3 className="text-xs font-bold text-slate-900 dark:text-white">
                             Riwayat Penerimaan Pembayaran
                         </h3>
-                        <p className="text-[10.5px] text-slate-400 dark:text-zinc-500">
+                        <p className="text-[10px] text-slate-400 dark:text-zinc-500">
                             Log transfer kas masuk, pelunasan invoice &amp; deposit klien
                         </p>
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10.5px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                <div className="flex items-center gap-1.5">
+                    <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
                         {items.length} pembayaran
                     </span>
                     {canManage && onCreate && (
                         <Button
                             size="sm"
                             onClick={onCreate}
-                            className="h-7.5 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-emerald-700"
+                            className="h-7 rounded-lg bg-emerald-600 px-2.5 text-xs font-semibold text-white shadow-2xs hover:bg-emerald-700"
                         >
-                            <Plus className="mr-1 size-3.5" />
+                            <Plus className="mr-1 size-3" />
                             Catat Kas
                         </Button>
                     )}
@@ -955,50 +955,50 @@ function PaymentLedger({
             </div>
 
             {/* Quick Search Toolbar */}
-            <div className="my-3 flex gap-2">
+            <div className="my-2.5 flex gap-1.5">
                 <div className="relative flex-1">
                     <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                     <Input
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Cari perkara atau alokasi invoice pembayaran..."
-                        className="h-8 rounded-lg border-slate-200/80 bg-slate-50/50 pl-8 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-100"
+                        className="h-7.5 rounded-lg border-slate-200/80 bg-slate-50/50 pl-8 text-xs text-slate-900 focus:border-emerald-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-100"
                     />
                 </div>
                 {searchQuery && (
                     <button
                         type="button"
                         onClick={() => setSearchQuery('')}
-                        className="flex h-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                        className="flex h-7.5 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white px-2 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
                         title="Reset Pencarian"
                     >
-                        <RotateCcw className="size-3.5 text-slate-400" />
+                        <RotateCcw className="size-3 text-slate-400" />
                     </button>
                 )}
             </div>
 
             {/* Feed List */}
-            <div className="mt-1">
+            <div className="mt-0.5">
                 {filteredItems.length > 0 ? (
-                    <div className="max-h-[520px] overflow-y-auto space-y-2 pr-1">
+                    <div className="max-h-[460px] overflow-y-auto space-y-1.5 pr-1">
                         {filteredItems.map((payment) => (
                             <div
                                 key={payment.id}
-                                className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-emerald-300 hover:bg-emerald-50/20 hover:shadow-xs dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-emerald-800/50 dark:hover:bg-white/[0.02]"
+                                className="group flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-xl border border-slate-200/70 bg-white p-2.5 sm:p-3 shadow-2xs transition-all hover:border-emerald-300 hover:bg-emerald-50/20 hover:shadow-xs dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-emerald-800/50 dark:hover:bg-white/[0.02]"
                             >
-                                <div className="flex items-start gap-3 min-w-0 flex-1">
-                                    <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl border border-emerald-200/60 bg-emerald-50 text-emerald-600 transition-transform group-hover:scale-105 dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-400">
-                                        <Banknote className="size-4" />
+                                <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                                    <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg border border-emerald-200/60 bg-emerald-50 text-emerald-600 transition-transform group-hover:scale-105 dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-400">
+                                        <Banknote className="size-3.5" />
                                     </div>
 
-                                    <div className="min-w-0 flex-1 space-y-1">
-                                        <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
+                                    <div className="min-w-0 flex-1 space-y-0.5">
+                                        <div className="flex flex-wrap items-center gap-1 text-[9.5px]">
                                             {payment.matter?.matter_number && (
-                                                <span className="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
+                                                <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
                                                     {payment.matter.matter_number}
                                                 </span>
                                             )}
-                                            <span className="inline-flex items-center rounded-md bg-emerald-50 px-1.5 py-0.5 font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
+                                            <span className="inline-flex items-center rounded bg-emerald-50 px-1.5 py-0.5 font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
                                                 {payment.reversed_at
                                                     ? 'Dikoreksi'
                                                     : payment.refunded_at
@@ -1006,13 +1006,13 @@ function PaymentLedger({
                                                       : 'Tercatat Sah'}
                                             </span>
                                             {payment.received_at && (
-                                                <span className="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                                                <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
                                                     {formatDate(payment.received_at)}
                                                 </span>
                                             )}
                                         </div>
 
-                                        <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white line-clamp-1">
+                                        <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
                                             <Link
                                                 href={paymentRoutes.show.url(payment.id)}
                                                 className="transition-colors hover:text-emerald-600 dark:hover:text-emerald-400"
@@ -1021,7 +1021,7 @@ function PaymentLedger({
                                             </Link>
                                         </h4>
 
-                                        <div className="flex flex-wrap items-center gap-x-2 text-[11px] text-slate-500 dark:text-zinc-400">
+                                        <div className="flex flex-wrap items-center gap-x-1.5 text-[10.5px] text-slate-500 dark:text-zinc-400">
                                             <span>
                                                 {payment.matter?.title
                                                     ? payment.matter.title
@@ -1039,20 +1039,20 @@ function PaymentLedger({
                                         </div>
 
                                         {payment.reversed_at && (
-                                            <p className="mt-0.5 text-[10px] font-semibold text-rose-600 dark:text-rose-400">
+                                            <p className="mt-0.5 text-[9.5px] font-semibold text-rose-600 dark:text-rose-400">
                                                 Dikoreksi: {payment.reversal_reason}
                                             </p>
                                         )}
                                         {payment.refunded_at && (
-                                            <p className="mt-0.5 text-[10px] font-semibold text-rose-600 dark:text-rose-400">
+                                            <p className="mt-0.5 text-[9.5px] font-semibold text-rose-600 dark:text-rose-400">
                                                 Direfund: {payment.refund_reason}
                                             </p>
                                         )}
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between sm:flex-col sm:items-end sm:justify-center gap-1.5 shrink-0 pl-11 sm:pl-0 border-t sm:border-t-0 border-slate-100 pt-2 sm:pt-0 dark:border-white/[0.04]">
-                                    <span className="font-mono text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                                <div className="flex items-center justify-between sm:flex-col sm:items-end sm:justify-center gap-1 shrink-0 pl-9.5 sm:pl-0 border-t sm:border-t-0 border-slate-100 pt-1.5 sm:pt-0 dark:border-white/[0.04]">
+                                    <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
                                         {formatMoney(payment.amount ?? 0, payment.currency || currency)}
                                     </span>
 
@@ -1083,14 +1083,14 @@ function PaymentLedger({
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-                        <div className="flex size-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
-                            <Banknote className="size-5" />
+                    <div className="flex flex-col items-center justify-center py-8 px-3 text-center">
+                        <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+                            <Banknote className="size-4.5" />
                         </div>
-                        <p className="mt-3 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                        <p className="mt-2.5 text-xs font-bold text-slate-800 dark:text-zinc-200">
                             {searchQuery ? 'Tidak Ada Hasil Pencarian' : emptyTitle}
                         </p>
-                        <p className="mt-1 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                        <p className="mt-0.5 text-[10.5px] text-slate-400 dark:text-zinc-500 max-w-xs">
                             {searchQuery
                                 ? 'Sesuaikan kata kunci pencarian Anda.'
                                 : emptyDescription}
@@ -1100,9 +1100,9 @@ function PaymentLedger({
                                 variant="outline"
                                 size="sm"
                                 onClick={onCreate}
-                                className="mt-3.5 h-8 rounded-lg text-xs font-semibold text-emerald-600 border-emerald-200 hover:bg-emerald-50 dark:border-emerald-900/40 dark:text-emerald-400"
+                                className="mt-3 h-7.5 rounded-lg text-xs font-semibold text-emerald-600 border-emerald-200 hover:bg-emerald-50 dark:border-emerald-900/40 dark:text-emerald-400"
                             >
-                                <Plus className="mr-1 size-3.5" /> Catat Kas Masuk
+                                <Plus className="mr-1 size-3" /> Catat Kas Masuk
                             </Button>
                         )}
                     </div>
