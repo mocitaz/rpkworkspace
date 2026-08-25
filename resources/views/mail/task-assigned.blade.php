@@ -13,7 +13,7 @@
 
 @section('content')
 <p style="margin: 0 0 16px 0; font-size: 14px; line-height: 22px; color: #475569;">
-    Anda telah ditugaskan oleh <strong>{{ $task->creator?->name ?? 'Managing Partner' }}</strong> untuk mengerjakan tugas berikut:
+    Anda telah ditugaskan oleh <strong>{{ $task->reporter?->name ?? 'Managing Partner' }}</strong> untuk mengerjakan tugas berikut:
 </p>
 
 <!-- Information Matrix Card -->
