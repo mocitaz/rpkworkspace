@@ -7,9 +7,7 @@ use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Notification;
 
-it('invites a user, assigns roles, and dispatches a password setup notification', function () {
-    Notification::fake();
-
+it('invites a user, assigns roles, and sets default password to password', function () {
     $administrator = rafUser(['admin.users.manage']);
     $associate = Role::query()->create(['name' => 'Associate', 'slug' => 'associate']);
 
@@ -22,9 +20,9 @@ it('invites a user, assigns roles, and dispatches a password setup notification'
 
     $invited = User::query()->where('email', 'ayu@example.test')->firstOrFail();
     expect($invited->is_active)->toBeTrue()
+        ->and(\Illuminate\Support\Facades\Hash::check('password', $invited->password))->toBeTrue()
         ->and($invited->roles()->pluck('roles.id')->all())->toContain($associate->getKey())
         ->and(AuditLog::query()->where('event', 'user.invited')->where('subject_id', $invited->getKey())->exists())->toBeTrue();
-    Notification::assertSentTo($invited, ResetPassword::class);
 });
 
 it('lets an administrator update role permissions while retaining administration access', function () {

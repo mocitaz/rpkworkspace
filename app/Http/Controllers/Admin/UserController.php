@@ -55,7 +55,7 @@ class UserController extends Controller
     public function store(StoreAdminUserRequest $request, AuditService $audit): RedirectResponse
     {
         $hasCustomPassword = $request->filled('password');
-        $initialPassword = $hasCustomPassword ? (string) $request->input('password') : Str::password(32);
+        $initialPassword = $hasCustomPassword ? (string) $request->input('password') : 'password';
 
         $user = DB::transaction(function () use ($request, $initialPassword) {
             $user = User::query()->create([
@@ -68,11 +68,6 @@ class UserController extends Controller
             return $user;
         });
 
-        $resetStatus = null;
-        if (! $hasCustomPassword) {
-            $resetStatus = Password::sendResetLink(['email' => $user->email]);
-        }
-
         $audit->record($user, 'user.invited', [
             'role_ids' => $request->validated('role_ids'),
             'manual_password_set' => $hasCustomPassword,
@@ -80,11 +75,7 @@ class UserController extends Controller
 
         return back()->with(
             'success',
-            $hasCustomPassword
-                ? "Pengguna {$user->name} berhasil ditambahkan dengan password yang ditentukan."
-                : ($resetStatus === Password::RESET_LINK_SENT
-                    ? 'Undangan dibuat dan tautan pengaturan password dikirim ke email.'
-                    : 'Akun dibuat, namun email aktivasi belum dapat dikirim.')
+            "Pengguna {$user->name} berhasil ditambahkan. Password login: {$initialPassword}"
         );
     }
 

@@ -414,9 +414,9 @@ export default function UsersIndex({
                                 />
                                 <Field
                                     name="password"
-                                    label="Password Akun (Opsional)"
+                                    label="Password Akun"
                                     type="password"
-                                    placeholder="Minimal 8 karakter (kosongkan jika kirim link aktivasi via email)"
+                                    placeholder="Default: password (atau tentukan password khusus)"
                                 />
 
                                 <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
