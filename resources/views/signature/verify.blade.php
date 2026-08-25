@@ -18,7 +18,6 @@
         @media print {
             body { background: white !important; padding: 0 !important; }
             .no-print { display: none !important; }
-            .shadow-custom { box-shadow: none !important; }
         }
     </style>
 </head>
@@ -68,14 +67,14 @@
                     </span>
 
                     @if ($signatureRequest->status === 'completed')
-                        <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-bold text-emerald-700 shadow-2xs">
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3.5 py-1 text-xs font-bold text-emerald-700 shadow-2xs">
                             <svg class="size-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                             </svg>
                             Dokumen telah ditandatangani
                         </span>
                     @elseif ($signatureRequest->status === 'sent' || $signatureRequest->status === 'pending')
-                        <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3 py-1 text-xs font-bold text-amber-700 shadow-2xs">
+                        <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3.5 py-1 text-xs font-bold text-amber-700 shadow-2xs">
                             <svg class="size-3.5 animate-spin text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
@@ -112,24 +111,24 @@
                 </div>
 
                 <!-- Compact QR & Verification Code Banner -->
-                <div class="flex flex-col sm:flex-row items-center gap-4 rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+                <div class="flex flex-col sm:flex-row items-center gap-4 rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs">
                     <!-- Fixed size QR code -->
-                    <div class="shrink-0 flex size-24 items-center justify-center rounded-xl bg-slate-50 p-1.5 border border-slate-200">
+                    <div class="shrink-0 flex items-center justify-center rounded-xl bg-slate-50 p-2 border border-slate-200/80">
                         <img 
                             src="{{ route('signature.qr', $signatureRequest->verification_code) }}" 
                             alt="QR Code Verifikasi" 
-                            style="width: 80px; height: 80px;"
+                            style="width: 80px; height: 80px; min-width: 80px; min-height: 80px;"
                             class="object-contain"
                         />
                     </div>
 
                     <!-- Verification details -->
-                    <div class="flex-1 min-w-0 space-y-1.5 text-center sm:text-left">
+                    <div class="flex-1 min-w-0 space-y-1 text-center sm:text-left">
                         <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
                             KODE VERIFIKASI PUBLIK RESMI
                         </span>
                         <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                            <code class="font-mono text-base font-black text-blue-600 tracking-wider">
+                            <code class="font-mono text-base font-black text-blue-600 tracking-wider select-all">
                                 {{ $signatureRequest->verification_code }}
                             </code>
                             <button 
@@ -144,8 +143,8 @@
                                 <span>Salin</span>
                             </button>
                         </div>
-                        <p class="text-[11px] text-slate-500">
-                            Pindai QR code dengan kamera ponsel untuk membuka sertifikat audit keaslian dokumen ini secara publik.
+                        <p class="text-xs text-slate-500">
+                            Pindai QR code dengan kamera ponsel untuk memverifikasi keabsahan berkas langsung di portal resmi RPK Law Firm.
                         </p>
                     </div>
                 </div>
@@ -163,60 +162,86 @@
                     </span>
                 </div>
 
-                <div class="space-y-3">
+                <div class="space-y-4">
                     @foreach ($signatureRequest->signers as $index => $signer)
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 transition-colors hover:bg-slate-50">
+                        <div class="rounded-2xl border border-slate-200/90 bg-slate-50/50 p-5 space-y-4 transition-colors hover:bg-slate-50">
                             
-                            <!-- Signer Details -->
-                            <div class="space-y-1 min-w-0">
-                                <div class="flex items-center gap-2">
-                                    <span class="flex size-6 items-center justify-center rounded-full bg-slate-900 font-mono text-[10px] font-bold text-white shrink-0">
+                            <!-- Header: Signer Name & Status Badge -->
+                            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/60 pb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="flex size-8 items-center justify-center rounded-full bg-slate-900 font-mono text-xs font-bold text-white shrink-0 shadow-2xs">
                                         {{ $index + 1 }}
                                     </span>
-                                    <p class="font-bold text-sm text-slate-900">
-                                        {{ $signer->name }}
-                                    </p>
+                                    <div>
+                                        <h4 class="text-sm font-black text-slate-900 leading-tight">
+                                            {{ $signer->name }}
+                                        </h4>
+                                        <p class="text-xs text-slate-500 font-mono">
+                                            {{ $signer->email }}
+                                        </p>
+                                    </div>
                                 </div>
-                                <p class="text-xs text-slate-500 font-mono pl-8">
-                                    {{ $signer->email }}
-                                </p>
-                                <p class="text-[11px] text-slate-500 pl-8">
-                                    @if ($signer->status === 'signed' && $signer->signed_at)
-                                        Ditandatangani pada <strong class="text-slate-800">{{ $signer->signed_at->translatedFormat('d F Y, H:i:s') }} WIB</strong>
+
+                                <div>
+                                    @if ($signer->status === 'signed')
+                                        <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 font-mono text-xs font-bold text-emerald-700 shadow-2xs">
+                                            <svg class="size-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Sah Terverifikasi
+                                        </span>
                                     @else
-                                        <span class="italic text-amber-600 font-medium">Menunggu giliran penandatanganan</span>
+                                        <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 border border-amber-200 px-3 py-1 font-mono text-xs font-bold text-amber-700">
+                                            Menunggu Tanda Tangan
+                                        </span>
                                     @endif
-                                </p>
+                                </div>
                             </div>
 
-                            <!-- Visual Signature Box & Status -->
-                            <div class="flex items-center gap-3 shrink-0 self-start sm:self-center pl-8 sm:pl-0">
-                                @if ($signer->status === 'signed')
-                                    @if ($signer->signature_data)
-                                        <div class="flex h-12 w-32 items-center justify-center rounded-xl border border-slate-200 bg-white p-1.5 shadow-2xs" title="Goresan Tanda Tangan Visual">
+                            <!-- Body: Visual Signature Plate & Timestamp Audit Details -->
+                            <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                                <!-- Visual Signature Plate (Left/Center) -->
+                                <div class="sm:col-span-6 space-y-1.5">
+                                    <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                                        GORESAN TANDA TANGAN VISUAL:
+                                    </span>
+                                    @if ($signer->status === 'signed' && $signer->signature_data)
+                                        <div class="flex h-20 w-48 items-center justify-center rounded-xl border border-slate-200 bg-white p-2 shadow-2xs">
                                             <img 
                                                 src="{{ $signer->signature_data }}" 
                                                 alt="Tanda Tangan {{ $signer->name }}" 
-                                                class="max-h-full max-w-full object-contain"
+                                                style="max-height: 60px; max-width: 100%; object-fit: contain;"
                                             />
                                         </div>
+                                    @elseif ($signer->status === 'signed')
+                                        <div class="flex h-16 w-48 items-center justify-center rounded-xl border border-slate-200 bg-white p-2 font-mono text-xs font-bold text-slate-600 shadow-2xs">
+                                            OTP Digital Verified
+                                        </div>
                                     @else
-                                        <span class="rounded-lg bg-slate-100 px-2.5 py-1 font-mono text-xs font-semibold text-slate-600 border border-slate-200">
-                                            OTP Digital
-                                        </span>
+                                        <div class="flex h-16 w-48 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-2 text-xs italic text-slate-400">
+                                            Belum ditandatangani
+                                        </div>
                                     @endif
+                                </div>
 
-                                    <span class="inline-flex items-center gap-1 rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-1.5 font-mono text-xs font-bold text-emerald-700 shadow-2xs">
-                                        <svg class="size-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        Sah
+                                <!-- Timestamp & Audit Metadata (Right) -->
+                                <div class="sm:col-span-6 space-y-1 sm:text-right">
+                                    <span class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                                        WAKTU PENANDATANGANAN:
                                     </span>
-                                @else
-                                    <span class="inline-flex items-center gap-1 rounded-xl bg-amber-50 border border-amber-200 px-3 py-1.5 font-mono text-xs font-bold text-amber-700">
-                                        Pending
-                                    </span>
-                                @endif
+                                    @if ($signer->status === 'signed' && $signer->signed_at)
+                                        <p class="font-mono text-xs font-extrabold text-slate-900">
+                                            {{ $signer->signed_at->translatedFormat('d F Y, H:i:s') }} WIB
+                                        </p>
+                                        <p class="text-[11px] text-emerald-700 font-semibold">
+                                            Jejak audit digital tercatat &amp; sah
+                                        </p>
+                                    @else
+                                        <p class="text-xs italic text-amber-600 font-medium">
+                                            Menunggu penandatanganan dokumen
+                                        </p>
+                                    @endif
+                                </div>
                             </div>
 
                         </div>
