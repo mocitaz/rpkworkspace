@@ -29,6 +29,9 @@ class SignSignatureRequest extends FormRequest
             'page_number' => ['nullable', 'integer', 'min:1'],
             'position_x' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'position_y' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'stamp_layout' => ['nullable', 'string', 'in:sig_left,qr_left,stacked'],
+            'name_position' => ['nullable', 'string', 'in:bottom,top'],
+            'signer_title' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

@@ -125,11 +125,14 @@ class GenerateSignedFinalPdf
             }
 
             $signerData[] = [
-                'name' => $signer->name,
+                'name' => $signer->accepted_name ?: $signer->name,
                 'signed_at' => $signer->signed_at ? $signer->signed_at->translatedFormat('d/m/Y H:i') : now()->translatedFormat('d/m/Y H:i'),
                 'page' => $signer->page_number,
                 'pos_x' => $signer->position_x,
                 'pos_y' => $signer->position_y,
+                'layout' => $signer->stamp_layout ?: 'sig_left',
+                'name_pos' => $signer->name_position ?: 'bottom',
+                'title' => $signer->signer_title,
                 'sig_path' => $sigPath,
             ];
         }
@@ -154,68 +157,76 @@ class GenerateSignedFinalPdf
             });
 
             foreach ($pageSigners as $signerItem) {
-                // Determine placement coordinates
-                $stampW = 56; // mm
-                $stampH = 24; // mm
+                // Determine placement coordinates & size
+                $stampW = 62; // mm
+                $stampH = 25; // mm
 
                 if ($signerItem['pos_x'] !== null && $signerItem['pos_y'] !== null) {
-                    // Convert percentage to mm coordinates bounded inside printable area
                     $x = ($size['width'] * ((float) $signerItem['pos_x'])) / 100;
                     $y = ($size['height'] * ((float) $signerItem['pos_y'])) / 100;
-                    $x = max(6, min($size['width'] - $stampW - 6, $x));
-                    $y = max(6, min($size['height'] - $stampH - 6, $y));
+                    $x = max(5, min($size['width'] - $stampW - 5, $x));
+                    $y = max(5, min($size['height'] - $stampH - 5, $y));
                 } else {
-                    // Default to bottom right
                     $x = $size['width'] - $stampW - 12;
                     $y = $size['height'] - $stampH - 12;
                 }
 
-                // Draw outer sleek stamp frame
+                // Draw clean white background card with subtle border
                 $pdf->SetFillColor(255, 255, 255);
-                $pdf->SetDrawColor(30, 41, 59); // slate-800
-                $pdf->SetLineWidth(0.3);
+                $pdf->SetDrawColor(203, 213, 225); // slate-300
+                $pdf->SetLineWidth(0.25);
                 $pdf->Rect($x, $y, $stampW, $stampH, 'DF');
 
-                // Draw Dark Top Header Ribbon (4mm height)
-                $pdf->SetFillColor(15, 23, 42); // slate-900
-                $pdf->Rect($x, $y, $stampW, 4.2, 'F');
+                $isQrLeft = $signerItem['layout'] === 'qr_left';
+                $isNameTop = $signerItem['name_pos'] === 'top';
 
-                // Header in stamp box
-                $pdf->SetTextColor(255, 255, 255);
-                $pdf->SetFont('Helvetica', 'B', 5);
-                $pdf->SetXY($x + 2, $y + 0.6);
-                $pdf->Cell(28, 3, 'RPK DIGITAL SEAL', 0, 0, 'L');
+                $qrSize = 19;
+                $qrX = $isQrLeft ? $x + 2.5 : $x + $stampW - $qrSize - 2.5;
+                $qrY = $y + ($stampH - $qrSize) / 2;
 
-                $pdf->SetFont('Helvetica', '', 4.5);
-                $pdf->SetTextColor(203, 213, 225); // slate-300
-                $pdf->SetXY($x + $stampW - 22, $y + 0.6);
-                $pdf->Cell(20, 3, 'UU ITE TERVERIFIKASI', 0, 0, 'R');
+                $contentX = $isQrLeft ? $x + $qrSize + 5 : $x + 2.5;
+                $contentW = $stampW - $qrSize - 6;
 
-                // If visual signature image exists, draw it
-                if ($signerItem['sig_path'] && is_file($signerItem['sig_path'])) {
-                    $pdf->Image($signerItem['sig_path'], $x + 2, $y + 4.8, 32, 10.5, 'PNG');
+                // Draw QR Code
+                $pdf->Image($qrPath, $qrX, $qrY, $qrSize, $qrSize, 'PNG');
+
+                if ($isNameTop) {
+                    // Name on Top
+                    $pdf->SetTextColor(15, 23, 42);
+                    $pdf->SetFont('Helvetica', 'B', 7);
+                    $pdf->SetXY($contentX, $y + 2);
+                    $pdf->Cell($contentW, 3.5, substr($signerItem['name'], 0, 26), 0, 0, 'L');
+
+                    if ($signerItem['title']) {
+                        $pdf->SetFont('Helvetica', '', 5);
+                        $pdf->SetTextColor(100, 116, 139);
+                        $pdf->SetXY($contentX, $y + 5.2);
+                        $pdf->Cell($contentW, 2.5, substr($signerItem['title'], 0, 30), 0, 0, 'L');
+                    }
+
+                    // Signature Image
+                    if ($signerItem['sig_path'] && is_file($signerItem['sig_path'])) {
+                        $pdf->Image($signerItem['sig_path'], $contentX, $y + 8, $contentW - 1, 15, 'PNG');
+                    }
+                } else {
+                    // Signature Image on Top
+                    if ($signerItem['sig_path'] && is_file($signerItem['sig_path'])) {
+                        $pdf->Image($signerItem['sig_path'], $contentX, $y + 2, $contentW - 1, 14, 'PNG');
+                    }
+
+                    // Name on Bottom
+                    $pdf->SetTextColor(15, 23, 42);
+                    $pdf->SetFont('Helvetica', 'B', 7);
+                    $pdf->SetXY($contentX, $y + 17);
+                    $pdf->Cell($contentW, 3.5, substr($signerItem['name'], 0, 26), 0, 0, 'L');
+
+                    if ($signerItem['title']) {
+                        $pdf->SetFont('Helvetica', '', 5);
+                        $pdf->SetTextColor(100, 116, 139);
+                        $pdf->SetXY($contentX, $y + 20.5);
+                        $pdf->Cell($contentW, 2.5, substr($signerItem['title'], 0, 30), 0, 0, 'L');
+                    }
                 }
-
-                // Signer name and date caption
-                $pdf->SetTextColor(15, 23, 42);
-                $pdf->SetFont('Helvetica', 'B', 6);
-                $pdf->SetXY($x + 2, $y + 15.8);
-                $pdf->Cell(34, 3, substr($signerItem['name'], 0, 24), 0, 0, 'L');
-
-                $pdf->SetFont('Helvetica', '', 4.8);
-                $pdf->SetTextColor(100, 116, 139);
-                $pdf->SetXY($x + 2, $y + 19.4);
-                $pdf->Cell(34, 3, 'Ditandatangani: '.$signerItem['signed_at'], 0, 0, 'L');
-
-                // Draw QR Code background container and QR
-                $qrContainerSize = 16.5;
-                $pdf->SetFillColor(248, 250, 252);
-                $pdf->SetDrawColor(226, 232, 240);
-                $pdf->SetLineWidth(0.2);
-                $pdf->Rect($x + $stampW - $qrContainerSize - 1.8, $y + 5.5, $qrContainerSize, $qrContainerSize, 'DF');
-
-                $qrSize = 15;
-                $pdf->Image($qrPath, $x + $stampW - $qrSize - 2.5, $y + 6.2, $qrSize, $qrSize, 'PNG');
             }
 
             // If last page and no signers were placed, or for corporate seal

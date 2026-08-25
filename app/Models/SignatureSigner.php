@@ -27,6 +27,9 @@ class SignatureSigner extends Model
         'page_number',
         'position_x',
         'position_y',
+        'stamp_layout',
+        'name_position',
+        'signer_title',
     ];
 
     protected $hidden = ['signed_ip_address', 'signed_user_agent', 'signature_data'];

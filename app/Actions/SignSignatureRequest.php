@@ -54,6 +54,9 @@ class SignSignatureRequest
                 'page_number' => $request->filled('page_number') ? (int) $request->input('page_number') : null,
                 'position_x' => $request->filled('position_x') ? (float) $request->input('position_x') : null,
                 'position_y' => $request->filled('position_y') ? (float) $request->input('position_y') : null,
+                'stamp_layout' => (string) $request->input('stamp_layout', 'sig_left'),
+                'name_position' => (string) $request->input('name_position', 'bottom'),
+                'signer_title' => $request->filled('signer_title') ? (string) $request->input('signer_title') : null,
             ]);
 
             if (! $signatureRequest->signers()->where('status', 'pending')->exists()) {
