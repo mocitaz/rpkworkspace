@@ -1032,9 +1032,55 @@ export default function DocumentShow({
                                         {signers.map((signer, index) => (
                                             <div
                                                 key={index}
-                                                className="flex flex-col gap-1.5 rounded-xl border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/10 dark:bg-zinc-800/40"
+                                                className="flex flex-col gap-2 rounded-xl border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/10 dark:bg-zinc-800/40"
                                             >
-                                                <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <span className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-zinc-200">
+                                                        <span className="flex size-5 items-center justify-center rounded-full bg-purple-100 font-mono text-[10px] font-bold text-purple-700 dark:bg-purple-950/60 dark:text-purple-300">
+                                                            {index + 1}
+                                                        </span>
+                                                        Signer #{index + 1}
+                                                    </span>
+
+                                                    {firmStaff.length > 0 && (
+                                                        <div className="relative">
+                                                            <select
+                                                                onChange={(e) => {
+                                                                    const selectedId = Number(e.target.value);
+                                                                    if (!selectedId) return;
+                                                                    const staff = firmStaff.find((s) => s.id === selectedId);
+                                                                    if (staff) {
+                                                                        setSigners((cur) =>
+                                                                            cur.map((item, i) =>
+                                                                                i === index
+                                                                                    ? {
+                                                                                          ...item,
+                                                                                          name: staff.name,
+                                                                                          email: (staff as any).email || '',
+                                                                                      }
+                                                                                    : item,
+                                                                            ),
+                                                                        );
+                                                                    }
+                                                                }}
+                                                                defaultValue=""
+                                                                className="h-7 cursor-pointer appearance-none rounded-lg border border-purple-200 bg-white pr-7 pl-2 text-[11px] font-semibold text-purple-800 outline-none hover:bg-purple-50 focus:border-purple-500 dark:border-purple-900/60 dark:bg-purple-950/30 dark:text-purple-300"
+                                                            >
+                                                                <option value="" disabled>
+                                                                    ⚡ Pilih dari Tim RPK...
+                                                                </option>
+                                                                {firmStaff.map((staff) => (
+                                                                    <option key={staff.id} value={staff.id}>
+                                                                        {staff.name} { (staff as any).email ? `(${ (staff as any).email })` : '' }
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-purple-600 dark:text-purple-400" />
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                     <Input
                                                         name={`signers[${index}][name]`}
                                                         placeholder="Nama lengkap penandatangan"
@@ -1052,6 +1098,7 @@ export default function DocumentShow({
                                                     <Input
                                                         name={`signers[${index}][email]`}
                                                         placeholder="email@perusahaan.com"
+                                                        type="email"
                                                         required
                                                         value={signer.email}
                                                         onChange={(e) =>
@@ -1063,12 +1110,16 @@ export default function DocumentShow({
                                                         }
                                                         className="h-8 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-[#121418]"
                                                     />
-                                                    <input
-                                                        name={`signers[${index}][signing_order]`}
-                                                        type="hidden"
-                                                        value={index + 1}
-                                                    />
-                                                    {signers.length > 1 && (
+                                                </div>
+
+                                                <input
+                                                    name={`signers[${index}][signing_order]`}
+                                                    type="hidden"
+                                                    value={index + 1}
+                                                />
+
+                                                {signers.length > 1 && (
+                                                    <div className="flex justify-end pt-0.5">
                                                         <Button
                                                             type="button"
                                                             size="sm"
@@ -1076,12 +1127,12 @@ export default function DocumentShow({
                                                             onClick={() =>
                                                                 setSigners((cur) => cur.filter((_, i) => i !== index))
                                                             }
-                                                            className="h-8 shrink-0 px-2 text-xs font-semibold text-rose-500 hover:bg-rose-50 hover:text-rose-700"
+                                                            className="h-6 px-2 text-[11px] font-semibold text-rose-500 hover:bg-rose-50 hover:text-rose-700"
                                                         >
-                                                            Hapus
+                                                            Hapus Signer Ini
                                                         </Button>
-                                                    )}
-                                                </div>
+                                                    </div>
+                                                )}
                                                 <InputError message={(errors as any)[`signers.${index}.name`] || (errors as any)[`signers.${index}.email`]} />
                                             </div>
                                         ))}

@@ -26,6 +26,9 @@ class SignSignatureRequest extends FormRequest
             'accepted_name' => ['required', 'string', 'max:255'],
             'accept_terms' => ['accepted'],
             'signature_data' => ['nullable', 'string', 'max:500000'],
+            'page_number' => ['nullable', 'integer', 'min:1'],
+            'position_x' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'position_y' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ];
     }
 }

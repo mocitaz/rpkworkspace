@@ -51,6 +51,9 @@ class SignSignatureRequest
                 'signed_user_agent' => $request->userAgent(),
                 'accepted_name' => $acceptedName,
                 'signature_data' => $request->input('signature_data'),
+                'page_number' => $request->filled('page_number') ? (int) $request->input('page_number') : null,
+                'position_x' => $request->filled('position_x') ? (float) $request->input('position_x') : null,
+                'position_y' => $request->filled('position_y') ? (float) $request->input('position_y') : null,
             ]);
 
             if (! $signatureRequest->signers()->where('status', 'pending')->exists()) {

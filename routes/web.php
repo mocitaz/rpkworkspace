@@ -41,6 +41,7 @@ Route::get('verify/signature/{verificationCode}/qr.svg', [SignatureVerificationC
 Route::get('verify/signature/{verificationCode}/download-signed', [SignatureVerificationController::class, 'downloadSigned'])->name('signature.verify.download-signed');
 Route::get('verify/signature/{verificationCode}/download-certificate', [SignatureVerificationController::class, 'downloadCertificate'])->name('signature.verify.download-certificate');
 Route::get('sign/{token}', [SignatureSigningController::class, 'show'])->middleware('throttle:signature-sign')->name('signature.sign.show');
+Route::get('sign/{token}/preview-pdf', [SignatureSigningController::class, 'pdf'])->middleware('throttle:signature-sign')->name('signature.sign.pdf');
 Route::post('sign/{token}', [SignatureSigningController::class, 'store'])->middleware('throttle:signature-sign')->name('signature.sign.store');
 Route::post('inbound/email', [InboundEmailController::class, 'store'])->middleware('throttle:30,1')->name('inbound.email.store');
 

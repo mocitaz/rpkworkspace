@@ -121,7 +121,7 @@ class DocumentController extends Controller
                     'replies' => fn ($r) => $r->with(['user:id,name,position_title,avatar_path', 'reactions.user:id,name'])->oldest(),
                 ])->orderByDesc('is_pinned')->latest(),
             ]),
-            'firmStaff' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title', 'avatar_path']),
+            'firmStaff' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'email', 'position_title', 'avatar_path']),
             'can' => [
                 'uploadVersion' => $request->user()->can('update', $document),
                 'download' => $request->user()->can('download', $document),

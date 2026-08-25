@@ -11,7 +11,23 @@ class SignatureSigner extends Model
 {
     use HasFactory, HasUlids;
 
-    protected $fillable = ['signature_request_id', 'name', 'email', 'signing_order', 'signing_token', 'status', 'signed_at', 'last_reminded_at', 'signed_ip_address', 'signed_user_agent', 'accepted_name', 'signature_data'];
+    protected $fillable = [
+        'signature_request_id',
+        'name',
+        'email',
+        'signing_order',
+        'signing_token',
+        'status',
+        'signed_at',
+        'last_reminded_at',
+        'signed_ip_address',
+        'signed_user_agent',
+        'accepted_name',
+        'signature_data',
+        'page_number',
+        'position_x',
+        'position_y',
+    ];
 
     protected $hidden = ['signed_ip_address', 'signed_user_agent', 'signature_data'];
 
@@ -21,7 +37,13 @@ class SignatureSigner extends Model
 
     protected function casts(): array
     {
-        return ['signed_at' => 'datetime', 'last_reminded_at' => 'datetime'];
+        return [
+            'signed_at' => 'datetime',
+            'last_reminded_at' => 'datetime',
+            'page_number' => 'integer',
+            'position_x' => 'float',
+            'position_y' => 'float',
+        ];
     }
 
     public function getSigningUrlAttribute(): string
