@@ -15,7 +15,14 @@ class SignatureRequestController extends Controller
         Gate::authorize('view', $document);
 
         try {
-            $signatureRequest = $create->handle($document->load('currentVersion'), $request->user(), $request->validated('signers'), $request->validated('mode'), $request->date('expires_at'));
+            $signatureRequest = $create->handle(
+                $document->load(['currentVersion', 'versions']),
+                $request->user(),
+                $request->validated('signers'),
+                $request->validated('mode'),
+                $request->date('expires_at'),
+                $request->validated('document_version_id')
+            );
 
             return back()->with('success', 'Permintaan tanda tangan dikirim. Kode verifikasi: '.$signatureRequest->verification_code);
         } catch (\Throwable $e) {

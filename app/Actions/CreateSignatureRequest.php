@@ -14,27 +14,32 @@ class CreateSignatureRequest
 {
     public function __construct(private AuditService $audit, private EnsureMatterIsNotOnLegalHold $legalHold) {}
 
-    public function handle(Document $document, User $actor, array $signers, string $mode = 'sequential', ?\DateTimeInterface $expiresAt = null): SignatureRequest
+    public function handle(Document $document, User $actor, array $signers, string $mode = 'sequential', ?\DateTimeInterface $expiresAt = null, ?string $documentVersionId = null): SignatureRequest
     {
         $document->loadMissing(['matter', 'currentVersion', 'versions']);
         if ($document->matter) {
             $this->legalHold->handle($document->matter);
         }
-        $version = $document->currentVersion ?? $document->versions()->first();
+        $version = $documentVersionId
+            ? $document->versions->firstWhere('id', $documentVersionId)
+            : ($document->currentVersion ?? $document->versions()->first());
+
         if ($version === null) {
-            throw new \DomainException('Dokumen belum memiliki versi berkas untuk ditandatangani.');
+            throw new \DomainException('Versi berkas dokumen yang dipilih tidak ditemukan.');
         }
 
         if (! in_array($mode, ['sequential', 'parallel'], true) || $signers === []) {
             throw new \DomainException('Mode atau daftar penanda tangan tidak valid.');
         }
 
-        $request = DB::transaction(function () use ($document, $actor, $signers, $mode, $expiresAt) {
+        $request = DB::transaction(function () use ($document, $actor, $signers, $mode, $expiresAt, $documentVersionId) {
             $lockedDocument = Document::query()->lockForUpdate()->whereKey($document->getKey())->firstOrFail();
-            $version = $lockedDocument->currentVersion ?? $lockedDocument->versions()->latest('version_number')->first();
+            $version = $documentVersionId
+                ? $lockedDocument->versions()->whereKey($documentVersionId)->first()
+                : ($lockedDocument->currentVersion ?? $lockedDocument->versions()->latest('version_number')->first());
 
             if ($version === null) {
-                throw new \DomainException('Dokumen belum memiliki versi berkas untuk ditandatangani.');
+                throw new \DomainException('Versi berkas dokumen yang dipilih tidak ditemukan.');
             }
 
             $request = SignatureRequest::query()->create([

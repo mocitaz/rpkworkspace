@@ -128,3 +128,35 @@ it('allows sending internal e-sign requests via HTTP on any document with versio
         ->and($signatureRequest->signers)->toHaveCount(1)
         ->and($signatureRequest->signers->first()->email)->toBe('fajaroni@rpklawoffice.local');
 });
+
+it('allows choosing a specific document version for e-signature request', function () {
+    $actor = rafUser(['document.view', 'document.upload', 'matter.view', 'matter.view.all', 'signature.manage']);
+    $document = Document::factory()->recycle($actor)->create(['status' => 'draft']);
+    $version1 = DocumentVersion::factory()->recycle($document)->recycle($actor)->create([
+        'document_id' => $document->getKey(),
+        'version_number' => 1,
+        'original_filename' => 'Kontrak_v1.pdf',
+        'uploaded_by' => $actor->getKey(),
+    ]);
+    $version2 = DocumentVersion::factory()->recycle($document)->recycle($actor)->create([
+        'document_id' => $document->getKey(),
+        'version_number' => 2,
+        'original_filename' => 'Kontrak_v2.pdf',
+        'uploaded_by' => $actor->getKey(),
+    ]);
+    $document->update(['current_version_id' => $version2->getKey()]);
+
+    // Request e-sign targeting specific older version1
+    $response = $this->actingAs($actor)->post(route('documents.signature-requests.store', $document), [
+        'document_version_id' => $version1->getKey(),
+        'mode' => 'parallel',
+        'signers' => [
+            ['name' => 'Signer A', 'email' => 'a@example.test'],
+        ],
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $signatureRequest = SignatureRequest::query()->where('document_id', $document->getKey())->firstOrFail();
+    expect($signatureRequest->document_version_id)->toBe($version1->getKey())
+        ->and($signatureRequest->document_checksum)->toBe($version1->checksum);
+});

@@ -23,6 +23,7 @@ class StoreSignatureRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'document_version_id' => ['nullable', 'string', 'exists:document_versions,id'],
             'mode' => ['required', 'in:sequential,parallel'],
             'expires_at' => ['nullable', 'date', 'after:now'],
             'signers' => ['required', 'array', 'min:1', 'max:20'],

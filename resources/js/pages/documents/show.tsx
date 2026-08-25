@@ -140,6 +140,9 @@ export default function DocumentShow({
     const [selectedVersionId, setSelectedVersionId] = useState(
         document.versions[0]?.id,
     );
+    const [signingVersionId, setSigningVersionId] = useState(
+        document.versions[0]?.id || '',
+    );
     const [signers, setSigners] = useState([{ name: '', email: '' }]);
 
     const selectedVersion =
@@ -964,6 +967,68 @@ export default function DocumentShow({
                                         {errors.error || (errors as any).general}
                                     </div>
                                 )}
+
+                                {/* Pilihan Versi Berkas untuk E-Sign */}
+                                <div className="grid gap-2 rounded-xl border border-slate-200/90 bg-slate-50/60 p-3.5 dark:border-white/10 dark:bg-zinc-800/40">
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="document_version_id" className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-zinc-100">
+                                            <FileText className="size-3.5 text-blue-600 dark:text-blue-400" />
+                                            Pilih Versi Berkas yang Ditandatangani *
+                                        </Label>
+                                        <span className="font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                            {document.versions.length} Versi Tersedia
+                                        </span>
+                                    </div>
+
+                                    <div className="relative">
+                                        <select
+                                            id="document_version_id"
+                                            name="document_version_id"
+                                            value={signingVersionId}
+                                            onChange={(e) => setSigningVersionId(e.target.value)}
+                                            className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-3 text-xs font-medium text-slate-900 outline-none hover:bg-slate-50 focus:border-slate-900 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                        >
+                                            {document.versions.map((ver) => (
+                                                <option key={ver.id} value={ver.id}>
+                                                    Versi #{ver.version_number} — {ver.original_filename} ({formatBytes(ver.file_size)} · {formatDate(ver.created_at)})
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                    </div>
+
+                                    {/* Preview Kartu Versi yang Dipilih */}
+                                    {(() => {
+                                        const v =
+                                            document.versions.find(
+                                                (item) => item.id === signingVersionId,
+                                            ) || document.versions[0];
+                                        if (!v) return null;
+                                        return (
+                                            <div className="flex items-center justify-between gap-2 rounded-lg border border-blue-200/70 bg-blue-50/70 px-3 py-2 text-[11px] text-blue-950 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-200">
+                                                <div className="min-w-0 flex-1 truncate">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <span className="font-mono font-bold text-blue-700 dark:text-blue-300">
+                                                            Versi v{v.version_number}
+                                                        </span>
+                                                        <span className="text-blue-400 dark:text-blue-600">·</span>
+                                                        <span className="truncate font-semibold text-slate-900 dark:text-white">
+                                                            {v.original_filename}
+                                                        </span>
+                                                    </div>
+                                                    <p className="mt-0.5 truncate text-[10px] text-slate-500 dark:text-zinc-400">
+                                                        Diunggah oleh {v.uploader?.name || 'Staf'} · {formatBytes(v.file_size)} · {formatDate(v.created_at)}
+                                                        {v.notes ? ` · "${v.notes}"` : ''}
+                                                    </p>
+                                                </div>
+                                                <span className="shrink-0 rounded bg-blue-600 px-2 py-0.5 font-mono text-[10px] font-bold text-white">
+                                                    Terpilih
+                                                </span>
+                                            </div>
+                                        );
+                                    })()}
+                                    <InputError message={(errors as any).document_version_id} />
+                                </div>
 
                                 <div className="grid gap-1.5">
                                     <Label htmlFor="mode" className="text-xs font-bold text-slate-700 dark:text-zinc-200">
