@@ -1,5 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import {
+    AlertTriangle,
     Check,
     CheckCircle2,
     ChevronDown,
@@ -10,6 +11,7 @@ import {
     Search,
     Shield,
     ShieldCheck,
+    Trash2,
     UserPlus,
     Users,
 } from 'lucide-react';
@@ -80,6 +82,7 @@ export default function UsersIndex({
     const getInitials = useInitials();
     const [tab, setTab] = useState<'users' | 'roles'>('users');
     const [editing, setEditing] = useState<User | null>(null);
+    const [deleting, setDeleting] = useState<User | null>(null);
     const [inviteOpen, setInviteOpen] = useState(false);
     const [createdCreds, setCreatedCreds] = useState<{
         name: string;
@@ -335,15 +338,26 @@ export default function UsersIndex({
 
                                                     {/* Actions */}
                                                     <td className="py-2.5 pr-4 pl-3 text-right whitespace-nowrap">
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => setEditing(user)}
-                                                            className="h-7 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
-                                                        >
-                                                            <Pencil className="mr-1 size-3 text-slate-400" />
-                                                            Kelola
-                                                        </Button>
+                                                        <div className="flex items-center justify-end gap-1.5">
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => setEditing(user)}
+                                                                className="h-7 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                            >
+                                                                <Pencil className="mr-1 size-3 text-slate-400" />
+                                                                Kelola
+                                                            </Button>
+                                                            <Button
+                                                                variant="outline"
+                                                                size="sm"
+                                                                onClick={() => setDeleting(user)}
+                                                                className="h-7 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-rose-600 shadow-2xs hover:border-rose-200 hover:bg-rose-50 dark:border-white/10 dark:bg-zinc-800 dark:text-rose-400 dark:hover:bg-rose-950/30"
+                                                                title="Hapus Pengguna"
+                                                            >
+                                                                <Trash2 className="size-3" />
+                                                            </Button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -474,6 +488,16 @@ export default function UsersIndex({
                 user={editing}
                 roles={roles}
                 onOpenChange={(open) => !open && setEditing(null)}
+                onDeleteClick={(user) => {
+                    setEditing(null);
+                    setDeleting(user);
+                }}
+            />
+
+            {/* Modal: Hapus User */}
+            <DeleteUserDialog
+                user={deleting}
+                onOpenChange={(open) => !open && setDeleting(null)}
             />
         </>
     );
@@ -762,10 +786,12 @@ function EditUserDialog({
     user,
     roles,
     onOpenChange,
+    onDeleteClick,
 }: {
     user: User | null;
     roles: Role[];
     onOpenChange: (open: boolean) => void;
+    onDeleteClick?: (user: User) => void;
 }) {
     const getInitials = useInitials();
     if (!user) return null;
@@ -880,7 +906,107 @@ function EditUserDialog({
                                 </Label>
                             </div>
 
-                            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                            <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                        const target = user;
+                                        onOpenChange(false);
+                                        onDeleteClick?.(target);
+                                    }}
+                                    className="h-8 rounded-lg px-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/30"
+                                >
+                                    <Trash2 className="mr-1 size-3.5" />
+                                    Hapus
+                                </Button>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => onOpenChange(false)}
+                                        className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                                    >
+                                        Batal
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        disabled={processing}
+                                        className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
+                                    >
+                                        Simpan Perubahan
+                                    </Button>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </Form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function DeleteUserDialog({
+    user,
+    onOpenChange,
+}: {
+    user: User | null;
+    onOpenChange: (open: boolean) => void;
+}) {
+    const getInitials = useInitials();
+    if (!user) return null;
+
+    return (
+        <Dialog open={!!user} onOpenChange={onOpenChange}>
+            <DialogContent className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
+                            <AlertTriangle className="size-4" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                Hapus Akun Pengguna
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500">
+                                Konfirmasi penghapusan akses akun staf.
+                            </DialogDescription>
+                        </div>
+                    </div>
+                </DialogHeader>
+
+                <div className="space-y-3 pt-2">
+                    <div className="flex items-center gap-2.5 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/5 dark:bg-[#121418]">
+                        <Avatar className="size-9 shrink-0 rounded-lg border border-slate-200 dark:border-white/10">
+                            <AvatarImage src={user.avatar_url ?? undefined} />
+                            <AvatarFallback className="rounded-lg bg-rose-50 text-xs font-bold text-rose-700 dark:bg-rose-950 dark:text-rose-300">
+                                {getInitials(user.name)}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                            <p className="text-xs font-bold text-slate-900 dark:text-white">
+                                {user.name}
+                            </p>
+                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                {user.email}
+                                {user.position_title ? ` · ${user.position_title}` : ''}
+                            </p>
+                        </div>
+                    </div>
+
+                    <p className="text-xs leading-relaxed text-slate-600 dark:text-zinc-400">
+                        Apakah Anda yakin ingin menghapus akun <strong>{user.name}</strong> ({user.email})? Jika pengguna memiliki riwayat perkara atau data keuangan terkait, status akun akan dinonaktifkan secara aman untuk melindungi integritas berkas.
+                    </p>
+
+                    <Form
+                        {...userRoutes.destroy.form(user.id)}
+                        onSuccess={() => onOpenChange(false)}
+                        className="flex items-center justify-end gap-2 pt-2"
+                    >
+                        {({ processing }) => (
+                            <>
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -891,16 +1017,25 @@ function EditUserDialog({
                                     Batal
                                 </Button>
                                 <Button
+                                    type="submit"
+                                    variant="destructive"
                                     size="sm"
                                     disabled={processing}
-                                    className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
+                                    className="h-8 rounded-lg bg-rose-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-rose-700"
                                 >
-                                    Simpan Perubahan
+                                    {processing ? (
+                                        <Spinner className="size-3.5" />
+                                    ) : (
+                                        <>
+                                            <Trash2 className="mr-1.5 size-3.5" />
+                                            Hapus Pengguna
+                                        </>
+                                    )}
                                 </Button>
-                            </div>
-                        </>
-                    )}
-                </Form>
+                            </>
+                        )}
+                    </Form>
+                </div>
             </DialogContent>
         </Dialog>
     );

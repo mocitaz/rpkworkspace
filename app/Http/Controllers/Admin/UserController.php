@@ -10,6 +10,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Notifications\NewStaffWelcomeNotification;
 use App\Services\AuditService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -121,6 +122,43 @@ class UserController extends Controller
         ], $request->user(), $request);
 
         return back()->with('success', 'Data pengguna berhasil diperbarui.');
+    }
+
+    /**
+     * Remove the specified user from storage.
+     */
+    public function destroy(Request $request, User $user, AuditService $audit): RedirectResponse
+    {
+        abort_unless($request->user()->hasPermission('admin.users.manage'), 403);
+        abort_if($request->user()->is($user), 422, 'Anda tidak dapat menghapus akun Anda sendiri.');
+
+        $isLastAdmin = $user->hasRole('administrator') && User::query()->whereHas('roles', fn ($q) => $q->where('slug', 'administrator'))->count() <= 1;
+        abort_if($isLastAdmin, 422, 'Tidak dapat menghapus administrator sistem terakhir.');
+
+        $userName = $user->name;
+        $userEmail = $user->email;
+
+        try {
+            DB::transaction(function () use ($user, $userName, $userEmail, $audit, $request): void {
+                $audit->record($user, 'user.deleted', [
+                    'email' => $userEmail,
+                    'name' => $userName,
+                ], $request->user(), $request);
+
+                $user->roles()->detach();
+                $user->directMessagesSent()->delete();
+                $user->directMessagesReceived()->delete();
+                $user->notifications()->delete();
+                $user->delete();
+            });
+
+            return back()->with('success', "Pengguna {$userName} ({$userEmail}) berhasil dihapus.");
+        } catch (QueryException $e) {
+            // If user has foreign key constraints on matter/financial records, deactivate safely
+            $user->update(['is_active' => false, 'disabled_at' => now()]);
+
+            return back()->with('warning', "Pengguna {$userName} memiliki riwayat perkara atau data keuangan terkait, sehingga akun telah dinonaktifkan secara aman.");
+        }
     }
 
     /**

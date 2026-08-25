@@ -70,3 +70,24 @@ it('allows an administrator to create a user with a manual password without send
 
     expect(Hash::check('NewPassword999!', $user->fresh()->password))->toBeTrue();
 });
+
+it('allows an administrator to delete a user', function () {
+    $administrator = rafUser(['admin.users.manage']);
+    $userToDelete = User::factory()->create(['name' => 'Staf Akan Dihapus', 'email' => 'hapus@example.test']);
+
+    $this->actingAs($administrator)->delete(route('admin.users.destroy', $userToDelete))
+        ->assertSessionHasNoErrors()
+        ->assertRedirect();
+
+    expect(User::query()->whereKey($userToDelete->getKey())->exists())->toBeFalse()
+        ->and(AuditLog::query()->where('event', 'user.deleted')->where('subject_id', $userToDelete->getKey())->exists())->toBeTrue();
+});
+
+it('prevents an administrator from deleting themselves', function () {
+    $administrator = rafUser(['admin.users.manage']);
+
+    $this->actingAs($administrator)->delete(route('admin.users.destroy', $administrator))
+        ->assertStatus(422);
+
+    expect(User::query()->whereKey($administrator->getKey())->exists())->toBeTrue();
+});
