@@ -252,6 +252,43 @@ export function FloatingChat() {
         fetchContacts();
     };
 
+    // Listen for custom event to open floating chat directly with a contact
+    useEffect(() => {
+        const handleOpenFloatingChat = (event: Event) => {
+            const customEvent = event as CustomEvent<{
+                userId: number;
+                name?: string;
+                email?: string;
+                avatar_url?: string | null;
+                title?: string;
+            }>;
+            const { userId, name, email, avatar_url, title } = customEvent.detail || {};
+            if (!userId) return;
+
+            setIsOpen(true);
+
+            const found = contacts.find((c) => c.id === userId);
+            if (found) {
+                handleSelectContact(found);
+            } else {
+                const tempContact: Contact = {
+                    id: userId,
+                    name: name || 'Anggota Tim',
+                    email: email || '',
+                    avatar_url: avatar_url ?? null,
+                    title: title || 'Staf',
+                    is_online: false,
+                    status_text: 'Offline',
+                    unread_count: 0,
+                };
+                handleSelectContact(tempContact);
+            }
+        };
+
+        window.addEventListener('open-floating-chat', handleOpenFloatingChat);
+        return () => window.removeEventListener('open-floating-chat', handleOpenFloatingChat);
+    }, [contacts]);
+
     // Auto-scroll on new messages
     useEffect(() => {
         if (activeContact) {

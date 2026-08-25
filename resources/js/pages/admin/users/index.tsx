@@ -889,14 +889,26 @@ function StaffDetailModal({
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
                         <div className="flex items-center gap-1.5 w-full sm:w-auto">
                             <Button
-                                asChild
+                                type="button"
                                 size="sm"
-                                className="h-8 flex-1 sm:flex-initial rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white hover:bg-slate-800 shadow-2xs dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
+                                onClick={() => {
+                                    window.dispatchEvent(
+                                        new CustomEvent('open-floating-chat', {
+                                            detail: {
+                                                userId: user.id,
+                                                name: user.name,
+                                                email: user.email,
+                                                avatar_url: user.avatar_url,
+                                                title: user.position_title,
+                                            },
+                                        }),
+                                    );
+                                    onClose();
+                                }}
+                                className="h-8 flex-1 sm:flex-initial rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white hover:bg-slate-800 shadow-2xs dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200 cursor-pointer"
                             >
-                                <Link href={`/chat?user_id=${user.id}`}>
-                                    <MessageSquare className="mr-1.5 size-3.5" />
-                                    Kirim Pesan
-                                </Link>
+                                <MessageSquare className="mr-1.5 size-3.5" />
+                                Kirim Pesan
                             </Button>
                             <Button
                                 asChild
