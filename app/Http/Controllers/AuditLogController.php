@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\AuditLog;
 use App\Models\User;
+use App\Services\AuditService;
 use Carbon\CarbonInterface;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -110,5 +112,54 @@ class AuditLogController extends Controller
 
             fclose($handle);
         }, 200, $headers);
+    }
+
+    public function prune(Request $request): RedirectResponse
+    {
+        abort_unless($request->user()->hasPermission('audit.view'), 403);
+
+        $validated = $request->validate([
+            'retention' => ['required', 'string', 'in:7,30,90,180,365,all'],
+        ]);
+
+        $retention = $validated['retention'];
+        $query = AuditLog::query();
+
+        if ($retention !== 'all') {
+            $days = (int) $retention;
+            $cutoff = now()->subDays($days);
+            $query->where('created_at', '<', $cutoff);
+        }
+
+        $deletedCount = $query->delete();
+
+        // Record the prune event for compliance audit trail
+        app(AuditService::class)->record(
+            subject: $request->user(),
+            event: 'audit.pruned',
+            metadata: [
+                'retention_option' => $retention,
+                'records_deleted' => $deletedCount,
+                'pruned_at' => now()->toIso8601String(),
+            ],
+            actor: $request->user(),
+            request: $request,
+            category: 'admin'
+        );
+
+        $label = match ($retention) {
+            '7' => '7 hari',
+            '30' => '30 hari (1 bulan)',
+            '90' => '90 hari (3 bulan)',
+            '180' => '180 hari (6 bulan)',
+            '365' => '365 hari (1 tahun)',
+            default => 'seluruh riwayat',
+        };
+
+        $message = $retention === 'all'
+            ? "Seluruh riwayat log audit ({$deletedCount} rekaman) berhasil dibersihkan."
+            : "Log audit yang lebih lama dari {$label} ({$deletedCount} rekaman) berhasil dibersihkan.";
+
+        return back()->with('success', $message);
     }
 }

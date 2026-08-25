@@ -121,6 +121,7 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::post('notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
     Route::get('admin/audit', [AuditLogController::class, 'index'])->name('admin.audit.index');
     Route::get('admin/audit/export', [AuditLogController::class, 'export'])->name('admin.audit.export');
+    Route::post('admin/audit/prune', [AuditLogController::class, 'prune'])->name('admin.audit.prune');
     Route::redirect('audit-logs', '/admin/audit');
     Route::redirect('audit', '/admin/audit');
     Route::get('admin/system-readiness', SystemReadinessController::class)->name('admin.system-readiness');

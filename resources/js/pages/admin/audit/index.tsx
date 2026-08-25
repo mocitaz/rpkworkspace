@@ -1,18 +1,31 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, usePage } from '@inertiajs/react';
 import {
     Activity,
+    AlertTriangle,
+    Check,
+    CheckCircle2,
     ChevronDown,
+    Clock,
     Download,
     Filter,
     Layers,
     RotateCcw,
     ShieldAlert,
     ShieldCheck,
+    Trash2,
     Users,
 } from 'lucide-react';
+import { useState } from 'react';
 import { EmptyState } from '@/components/empty-state';
 import { Pagination } from '@/components/pagination';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { formatDate } from '@/lib/format';
@@ -58,12 +71,23 @@ export default function AuditIndex({
         until?: string;
     };
 }) {
+    const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
+    const [cleanOpen, setCleanOpen] = useState(false);
+
     return (
         <>
             <Head title="Audit Log & Jejak Aktivitas - Kepatuhan Hukum" />
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                    {/* Flash Success Notification */}
+                    {flash?.success && (
+                        <div className="flex items-center gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50/90 p-3 text-xs font-semibold text-emerald-900 shadow-2xs dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-300">
+                            <CheckCircle2 className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                            <span>{flash.success}</span>
+                        </div>
+                    )}
+
                     {/* 1. Header Navigation & Action Bar */}
                     <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">
@@ -77,6 +101,16 @@ export default function AuditIndex({
 
                         {/* Right: Actions */}
                         <div className="flex shrink-0 items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCleanOpen(true)}
+                                className="h-8 rounded-lg border-rose-200 bg-white px-3 text-xs font-semibold text-rose-600 shadow-2xs hover:bg-rose-50 hover:border-rose-300 transition-all dark:border-rose-950/40 dark:bg-[#14161b] dark:text-rose-400 dark:hover:bg-rose-950/20"
+                            >
+                                <Trash2 className="mr-1.5 size-3.5 text-rose-600 dark:text-rose-400" />
+                                Bersihkan Log
+                            </Button>
+
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -360,7 +394,204 @@ export default function AuditIndex({
                     </div>
                 </main>
             </div>
+
+            {/* Clean & Prune Dialog Modal */}
+            <CleanAuditLogsDialog
+                open={cleanOpen}
+                onOpenChange={setCleanOpen}
+                totalLogs={metrics.total}
+            />
         </>
+    );
+}
+
+function CleanAuditLogsDialog({
+    open,
+    onOpenChange,
+    totalLogs,
+}: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    totalLogs: number;
+}) {
+    const [retention, setRetention] = useState<string>('30');
+    const [confirmed, setConfirmed] = useState<boolean>(false);
+
+    const retentionOptions = [
+        {
+            value: '7',
+            label: 'Lebih lama dari 7 Hari',
+            desc: 'Pertahankan 1 minggu terakhir, hapus log yang lebih lama.',
+            badge: '1 Minggu',
+        },
+        {
+            value: '30',
+            label: 'Lebih lama dari 30 Hari',
+            desc: 'Pertahankan 1 bulan terakhir (Rekomendasi standar).',
+            badge: '1 Bulan',
+            isDefault: true,
+        },
+        {
+            value: '90',
+            label: 'Lebih lama dari 90 Hari',
+            desc: 'Pertahankan 3 bulan terakhir untuk jejak triwulan.',
+            badge: '3 Bulan',
+        },
+        {
+            value: '180',
+            label: 'Lebih lama dari 180 Hari',
+            desc: 'Pertahankan 6 bulan terakhir untuk jejak semester.',
+            badge: '6 Bulan',
+        },
+        {
+            value: '365',
+            label: 'Lebih lama dari 365 Hari',
+            desc: 'Pertahankan 1 tahun terakhir untuk audit tahunan.',
+            badge: '1 Tahun',
+        },
+        {
+            value: 'all',
+            label: 'Bersihkan Seluruh Riwayat Log (Semua)',
+            desc: 'Kosongkan total seluruh log audit yang ada di database.',
+            badge: 'Semua',
+            isDanger: true,
+        },
+    ];
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-xl p-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
+                <div className="border-b border-slate-100 bg-slate-50/60 p-5 dark:border-white/5 dark:bg-zinc-900/40">
+                    <DialogHeader>
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex size-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 border border-rose-100 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-900/40">
+                                <Trash2 className="size-4.5" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                    Bersihkan &amp; Pemangkasan Log Audit
+                                </DialogTitle>
+                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                    Pilih durasi retensi penyimpanan untuk menghapus log aktivitas yang sudah lampau.
+                                </DialogDescription>
+                            </div>
+                        </div>
+                    </DialogHeader>
+                </div>
+
+                <Form
+                    {...auditRoutes.prune.form()}
+                    onSuccess={() => {
+                        onOpenChange(false);
+                        setConfirmed(false);
+                    }}
+                    className="p-5 space-y-4"
+                >
+                    {({ processing }) => (
+                        <>
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-zinc-300">
+                                    Pilih Batas Waktu Retensi (Durasi Hilang)
+                                </Label>
+                                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                                    {retentionOptions.map((opt) => {
+                                        const isSelected = retention === opt.value;
+                                        return (
+                                            <label
+                                                key={opt.value}
+                                                className={`relative flex cursor-pointer flex-col justify-between rounded-xl border p-3 transition-all ${
+                                                    isSelected
+                                                        ? opt.isDanger
+                                                            ? 'border-rose-500 bg-rose-50/50 dark:border-rose-500/80 dark:bg-rose-950/20'
+                                                            : 'border-slate-900 bg-slate-50 dark:border-white dark:bg-zinc-800/60'
+                                                        : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/50 dark:border-white/10 dark:bg-zinc-900/40 dark:hover:bg-zinc-800/40'
+                                                }`}
+                                            >
+                                                <input
+                                                    type="radio"
+                                                    name="retention"
+                                                    value={opt.value}
+                                                    checked={isSelected}
+                                                    onChange={() => setRetention(opt.value)}
+                                                    className="sr-only"
+                                                />
+                                                <div className="flex items-center justify-between gap-1">
+                                                    <span className="font-bold text-xs text-slate-900 dark:text-white">
+                                                        {opt.label}
+                                                    </span>
+                                                    <span
+                                                        className={`rounded px-1.5 py-0.2 font-mono text-[9.5px] font-bold ${
+                                                            opt.isDanger
+                                                                ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300'
+                                                                : isSelected
+                                                                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
+                                                                  : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-400'
+                                                        }`}
+                                                    >
+                                                        {opt.badge}
+                                                    </span>
+                                                </div>
+                                                <p className="mt-1 text-[11px] text-slate-500 dark:text-zinc-400">
+                                                    {opt.desc}
+                                                </p>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Warning Card */}
+                            <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-xs dark:border-amber-900/40 dark:bg-amber-950/20">
+                                <div className="flex items-start gap-2">
+                                    <AlertTriangle className="size-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+                                    <div className="space-y-0.5 text-amber-900 dark:text-amber-300">
+                                        <p className="font-bold">Konfirmasi Integritas &amp; Kepatuhan</p>
+                                        <p className="text-[11px] text-amber-800/90 dark:text-amber-400/90">
+                                            Penghapusan log bersifat permanen. Aktivitas pembersihan ini akan dicatat sebagai event audit baru (<code>audit.pruned</code>) untuk menjaga akuntabilitas sistem. Total saat ini: <strong>{totalLogs}</strong> log.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Safety Checkbox */}
+                            <label className="flex items-start gap-2 pt-1 cursor-pointer select-none">
+                                <input
+                                    type="checkbox"
+                                    checked={confirmed}
+                                    onChange={(e) => setConfirmed(e.target.checked)}
+                                    className="mt-0.5 size-4 rounded border-slate-300 text-rose-600 focus:ring-rose-500 dark:border-white/20 dark:bg-zinc-800"
+                                />
+                                <span className="text-xs text-slate-700 dark:text-zinc-300">
+                                    Saya mengonfirmasi bahwa saya berwenang melakukan pembersihan data log audit kepatuhan ini.
+                                </span>
+                            </label>
+
+                            {/* Actions */}
+                            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-white/5">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => onOpenChange(false)}
+                                    className="h-8 rounded-lg border-slate-200 text-xs font-semibold hover:bg-slate-50 dark:border-white/10"
+                                >
+                                    Batal
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    size="sm"
+                                    disabled={!confirmed || processing}
+                                    className="h-8 rounded-lg bg-rose-600 px-4 text-xs font-bold text-white shadow-2xs hover:bg-rose-700 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none"
+                                >
+                                    <Trash2 className="mr-1.5 size-3.5" />
+                                    {processing ? 'Membersihkan...' : 'Bersihkan Log Sekarang'}
+                                </Button>
+                            </div>
+                        </>
+                    )}
+                </Form>
+            </DialogContent>
+        </Dialog>
     );
 }
 
