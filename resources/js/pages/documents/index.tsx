@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Form, Head, Link, useForm } from '@inertiajs/react';
 import {
     Building2,
     ChevronDown,
