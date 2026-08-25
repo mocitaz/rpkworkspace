@@ -486,15 +486,18 @@
         let isDrawing = false;
         let hasDrawn = false;
         let currentMode = 'draw';
+        let lastPoint = null;
+        let midPoint = null;
 
         function resizeCanvas() {
             const rect = canvas.getBoundingClientRect();
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = rect.width * dpr;
-            canvas.height = rect.height * dpr;
-            ctx.scale(dpr, dpr);
-            ctx.strokeStyle = '#0f172a';
-            ctx.lineWidth = 3.2;
+            const dpr = Math.max(window.devicePixelRatio || 1, 2);
+            canvas.width = Math.round(rect.width * dpr);
+            canvas.height = Math.round(rect.height * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.strokeStyle = '#0a192f';
+            ctx.fillStyle = '#0a192f';
+            ctx.lineWidth = 2.6;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
         }
@@ -514,22 +517,43 @@
             isDrawing = true;
             hasDrawn = true;
             const pos = getCanvasPos(e);
+            lastPoint = pos;
+            midPoint = pos;
             ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
+            ctx.arc(pos.x, pos.y, ctx.lineWidth / 2.5, 0, Math.PI * 2, true);
+            ctx.fill();
             e.preventDefault();
         }
 
         function draw(e) {
             if (!isDrawing) return;
-            const pos = getCanvasPos(e);
-            ctx.lineTo(pos.x, pos.y);
+            const currentPoint = getCanvasPos(e);
+            const currentMid = {
+                x: (lastPoint.x + currentPoint.x) / 2,
+                y: (lastPoint.y + currentPoint.y) / 2
+            };
+
+            ctx.beginPath();
+            ctx.moveTo(midPoint.x, midPoint.y);
+            ctx.quadraticCurveTo(lastPoint.x, lastPoint.y, currentMid.x, currentMid.y);
             ctx.stroke();
+
+            lastPoint = currentPoint;
+            midPoint = currentMid;
             e.preventDefault();
         }
 
         function stopDrawing() {
             if (isDrawing) {
                 isDrawing = false;
+                if (lastPoint && midPoint) {
+                    ctx.beginPath();
+                    ctx.moveTo(midPoint.x, midPoint.y);
+                    ctx.lineTo(lastPoint.x, lastPoint.y);
+                    ctx.stroke();
+                }
+                lastPoint = null;
+                midPoint = null;
                 syncCanvasData();
             }
         }
@@ -576,7 +600,7 @@
                 return srcCanvas.toDataURL('image/png');
             }
 
-            const pad = 12;
+            const pad = 20;
             minX = Math.max(0, minX - pad);
             minY = Math.max(0, minY - pad);
             maxX = Math.min(w, maxX + pad);
