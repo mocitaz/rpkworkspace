@@ -1,7 +1,9 @@
 import { Form, Head } from '@inertiajs/react';
 import { Lock, Mail } from 'lucide-react';
+import { useState } from 'react';
 import InputError from '@/components/input-error';
 import PasswordInput from '@/components/password-input';
+import { PasswordStrengthIndicator } from '@/components/password-strength-indicator';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,6 +17,8 @@ type Props = {
 };
 
 export default function ResetPassword({ token, email, passwordRules }: Props) {
+    const [newPassword, setNewPassword] = useState('');
+
     return (
         <>
             <Head title="Reset Password - RPK Law Workspace" />
@@ -57,6 +61,8 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                                     name="password"
                                     autoComplete="new-password"
                                     autoFocus
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
                                     placeholder="Masukkan kata sandi baru"
                                     passwordrules={passwordRules}
                                     className="h-11 w-full rounded-xl border-slate-200/80 bg-[#f8fafc] pl-10 pr-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
@@ -64,6 +70,9 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                             </div>
                             <InputError message={errors.password} />
                         </div>
+
+                        {/* Password Criteria & Strength Detection */}
+                        <PasswordStrengthIndicator password={newPassword} />
 
                         <div className="space-y-1">
                             <Label htmlFor="password_confirmation" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">

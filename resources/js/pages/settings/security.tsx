@@ -1,6 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import { KeyRound, Lock, Shield, ShieldCheck } from 'lucide-react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
 import InputError from '@/components/input-error';
 import type { Props as ManagePasskeysProps } from '@/components/manage-passkeys';
@@ -8,6 +8,7 @@ import ManagePasskeys from '@/components/manage-passkeys';
 import type { Props as ManageTwoFactorProps } from '@/components/manage-two-factor';
 import ManageTwoFactor from '@/components/manage-two-factor';
 import PasswordInput from '@/components/password-input';
+import { PasswordStrengthIndicator } from '@/components/password-strength-indicator';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
@@ -22,6 +23,7 @@ type Props = {
 export default function Security(props: Props) {
     const passwordInput = useRef<HTMLInputElement>(null);
     const currentPasswordInput = useRef<HTMLInputElement>(null);
+    const [newPassword, setNewPassword] = useState('');
 
     return (
         <>
@@ -98,6 +100,8 @@ export default function Security(props: Props) {
                                             id="password"
                                             ref={passwordInput}
                                             name="password"
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
                                             className="h-8 rounded-lg border border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                             autoComplete="new-password"
                                             placeholder="Minimal 8 karakter"
@@ -131,6 +135,9 @@ export default function Security(props: Props) {
                                         />
                                     </div>
                                 </div>
+
+                                {/* Password Criteria & Strength Detection */}
+                                <PasswordStrengthIndicator password={newPassword} />
 
                                 <div className="flex items-center justify-end pt-1">
                                     <Button
