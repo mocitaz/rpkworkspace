@@ -1,5 +1,5 @@
 import { Form } from '@inertiajs/react';
-import { Building2, ChevronDown, Pencil, ShieldCheck } from 'lucide-react';
+import { Building2, ChevronDown, Pencil, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { useState } from 'react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -109,6 +109,22 @@ export function ClientEditDialog({
                 >
                     {({ errors, processing }) => (
                         <>
+                            <input type="hidden" name="country_code" value={client.country_code ?? 'ID'} />
+
+                            {Object.keys(errors).length > 0 && (
+                                <div className="rounded-xl border border-rose-200 bg-rose-50/90 p-3 text-xs text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
+                                    <div className="flex items-center gap-2 font-bold">
+                                        <ShieldAlert className="size-4 shrink-0 text-rose-600" />
+                                        <span>Gagal memperbarui profil klien:</span>
+                                    </div>
+                                    <ul className="mt-1 list-inside list-disc space-y-0.5 pl-1 text-[11px]">
+                                        {Object.entries(errors).map(([key, msg]) => (
+                                            <li key={key}>{msg}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
                             {/* Section 1: Identitas & Klasifikasi Entitas */}
                             <div className="space-y-2.5">
                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">

@@ -16,6 +16,30 @@ class UpdateClientRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $merges = [];
+
+        if (! $this->filled('country_code')) {
+            $merges['country_code'] = $this->route('client')?->country_code ?? 'ID';
+        }
+
+        if ($this->has('relationship_partner_id') && ($this->input('relationship_partner_id') === '' || $this->input('relationship_partner_id') === null)) {
+            $merges['relationship_partner_id'] = null;
+        }
+
+        if ($this->has('kyc_assessed_by') && ($this->input('kyc_assessed_by') === '' || $this->input('kyc_assessed_by') === null)) {
+            $merges['kyc_assessed_by'] = null;
+        }
+
+        if (! empty($merges)) {
+            $this->merge($merges);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
@@ -37,7 +61,7 @@ class UpdateClientRequest extends FormRequest
             'city' => ['nullable', 'string', 'max:100'],
             'province' => ['nullable', 'string', 'max:100'],
             'postal_code' => ['nullable', 'string', 'max:20'],
-            'country_code' => ['required', 'string', 'size:2'],
+            'country_code' => ['sometimes', 'nullable', 'string', 'size:2'],
             'notes' => ['nullable', 'string', 'max:10000'],
             'kyc_risk_level' => ['sometimes', 'nullable', 'in:low,medium,high'],
             'kyc_status' => ['sometimes', 'nullable', 'in:verified,in_review,pending_documents,rejected'],
