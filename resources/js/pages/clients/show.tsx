@@ -501,21 +501,12 @@ export default function ClientShow({
                                             <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                 Kontak Person ({client.contacts.length})
                                             </span>
-                                            {client.contacts.length > 2 ? (
+                                            {client.contacts.length > 2 && (
                                                 <button
                                                     onClick={() => setTab('Kontak')}
                                                     className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400 cursor-pointer"
                                                 >
                                                     Lihat Semua →
-                                                </button>
-                                            ) : (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setIsAddingContact(true)}
-                                                    className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400 cursor-pointer"
-                                                >
-                                                    <Plus className="size-3" />
-                                                    Tambah Kontak
                                                 </button>
                                             )}
                                         </div>
@@ -552,26 +543,9 @@ export default function ClientShow({
                                                 ))}
                                             </div>
                                         ) : (
-                                            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200/80 bg-slate-50/50 p-5 text-center dark:border-white/10 dark:bg-white/[0.01]">
-                                                <div className="mb-2 flex size-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                                                    <ContactRound className="size-4" />
-                                                </div>
-                                                <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200">
-                                                    Belum ada kontak perwakilan
-                                                </p>
-                                                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                    Daftarkan narahubung PIC, direksi, atau kuasa klien.
-                                                </p>
-                                                <Button
-                                                    type="button"
-                                                    size="sm"
-                                                    onClick={() => setIsAddingContact(true)}
-                                                    className="mt-3 h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900 cursor-pointer"
-                                                >
-                                                    <Plus className="mr-1.5 size-3.5" />
-                                                    Tambah Kontak Person
-                                                </Button>
-                                            </div>
+                                            <p className="text-xs text-slate-400">
+                                                Belum ada kontak perwakilan yang didaftarkan.
+                                            </p>
                                         )}
                                     </div>
                                 </div>
