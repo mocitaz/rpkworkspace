@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head, Link, router } from '@inertiajs/react';
 import {
     AlertCircle,
     ArrowUpRight,
@@ -26,6 +26,7 @@ import {
     WalletCards,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { EmptyState } from '@/components/empty-state';
 import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
@@ -136,6 +137,8 @@ export default function FinanceIndex({
     const [reversePayment, setReversePayment] = useState<LedgerItem | null>(null);
     const [refundPayment, setRefundPayment] = useState<LedgerItem | null>(null);
     const [cancelInvoice, setCancelInvoice] = useState<LedgerItem | null>(null);
+    const [expenseToDelete, setExpenseToDelete] = useState<LedgerItem | null>(null);
+    const [isDeletingExpense, setIsDeletingExpense] = useState(false);
     const [activeTab, setActiveTab] = useState<'all' | 'invoices' | 'quotations' | 'expenses' | 'payments'>('all');
     const [showDetailedAnalytics, setShowDetailedAnalytics] = useState(false);
 
@@ -575,6 +578,7 @@ export default function FinanceIndex({
                                     date={(i) => i.incurred_at}
                                     canCreate={can.expense}
                                     onCreate={() => setModal('expense')}
+                                    onDeleteExpense={can.expense ? (exp) => setExpenseToDelete(exp) : undefined}
                                     actionLabel="Catat Biaya Perkara"
                                     emptyTitle="Belum Ada Catatan Biaya Perkara"
                                     emptyDescription="Belum ada pengeluaran operasional perkara seperti panjar pengadilan, materai, akomodasi, atau transportasi yang dicatat."
@@ -622,6 +626,31 @@ export default function FinanceIndex({
                 invoice={cancelInvoice}
                 onClose={() => setCancelInvoice(null)}
             />
+
+            {/* Modal Konfirmasi Hapus Biaya Perkara */}
+            <ConfirmDialog
+                open={!!expenseToDelete}
+                onOpenChange={(open) => !open && setExpenseToDelete(null)}
+                title="Hapus Catatan Biaya Perkara"
+                description={
+                    expenseToDelete
+                        ? `Apakah Anda yakin ingin menghapus catatan biaya "${expenseToDelete.description || expenseToDelete.title || 'Biaya Operasional'}" senilai ${formatMoney(expenseToDelete.amount ?? 0, expenseToDelete.currency || currency)}?`
+                        : ''
+                }
+                confirmLabel="Hapus Biaya"
+                variant="danger"
+                processing={isDeletingExpense}
+                onConfirm={() => {
+                    if (!expenseToDelete) return;
+                    setIsDeletingExpense(true);
+                    router.delete(`/finance/expenses/${expenseToDelete.id}`, {
+                        onFinish: () => {
+                            setIsDeletingExpense(false);
+                            setExpenseToDelete(null);
+                        },
+                    });
+                }}
+            />
         </>
     );
 }
@@ -642,6 +671,7 @@ function Ledger({
     emptyTitle = 'Belum ada catatan transaksi',
     emptyDescription = 'Belum ada data pada bagian ini.',
     onCancel,
+    onDeleteExpense,
 }: {
     title: string;
     items: LedgerItem[];
@@ -658,6 +688,7 @@ function Ledger({
     emptyTitle?: string;
     emptyDescription?: string;
     onCancel?: (invoice: LedgerItem) => void;
+    onDeleteExpense?: (expense: LedgerItem) => void;
 }) {
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -878,6 +909,19 @@ function Ledger({
                                                     </Button>
                                                 </Form>
                                             )}
+
+                                        {onDeleteExpense && !i.invoice_number && !i.quotation_number && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => onDeleteExpense(i)}
+                                                className="size-6.5 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400"
+                                                title="Hapus Catatan Biaya"
+                                            >
+                                                <Trash2 className="size-3 text-rose-500" />
+                                            </Button>
+                                        )}
                                     </div>
                                 </div>
                             </div>

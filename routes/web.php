@@ -51,10 +51,14 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::resource('matters', MatterController::class)->only(['index', 'create', 'store', 'show', 'update']);
     Route::post('matters/conflict-checks', [MatterController::class, 'storeConflictCheck'])->name('matters.conflict-checks.store');
     Route::post('matters/{matter}/parties', [MatterOperationController::class, 'storeParty'])->name('matters.parties.store');
+    Route::delete('matters/{matter}/parties/{party}', [MatterOperationController::class, 'destroyParty'])->name('matters.parties.destroy');
     Route::post('matters/{matter}/deadlines', [MatterOperationController::class, 'storeDeadline'])->name('matters.deadlines.store');
+    Route::delete('matters/{matter}/deadlines/{deadline}', [MatterOperationController::class, 'destroyDeadline'])->name('matters.deadlines.destroy');
     Route::post('matters/{matter}/events', [MatterOperationController::class, 'storeEvent'])->name('matters.events.store');
+    Route::delete('matters/{matter}/events/{event}', [MatterOperationController::class, 'destroyEvent'])->name('matters.events.destroy');
     Route::put('matters/{matter}/events/{event}/checklist', [MatterEventChecklistController::class, 'update'])->name('matters.events.checklist.update');
     Route::post('matters/{matter}/notes', [MatterOperationController::class, 'storeNote'])->name('matters.notes.store');
+    Route::delete('matters/{matter}/notes/{note}', [MatterOperationController::class, 'destroyNote'])->name('matters.notes.destroy');
     Route::post('matters/{matter}/evidences', [MatterOperationController::class, 'storeEvidence'])->name('matters.evidences.store');
     Route::put('matters/{matter}/evidences/{evidence}', [MatterOperationController::class, 'updateEvidence'])->name('matters.evidences.update');
     Route::delete('matters/{matter}/evidences/{evidence}', [MatterOperationController::class, 'destroyEvidence'])->name('matters.evidences.destroy');
@@ -66,8 +70,8 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::post('clients/{client}/compliance-documents', [ClientController::class, 'storeComplianceDocument'])->name('clients.compliance.store');
     Route::put('clients/{client}/compliance-documents/{complianceDocument}', [ClientController::class, 'updateComplianceDocument'])->name('clients.compliance.update');
     Route::delete('clients/{client}/compliance-documents/{complianceDocument}', [ClientController::class, 'destroyComplianceDocument'])->name('clients.compliance.destroy');
-    Route::resource('contacts', ContactController::class)->only(['index', 'store', 'update']);
-    Route::resource('tasks', TaskController::class)->only(['index', 'store', 'update']);
+    Route::resource('contacts', ContactController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('tasks', TaskController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::redirect('templates', '/documents')->name('templates.index');
     Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
     Route::post('comments/{comment}/reaction', [CommentController::class, 'toggleReaction'])->name('comments.reaction');
@@ -85,6 +89,7 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::post('finance/quotations', [FinanceController::class, 'storeQuotation'])->name('finance.quotations.store');
     Route::post('finance/quotations/{quotation}/approve', [FinanceController::class, 'approveQuotation'])->name('finance.quotations.approve');
     Route::post('finance/expenses', [FinanceController::class, 'storeExpense'])->name('finance.expenses.store');
+    Route::delete('finance/expenses/{expense}', [FinanceController::class, 'destroyExpense'])->name('finance.expenses.destroy');
     Route::post('finance/payments', [FinanceController::class, 'storePayment'])->name('finance.payments.store');
     Route::post('finance/payments/{payment}/reverse', [FinanceController::class, 'reversePayment'])->name('finance.payments.reverse');
     Route::post('finance/payments/{payment}/refund', [FinanceController::class, 'refundPayment'])->name('finance.payments.refund');
@@ -93,6 +98,7 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::get('governance', [GovernanceController::class, 'index'])->name('governance.index');
     Route::post('governance/correspondences', [GovernanceController::class, 'storeCorrespondence'])->name('governance.correspondences.store');
     Route::get('governance/correspondences/{correspondence}', [GovernanceController::class, 'showCorrespondence'])->name('governance.correspondences.show');
+    Route::delete('governance/correspondences/{correspondence}', [GovernanceController::class, 'destroyCorrespondence'])->name('governance.correspondences.destroy');
     Route::post('governance/correspondences/{correspondence}/attachments', [GovernanceController::class, 'storeCorrespondenceAttachment'])->name('governance.correspondences.attachments.store');
     Route::post('governance/conflict-checks', [GovernanceController::class, 'storeConflictCheck'])->name('governance.conflict-checks.store');
     Route::patch('governance/conflict-checks/{conflictCheck}', [GovernanceController::class, 'resolveConflictCheck'])->name('governance.conflict-checks.resolve');
@@ -101,7 +107,7 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::post('governance/matters/{matter}/archive', [GovernanceController::class, 'archive'])->name('governance.matters.archive');
     Route::post('governance/matters/{matter}/exports', [GovernanceController::class, 'requestExport'])->name('governance.matters.exports.store');
     Route::get('governance/exports/{matterExport}/download', [GovernanceController::class, 'downloadExport'])->name('governance.exports.download');
-    Route::resource('documents', DocumentController::class)->only(['index', 'store', 'show']);
+    Route::resource('documents', DocumentController::class)->only(['index', 'store', 'show', 'destroy']);
     Route::post('documents/{document}/approvals', [DocumentApprovalController::class, 'store'])->name('documents.approvals.store');
     Route::patch('document-approvals/{approval}', [DocumentApprovalController::class, 'resolve'])->name('documents.approvals.resolve');
     Route::post('documents/{document}/signature-requests', [SignatureRequestController::class, 'store'])->name('documents.signature-requests.store');

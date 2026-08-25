@@ -285,6 +285,9 @@ export default function MatterShow({
     const [editingEvidence, setEditingEvidence] = useState<MatterEvidence | null>(null);
     const [chronologyToDelete, setChronologyToDelete] = useState<MatterChronologyItem | null>(null);
     const [evidenceToDelete, setEvidenceToDelete] = useState<MatterEvidence | null>(null);
+    const [partyToDelete, setPartyToDelete] = useState<Matter['parties'][number] | null>(null);
+    const [eventToDelete, setEventToDelete] = useState<Matter['events'][number] | null>(null);
+    const [noteToDelete, setNoteToDelete] = useState<Matter['notes'][number] | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const nextDeadline = matter.deadlines[0];
 
@@ -781,9 +784,25 @@ export default function MatterShow({
                                                                 </p>
                                                             )}
                                                         </div>
-                                                        <span className="shrink-0 rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                            {partyTypeLabels[party.party_type] ?? party.party_type.replace('_', ' ')}
-                                                        </span>
+                                                        <div className="flex shrink-0 items-center gap-1.5">
+                                                            <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                                {partyTypeLabels[party.party_type] ?? party.party_type.replace('_', ' ')}
+                                                            </span>
+                                                            {can.update && (
+                                                                <button
+                                                                    type="button"
+                                                                    disabled={Boolean(matter.legal_hold_at)}
+                                                                    onClick={() => {
+                                                                        if (matter.legal_hold_at) return;
+                                                                        setPartyToDelete(party);
+                                                                    }}
+                                                                    className="text-slate-400 hover:text-rose-600 disabled:cursor-not-allowed disabled:text-amber-500 disabled:opacity-60 dark:hover:text-rose-400"
+                                                                    title={matter.legal_hold_at ? 'Dikunci karena Legal Hold aktif' : 'Hapus Pihak Terkait'}
+                                                                >
+                                                                    <Trash2 className="size-3" />
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>
@@ -985,9 +1004,25 @@ export default function MatterShow({
                                                                 <span className="font-mono text-[11px] font-semibold text-slate-900 dark:text-white">
                                                                     {formatDate(event.starts_at, true)}
                                                                 </span>
-                                                                <span className={`rounded px-1.5 py-0.2 text-[9px] font-bold capitalize ${meta.color}`}>
-                                                                    {meta.label}
-                                                                </span>
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <span className={`rounded px-1.5 py-0.2 text-[9px] font-bold capitalize ${meta.color}`}>
+                                                                        {meta.label}
+                                                                    </span>
+                                                                    {can.update && (
+                                                                        <button
+                                                                            type="button"
+                                                                            disabled={Boolean(matter.legal_hold_at)}
+                                                                            onClick={() => {
+                                                                                if (matter.legal_hold_at) return;
+                                                                                setEventToDelete(event);
+                                                                            }}
+                                                                            className="text-slate-400 hover:text-rose-600 disabled:cursor-not-allowed disabled:text-amber-500 disabled:opacity-60 dark:hover:text-rose-400"
+                                                                            title={matter.legal_hold_at ? 'Dikunci karena Legal Hold aktif' : 'Hapus Agenda'}
+                                                                        >
+                                                                            <Trash2 className="size-3" />
+                                                                        </button>
+                                                                    )}
+                                                                </div>
                                                             </div>
 
                                                             <h4 className="mt-1 font-semibold text-slate-900 dark:text-white">
@@ -1507,7 +1542,23 @@ export default function MatterShow({
                                                             <h4 className="font-semibold text-slate-900 dark:text-white">
                                                                 {note.title || 'Catatan Internal'}
                                                             </h4>
-                                                            <StatusBadge value={note.classification} />
+                                                            <div className="flex items-center gap-1.5">
+                                                                <StatusBadge value={note.classification} />
+                                                                {can.update && (
+                                                                    <button
+                                                                        type="button"
+                                                                        disabled={Boolean(matter.legal_hold_at)}
+                                                                        onClick={() => {
+                                                                            if (matter.legal_hold_at) return;
+                                                                            setNoteToDelete(note);
+                                                                        }}
+                                                                        className="text-slate-400 hover:text-rose-600 disabled:cursor-not-allowed disabled:text-amber-500 disabled:opacity-60 dark:hover:text-rose-400"
+                                                                        title={matter.legal_hold_at ? 'Dikunci karena Legal Hold aktif' : 'Hapus Catatan'}
+                                                                    >
+                                                                        <Trash2 className="size-3" />
+                                                                    </button>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                         <p className="mt-2 leading-relaxed whitespace-pre-wrap text-slate-700 dark:text-zinc-300">
                                                             {note.body}
@@ -1774,6 +1825,81 @@ export default function MatterShow({
                         onFinish: () => {
                             setIsDeleting(false);
                             setEvidenceToDelete(null);
+                        },
+                    });
+                }}
+            />
+
+            {/* Delete Party Confirmation Dialog */}
+            <ConfirmDialog
+                open={!!partyToDelete}
+                onOpenChange={(open) => !open && setPartyToDelete(null)}
+                title="Hapus Pihak Terkait"
+                description={
+                    partyToDelete
+                        ? `Apakah Anda yakin ingin menghapus pihak "${partyToDelete.name}" dari berkas perkara ini?`
+                        : ''
+                }
+                confirmLabel="Hapus Pihak"
+                variant="danger"
+                processing={isDeleting}
+                onConfirm={() => {
+                    if (!partyToDelete) return;
+                    setIsDeleting(true);
+                    router.delete(partyRoutes.destroy({ matter: matter.id, party: partyToDelete.id }), {
+                        onFinish: () => {
+                            setIsDeleting(false);
+                            setPartyToDelete(null);
+                        },
+                    });
+                }}
+            />
+
+            {/* Delete Event Confirmation Dialog */}
+            <ConfirmDialog
+                open={!!eventToDelete}
+                onOpenChange={(open) => !open && setEventToDelete(null)}
+                title="Hapus Agenda / Sidang"
+                description={
+                    eventToDelete
+                        ? `Apakah Anda yakin ingin menghapus agenda "${eventToDelete.title}"?`
+                        : ''
+                }
+                confirmLabel="Hapus Agenda"
+                variant="danger"
+                processing={isDeleting}
+                onConfirm={() => {
+                    if (!eventToDelete) return;
+                    setIsDeleting(true);
+                    router.delete(eventRoutes.destroy({ matter: matter.id, event: eventToDelete.id }), {
+                        onFinish: () => {
+                            setIsDeleting(false);
+                            setEventToDelete(null);
+                        },
+                    });
+                }}
+            />
+
+            {/* Delete Note Confirmation Dialog */}
+            <ConfirmDialog
+                open={!!noteToDelete}
+                onOpenChange={(open) => !open && setNoteToDelete(null)}
+                title="Hapus Catatan Internal"
+                description={
+                    noteToDelete
+                        ? `Apakah Anda yakin ingin menghapus catatan internal "${noteToDelete.title || 'Catatan Internal'}"?`
+                        : ''
+                }
+                confirmLabel="Hapus Catatan"
+                variant="danger"
+                processing={isDeleting}
+                onConfirm={() => {
+                    if (!noteToDelete) return;
+                    setIsDeleting(true);
+                    router.delete(noteRoutes.destroy({ matter: matter.id, note: noteToDelete.id }), {
+                        onFinish: () => {
+                            setIsDeleting(false);
+                            setNoteToDelete(null);
                         },
                     });
                 }}

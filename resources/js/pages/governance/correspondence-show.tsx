@@ -1,4 +1,4 @@
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head, Link, router } from '@inertiajs/react';
 import {
     ArrowLeft,
     ArrowUpRight,
@@ -16,10 +16,13 @@ import {
     Paperclip,
     Send,
     ShieldCheck,
+    Trash2,
     Upload,
     User,
     Users,
 } from 'lucide-react';
+import { useState } from 'react';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import { FileInput } from '@/components/ui/file-input';
 import { Input } from '@/components/ui/input';
@@ -52,10 +55,14 @@ type Correspondence = {
 export default function CorrespondenceShow({
     correspondence,
     canUploadAttachment,
+    canDelete = false,
 }: {
     correspondence: Correspondence;
     canUploadAttachment: boolean;
+    canDelete?: boolean;
 }) {
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const isInbound = correspondence.direction === 'inbound';
 
     return (
@@ -149,6 +156,18 @@ export default function CorrespondenceShow({
                                     Buka Perkara Terkait
                                 </Link>
                             </Button>
+
+                            {canDelete && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setShowDeleteConfirm(true)}
+                                    className="h-8 rounded-lg border-rose-200 bg-rose-50/50 px-3 text-xs font-semibold text-rose-700 hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300"
+                                >
+                                    <Trash2 className="mr-1 size-3.5" />
+                                    Hapus
+                                </Button>
+                            )}
                         </div>
                     </div>
 
@@ -487,6 +506,26 @@ export default function CorrespondenceShow({
                     </div>
                 </main>
             </div>
+
+            {/* Modal Konfirmasi Hapus Korespondensi */}
+            <ConfirmDialog
+                open={showDeleteConfirm}
+                onOpenChange={setShowDeleteConfirm}
+                title="Hapus Catatan Korespondensi"
+                description={`Apakah Anda yakin ingin menghapus catatan korespondensi "${correspondence.subject}"? Tindakan ini akan dicatat dalam riwayat audit kepatuhan.`}
+                confirmLabel="Hapus Korespondensi"
+                variant="danger"
+                processing={isDeleting}
+                onConfirm={() => {
+                    setIsDeleting(true);
+                    router.delete(`/governance/correspondences/${correspondence.id}`, {
+                        onFinish: () => {
+                            setIsDeleting(false);
+                            setShowDeleteConfirm(false);
+                        },
+                    });
+                }}
+            />
         </>
     );
 }

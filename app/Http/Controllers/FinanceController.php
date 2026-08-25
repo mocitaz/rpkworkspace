@@ -146,6 +146,23 @@ class FinanceController extends Controller
         return back()->with('success', 'Biaya berhasil dicatat.');
     }
 
+    public function destroyExpense(Expense $expense, AuditService $audit): RedirectResponse
+    {
+        $this->authorizeFinanceAccess(request(), $expense->matter);
+        abort_unless(request()->user()->hasPermission('expense.manage'), 403);
+
+        $description = $expense->description;
+        $amount = $expense->amount;
+        $expense->delete();
+
+        $audit->record($expense, 'expense.deleted', [
+            'description' => $description,
+            'amount' => $amount,
+        ], request()->user(), request());
+
+        return back()->with('success', 'Biaya pengeluaran operasional berhasil dihapus.');
+    }
+
     public function storePayment(StorePaymentRequest $request, RecordPayment $record, CreateFinanceProofDocument $createProof, AuditService $audit): RedirectResponse
     {
         $this->authorizeMatter($request, $request->validated('matter_id'));

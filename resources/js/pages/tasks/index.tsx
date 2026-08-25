@@ -24,6 +24,7 @@ import {
     Scale,
     Search,
     TrendingUp,
+    Trash2,
     User,
     UserCheck,
     UserPlus,
@@ -31,6 +32,7 @@ import {
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { DiscussionBox, type DiscussionComment } from '@/components/comments/discussion-box';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { EmptyState } from '@/components/empty-state';
 import InputError from '@/components/input-error';
 import { Pagination } from '@/components/pagination';
@@ -106,7 +108,7 @@ export default function TasksIndex({
         completed: number;
     };
     filters: { view?: string; status?: string; matter_id?: string };
-    can: { create: boolean; update?: boolean };
+    can: { create: boolean; update?: boolean; delete?: boolean };
 }) {
     const getInitials = useInitials();
     const [openCreate, setOpenCreate] = useState(() =>
@@ -114,6 +116,8 @@ export default function TasksIndex({
     );
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [editingTask, setEditingTask] = useState<Task | null>(null);
+    const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+    const [isDeletingTask, setIsDeletingTask] = useState(false);
     const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
     const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
 
@@ -807,21 +811,34 @@ export default function TasksIndex({
                                     </DialogDescription>
                                 </div>
 
-                                {can.update && (
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => {
-                                            const t = selectedTask;
-                                            setSelectedTask(null);
-                                            setEditingTask(t);
-                                        }}
-                                        className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
-                                    >
-                                        <Pencil className="mr-1.5 size-3.5 text-slate-400" />
-                                        Edit Tugas
-                                    </Button>
-                                )}
+                                <div className="flex items-center gap-2 shrink-0">
+                                    {can.update && (
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => {
+                                                const t = selectedTask;
+                                                setSelectedTask(null);
+                                                setEditingTask(t);
+                                            }}
+                                            className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
+                                        >
+                                            <Pencil className="mr-1.5 size-3.5 text-slate-400" />
+                                            Edit Tugas
+                                        </Button>
+                                    )}
+                                    {can.delete && (
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => setTaskToDelete(selectedTask)}
+                                            className="h-8 rounded-lg border-rose-200 bg-rose-50/50 px-2.5 text-xs font-semibold text-rose-700 shadow-2xs hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300"
+                                            title="Hapus Tugas"
+                                        >
+                                            <Trash2 className="size-3.5 text-rose-600 dark:text-rose-400" />
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
                         </div>
 
@@ -1444,6 +1461,32 @@ export default function TasksIndex({
                     </DialogContent>
                 )}
             </Dialog>
+
+            {/* Modal Konfirmasi Hapus Tugas */}
+            <ConfirmDialog
+                open={!!taskToDelete}
+                onOpenChange={(open) => !open && setTaskToDelete(null)}
+                title="Hapus Tugas Delegasi"
+                description={
+                    taskToDelete
+                        ? `Apakah Anda yakin ingin menghapus tugas "${taskToDelete.title}"? Seluruh riwayat komentar terkait tugas ini juga akan dihapus.`
+                        : ''
+                }
+                confirmLabel="Hapus Tugas"
+                variant="danger"
+                processing={isDeletingTask}
+                onConfirm={() => {
+                    if (!taskToDelete) return;
+                    setIsDeletingTask(true);
+                    router.delete(`/tasks/${taskToDelete.id}`, {
+                        onFinish: () => {
+                            setIsDeletingTask(false);
+                            setTaskToDelete(null);
+                            setSelectedTask(null);
+                        },
+                    });
+                }}
+            />
         </>
     );
 }

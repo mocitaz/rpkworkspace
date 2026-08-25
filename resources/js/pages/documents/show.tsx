@@ -1,4 +1,4 @@
-import { Form, Head, Link, useForm } from '@inertiajs/react';
+import { Form, Head, Link, router, useForm } from '@inertiajs/react';
 import {
     ArrowLeft,
     ArrowUpRight,
@@ -23,11 +23,13 @@ import {
     ScanText,
     ShieldAlert,
     ShieldCheck,
+    Trash2,
     Upload,
     User,
 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { DiscussionBox, type DiscussionComment, type DiscussionStaff } from '@/components/comments/discussion-box';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { EmptyState } from '@/components/empty-state';
 import InputError from '@/components/input-error';
 import { StatusBadge } from '@/components/status-badge';
@@ -131,6 +133,7 @@ export default function DocumentShow({
         download: boolean;
         approve: boolean;
         signature: boolean;
+        delete?: boolean;
     };
     reviewers: { id: number; name: string }[];
 }) {
@@ -145,6 +148,8 @@ export default function DocumentShow({
         document.versions[0]?.id || '',
     );
     const [signers, setSigners] = useState([{ name: '', email: '' }]);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const selectedVersion =
         document.versions.find((version) => version.id === selectedVersionId) ??
@@ -204,6 +209,17 @@ export default function DocumentShow({
                                     >
                                         <FileUp className="mr-1.5 size-3.5" />
                                         + Versi Baru
+                                    </Button>
+                                )}
+                                {can.delete && !document.matter?.legal_hold_at && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setShowDeleteConfirm(true)}
+                                        className="h-8 shrink-0 rounded-lg border-rose-200 bg-rose-50/50 px-3 text-xs font-semibold text-rose-700 shadow-2xs hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300"
+                                    >
+                                        <Trash2 className="mr-1.5 size-3.5 text-rose-600 dark:text-rose-400" />
+                                        Hapus Dokumen
                                     </Button>
                                 )}
                             </div>
@@ -1153,6 +1169,26 @@ export default function DocumentShow({
                     </Form>
                 </DialogContent>
             </Dialog>
+
+            {/* Modal Konfirmasi Hapus Dokumen */}
+            <ConfirmDialog
+                open={showDeleteConfirm}
+                onOpenChange={setShowDeleteConfirm}
+                title="Hapus Dokumen Repositori"
+                description={`Apakah Anda yakin ingin menghapus dokumen "${document.title}" beserta seluruh riwayat versinya? Tindakan ini akan dicatat dalam log audit.`}
+                confirmLabel="Hapus Dokumen"
+                variant="danger"
+                processing={isDeleting}
+                onConfirm={() => {
+                    setIsDeleting(true);
+                    router.delete(`/documents/${document.id}`, {
+                        onFinish: () => {
+                            setIsDeleting(false);
+                            setShowDeleteConfirm(false);
+                        },
+                    });
+                }}
+            />
         </>
     );
 }

@@ -55,12 +55,14 @@ class TaskPolicy
             && ($user->hasPermission('task.manage') || $task->assignee_id === $user->getKey());
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
     public function delete(User $user, ?Task $task = null): bool
     {
-        return false;
+        if ($task === null) {
+            return $user->hasPermission('task.manage');
+        }
+
+        return $this->view($user, $task)
+            && ($user->hasPermission('task.manage') || $task->reporter_id === $user->getKey());
     }
 
     /**

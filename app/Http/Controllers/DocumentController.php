@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Actions\CreateDocumentVersion;
+use App\Actions\EnsureMatterIsNotOnLegalHold;
 use App\Actions\GenerateSignedFinalPdf;
 use App\Http\Requests\StoreDocumentRequest;
 use App\Models\Client;
@@ -125,6 +126,7 @@ class DocumentController extends Controller
             'can' => [
                 'uploadVersion' => $request->user()->can('update', $document),
                 'download' => $request->user()->can('download', $document),
+                'delete' => $request->user()->can('delete', $document),
                 'approve' => $request->user()->hasPermission('document.approve'),
                 'signature' => $request->user()->hasPermission('signature.manage'),
             ],
@@ -132,5 +134,23 @@ class DocumentController extends Controller
                 ? User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name'])
                 : [],
         ]);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Document $document, EnsureMatterIsNotOnLegalHold $hold, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('delete', $document);
+        if ($document->matter) {
+            $hold->handle($document->matter);
+        }
+
+        $title = $document->title;
+        $document->delete();
+
+        $audit->record($document, 'document.deleted', ['title' => $title], request()->user(), request());
+
+        return to_route('documents.index')->with('success', 'Dokumen berhasil dihapus.');
     }
 }

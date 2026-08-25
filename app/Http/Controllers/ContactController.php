@@ -51,6 +51,7 @@ class ContactController extends Controller
             'can' => [
                 'create' => $request->user()->can('create', Contact::class),
                 'update' => $request->user()->can('update', Contact::class),
+                'delete' => $request->user()->can('delete', Contact::class),
             ],
         ]);
     }
@@ -76,5 +77,20 @@ class ContactController extends Controller
         $audit->record($contact, 'contact.updated', ['old' => $old, 'new' => $contact->only(array_keys($old))], $request->user(), $request);
 
         return back()->with('success', 'Data kontak berhasil diperbarui.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Contact $contact, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('delete', $contact);
+
+        $name = trim($contact->first_name.' '.$contact->last_name);
+        $contact->delete();
+
+        $audit->record($contact, 'contact.deleted', ['name' => $name], request()->user(), request());
+
+        return back()->with('success', 'Kontak berhasil dihapus.');
     }
 }

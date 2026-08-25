@@ -39,12 +39,9 @@ class DocumentPolicy
         return $this->view($user, $document) && $user->hasPermission('document.upload');
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
     public function delete(User $user, Document $document): bool
     {
-        return false;
+        return $this->view($user, $document) && ($user->hasPermission('document.upload') || $document->created_by === $user->getKey());
     }
 
     /**

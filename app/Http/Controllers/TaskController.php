@@ -60,6 +60,7 @@ class TaskController extends Controller
             'can' => [
                 'create' => $request->user()->can('create', Task::class),
                 'update' => $request->user()->can('update', Task::class),
+                'delete' => $request->user()->can('delete', Task::class),
             ],
         ]);
     }
@@ -103,6 +104,21 @@ class TaskController extends Controller
         $audit->record($task, 'task.updated', ['status' => $task->status, 'assignee_id' => $task->assignee_id], $request->user(), $request);
 
         return back()->with('success', 'Tugas diperbarui.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Task $task, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('delete', $task);
+
+        $title = $task->title;
+        $task->delete();
+
+        $audit->record($task, 'task.deleted', ['title' => $title], request()->user(), request());
+
+        return back()->with('success', 'Tugas berhasil dihapus.');
     }
 
     private function notifyAssignee(Task $task, User $actor): void

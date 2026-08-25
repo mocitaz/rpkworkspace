@@ -39,12 +39,9 @@ class ContactPolicy
         return $user->hasPermission('contact.manage');
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
     public function delete(User $user, ?Contact $contact = null): bool
     {
-        return false;
+        return $user->hasPermission('contact.manage');
     }
 
     /**

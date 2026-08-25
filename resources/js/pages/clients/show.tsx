@@ -187,6 +187,8 @@ export default function ClientShow({
     const [isUploadingDocument, setIsUploadingDocument] = useState(false);
     const [complianceToDelete, setComplianceToDelete] = useState<ComplianceDocument | null>(null);
     const [isDeletingCompliance, setIsDeletingCompliance] = useState(false);
+    const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
+    const [isDeletingContact, setIsDeletingContact] = useState(false);
     const allMatters = useMemo(() => [...activeMatters, ...closedMatters], [activeMatters, closedMatters]);
 
     const handleCopyTax = () => {
@@ -888,18 +890,30 @@ export default function ClientShow({
                                                     key={contact.id}
                                                     className="flex flex-col justify-between rounded-xl border border-slate-200/70 bg-slate-50/60 p-3 text-xs transition-all hover:border-slate-300 hover:bg-white dark:border-white/[0.06] dark:bg-[#121418] dark:hover:bg-[#16181d]"
                                                 >
-                                                    <div className="flex items-start gap-2.5">
-                                                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[10px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                                            {getInitials(contact.full_name)}
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <div className="flex items-start gap-2.5 min-w-0">
+                                                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[10px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                                {getInitials(contact.full_name)}
+                                                            </div>
+                                                            <div className="min-w-0">
+                                                                <h4 className="truncate font-semibold text-slate-900 dark:text-white">
+                                                                    {contact.full_name}
+                                                                </h4>
+                                                                <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
+                                                                    {contact.job_title ?? 'Perwakilan Klien'}
+                                                                </p>
+                                                            </div>
                                                         </div>
-                                                        <div className="min-w-0">
-                                                            <h4 className="truncate font-semibold text-slate-900 dark:text-white">
-                                                                {contact.full_name}
-                                                            </h4>
-                                                            <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
-                                                                {contact.job_title ?? 'Perwakilan Klien'}
-                                                            </p>
-                                                        </div>
+                                                        {can.update && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setContactToDelete(contact)}
+                                                                className="shrink-0 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400"
+                                                                title="Hapus Kontak"
+                                                            >
+                                                                <Trash2 className="size-3.5" />
+                                                            </button>
+                                                        )}
                                                     </div>
 
                                                     <div className="mt-3 space-y-1 border-t border-slate-100 pt-2 text-[10px] dark:border-white/[0.04]">
@@ -1441,6 +1455,31 @@ export default function ClientShow({
                         onFinish: () => {
                             setIsDeletingCompliance(false);
                             setComplianceToDelete(null);
+                        },
+                    });
+                }}
+            />
+
+            {/* Modal Konfirmasi Hapus Kontak Perwakilan */}
+            <ConfirmDialog
+                open={!!contactToDelete}
+                onOpenChange={(open) => !open && setContactToDelete(null)}
+                title="Hapus Kontak Perwakilan"
+                description={
+                    contactToDelete
+                        ? `Apakah Anda yakin ingin menghapus kontak "${contactToDelete.full_name}" dari daftar kontak perwakilan klien ini?`
+                        : ''
+                }
+                confirmLabel="Hapus Kontak"
+                variant="danger"
+                processing={isDeletingContact}
+                onConfirm={() => {
+                    if (!contactToDelete) return;
+                    setIsDeletingContact(true);
+                    router.delete(`/contacts/${contactToDelete.id}`, {
+                        onFinish: () => {
+                            setIsDeletingContact(false);
+                            setContactToDelete(null);
                         },
                     });
                 }}

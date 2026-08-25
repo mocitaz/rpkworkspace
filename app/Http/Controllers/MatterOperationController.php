@@ -7,8 +7,12 @@ use App\Http\Requests\StoreMatterDeadlineRequest;
 use App\Http\Requests\StoreMatterEventRequest;
 use App\Http\Requests\StoreMatterNoteRequest;
 use App\Http\Requests\StoreMatterPartyRequest;
+use App\Models\Deadline;
 use App\Models\Matter;
+use App\Models\MatterEvent;
 use App\Models\MatterEvidence;
+use App\Models\MatterParty;
+use App\Models\Note;
 use App\Notifications\HearingScheduledNotification;
 use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
@@ -140,5 +144,69 @@ class MatterOperationController extends Controller
         ], request()->user(), request());
 
         return back()->with('success', 'Alat bukti fisik berhasil dihapus.');
+    }
+
+    public function destroyParty(Matter $matter, MatterParty $party, EnsureMatterIsNotOnLegalHold $hold, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('update', $matter);
+        $hold->handle($matter);
+
+        $name = $party->name;
+        $party->delete();
+
+        $audit->record($matter, 'matter.party_deleted', [
+            'matter_id' => $matter->getKey(),
+            'name' => $name,
+        ], request()->user(), request());
+
+        return back()->with('success', 'Pihak terkait berhasil dihapus.');
+    }
+
+    public function destroyDeadline(Matter $matter, Deadline $deadline, EnsureMatterIsNotOnLegalHold $hold, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('update', $matter);
+        $hold->handle($matter);
+
+        $title = $deadline->title;
+        $deadline->delete();
+
+        $audit->record($matter, 'matter.deadline_deleted', [
+            'matter_id' => $matter->getKey(),
+            'title' => $title,
+        ], request()->user(), request());
+
+        return back()->with('success', 'Tenggat waktu berhasil dihapus.');
+    }
+
+    public function destroyEvent(Matter $matter, MatterEvent $event, EnsureMatterIsNotOnLegalHold $hold, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('update', $matter);
+        $hold->handle($matter);
+
+        $title = $event->title;
+        $event->delete();
+
+        $audit->record($matter, 'matter.event_deleted', [
+            'matter_id' => $matter->getKey(),
+            'title' => $title,
+        ], request()->user(), request());
+
+        return back()->with('success', 'Agenda sidang berhasil dihapus.');
+    }
+
+    public function destroyNote(Matter $matter, Note $note, EnsureMatterIsNotOnLegalHold $hold, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('update', $matter);
+        $hold->handle($matter);
+
+        $title = $note->title;
+        $note->delete();
+
+        $audit->record($matter, 'matter.note_deleted', [
+            'matter_id' => $matter->getKey(),
+            'title' => $title,
+        ], request()->user(), request());
+
+        return back()->with('success', 'Catatan internal berhasil dihapus.');
     }
 }

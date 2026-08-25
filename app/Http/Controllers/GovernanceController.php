@@ -21,6 +21,7 @@ use App\Models\Correspondence;
 use App\Models\Document;
 use App\Models\Matter;
 use App\Models\MatterExport;
+use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -107,6 +108,7 @@ class GovernanceController extends Controller
                 'documents.currentVersion:id,document_id,original_filename,mime_type,file_size',
             ]),
             'canUploadAttachment' => $request->user()->hasPermission('correspondence.manage') && $request->user()->hasPermission('document.upload'),
+            'canDelete' => $request->user()->hasPermission('correspondence.manage'),
         ]);
     }
 
@@ -128,6 +130,23 @@ class GovernanceController extends Controller
         $audit->record($correspondence, 'correspondence.attachment_uploaded', ['document_id' => $document->getKey()], $request->user(), $request);
 
         return back()->with('success', 'Lampiran correspondence diunggah dan dijadwalkan untuk pemindaian.');
+    }
+
+    public function destroyCorrespondence(Correspondence $correspondence, EnsureMatterIsNotOnLegalHold $hold, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('view', $correspondence->matter);
+        abort_unless(request()->user()->hasPermission('correspondence.manage'), 403);
+        $hold->handle($correspondence->matter);
+
+        $subject = $correspondence->subject;
+        $correspondence->delete();
+
+        $audit->record($correspondence, 'correspondence.deleted', [
+            'subject' => $subject,
+            'matter_id' => $correspondence->matter_id,
+        ], request()->user(), request());
+
+        return redirect()->route('governance.index')->with('success', 'Log korespondensi berhasil dihapus.');
     }
 
     public function storeConflictCheck(StoreConflictCheckRequest $request, RunConflictCheck $run): RedirectResponse

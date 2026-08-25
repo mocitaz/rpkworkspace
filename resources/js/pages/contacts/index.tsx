@@ -15,6 +15,7 @@ import {
     Plus,
     RotateCcw,
     Search,
+    Trash2,
     TrendingUp,
     User,
     UserCheck,
@@ -22,6 +23,7 @@ import {
     Users,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { EmptyState } from '@/components/empty-state';
 import InputError from '@/components/input-error';
 import { Pagination } from '@/components/pagination';
@@ -75,13 +77,15 @@ export default function ContactsIndex({
         connected_clients: number;
     };
     filters: { search?: string; client_id?: string };
-    can: { create: boolean; update?: boolean };
+    can: { create: boolean; update?: boolean; delete?: boolean };
 }) {
     const [openCreate, setOpenCreate] = useState(() =>
         new URLSearchParams(window.location.search).has('create'),
     );
     const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
     const [editingContact, setEditingContact] = useState<Contact | null>(null);
+    const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
+    const [isDeletingContact, setIsDeletingContact] = useState(false);
     const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
     const [searchQuery, setSearchQuery] = useState(filters.search ?? '');
     const [copiedInfo, setCopiedInfo] = useState(false);
@@ -685,6 +689,18 @@ export default function ContactsIndex({
                                         Edit
                                     </Button>
                                 )}
+
+                                {can.delete && (
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => setContactToDelete(selectedContact)}
+                                        className="h-7.5 rounded-lg border-rose-200 bg-rose-50/50 px-2 text-xs font-semibold text-rose-700 hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300"
+                                        title="Hapus Kontak"
+                                    >
+                                        <Trash2 className="size-3 text-rose-600 dark:text-rose-400" />
+                                    </Button>
+                                )}
                             </div>
 
                             {/* Contact Details List */}
@@ -1043,6 +1059,32 @@ export default function ContactsIndex({
                     </DialogContent>
                 )}
             </Dialog>
+
+            {/* Modal Konfirmasi Hapus Kontak */}
+            <ConfirmDialog
+                open={!!contactToDelete}
+                onOpenChange={(open) => !open && setContactToDelete(null)}
+                title="Hapus Kontak"
+                description={
+                    contactToDelete
+                        ? `Apakah Anda yakin ingin menghapus data kontak "${contactToDelete.full_name || contactToDelete.first_name}"?`
+                        : ''
+                }
+                confirmLabel="Hapus Kontak"
+                variant="danger"
+                processing={isDeletingContact}
+                onConfirm={() => {
+                    if (!contactToDelete) return;
+                    setIsDeletingContact(true);
+                    router.delete(`/contacts/${contactToDelete.id}`, {
+                        onFinish: () => {
+                            setIsDeletingContact(false);
+                            setContactToDelete(null);
+                            setSelectedContact(null);
+                        },
+                    });
+                }}
+            />
         </>
     );
 }
