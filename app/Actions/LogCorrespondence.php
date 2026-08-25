@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Models\Correspondence;
 use App\Models\Matter;
 use App\Models\User;
+use App\Notifications\CorrespondenceDispatchedNotification;
 use App\Services\AuditService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -41,6 +42,11 @@ class LogCorrespondence
             'direction' => $correspondence->direction,
             'source' => $correspondence->source,
         ], $actor);
+
+        if ($matter->responsible_partner_id && $matter->responsible_partner_id !== $actor->getKey()) {
+            $partner = User::query()->where('is_active', true)->find($matter->responsible_partner_id);
+            $partner?->notify((new CorrespondenceDispatchedNotification($correspondence))->afterCommit());
+        }
 
         return $correspondence;
     }

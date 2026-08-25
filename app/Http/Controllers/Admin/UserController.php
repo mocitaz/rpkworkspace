@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateAdminUserRequest;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
+use App\Notifications\NewStaffWelcomeNotification;
 use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -71,6 +72,10 @@ class UserController extends Controller
             'role_ids' => $request->validated('role_ids'),
             'manual_password_set' => $hasCustomPassword,
         ], $request->user(), $request);
+
+        if (! $hasCustomPassword) {
+            $user->notify((new NewStaffWelcomeNotification($user, $initialPassword))->afterCommit());
+        }
 
         return back()->with(
             'success',

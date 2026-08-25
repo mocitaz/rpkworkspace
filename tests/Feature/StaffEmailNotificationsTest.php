@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Client;
+use App\Models\Correspondence;
 use App\Models\Document;
 use App\Models\DocumentApproval;
 use App\Models\Matter;
@@ -10,6 +11,7 @@ use App\Models\Task;
 use App\Models\User;
 use App\Notifications\ClientPartnerAssignedNotification;
 use App\Notifications\ComplianceExpiringNotification;
+use App\Notifications\CorrespondenceDispatchedNotification;
 use App\Notifications\DocumentApprovalRequestedNotification;
 use App\Notifications\DocumentCommentAddedNotification;
 use App\Notifications\DocumentSignedExecutedNotification;
@@ -18,11 +20,15 @@ use App\Notifications\HearingReminderNotification;
 use App\Notifications\HearingScheduledNotification;
 use App\Notifications\MatterAssignedNotification;
 use App\Notifications\MatterStageChangedNotification;
+use App\Notifications\NewStaffWelcomeNotification;
 use App\Notifications\PaymentVerificationRequestedNotification;
+use App\Notifications\SecurityAlertNotification;
 use App\Notifications\TaskAssignedNotification;
 use App\Notifications\TaskCompletedNotification;
 use App\Notifications\TaskDueReminderNotification;
 use App\Notifications\TaskOverdueNotification;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -188,5 +194,45 @@ class StaffEmailNotificationsTest extends TestCase
         );
         $mail15 = $notif15->toMail($user);
         $this->assertStringContainsString('Verifikasi Pembayaran Klien Masuk', (string) $mail15->render());
+
+        // 16. Correspondence Dispatched
+        $correspondence = Correspondence::factory()->create([
+            'matter_id' => $matter->id,
+            'client_id' => $client->id,
+            'subject' => 'Surat Panggilan Sidang Pertama Perkara Perdata No. 12/Pdt.G/2026/PN.Jkt.Pst',
+            'direction' => 'inbound',
+            'source' => 'manual',
+            'from_addresses' => ['panitera@pn-jakartapusat.go.id'],
+            'to_addresses' => ['litigasi@rpklawoffice.com'],
+            'occurred_at' => now(),
+            'created_by' => $user->id,
+        ]);
+        $notif16 = new CorrespondenceDispatchedNotification($correspondence, 'Harap dipelajari dan disiapkan surat kuasa sebelum hari sidang.');
+        $mail16 = $notif16->toMail($user);
+        $this->assertStringContainsString('Disposisi Surat Masuk Resmi', (string) $mail16->render());
+
+        // 17. Security Alert
+        $notif17 = new SecurityAlertNotification(
+            activityType: 'Penggantian Kata Sandi Akun Berhasil',
+            ipAddress: '103.145.22.18',
+            userAgent: 'Chrome on macOS'
+        );
+        $mail17 = $notif17->toMail($user);
+        $this->assertStringContainsString('Pemberitahuan Keamanan Akun', (string) $mail17->render());
+
+        // 18. Reset Password
+        $notif18 = new ResetPassword('sample-reset-token-12345');
+        $mail18 = $notif18->toMail($user);
+        $this->assertStringContainsString('Permintaan Reset Password', (string) $mail18->render());
+
+        // 19. Verify Email
+        $notif19 = new VerifyEmail;
+        $mail19 = $notif19->toMail($user);
+        $this->assertStringContainsString('Verifikasi Alamat Email', (string) $mail19->render());
+
+        // 20. New Staff Welcome
+        $notif20 = new NewStaffWelcomeNotification($user, 'SecretTempPass2026!');
+        $mail20 = $notif20->toMail($user);
+        $this->assertStringContainsString('Selamat Datang di RPK Law Firm', (string) $mail20->render());
     }
 }
