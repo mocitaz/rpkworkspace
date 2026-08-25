@@ -435,9 +435,12 @@ export default function ClientShow({
                                     {/* Catatan & Ikhtisar Klien */}
                                     <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                         <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2 dark:border-white/[0.04]">
-                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                Catatan &amp; Ikhtisar Klien
-                                            </span>
+                                            <div className="flex items-center gap-1.5">
+                                                <Building2 className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                                <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                    Catatan &amp; Ikhtisar Klien
+                                                </span>
+                                            </div>
                                             <span className="text-[11px] text-slate-400">
                                                 Profil Entitas
                                             </span>
@@ -451,9 +454,12 @@ export default function ClientShow({
                                     {/* Matter Berjalan */}
                                     <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                         <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                Matter Berjalan ({activeMatters.length})
-                                            </span>
+                                            <div className="flex items-center gap-1.5">
+                                                <Briefcase className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                                <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                    Matter Berjalan ({activeMatters.length})
+                                                </span>
+                                            </div>
                                             {allMatters.length > 0 && (
                                                 <button
                                                     onClick={() => setTab('Matters')}
@@ -556,10 +562,13 @@ export default function ClientShow({
                                 <div className="space-y-3 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
                                         <div>
-                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Daftar Perkara Hukum ({allMatters.length})
-                                            </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                            <div className="flex items-center gap-2">
+                                                <Briefcase className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                    Daftar Perkara Hukum ({allMatters.length})
+                                                </h2>
+                                            </div>
+                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                                 Seluruh riwayat penanganan perkara aktif maupun selesai.
                                             </p>
                                         </div>
@@ -664,13 +673,12 @@ export default function ClientShow({
                             )}
 
                             {/* TAB: LEGALITAS & KEPATUHAN KORPORASI */}
-                            {/* TAB: LEGALITAS & KEPATUHAN KORPORASI */}
                             {tab === 'Legalitas' && (
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex flex-col justify-between gap-3 border-b border-slate-100 pb-3 sm:flex-row sm:items-center dark:border-white/[0.04]">
                                         <div>
                                             <div className="flex items-center gap-2">
-                                                <FileBadge className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <Scale className="size-4 text-slate-700 dark:text-zinc-300" />
                                                 <h2 className="text-xs font-bold text-slate-900 dark:text-white">
                                                     Legalitas Korporasi &amp; Kepatuhan Izin ({client.compliance_documents?.length ?? 0})
                                                 </h2>
@@ -850,10 +858,13 @@ export default function ClientShow({
                                 <div className="space-y-3 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
                                         <div>
-                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Daftar Kontak Perwakilan ({client.contacts.length})
-                                            </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                            <div className="flex items-center gap-2">
+                                                <ContactRound className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                    Daftar Kontak Perwakilan ({client.contacts.length})
+                                                </h2>
+                                            </div>
+                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                                 Personil yang dapat dihubungi terkait administrasi dan komunikasi perkara.
                                             </p>
                                         </div>
@@ -942,10 +953,13 @@ export default function ClientShow({
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3 dark:border-white/[0.04]">
                                         <div>
-                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Kepatuhan KYC &amp; Anti-Money Laundering (PMPJ)
-                                            </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                            <div className="flex items-center gap-2">
+                                                <ShieldCheck className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                    Kepatuhan KYC &amp; Anti-Money Laundering (PMPJ)
+                                                </h2>
+                                            </div>
+                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                                 Prinsip Mengenali Pengguna Jasa (PMPJ) dan penilaian risiko kepatuhan hukum.
                                             </p>
                                         </div>
@@ -1099,10 +1113,13 @@ export default function ClientShow({
                                 <div className="space-y-3 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
                                         <div>
-                                            <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Dokumen Terkait Klien ({documents.length})
-                                            </h2>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                            <div className="flex items-center gap-2">
+                                                <FileText className="size-4 text-slate-700 dark:text-zinc-300" />
+                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                    Dokumen Terkait Klien ({documents.length})
+                                                </h2>
+                                            </div>
+                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                                 Arsip legalitas, surat kuasa, dan dokumen perkara terkait.
                                             </p>
                                         </div>
@@ -1213,9 +1230,12 @@ export default function ClientShow({
                         <div className="space-y-4 lg:col-span-4">
                             {/* Legalitas & Kontak Perusahaan */}
                             <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <span className="mb-3 block text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                    Legalitas &amp; Kontak Perusahaan
-                                </span>
+                                <div className="mb-3 flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
+                                    <Building2 className="size-3.5 text-slate-400" />
+                                    <span className="text-[11px] font-semibold uppercase">
+                                        Legalitas &amp; Kontak Perusahaan
+                                    </span>
+                                </div>
                                 <div className="space-y-2.5 text-xs">
                                     {client.tax_identifier && (
                                         <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 dark:border-white/[0.04]">
@@ -1318,9 +1338,12 @@ export default function ClientShow({
                             {/* Berkas Legalitas Terkini */}
                             <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                 <div className="mb-3 flex items-center justify-between">
-                                    <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                        Berkas Legalitas ({documents.length})
-                                    </span>
+                                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
+                                        <FileText className="size-3.5 text-slate-400" />
+                                        <span className="text-[11px] font-semibold uppercase">
+                                            Berkas Legalitas ({documents.length})
+                                        </span>
+                                    </div>
                                     {documents.length > 0 && (
                                         <button
                                             onClick={() => setTab('Dokumen')}
