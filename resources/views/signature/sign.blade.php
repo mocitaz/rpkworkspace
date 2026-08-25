@@ -20,10 +20,10 @@
         <header class="flex items-center justify-between rounded-3xl border border-slate-200/90 bg-white p-5 shadow-2xs">
             <div class="flex items-center gap-3.5">
                 <img 
-                    src="/logo/raf-law-firm-transparent.png" 
+                    src="/logo/logo.png" 
                     alt="RPK Law Firm" 
                     class="h-10 w-auto max-w-[160px] object-contain"
-                    onerror="this.onerror=null; this.src='/logo/logo.png';"
+                    onerror="this.onerror=null; this.src='/logo/raf-law-firm-transparent.png';"
                 />
                 <div class="border-l border-slate-200 pl-3">
                     <h2 class="text-xs font-black tracking-tight text-slate-900 uppercase">RPK LAW FIRM</h2>

@@ -13,7 +13,12 @@ class SignatureVerificationController extends Controller
     public function show(string $verificationCode): View
     {
         $signatureRequest = SignatureRequest::query()
-            ->with(['document:id,title', 'documentVersion:id,checksum,version_number', 'signers:id,signature_request_id,name,status,signed_at'])
+            ->with([
+                'document.matter:id,matter_number,title',
+                'document.client:id,client_number,display_name',
+                'documentVersion:id,document_id,checksum,version_number,original_filename,file_size,mime_type',
+                'signers' => fn ($q) => $q->orderBy('signing_order')->orderBy('id'),
+            ])
             ->where('verification_code', $verificationCode)
             ->firstOrFail();
 
