@@ -247,87 +247,94 @@ export default function ContactsIndex({
                     </section>
 
                     {/* 3. Filter Bar & View Toggle */}
-                    <div className="flex flex-col gap-3 rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.06] dark:bg-[#14161b]">
-                        <form
-                            onSubmit={handleFilterSubmit}
-                            className="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center"
-                        >
-                            <div className="relative min-w-[220px] flex-1 sm:max-w-xs">
-                                <Search className="pointer-events-none absolute top-2.5 left-2.5 size-3.5 text-slate-400" />
+                    <div className="rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 space-y-2 dark:border-white/[0.04] dark:bg-[#121418]">
+                        {/* Row 1: Search + View Switcher + Reset + Count Badge */}
+                        <div className="flex items-center gap-2">
+                            <div className="relative flex-1">
+                                <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                                 <Input
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="Cari nama, jabatan, email, no HP..."
-                                    className="h-8 w-full rounded-lg border-slate-200 bg-slate-50/70 pr-3 pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                    placeholder="Cari nama personil, jabatan, email, no HP/telepon..."
+                                    className="h-8 w-full rounded-lg border-slate-200 bg-white pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
                                 />
                             </div>
 
-                            <div className="relative min-w-[180px]">
+                            {/* View Switcher */}
+                            <div className="flex items-center gap-0.5 rounded-lg border border-slate-200/70 bg-white p-0.5 dark:border-white/10 dark:bg-zinc-800">
+                                <button
+                                    type="button"
+                                    onClick={() => setViewMode('table')}
+                                    className={`flex size-7 items-center justify-center rounded-md transition-all ${
+                                        viewMode === 'table'
+                                            ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400'
+                                    }`}
+                                    title="Tampilan Tabel"
+                                >
+                                    <LayoutList className="size-3.5" />
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setViewMode('cards')}
+                                    className={`flex size-7 items-center justify-center rounded-md transition-all ${
+                                        viewMode === 'cards'
+                                            ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400'
+                                    }`}
+                                    title="Tampilan Grid"
+                                >
+                                    <Grid className="size-3.5" />
+                                </button>
+                            </div>
+
+                            {(filters.search || filters.client_id) && (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleResetFilters}
+                                    className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                    title="Reset Semua Filter"
+                                >
+                                    <RotateCcw className="size-3.5 text-slate-400" />
+                                </Button>
+                            )}
+
+                            <span className="shrink-0 rounded-md bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 border border-slate-200/70 shadow-2xs dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-300">
+                                {contacts.total} kontak
+                            </span>
+                        </div>
+
+                        {/* Row 2: Select Client + Submit button */}
+                        <form
+                            onSubmit={handleFilterSubmit}
+                            className="flex flex-wrap items-center gap-2"
+                        >
+                            <div className="relative min-w-[200px] flex-1">
                                 <select
                                     defaultValue={filters.client_id ?? ''}
                                     onChange={(e) => handleClientFilter(e.target.value)}
-                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                 >
-                                    <option value="">Semua Klien &amp; Entitas</option>
+                                    <option value="">Semua Klien &amp; Entitas Terkait</option>
                                     {clients.map((client) => (
                                         <option key={client.id} value={client.id}>
                                             {client.display_name}
                                         </option>
                                     ))}
                                 </select>
-                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
+                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
                             </div>
 
-                            <div className="flex items-center gap-1.5">
-                                <Button
-                                    type="submit"
-                                    size="sm"
-                                    className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
-                                >
-                                    Cari
-                                </Button>
-
-                                {(filters.search || filters.client_id) && (
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={handleResetFilters}
-                                        className="h-8 rounded-lg border-slate-200 px-2.5 text-xs text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
-                                    >
-                                        <RotateCcw className="size-3" />
-                                    </Button>
-                                )}
-                            </div>
+                            <Button
+                                type="submit"
+                                size="sm"
+                                className="h-8 shrink-0 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                            >
+                                Terapkan Filter
+                            </Button>
                         </form>
-
-                        {/* View Switcher Pills */}
-                        <div className="flex items-center gap-1 border-t border-slate-100 pt-2 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-2.5 dark:border-white/[0.04]">
-                            <button
-                                type="button"
-                                onClick={() => setViewMode('table')}
-                                className={`flex size-7 items-center justify-center rounded-lg transition-all ${
-                                    viewMode === 'table'
-                                        ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400'
-                                }`}
-                                title="Tampilan Tabel"
-                            >
-                                <LayoutList className="size-3.5" />
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setViewMode('cards')}
-                                className={`flex size-7 items-center justify-center rounded-lg transition-all ${
-                                    viewMode === 'cards'
-                                        ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400'
-                                }`}
-                                title="Tampilan Grid"
-                            >
-                                <Grid className="size-3.5" />
-                            </button>
-                        </div>
                     </div>
 
                     {/* 4. Contacts Content */}

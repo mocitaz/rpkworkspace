@@ -230,88 +230,91 @@ export default function ClientsIndex({
                     </section>
 
                     {/* 3. Filter Controls & Segmented Quick Filter Bar */}
-                    <div className="space-y-3">
-                        <div className="flex flex-col gap-3 rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.06] dark:bg-[#14161b]">
-                            {/* Segmented Quick Status Pills */}
-                            <div className="flex flex-wrap items-center gap-1">
-                                <button
-                                    type="button"
-                                    onClick={() => handleFilterStatus('')}
-                                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
-                                        !filters.status
-                                            ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                            : 'text-slate-600 hover:bg-slate-100 dark:text-zinc-400 dark:hover:bg-white/[0.04]'
-                                    }`}
-                                >
-                                    Semua ({clients.total})
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleFilterStatus('active')}
-                                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
-                                        filters.status === 'active'
-                                            ? 'bg-emerald-600 text-white shadow-2xs'
-                                            : 'text-slate-600 hover:bg-slate-100 hover:text-emerald-700 dark:text-zinc-400 dark:hover:bg-white/[0.04]'
-                                    }`}
-                                >
-                                    Aktif ({activeClientsCount})
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleFilterStatus('inactive')}
-                                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
-                                        filters.status === 'inactive'
-                                            ? 'bg-amber-600 text-white shadow-2xs'
-                                            : 'text-slate-600 hover:bg-slate-100 hover:text-amber-700 dark:text-zinc-400 dark:hover:bg-white/[0.04]'
-                                    }`}
-                                >
-                                    Tidak Aktif
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => handleFilterStatus('closed')}
-                                    className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
-                                        filters.status === 'closed'
-                                            ? 'bg-slate-700 text-white shadow-2xs dark:bg-zinc-700'
-                                            : 'text-slate-600 hover:bg-slate-100 dark:text-zinc-400 dark:hover:bg-white/[0.04]'
-                                    }`}
-                                >
-                                    Ditutup
-                                </button>
+                    <div className="rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 space-y-2 dark:border-white/[0.04] dark:bg-[#121418]">
+                        {/* Row 1: Search Form + Reset + Count Badge */}
+                        <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
+                            <div className="relative flex-1">
+                                <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                <Input
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder="Cari nama klien, nomor registrasi, sektor industri..."
+                                    className="h-8 w-full rounded-lg border-slate-200 bg-white pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
+                                />
                             </div>
 
-                            {/* Search Form */}
-                            <form onSubmit={handleSearchSubmit} className="flex items-center gap-2">
-                                <div className="relative min-w-[200px] flex-1 sm:w-64 sm:flex-none">
-                                    <Search className="pointer-events-none absolute top-2.5 left-2.5 size-3.5 text-slate-400" />
-                                    <Input
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        placeholder="Cari nama, no. klien, industri..."
-                                        className="h-8 w-full rounded-lg border-slate-200 bg-slate-50/70 pr-3 pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
-                                    />
-                                </div>
+                            <Button
+                                type="submit"
+                                size="sm"
+                                className="h-8 shrink-0 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                            >
+                                Cari
+                            </Button>
 
+                            {(filters.search || filters.status) && (
                                 <Button
-                                    type="submit"
+                                    type="button"
+                                    variant="outline"
                                     size="sm"
-                                    className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                                    onClick={handleResetFilters}
+                                    className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                    title="Reset Semua Filter"
                                 >
-                                    Cari
+                                    <RotateCcw className="size-3.5 text-slate-400" />
                                 </Button>
+                            )}
 
-                                {(filters.search || filters.status) && (
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={handleResetFilters}
-                                        className="h-8 rounded-lg border-slate-200 px-2.5 text-xs text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
-                                    >
-                                        <RotateCcw className="size-3" />
-                                    </Button>
-                                )}
-                            </form>
+                            <span className="shrink-0 rounded-md bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 border border-slate-200/70 shadow-2xs dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-300">
+                                {clients.total} klien
+                            </span>
+                        </form>
+
+                        {/* Row 2: Segmented Quick Status Pills */}
+                        <div className="flex flex-wrap items-center gap-1 border-t border-slate-200/40 pt-2 dark:border-white/[0.04]">
+                            <button
+                                type="button"
+                                onClick={() => handleFilterStatus('')}
+                                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                    !filters.status
+                                        ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                        : 'text-slate-600 hover:bg-white dark:text-zinc-400 dark:hover:bg-zinc-800'
+                                }`}
+                            >
+                                Semua ({clients.total})
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleFilterStatus('active')}
+                                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                    filters.status === 'active'
+                                        ? 'bg-emerald-600 text-white shadow-2xs'
+                                        : 'text-slate-600 hover:bg-white hover:text-emerald-700 dark:text-zinc-400 dark:hover:bg-zinc-800'
+                                }`}
+                            >
+                                Aktif ({activeClientsCount})
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleFilterStatus('inactive')}
+                                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                    filters.status === 'inactive'
+                                        ? 'bg-amber-600 text-white shadow-2xs'
+                                        : 'text-slate-600 hover:bg-white hover:text-amber-700 dark:text-zinc-400 dark:hover:bg-zinc-800'
+                                }`}
+                            >
+                                Tidak Aktif
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleFilterStatus('closed')}
+                                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                    filters.status === 'closed'
+                                        ? 'bg-slate-700 text-white shadow-2xs dark:bg-zinc-700'
+                                        : 'text-slate-600 hover:bg-white dark:text-zinc-400 dark:hover:bg-zinc-800'
+                                }`}
+                            >
+                                Ditutup
+                            </button>
                         </div>
                     </div>
 
