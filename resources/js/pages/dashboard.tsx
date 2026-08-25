@@ -458,86 +458,86 @@ export default function Dashboard({
                     {/* 3. Main Bento Hub: Symmetrical 2x2 Grid (Equal Heights & Perfectly Aligned) */}
                     <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                         {/* [Row 1, Col 1] Widget 1: Work Queue & Tugas */}
-                        <div className="flex h-full flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div>
-                                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
-                                    <div className="flex items-center gap-2">
-                                        <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                            Work Queue &amp; Tugas
-                                        </h2>
-                                        <span className="font-mono text-[10px] text-slate-400">
-                                            ({currentQueueItems.length})
-                                        </span>
-                                    </div>
-                                    {/* Sleek Segmented Switch */}
-                                    <div className="flex items-center rounded-lg bg-slate-100 p-0.5 text-xs dark:bg-white/[0.04]">
-                                        <button
-                                            type="button"
-                                            onClick={() => setQueueTab('pending')}
-                                            className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
-                                                queueTab === 'pending'
-                                                    ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
-                                                    : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
-                                            }`}
-                                        >
-                                            Menunggu ({pendingCount})
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setQueueTab('in_progress')}
-                                            className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
-                                                queueTab === 'in_progress'
-                                                    ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
-                                                    : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
-                                            }`}
-                                        >
-                                            Review ({reviewCount})
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setQueueTab('completed')}
-                                            className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
-                                                queueTab === 'completed'
-                                                    ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
-                                                    : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
-                                            }`}
-                                        >
-                                            Selesai ({completedCount})
-                                        </button>
-                                    </div>
+                        <div className="flex h-full flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                <div className="flex items-center gap-2">
+                                    <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                        Work Queue &amp; Tugas
+                                    </h2>
+                                    <span className="font-mono text-[10px] text-slate-400">
+                                        ({currentQueueItems.length})
+                                    </span>
                                 </div>
+                                {/* Sleek Segmented Switch */}
+                                <div className="flex items-center rounded-lg bg-slate-100 p-0.5 text-xs dark:bg-white/[0.04]">
+                                    <button
+                                        type="button"
+                                        onClick={() => setQueueTab('pending')}
+                                        className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
+                                            queueTab === 'pending'
+                                                ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
+                                                : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
+                                        }`}
+                                    >
+                                        Menunggu ({pendingCount})
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setQueueTab('in_progress')}
+                                        className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
+                                            queueTab === 'in_progress'
+                                                ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
+                                                : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
+                                        }`}
+                                    >
+                                        Review ({reviewCount})
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setQueueTab('completed')}
+                                        className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
+                                            queueTab === 'completed'
+                                                ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
+                                                : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
+                                        }`}
+                                    >
+                                        Selesai ({completedCount})
+                                    </button>
+                                </div>
+                            </div>
 
-                                <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
-                                    {currentQueueItems.length === 0 ? (
-                                        <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
-                                            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
-                                                <CheckCircle2 className="size-4.5 text-slate-400 dark:text-zinc-500" />
-                                            </div>
-                                            <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
-                                                Antrean Tugas Bersih
-                                            </p>
-                                            <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
-                                                {queueTab === 'completed'
-                                                    ? 'Belum ada tugas yang selesai tercatat.'
-                                                    : queueTab === 'in_progress'
-                                                      ? 'Tidak ada tugas yang sedang dalam tahap review.'
-                                                      : 'Tidak ada tugas yang menunggu pengerjaan saat ini.'}
-                                            </p>
-                                            {queueTab === 'pending' && (
-                                                <Button
-                                                    asChild
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="mt-2 h-7 rounded-lg text-[11px] font-bold text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
-                                                >
-                                                    <Link href={tasksRoutes.index({ query: { create: 1 } })}>
-                                                        <Plus className="mr-1 size-3" /> Buat Tugas Baru
-                                                    </Link>
-                                                </Button>
-                                            )}
+                            <div className="flex flex-1 flex-col justify-center py-3">
+                                {currentQueueItems.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-4 px-4 text-center">
+                                        <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
+                                            <CheckCircle2 className="size-4.5 text-slate-400 dark:text-zinc-500" />
                                         </div>
-                                    ) : (
-                                        currentQueueItems.slice(0, 4).map((item, idx) => {
+                                        <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                            Antrean Tugas Bersih
+                                        </p>
+                                        <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                            {queueTab === 'completed'
+                                                ? 'Belum ada tugas yang selesai tercatat.'
+                                                : queueTab === 'in_progress'
+                                                  ? 'Tidak ada tugas yang sedang dalam tahap review.'
+                                                  : 'Tidak ada tugas yang menunggu pengerjaan saat ini.'}
+                                        </p>
+                                        {queueTab === 'pending' && (
+                                            <Button
+                                                asChild
+                                                variant="ghost"
+                                                size="sm"
+                                                className="mt-2.5 h-7 rounded-lg text-[11px] font-bold text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
+                                            >
+                                                <Link href={tasksRoutes.index({ query: { create: 1 } })}>
+                                                    <Plus className="mr-1 size-3" /> Buat Tugas Baru
+                                                </Link>
+                                            </Button>
+                                        )}
+                                    </div>
+                                ) : (
+                                    <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                        {currentQueueItems.slice(0, 4).map((item, idx) => {
                                             const isUrgent = item.priority === 'high';
 
                                             return (
@@ -602,12 +602,12 @@ export default function Dashboard({
                                                     </div>
                                                 </div>
                                             );
-                                        })
-                                    )}
-                                </div>
+                                        })}
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="mt-2 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
+                            <div className="mt-auto border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
                                 <Link
                                     href={tasksRoutes.index()}
                                     className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
@@ -618,63 +618,63 @@ export default function Dashboard({
                         </div>
 
                         {/* [Row 1, Col 2] Widget 2: Jadwal Sidang & Agenda */}
-                        <div className="flex h-full flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div>
-                                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
-                                    <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                        Jadwal Sidang &amp; Agenda
-                                    </h2>
-                                    <Link
-                                        href={calendarRoutes.index()}
-                                        className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                        <div className="flex h-full flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                    Jadwal Sidang &amp; Agenda
+                                </h2>
+                                <Link
+                                    href={calendarRoutes.index()}
+                                    className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                >
+                                    Buka Kalender →
+                                </Link>
+                            </div>
+
+                            {/* Mini 7-Day Clean Strip */}
+                            <div className="mt-3 grid grid-cols-7 gap-1 rounded-lg bg-slate-50 p-1 text-center dark:bg-white/[0.03]">
+                                {weekDays.map((d, index) => (
+                                    <button
+                                        key={index}
+                                        type="button"
+                                        onClick={() => setSelectedDateIndex(index)}
+                                        className={`flex flex-col items-center justify-center rounded-md py-1 text-xs transition-all cursor-pointer ${
+                                            selectedDateIndex === index
+                                                ? 'bg-slate-900 text-white font-bold shadow-2xs dark:bg-white dark:text-slate-900'
+                                                : 'text-slate-600 hover:bg-white hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/[0.06]'
+                                        }`}
                                     >
-                                        Buka Kalender →
-                                    </Link>
-                                </div>
+                                        <span className="text-[9px] uppercase opacity-75">{d.dayName}</span>
+                                        <span className="font-mono text-xs font-semibold">{d.dayNum}</span>
+                                    </button>
+                                ))}
+                            </div>
 
-                                {/* Mini 7-Day Clean Strip */}
-                                <div className="mt-3 grid grid-cols-7 gap-1 rounded-lg bg-slate-50 p-1 text-center dark:bg-white/[0.03]">
-                                    {weekDays.map((d, index) => (
-                                        <button
-                                            key={index}
-                                            type="button"
-                                            onClick={() => setSelectedDateIndex(index)}
-                                            className={`flex flex-col items-center justify-center rounded-md py-1 text-xs transition-all cursor-pointer ${
-                                                selectedDateIndex === index
-                                                    ? 'bg-slate-900 text-white font-bold shadow-2xs dark:bg-white dark:text-slate-900'
-                                                    : 'text-slate-600 hover:bg-white hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/[0.06]'
-                                            }`}
-                                        >
-                                            <span className="text-[9px] uppercase opacity-75">{d.dayName}</span>
-                                            <span className="font-mono text-xs font-semibold">{d.dayNum}</span>
-                                        </button>
-                                    ))}
-                                </div>
+                            <div className="mt-3 flex items-center justify-between border-b border-slate-100 pb-2 text-[11px] dark:border-white/[0.04]">
+                                <span className="font-semibold text-slate-800 dark:text-zinc-200">
+                                    {activeDayFormatted}
+                                </span>
+                                <span className="text-slate-400 font-mono text-[10px]">
+                                    {filteredDayEvents.length} Agenda
+                                </span>
+                            </div>
 
-                                <div className="mt-3 flex items-center justify-between border-b border-slate-100 pb-2 text-[11px] dark:border-white/[0.04]">
-                                    <span className="font-semibold text-slate-800 dark:text-zinc-200">
-                                        {activeDayFormatted}
-                                    </span>
-                                    <span className="text-slate-400 font-mono text-[10px]">
-                                        {filteredDayEvents.length} Agenda
-                                    </span>
-                                </div>
-
-                                <div className="space-y-2 pt-2">
-                                    {filteredDayEvents.length === 0 ? (
-                                        <div className="flex flex-col items-center justify-center py-6 px-4 text-center">
-                                            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
-                                                <CalendarIcon className="size-4.5" />
-                                            </div>
-                                            <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
-                                                Agenda Lengang
-                                            </p>
-                                            <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
-                                                Tidak ada jadwal sidang pengadilan atau agenda pada tanggal ini.
-                                            </p>
+                            <div className="flex flex-1 flex-col justify-center py-3">
+                                {filteredDayEvents.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-4 px-4 text-center">
+                                        <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+                                            <CalendarIcon className="size-4.5" />
                                         </div>
-                                    ) : (
-                                        filteredDayEvents.slice(0, 3).map((ev, idx) => (
+                                        <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                            Agenda Lengang
+                                        </p>
+                                        <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                            Tidak ada jadwal sidang pengadilan atau agenda pada tanggal ini.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {filteredDayEvents.slice(0, 3).map((ev, idx) => (
                                             <div
                                                 key={ev.id || idx}
                                                 className="flex items-center justify-between gap-2 text-xs"
@@ -697,12 +697,12 @@ export default function Dashboard({
                                                     {ev.category}
                                                 </span>
                                             </div>
-                                        ))
-                                    )}
-                                </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="mt-2 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
+                            <div className="mt-auto border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
                                 <Link
                                     href={calendarRoutes.index()}
                                     className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
@@ -713,40 +713,40 @@ export default function Dashboard({
                         </div>
 
                         {/* [Row 2, Col 1] Widget 3: Prioritas & Tindakan Kemitraan */}
-                        <div className="flex h-full flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div>
-                                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
-                                    <div className="flex items-center gap-2">
-                                        <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                            Prioritas &amp; Tindakan Kemitraan
-                                        </h2>
-                                        <span className="rounded-full bg-rose-50 px-2 py-0.5 font-mono text-[9px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
-                                            {executive_actions?.length ?? 0} MENDESAK
-                                        </span>
-                                    </div>
-                                    <Link
-                                        href={tasksRoutes.index({ query: { priority: 'high' } })}
-                                        className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
-                                    >
-                                        Semua →
-                                    </Link>
+                        <div className="flex h-full flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                <div className="flex items-center gap-2">
+                                    <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                        Prioritas &amp; Tindakan Kemitraan
+                                    </h2>
+                                    <span className="rounded-full bg-rose-50 px-2 py-0.5 font-mono text-[9px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
+                                        {executive_actions?.length ?? 0} MENDESAK
+                                    </span>
                                 </div>
+                                <Link
+                                    href={tasksRoutes.index({ query: { priority: 'high' } })}
+                                    className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                >
+                                    Semua →
+                                </Link>
+                            </div>
 
-                                <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
-                                    {!executive_actions || executive_actions.length === 0 ? (
-                                        <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
-                                            <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
-                                                <ShieldCheck className="size-4.5" />
-                                            </div>
-                                            <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
-                                                Kondisi Operasional Aman
-                                            </p>
-                                            <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
-                                                Tidak ada perkara atau tenggat kritis yang memerlukan tindakan darurat saat ini.
-                                            </p>
+                            <div className="flex flex-1 flex-col justify-center py-3">
+                                {!executive_actions || executive_actions.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-4 px-4 text-center">
+                                        <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+                                            <ShieldCheck className="size-4.5" />
                                         </div>
-                                    ) : (
-                                        executive_actions.slice(0, 4).map((action, idx) => {
+                                        <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                            Kondisi Operasional Aman
+                                        </p>
+                                        <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                            Tidak ada perkara atau tenggat kritis yang memerlukan tindakan darurat saat ini.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                        {executive_actions.slice(0, 4).map((action, idx) => {
                                             return (
                                                 <div
                                                     key={action.id || idx}
@@ -799,12 +799,12 @@ export default function Dashboard({
                                                     </div>
                                                 </div>
                                             );
-                                        })
-                                    )}
-                                </div>
+                                        })}
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="mt-2 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
+                            <div className="mt-auto border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
                                 <Link
                                     href={tasksRoutes.index({ query: { priority: 'high' } })}
                                     className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
@@ -815,40 +815,40 @@ export default function Dashboard({
                         </div>
 
                         {/* [Row 2, Col 2] Widget 4: Recent Audit Activity */}
-                        <div className="flex h-full flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div>
-                                <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
-                                    <div className="flex items-center gap-2">
-                                        <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                            Aktivitas &amp; Log Terkini
-                                        </h2>
-                                        <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[9px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-400">
-                                            Audit Trail
-                                        </span>
-                                    </div>
-                                    <Link
-                                        href={auditRoutes.index()}
-                                        className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                                    >
-                                        Semua Log →
-                                    </Link>
+                        <div className="flex h-full flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                <div className="flex items-center gap-2">
+                                    <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                        Aktivitas &amp; Log Terkini
+                                    </h2>
+                                    <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[9px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-400">
+                                        Audit Trail
+                                    </span>
                                 </div>
+                                <Link
+                                    href={auditRoutes.index()}
+                                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                                >
+                                    Semua Log →
+                                </Link>
+                            </div>
 
-                                <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
-                                    {!activities || activities.length === 0 ? (
-                                        <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
-                                            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
-                                                <Clock className="size-4.5" />
-                                            </div>
-                                            <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
-                                                Log Siap Merekam
-                                            </p>
-                                            <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
-                                                Setiap aktivitas tim pada perkara, berkas, dan penagihan akan otomatis tercatat di sini.
-                                            </p>
+                            <div className="flex flex-1 flex-col justify-center py-3">
+                                {!activities || activities.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-4 px-4 text-center">
+                                        <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
+                                            <Clock className="size-4.5" />
                                         </div>
-                                    ) : (
-                                        activities.slice(0, 4).map((act, idx) => {
+                                        <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                            Log Siap Merekam
+                                        </p>
+                                        <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                            Setiap aktivitas tim pada perkara, berkas, dan penagihan akan otomatis tercatat di sini.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                        {activities.slice(0, 4).map((act, idx) => {
                                             const badgeColorClass =
                                                 act.badge_color === 'blue'
                                                     ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
@@ -914,12 +914,12 @@ export default function Dashboard({
                                                     {content}
                                                 </div>
                                             );
-                                        })
-                                    )}
-                                </div>
+                                        })}
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="mt-2 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
+                            <div className="mt-auto border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
                                 <Link
                                     href={auditRoutes.index()}
                                     className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
