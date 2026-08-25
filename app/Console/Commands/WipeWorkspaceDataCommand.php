@@ -133,8 +133,9 @@ class WipeWorkspaceDataCommand extends Command
             'matters',
             'matter_number_sequences',
 
-            // Clients & Compliance
+            // Clients, Contacts & Compliance
             'client_compliance_documents',
+            'contacts',
             'client_contacts',
             'clients',
 

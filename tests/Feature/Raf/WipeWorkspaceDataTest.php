@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Client;
+use App\Models\Contact;
 use App\Models\Document;
 use App\Models\Invoice;
 use App\Models\Matter;
@@ -15,12 +16,14 @@ it('wipes operational data while preserving users, roles, and auth structure', f
 
     // 2. Arrange: Create Operational Data
     $client = Client::factory()->create();
+    $contact = Contact::factory()->for($client)->create(['created_by' => $user->id]);
     $matter = Matter::factory()->for($client)->create();
     $invoice = Invoice::factory()->for($client)->for($matter)->create();
     $document = Document::factory()->for($matter)->create(['created_by' => $user->id]);
 
     expect(User::query()->count())->toBeGreaterThan(0)
         ->and(Client::query()->count())->toBe(1)
+        ->and(Contact::query()->count())->toBe(1)
         ->and(Matter::query()->count())->toBe(1)
         ->and(Invoice::query()->count())->toBe(1)
         ->and(Document::query()->count())->toBe(1);
@@ -31,6 +34,7 @@ it('wipes operational data while preserving users, roles, and auth structure', f
 
     // 4. Assert: Operational data is 0, but users and roles remain intact
     expect(Client::query()->count())->toBe(0)
+        ->and(Contact::query()->count())->toBe(0)
         ->and(Matter::query()->count())->toBe(0)
         ->and(Invoice::query()->count())->toBe(0)
         ->and(Document::query()->count())->toBe(0)
