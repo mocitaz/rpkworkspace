@@ -732,47 +732,45 @@ export default function TasksIndex({
             {/* Modal Dialog: Detail Ringkasan Tugas & Kolaborasi */}
             <Dialog open={!!selectedTask} onOpenChange={(open) => !open && setSelectedTask(null)}>
                 {selectedTask && (
-                    <DialogContent className="max-h-[90vh] overflow-hidden flex flex-col p-0 rounded-2xl border border-slate-200/90 bg-white shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
+                    <DialogContent className="max-h-[92vh] overflow-hidden flex flex-col p-0 rounded-2xl border border-slate-200/90 bg-white shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
                         {/* Header: Title, Badges & Action Controls */}
-                        <div className="shrink-0 border-b border-slate-100 bg-slate-50/60 px-6 pt-5 pb-4 pr-14 dark:border-white/[0.06] dark:bg-white/[0.02]">
-                            <div className="flex items-start justify-between gap-3">
-                                <div className="flex items-start gap-3 min-w-0">
-                                    <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400 mt-0.5">
-                                        <ListTodo className="size-4.5" />
-                                    </div>
-                                    <div className="min-w-0 space-y-1.5">
-                                        <div className="flex flex-wrap items-center gap-2">
-                                            <StatusBadge value={selectedTask.priority} />
-                                            <StatusBadge value={selectedTask.status} />
-                                            {selectedTask.due_at && isTaskOverdue(selectedTask) && (
-                                                <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 uppercase dark:bg-rose-950/60 dark:text-rose-300">
-                                                    <AlertCircle className="size-3" />
-                                                    Lewat Tenggat
-                                                </span>
-                                            )}
-                                        </div>
-                                        <DialogTitle className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug break-words">
-                                            {selectedTask.title}
-                                        </DialogTitle>
-                                        <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                            {selectedTask.matter ? (
-                                                <Link
-                                                    href={matterRoutes.show(selectedTask.matter.id)}
-                                                    className="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400 transition-colors"
-                                                >
-                                                    <Briefcase className="size-3 text-blue-600 dark:text-blue-400" />
-                                                    <span>Terkait Perkara:</span>
-                                                    <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
-                                                        {selectedTask.matter.matter_number}
-                                                    </span>
-                                                    <span>· {selectedTask.matter.title}</span>
-                                                    <ArrowUpRight className="size-3 text-slate-400" />
-                                                </Link>
-                                            ) : (
-                                                <span>Tugas internal &amp; instruksi umum kantor</span>
-                                            )}
-                                        </DialogDescription>
-                                    </div>
+                        <div className="shrink-0 border-b border-slate-100 bg-white px-6 pt-5 pb-4 pr-14 dark:border-white/[0.06] dark:bg-[#14161b]">
+                            {/* Top Meta Line: Badges & Matter Pill */}
+                            <div className="flex flex-wrap items-center gap-2 mb-2.5">
+                                <StatusBadge value={selectedTask.priority} />
+                                <StatusBadge value={selectedTask.status} />
+
+                                {selectedTask.matter && (
+                                    <Link
+                                        href={matterRoutes.show(selectedTask.matter.id)}
+                                        className="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 hover:text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 transition-colors whitespace-nowrap"
+                                    >
+                                        <Briefcase className="size-3 text-blue-600 dark:text-blue-400 shrink-0" />
+                                        <span className="font-mono font-bold">{selectedTask.matter.matter_number}</span>
+                                        <span className="truncate max-w-[260px] sm:max-w-[360px]">· {selectedTask.matter.title}</span>
+                                        <ArrowUpRight className="size-3 text-blue-500 shrink-0" />
+                                    </Link>
+                                )}
+
+                                {selectedTask.due_at && isTaskOverdue(selectedTask) && (
+                                    <span className="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-700 uppercase dark:bg-rose-950/60 dark:text-rose-300 whitespace-nowrap">
+                                        <AlertCircle className="size-3 shrink-0" />
+                                        Lewat Tenggat
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* Task Title + Edit Button Row */}
+                            <div className="flex items-start justify-between gap-4">
+                                <div className="space-y-1 min-w-0 flex-1">
+                                    <DialogTitle className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-snug break-words">
+                                        {selectedTask.title}
+                                    </DialogTitle>
+                                    <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                        {selectedTask.matter
+                                            ? `Tugas operasional dalam penanganan ${selectedTask.matter.matter_number}`
+                                            : 'Tugas internal & instruksi umum kantor hukum'}
+                                    </DialogDescription>
                                 </div>
 
                                 {can.update && (
@@ -784,202 +782,203 @@ export default function TasksIndex({
                                             setSelectedTask(null);
                                             setEditingTask(t);
                                         }}
-                                        className="h-8 shrink-0 rounded-xl border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
+                                        className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
                                     >
-                                        <Pencil className="mr-1.5 size-3 text-slate-400" />
+                                        <Pencil className="mr-1.5 size-3.5 text-slate-400" />
                                         Edit Tugas
                                     </Button>
                                 )}
                             </div>
                         </div>
 
-                        {/* Interactive Workflow Status Pipeline */}
-                        <div className="shrink-0 border-b border-slate-100 bg-slate-100/60 px-6 py-2.5 dark:border-white/[0.04] dark:bg-white/[0.02]">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
-                                    Alur Kerja:
-                                </span>
-                                <div className="grid grid-cols-4 gap-1.5">
-                                    {[
-                                        { key: 'pending', label: 'To Do', activeBg: 'bg-slate-700 text-white dark:bg-zinc-200 dark:text-slate-900' },
-                                        { key: 'in_progress', label: 'Dikerjakan', activeBg: 'bg-blue-600 text-white shadow-xs' },
-                                        { key: 'review', label: 'Review', activeBg: 'bg-amber-600 text-white shadow-xs' },
-                                        { key: 'completed', label: 'Selesai', activeBg: 'bg-emerald-600 text-white shadow-xs' },
-                                    ].map((step) => {
-                                        const isActive = selectedTask.status === step.key;
-                                        return (
-                                            <button
-                                                key={step.key}
-                                                type="button"
-                                                onClick={() => changeStatus(selectedTask, step.key)}
-                                                className={`flex items-center justify-center gap-1 rounded-lg px-2.5 py-1.5 text-center text-xs font-bold transition-all cursor-pointer ${
-                                                    isActive
-                                                        ? step.activeBg
-                                                        : 'bg-white text-slate-600 hover:bg-slate-200/80 dark:bg-white/[0.06] dark:text-zinc-300 dark:hover:bg-white/[0.1]'
-                                                }`}
-                                            >
-                                                {step.key === 'completed' && <Check className="size-3" />}
-                                                {step.label}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
+                        {/* Interactive Workflow Status Pipeline - 4-Column Balanced Grid */}
+                        <div className="shrink-0 border-b border-slate-100 bg-slate-50/80 px-6 py-2.5 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                            <div className="grid grid-cols-4 gap-2 w-full">
+                                {[
+                                    { key: 'pending', num: '1', label: 'To Do', activeBg: 'bg-slate-900 text-white font-bold shadow-xs dark:bg-white dark:text-slate-900' },
+                                    { key: 'in_progress', num: '2', label: 'Dikerjakan', activeBg: 'bg-blue-600 text-white font-bold shadow-xs' },
+                                    { key: 'review', num: '3', label: 'Review', activeBg: 'bg-amber-600 text-white font-bold shadow-xs' },
+                                    { key: 'completed', num: '4', label: 'Selesai', activeBg: 'bg-emerald-600 text-white font-bold shadow-xs' },
+                                ].map((step) => {
+                                    const isActive = selectedTask.status === step.key;
+                                    return (
+                                        <button
+                                            key={step.key}
+                                            type="button"
+                                            onClick={() => changeStatus(selectedTask, step.key)}
+                                            className={`flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-center text-xs transition-all cursor-pointer ${
+                                                isActive
+                                                    ? step.activeBg
+                                                    : 'bg-white text-slate-600 hover:bg-slate-200/70 border border-slate-200/60 font-medium dark:bg-[#16181d] dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/[0.08]'
+                                            }`}
+                                        >
+                                            {step.key === 'completed' && isActive ? (
+                                                <Check className="size-3 shrink-0 stroke-[3]" />
+                                            ) : (
+                                                <span className={`size-4 shrink-0 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                                                    isActive ? 'bg-white/20 text-current' : 'bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-zinc-300'
+                                                }`}>
+                                                    {step.num}
+                                                </span>
+                                            )}
+                                            <span className="truncate">{step.label}</span>
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
 
                         {/* Scrollable Content Body */}
                         <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                            {/* Symmetric 2x2 Metadata Grid */}
+                            {/* Symmetric 4-Card Metadata Grid */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {/* 1. Perkara Terkait */}
-                                <div className="flex flex-col justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/[0.04] dark:bg-white/[0.02]">
-                                    <div className="space-y-1">
-                                        <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
-                                            <Briefcase className="size-3.5 text-blue-600 dark:text-blue-400" />
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-                                                Perkara Terkait
-                                            </span>
+                                <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02] flex flex-col justify-between space-y-2">
+                                    <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400">
+                                        <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                                            <Briefcase className="size-3.5" />
                                         </div>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                            Perkara Terkait
+                                        </span>
+                                    </div>
+                                    <div className="min-w-0">
                                         {selectedTask.matter ? (
-                                            <p className="line-clamp-2 text-xs font-semibold text-slate-900 dark:text-white pt-0.5">
-                                                <span className="font-mono text-blue-600 dark:text-blue-400">{selectedTask.matter.matter_number}</span> · {selectedTask.matter.title}
-                                            </p>
+                                            <Link
+                                                href={matterRoutes.show(selectedTask.matter.id)}
+                                                className="group block"
+                                            >
+                                                <p className="font-mono text-xs font-bold text-blue-600 group-hover:underline dark:text-blue-400 flex items-center gap-1">
+                                                    {selectedTask.matter.matter_number}
+                                                    <ArrowUpRight className="size-3 text-slate-400 inline" />
+                                                </p>
+                                                <p className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white pt-0.5">
+                                                    {selectedTask.matter.title}
+                                                </p>
+                                            </Link>
                                         ) : (
-                                            <p className="text-xs text-slate-400 italic pt-0.5">Tugas independen (tanpa perkara)</p>
+                                            <p className="text-xs text-slate-400 italic">Tugas independen (tanpa perkara)</p>
                                         )}
                                     </div>
-                                    {selectedTask.matter && (
-                                        <div className="pt-2">
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                className="h-7 w-full rounded-lg border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-200"
-                                                asChild
-                                            >
-                                                <Link href={matterRoutes.show(selectedTask.matter.id)}>
-                                                    Buka Perkara
-                                                    <ArrowUpRight className="ml-1 size-3 text-slate-400" />
-                                                </Link>
-                                            </Button>
-                                        </div>
-                                    )}
                                 </div>
 
                                 {/* 2. Batas Waktu (Tenggat) */}
-                                <div className="flex flex-col justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/[0.04] dark:bg-white/[0.02]">
-                                    <div className="space-y-1">
-                                        <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
-                                            <Clock className="size-3.5 text-amber-600 dark:text-amber-400" />
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-                                                Batas Waktu (Tenggat)
-                                            </span>
+                                <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02] flex flex-col justify-between space-y-2">
+                                    <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400">
+                                        <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+                                            <Clock className="size-3.5" />
                                         </div>
-                                        <div className="pt-0.5">
-                                            {selectedTask.due_at ? (
-                                                <div className="space-y-0.5">
-                                                    <p className="font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                        {formatDate(selectedTask.due_at, true)}
-                                                    </p>
-                                                    <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                                        {isTaskOverdue(selectedTask) ? (
-                                                            <span className="font-semibold text-rose-600 dark:text-rose-400">⚠️ Melewati batas waktu</span>
-                                                        ) : (
-                                                            <span>Jadwal deliverable perkara</span>
-                                                        )}
-                                                    </p>
-                                                </div>
-                                            ) : (
-                                                <p className="text-xs text-slate-400 italic">Tidak ditentukan (fleksibel)</p>
-                                            )}
-                                        </div>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                            Batas Waktu (Tenggat WIB)
+                                        </span>
+                                    </div>
+                                    <div>
+                                        {selectedTask.due_at ? (
+                                            <div>
+                                                <p className="font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                    {formatDate(selectedTask.due_at, true)}
+                                                </p>
+                                                <p className="text-[10.5px] text-slate-500 dark:text-zinc-400 pt-0.5">
+                                                    {isTaskOverdue(selectedTask) ? (
+                                                        <span className="font-semibold text-rose-600 dark:text-rose-400">⚠️ Melewati batas waktu</span>
+                                                    ) : (
+                                                        <span>Jadwal deliverable perkara</span>
+                                                    )}
+                                                </p>
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-slate-400 italic">Tidak ditentukan (fleksibel)</p>
+                                        )}
                                     </div>
                                 </div>
 
                                 {/* 3. Pelaksana (Assignee) */}
-                                <div className="flex flex-col justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/[0.04] dark:bg-white/[0.02]">
-                                    <div className="space-y-1">
-                                        <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
-                                            <UserCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-                                                Pelaksana (Assignee)
-                                            </span>
+                                <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02] flex flex-col justify-between space-y-2">
+                                    <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400">
+                                        <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                                            <UserCheck className="size-3.5" />
                                         </div>
-                                        <div className="pt-1">
-                                            {selectedTask.assignee ? (
-                                                <div className="flex items-center gap-2.5">
-                                                    <Avatar className="size-8 rounded-full border border-slate-200 dark:border-white/10">
-                                                        <AvatarImage src={selectedTask.assignee.avatar_url ?? undefined} />
-                                                        <AvatarFallback className="text-[10px] font-bold">
-                                                            {getInitials(selectedTask.assignee.name)}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                    <div className="min-w-0">
-                                                        <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                                                            {selectedTask.assignee.name}
-                                                        </p>
-                                                        <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
-                                                            {selectedTask.assignee.position_title ?? 'Advokat Pelaksana'}
-                                                        </p>
-                                                    </div>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                            Pelaksana (Assignee)
+                                        </span>
+                                    </div>
+                                    <div>
+                                        {selectedTask.assignee ? (
+                                            <div className="flex items-center gap-2.5">
+                                                <Avatar className="size-7 rounded-full border border-slate-200 dark:border-white/10 shrink-0">
+                                                    <AvatarImage src={selectedTask.assignee.avatar_url ?? undefined} />
+                                                    <AvatarFallback className="text-[9px] font-bold">
+                                                        {getInitials(selectedTask.assignee.name)}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div className="min-w-0">
+                                                    <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                                        {selectedTask.assignee.name}
+                                                    </p>
+                                                    <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
+                                                        {selectedTask.assignee.position_title ?? 'Advokat Pelaksana'}
+                                                    </p>
                                                 </div>
-                                            ) : (
-                                                <p className="text-xs text-slate-400 italic">Belum ditugaskan</p>
-                                            )}
-                                        </div>
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-slate-400 italic">Belum ditugaskan</p>
+                                        )}
                                     </div>
                                 </div>
 
                                 {/* 4. Reviewer (Partner) */}
-                                <div className="flex flex-col justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/[0.04] dark:bg-white/[0.02]">
-                                    <div className="space-y-1">
-                                        <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
-                                            <User className="size-3.5 text-indigo-600 dark:text-indigo-400" />
-                                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-                                                Reviewer (Partner)
-                                            </span>
+                                <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02] flex flex-col justify-between space-y-2">
+                                    <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400">
+                                        <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
+                                            <User className="size-3.5" />
                                         </div>
-                                        <div className="pt-1">
-                                            {selectedTask.reviewer ? (
-                                                <div className="flex items-center gap-2.5">
-                                                    <Avatar className="size-8 rounded-full border border-slate-200 dark:border-white/10">
-                                                        <AvatarImage src={selectedTask.reviewer.avatar_url ?? undefined} />
-                                                        <AvatarFallback className="text-[10px] font-bold">
-                                                            {getInitials(selectedTask.reviewer.name)}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                    <div className="min-w-0">
-                                                        <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                                                            {selectedTask.reviewer.name}
-                                                        </p>
-                                                        <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
-                                                            {selectedTask.reviewer.position_title ?? 'Supervising Partner'}
-                                                        </p>
-                                                    </div>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                            Reviewer (Partner)
+                                        </span>
+                                    </div>
+                                    <div>
+                                        {selectedTask.reviewer ? (
+                                            <div className="flex items-center gap-2.5">
+                                                <Avatar className="size-7 rounded-full border border-slate-200 dark:border-white/10 shrink-0">
+                                                    <AvatarImage src={selectedTask.reviewer.avatar_url ?? undefined} />
+                                                    <AvatarFallback className="text-[9px] font-bold">
+                                                        {getInitials(selectedTask.reviewer.name)}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div className="min-w-0">
+                                                    <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                                        {selectedTask.reviewer.name}
+                                                    </p>
+                                                    <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
+                                                        {selectedTask.reviewer.position_title ?? 'Supervising Partner'}
+                                                    </p>
                                                 </div>
-                                            ) : (
-                                                <p className="text-xs text-slate-400 italic">Tanpa reviewer</p>
-                                            )}
-                                        </div>
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-slate-400 italic">Tanpa reviewer</p>
+                                        )}
                                     </div>
                                 </div>
                             </div>
 
                             {/* Instruksi Kerja & Catatan Teknis */}
-                            <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 dark:border-white/[0.04] dark:bg-white/[0.02] space-y-1.5">
-                                <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
-                                    <FileText className="size-3.5 text-slate-600 dark:text-zinc-300" />
+                            <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-4 dark:border-white/[0.06] dark:bg-white/[0.02] space-y-1.5">
+                                <div className="flex items-center gap-2 text-slate-600 dark:text-zinc-300">
+                                    <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-zinc-300">
+                                        <FileText className="size-3.5" />
+                                    </div>
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-zinc-300">
                                         Instruksi Kerja &amp; Catatan Teknis
                                     </span>
                                 </div>
-                                <div className="text-xs leading-relaxed text-slate-700 dark:text-zinc-300 whitespace-pre-wrap pt-0.5">
+                                <div className="text-xs leading-relaxed text-slate-800 dark:text-zinc-200 whitespace-pre-wrap pt-1 pl-8">
                                     {selectedTask.description ||
                                         'Tidak ada instruksi kerja tambahan. Kerjakan tugas sesuai SOP dan arahan Partner penanggung jawab.'}
                                 </div>
                             </div>
 
                             {/* Task Collaboration Discussion Box */}
-                            <div className="rounded-xl border border-slate-200/80 bg-white overflow-hidden dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="pb-2">
                                 <DiscussionBox
                                     commentableType="task"
                                     commentableId={selectedTask.id}
