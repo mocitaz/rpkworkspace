@@ -504,9 +504,12 @@ export default function ClientShow({
                                     {/* Kontak Preview */}
                                     <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                         <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                Kontak Person ({client.contacts.length})
-                                            </span>
+                                            <div className="flex items-center gap-1.5">
+                                                <ContactRound className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                                <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                    Kontak Person ({client.contacts.length})
+                                                </span>
+                                            </div>
                                             {client.contacts.length > 2 && (
                                                 <button
                                                     onClick={() => setTab('Kontak')}
