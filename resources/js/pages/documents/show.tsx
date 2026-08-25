@@ -439,7 +439,7 @@ export default function DocumentShow({
                         </div>
                     )}
 
-                    {/* 4. Workflow Panel: Approval & Signature Requests */}
+                    {/* 4. Row 1: Approval & Review Dokumen + Riwayat & Log Seluruh Versi (Side-by-Side) */}
                     <div className="grid gap-5 lg:grid-cols-2 items-start">
                         {/* 1. Approval Dokumen */}
                         <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
@@ -520,227 +520,235 @@ export default function DocumentShow({
                             </div>
                         </div>
 
-                        {/* 2. Signature Requests & Acceptance */}
+                        {/* 2. Version History Table (Side-by-side with Approval) */}
                         <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
                                 <div className="flex items-center gap-2">
-                                    <div className="flex size-7 items-center justify-center rounded-lg bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-zinc-100">
-                                        <QrCode className="size-3.5" />
+                                    <div className="flex size-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                                        <FileClock className="size-3.5" />
                                     </div>
                                     <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                                        Penerimaan Internal &amp; Verifikasi E-Sign
+                                        Riwayat &amp; Log Seluruh Versi
                                     </h3>
                                 </div>
                                 <span className="rounded bg-slate-100 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
-                                    {document.signature_requests.length} Permintaan
+                                    {document.versions.length} Versi
                                 </span>
                             </div>
 
-                            <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
-                                {document.signature_requests.length ? (
-                                    document.signature_requests.map((request) => (
-                                        <div key={request.id} className="space-y-2.5 py-3 text-xs">
-                                            <div className="flex items-center justify-between gap-2">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-bold text-slate-900 dark:text-white text-xs">
-                                                        Alur: {request.mode === 'sequential' ? 'Berurutan' : 'Paralel'}
+                            <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                {document.versions.map((v, index) => (
+                                    <div
+                                        key={v.id}
+                                        className="flex flex-col gap-2.5 py-3 sm:flex-row sm:items-center sm:justify-between text-xs"
+                                    >
+                                        <div className="min-w-0 space-y-0.5">
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                    v{v.version_number}.0
+                                                </span>
+                                                {index === 0 && (
+                                                    <span className="rounded bg-blue-50 px-1.5 py-0.2 font-mono text-[9.5px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                        TERKINI
                                                     </span>
-                                                    <span className="text-[10px] font-mono text-slate-400">
-                                                        · Kode: {request.verification_code}
-                                                    </span>
-                                                </div>
-                                                <StatusBadge value={request.status} />
+                                                )}
+                                                <span className="truncate text-xs font-semibold text-slate-900 dark:text-white">
+                                                    {v.original_filename}
+                                                </span>
                                             </div>
-
-                                            {/* Signers Compact List */}
-                                            <div className="space-y-1.5">
-                                                {request.signers.map((s, idx) => (
-                                                    <div
-                                                        key={s.id || idx}
-                                                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2 px-2.5 dark:border-white/10 dark:bg-zinc-800/40"
-                                                    >
-                                                        <div className="min-w-0 space-y-0.5">
-                                                            <div className="flex items-center gap-1.5">
-                                                                <span className="font-bold text-slate-900 dark:text-white text-xs">
-                                                                    {s.name}
-                                                                </span>
-                                                                <span className="text-[10px] text-slate-500 truncate">
-                                                                    ({s.email})
-                                                                </span>
-                                                            </div>
-                                                            <p className="text-[10.5px]">
-                                                                {s.status === 'signed' ? (
-                                                                    <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
-                                                                        <Check className="size-3" />
-                                                                        Ditandatangani {s.signed_at ? formatDate(s.signed_at) : 'Selesai'}
-                                                                    </span>
-                                                                ) : (
-                                                                    <span className="text-amber-600 font-medium dark:text-amber-400">
-                                                                        Menunggu penandatanganan
-                                                                    </span>
-                                                                )}
-                                                            </p>
-                                                        </div>
-
-                                                        {s.status === 'pending' && s.signing_token && (
-                                                            <div className="flex items-center gap-1.5 shrink-0">
-                                                                <a
-                                                                    href={`/sign/${s.signing_token}`}
-                                                                    target="_blank"
-                                                                    rel="noreferrer"
-                                                                    className="inline-flex h-6.5 items-center gap-1 rounded-md bg-slate-900 px-2 text-[11px] font-bold text-white shadow-2xs hover:bg-black active:scale-95 transition-all dark:bg-white dark:text-slate-900"
-                                                                >
-                                                                    <PenLine className="size-2.5" />
-                                                                    Tanda Tangani
-                                                                    <ExternalLink className="size-2 opacity-70" />
-                                                                </a>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => {
-                                                                        const url = `${window.location.origin}/sign/${s.signing_token}`;
-                                                                        navigator.clipboard.writeText(url);
-                                                                        alert(`Tautan tanda tangan disalin:\n${url}`);
-                                                                    }}
-                                                                    className="inline-flex h-6.5 items-center gap-1 rounded-md border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
-                                                                    title="Salin tautan signer"
-                                                                >
-                                                                    <Copy className="size-2.5" />
-                                                                    Salin Link
-                                                                </button>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                ))}
-                                            </div>
-
-                                            {/* Completed Action Strip (Compact & Clean) */}
-                                            {request.status === 'completed' && (
-                                                <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-emerald-50/70 border border-emerald-200/80 p-2 px-2.5 dark:bg-emerald-950/20 dark:border-emerald-900/40">
-                                                    <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1">
-                                                        <CheckCircle2 className="size-3 text-emerald-600" />
-                                                        E-Sign Selesai
-                                                    </span>
-                                                    <div className="flex items-center gap-1.5">
-                                                        <a
-                                                            href={signatureArtifactRoutes.signedFinal.url(request.id)}
-                                                            className="inline-flex h-6.5 items-center gap-1 rounded-md bg-emerald-600 px-2 text-[11px] font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-95 transition-all"
-                                                        >
-                                                            <Download className="size-2.5" />
-                                                            Unduh PDF
-                                                        </a>
-                                                        {request.certificate_path && (
-                                                            <a
-                                                                href={signatureArtifactRoutes.certificate.url(request.id)}
-                                                                className="inline-flex h-6.5 items-center gap-1 rounded-md border border-slate-200 bg-white px-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
-                                                            >
-                                                                <FileCheck className="size-2.5" />
-                                                                Sertifikat
-                                                            </a>
-                                                        )}
-                                                        <a
-                                                            href={signatureVerificationRoutes.verify.url(request.verification_code)}
-                                                            target="_blank"
-                                                            rel="noreferrer"
-                                                            className="inline-flex h-6.5 items-center gap-1 rounded-md border border-slate-200 bg-white px-2 text-[11px] font-semibold text-blue-600 hover:bg-blue-50 dark:border-white/10 dark:bg-zinc-800 dark:text-blue-400"
-                                                            title="Verifikasi QR Publik"
-                                                        >
-                                                            <ExternalLink className="size-2.5" />
-                                                            Verifikasi
-                                                        </a>
-                                                    </div>
-                                                </div>
+                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                Oleh <strong className="text-slate-700 dark:text-zinc-300">{v.uploader.name}</strong> · {formatDate(v.created_at, true)} · {formatBytes(v.file_size)}
+                                            </p>
+                                            {v.notes && (
+                                                <p className="text-[11px] text-slate-700 dark:text-zinc-300">
+                                                    Catatan: {v.notes}
+                                                </p>
                                             )}
                                         </div>
-                                    ))
-                                ) : (
-                                    <p className="py-6 text-center text-xs font-medium text-slate-400 dark:text-zinc-500">
-                                        Belum ada permintaan tanda tangan internal.
-                                    </p>
-                                )}
+
+                                        <div className="flex shrink-0 items-center gap-1.5">
+                                            <Button
+                                                size="sm"
+                                                variant={selectedVersion?.id === v.id ? 'default' : 'outline'}
+                                                onClick={() => {
+                                                    setSelectedVersionId(v.id);
+                                                    window.document.getElementById('preview-viewport')?.scrollIntoView({ behavior: 'smooth' });
+                                                }}
+                                                className={`h-6.5 rounded-md px-2 text-[11px] font-semibold ${
+                                                    selectedVersion?.id === v.id
+                                                        ? 'bg-slate-900 text-white hover:bg-black dark:bg-white dark:text-slate-950'
+                                                        : 'border-slate-200 hover:bg-slate-50 dark:border-white/10'
+                                                }`}
+                                            >
+                                                <Eye className="mr-1 size-3" />
+                                                {selectedVersion?.id === v.id ? 'Ditinjau' : 'Pratinjau'}
+                                            </Button>
+
+                                            {can.download && v.scan_status !== 'infected' && (
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    className="h-6.5 rounded-md border-slate-200 px-2 text-[11px] font-semibold text-blue-600 hover:bg-slate-50 dark:border-white/10 dark:text-blue-400"
+                                                    asChild
+                                                >
+                                                    <a href={versionRoutes.download.url({ document: document.id, version: v.id })}>
+                                                        <Download className="mr-1 size-3" />
+                                                        Unduh
+                                                    </a>
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
 
-                    {/* 5. Version History Table */}
-                    <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                            <div className="flex items-center gap-2">
-                                <div className="flex size-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                                    <FileClock className="size-3.5" />
+                    {/* 5. Row 2: Penerimaan Internal & Verifikasi E-Sign (Full Width Standalone Row) */}
+                    <div className="rounded-xl border border-slate-200/70 bg-white p-4 sm:p-5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
+                            <div className="flex items-center gap-2.5">
+                                <div className="flex size-7 items-center justify-center rounded-lg bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-zinc-100">
+                                    <QrCode className="size-3.5" />
                                 </div>
-                                <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                                    Riwayat &amp; Log Seluruh Versi ({document.versions.length})
-                                </h3>
+                                <div>
+                                    <h3 className="text-xs font-bold text-slate-900 dark:text-white">
+                                        Penerimaan Internal &amp; Verifikasi E-Sign
+                                    </h3>
+                                    <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                        Alur pengesahan dokumen resmi dan verifikasi keabsahan tanda tangan elektronik
+                                    </p>
+                                </div>
                             </div>
+                            <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                                {document.signature_requests.length} Permintaan
+                            </span>
                         </div>
 
-                        <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                            {document.versions.map((v, index) => (
-                                <div
-                                    key={v.id}
-                                    className="flex flex-col gap-2.5 py-3 sm:flex-row sm:items-center sm:justify-between"
-                                >
-                                    <div className="min-w-0 space-y-0.5">
-                                        <div className="flex items-center gap-1.5">
-                                            <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                v{v.version_number}.0
-                                            </span>
-                                            {index === 0 && (
-                                                <span className="rounded bg-blue-50 px-1.5 py-0.2 font-mono text-[9.5px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                                    TERKINI
+                        <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
+                            {document.signature_requests.length ? (
+                                document.signature_requests.map((request) => (
+                                    <div key={request.id} className="space-y-3 py-3.5 text-xs">
+                                        <div className="flex flex-wrap items-center justify-between gap-2">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-bold text-slate-900 dark:text-white text-xs">
+                                                    Alur: {request.mode === 'sequential' ? 'Berurutan (Sequential)' : 'Paralel (Serentak)'}
                                                 </span>
-                                            )}
-                                            <span className="truncate text-xs font-semibold text-slate-900 dark:text-white">
-                                                {v.original_filename}
-                                            </span>
+                                                <span className="text-[10px] font-mono text-slate-400">
+                                                    · Kode Verifikasi: {request.verification_code}
+                                                </span>
+                                            </div>
+                                            <StatusBadge value={request.status} />
                                         </div>
-                                        <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                            Oleh <strong className="text-slate-700 dark:text-zinc-300">{v.uploader.name}</strong> · {formatDate(v.created_at, true)} · {formatBytes(v.file_size)}
-                                        </p>
-                                        {v.notes && (
-                                            <p className="text-xs text-slate-700 dark:text-zinc-300">
-                                                Catatan: {v.notes}
-                                            </p>
-                                        )}
-                                        <p className="font-mono text-[10px] text-slate-400">
-                                            SHA-256: {v.checksum}
-                                        </p>
-                                    </div>
 
-                                    <div className="flex shrink-0 items-center gap-1.5">
-                                        <Button
-                                            size="sm"
-                                            variant={selectedVersion?.id === v.id ? 'default' : 'outline'}
-                                            onClick={() => {
-                                                setSelectedVersionId(v.id);
-                                                window.document.getElementById('preview-viewport')?.scrollIntoView({ behavior: 'smooth' });
-                                            }}
-                                            className={`h-7 rounded-lg text-xs font-semibold ${
-                                                selectedVersion?.id === v.id
-                                                    ? 'bg-slate-900 text-white hover:bg-black dark:bg-white dark:text-slate-950'
-                                                    : 'border-slate-200 hover:bg-slate-50 dark:border-white/10'
-                                            }`}
-                                        >
-                                            <Eye className="mr-1 size-3" />
-                                            {selectedVersion?.id === v.id ? 'Sedang Dilihat' : 'Pratinjau'}
-                                        </Button>
+                                        {/* Signers Grid */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                                            {request.signers.map((s, idx) => (
+                                                <div
+                                                    key={s.id || idx}
+                                                    className="flex flex-col justify-between gap-2 rounded-xl border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/10 dark:bg-zinc-800/40"
+                                                >
+                                                    <div className="space-y-1">
+                                                        <div className="flex items-center justify-between gap-1.5">
+                                                            <span className="font-bold text-slate-900 dark:text-white text-xs truncate">
+                                                                {s.name}
+                                                            </span>
+                                                            <span className="shrink-0 font-mono text-[10px] text-slate-400">
+                                                                #{idx + 1}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-[11px] text-slate-500 truncate">
+                                                            {s.email}
+                                                        </p>
+                                                        <p className="text-[11px] pt-0.5">
+                                                            {s.status === 'signed' ? (
+                                                                <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
+                                                                    <Check className="size-3" />
+                                                                    Ditandatangani {s.signed_at ? formatDate(s.signed_at) : 'Selesai'}
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-amber-600 font-medium dark:text-amber-400">
+                                                                    Menunggu penandatanganan
+                                                                </span>
+                                                            )}
+                                                        </p>
+                                                    </div>
 
-                                        {can.download && v.scan_status !== 'infected' && (
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                className="h-7 rounded-lg border-slate-200 text-xs font-semibold text-blue-600 hover:bg-slate-50 dark:border-white/10 dark:text-blue-400"
-                                                asChild
-                                            >
-                                                <a href={versionRoutes.download.url({ document: document.id, version: v.id })}>
-                                                    <Download className="mr-1 size-3" />
-                                                    Unduh
-                                                </a>
-                                            </Button>
+                                                    {s.status === 'pending' && s.signing_token && (
+                                                        <div className="flex items-center gap-1.5 pt-1 border-t border-slate-200/60 dark:border-white/5">
+                                                            <a
+                                                                href={`/sign/${s.signing_token}`}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                className="inline-flex flex-1 h-7 items-center justify-center gap-1 rounded-lg bg-slate-900 px-2 text-[11px] font-bold text-white shadow-2xs hover:bg-black active:scale-95 transition-all dark:bg-white dark:text-slate-900"
+                                                            >
+                                                                <PenLine className="size-2.5" />
+                                                                Tanda Tangani
+                                                                <ExternalLink className="size-2 opacity-70" />
+                                                            </a>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const url = `${window.location.origin}/sign/${s.signing_token}`;
+                                                                    navigator.clipboard.writeText(url);
+                                                                    alert(`Tautan tanda tangan disalin:\n${url}`);
+                                                                }}
+                                                                className="inline-flex h-7 items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                                                title="Salin tautan signer"
+                                                            >
+                                                                <Copy className="size-2.5" />
+                                                                Salin
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Completed Action Strip */}
+                                        {request.status === 'completed' && (
+                                            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-emerald-50/70 border border-emerald-200/80 p-2.5 px-3.5 dark:bg-emerald-950/20 dark:border-emerald-900/40">
+                                                <span className="text-xs font-bold text-emerald-900 dark:text-emerald-300 flex items-center gap-1.5">
+                                                    <CheckCircle2 className="size-3.5 text-emerald-600" />
+                                                    E-Sign Selesai — Dokumen resmi telah lengkap dibubuhi stempel tanda tangan dan QR Code verifikasi.
+                                                </span>
+                                                <div className="flex items-center gap-2">
+                                                    <a
+                                                        href={signatureArtifactRoutes.signedFinal.url(request.id)}
+                                                        className="inline-flex h-7 items-center gap-1.5 rounded-lg bg-emerald-600 px-3 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-95 transition-all"
+                                                    >
+                                                        <Download className="size-3" />
+                                                        Unduh Berkas PDF (Dibubuhi TTD &amp; QR)
+                                                    </a>
+                                                    {request.certificate_path && (
+                                                        <a
+                                                            href={signatureArtifactRoutes.certificate.url(request.id)}
+                                                            className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                        >
+                                                            <FileCheck className="size-3" />
+                                                            Sertifikat
+                                                        </a>
+                                                    )}
+                                                    <a
+                                                        href={signatureVerificationRoutes.verify.url(request.verification_code)}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-semibold text-blue-600 hover:bg-blue-50 dark:border-white/10 dark:bg-zinc-800 dark:text-blue-400"
+                                                        title="Verifikasi QR Publik"
+                                                    >
+                                                        <ExternalLink className="size-3" />
+                                                        Verifikasi Publik
+                                                    </a>
+                                                </div>
+                                            </div>
                                         )}
                                     </div>
-                                </div>
-                            ))}
+                                ))
+                            ) : (
+                                <p className="py-6 text-center text-xs font-medium text-slate-400 dark:text-zinc-500">
+                                    Belum ada permintaan tanda tangan internal.
+                                </p>
+                            )}
                         </div>
                     </div>
 
