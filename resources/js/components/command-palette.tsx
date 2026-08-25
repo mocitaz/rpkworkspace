@@ -93,7 +93,9 @@ export function CommandPalette({ className }: { className?: string } = {}) {
                 <div className="flex min-w-0 items-center gap-2">
                     <Search className="size-3.5 shrink-0 text-slate-400 dark:text-zinc-500" />
                     <span className="truncate text-xs font-medium">
-                        <span className="hidden sm:inline">Cari perkara, klien, dokumen, atau aksi...</span>
+                        <span className="hidden sm:inline">
+                            Cari perkara, klien, dokumen, atau aksi...
+                        </span>
                         <span className="inline sm:hidden">Cari...</span>
                     </span>
                 </div>

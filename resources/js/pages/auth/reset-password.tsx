@@ -21,8 +21,13 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
     const [confirmationPassword, setConfirmationPassword] = useState('');
 
     const hasConfirmation = confirmationPassword.length > 0;
-    const isConfirmationMatching = hasConfirmation && newPassword.length > 0 && confirmationPassword === newPassword;
-    const isConfirmationMismatch = hasConfirmation && (!newPassword.length || confirmationPassword !== newPassword);
+    const isConfirmationMatching =
+        hasConfirmation &&
+        newPassword.length > 0 &&
+        confirmationPassword === newPassword;
+    const isConfirmationMismatch =
+        hasConfirmation &&
+        (!newPassword.length || confirmationPassword !== newPassword);
 
     return (
         <>
@@ -37,7 +42,10 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                 {({ processing, errors }) => (
                     <>
                         <div className="space-y-1">
-                            <Label htmlFor="email" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                            <Label
+                                htmlFor="email"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                            >
                                 Email
                             </Label>
                             <div className="relative flex items-center">
@@ -56,21 +64,26 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                         </div>
 
                         <div className="space-y-1">
-                            <Label htmlFor="password" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                            <Label
+                                htmlFor="password"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                            >
                                 Kata Sandi Baru
                             </Label>
                             <div className="relative w-full">
-                                <Lock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 dark:text-zinc-500 z-10" />
+                                <Lock className="pointer-events-none absolute top-1/2 left-3.5 z-10 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
                                 <PasswordInput
                                     id="password"
                                     name="password"
                                     autoComplete="new-password"
                                     autoFocus
                                     value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    onChange={(e) =>
+                                        setNewPassword(e.target.value)
+                                    }
                                     placeholder="Masukkan kata sandi baru"
                                     passwordrules={passwordRules}
-                                    className="h-11 w-full rounded-xl border-slate-200/80 bg-[#f8fafc] pl-10 pr-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
+                                    className="h-11 w-full rounded-xl border-slate-200/80 bg-[#f8fafc] pr-10 pl-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
                                 />
                             </div>
                             <InputError message={errors.password} />
@@ -80,20 +93,25 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                         <PasswordStrengthIndicator password={newPassword} />
 
                         <div className="space-y-1">
-                            <Label htmlFor="password_confirmation" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                            <Label
+                                htmlFor="password_confirmation"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                            >
                                 Konfirmasi Kata Sandi Baru
                             </Label>
                             <div className="relative w-full">
-                                <Lock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 dark:text-zinc-500 z-10" />
+                                <Lock className="pointer-events-none absolute top-1/2 left-3.5 z-10 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
                                 <PasswordInput
                                     id="password_confirmation"
                                     name="password_confirmation"
                                     value={confirmationPassword}
-                                    onChange={(e) => setConfirmationPassword(e.target.value)}
+                                    onChange={(e) =>
+                                        setConfirmationPassword(e.target.value)
+                                    }
                                     autoComplete="new-password"
                                     placeholder="Ulangi kata sandi baru"
                                     passwordrules={passwordRules}
-                                    className="h-11 w-full rounded-xl border-slate-200/80 bg-[#f8fafc] pl-10 pr-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
+                                    className="h-11 w-full rounded-xl border-slate-200/80 bg-[#f8fafc] pr-10 pl-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-white/[0.03] dark:text-white"
                                 />
                             </div>
                             {isConfirmationMatching && (
@@ -105,16 +123,20 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
                             {isConfirmationMismatch && (
                                 <div className="mt-0.5 inline-flex items-center gap-1 rounded-md border border-rose-200 bg-rose-50/80 px-2 py-0.5 text-[11px] font-semibold text-rose-700 dark:border-rose-800/40 dark:bg-rose-950/30 dark:text-rose-300">
                                     <AlertCircle className="size-3 text-rose-600 dark:text-rose-400" />
-                                    <span>Konfirmasi kata sandi belum sama</span>
+                                    <span>
+                                        Konfirmasi kata sandi belum sama
+                                    </span>
                                 </div>
                             )}
-                            <InputError message={errors.password_confirmation} />
+                            <InputError
+                                message={errors.password_confirmation}
+                            />
                         </div>
 
                         <div className="pt-2">
                             <Button
                                 type="submit"
-                                className="h-11 w-full rounded-xl bg-[#3b41e2] text-xs font-bold tracking-wide text-white shadow-lg shadow-indigo-500/25 hover:bg-[#3237c5] active:scale-[0.98] transition-all dark:bg-blue-600 dark:hover:bg-blue-500"
+                                className="h-11 w-full rounded-xl bg-[#3b41e2] text-xs font-bold tracking-wide text-white shadow-lg shadow-indigo-500/25 transition-all hover:bg-[#3237c5] active:scale-[0.98] dark:bg-blue-600 dark:hover:bg-blue-500"
                                 disabled={processing}
                                 data-test="reset-password-button"
                             >

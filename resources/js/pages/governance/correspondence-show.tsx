@@ -78,7 +78,9 @@ export default function CorrespondenceShow({
                                 <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
                                     {correspondence.matter.matter_number}
                                 </span>
-                                <span className="text-slate-300 dark:text-zinc-700">•</span>
+                                <span className="text-slate-300 dark:text-zinc-700">
+                                    •
+                                </span>
                                 <span
                                     className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${
                                         isInbound
@@ -86,9 +88,13 @@ export default function CorrespondenceShow({
                                             : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
                                     }`}
                                 >
-                                    {isInbound ? 'Surat Masuk (Inbound)' : 'Surat Keluar (Outbound)'}
+                                    {isInbound
+                                        ? 'Surat Masuk (Inbound)'
+                                        : 'Surat Keluar (Outbound)'}
                                 </span>
-                                <span className="text-slate-300 dark:text-zinc-700">•</span>
+                                <span className="text-slate-300 dark:text-zinc-700">
+                                    •
+                                </span>
                                 <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
                                     Kanal: {correspondence.source}
                                 </span>
@@ -111,24 +117,38 @@ export default function CorrespondenceShow({
 
                             <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-zinc-400">
                                 <Link
-                                    href={matterRoutes.show(correspondence.matter.id)}
+                                    href={matterRoutes.show(
+                                        correspondence.matter.id,
+                                    )}
                                     className="font-medium text-slate-700 hover:text-blue-600 dark:text-zinc-200 dark:hover:text-blue-400"
                                 >
                                     {correspondence.matter.title}
                                 </Link>
                                 {correspondence.client && (
                                     <>
-                                        <span className="text-slate-300 dark:text-zinc-700">•</span>
+                                        <span className="text-slate-300 dark:text-zinc-700">
+                                            •
+                                        </span>
                                         <Link
-                                            href={clientRoutes.show(correspondence.client.id)}
+                                            href={clientRoutes.show(
+                                                correspondence.client.id,
+                                            )}
                                             className="hover:text-blue-600 dark:hover:text-blue-400"
                                         >
-                                            Klien: {correspondence.client.display_name}
+                                            Klien:{' '}
+                                            {correspondence.client.display_name}
                                         </Link>
                                     </>
                                 )}
-                                <span className="text-slate-300 dark:text-zinc-700">•</span>
-                                <span>{formatDate(correspondence.occurred_at, true)}</span>
+                                <span className="text-slate-300 dark:text-zinc-700">
+                                    •
+                                </span>
+                                <span>
+                                    {formatDate(
+                                        correspondence.occurred_at,
+                                        true,
+                                    )}
+                                </span>
                             </div>
                         </div>
 
@@ -151,7 +171,11 @@ export default function CorrespondenceShow({
                                 className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
                                 asChild
                             >
-                                <Link href={matterRoutes.show(correspondence.matter.id)}>
+                                <Link
+                                    href={matterRoutes.show(
+                                        correspondence.matter.id,
+                                    )}
+                                >
                                     <Briefcase className="mr-1.5 size-3.5" />
                                     Buka Perkara Terkait
                                 </Link>
@@ -180,7 +204,11 @@ export default function CorrespondenceShow({
                                     Arah Korespondensi
                                 </span>
                                 <div className="flex size-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                                    {isInbound ? <Inbox className="size-3.5" /> : <Send className="size-3.5" />}
+                                    {isInbound ? (
+                                        <Inbox className="size-3.5" />
+                                    ) : (
+                                        <Send className="size-3.5" />
+                                    )}
                                 </div>
                             </div>
                             <div className="mt-2">
@@ -224,10 +252,10 @@ export default function CorrespondenceShow({
                                 </div>
                             </div>
                             <div className="mt-2">
-                                <p className="font-mono text-sm font-bold text-blue-600 dark:text-blue-400 truncate">
+                                <p className="truncate font-mono text-sm font-bold text-blue-600 dark:text-blue-400">
                                     {correspondence.matter.matter_number}
                                 </p>
-                                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400 truncate">
+                                <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-zinc-400">
                                     {correspondence.matter.title}
                                 </p>
                             </div>
@@ -244,7 +272,7 @@ export default function CorrespondenceShow({
                                 </div>
                             </div>
                             <div className="mt-2">
-                                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                                <p className="truncate text-sm font-bold text-slate-900 dark:text-white">
                                     {correspondence.creator.name}
                                 </p>
                                 <p className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
@@ -267,11 +295,16 @@ export default function CorrespondenceShow({
                                             Dari:
                                         </span>
                                         <div className="flex flex-wrap gap-1.5 font-mono font-semibold text-slate-900 dark:text-white">
-                                            {correspondence.from_addresses.map((addr, idx) => (
-                                                <span key={idx} className="rounded bg-slate-100 px-2 py-0.5 text-xs dark:bg-white/[0.06]">
-                                                    {addr}
-                                                </span>
-                                            ))}
+                                            {correspondence.from_addresses.map(
+                                                (addr, idx) => (
+                                                    <span
+                                                        key={idx}
+                                                        className="rounded bg-slate-100 px-2 py-0.5 text-xs dark:bg-white/[0.06]"
+                                                    >
+                                                        {addr}
+                                                    </span>
+                                                ),
+                                            )}
                                         </div>
                                     </div>
                                     <div className="flex items-start gap-2">
@@ -279,33 +312,46 @@ export default function CorrespondenceShow({
                                             Kepada:
                                         </span>
                                         <div className="flex flex-wrap gap-1.5 font-mono font-semibold text-slate-900 dark:text-white">
-                                            {correspondence.to_addresses.map((addr, idx) => (
-                                                <span key={idx} className="rounded bg-slate-100 px-2 py-0.5 text-xs dark:bg-white/[0.06]">
-                                                    {addr}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    {correspondence.cc_addresses && correspondence.cc_addresses.length > 0 && (
-                                        <div className="flex items-start gap-2">
-                                            <span className="w-16 shrink-0 font-semibold text-slate-400">
-                                                CC:
-                                            </span>
-                                            <div className="flex flex-wrap gap-1.5 font-mono text-slate-600 dark:text-zinc-400">
-                                                {correspondence.cc_addresses.map((addr, idx) => (
-                                                    <span key={idx} className="rounded bg-slate-50 px-1.5 py-0.5 text-[11px] dark:bg-white/[0.04]">
+                                            {correspondence.to_addresses.map(
+                                                (addr, idx) => (
+                                                    <span
+                                                        key={idx}
+                                                        className="rounded bg-slate-100 px-2 py-0.5 text-xs dark:bg-white/[0.06]"
+                                                    >
                                                         {addr}
                                                     </span>
-                                                ))}
-                                            </div>
+                                                ),
+                                            )}
                                         </div>
-                                    )}
+                                    </div>
+                                    {correspondence.cc_addresses &&
+                                        correspondence.cc_addresses.length >
+                                            0 && (
+                                            <div className="flex items-start gap-2">
+                                                <span className="w-16 shrink-0 font-semibold text-slate-400">
+                                                    CC:
+                                                </span>
+                                                <div className="flex flex-wrap gap-1.5 font-mono text-slate-600 dark:text-zinc-400">
+                                                    {correspondence.cc_addresses.map(
+                                                        (addr, idx) => (
+                                                            <span
+                                                                key={idx}
+                                                                className="rounded bg-slate-50 px-1.5 py-0.5 text-[11px] dark:bg-white/[0.04]"
+                                                            >
+                                                                {addr}
+                                                            </span>
+                                                        ),
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
                                 </div>
 
                                 <div className="py-4 text-xs leading-relaxed whitespace-pre-wrap text-slate-800 dark:text-zinc-200">
                                     {correspondence.body || (
                                         <p className="text-slate-400 italic">
-                                            Tidak ada ringkasan atau isi pesan tercatat.
+                                            Tidak ada ringkasan atau isi pesan
+                                            tercatat.
                                         </p>
                                     )}
                                 </div>
@@ -319,7 +365,8 @@ export default function CorrespondenceShow({
                                             <Paperclip className="size-3.5" />
                                         </div>
                                         <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                                            Lampiran Berkas ({correspondence.documents.length})
+                                            Lampiran Berkas (
+                                            {correspondence.documents.length})
                                         </h3>
                                     </div>
                                 </div>
@@ -327,34 +374,41 @@ export default function CorrespondenceShow({
                                 <div className="space-y-3 pt-3">
                                     {correspondence.documents.length > 0 ? (
                                         <div className="grid gap-2 sm:grid-cols-2">
-                                            {correspondence.documents.map((document) => (
-                                                <Link
-                                                    key={document.id}
-                                                    href={documentRoutes.show(document.id)}
-                                                    className="group flex items-center justify-between gap-2.5 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 text-xs transition-colors hover:border-slate-300 hover:bg-white dark:border-white/[0.04] dark:bg-[#121418] dark:hover:bg-zinc-800"
-                                                >
-                                                    <div className="flex min-w-0 items-center gap-2">
-                                                        <div className="flex size-6 shrink-0 items-center justify-center rounded bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300">
-                                                            <FileText className="size-3" />
+                                            {correspondence.documents.map(
+                                                (document) => (
+                                                    <Link
+                                                        key={document.id}
+                                                        href={documentRoutes.show(
+                                                            document.id,
+                                                        )}
+                                                        className="group flex items-center justify-between gap-2.5 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 text-xs transition-colors hover:border-slate-300 hover:bg-white dark:border-white/[0.04] dark:bg-[#121418] dark:hover:bg-zinc-800"
+                                                    >
+                                                        <div className="flex min-w-0 items-center gap-2">
+                                                            <div className="flex size-6 shrink-0 items-center justify-center rounded bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-300">
+                                                                <FileText className="size-3" />
+                                                            </div>
+                                                            <span className="truncate font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                                                                {document.title}
+                                                            </span>
                                                         </div>
-                                                        <span className="truncate font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
-                                                            {document.title}
-                                                        </span>
-                                                    </div>
-                                                    <ArrowUpRight className="size-3.5 text-slate-400 group-hover:text-blue-600 shrink-0" />
-                                                </Link>
-                                            ))}
+                                                        <ArrowUpRight className="size-3.5 shrink-0 text-slate-400 group-hover:text-blue-600" />
+                                                    </Link>
+                                                ),
+                                            )}
                                         </div>
                                     ) : (
                                         <p className="text-xs text-slate-400">
-                                            Belum ada dokumen lampiran terkait korespondensi ini.
+                                            Belum ada dokumen lampiran terkait
+                                            korespondensi ini.
                                         </p>
                                     )}
 
                                     {/* Upload Form */}
                                     {canUploadAttachment && (
                                         <Form
-                                            {...attachmentRoutes.store.form(correspondence.id)}
+                                            {...attachmentRoutes.store.form(
+                                                correspondence.id,
+                                            )}
                                             encType="multipart/form-data"
                                             className="rounded-lg border border-slate-200/60 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]"
                                         >
@@ -414,25 +468,34 @@ export default function CorrespondenceShow({
                                 </span>
                                 <div className="mt-1.5 space-y-0.5">
                                     <Link
-                                        href={matterRoutes.show(correspondence.matter.id)}
+                                        href={matterRoutes.show(
+                                            correspondence.matter.id,
+                                        )}
                                         className="group block"
                                     >
                                         <span className="font-mono text-xs font-semibold text-blue-600 group-hover:underline dark:text-blue-400">
-                                            {correspondence.matter.matter_number}
+                                            {
+                                                correspondence.matter
+                                                    .matter_number
+                                            }
                                         </span>
                                         <p className="mt-0.5 text-xs font-medium text-slate-900 dark:text-white">
                                             {correspondence.matter.title}
                                         </p>
                                     </Link>
                                 </div>
-                                <div className="mt-2.5 pt-2 border-t border-slate-100 dark:border-white/[0.04]">
+                                <div className="mt-2.5 border-t border-slate-100 pt-2 dark:border-white/[0.04]">
                                     <Button
                                         size="sm"
                                         variant="outline"
                                         className="h-7 w-full rounded-lg text-xs font-semibold"
                                         asChild
                                     >
-                                        <Link href={matterRoutes.show(correspondence.matter.id)}>
+                                        <Link
+                                            href={matterRoutes.show(
+                                                correspondence.matter.id,
+                                            )}
+                                        >
                                             Lihat Perkara
                                             <ArrowUpRight className="ml-1 size-3 text-slate-400" />
                                         </Link>
@@ -448,25 +511,35 @@ export default function CorrespondenceShow({
                                     </span>
                                     <div className="mt-1.5">
                                         <Link
-                                            href={clientRoutes.show(correspondence.client.id)}
+                                            href={clientRoutes.show(
+                                                correspondence.client.id,
+                                            )}
                                             className="text-xs font-semibold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
                                         >
                                             {correspondence.client.display_name}
                                         </Link>
-                                        {correspondence.client.client_number && (
+                                        {correspondence.client
+                                            .client_number && (
                                             <p className="mt-0.5 font-mono text-[10px] text-slate-500">
-                                                {correspondence.client.client_number}
+                                                {
+                                                    correspondence.client
+                                                        .client_number
+                                                }
                                             </p>
                                         )}
                                     </div>
-                                    <div className="mt-2.5 pt-2 border-t border-slate-100 dark:border-white/[0.04]">
+                                    <div className="mt-2.5 border-t border-slate-100 pt-2 dark:border-white/[0.04]">
                                         <Button
                                             size="sm"
                                             variant="outline"
                                             className="h-7 w-full rounded-lg text-xs font-semibold"
                                             asChild
                                         >
-                                            <Link href={clientRoutes.show(correspondence.client.id)}>
+                                            <Link
+                                                href={clientRoutes.show(
+                                                    correspondence.client.id,
+                                                )}
+                                            >
                                                 Lihat Klien
                                                 <ArrowUpRight className="ml-1 size-3 text-slate-400" />
                                             </Link>
@@ -482,19 +555,28 @@ export default function CorrespondenceShow({
                                 </span>
                                 <div className="mt-2 space-y-1.5 text-xs">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-slate-500">Pencatat:</span>
+                                        <span className="text-slate-500">
+                                            Pencatat:
+                                        </span>
                                         <span className="font-semibold text-slate-900 dark:text-white">
                                             {correspondence.creator.name}
                                         </span>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-slate-500">Waktu:</span>
+                                        <span className="text-slate-500">
+                                            Waktu:
+                                        </span>
                                         <span className="font-mono text-[10.5px] font-semibold text-slate-700 dark:text-zinc-300">
-                                            {formatDate(correspondence.occurred_at, true)}
+                                            {formatDate(
+                                                correspondence.occurred_at,
+                                                true,
+                                            )}
                                         </span>
                                     </div>
                                     <div className="flex items-center justify-between border-t border-slate-100 pt-1.5 dark:border-white/[0.04]">
-                                        <span className="text-slate-500">Integritas:</span>
+                                        <span className="text-slate-500">
+                                            Integritas:
+                                        </span>
                                         <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold text-emerald-600 dark:text-emerald-400">
                                             <ShieldCheck className="size-3" />
                                             Terverifikasi Sah
@@ -518,12 +600,15 @@ export default function CorrespondenceShow({
                 processing={isDeleting}
                 onConfirm={() => {
                     setIsDeleting(true);
-                    router.delete(`/governance/correspondences/${correspondence.id}`, {
-                        onFinish: () => {
-                            setIsDeleting(false);
-                            setShowDeleteConfirm(false);
+                    router.delete(
+                        `/governance/correspondences/${correspondence.id}`,
+                        {
+                            onFinish: () => {
+                                setIsDeleting(false);
+                                setShowDeleteConfirm(false);
+                            },
                         },
-                    });
+                    );
                 }}
             />
         </>

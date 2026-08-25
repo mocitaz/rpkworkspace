@@ -22,7 +22,11 @@ export function UserInfo({
                     }`}
                 >
                     <AvatarImage
-                        src={user.avatar_url || user.avatar || '/images/default-avatar.svg'}
+                        src={
+                            user.avatar_url ||
+                            user.avatar ||
+                            '/images/default-avatar.svg'
+                        }
                         alt={user.name}
                     />
                     <AvatarFallback

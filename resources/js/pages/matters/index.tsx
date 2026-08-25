@@ -46,7 +46,12 @@ type Matter = {
     priority: string;
     next_deadline?: string;
     updated_at: string;
-    client: { id?: string; display_name: string; type?: string; client_number?: string };
+    client: {
+        id?: string;
+        display_name: string;
+        type?: string;
+        client_number?: string;
+    };
     practice_area?: { name: string };
     responsible_partner: {
         id?: number;
@@ -81,15 +86,23 @@ export default function MattersIndex({
     );
 
     const highPriorityCount = useMemo(
-        () => matters.data.filter((m) => m.priority === 'critical' || m.priority === 'high').length,
+        () =>
+            matters.data.filter(
+                (m) => m.priority === 'critical' || m.priority === 'high',
+            ).length,
         [matters.data],
     );
 
     const corporateCount = useMemo(
-        () => matters.data.filter((m) => {
-            const pa = m.practice_area?.name?.toLowerCase() ?? '';
-            return pa.includes('corporate') || pa.includes('bisnis') || pa.includes('komersial');
-        }).length,
+        () =>
+            matters.data.filter((m) => {
+                const pa = m.practice_area?.name?.toLowerCase() ?? '';
+                return (
+                    pa.includes('corporate') ||
+                    pa.includes('bisnis') ||
+                    pa.includes('komersial')
+                );
+            }).length,
         [matters.data],
     );
 
@@ -102,10 +115,14 @@ export default function MattersIndex({
         } else {
             queryParams.delete('status');
         }
-        router.get(matterRoutes.index(), Object.fromEntries(queryParams.entries()), {
-            preserveState: true,
-            preserveScroll: true,
-        });
+        router.get(
+            matterRoutes.index(),
+            Object.fromEntries(queryParams.entries()),
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
     };
 
     return (
@@ -121,7 +138,9 @@ export default function MattersIndex({
                                 Portofolio Perkara
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Seluruh registrasi perkara hukum, penugasan partner, jadwal sidang, dan monitoring tenggat perkara.
+                                Seluruh registrasi perkara hukum, penugasan
+                                partner, jadwal sidang, dan monitoring tenggat
+                                perkara.
                             </p>
                         </div>
 
@@ -146,7 +165,9 @@ export default function MattersIndex({
                         {/* 1. Total Matters */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">TOTAL PERKARA</span>
+                                <span className="text-[11px] font-semibold">
+                                    TOTAL PERKARA
+                                </span>
                                 <FolderKanban className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -159,14 +180,18 @@ export default function MattersIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Arsip Portofolio Firma</span>
-                                <span className="font-mono font-semibold text-slate-700 dark:text-zinc-300">100% Tercatat</span>
+                                <span className="font-mono font-semibold text-slate-700 dark:text-zinc-300">
+                                    100% Tercatat
+                                </span>
                             </div>
                         </div>
 
                         {/* 2. Active Matters */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">PERKARA AKTIF</span>
+                                <span className="text-[11px] font-semibold">
+                                    PERKARA AKTIF
+                                </span>
                                 <Briefcase className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -174,19 +199,24 @@ export default function MattersIndex({
                                     {activeMattersCount}
                                 </span>
                                 <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                    {corporateCount} Corp · {litigationCount} Litigasi
+                                    {corporateCount} Corp · {litigationCount}{' '}
+                                    Litigasi
                                 </span>
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Dalam Penanganan</span>
-                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">Aktif</span>
+                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                    Aktif
+                                </span>
                             </div>
                         </div>
 
                         {/* 3. High/Critical Priority */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">PRIORITAS TINGGI</span>
+                                <span className="text-[11px] font-semibold">
+                                    PRIORITAS TINGGI
+                                </span>
                                 <ShieldAlert className="size-3.5 text-slate-400 transition-colors group-hover:text-rose-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -199,14 +229,18 @@ export default function MattersIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Tenggat Terpantau</span>
-                                <span className="font-semibold text-rose-600 dark:text-rose-400">Atensi Partner</span>
+                                <span className="font-semibold text-rose-600 dark:text-rose-400">
+                                    Atensi Partner
+                                </span>
                             </div>
                         </div>
 
                         {/* 4. Practice Area */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">AREA PRAKTIK</span>
+                                <span className="text-[11px] font-semibold">
+                                    AREA PRAKTIK
+                                </span>
                                 <Scale className="size-3.5 text-slate-400 transition-colors group-hover:text-purple-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -219,13 +253,15 @@ export default function MattersIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Spesialisasi Hukum</span>
-                                <span className="font-semibold text-purple-600 dark:text-purple-400">Terdistribusi</span>
+                                <span className="font-semibold text-purple-600 dark:text-purple-400">
+                                    Terdistribusi
+                                </span>
                             </div>
                         </div>
                     </section>
 
                     {/* 3. Filter Controls & Segmented Quick Filter Bar */}
-                    <div className="rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 space-y-2 dark:border-white/[0.04] dark:bg-[#121418]">
+                    <div className="space-y-2 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                         {/* Row 1: Search Form + Reset + Count Badge */}
                         <Form
                             {...matterRoutes.index.form()}
@@ -244,7 +280,9 @@ export default function MattersIndex({
                             <div className="relative min-w-[160px]">
                                 <select
                                     name="practice_area_id"
-                                    defaultValue={filters.practice_area_id ?? ''}
+                                    defaultValue={
+                                        filters.practice_area_id ?? ''
+                                    }
                                     className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                 >
                                     <option value="">Semua Area Praktik</option>
@@ -265,7 +303,10 @@ export default function MattersIndex({
                                 Cari
                             </Button>
 
-                            {(filters.search || filters.practice_area_id || filters.mine || filters.status) && (
+                            {(filters.search ||
+                                filters.practice_area_id ||
+                                filters.mine ||
+                                filters.status) && (
                                 <Button
                                     asChild
                                     variant="outline"
@@ -279,7 +320,7 @@ export default function MattersIndex({
                                 </Button>
                             )}
 
-                            <span className="shrink-0 rounded-md bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 border border-slate-200/70 shadow-2xs dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-300">
+                            <span className="shrink-0 rounded-md border border-slate-200/70 bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
                                 {matters.total} perkara
                             </span>
                         </Form>
@@ -340,12 +381,18 @@ export default function MattersIndex({
                                 <EmptyState
                                     icon={Briefcase}
                                     title={
-                                        filters.search || filters.practice_area || filters.status || filters.stage
+                                        filters.search ||
+                                        filters.practice_area ||
+                                        filters.status ||
+                                        filters.stage
                                             ? 'Tidak ada perkara yang sesuai filter'
                                             : 'Belum Ada Perkara Terdaftar'
                                     }
                                     description={
-                                        filters.search || filters.practice_area || filters.status || filters.stage
+                                        filters.search ||
+                                        filters.practice_area ||
+                                        filters.status ||
+                                        filters.stage
                                             ? 'Coba sesuaikan kata kunci filter pencarian atau reset filter untuk melihat semua perkara.'
                                             : 'Mulai dengan membuka berkas perkara Litigasi atau Non-Litigasi / Korporasi baru.'
                                     }
@@ -354,20 +401,28 @@ export default function MattersIndex({
                                             {can.create && (
                                                 <Button
                                                     asChild
-                                                    className="h-8 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 cursor-pointer"
+                                                    className="h-8 cursor-pointer rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
                                                 >
-                                                    <Link href={matterRoutes.create()}>
-                                                        <Plus className="mr-1 size-3.5" /> Buka Perkara Baru
+                                                    <Link
+                                                        href={matterRoutes.create()}
+                                                    >
+                                                        <Plus className="mr-1 size-3.5" />{' '}
+                                                        Buka Perkara Baru
                                                     </Link>
                                                 </Button>
                                             )}
-                                            {(filters.search || filters.practice_area || filters.status || filters.stage) && (
+                                            {(filters.search ||
+                                                filters.practice_area ||
+                                                filters.status ||
+                                                filters.stage) && (
                                                 <Button
                                                     asChild
                                                     variant="outline"
                                                     className="h-8 rounded-lg border-slate-200 px-3.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
                                                 >
-                                                    <Link href={matterRoutes.index.url()}>
+                                                    <Link
+                                                        href={matterRoutes.index.url()}
+                                                    >
                                                         Reset Filter
                                                     </Link>
                                                 </Button>
@@ -379,176 +434,284 @@ export default function MattersIndex({
                         ) : (
                             <>
                                 {/* Mobile Cards (sm:hidden) */}
-                        <div className="divide-y divide-slate-100 sm:hidden dark:divide-white/[0.04]">
-                            {matters.data.map((matter) => (
-                                <Link
-                                    key={matter.id}
-                                    href={matterRoutes.show(matter.id)}
-                                    className="block p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
-                                >
-                                    <div className="flex items-start justify-between gap-2">
-                                        <div className="min-w-0 flex-1">
-                                            <div className="flex items-center gap-1.5 font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
-                                                <span>{matter.matter_number}</span>
-                                                <span>·</span>
-                                                <span className="truncate">{matter.practice_area?.name ?? 'Umum'}</span>
-                                            </div>
-                                            <p className="mt-0.5 line-clamp-2 text-xs font-bold text-slate-900 dark:text-white">
-                                                {matter.title}
-                                            </p>
-                                            <p className="mt-1 truncate text-[11px] font-medium text-slate-600 dark:text-zinc-300">
-                                                {matter.client.display_name}
-                                            </p>
-                                        </div>
-                                        <ChevronRight className="size-4 shrink-0 text-slate-400" />
-                                    </div>
-                                    <div className="mt-2.5 flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-2 text-[10px] dark:border-white/[0.04]">
-                                        <StatusBadge value={matter.status} />
-                                        <StatusBadge value={matter.priority} />
-                                        {matter.next_deadline && (
-                                            <span className="ml-auto font-mono text-slate-500 dark:text-zinc-400">
-                                                {formatDate(matter.next_deadline)}
-                                            </span>
-                                        )}
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-
-                        {/* Desktop Data Table (hidden sm:block) */}
-                        <div className="hidden overflow-x-auto sm:block">
-                            <table className="w-full text-left text-xs">
-                                <thead>
-                                    <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                        <th className="py-2.5 pr-3 pl-4 font-semibold">Perkara &amp; Nomor</th>
-                                        <th className="px-3 py-2.5 font-semibold">Klien</th>
-                                        <th className="px-3 py-2.5 font-semibold">Area Praktik</th>
-                                        <th className="px-3 py-2.5 text-center font-semibold">Lead Partner</th>
-                                        <th className="px-3 py-2.5 font-semibold">Status</th>
-                                        <th className="px-3 py-2.5 font-semibold">Prioritas</th>
-                                        <th className="px-3 py-2.5 font-semibold">Tenggat</th>
-                                        <th className="py-2.5 pr-4 pl-1 text-right font-semibold"></th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                <div className="divide-y divide-slate-100 sm:hidden dark:divide-white/[0.04]">
                                     {matters.data.map((matter) => (
-                                        <tr
+                                        <Link
                                             key={matter.id}
-                                            className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                            href={matterRoutes.show(matter.id)}
+                                            className="block p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
                                         >
-                                            {/* 1. Title & Number */}
-                                            <td className="py-2.5 pr-3 pl-4">
-                                                <Link
-                                                    href={matterRoutes.show(matter.id)}
-                                                    className="flex items-center gap-2.5"
-                                                >
-                                                    <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-600 group-hover:text-white dark:bg-blue-950/40 dark:text-blue-400">
-                                                        <Briefcase className="size-3.5" />
-                                                    </div>
-                                                    <div className="min-w-0 space-y-0.5">
-                                                        <p className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
-                                                            {matter.title}
-                                                        </p>
-                                                        <span className="inline-block font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
-                                                            {matter.matter_number}
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="flex items-center gap-1.5 font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                        <span>
+                                                            {
+                                                                matter.matter_number
+                                                            }
+                                                        </span>
+                                                        <span>·</span>
+                                                        <span className="truncate">
+                                                            {matter
+                                                                .practice_area
+                                                                ?.name ??
+                                                                'Umum'}
                                                         </span>
                                                     </div>
-                                                </Link>
-                                            </td>
-
-                                            {/* 2. Client */}
-                                            <td className="px-3 py-2.5 font-medium whitespace-nowrap">
-                                                {matter.client.id ? (
-                                                    <Link
-                                                        href={clientRoutes.show(matter.client.id)}
-                                                        className="inline-flex items-center gap-1.5 text-slate-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
-                                                    >
-                                                        {matter.client.type === 'individual' || matter.client.type === 'person' ? (
-                                                            <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                                        ) : (
-                                                            <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
+                                                    <p className="mt-0.5 line-clamp-2 text-xs font-bold text-slate-900 dark:text-white">
+                                                        {matter.title}
+                                                    </p>
+                                                    <p className="mt-1 truncate text-[11px] font-medium text-slate-600 dark:text-zinc-300">
+                                                        {
+                                                            matter.client
+                                                                .display_name
+                                                        }
+                                                    </p>
+                                                </div>
+                                                <ChevronRight className="size-4 shrink-0 text-slate-400" />
+                                            </div>
+                                            <div className="mt-2.5 flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-2 text-[10px] dark:border-white/[0.04]">
+                                                <StatusBadge
+                                                    value={matter.status}
+                                                />
+                                                <StatusBadge
+                                                    value={matter.priority}
+                                                />
+                                                {matter.next_deadline && (
+                                                    <span className="ml-auto font-mono text-slate-500 dark:text-zinc-400">
+                                                        {formatDate(
+                                                            matter.next_deadline,
                                                         )}
-                                                        <span className="hover:underline">{matter.client.display_name}</span>
-                                                    </Link>
-                                                ) : (
-                                                    <span className="inline-flex items-center gap-1.5 text-slate-700 dark:text-zinc-300">
-                                                        {matter.client.type === 'individual' || matter.client.type === 'person' ? (
-                                                            <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                                        ) : (
-                                                            <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
-                                                        )}
-                                                        <span>{matter.client.display_name}</span>
                                                     </span>
                                                 )}
-                                            </td>
-
-                                            {/* 3. Practice Area */}
-                                            <td className="px-3 py-2.5 whitespace-nowrap">
-                                                <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                    {matter.practice_area?.name ?? 'Umum'}
-                                                </span>
-                                            </td>
-
-                                            {/* 4. Responsible Partner */}
-                                            <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                <TooltipProvider delayDuration={100}>
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <div className="inline-flex cursor-pointer items-center justify-center">
-                                                                <Avatar className="size-6 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                                    <AvatarImage src={matter.responsible_partner.avatar_url ?? undefined} />
-                                                                    <AvatarFallback className="text-[8px] font-bold">
-                                                                        {getInitials(matter.responsible_partner.name)}
-                                                                    </AvatarFallback>
-                                                                </Avatar>
-                                                            </div>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent
-                                                            side="top"
-                                                            className="bg-slate-900 px-2.5 py-1 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800"
-                                                        >
-                                                            {matter.responsible_partner.name}
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                </TooltipProvider>
-                                            </td>
-
-                                            {/* 5. Status */}
-                                            <td className="px-3 py-2.5 whitespace-nowrap">
-                                                <StatusBadge value={matter.status} />
-                                            </td>
-
-                                            {/* 6. Priority */}
-                                            <td className="px-3 py-2.5 whitespace-nowrap">
-                                                <StatusBadge value={matter.priority} />
-                                            </td>
-
-                                            {/* 7. Next Deadline */}
-                                            <td className="px-3 py-2.5 font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
-                                                {matter.next_deadline ? formatDate(matter.next_deadline) : '-'}
-                                            </td>
-
-                                            {/* 8. Action Arrow */}
-                                            <td className="py-2.5 pr-4 pl-1 text-right">
-                                                <Link
-                                                    href={matterRoutes.show(matter.id)}
-                                                    className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
-                                                >
-                                                    <ChevronRight className="size-4" />
-                                                </Link>
-                                            </td>
-                                        </tr>
+                                            </div>
+                                        </Link>
                                     ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        </>
+                                </div>
+
+                                {/* Desktop Data Table (hidden sm:block) */}
+                                <div className="hidden overflow-x-auto sm:block">
+                                    <table className="w-full text-left text-xs">
+                                        <thead>
+                                            <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
+                                                <th className="py-2.5 pr-3 pl-4 font-semibold">
+                                                    Perkara &amp; Nomor
+                                                </th>
+                                                <th className="px-3 py-2.5 font-semibold">
+                                                    Klien
+                                                </th>
+                                                <th className="px-3 py-2.5 font-semibold">
+                                                    Area Praktik
+                                                </th>
+                                                <th className="px-3 py-2.5 text-center font-semibold">
+                                                    Lead Partner
+                                                </th>
+                                                <th className="px-3 py-2.5 font-semibold">
+                                                    Status
+                                                </th>
+                                                <th className="px-3 py-2.5 font-semibold">
+                                                    Prioritas
+                                                </th>
+                                                <th className="px-3 py-2.5 font-semibold">
+                                                    Tenggat
+                                                </th>
+                                                <th className="py-2.5 pr-4 pl-1 text-right font-semibold"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                            {matters.data.map((matter) => (
+                                                <tr
+                                                    key={matter.id}
+                                                    className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                >
+                                                    {/* 1. Title & Number */}
+                                                    <td className="py-2.5 pr-3 pl-4">
+                                                        <Link
+                                                            href={matterRoutes.show(
+                                                                matter.id,
+                                                            )}
+                                                            className="flex items-center gap-2.5"
+                                                        >
+                                                            <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-600 group-hover:text-white dark:bg-blue-950/40 dark:text-blue-400">
+                                                                <Briefcase className="size-3.5" />
+                                                            </div>
+                                                            <div className="min-w-0 space-y-0.5">
+                                                                <p className="truncate text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                                                                    {
+                                                                        matter.title
+                                                                    }
+                                                                </p>
+                                                                <span className="inline-block font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                                    {
+                                                                        matter.matter_number
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                        </Link>
+                                                    </td>
+
+                                                    {/* 2. Client */}
+                                                    <td className="px-3 py-2.5 font-medium whitespace-nowrap">
+                                                        {matter.client.id ? (
+                                                            <Link
+                                                                href={clientRoutes.show(
+                                                                    matter
+                                                                        .client
+                                                                        .id,
+                                                                )}
+                                                                className="inline-flex items-center gap-1.5 text-slate-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
+                                                            >
+                                                                {matter.client
+                                                                    .type ===
+                                                                    'individual' ||
+                                                                matter.client
+                                                                    .type ===
+                                                                    'person' ? (
+                                                                    <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                                                ) : (
+                                                                    <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
+                                                                )}
+                                                                <span className="hover:underline">
+                                                                    {
+                                                                        matter
+                                                                            .client
+                                                                            .display_name
+                                                                    }
+                                                                </span>
+                                                            </Link>
+                                                        ) : (
+                                                            <span className="inline-flex items-center gap-1.5 text-slate-700 dark:text-zinc-300">
+                                                                {matter.client
+                                                                    .type ===
+                                                                    'individual' ||
+                                                                matter.client
+                                                                    .type ===
+                                                                    'person' ? (
+                                                                    <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                                                ) : (
+                                                                    <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
+                                                                )}
+                                                                <span>
+                                                                    {
+                                                                        matter
+                                                                            .client
+                                                                            .display_name
+                                                                    }
+                                                                </span>
+                                                            </span>
+                                                        )}
+                                                    </td>
+
+                                                    {/* 3. Practice Area */}
+                                                    <td className="px-3 py-2.5 whitespace-nowrap">
+                                                        <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                            {matter
+                                                                .practice_area
+                                                                ?.name ??
+                                                                'Umum'}
+                                                        </span>
+                                                    </td>
+
+                                                    {/* 4. Responsible Partner */}
+                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                                                        <TooltipProvider
+                                                            delayDuration={100}
+                                                        >
+                                                            <Tooltip>
+                                                                <TooltipTrigger
+                                                                    asChild
+                                                                >
+                                                                    <div className="inline-flex cursor-pointer items-center justify-center">
+                                                                        <Avatar className="size-6 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                            <AvatarImage
+                                                                                src={
+                                                                                    matter
+                                                                                        .responsible_partner
+                                                                                        .avatar_url ??
+                                                                                    undefined
+                                                                                }
+                                                                            />
+                                                                            <AvatarFallback className="text-[8px] font-bold">
+                                                                                {getInitials(
+                                                                                    matter
+                                                                                        .responsible_partner
+                                                                                        .name,
+                                                                                )}
+                                                                            </AvatarFallback>
+                                                                        </Avatar>
+                                                                    </div>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent
+                                                                    side="top"
+                                                                    className="bg-slate-900 px-2.5 py-1 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800"
+                                                                >
+                                                                    {
+                                                                        matter
+                                                                            .responsible_partner
+                                                                            .name
+                                                                    }
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
+                                                    </td>
+
+                                                    {/* 5. Status */}
+                                                    <td className="px-3 py-2.5 whitespace-nowrap">
+                                                        <StatusBadge
+                                                            value={
+                                                                matter.status
+                                                            }
+                                                        />
+                                                    </td>
+
+                                                    {/* 6. Priority */}
+                                                    <td className="px-3 py-2.5 whitespace-nowrap">
+                                                        <StatusBadge
+                                                            value={
+                                                                matter.priority
+                                                            }
+                                                        />
+                                                    </td>
+
+                                                    {/* 7. Next Deadline */}
+                                                    <td className="px-3 py-2.5 font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                        {matter.next_deadline
+                                                            ? formatDate(
+                                                                  matter.next_deadline,
+                                                              )
+                                                            : '-'}
+                                                    </td>
+
+                                                    {/* 8. Action Arrow */}
+                                                    <td className="py-2.5 pr-4 pl-1 text-right">
+                                                        <Link
+                                                            href={matterRoutes.show(
+                                                                matter.id,
+                                                            )}
+                                                            className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                                        >
+                                                            <ChevronRight className="size-4" />
+                                                        </Link>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </>
                         )}
 
                         {/* Table Footer with Pagination */}
                         <div className="flex flex-col justify-between gap-3 border-t border-slate-100 bg-slate-50/50 px-4 py-2.5 sm:flex-row sm:items-center dark:border-white/[0.04] dark:bg-[#121418]">
                             <span className="text-xs text-slate-500 dark:text-zinc-400">
-                                Menampilkan <span className="font-semibold text-slate-900 dark:text-white">{matters.data.length}</span> dari <span className="font-semibold text-slate-900 dark:text-white">{matters.total}</span> perkara
+                                Menampilkan{' '}
+                                <span className="font-semibold text-slate-900 dark:text-white">
+                                    {matters.data.length}
+                                </span>{' '}
+                                dari{' '}
+                                <span className="font-semibold text-slate-900 dark:text-white">
+                                    {matters.total}
+                                </span>{' '}
+                                perkara
                             </span>
 
                             <Pagination links={matters.links} />

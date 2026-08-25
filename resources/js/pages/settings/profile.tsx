@@ -1,6 +1,12 @@
 import { useRef, useState } from 'react';
 import { Form, Head, Link, usePage } from '@inertiajs/react';
-import { Camera, CheckCircle2, Scissors, Trash2, User as UserIcon } from 'lucide-react';
+import {
+    Camera,
+    CheckCircle2,
+    Scissors,
+    Trash2,
+    User as UserIcon,
+} from 'lucide-react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import { AvatarCropperModal } from '@/components/avatar-cropper-modal';
 import InputError from '@/components/input-error';
@@ -30,7 +36,8 @@ export default function Profile({
     );
     const [isRemoved, setIsRemoved] = useState(false);
     const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
-    const [originalFileName, setOriginalFileName] = useState<string>('avatar.jpg');
+    const [originalFileName, setOriginalFileName] =
+        useState<string>('avatar.jpg');
     const [isCropperOpen, setIsCropperOpen] = useState(false);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +53,10 @@ export default function Profile({
         }
     };
 
-    const handleCropComplete = (croppedFile: File, croppedPreviewUrl: string) => {
+    const handleCropComplete = (
+        croppedFile: File,
+        croppedPreviewUrl: string,
+    ) => {
         // Set the cropped file into the file input using DataTransfer
         if (fileInputRef.current) {
             const dataTransfer = new DataTransfer();
@@ -85,7 +95,8 @@ export default function Profile({
                         Profil &amp; Identitas Advokat
                     </h2>
                     <p className="text-xs text-slate-500 dark:text-zinc-400">
-                        Perbarui informasi foto profil, nama lengkap, dan alamat email akun Anda.
+                        Perbarui informasi foto profil, nama lengkap, dan alamat
+                        email akun Anda.
                     </p>
                 </div>
 
@@ -109,7 +120,10 @@ export default function Profile({
                                     {/* Avatar Display */}
                                     <div className="group relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-white shadow-2xs dark:border-white/10 dark:bg-zinc-800">
                                         <img
-                                            src={previewUrl || '/images/default-avatar.svg'}
+                                            src={
+                                                previewUrl ||
+                                                '/images/default-avatar.svg'
+                                            }
                                             alt={auth.user.name}
                                             className="size-full object-cover transition-transform group-hover:scale-105"
                                         />
@@ -139,7 +153,8 @@ export default function Profile({
                                                 size="sm"
                                                 onClick={() => {
                                                     if (fileInputRef.current) {
-                                                        fileInputRef.current.value = '';
+                                                        fileInputRef.current.value =
+                                                            '';
                                                     }
                                                     fileInputRef.current?.click();
                                                 }}
@@ -154,7 +169,9 @@ export default function Profile({
                                                     type="button"
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => setIsCropperOpen(true)}
+                                                    onClick={() =>
+                                                        setIsCropperOpen(true)
+                                                    }
                                                     className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-blue-600 shadow-2xs hover:bg-blue-50 dark:border-white/10 dark:bg-zinc-800 dark:text-blue-400"
                                                 >
                                                     <Scissors className="mr-1.5 size-3.5" />
@@ -181,7 +198,9 @@ export default function Profile({
                                         </div>
 
                                         <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                            Format JPG, PNG, atau WebP. Anda dapat memposisikan &amp; memotong foto sebelum disimpan.
+                                            Format JPG, PNG, atau WebP. Anda
+                                            dapat memposisikan &amp; memotong
+                                            foto sebelum disimpan.
                                         </p>
 
                                         <InputError
@@ -247,7 +266,8 @@ export default function Profile({
                                 auth.user.email_verified_at === null && (
                                     <div className="rounded-lg border border-amber-200 bg-amber-50/90 p-3 text-xs text-amber-900">
                                         <p>
-                                            Alamat email Anda belum terverifikasi.{' '}
+                                            Alamat email Anda belum
+                                            terverifikasi.{' '}
                                             <Link
                                                 href={send()}
                                                 as="button"
@@ -261,7 +281,8 @@ export default function Profile({
                                             'verification-link-sent' && (
                                             <div className="mt-1 flex items-center gap-1 font-semibold text-emerald-700">
                                                 <CheckCircle2 className="size-3.5" />
-                                                Tautan verifikasi baru telah dikirim ke alamat email Anda.
+                                                Tautan verifikasi baru telah
+                                                dikirim ke alamat email Anda.
                                             </div>
                                         )}
                                     </div>

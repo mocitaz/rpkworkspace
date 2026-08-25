@@ -16,7 +16,10 @@ import {
     ShieldCheck,
 } from 'lucide-react';
 import { useRef, useState } from 'react';
-import { DocumentPreviewModal, type PreviewableDocument } from '@/components/documents/document-preview-modal';
+import {
+    DocumentPreviewModal,
+    type PreviewableDocument,
+} from '@/components/documents/document-preview-modal';
 import { EmptyState } from '@/components/empty-state';
 import InputError from '@/components/input-error';
 import { Pagination } from '@/components/pagination';
@@ -93,7 +96,9 @@ export default function DocumentsIndex({
 }) {
     const params = new URLSearchParams(window.location.search);
     const [open, setOpen] = useState(() => params.has('upload'));
-    const [previewDoc, setPreviewDoc] = useState<PreviewableDocument | null>(null);
+    const [previewDoc, setPreviewDoc] = useState<PreviewableDocument | null>(
+        null,
+    );
     const initialMatterId = params.get('matter_id') ?? '';
 
     return (
@@ -109,7 +114,9 @@ export default function DocumentsIndex({
                                 Dokumen &amp; Repositori Legal
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Penyimpanan privat berkas perkara, surat kuasa, alat bukti, dan audit jejak versi tersertifikasi.
+                                Penyimpanan privat berkas perkara, surat kuasa,
+                                alat bukti, dan audit jejak versi
+                                tersertifikasi.
                             </p>
                         </div>
 
@@ -121,8 +128,8 @@ export default function DocumentsIndex({
                                     onClick={() => setOpen(true)}
                                     className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
                                 >
-                                    <FileUp className="mr-1.5 size-3.5" />
-                                    + Unggah Dokumen Privat
+                                    <FileUp className="mr-1.5 size-3.5" />+
+                                    Unggah Dokumen Privat
                                 </Button>
                             )}
                         </div>
@@ -133,7 +140,9 @@ export default function DocumentsIndex({
                         {/* 1. Total Dokumen */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">TOTAL VAULT DOKUMEN</span>
+                                <span className="text-[11px] font-semibold">
+                                    TOTAL VAULT DOKUMEN
+                                </span>
                                 <FileText className="size-3.5 text-blue-600 dark:text-blue-400" />
                             </div>
                             <div className="mt-2 flex items-baseline gap-1.5">
@@ -146,14 +155,18 @@ export default function DocumentsIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Tersimpan Enkripsi</span>
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">Privat</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                    Privat
+                                </span>
                             </div>
                         </div>
 
                         {/* 2. Berkas Rahasia */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">KERAHASIAAN TERBATAS</span>
+                                <span className="text-[11px] font-semibold">
+                                    KERAHASIAAN TERBATAS
+                                </span>
                                 <ShieldAlert className="size-3.5 text-amber-500" />
                             </div>
                             <div className="mt-2 flex items-baseline gap-1.5">
@@ -166,14 +179,18 @@ export default function DocumentsIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Restricted Access</span>
-                                <span className="font-semibold text-amber-600">Rahasia</span>
+                                <span className="font-semibold text-amber-600">
+                                    Rahasia
+                                </span>
                             </div>
                         </div>
 
                         {/* 3. Dalam Review */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">DALAM REVIEW</span>
+                                <span className="text-[11px] font-semibold">
+                                    DALAM REVIEW
+                                </span>
                                 <FileClock className="size-3.5 text-purple-600 dark:text-purple-400" />
                             </div>
                             <div className="mt-2 flex items-baseline gap-1.5">
@@ -186,14 +203,18 @@ export default function DocumentsIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Approval Pending</span>
-                                <span className="font-semibold text-purple-600 dark:text-purple-400">Review</span>
+                                <span className="font-semibold text-purple-600 dark:text-purple-400">
+                                    Review
+                                </span>
                             </div>
                         </div>
 
                         {/* 4. Cakupan Matter */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">CAKUPAN PERKARA</span>
+                                <span className="text-[11px] font-semibold">
+                                    CAKUPAN PERKARA
+                                </span>
                                 <FolderKanban className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                             </div>
                             <div className="mt-2 flex items-baseline gap-1.5">
@@ -206,7 +227,9 @@ export default function DocumentsIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Tautan Perkara</span>
-                                <span className="font-semibold text-slate-700 dark:text-zinc-300">Aktif</span>
+                                <span className="font-semibold text-slate-700 dark:text-zinc-300">
+                                    Aktif
+                                </span>
                             </div>
                         </div>
                     </section>
@@ -214,7 +237,7 @@ export default function DocumentsIndex({
                     {/* 3. Filter & Search Toolbar */}
                     <Form
                         {...documentRoutes.index.form()}
-                        className="rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 space-y-2 dark:border-white/[0.04] dark:bg-[#121418]"
+                        className="space-y-2 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]"
                     >
                         {/* Row 1: Search, Reset, Count */}
                         <div className="flex items-center gap-2">
@@ -227,7 +250,10 @@ export default function DocumentsIndex({
                                     className="h-8 w-full rounded-lg border-slate-200 bg-white pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
                                 />
                             </div>
-                            {(filters.search || filters.status || filters.matter_id || filters.document_type) && (
+                            {(filters.search ||
+                                filters.status ||
+                                filters.matter_id ||
+                                filters.document_type) && (
                                 <Button
                                     asChild
                                     variant="outline"
@@ -240,7 +266,7 @@ export default function DocumentsIndex({
                                     </Link>
                                 </Button>
                             )}
-                            <span className="shrink-0 rounded-md bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 border border-slate-200/70 shadow-2xs dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-300">
+                            <span className="shrink-0 rounded-md border border-slate-200/70 bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
                                 {documents.total} berkas
                             </span>
                         </div>
@@ -255,8 +281,12 @@ export default function DocumentsIndex({
                                 >
                                     <option value="">Semua Perkara</option>
                                     {matters.map((matter) => (
-                                        <option key={matter.id} value={matter.id}>
-                                            {matter.matter_number} - {matter.title}
+                                        <option
+                                            key={matter.id}
+                                            value={matter.id}
+                                        >
+                                            {matter.matter_number} -{' '}
+                                            {matter.title}
                                         </option>
                                     ))}
                                 </select>
@@ -271,7 +301,9 @@ export default function DocumentsIndex({
                                 >
                                     <option value="">Semua Status</option>
                                     <option value="draft">Draf</option>
-                                    <option value="under_review">Dalam Review</option>
+                                    <option value="under_review">
+                                        Dalam Review
+                                    </option>
                                     <option value="approved">Disetujui</option>
                                     <option value="final">Final</option>
                                 </select>
@@ -295,12 +327,18 @@ export default function DocumentsIndex({
                                 <EmptyState
                                     icon={FileText}
                                     title={
-                                        filters.search || filters.status || filters.matter_id || filters.document_type
+                                        filters.search ||
+                                        filters.status ||
+                                        filters.matter_id ||
+                                        filters.document_type
                                             ? 'Belum ada dokumen yang sesuai pencarian'
                                             : 'Vault Dokumen Kosong'
                                     }
                                     description={
-                                        filters.search || filters.status || filters.matter_id || filters.document_type
+                                        filters.search ||
+                                        filters.status ||
+                                        filters.matter_id ||
+                                        filters.document_type
                                             ? 'Tidak ditemukan berkas dengan kriteria filter yang Anda pilih. Coba sesuaikan kata kunci atau reset filter.'
                                             : 'Seluruh berkas perkara, draf kontrak, dan dokumen legal disimpan secara privat dengan enkripsi ketat.'
                                     }
@@ -309,19 +347,27 @@ export default function DocumentsIndex({
                                             {can.upload && (
                                                 <Button
                                                     type="button"
-                                                    onClick={() => setOpen(true)}
-                                                    className="h-8 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 cursor-pointer"
+                                                    onClick={() =>
+                                                        setOpen(true)
+                                                    }
+                                                    className="h-8 cursor-pointer rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
                                                 >
-                                                    <Plus className="mr-1 size-3.5" /> Unggah Dokumen Baru
+                                                    <Plus className="mr-1 size-3.5" />{' '}
+                                                    Unggah Dokumen Baru
                                                 </Button>
                                             )}
-                                            {(filters.search || filters.status || filters.matter_id || filters.document_type) && (
+                                            {(filters.search ||
+                                                filters.status ||
+                                                filters.matter_id ||
+                                                filters.document_type) && (
                                                 <Button
                                                     asChild
                                                     variant="outline"
                                                     className="h-8 rounded-lg border-slate-200 px-3.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
                                                 >
-                                                    <Link href={documentRoutes.index.url()}>
+                                                    <Link
+                                                        href={documentRoutes.index.url()}
+                                                    >
                                                         Reset Filter
                                                     </Link>
                                                 </Button>
@@ -345,18 +391,35 @@ export default function DocumentsIndex({
                                                 </div>
                                                 <div className="min-w-0 flex-1">
                                                     <Link
-                                                        href={documentRoutes.show(document.id)}
+                                                        href={documentRoutes.show(
+                                                            document.id,
+                                                        )}
                                                         className="line-clamp-2 text-xs font-bold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
                                                     >
                                                         {document.title}
                                                     </Link>
                                                     {document.matter && (
                                                         <Link
-                                                            href={matterRoutes.show(document.matter.id)}
+                                                            href={matterRoutes.show(
+                                                                document.matter
+                                                                    .id,
+                                                            )}
                                                             className="mt-0.5 inline-flex items-center gap-1 font-mono text-[10px] font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                                         >
                                                             <FolderKanban className="size-2.5 shrink-0" />
-                                                            <span className="truncate">{document.matter.matter_number} · {document.matter.title}</span>
+                                                            <span className="truncate">
+                                                                {
+                                                                    document
+                                                                        .matter
+                                                                        .matter_number
+                                                                }{' '}
+                                                                ·{' '}
+                                                                {
+                                                                    document
+                                                                        .matter
+                                                                        .title
+                                                                }
+                                                            </span>
                                                         </Link>
                                                     )}
                                                 </div>
@@ -364,7 +427,9 @@ export default function DocumentsIndex({
                                                     type="button"
                                                     variant="outline"
                                                     size="sm"
-                                                    onClick={() => setPreviewDoc(document)}
+                                                    onClick={() =>
+                                                        setPreviewDoc(document)
+                                                    }
                                                     className="h-7 shrink-0 rounded-lg px-2 text-[11px] font-semibold text-blue-600 dark:text-blue-400"
                                                 >
                                                     <Eye className="mr-1 size-3" />
@@ -372,17 +437,29 @@ export default function DocumentsIndex({
                                                 </Button>
                                             </div>
                                             <div className="flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-2 text-[10px] dark:border-white/[0.04]">
-                                                <StatusBadge value={document.status} />
+                                                <StatusBadge
+                                                    value={document.status}
+                                                />
                                                 <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-white">
-                                                    v{document.current_version?.version_number ?? 1}.0
+                                                    v
+                                                    {document.current_version
+                                                        ?.version_number ?? 1}
+                                                    .0
                                                 </span>
-                                                {document.current_version?.file_size ? (
+                                                {document.current_version
+                                                    ?.file_size ? (
                                                     <span className="font-mono text-slate-500 dark:text-zinc-400">
-                                                        {formatBytes(document.current_version.file_size)}
+                                                        {formatBytes(
+                                                            document
+                                                                .current_version
+                                                                .file_size,
+                                                        )}
                                                     </span>
                                                 ) : null}
                                                 <span className="ml-auto font-mono text-slate-400 dark:text-zinc-500">
-                                                    {formatDate(document.updated_at)}
+                                                    {formatDate(
+                                                        document.updated_at,
+                                                    )}
                                                 </span>
                                             </div>
                                         </div>
@@ -394,13 +471,27 @@ export default function DocumentsIndex({
                                     <table className="w-full text-left text-xs">
                                         <thead>
                                             <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                                <th className="py-2.5 pr-3 pl-4 font-semibold">Nama Dokumen &amp; Tipe</th>
-                                                <th className="px-3 py-2.5 font-semibold">Terkait Perkara / Klien</th>
-                                                <th className="px-3 py-2.5 text-center font-semibold">Versi</th>
-                                                <th className="px-3 py-2.5 text-right font-semibold">Ukuran</th>
-                                                <th className="px-3 py-2.5 text-center font-semibold">Status</th>
-                                                <th className="px-3 py-2.5 text-right font-semibold">Diperbarui</th>
-                                                <th className="py-2.5 pr-4 pl-3 text-center font-semibold">Aksi</th>
+                                                <th className="py-2.5 pr-3 pl-4 font-semibold">
+                                                    Nama Dokumen &amp; Tipe
+                                                </th>
+                                                <th className="px-3 py-2.5 font-semibold">
+                                                    Terkait Perkara / Klien
+                                                </th>
+                                                <th className="px-3 py-2.5 text-center font-semibold">
+                                                    Versi
+                                                </th>
+                                                <th className="px-3 py-2.5 text-right font-semibold">
+                                                    Ukuran
+                                                </th>
+                                                <th className="px-3 py-2.5 text-center font-semibold">
+                                                    Status
+                                                </th>
+                                                <th className="px-3 py-2.5 text-right font-semibold">
+                                                    Diperbarui
+                                                </th>
+                                                <th className="py-2.5 pr-4 pl-3 text-center font-semibold">
+                                                    Aksi
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
@@ -417,25 +508,34 @@ export default function DocumentsIndex({
                                                             </div>
                                                             <div className="min-w-0 space-y-0.5">
                                                                 <Link
-                                                                    href={documentRoutes.show(document.id)}
+                                                                    href={documentRoutes.show(
+                                                                        document.id,
+                                                                    )}
                                                                     className="font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
                                                                 >
-                                                                    {document.title}
+                                                                    {
+                                                                        document.title
+                                                                    }
                                                                 </Link>
                                                                 <div className="flex flex-wrap items-center gap-1">
-                                                                    <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[9.5px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                                        {document.document_type ?? 'Dokumen Umum'}
+                                                                    <span className="py-0.2 rounded bg-slate-100 px-1.5 text-[9.5px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                                        {document.document_type ??
+                                                                            'Dokumen Umum'}
                                                                     </span>
                                                                     <span
-                                                                        className={`rounded px-1.5 py-0.2 text-[9.5px] font-semibold ${
-                                                                            document.confidentiality_level === 'strictly_confidential'
+                                                                        className={`py-0.2 rounded px-1.5 text-[9.5px] font-semibold ${
+                                                                            document.confidentiality_level ===
+                                                                            'strictly_confidential'
                                                                                 ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
-                                                                                : document.confidentiality_level === 'restricted'
+                                                                                : document.confidentiality_level ===
+                                                                                    'restricted'
                                                                                   ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'
                                                                                   : 'bg-slate-100 text-slate-600 dark:bg-white/[0.06]'
                                                                         }`}
                                                                     >
-                                                                        {document.confidentiality_level}
+                                                                        {
+                                                                            document.confidentiality_level
+                                                                        }
                                                                     </span>
                                                                 </div>
                                                             </div>
@@ -446,51 +546,92 @@ export default function DocumentsIndex({
                                                     <td className="px-3 py-2.5 whitespace-nowrap">
                                                         {document.matter ? (
                                                             <Link
-                                                                href={matterRoutes.show(document.matter.id)}
+                                                                href={matterRoutes.show(
+                                                                    document
+                                                                        .matter
+                                                                        .id,
+                                                                )}
                                                                 className="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:underline dark:text-blue-400"
                                                             >
                                                                 <FolderKanban className="size-3 shrink-0 text-slate-400" />
                                                                 <span className="max-w-[200px] truncate font-semibold">
-                                                                    {document.matter.matter_number} · {document.matter.title}
+                                                                    {
+                                                                        document
+                                                                            .matter
+                                                                            .matter_number
+                                                                    }{' '}
+                                                                    ·{' '}
+                                                                    {
+                                                                        document
+                                                                            .matter
+                                                                            .title
+                                                                    }
                                                                 </span>
                                                             </Link>
                                                         ) : document.client ? (
                                                             <Link
-                                                                href={clientRoutes.show(document.client.id)}
+                                                                href={clientRoutes.show(
+                                                                    document
+                                                                        .client
+                                                                        .id,
+                                                                )}
                                                                 className="inline-flex items-center gap-1 text-xs text-slate-700 hover:underline dark:text-zinc-300"
                                                             >
                                                                 <Building2 className="size-3 shrink-0 text-slate-400" />
                                                                 <span className="max-w-[160px] truncate font-semibold">
-                                                                    {document.client.display_name}
+                                                                    {
+                                                                        document
+                                                                            .client
+                                                                            .display_name
+                                                                    }
                                                                 </span>
                                                             </Link>
                                                         ) : (
-                                                            <span className="text-slate-400 dark:text-zinc-500">-</span>
+                                                            <span className="text-slate-400 dark:text-zinc-500">
+                                                                -
+                                                            </span>
                                                         )}
                                                     </td>
 
                                                     {/* Version Chip */}
                                                     <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                        <span className="rounded bg-slate-100 px-1.5 py-0.2 font-mono text-[11px] font-semibold text-slate-900 dark:bg-zinc-800 dark:text-white">
-                                                            v{document.current_version?.version_number ?? 1}.0
+                                                        <span className="py-0.2 rounded bg-slate-100 px-1.5 font-mono text-[11px] font-semibold text-slate-900 dark:bg-zinc-800 dark:text-white">
+                                                            v
+                                                            {document
+                                                                .current_version
+                                                                ?.version_number ??
+                                                                1}
+                                                            .0
                                                         </span>
                                                     </td>
 
                                                     {/* File Size */}
                                                     <td className="px-3 py-2.5 text-right font-mono text-xs whitespace-nowrap text-slate-500 dark:text-zinc-400">
-                                                        {document.current_version?.file_size
-                                                            ? formatBytes(document.current_version.file_size)
+                                                        {document
+                                                            .current_version
+                                                            ?.file_size
+                                                            ? formatBytes(
+                                                                  document
+                                                                      .current_version
+                                                                      .file_size,
+                                                              )
                                                             : '-'}
                                                     </td>
 
                                                     {/* Status Badge */}
                                                     <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                        <StatusBadge value={document.status} />
+                                                        <StatusBadge
+                                                            value={
+                                                                document.status
+                                                            }
+                                                        />
                                                     </td>
 
                                                     {/* Updated At */}
-                                                    <td className="py-2.5 px-3 text-right font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
-                                                        {formatDate(document.updated_at)}
+                                                    <td className="px-3 py-2.5 text-right font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                        {formatDate(
+                                                            document.updated_at,
+                                                        )}
                                                     </td>
 
                                                     {/* Action: Quick Preview */}
@@ -499,7 +640,11 @@ export default function DocumentsIndex({
                                                             type="button"
                                                             variant="outline"
                                                             size="sm"
-                                                            onClick={() => setPreviewDoc(document)}
+                                                            onClick={() =>
+                                                                setPreviewDoc(
+                                                                    document,
+                                                                )
+                                                            }
                                                             className="h-7 cursor-pointer rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-blue-600 shadow-2xs hover:border-blue-300 hover:bg-blue-50/80 active:scale-95 dark:border-white/10 dark:bg-[#14161b] dark:text-blue-400"
                                                         >
                                                             <Eye className="mr-1 size-3" />
@@ -561,29 +706,35 @@ function UploadDocumentModal({
 }: {
     isOpen: boolean;
     onClose: () => void;
-    matters: { id: string; matter_number: string; title: string; client_id: string }[];
+    matters: {
+        id: string;
+        matter_number: string;
+        title: string;
+        client_id: string;
+    }[];
     clients: { id: string; display_name: string }[];
     initialMatterId?: string;
 }) {
-    const { data, setData, post, processing, errors, reset, clearErrors } = useForm<{
-        title: string;
-        matter_id: string;
-        client_id: string;
-        document_type: string;
-        confidentiality_level: string;
-        status: string;
-        file: File | null;
-        notes: string;
-    }>({
-        title: '',
-        matter_id: initialMatterId,
-        client_id: '',
-        document_type: '',
-        confidentiality_level: 'standard',
-        status: 'draft',
-        file: null,
-        notes: '',
-    });
+    const { data, setData, post, processing, errors, reset, clearErrors } =
+        useForm<{
+            title: string;
+            matter_id: string;
+            client_id: string;
+            document_type: string;
+            confidentiality_level: string;
+            status: string;
+            file: File | null;
+            notes: string;
+        }>({
+            title: '',
+            matter_id: initialMatterId,
+            client_id: '',
+            document_type: '',
+            confidentiality_level: 'standard',
+            status: 'draft',
+            file: null,
+            notes: '',
+        });
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -621,7 +772,8 @@ function UploadDocumentModal({
                                 Unggah Dokumen Privat
                             </DialogTitle>
                             <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Simpan berkas legal dengan kontrol akses, scan antivirus, dan ekstraksi teks.
+                                Simpan berkas legal dengan kontrol akses, scan
+                                antivirus, dan ekstraksi teks.
                             </DialogDescription>
                         </div>
                     </div>
@@ -643,8 +795,12 @@ function UploadDocumentModal({
 
                 <form onSubmit={handleSubmit} className="space-y-3.5 pt-1">
                     <div className="grid gap-1">
-                        <Label htmlFor="title" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                            Judul Dokumen <span className="text-rose-500">*</span>
+                        <Label
+                            htmlFor="title"
+                            className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                        >
+                            Judul Dokumen{' '}
+                            <span className="text-rose-500">*</span>
                         </Label>
                         <Input
                             id="title"
@@ -659,20 +815,31 @@ function UploadDocumentModal({
 
                     <div className="grid gap-2.5 sm:grid-cols-2">
                         <div className="grid gap-1">
-                            <Label htmlFor="matter_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            <Label
+                                htmlFor="matter_id"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                            >
                                 Terkait Perkara (Matter)
                             </Label>
                             <div className="relative">
                                 <select
                                     id="matter_id"
                                     value={data.matter_id}
-                                    onChange={(e) => setData('matter_id', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('matter_id', e.target.value)
+                                    }
                                     className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                 >
-                                    <option value="">Dokumen Umum (Tanpa Matter)</option>
+                                    <option value="">
+                                        Dokumen Umum (Tanpa Matter)
+                                    </option>
                                     {matters.map((matter) => (
-                                        <option key={matter.id} value={matter.id}>
-                                            {matter.matter_number} - {matter.title}
+                                        <option
+                                            key={matter.id}
+                                            value={matter.id}
+                                        >
+                                            {matter.matter_number} -{' '}
+                                            {matter.title}
                                         </option>
                                     ))}
                                 </select>
@@ -682,19 +849,29 @@ function UploadDocumentModal({
                         </div>
 
                         <div className="grid gap-1">
-                            <Label htmlFor="client_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            <Label
+                                htmlFor="client_id"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                            >
                                 Terkait Klien
                             </Label>
                             <div className="relative">
                                 <select
                                     id="client_id"
                                     value={data.client_id}
-                                    onChange={(e) => setData('client_id', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('client_id', e.target.value)
+                                    }
                                     className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                 >
-                                    <option value="">Pilih Klien (Opsional)</option>
+                                    <option value="">
+                                        Pilih Klien (Opsional)
+                                    </option>
                                     {clients.map((client) => (
-                                        <option key={client.id} value={client.id}>
+                                        <option
+                                            key={client.id}
+                                            value={client.id}
+                                        >
                                             {client.display_name}
                                         </option>
                                     ))}
@@ -707,13 +884,18 @@ function UploadDocumentModal({
 
                     <div className="grid gap-2.5 sm:grid-cols-2">
                         <div className="grid gap-1">
-                            <Label htmlFor="document_type" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            <Label
+                                htmlFor="document_type"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                            >
                                 Kategori / Tipe Dokumen
                             </Label>
                             <Input
                                 id="document_type"
                                 value={data.document_type}
-                                onChange={(e) => setData('document_type', e.target.value)}
+                                onChange={(e) =>
+                                    setData('document_type', e.target.value)
+                                }
                                 placeholder="Contoh: Kontrak, Alat Bukti, Surat Kuasa"
                                 className="h-8 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                             />
@@ -721,30 +903,52 @@ function UploadDocumentModal({
                         </div>
 
                         <div className="grid gap-1">
-                            <Label htmlFor="confidentiality_level" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            <Label
+                                htmlFor="confidentiality_level"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                            >
                                 Tingkat Kerahasiaan
                             </Label>
                             <div className="relative">
                                 <select
                                     id="confidentiality_level"
                                     value={data.confidentiality_level}
-                                    onChange={(e) => setData('confidentiality_level', e.target.value)}
+                                    onChange={(e) =>
+                                        setData(
+                                            'confidentiality_level',
+                                            e.target.value,
+                                        )
+                                    }
                                     className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                 >
-                                    <option value="standard">Standar Internal</option>
-                                    <option value="confidential">Confidential (Rahasia)</option>
-                                    <option value="restricted">Restricted (Terbatas)</option>
-                                    <option value="strictly_confidential">Strictly Confidential (Sangat Rahasia)</option>
+                                    <option value="standard">
+                                        Standar Internal
+                                    </option>
+                                    <option value="confidential">
+                                        Confidential (Rahasia)
+                                    </option>
+                                    <option value="restricted">
+                                        Restricted (Terbatas)
+                                    </option>
+                                    <option value="strictly_confidential">
+                                        Strictly Confidential (Sangat Rahasia)
+                                    </option>
                                 </select>
                                 <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                             </div>
-                            <InputError message={errors.confidentiality_level} />
+                            <InputError
+                                message={errors.confidentiality_level}
+                            />
                         </div>
                     </div>
 
                     <div className="grid gap-1">
-                        <Label htmlFor="file" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                            Pilih Berkas Dokumen (PDF, DOCX, XLSX, dll) <span className="text-rose-500">*</span>
+                        <Label
+                            htmlFor="file"
+                            className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                        >
+                            Pilih Berkas Dokumen (PDF, DOCX, XLSX, dll){' '}
+                            <span className="text-rose-500">*</span>
                         </Label>
                         <FileInput
                             id="file"
@@ -760,7 +964,10 @@ function UploadDocumentModal({
                     </div>
 
                     <div className="grid gap-1">
-                        <Label htmlFor="notes" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                        <Label
+                            htmlFor="notes"
+                            className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                        >
                             Catatan Dokumen / Keterangan (Opsional)
                         </Label>
                         <textarea
@@ -824,7 +1031,10 @@ function Field({
 }) {
     return (
         <div className="grid gap-1">
-            <Label htmlFor={name} className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+            <Label
+                htmlFor={name}
+                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+            >
                 {label} {required && <span className="text-rose-500">*</span>}
             </Label>
             <Input
@@ -841,7 +1051,5 @@ function Field({
 }
 
 DocumentsIndex.layout = {
-    breadcrumbs: [
-        { title: 'Dokumen', href: documentRoutes.index() },
-    ],
+    breadcrumbs: [{ title: 'Dokumen', href: documentRoutes.index() }],
 };

@@ -266,7 +266,7 @@
     }
 
     .leader-line {
-        @apply border-b border-dotted border-slate-300 dark:border-zinc-700 flex-1 mx-2 mb-1;
+        @apply mx-2 mb-1 flex-1 border-b border-dotted border-slate-300 dark:border-zinc-700;
     }
 }
 
@@ -286,5 +286,3 @@
         animation: none;
     }
 }
-
-

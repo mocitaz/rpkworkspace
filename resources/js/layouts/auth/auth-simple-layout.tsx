@@ -10,7 +10,7 @@ export default function AuthSimpleLayout({
     return (
         <div className="relative flex min-h-screen w-full flex-col justify-between overflow-hidden text-slate-900 selection:bg-blue-600 selection:text-white dark:text-zinc-100">
             {/* Seamless Full-Bleed Illustrated Scenery Canvas Background */}
-            <div className="pointer-events-none fixed inset-0 z-0 select-none overflow-hidden bg-[#e6ebf0] dark:bg-[#0c0d12]">
+            <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#e6ebf0] select-none dark:bg-[#0c0d12]">
                 <img
                     src="/images/rpk-login-vector-bg.jpg"
                     alt="RPK Legal Workspace Scenic Backdrop"
@@ -54,7 +54,8 @@ export default function AuthSimpleLayout({
             {/* Subtle Clean Footer */}
             <footer className="relative z-10 py-3 text-center text-xs font-medium text-slate-500/90 drop-shadow-xs dark:text-zinc-400">
                 <div className="mx-auto max-w-5xl px-4">
-                    &copy; {new Date().getFullYear()} RPK LawApp — Integrated Legal Practice System. All rights reserved.
+                    &copy; {new Date().getFullYear()} RPK LawApp — Integrated
+                    Legal Practice System. All rights reserved.
                 </div>
             </footer>
         </div>

@@ -56,12 +56,14 @@ export default function PaymentShow({ payment }: { payment: Payment }) {
 
     return (
         <>
-            <Head title={`Detail Penerimaan Kas - ${formatMoney(payment.amount, payment.currency)}`} />
+            <Head
+                title={`Detail Penerimaan Kas - ${formatMoney(payment.amount, payment.currency)}`}
+            />
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-4xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
                     {/* 1. Header Toolbar */}
-                    <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center border-b border-slate-200/60 pb-4 dark:border-white/[0.06]">
+                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-4 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">
                             <Link
                                 href={financeRoutes.index()}
@@ -72,7 +74,8 @@ export default function PaymentShow({ payment }: { payment: Payment }) {
                             </Link>
                             <div className="flex flex-wrap items-center gap-2 pt-0.5">
                                 <h1 className="font-mono text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                                    {payment.reference_number ?? 'Penerimaan Kas'}
+                                    {payment.reference_number ??
+                                        'Penerimaan Kas'}
                                 </h1>
                                 <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
                                     OFFICIAL CASH RECEIPT
@@ -107,7 +110,10 @@ export default function PaymentShow({ payment }: { payment: Payment }) {
                                 </span>
                                 <div className="flex items-baseline gap-2">
                                     <span className="font-mono text-2xl font-bold tracking-tight text-emerald-600 sm:text-3xl dark:text-emerald-400">
-                                        {formatMoney(payment.amount, payment.currency)}
+                                        {formatMoney(
+                                            payment.amount,
+                                            payment.currency,
+                                        )}
                                     </span>
                                 </div>
                                 <p className="text-xs text-slate-600 dark:text-zinc-400">
@@ -115,14 +121,17 @@ export default function PaymentShow({ payment }: { payment: Payment }) {
                                     <span className="font-semibold text-slate-900 dark:text-white">
                                         {payment.client.display_name}
                                     </span>{' '}
-                                    · Melalui <span className="font-semibold text-slate-900 dark:text-white">{payment.method}</span>
+                                    · Melalui{' '}
+                                    <span className="font-semibold text-slate-900 dark:text-white">
+                                        {payment.method}
+                                    </span>
                                 </p>
                             </div>
 
                             <div className="flex items-center gap-2">
                                 {isNormal && (
                                     <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-                                        <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                        <span className="size-1.5 animate-pulse rounded-full bg-emerald-500" />
                                         Tercatat Sah &amp; Valid
                                     </span>
                                 )}
@@ -144,13 +153,17 @@ export default function PaymentShow({ payment }: { payment: Payment }) {
                         {/* Reversal / Refund Alert */}
                         {payment.reversed_at && (
                             <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50/80 p-3 text-xs font-medium text-rose-900 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200">
-                                <strong className="font-semibold">Alasan Koreksi Pembayaran:</strong>{' '}
+                                <strong className="font-semibold">
+                                    Alasan Koreksi Pembayaran:
+                                </strong>{' '}
                                 {payment.reversal_reason}
                             </div>
                         )}
                         {payment.refunded_at && (
                             <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50/80 p-3 text-xs font-medium text-rose-900 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200">
-                                <strong className="font-semibold">Alasan Pengembalian (Refund):</strong>{' '}
+                                <strong className="font-semibold">
+                                    Alasan Pengembalian (Refund):
+                                </strong>{' '}
                                 {payment.refund_reason}
                             </div>
                         )}
@@ -206,42 +219,62 @@ export default function PaymentShow({ payment }: { payment: Payment }) {
                                     Alokasi Pelunasan Invoice Tagihan
                                 </h3>
                             </div>
-                            <span className="rounded bg-slate-100 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                            <span className="py-0.2 rounded bg-slate-100 px-1.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
                                 {payment.allocations.length} Alokasi
                             </span>
                         </div>
 
                         <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
                             {payment.allocations.length ? (
-                                payment.allocations.map((allocation) => (
+                                payment.allocations.map((allocation) =>
                                     allocation.invoice ? (
                                         <Link
                                             key={allocation.id}
-                                            href={invoiceRoutes.show.url(allocation.invoice.id)}
+                                            href={invoiceRoutes.show.url(
+                                                allocation.invoice.id,
+                                            )}
                                             className="group flex flex-col justify-between gap-2 py-3 transition-colors hover:bg-slate-50/50 sm:flex-row sm:items-center dark:hover:bg-white/[0.02]"
                                         >
                                             <div className="space-y-0.5">
                                                 <div className="flex items-center gap-1.5">
                                                     <span className="font-mono text-xs font-semibold text-blue-600 group-hover:underline dark:text-blue-400">
-                                                        {allocation.invoice.invoice_number}
+                                                        {
+                                                            allocation.invoice
+                                                                .invoice_number
+                                                        }
                                                     </span>
-                                                    <StatusBadge value={allocation.invoice.status} />
+                                                    <StatusBadge
+                                                        value={
+                                                            allocation.invoice
+                                                                .status
+                                                        }
+                                                    />
                                                 </div>
                                                 <p className="text-xs font-medium text-slate-900 dark:text-white">
                                                     {allocation.invoice.title}
                                                 </p>
                                                 <p className="font-mono text-[10px] text-slate-500 dark:text-zinc-400">
-                                                    Sisa Tagihan: {formatMoney(allocation.invoice.outstanding_amount, allocation.invoice.currency)}
+                                                    Sisa Tagihan:{' '}
+                                                    {formatMoney(
+                                                        allocation.invoice
+                                                            .outstanding_amount,
+                                                        allocation.invoice
+                                                            .currency,
+                                                    )}
                                                 </p>
                                             </div>
 
                                             <div className="flex items-center gap-2.5 text-right">
                                                 <div className="text-right">
-                                                    <span className="text-[9.5px] font-semibold text-slate-400 uppercase block">
+                                                    <span className="block text-[9.5px] font-semibold text-slate-400 uppercase">
                                                         Dialokasikan
                                                     </span>
                                                     <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                                                        {formatMoney(allocation.amount, allocation.invoice.currency)}
+                                                        {formatMoney(
+                                                            allocation.amount,
+                                                            allocation.invoice
+                                                                .currency,
+                                                        )}
                                                     </span>
                                                 </div>
                                                 <ArrowUpRight className="size-3.5 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-blue-600" />
@@ -259,15 +292,19 @@ export default function PaymentShow({ payment }: { payment: Payment }) {
                                             </div>
                                             <div className="text-right">
                                                 <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                                                    {formatMoney(allocation.amount, payment.currency)}
+                                                    {formatMoney(
+                                                        allocation.amount,
+                                                        payment.currency,
+                                                    )}
                                                 </span>
                                             </div>
                                         </div>
-                                    )
-                                ))
+                                    ),
+                                )
                             ) : (
                                 <p className="py-6 text-center text-xs font-medium text-slate-400 dark:text-zinc-500">
-                                    Belum ada alokasi invoice tercatat pada transaksi ini.
+                                    Belum ada alokasi invoice tercatat pada
+                                    transaksi ini.
                                 </p>
                             )}
                         </div>

@@ -62,7 +62,7 @@ export function MobileBottomNav() {
     return (
         <nav
             aria-label="Mobile Navigation"
-            className="fixed inset-x-0 bottom-0 z-40 flex h-15 items-center justify-around border-t border-slate-200/90 bg-white/95 px-2 pb-safe backdrop-blur-xl md:hidden dark:border-white/[0.08] dark:bg-[#121418]/95"
+            className="pb-safe fixed inset-x-0 bottom-0 z-40 flex h-15 items-center justify-around border-t border-slate-200/90 bg-white/95 px-2 backdrop-blur-xl md:hidden dark:border-white/[0.08] dark:bg-[#121418]/95"
         >
             {navItems.map((item) => {
                 const Icon = item.icon;

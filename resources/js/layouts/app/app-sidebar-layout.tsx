@@ -13,7 +13,10 @@ export default function AppSidebarLayout({
     return (
         <AppShell variant="sidebar">
             <AppSidebar />
-            <AppContent variant="sidebar" className="overflow-x-hidden pb-20 md:pb-6">
+            <AppContent
+                variant="sidebar"
+                className="overflow-x-hidden pb-20 md:pb-6"
+            >
                 <AppSidebarHeader breadcrumbs={breadcrumbs} />
                 {children}
             </AppContent>
@@ -22,4 +25,3 @@ export default function AppSidebarLayout({
         </AppShell>
     );
 }
-

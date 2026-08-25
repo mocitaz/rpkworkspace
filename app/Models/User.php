@@ -31,7 +31,48 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'position_title', 'employee_code', 'department', 'employment_type', 'employment_status', 'work_mode', 'joined_at', 'contract_end', 'leave_balance', 'utilization', 'performance_score', 'next_review', 'avatar_path', 'email', 'email_verified_at', 'password', 'calendar_token', 'locale', 'timezone', 'is_active', 'disabled_at', 'last_seen_at'])]
+#[Fillable([
+    'name',
+    'position_title',
+    'employee_code',
+    'department',
+    'employment_type',
+    'employment_status',
+    'work_mode',
+    'joined_at',
+    'contract_end',
+    'leave_balance',
+    'utilization',
+    'performance_score',
+    'next_review',
+    'avatar_path',
+    'email',
+    'email_verified_at',
+    'password',
+    'calendar_token',
+    'locale',
+    'timezone',
+    'is_active',
+    'disabled_at',
+    'last_seen_at',
+    'phone',
+    'address',
+    'ktp_address',
+    'birth_date',
+    'advocate_license_no',
+    'bas_number',
+    'bas_date',
+    'kta_expiry_date',
+    'practice_areas',
+    'education',
+    'hourly_rate',
+    'bank_name',
+    'bank_account_number',
+    'bank_account_holder',
+    'npwp',
+    'matter_capacity_limit',
+    'supervisor_name',
+])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {
@@ -128,6 +169,11 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             'joined_at' => 'date',
             'contract_end' => 'date',
             'next_review' => 'date',
+            'birth_date' => 'date',
+            'bas_date' => 'date',
+            'kta_expiry_date' => 'date',
+            'hourly_rate' => 'decimal:2',
+            'matter_capacity_limit' => 'integer',
             'performance_score' => 'decimal:1',
         ];
     }

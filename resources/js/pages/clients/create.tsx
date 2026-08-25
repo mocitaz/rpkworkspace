@@ -39,7 +39,11 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
                                 Registrasi Klien Baru
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Nomor klien unik (contoh: <strong className="font-mono text-slate-700 dark:text-zinc-300">RPK-C-2026-XXXX</strong>) akan dibuat otomatis oleh sistem.
+                                Nomor klien unik (contoh:{' '}
+                                <strong className="font-mono text-slate-700 dark:text-zinc-300">
+                                    RPK-C-2026-XXXX
+                                </strong>
+                                ) akan dibuat otomatis oleh sistem.
                             </p>
                         </div>
 
@@ -67,7 +71,8 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
                                         <div className="flex items-center gap-2">
                                             <Building2 className="size-4 text-blue-600 dark:text-blue-400" />
                                             <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Tahap 1: Identitas &amp; Klasifikasi Entitas
+                                                Tahap 1: Identitas &amp;
+                                                Klasifikasi Entitas
                                             </h2>
                                         </div>
                                     </div>
@@ -123,7 +128,9 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
                                         <Field
                                             label="Nomor Induk Berusaha (NIB) / No. Akta"
                                             name="registration_identifier"
-                                            error={errors.registration_identifier}
+                                            error={
+                                                errors.registration_identifier
+                                            }
                                             placeholder="Contoh: AHU-001400.AH.01.01.2026"
                                         />
                                     </div>
@@ -135,7 +142,8 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
                                         <div className="flex items-center gap-2">
                                             <ContactRound className="size-4 text-blue-600 dark:text-blue-400" />
                                             <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Tahap 2: Penugasan Partner &amp; Komunikasi Resmi
+                                                Tahap 2: Penugasan Partner &amp;
+                                                Komunikasi Resmi
                                             </h2>
                                         </div>
                                     </div>
@@ -145,12 +153,16 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
                                             <SelectField
                                                 label="Relationship Partner (Penanggung Jawab)"
                                                 name="relationship_partner_id"
-                                                error={errors.relationship_partner_id}
+                                                error={
+                                                    errors.relationship_partner_id
+                                                }
                                                 optional
-                                                options={partners.map((partner) => ({
-                                                    value: partner.id,
-                                                    label: `${partner.name} ${partner.position_title ? `(${partner.position_title})` : ''}`,
-                                                }))}
+                                                options={partners.map(
+                                                    (partner) => ({
+                                                        value: partner.id,
+                                                        label: `${partner.name} ${partner.position_title ? `(${partner.position_title})` : ''}`,
+                                                    }),
+                                                )}
                                             />
                                         </div>
 
@@ -185,7 +197,8 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
                                         <div className="flex items-center gap-2">
                                             <MapPin className="size-4 text-emerald-600 dark:text-emerald-400" />
                                             <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Tahap 3: Domisili &amp; Ikhtisar Profil
+                                                Tahap 3: Domisili &amp; Ikhtisar
+                                                Profil
                                             </h2>
                                         </div>
                                     </div>
@@ -233,16 +246,19 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
                                                 htmlFor="notes"
                                                 className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                                             >
-                                                Catatan / Ringkasan Klien (KYC &amp; Latar Belakang)
+                                                Catatan / Ringkasan Klien (KYC
+                                                &amp; Latar Belakang)
                                             </Label>
                                             <textarea
                                                 id="notes"
                                                 name="notes"
                                                 rows={2.5}
                                                 placeholder="Tambahkan ikhtisar latar belakang klien, profil beneficial ownership, preferensi komunikasi..."
-                                                className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 transition-colors outline-hidden placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                                className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 outline-hidden transition-colors placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                             />
-                                            <InputError message={errors.notes} />
+                                            <InputError
+                                                message={errors.notes}
+                                            />
                                         </div>
                                     </div>
                                 </section>
@@ -250,7 +266,8 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
                                 {/* Action Buttons */}
                                 <div className="flex flex-col justify-between gap-3 border-t border-slate-200/60 pt-4 sm:flex-row sm:items-center dark:border-white/[0.06]">
                                     <p className="text-[11px] text-slate-400">
-                                        Pastikan data identitas entitas dan penugasan partner telah sesuai.
+                                        Pastikan data identitas entitas dan
+                                        penugasan partner telah sesuai.
                                     </p>
 
                                     <div className="flex items-center gap-2">
@@ -323,7 +340,7 @@ function Field({
                 type={type}
                 required={required}
                 placeholder={placeholder}
-                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 placeholder:text-slate-400 transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 transition-colors placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
             />
             <InputError message={error} />
         </div>
@@ -355,9 +372,7 @@ function SelectField({
                     {label}
                 </Label>
                 {optional && (
-                    <span className="text-[10px] text-slate-400">
-                        Opsional
-                    </span>
+                    <span className="text-[10px] text-slate-400">Opsional</span>
                 )}
             </div>
             <div className="relative">
@@ -366,7 +381,7 @@ function SelectField({
                     name={name}
                     defaultValue={defaultValue}
                     required={!optional}
-                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                 >
                     <option value="">
                         {optional ? 'Tidak ditentukan' : 'Pilih...'}

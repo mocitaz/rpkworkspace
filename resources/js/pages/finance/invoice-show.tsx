@@ -133,7 +133,7 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10] print:bg-white print:p-0">
                 <main className="mx-auto max-w-5xl space-y-5 px-4 py-5 sm:px-6 lg:px-8 print:max-w-none print:px-0 print:py-0">
                     {/* 1. Header Toolbar */}
-                    <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center print:hidden border-b border-slate-200/60 pb-4 dark:border-white/[0.06]">
+                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-4 sm:flex-row sm:items-center dark:border-white/[0.06] print:hidden">
                         <div className="space-y-1">
                             <Link
                                 href={financeRoutes.index()}
@@ -202,7 +202,9 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                         {/* 1. Total Tagihan */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">TOTAL TAGIHAN</span>
+                                <span className="text-[11px] font-semibold">
+                                    TOTAL TAGIHAN
+                                </span>
                                 <Receipt className="size-3.5 text-slate-400 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -212,19 +214,26 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Termasuk Pajak</span>
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">Bruto</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                    Bruto
+                                </span>
                             </div>
                         </div>
 
                         {/* 2. Telah Dibayar */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">TELAH DIBAYAR</span>
+                                <span className="text-[11px] font-semibold">
+                                    TELAH DIBAYAR
+                                </span>
                                 <Banknote className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
                                 <span className="font-mono text-xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
-                                    {formatMoney(invoice.paid_amount, invoice.currency)}
+                                    {formatMoney(
+                                        invoice.paid_amount,
+                                        invoice.currency,
+                                    )}
                                 </span>
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
@@ -240,18 +249,25 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                         {/* 3. Sisa Tagihan (Outstanding) */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">SISA TAGIHAN</span>
+                                <span className="text-[11px] font-semibold">
+                                    SISA TAGIHAN
+                                </span>
                                 <CalendarClock className="size-3.5 text-rose-500 dark:text-rose-400" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
                                 <span className="font-mono text-xl font-bold tracking-tight text-rose-600 dark:text-rose-400">
-                                    {formatMoney(invoice.outstanding_amount, invoice.currency)}
+                                    {formatMoney(
+                                        invoice.outstanding_amount,
+                                        invoice.currency,
+                                    )}
                                 </span>
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Status</span>
                                 <span className="font-semibold text-rose-600 dark:text-rose-400">
-                                    {invoice.outstanding_amount === 0 ? 'LUNAS' : 'Belum Lunas'}
+                                    {invoice.outstanding_amount === 0
+                                        ? 'LUNAS'
+                                        : 'Belum Lunas'}
                                 </span>
                             </div>
                         </div>
@@ -259,19 +275,25 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                         {/* 4. Status Tenggat */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">JATUH TEMPO</span>
+                                <span className="text-[11px] font-semibold">
+                                    JATUH TEMPO
+                                </span>
                                 <AlertCircle className="size-3.5 text-slate-400 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
                                 <span
                                     className={`font-mono text-base font-bold ${isOverdue ? 'text-rose-600' : 'text-slate-900 dark:text-white'}`}
                                 >
-                                    {invoice.due_at ? formatDate(invoice.due_at) : 'Tanpa Tenggat'}
+                                    {invoice.due_at
+                                        ? formatDate(invoice.due_at)
+                                        : 'Tanpa Tenggat'}
                                 </span>
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Kondisi</span>
-                                <span className={`font-semibold ${isOverdue ? 'text-rose-600' : 'text-slate-700 dark:text-zinc-300'}`}>
+                                <span
+                                    className={`font-semibold ${isOverdue ? 'text-rose-600' : 'text-slate-700 dark:text-zinc-300'}`}
+                                >
                                     {isOverdue ? 'Lewat Tenggat' : 'Normal'}
                                 </span>
                             </div>
@@ -281,7 +303,10 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                     {/* Cancellation Warning if present */}
                     {invoice.cancellation_reason && (
                         <div className="rounded-xl border border-rose-200 bg-rose-50/80 p-3.5 text-xs font-medium text-rose-900 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200">
-                            <strong className="font-semibold">Alasan Pembatalan:</strong> {invoice.cancellation_reason}
+                            <strong className="font-semibold">
+                                Alasan Pembatalan:
+                            </strong>{' '}
+                            {invoice.cancellation_reason}
                         </div>
                     )}
 
@@ -303,9 +328,11 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                     Advocates &amp; Legal Consultants
                                 </p>
                                 <p className="max-w-sm text-xs leading-relaxed text-slate-500 dark:text-zinc-400">
-                                    Menara Hukum RPK, Lt. 5, Jl. LLRE Martadinata (Riau) No. 88, Bandung 40115
+                                    Menara Hukum RPK, Lt. 5, Jl. LLRE
+                                    Martadinata (Riau) No. 88, Bandung 40115
                                     <br />
-                                    Tel: +62 22 420 8899 · Email: billing@rpklaw.co.id
+                                    Tel: +62 22 420 8899 · Email:
+                                    billing@rpklaw.co.id
                                 </p>
                             </div>
 
@@ -321,7 +348,10 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                     <p>
                                         Tanggal Terbit:{' '}
                                         <span className="font-mono font-semibold text-slate-900 dark:text-white">
-                                            {formatDate(invoice.issued_at ?? new Date().toISOString())}
+                                            {formatDate(
+                                                invoice.issued_at ??
+                                                    new Date().toISOString(),
+                                            )}
                                         </span>
                                     </p>
                                     <p>
@@ -351,7 +381,8 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                     {invoice.client.display_name}
                                 </h3>
                                 {invoice.client.legal_name &&
-                                    invoice.client.legal_name !== invoice.client.display_name && (
+                                    invoice.client.legal_name !==
+                                        invoice.client.display_name && (
                                         <p className="text-[11px] text-slate-500 italic dark:text-zinc-400">
                                             {invoice.client.legal_name}
                                         </p>
@@ -360,18 +391,24 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                     {invoice.client.address_line_1 && (
                                         <p>
                                             {invoice.client.address_line_1}
-                                            {invoice.client.city ? `, ${invoice.client.city}` : ''}
-                                            {invoice.client.postal_code ? ` ${invoice.client.postal_code}` : ''}
+                                            {invoice.client.city
+                                                ? `, ${invoice.client.city}`
+                                                : ''}
+                                            {invoice.client.postal_code
+                                                ? ` ${invoice.client.postal_code}`
+                                                : ''}
                                         </p>
                                     )}
                                     {invoice.client.email && (
                                         <p className="flex items-center gap-1">
-                                            <Mail className="size-3 text-slate-400" /> {invoice.client.email}
+                                            <Mail className="size-3 text-slate-400" />{' '}
+                                            {invoice.client.email}
                                         </p>
                                     )}
                                     {invoice.client.phone && (
                                         <p className="flex items-center gap-1">
-                                            <Phone className="size-3 text-slate-400" /> {invoice.client.phone}
+                                            <Phone className="size-3 text-slate-400" />{' '}
+                                            {invoice.client.phone}
                                         </p>
                                     )}
                                 </div>
@@ -388,13 +425,20 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                 {invoice.matter ? (
                                     <div className="mt-2 space-y-1.5 text-xs">
                                         <div className="flex items-center gap-1.5">
-                                            <span className="font-medium text-slate-500">Perkara:</span>
+                                            <span className="font-medium text-slate-500">
+                                                Perkara:
+                                            </span>
                                             <Link
-                                                href={matterRoutes.show(invoice.matter.id)}
+                                                href={matterRoutes.show(
+                                                    invoice.matter.id,
+                                                )}
                                                 className="inline-flex items-center gap-1 font-mono font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                             >
-                                                <span className="rounded bg-blue-50 px-1.5 py-0.2 font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                                    {invoice.matter.matter_number}
+                                                <span className="py-0.2 rounded bg-blue-50 px-1.5 font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                    {
+                                                        invoice.matter
+                                                            .matter_number
+                                                    }
                                                 </span>
                                             </Link>
                                         </div>
@@ -405,14 +449,19 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                             <p className="text-[11px] text-slate-500 dark:text-zinc-400">
                                                 Lead Partner:{' '}
                                                 <span className="font-semibold text-slate-900 dark:text-white">
-                                                    {invoice.matter.responsible_partner.name}
+                                                    {
+                                                        invoice.matter
+                                                            .responsible_partner
+                                                            .name
+                                                    }
                                                 </span>
                                             </p>
                                         )}
                                     </div>
                                 ) : (
                                     <p className="mt-2 text-xs text-slate-500 dark:text-zinc-400">
-                                        Layanan Penasehat Hukum Umum / Retainer Advisory
+                                        Layanan Penasehat Hukum Umum / Retainer
+                                        Advisory
                                     </p>
                                 )}
                             </div>
@@ -423,11 +472,21 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                             <table className="w-full text-left text-xs">
                                 <thead>
                                     <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                        <th className="w-10 py-2.5 pr-2 pl-3 text-center">#</th>
-                                        <th className="px-3 py-2.5">Uraian Jasa Hukum / Deliverable</th>
-                                        <th className="w-20 px-3 py-2.5 text-center">Qty</th>
-                                        <th className="w-36 px-3 py-2.5 text-right">Tarif Satuan ({invoice.currency})</th>
-                                        <th className="w-36 py-2.5 pr-3 pl-3 text-right">Jumlah ({invoice.currency})</th>
+                                        <th className="w-10 py-2.5 pr-2 pl-3 text-center">
+                                            #
+                                        </th>
+                                        <th className="px-3 py-2.5">
+                                            Uraian Jasa Hukum / Deliverable
+                                        </th>
+                                        <th className="w-20 px-3 py-2.5 text-center">
+                                            Qty
+                                        </th>
+                                        <th className="w-36 px-3 py-2.5 text-right">
+                                            Tarif Satuan ({invoice.currency})
+                                        </th>
+                                        <th className="w-36 py-2.5 pr-3 pl-3 text-right">
+                                            Jumlah ({invoice.currency})
+                                        </th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
@@ -448,10 +507,16 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                                 {item.quantity}
                                             </td>
                                             <td className="px-3 py-2.5 text-right font-mono text-xs text-slate-600 dark:text-zinc-400">
-                                                {formatMoney(item.unit_amount, invoice.currency)}
+                                                {formatMoney(
+                                                    item.unit_amount,
+                                                    invoice.currency,
+                                                )}
                                             </td>
                                             <td className="py-2.5 pr-3 pl-3 text-right font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                {formatMoney(item.total_amount, invoice.currency)}
+                                                {formatMoney(
+                                                    item.total_amount,
+                                                    invoice.currency,
+                                                )}
                                             </td>
                                         </tr>
                                     ))}
@@ -488,25 +553,34 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                     </div>
                                     <div className="mt-2.5 space-y-1.5 text-xs">
                                         <div className="flex justify-between">
-                                            <span className="text-slate-500">Bank:</span>
+                                            <span className="text-slate-500">
+                                                Bank:
+                                            </span>
                                             <span className="font-semibold text-slate-900 dark:text-white">
-                                                Bank Central Asia (BCA) KCU Sudirman
+                                                Bank Central Asia (BCA) KCU
+                                                Sudirman
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-slate-500">No. Rekening:</span>
+                                            <span className="text-slate-500">
+                                                No. Rekening:
+                                            </span>
                                             <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
                                                 872-009-8811
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-slate-500">Atas Nama:</span>
+                                            <span className="text-slate-500">
+                                                Atas Nama:
+                                            </span>
                                             <span className="font-semibold text-slate-900 dark:text-white">
                                                 RPK LAW FIRM &amp; PARTNERS
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-slate-500">Berita Acara:</span>
+                                            <span className="text-slate-500">
+                                                Berita Acara:
+                                            </span>
                                             <span className="font-mono text-xs font-semibold text-slate-700 dark:text-zinc-300">
                                                 {invoice.invoice_number}
                                             </span>
@@ -532,7 +606,10 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                         <div className="flex justify-between text-slate-600 dark:text-zinc-400">
                                             <span>Subtotal Jasa:</span>
                                             <span className="font-mono font-semibold text-slate-900 dark:text-white">
-                                                {formatMoney(subtotal, invoice.currency)}
+                                                {formatMoney(
+                                                    subtotal,
+                                                    invoice.currency,
+                                                )}
                                             </span>
                                         </div>
 
@@ -540,16 +617,26 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                             <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
                                                 <span>Potongan / Diskon:</span>
                                                 <span className="font-mono font-semibold">
-                                                    - {formatMoney(discount, invoice.currency)}
+                                                    -{' '}
+                                                    {formatMoney(
+                                                        discount,
+                                                        invoice.currency,
+                                                    )}
                                                 </span>
                                             </div>
                                         )}
 
                                         {taxAmount > 0 && (
                                             <div className="flex justify-between text-slate-600 dark:text-zinc-400">
-                                                <span>PPN ({invoice.tax_rate ?? 0}%):</span>
+                                                <span>
+                                                    PPN ({invoice.tax_rate ?? 0}
+                                                    %):
+                                                </span>
                                                 <span className="font-mono font-semibold text-slate-900 dark:text-white">
-                                                    {formatMoney(taxAmount, invoice.currency)}
+                                                    {formatMoney(
+                                                        taxAmount,
+                                                        invoice.currency,
+                                                    )}
                                                 </span>
                                             </div>
                                         )}
@@ -560,7 +647,10 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                                     Total Tagihan:
                                                 </span>
                                                 <span className="font-mono text-base font-bold text-slate-900 dark:text-white">
-                                                    {formatMoney(totalAmount, invoice.currency)}
+                                                    {formatMoney(
+                                                        totalAmount,
+                                                        invoice.currency,
+                                                    )}
                                                 </span>
                                             </div>
                                         </div>
@@ -570,13 +660,19 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                                 <div className="flex justify-between text-xs font-semibold text-emerald-600 dark:text-emerald-400">
                                                     <span>Telah Dibayar:</span>
                                                     <span className="font-mono">
-                                                        {formatMoney(invoice.paid_amount, invoice.currency)}
+                                                        {formatMoney(
+                                                            invoice.paid_amount,
+                                                            invoice.currency,
+                                                        )}
                                                     </span>
                                                 </div>
                                                 <div className="flex justify-between text-xs font-bold text-rose-600 dark:text-rose-400">
                                                     <span>Sisa Tagihan:</span>
                                                     <span className="font-mono text-sm">
-                                                        {formatMoney(invoice.outstanding_amount, invoice.currency)}
+                                                        {formatMoney(
+                                                            invoice.outstanding_amount,
+                                                            invoice.currency,
+                                                        )}
                                                     </span>
                                                 </div>
                                             </div>
@@ -594,10 +690,18 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                         Ketentuan &amp; Catatan Penagihan:
                                     </p>
                                     <ul className="list-inside list-disc space-y-0.5 text-[11px] leading-relaxed">
-                                        <li>Pembayaran dianggap sah setelah dana efektif masuk ke rekening kantor hukum RPK.</li>
-                                        <li>Harap mencantumkan nomor invoice pada berita acara transfer bank.</li>
                                         <li>
-                                            Bukti transfer dapat dikirimkan ke email{' '}
+                                            Pembayaran dianggap sah setelah dana
+                                            efektif masuk ke rekening kantor
+                                            hukum RPK.
+                                        </li>
+                                        <li>
+                                            Harap mencantumkan nomor invoice
+                                            pada berita acara transfer bank.
+                                        </li>
+                                        <li>
+                                            Bukti transfer dapat dikirimkan ke
+                                            email{' '}
                                             <span className="font-semibold text-slate-900 dark:text-white">
                                                 billing@rpklaw.co.id
                                             </span>
@@ -608,7 +712,11 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
 
                                 <div className="text-center sm:col-span-4 sm:text-right">
                                     <p className="text-[11px] text-slate-500">
-                                        Bandung, {formatDate(invoice.issued_at ?? new Date().toISOString())}
+                                        Bandung,{' '}
+                                        {formatDate(
+                                            invoice.issued_at ??
+                                                new Date().toISOString(),
+                                        )}
                                     </p>
                                     <p className="text-xs font-bold text-slate-900 dark:text-white">
                                         RPK Law Firm &amp; Partners
@@ -633,41 +741,59 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                     Riwayat Alokasi Pembayaran Masuk
                                 </h3>
                             </div>
-                            <span className="rounded bg-slate-100 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                            <span className="py-0.2 rounded bg-slate-100 px-1.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
                                 {invoice.payment_allocations.length} Transaksi
                             </span>
                         </div>
 
                         <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
                             {invoice.payment_allocations.length ? (
-                                invoice.payment_allocations.map((allocation) => (
-                                    <div
-                                        key={allocation.id}
-                                        className="flex items-center justify-between py-2.5 text-xs"
-                                    >
-                                        <div className="space-y-0.5">
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-mono font-semibold text-slate-900 dark:text-white">
-                                                    {formatDate(allocation.payment.received_at)}
-                                                </span>
-                                                <span className="rounded bg-emerald-50 px-1.5 py-0.2 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-                                                    Lunas Alokasi
-                                                </span>
+                                invoice.payment_allocations.map(
+                                    (allocation) => (
+                                        <div
+                                            key={allocation.id}
+                                            className="flex items-center justify-between py-2.5 text-xs"
+                                        >
+                                            <div className="space-y-0.5">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-mono font-semibold text-slate-900 dark:text-white">
+                                                        {formatDate(
+                                                            allocation.payment
+                                                                .received_at,
+                                                        )}
+                                                    </span>
+                                                    <span className="py-0.2 rounded bg-emerald-50 px-1.5 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+                                                        Lunas Alokasi
+                                                    </span>
+                                                </div>
+                                                <p className="text-[10px] text-slate-500 dark:text-zinc-400">
+                                                    Ref:{' '}
+                                                    {allocation.payment
+                                                        .reference_number ??
+                                                        'Transfer Bank BCA'}
+                                                    {allocation.payment
+                                                        .reversed_at
+                                                        ? ' · (Dikoreksi)'
+                                                        : ''}
+                                                    {allocation.payment
+                                                        .refunded_at
+                                                        ? ' · (Direfund)'
+                                                        : ''}
+                                                </p>
                                             </div>
-                                            <p className="text-[10px] text-slate-500 dark:text-zinc-400">
-                                                Ref: {allocation.payment.reference_number ?? 'Transfer Bank BCA'}
-                                                {allocation.payment.reversed_at ? ' · (Dikoreksi)' : ''}
-                                                {allocation.payment.refunded_at ? ' · (Direfund)' : ''}
-                                            </p>
+                                            <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                                {formatMoney(
+                                                    allocation.amount,
+                                                    invoice.currency,
+                                                )}
+                                            </span>
                                         </div>
-                                        <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                                            {formatMoney(allocation.amount, invoice.currency)}
-                                        </span>
-                                    </div>
-                                ))
+                                    ),
+                                )
                             ) : (
                                 <p className="py-6 text-center text-xs font-medium text-slate-400 dark:text-zinc-500">
-                                    Belum ada alokasi pembayaran untuk invoice ini.
+                                    Belum ada alokasi pembayaran untuk invoice
+                                    ini.
                                 </p>
                             )}
                         </div>

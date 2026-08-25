@@ -134,12 +134,18 @@ export default function FinanceIndex({
     const [modal, setModal] = useState<
         'invoice' | 'quotation' | 'expense' | 'payment' | null
     >(null);
-    const [reversePayment, setReversePayment] = useState<LedgerItem | null>(null);
+    const [reversePayment, setReversePayment] = useState<LedgerItem | null>(
+        null,
+    );
     const [refundPayment, setRefundPayment] = useState<LedgerItem | null>(null);
     const [cancelInvoice, setCancelInvoice] = useState<LedgerItem | null>(null);
-    const [expenseToDelete, setExpenseToDelete] = useState<LedgerItem | null>(null);
+    const [expenseToDelete, setExpenseToDelete] = useState<LedgerItem | null>(
+        null,
+    );
     const [isDeletingExpense, setIsDeletingExpense] = useState(false);
-    const [activeTab, setActiveTab] = useState<'all' | 'invoices' | 'quotations' | 'expenses' | 'payments'>('all');
+    const [activeTab, setActiveTab] = useState<
+        'all' | 'invoices' | 'quotations' | 'expenses' | 'payments'
+    >('all');
     const [showDetailedAnalytics, setShowDetailedAnalytics] = useState(false);
 
     const currency = overview?.currency ?? 'IDR';
@@ -157,7 +163,9 @@ export default function FinanceIndex({
                                 Keuangan &amp; Billing Operasional
                             </h1>
                             <p className="text-[11px] text-slate-500 sm:text-xs dark:text-zinc-400">
-                                Manajemen invoice tagihan klien, quotation tarif perkara, pengeluaran (disbursement), dan arus kas firma.
+                                Manajemen invoice tagihan klien, quotation tarif
+                                perkara, pengeluaran (disbursement), dan arus
+                                kas firma.
                             </p>
                         </div>
 
@@ -212,16 +220,19 @@ export default function FinanceIndex({
                     >
                         <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
                             <FolderKanban className="size-3.5 shrink-0" />
-                            <span className="text-xs font-semibold whitespace-nowrap">Lingkup Perkara:</span>
+                            <span className="text-xs font-semibold whitespace-nowrap">
+                                Lingkup Perkara:
+                            </span>
                         </div>
                         <div className="relative flex-1">
                             <select
                                 name="matter_id"
                                 defaultValue={selectedMatterId}
-                                className="h-7.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                className="h-7.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                             >
                                 <option value="">
-                                    Semua Lingkup Perkara (Ringkasan Finansial Global)
+                                    Semua Lingkup Perkara (Ringkasan Finansial
+                                    Global)
                                 </option>
                                 {matters.map((m) => (
                                     <option value={m.id} key={m.id}>
@@ -249,75 +260,114 @@ export default function FinanceIndex({
                                 {/* 1. Invoice Diterbitkan */}
                                 <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                        <span className="text-[10px] font-bold uppercase tracking-wider">TOTAL TAGIHAN</span>
+                                        <span className="text-[10px] font-bold tracking-wider uppercase">
+                                            TOTAL TAGIHAN
+                                        </span>
                                         <Receipt className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                                     </div>
                                     <div className="mt-1.5 flex items-baseline justify-between">
-                                        <span className="font-mono text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                                            {formatMoney(overview.invoiced_amount, currency)}
+                                        <span className="font-mono text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
+                                            {formatMoney(
+                                                overview.invoiced_amount,
+                                                currency,
+                                            )}
                                         </span>
                                     </div>
                                     <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
                                         <span>Invoice Diterbitkan</span>
-                                        <span className="font-semibold text-blue-600 dark:text-blue-400">Aktif</span>
+                                        <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                            Aktif
+                                        </span>
                                     </div>
                                 </div>
 
                                 {/* 2. Pembayaran Diterima (Total Kas Masuk) */}
                                 <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                        <span className="text-[10px] font-bold uppercase tracking-wider">TOTAL KAS MASUK</span>
+                                        <span className="text-[10px] font-bold tracking-wider uppercase">
+                                            TOTAL KAS MASUK
+                                        </span>
                                         <Banknote className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                                     </div>
                                     <div className="mt-1.5 flex items-baseline justify-between">
-                                        <span className="font-mono text-lg sm:text-xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
-                                            {formatMoney(overview.total_cash_inflow ?? overview.payment_received_amount, currency)}
+                                        <span className="font-mono text-lg font-bold tracking-tight text-emerald-600 sm:text-xl dark:text-emerald-400">
+                                            {formatMoney(
+                                                overview.total_cash_inflow ??
+                                                    overview.payment_received_amount,
+                                                currency,
+                                            )}
                                         </span>
                                     </div>
                                     <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
                                         <span className="truncate">
-                                            Teralokasi: {formatMoney(overview.payment_received_amount, currency)}
-                                            {(overview.unallocated_payment_amount ?? 0) > 0 && (
-                                                <span className="text-amber-600 dark:text-amber-400 ml-1">
-                                                    · DP: {formatMoney(overview.unallocated_payment_amount ?? 0, currency)}
+                                            Teralokasi:{' '}
+                                            {formatMoney(
+                                                overview.payment_received_amount,
+                                                currency,
+                                            )}
+                                            {(overview.unallocated_payment_amount ??
+                                                0) > 0 && (
+                                                <span className="ml-1 text-amber-600 dark:text-amber-400">
+                                                    · DP:{' '}
+                                                    {formatMoney(
+                                                        overview.unallocated_payment_amount ??
+                                                            0,
+                                                        currency,
+                                                    )}
                                                 </span>
                                             )}
                                         </span>
-                                        <span className="shrink-0 font-semibold text-emerald-600 dark:text-emerald-400">Kas Riil</span>
+                                        <span className="shrink-0 font-semibold text-emerald-600 dark:text-emerald-400">
+                                            Kas Riil
+                                        </span>
                                     </div>
                                 </div>
 
                                 {/* 3. Piutang Berjalan */}
                                 <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                        <span className="text-[10px] font-bold uppercase tracking-wider">PIUTANG (OUTSTANDING)</span>
+                                        <span className="text-[10px] font-bold tracking-wider uppercase">
+                                            PIUTANG (OUTSTANDING)
+                                        </span>
                                         <CalendarClock className="size-3.5 text-amber-500 dark:text-amber-400" />
                                     </div>
                                     <div className="mt-1.5 flex items-baseline justify-between">
-                                        <span className="font-mono text-lg sm:text-xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
-                                            {formatMoney(overview.receivable_amount, currency)}
+                                        <span className="font-mono text-lg font-bold tracking-tight text-amber-600 sm:text-xl dark:text-amber-400">
+                                            {formatMoney(
+                                                overview.receivable_amount,
+                                                currency,
+                                            )}
                                         </span>
                                     </div>
                                     <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
                                         <span>Belum Dilunasi</span>
-                                        <span className="font-semibold text-amber-600 dark:text-amber-400">Berjalan</span>
+                                        <span className="font-semibold text-amber-600 dark:text-amber-400">
+                                            Berjalan
+                                        </span>
                                     </div>
                                 </div>
 
                                 {/* 4. Net Margin */}
                                 <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                        <span className="text-[10px] font-bold uppercase tracking-wider">MARGIN &amp; PROFIT</span>
+                                        <span className="text-[10px] font-bold tracking-wider uppercase">
+                                            MARGIN &amp; PROFIT
+                                        </span>
                                         <DollarSign className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                                     </div>
                                     <div className="mt-1.5 flex items-baseline justify-between">
-                                        <span className="font-mono text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                                            {formatMoney(overview.margin_amount, currency)}
+                                        <span className="font-mono text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
+                                            {formatMoney(
+                                                overview.margin_amount,
+                                                currency,
+                                            )}
                                         </span>
                                     </div>
                                     <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
                                         <span>Net Margin</span>
-                                        <span className="font-semibold text-slate-700 dark:text-zinc-300">Setelah Biaya</span>
+                                        <span className="font-semibold text-slate-700 dark:text-zinc-300">
+                                            Setelah Biaya
+                                        </span>
                                     </div>
                                 </div>
                             </section>
@@ -326,8 +376,12 @@ export default function FinanceIndex({
                             <div className="flex items-center justify-between pt-0.5">
                                 <button
                                     type="button"
-                                    onClick={() => setShowDetailedAnalytics((prev) => !prev)}
-                                    className="group inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300 dark:hover:bg-zinc-800/60 cursor-pointer"
+                                    onClick={() =>
+                                        setShowDetailedAnalytics(
+                                            (prev) => !prev,
+                                        )
+                                    }
+                                    className="group inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300 dark:hover:bg-zinc-800/60"
                                 >
                                     <span className="flex size-4 items-center justify-center rounded bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
                                         {showDetailedAnalytics ? (
@@ -346,39 +400,52 @@ export default function FinanceIndex({
 
                             {/* Collapsible Secondary Operational Metrics & Aging Report */}
                             {showDetailedAnalytics && (
-                                <div className="space-y-2.5 animate-in fade-in-50 duration-200">
+                                <div className="animate-in space-y-2.5 duration-200 fade-in-50">
                                     {/* Secondary Operational Metrics Bar */}
                                     <section className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                                         <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                            <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
+                                            <p className="text-[9.5px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                                 Anggaran (Budget)
                                             </p>
                                             <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                {formatMoney(overview.budget_amount, currency)}
+                                                {formatMoney(
+                                                    overview.budget_amount,
+                                                    currency,
+                                                )}
                                             </p>
                                         </div>
                                         <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                            <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
+                                            <p className="text-[9.5px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                                 Biaya Perkara (Expense)
                                             </p>
                                             <p className="mt-0.5 font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
-                                                {formatMoney(overview.expense_amount, currency)}
+                                                {formatMoney(
+                                                    overview.expense_amount,
+                                                    currency,
+                                                )}
                                             </p>
                                         </div>
                                         <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                            <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
+                                            <p className="text-[9.5px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                                 Quotation Diajukan
                                             </p>
                                             <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                {formatMoney(overview.quotation_amount, currency)}
+                                                {formatMoney(
+                                                    overview.quotation_amount,
+                                                    currency,
+                                                )}
                                             </p>
                                         </div>
                                         <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                            <p className="text-[9.5px] font-bold text-slate-500 uppercase tracking-wider dark:text-zinc-400">
+                                            <p className="text-[9.5px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                                 Lewat Jatuh Tempo
                                             </p>
                                             <p className="mt-0.5 font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
-                                                {formatMoney(overview.overdue_amount ?? 0, currency)}
+                                                {formatMoney(
+                                                    overview.overdue_amount ??
+                                                        0,
+                                                    currency,
+                                                )}
                                             </p>
                                         </div>
                                     </section>
@@ -392,7 +459,8 @@ export default function FinanceIndex({
                                                         AGING REPORT
                                                     </span>
                                                     <h3 className="text-xs font-semibold text-slate-900 dark:text-white">
-                                                        Analisis Umur Piutang (Receivables Schedule)
+                                                        Analisis Umur Piutang
+                                                        (Receivables Schedule)
                                                     </h3>
                                                 </div>
                                             </div>
@@ -428,19 +496,31 @@ export default function FinanceIndex({
                                                         'text-rose-700 dark:text-rose-300 font-bold',
                                                         'border-rose-200 bg-rose-50/70 dark:border-rose-900/40 dark:bg-rose-950/30',
                                                     ],
-                                                ].map(([label, val, textCls, cardCls]) => (
-                                                    <div
-                                                        key={String(label)}
-                                                        className={`rounded-lg border p-2 ${cardCls}`}
-                                                    >
-                                                        <p className="truncate text-[9.5px] font-semibold text-slate-500 dark:text-zinc-400">
-                                                            {label}
-                                                        </p>
-                                                        <p className={`mt-0.5 font-mono text-xs font-bold ${textCls}`}>
-                                                            {formatMoney(Number(val), currency)}
-                                                        </p>
-                                                    </div>
-                                                ))}
+                                                ].map(
+                                                    ([
+                                                        label,
+                                                        val,
+                                                        textCls,
+                                                        cardCls,
+                                                    ]) => (
+                                                        <div
+                                                            key={String(label)}
+                                                            className={`rounded-lg border p-2 ${cardCls}`}
+                                                        >
+                                                            <p className="truncate text-[9.5px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                                {label}
+                                                            </p>
+                                                            <p
+                                                                className={`mt-0.5 font-mono text-xs font-bold ${textCls}`}
+                                                            >
+                                                                {formatMoney(
+                                                                    Number(val),
+                                                                    currency,
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                    ),
+                                                )}
                                             </div>
                                         </div>
                                     )}
@@ -457,7 +537,7 @@ export default function FinanceIndex({
                     )}
 
                     {/* Segmented Tab Navigation for Ledgers */}
-                    <div className="flex items-center gap-1 overflow-x-auto border-b border-slate-200/60 pb-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden dark:border-white/[0.06]">
+                    <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto border-b border-slate-200/60 pb-2 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
                         <button
                             type="button"
                             onClick={() => setActiveTab('all')}
@@ -524,14 +604,24 @@ export default function FinanceIndex({
                     <div className="grid gap-3 lg:grid-cols-2">
                         {/* 1. Invoice Terbaru */}
                         {(activeTab === 'all' || activeTab === 'invoices') && (
-                            <div className={activeTab === 'invoices' ? 'lg:col-span-2' : ''}>
+                            <div
+                                className={
+                                    activeTab === 'invoices'
+                                        ? 'lg:col-span-2'
+                                        : ''
+                                }
+                            >
                                 <Ledger
                                     title="Invoice Tagihan Klien"
                                     items={invoices}
                                     currency={currency}
                                     icon={ReceiptText}
                                     iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400"
-                                    value={(i) => i.outstanding_amount ?? i.total_amount ?? 0}
+                                    value={(i) =>
+                                        i.outstanding_amount ??
+                                        i.total_amount ??
+                                        0
+                                    }
                                     date={(i) => i.due_at}
                                     canTransition={can.invoiceTransition}
                                     canCreate={can.invoice}
@@ -545,8 +635,15 @@ export default function FinanceIndex({
                         )}
 
                         {/* 2. Quotation Terbaru */}
-                        {(activeTab === 'all' || activeTab === 'quotations') && (
-                            <div className={activeTab === 'quotations' ? 'lg:col-span-2' : ''}>
+                        {(activeTab === 'all' ||
+                            activeTab === 'quotations') && (
+                            <div
+                                className={
+                                    activeTab === 'quotations'
+                                        ? 'lg:col-span-2'
+                                        : ''
+                                }
+                            >
                                 <Ledger
                                     title="Quotation & Penawaran Honorarium"
                                     items={quotations}
@@ -567,7 +664,13 @@ export default function FinanceIndex({
 
                         {/* 3. Biaya Perkara & Disbursement */}
                         {(activeTab === 'all' || activeTab === 'expenses') && (
-                            <div className={activeTab === 'expenses' ? 'lg:col-span-2' : ''}>
+                            <div
+                                className={
+                                    activeTab === 'expenses'
+                                        ? 'lg:col-span-2'
+                                        : ''
+                                }
+                            >
                                 <Ledger
                                     title="Biaya Perkara & Disbursement"
                                     items={expenses}
@@ -578,7 +681,11 @@ export default function FinanceIndex({
                                     date={(i) => i.incurred_at}
                                     canCreate={can.expense}
                                     onCreate={() => setModal('expense')}
-                                    onDeleteExpense={can.expense ? (exp) => setExpenseToDelete(exp) : undefined}
+                                    onDeleteExpense={
+                                        can.expense
+                                            ? (exp) => setExpenseToDelete(exp)
+                                            : undefined
+                                    }
                                     actionLabel="Catat Biaya Perkara"
                                     emptyTitle="Belum Ada Catatan Biaya Perkara"
                                     emptyDescription="Belum ada pengeluaran operasional perkara seperti panjar pengadilan, materai, akomodasi, atau transportasi yang dicatat."
@@ -588,7 +695,13 @@ export default function FinanceIndex({
 
                         {/* 4. Riwayat Penerimaan Pembayaran */}
                         {(activeTab === 'all' || activeTab === 'payments') && (
-                            <div className={activeTab === 'payments' ? 'lg:col-span-2' : ''}>
+                            <div
+                                className={
+                                    activeTab === 'payments'
+                                        ? 'lg:col-span-2'
+                                        : ''
+                                }
+                            >
                                 <PaymentLedger
                                     items={payments}
                                     currency={currency}
@@ -709,11 +822,13 @@ function Ledger({
     }, [items, searchQuery]);
 
     return (
-        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-3 sm:p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+            <div className="flex flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
                 <div className="flex items-center gap-2">
-                    <div className={`flex size-7 shrink-0 items-center justify-center rounded-lg ${iconBg}`}>
+                    <div
+                        className={`flex size-7 shrink-0 items-center justify-center rounded-lg ${iconBg}`}
+                    >
                         <IconComp className="size-3.5" />
                     </div>
                     <div>
@@ -736,7 +851,9 @@ function Ledger({
                             className="h-7 rounded-lg bg-slate-900 px-2.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                         >
                             <Plus className="mr-1 size-3" />
-                            {actionLabel ? actionLabel.replace('Baru', '').trim() : 'Tambah'}
+                            {actionLabel
+                                ? actionLabel.replace('Baru', '').trim()
+                                : 'Tambah'}
                         </Button>
                     )}
                 </div>
@@ -768,13 +885,13 @@ function Ledger({
             {/* Feed List */}
             <div className="mt-0.5">
                 {filteredItems.length > 0 ? (
-                    <div className="max-h-[460px] overflow-y-auto space-y-1.5 pr-1">
+                    <div className="max-h-[460px] space-y-1.5 overflow-y-auto pr-1">
                         {filteredItems.map((i) => (
                             <div
                                 key={i.id}
-                                className="group flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-xl border border-slate-200/70 bg-white p-2.5 sm:p-3 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50/20 hover:shadow-xs dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-white/10 dark:hover:bg-white/[0.02]"
+                                className="group flex flex-col justify-between gap-2.5 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50/20 hover:shadow-xs sm:flex-row sm:items-center sm:p-3 dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-white/10 dark:hover:bg-white/[0.02]"
                             >
-                                <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                                <div className="flex min-w-0 flex-1 items-start gap-2.5">
                                     <div
                                         className={`mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg border transition-transform group-hover:scale-105 ${iconBg} border-slate-200/60 dark:border-white/10`}
                                     >
@@ -796,22 +913,26 @@ function Ledger({
                                             )}
                                         </div>
 
-                                        <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
+                                        <h4 className="line-clamp-1 text-xs font-bold text-slate-900 dark:text-white">
                                             {i.invoice_number ? (
                                                 <Link
-                                                    href={invoiceRoutes.show.url(i.id)}
+                                                    href={invoiceRoutes.show.url(
+                                                        i.id,
+                                                    )}
                                                     className="transition-colors hover:text-blue-600 dark:hover:text-blue-400"
                                                 >
                                                     {i.invoice_number}
                                                 </Link>
                                             ) : (
-                                                i.quotation_number ?? i.title ?? i.description
+                                                (i.quotation_number ??
+                                                i.title ??
+                                                i.description)
                                             )}
                                         </h4>
 
                                         <div className="flex flex-wrap items-center gap-x-1.5 text-[10.5px] text-slate-500 dark:text-zinc-400">
                                             {i.matter?.title && (
-                                                <span className="truncate max-w-[260px] font-medium text-slate-600 dark:text-zinc-300">
+                                                <span className="max-w-[260px] truncate font-medium text-slate-600 dark:text-zinc-300">
                                                     {i.matter.title}
                                                 </span>
                                             )}
@@ -819,7 +940,8 @@ function Ledger({
                                                 <>
                                                     <span>·</span>
                                                     <span className="font-mono text-slate-500 dark:text-zinc-400">
-                                                        Jatuh Tempo: {formatDate(date(i)!)}
+                                                        Jatuh Tempo:{' '}
+                                                        {formatDate(date(i)!)}
                                                     </span>
                                                 </>
                                             )}
@@ -827,9 +949,12 @@ function Ledger({
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between sm:flex-col sm:items-end sm:justify-center gap-1 shrink-0 pl-9.5 sm:pl-0 border-t sm:border-t-0 border-slate-100 pt-1.5 sm:pt-0 dark:border-white/[0.04]">
+                                <div className="flex shrink-0 items-center justify-between gap-1 border-t border-slate-100 pt-1.5 pl-9.5 sm:flex-col sm:items-end sm:justify-center sm:border-t-0 sm:pt-0 sm:pl-0 dark:border-white/[0.04]">
                                     <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                        {formatMoney(value(i), i.currency || currency)}
+                                        {formatMoney(
+                                            value(i),
+                                            i.currency || currency,
+                                        )}
                                     </span>
 
                                     <div className="flex items-center gap-1">
@@ -841,7 +966,9 @@ function Ledger({
                                                 asChild
                                             >
                                                 <a
-                                                    href={invoiceRoutes.pdf.url(i.id)}
+                                                    href={invoiceRoutes.pdf.url(
+                                                        i.id,
+                                                    )}
                                                     target="_blank"
                                                     rel="noreferrer"
                                                     title="Download Dokumen PDF Invoice"
@@ -859,7 +986,9 @@ function Ledger({
                                                 asChild
                                             >
                                                 <a
-                                                    href={quotationRoutes.pdf.url(i.id)}
+                                                    href={quotationRoutes.pdf.url(
+                                                        i.id,
+                                                    )}
                                                     target="_blank"
                                                     rel="noreferrer"
                                                     title="Download Dokumen PDF Quotation"
@@ -872,8 +1001,16 @@ function Ledger({
                                         {canTransition &&
                                             i.invoice_number &&
                                             i.status === 'draft' && (
-                                                <Form {...invoiceRoutes.transition.form(i.id)}>
-                                                    <input type="hidden" name="status" value="sent" />
+                                                <Form
+                                                    {...invoiceRoutes.transition.form(
+                                                        i.id,
+                                                    )}
+                                                >
+                                                    <input
+                                                        type="hidden"
+                                                        name="status"
+                                                        value="sent"
+                                                    />
                                                     <Button
                                                         size="sm"
                                                         className="h-6.5 rounded-lg bg-slate-900 px-2 text-[10px] font-semibold text-white hover:bg-black dark:bg-white dark:text-slate-900"
@@ -885,12 +1022,18 @@ function Ledger({
 
                                         {canTransition &&
                                             i.invoice_number &&
-                                            ['draft', 'sent', 'overdue'].includes(i.status) &&
+                                            [
+                                                'draft',
+                                                'sent',
+                                                'overdue',
+                                            ].includes(i.status) &&
                                             (i.paid_amount ?? 0) === 0 && (
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
-                                                    onClick={() => onCancel?.(i)}
+                                                    onClick={() =>
+                                                        onCancel?.(i)
+                                                    }
                                                     className="h-6.5 rounded-lg text-[10px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
                                                 >
                                                     Batal
@@ -899,8 +1042,15 @@ function Ledger({
 
                                         {approveQuotations &&
                                             i.quotation_number &&
-                                            ['draft', 'pending_approval'].includes(i.status) && (
-                                                <Form {...quotationRoutes.approve.form(i.id)}>
+                                            [
+                                                'draft',
+                                                'pending_approval',
+                                            ].includes(i.status) && (
+                                                <Form
+                                                    {...quotationRoutes.approve.form(
+                                                        i.id,
+                                                    )}
+                                                >
                                                     <Button
                                                         size="sm"
                                                         className="h-6.5 rounded-lg bg-emerald-600 px-2 text-[10px] font-semibold text-white hover:bg-emerald-700"
@@ -910,32 +1060,38 @@ function Ledger({
                                                 </Form>
                                             )}
 
-                                        {onDeleteExpense && !i.invoice_number && !i.quotation_number && (
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => onDeleteExpense(i)}
-                                                className="size-6.5 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400"
-                                                title="Hapus Catatan Biaya"
-                                            >
-                                                <Trash2 className="size-3 text-rose-500" />
-                                            </Button>
-                                        )}
+                                        {onDeleteExpense &&
+                                            !i.invoice_number &&
+                                            !i.quotation_number && (
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() =>
+                                                        onDeleteExpense(i)
+                                                    }
+                                                    className="size-6.5 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400"
+                                                    title="Hapus Catatan Biaya"
+                                                >
+                                                    <Trash2 className="size-3 text-rose-500" />
+                                                </Button>
+                                            )}
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-8 px-3 text-center">
+                    <div className="flex flex-col items-center justify-center px-3 py-8 text-center">
                         <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
                             <IconComp className="size-4.5" />
                         </div>
                         <p className="mt-2.5 text-xs font-bold text-slate-800 dark:text-zinc-200">
-                            {searchQuery ? 'Tidak Ada Hasil Pencarian' : emptyTitle}
+                            {searchQuery
+                                ? 'Tidak Ada Hasil Pencarian'
+                                : emptyTitle}
                         </p>
-                        <p className="mt-0.5 text-[10.5px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                        <p className="mt-0.5 max-w-xs text-[10.5px] text-slate-400 dark:text-zinc-500">
                             {searchQuery
                                 ? 'Sesuaikan kata kunci pencarian Anda.'
                                 : emptyDescription}
@@ -945,9 +1101,11 @@ function Ledger({
                                 variant="outline"
                                 size="sm"
                                 onClick={onCreate}
-                                className="mt-3 h-7.5 rounded-lg text-xs font-semibold text-slate-900 border-slate-200 hover:bg-slate-50 dark:border-white/10 dark:text-white dark:hover:bg-zinc-800"
+                                className="mt-3 h-7.5 rounded-lg border-slate-200 text-xs font-semibold text-slate-900 hover:bg-slate-50 dark:border-white/10 dark:text-white dark:hover:bg-zinc-800"
                             >
-                                <Plus className="mr-1 size-3" /> {actionLabel || `Buat ${title.split(' ')[0]} Baru`}
+                                <Plus className="mr-1 size-3" />{' '}
+                                {actionLabel ||
+                                    `Buat ${title.split(' ')[0]} Baru`}
                             </Button>
                         )}
                     </div>
@@ -989,15 +1147,17 @@ function PaymentLedger({
                 p.matter?.title.toLowerCase().includes(q) ||
                 p.reversal_reason?.toLowerCase().includes(q) ||
                 p.refund_reason?.toLowerCase().includes(q) ||
-                p.allocations?.some((a) => a.invoice?.invoice_number?.toLowerCase().includes(q))
+                p.allocations?.some((a) =>
+                    a.invoice?.invoice_number?.toLowerCase().includes(q),
+                )
             );
         });
     }, [items, searchQuery]);
 
     return (
-        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-3 sm:p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+            <div className="flex flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
                 <div className="flex items-center gap-2">
                     <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
                         <Banknote className="size-3.5" />
@@ -1007,7 +1167,8 @@ function PaymentLedger({
                             Riwayat Penerimaan Pembayaran
                         </h3>
                         <p className="text-[10px] text-slate-400 dark:text-zinc-500">
-                            Log transfer kas masuk, pelunasan invoice &amp; deposit klien
+                            Log transfer kas masuk, pelunasan invoice &amp;
+                            deposit klien
                         </p>
                     </div>
                 </div>
@@ -1054,13 +1215,13 @@ function PaymentLedger({
             {/* Feed List */}
             <div className="mt-0.5">
                 {filteredItems.length > 0 ? (
-                    <div className="max-h-[460px] overflow-y-auto space-y-1.5 pr-1">
+                    <div className="max-h-[460px] space-y-1.5 overflow-y-auto pr-1">
                         {filteredItems.map((payment) => (
                             <div
                                 key={payment.id}
-                                className="group flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-xl border border-slate-200/70 bg-white p-2.5 sm:p-3 shadow-2xs transition-all hover:border-emerald-300 hover:bg-emerald-50/20 hover:shadow-xs dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-emerald-800/50 dark:hover:bg-white/[0.02]"
+                                className="group flex flex-col justify-between gap-2.5 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs transition-all hover:border-emerald-300 hover:bg-emerald-50/20 hover:shadow-xs sm:flex-row sm:items-center sm:p-3 dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-emerald-800/50 dark:hover:bg-white/[0.02]"
                             >
-                                <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                                <div className="flex min-w-0 flex-1 items-start gap-2.5">
                                     <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg border border-emerald-200/60 bg-emerald-50 text-emerald-600 transition-transform group-hover:scale-105 dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-400">
                                         <Banknote className="size-3.5" />
                                     </div>
@@ -1069,7 +1230,10 @@ function PaymentLedger({
                                         <div className="flex flex-wrap items-center gap-1 text-[9.5px]">
                                             {payment.matter?.matter_number && (
                                                 <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
-                                                    {payment.matter.matter_number}
+                                                    {
+                                                        payment.matter
+                                                            .matter_number
+                                                    }
                                                 </span>
                                             )}
                                             <span className="inline-flex items-center rounded bg-emerald-50 px-1.5 py-0.5 font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
@@ -1081,17 +1245,26 @@ function PaymentLedger({
                                             </span>
                                             {payment.received_at && (
                                                 <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
-                                                    {formatDate(payment.received_at)}
+                                                    {formatDate(
+                                                        payment.received_at,
+                                                    )}
                                                 </span>
                                             )}
                                         </div>
 
-                                        <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
+                                        <h4 className="line-clamp-1 text-xs font-bold text-slate-900 dark:text-white">
                                             <Link
-                                                href={paymentRoutes.show.url(payment.id)}
+                                                href={paymentRoutes.show.url(
+                                                    payment.id,
+                                                )}
                                                 className="transition-colors hover:text-emerald-600 dark:hover:text-emerald-400"
                                             >
-                                                Penerimaan: {formatMoney(payment.amount ?? 0, payment.currency || currency)}
+                                                Penerimaan:{' '}
+                                                {formatMoney(
+                                                    payment.amount ?? 0,
+                                                    payment.currency ||
+                                                        currency,
+                                                )}
                                             </Link>
                                         </h4>
 
@@ -1101,33 +1274,50 @@ function PaymentLedger({
                                                     ? payment.matter.title
                                                     : 'Tanpa Terikat Perkara Khusus'}
                                             </span>
-                                            {payment.allocations?.map((allocation) => (
-                                                <span
-                                                    key={allocation.id}
-                                                    className="font-mono text-slate-600 dark:text-zinc-300"
-                                                >
-                                                    · Alokasi: {allocation.invoice?.invoice_number ?? 'Invoice'} (
-                                                    {formatMoney(allocation.amount, allocation.invoice?.currency ?? currency)})
-                                                </span>
-                                            ))}
+                                            {payment.allocations?.map(
+                                                (allocation) => (
+                                                    <span
+                                                        key={allocation.id}
+                                                        className="font-mono text-slate-600 dark:text-zinc-300"
+                                                    >
+                                                        · Alokasi:{' '}
+                                                        {allocation.invoice
+                                                            ?.invoice_number ??
+                                                            'Invoice'}{' '}
+                                                        (
+                                                        {formatMoney(
+                                                            allocation.amount,
+                                                            allocation.invoice
+                                                                ?.currency ??
+                                                                currency,
+                                                        )}
+                                                        )
+                                                    </span>
+                                                ),
+                                            )}
                                         </div>
 
                                         {payment.reversed_at && (
                                             <p className="mt-0.5 text-[9.5px] font-semibold text-rose-600 dark:text-rose-400">
-                                                Dikoreksi: {payment.reversal_reason}
+                                                Dikoreksi:{' '}
+                                                {payment.reversal_reason}
                                             </p>
                                         )}
                                         {payment.refunded_at && (
                                             <p className="mt-0.5 text-[9.5px] font-semibold text-rose-600 dark:text-rose-400">
-                                                Direfund: {payment.refund_reason}
+                                                Direfund:{' '}
+                                                {payment.refund_reason}
                                             </p>
                                         )}
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-between sm:flex-col sm:items-end sm:justify-center gap-1 shrink-0 pl-9.5 sm:pl-0 border-t sm:border-t-0 border-slate-100 pt-1.5 sm:pt-0 dark:border-white/[0.04]">
+                                <div className="flex shrink-0 items-center justify-between gap-1 border-t border-slate-100 pt-1.5 pl-9.5 sm:flex-col sm:items-end sm:justify-center sm:border-t-0 sm:pt-0 sm:pl-0 dark:border-white/[0.04]">
                                     <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                                        {formatMoney(payment.amount ?? 0, payment.currency || currency)}
+                                        {formatMoney(
+                                            payment.amount ?? 0,
+                                            payment.currency || currency,
+                                        )}
                                     </span>
 
                                     {canManage &&
@@ -1137,7 +1327,9 @@ function PaymentLedger({
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
-                                                    onClick={() => onReverse(payment)}
+                                                    onClick={() =>
+                                                        onReverse(payment)
+                                                    }
                                                     className="h-6.5 rounded-lg border-slate-200 px-2 text-[10px] font-semibold hover:bg-slate-50 dark:border-white/10"
                                                 >
                                                     Koreksi
@@ -1145,7 +1337,9 @@ function PaymentLedger({
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
-                                                    onClick={() => onRefund(payment)}
+                                                    onClick={() =>
+                                                        onRefund(payment)
+                                                    }
                                                     className="h-6.5 rounded-lg px-2 text-[10px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
                                                 >
                                                     Refund
@@ -1157,14 +1351,16 @@ function PaymentLedger({
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-8 px-3 text-center">
+                    <div className="flex flex-col items-center justify-center px-3 py-8 text-center">
                         <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
                             <Banknote className="size-4.5" />
                         </div>
                         <p className="mt-2.5 text-xs font-bold text-slate-800 dark:text-zinc-200">
-                            {searchQuery ? 'Tidak Ada Hasil Pencarian' : emptyTitle}
+                            {searchQuery
+                                ? 'Tidak Ada Hasil Pencarian'
+                                : emptyTitle}
                         </p>
-                        <p className="mt-0.5 text-[10.5px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                        <p className="mt-0.5 max-w-xs text-[10.5px] text-slate-400 dark:text-zinc-500">
                             {searchQuery
                                 ? 'Sesuaikan kata kunci pencarian Anda.'
                                 : emptyDescription}
@@ -1174,7 +1370,7 @@ function PaymentLedger({
                                 variant="outline"
                                 size="sm"
                                 onClick={onCreate}
-                                className="mt-3 h-7.5 rounded-lg text-xs font-semibold text-emerald-600 border-emerald-200 hover:bg-emerald-50 dark:border-emerald-900/40 dark:text-emerald-400"
+                                className="mt-3 h-7.5 rounded-lg border-emerald-200 text-xs font-semibold text-emerald-600 hover:bg-emerald-50 dark:border-emerald-900/40 dark:text-emerald-400"
                             >
                                 <Plus className="mr-1 size-3" /> Catat Kas Masuk
                             </Button>
@@ -1215,7 +1411,8 @@ function ReversePaymentDialog({
                         {({ processing, errors }) => (
                             <>
                                 <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Alokasi invoice akan dibuka kembali dan transaksi dicatat dalam log audit.
+                                    Alokasi invoice akan dibuka kembali dan
+                                    transaksi dicatat dalam log audit.
                                 </p>
                                 <div className="grid gap-1">
                                     <Label
@@ -1225,7 +1422,7 @@ function ReversePaymentDialog({
                                         Alasan Pembatalan
                                     </Label>
                                     <textarea
-                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs text-slate-900 transition-colors outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs text-slate-900 outline-hidden transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                         id="reason"
                                         name="reason"
                                         rows={3}
@@ -1234,7 +1431,9 @@ function ReversePaymentDialog({
                                         minLength={8}
                                     />
                                     {errors.reason && (
-                                        <p className="text-xs text-rose-500">{errors.reason}</p>
+                                        <p className="text-xs text-rose-500">
+                                            {errors.reason}
+                                        </p>
                                     )}
                                 </div>
                                 <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
@@ -1294,7 +1493,9 @@ function RefundPaymentDialog({
                         {({ processing, errors }) => (
                             <>
                                 <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Gunakan jika dana telah ditransfer balik ke rekening klien. Saldo invoice akan disesuaikan.
+                                    Gunakan jika dana telah ditransfer balik ke
+                                    rekening klien. Saldo invoice akan
+                                    disesuaikan.
                                 </p>
                                 <div className="grid gap-1">
                                     <Label
@@ -1304,7 +1505,7 @@ function RefundPaymentDialog({
                                         Alasan Pengembalian (Refund)
                                     </Label>
                                     <textarea
-                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs text-slate-900 transition-colors outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs text-slate-900 outline-hidden transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                         id="refund-reason"
                                         name="reason"
                                         rows={3}
@@ -1313,7 +1514,9 @@ function RefundPaymentDialog({
                                         minLength={8}
                                     />
                                     {errors.reason && (
-                                        <p className="text-xs text-rose-500">{errors.reason}</p>
+                                        <p className="text-xs text-rose-500">
+                                            {errors.reason}
+                                        </p>
                                     )}
                                 </div>
                                 <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
@@ -1372,9 +1575,14 @@ function CancelInvoiceDialog({
                     >
                         {({ processing, errors }) => (
                             <>
-                                <input type="hidden" name="status" value="cancelled" />
+                                <input
+                                    type="hidden"
+                                    name="status"
+                                    value="cancelled"
+                                />
                                 <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Invoice {invoice.invoice_number} akan dibatalkan secara permanen.
+                                    Invoice {invoice.invoice_number} akan
+                                    dibatalkan secara permanen.
                                 </p>
                                 <div className="grid gap-1">
                                     <Label
@@ -1384,7 +1592,7 @@ function CancelInvoiceDialog({
                                         Alasan Pembatalan
                                     </Label>
                                     <textarea
-                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs text-slate-900 transition-colors outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs text-slate-900 outline-hidden transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                         id="cancellation-reason"
                                         name="reason"
                                         rows={3}
@@ -1393,7 +1601,9 @@ function CancelInvoiceDialog({
                                         minLength={8}
                                     />
                                     {errors.reason && (
-                                        <p className="text-xs text-rose-500">{errors.reason}</p>
+                                        <p className="text-xs text-rose-500">
+                                            {errors.reason}
+                                        </p>
                                     )}
                                 </div>
                                 <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
@@ -1564,15 +1774,18 @@ function FinanceDialog({
                                                     ])
                                                 }
                                             >
-                                                <Plus className="mr-0.5 size-2.5" /> Tambah Baris
+                                                <Plus className="mr-0.5 size-2.5" />{' '}
+                                                Tambah Baris
                                             </Button>
                                         </div>
 
                                         <div className="space-y-1.5 pt-1">
                                             {lineItems.map((item, index) => {
                                                 const rowTotal =
-                                                    (Number(item.quantity) || 0) *
-                                                    (Number(item.unitAmount) || 0);
+                                                    (Number(item.quantity) ||
+                                                        0) *
+                                                    (Number(item.unitAmount) ||
+                                                        0);
 
                                                 return (
                                                     <div
@@ -1585,17 +1798,30 @@ function FinanceDialog({
                                                                 placeholder="Deskripsi item..."
                                                                 className="h-7.5 rounded-lg border-slate-200 bg-slate-50/50 text-xs dark:border-white/10 dark:bg-zinc-800"
                                                                 required
-                                                                value={item.description}
+                                                                value={
+                                                                    item.description
+                                                                }
                                                                 onChange={(e) =>
-                                                                    setLineItems((items) =>
-                                                                        items.map((cur, idx) =>
-                                                                            idx === index
-                                                                                ? {
-                                                                                      ...cur,
-                                                                                      description: e.target.value,
-                                                                                  }
-                                                                                : cur,
-                                                                        ),
+                                                                    setLineItems(
+                                                                        (
+                                                                            items,
+                                                                        ) =>
+                                                                            items.map(
+                                                                                (
+                                                                                    cur,
+                                                                                    idx,
+                                                                                ) =>
+                                                                                    idx ===
+                                                                                    index
+                                                                                        ? {
+                                                                                              ...cur,
+                                                                                              description:
+                                                                                                  e
+                                                                                                      .target
+                                                                                                      .value,
+                                                                                          }
+                                                                                        : cur,
+                                                                            ),
                                                                     )
                                                                 }
                                                             />
@@ -1606,17 +1832,30 @@ function FinanceDialog({
                                                                 placeholder="Qty"
                                                                 className="h-7.5 rounded-lg border-slate-200 bg-slate-50/50 text-xs dark:border-white/10 dark:bg-zinc-800"
                                                                 required
-                                                                value={item.quantity}
+                                                                value={
+                                                                    item.quantity
+                                                                }
                                                                 onChange={(e) =>
-                                                                    setLineItems((items) =>
-                                                                        items.map((cur, idx) =>
-                                                                            idx === index
-                                                                                ? {
-                                                                                      ...cur,
-                                                                                      quantity: e.target.value,
-                                                                                  }
-                                                                                : cur,
-                                                                        ),
+                                                                    setLineItems(
+                                                                        (
+                                                                            items,
+                                                                        ) =>
+                                                                            items.map(
+                                                                                (
+                                                                                    cur,
+                                                                                    idx,
+                                                                                ) =>
+                                                                                    idx ===
+                                                                                    index
+                                                                                        ? {
+                                                                                              ...cur,
+                                                                                              quantity:
+                                                                                                  e
+                                                                                                      .target
+                                                                                                      .value,
+                                                                                          }
+                                                                                        : cur,
+                                                                            ),
                                                                     )
                                                                 }
                                                             />
@@ -1627,29 +1866,53 @@ function FinanceDialog({
                                                                 placeholder="Nominal (IDR)"
                                                                 className="h-7.5 rounded-lg border-slate-200 bg-slate-50/50 text-xs dark:border-white/10 dark:bg-zinc-800"
                                                                 required
-                                                                value={item.unitAmount}
+                                                                value={
+                                                                    item.unitAmount
+                                                                }
                                                                 onChange={(e) =>
-                                                                    setLineItems((items) =>
-                                                                        items.map((cur, idx) =>
-                                                                            idx === index
-                                                                                ? {
-                                                                                      ...cur,
-                                                                                      unitAmount: e.target.value,
-                                                                                  }
-                                                                                : cur,
-                                                                        ),
+                                                                    setLineItems(
+                                                                        (
+                                                                            items,
+                                                                        ) =>
+                                                                            items.map(
+                                                                                (
+                                                                                    cur,
+                                                                                    idx,
+                                                                                ) =>
+                                                                                    idx ===
+                                                                                    index
+                                                                                        ? {
+                                                                                              ...cur,
+                                                                                              unitAmount:
+                                                                                                  e
+                                                                                                      .target
+                                                                                                      .value,
+                                                                                          }
+                                                                                        : cur,
+                                                                            ),
                                                                     )
                                                                 }
                                                             />
-                                                            {lineItems.length > 1 && (
+                                                            {lineItems.length >
+                                                                1 && (
                                                                 <Button
                                                                     type="button"
                                                                     size="icon"
                                                                     variant="ghost"
-                                                                    className="size-7 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 shrink-0"
+                                                                    className="size-7 shrink-0 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30"
                                                                     onClick={() =>
-                                                                        setLineItems((items) =>
-                                                                            items.filter((_, idx) => idx !== index),
+                                                                        setLineItems(
+                                                                            (
+                                                                                items,
+                                                                            ) =>
+                                                                                items.filter(
+                                                                                    (
+                                                                                        _,
+                                                                                        idx,
+                                                                                    ) =>
+                                                                                        idx !==
+                                                                                        index,
+                                                                                ),
                                                                         )
                                                                     }
                                                                 >
@@ -1659,7 +1922,13 @@ function FinanceDialog({
                                                         </div>
                                                         {rowTotal > 0 && (
                                                             <div className="flex justify-end text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
-                                                                Subtotal: <span className="font-mono text-slate-800 dark:text-white ml-1">{formatMoney(rowTotal, 'IDR')}</span>
+                                                                Subtotal:{' '}
+                                                                <span className="ml-1 font-mono text-slate-800 dark:text-white">
+                                                                    {formatMoney(
+                                                                        rowTotal,
+                                                                        'IDR',
+                                                                    )}
+                                                                </span>
                                                             </div>
                                                         )}
                                                     </div>
@@ -1679,7 +1948,11 @@ function FinanceDialog({
                                                 type="number"
                                                 min="0"
                                                 value={discountAmount}
-                                                onChange={(e) => setDiscountAmount(e.target.value)}
+                                                onChange={(e) =>
+                                                    setDiscountAmount(
+                                                        e.target.value,
+                                                    )
+                                                }
                                                 placeholder="0"
                                                 className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs dark:border-white/10 dark:bg-[#121418]"
                                             />
@@ -1695,7 +1968,9 @@ function FinanceDialog({
                                                 min="0"
                                                 max="100"
                                                 value={taxRate}
-                                                onChange={(e) => setTaxRate(e.target.value)}
+                                                onChange={(e) =>
+                                                    setTaxRate(e.target.value)
+                                                }
                                                 placeholder="11"
                                                 className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs dark:border-white/10 dark:bg-[#121418]"
                                             />
@@ -1703,24 +1978,40 @@ function FinanceDialog({
                                     </div>
 
                                     {/* Live Calculation Preview Card */}
-                                    <div className="rounded-lg border border-blue-100 bg-blue-50/50 p-3 space-y-1.5 dark:border-blue-900/30 dark:bg-blue-950/20">
+                                    <div className="space-y-1.5 rounded-lg border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-900/30 dark:bg-blue-950/20">
                                         <div className="flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-zinc-300">
                                             <span>Subtotal Item:</span>
-                                            <span className="font-mono">{formatMoney(subtotal, 'IDR')}</span>
+                                            <span className="font-mono">
+                                                {formatMoney(subtotal, 'IDR')}
+                                            </span>
                                         </div>
                                         {discount > 0 && (
                                             <div className="flex items-center justify-between text-xs font-medium text-rose-600 dark:text-rose-400">
                                                 <span>Diskon Potongan:</span>
-                                                <span className="font-mono">- {formatMoney(discount, 'IDR')}</span>
+                                                <span className="font-mono">
+                                                    -{' '}
+                                                    {formatMoney(
+                                                        discount,
+                                                        'IDR',
+                                                    )}
+                                                </span>
                                             </div>
                                         )}
                                         <div className="flex items-center justify-between text-xs font-medium text-slate-600 dark:text-zinc-400">
-                                            <span>PPN ({taxRate || '0'}%):</span>
-                                            <span className="font-mono">+ {formatMoney(tax, 'IDR')}</span>
+                                            <span>
+                                                PPN ({taxRate || '0'}%):
+                                            </span>
+                                            <span className="font-mono">
+                                                + {formatMoney(tax, 'IDR')}
+                                            </span>
                                         </div>
-                                        <div className="border-t border-blue-200/80 pt-1.5 flex items-center justify-between text-xs font-bold text-blue-700 dark:border-blue-900/60 dark:text-blue-400">
-                                            <span>Total Tagihan (Grand Total):</span>
-                                            <span className="font-mono text-sm">{formatMoney(grandTotal, 'IDR')}</span>
+                                        <div className="flex items-center justify-between border-t border-blue-200/80 pt-1.5 text-xs font-bold text-blue-700 dark:border-blue-900/60 dark:text-blue-400">
+                                            <span>
+                                                Total Tagihan (Grand Total):
+                                            </span>
+                                            <span className="font-mono text-sm">
+                                                {formatMoney(grandTotal, 'IDR')}
+                                            </span>
                                         </div>
                                     </div>
                                 </>
@@ -1771,7 +2062,11 @@ function FinanceDialog({
                                             placeholder="Pilih berkas kuitansi / nota..."
                                         />
                                     </div>
-                                    <input type="hidden" name="status" value="draft" />
+                                    <input
+                                        type="hidden"
+                                        name="status"
+                                        value="draft"
+                                    />
                                 </>
                             )}
 
@@ -1816,11 +2111,21 @@ function FinanceDialog({
 
                                     {/* Invoice Allocation Builder */}
                                     {(() => {
-                                        const eligibleInvoices = invoices.filter(
-                                            (inv) => ['sent', 'overdue'].includes(inv.status) && (inv.outstanding_amount ?? 0) > 0
-                                        );
+                                        const eligibleInvoices =
+                                            invoices.filter(
+                                                (inv) =>
+                                                    [
+                                                        'sent',
+                                                        'overdue',
+                                                    ].includes(inv.status) &&
+                                                    (inv.outstanding_amount ??
+                                                        0) > 0,
+                                            );
                                         const draftInvoices = invoices.filter(
-                                            (inv) => inv.status === 'draft' && (inv.outstanding_amount ?? 0) > 0
+                                            (inv) =>
+                                                inv.status === 'draft' &&
+                                                (inv.outstanding_amount ?? 0) >
+                                                    0,
                                         );
 
                                         return (
@@ -1832,52 +2137,92 @@ function FinanceDialog({
                                                 {eligibleInvoices.length > 0 ? (
                                                     <>
                                                         <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                                            Alokasikan nominal pembayaran ke invoice resmi yang terkirim / overdue:
+                                                            Alokasikan nominal
+                                                            pembayaran ke
+                                                            invoice resmi yang
+                                                            terkirim / overdue:
                                                         </p>
                                                         <div className="space-y-1.5 pt-1">
-                                                            {eligibleInvoices.map((inv, index) => (
-                                                                <div
-                                                                    className="grid grid-cols-[1fr_7.5rem] items-center gap-2"
-                                                                    key={inv.id}
-                                                                >
-                                                                    <div className="min-w-0">
-                                                                        <div className="flex items-center gap-1.5">
-                                                                            <p className="truncate font-mono text-xs font-semibold text-slate-900 dark:text-white">
-                                                                                {inv.invoice_number}
+                                                            {eligibleInvoices.map(
+                                                                (
+                                                                    inv,
+                                                                    index,
+                                                                ) => (
+                                                                    <div
+                                                                        className="grid grid-cols-[1fr_7.5rem] items-center gap-2"
+                                                                        key={
+                                                                            inv.id
+                                                                        }
+                                                                    >
+                                                                        <div className="min-w-0">
+                                                                            <div className="flex items-center gap-1.5">
+                                                                                <p className="truncate font-mono text-xs font-semibold text-slate-900 dark:text-white">
+                                                                                    {
+                                                                                        inv.invoice_number
+                                                                                    }
+                                                                                </p>
+                                                                                <span className="rounded bg-blue-50 px-1 py-0.5 text-[9px] font-semibold text-blue-600 uppercase dark:bg-blue-950/40 dark:text-blue-400">
+                                                                                    {
+                                                                                        inv.status
+                                                                                    }
+                                                                                </span>
+                                                                            </div>
+                                                                            <p className="text-[10px] text-slate-500">
+                                                                                Sisa{' '}
+                                                                                {formatMoney(
+                                                                                    inv.outstanding_amount ??
+                                                                                        0,
+                                                                                    inv.currency,
+                                                                                )}
                                                                             </p>
-                                                                            <span className="rounded bg-blue-50 px-1 py-0.5 text-[9px] font-semibold text-blue-600 uppercase dark:bg-blue-950/40 dark:text-blue-400">
-                                                                                {inv.status}
-                                                                            </span>
                                                                         </div>
-                                                                        <p className="text-[10px] text-slate-500">
-                                                                            Sisa {formatMoney(inv.outstanding_amount ?? 0, inv.currency)}
-                                                                        </p>
+                                                                        <input
+                                                                            type="hidden"
+                                                                            name={`allocations[${index}][invoice_id]`}
+                                                                            value={
+                                                                                inv.id
+                                                                            }
+                                                                        />
+                                                                        <Input
+                                                                            name={`allocations[${index}][amount]`}
+                                                                            type="number"
+                                                                            min="1"
+                                                                            placeholder="0"
+                                                                            className="h-7.5 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-zinc-800"
+                                                                        />
                                                                     </div>
-                                                                    <input
-                                                                        type="hidden"
-                                                                        name={`allocations[${index}][invoice_id]`}
-                                                                        value={inv.id}
-                                                                    />
-                                                                    <Input
-                                                                        name={`allocations[${index}][amount]`}
-                                                                        type="number"
-                                                                        min="1"
-                                                                        placeholder="0"
-                                                                        className="h-7.5 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-zinc-800"
-                                                                    />
-                                                                </div>
-                                                            ))}
+                                                                ),
+                                                            )}
                                                         </div>
                                                     </>
                                                 ) : (
                                                     <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                        Tidak ada invoice aktif (Sent/Overdue) dengan sisa tagihan. Pembayaran ini akan dicatat sebagai <strong>uang muka / dana titipan (Unallocated Retainer)</strong>.
+                                                        Tidak ada invoice aktif
+                                                        (Sent/Overdue) dengan
+                                                        sisa tagihan. Pembayaran
+                                                        ini akan dicatat sebagai{' '}
+                                                        <strong>
+                                                            uang muka / dana
+                                                            titipan (Unallocated
+                                                            Retainer)
+                                                        </strong>
+                                                        .
                                                     </p>
                                                 )}
 
                                                 {draftInvoices.length > 0 && (
                                                     <div className="mt-2 rounded-md border border-amber-200/80 bg-amber-50/70 p-2 text-[10.5px] text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300">
-                                                        <span className="font-semibold">Perhatian:</span> Terdapat {draftInvoices.length} invoice berstatus <em>Draft</em>. Invoice Draft harus dikirim (Sent) terlebih dahulu sebelum dapat dialokasikan pembayaran.
+                                                        <span className="font-semibold">
+                                                            Perhatian:
+                                                        </span>{' '}
+                                                        Terdapat{' '}
+                                                        {draftInvoices.length}{' '}
+                                                        invoice berstatus{' '}
+                                                        <em>Draft</em>. Invoice
+                                                        Draft harus dikirim
+                                                        (Sent) terlebih dahulu
+                                                        sebelum dapat
+                                                        dialokasikan pembayaran.
                                                     </div>
                                                 )}
                                             </div>
@@ -1888,7 +2233,11 @@ function FinanceDialog({
 
                             <input type="hidden" name="currency" value="IDR" />
                             {!isExpense && !isPayment && (
-                                <input type="hidden" name="status" value="draft" />
+                                <input
+                                    type="hidden"
+                                    name="status"
+                                    value="draft"
+                                />
                             )}
 
                             <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
@@ -1918,7 +2267,10 @@ function FinanceDialog({
                             </div>
 
                             {Object.values(errors).map((e) => (
-                                <p className="text-xs font-semibold text-rose-500" key={e}>
+                                <p
+                                    className="text-xs font-semibold text-rose-500"
+                                    key={e}
+                                >
                                     {e}
                                 </p>
                             ))}
@@ -1994,7 +2346,7 @@ function SelectField({
                     id={name}
                     name={name}
                     required={required}
-                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                 >
                     <option value="">Pilih {label.toLowerCase()}</option>
                     {data.map((item) => (

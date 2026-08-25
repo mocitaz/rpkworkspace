@@ -54,7 +54,10 @@ export function AppSidebarHeader({
                             >
                                 <Avatar className="size-8 shrink-0 rounded-xl border border-slate-200/90 shadow-2xs transition-transform group-hover:scale-105 dark:border-white/15">
                                     <AvatarImage
-                                        src={auth.user.avatar_url ?? auth.user.avatar}
+                                        src={
+                                            auth.user.avatar_url ??
+                                            auth.user.avatar
+                                        }
                                         alt={auth.user.name}
                                     />
                                     <AvatarFallback className="rounded-xl bg-blue-50 text-[10px] font-extrabold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
@@ -67,7 +70,8 @@ export function AppSidebarHeader({
                                         {auth.user.name}
                                     </span>
                                     <span className="max-w-[130px] truncate text-[10px] font-medium text-slate-400 dark:text-zinc-500">
-                                        {auth.user.position_title ?? auth.user.email}
+                                        {auth.user.position_title ??
+                                            auth.user.email}
                                     </span>
                                 </div>
 

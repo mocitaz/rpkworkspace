@@ -31,7 +31,10 @@ import {
     Users,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { DiscussionBox, type DiscussionComment } from '@/components/comments/discussion-box';
+import {
+    DiscussionBox,
+    type DiscussionComment,
+} from '@/components/comments/discussion-box';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { EmptyState } from '@/components/empty-state';
 import InputError from '@/components/input-error';
@@ -171,7 +174,8 @@ export default function TasksIndex({
                                 Tugas &amp; Instruksi Kerja
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Delegasi penugasan advokat, supervisi partner, dan kontrol batas waktu deliverable perkara.
+                                Delegasi penugasan advokat, supervisi partner,
+                                dan kontrol batas waktu deliverable perkara.
                             </p>
                         </div>
 
@@ -193,7 +197,9 @@ export default function TasksIndex({
                         {/* 1. Total Tugas */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">TOTAL INSTRUKSI</span>
+                                <span className="text-[11px] font-semibold">
+                                    TOTAL INSTRUKSI
+                                </span>
                                 <ListTodo className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -206,14 +212,18 @@ export default function TasksIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Arsip Kantor</span>
-                                <span className="font-semibold text-slate-700 dark:text-zinc-300">{tasks.data.length} di halaman ini</span>
+                                <span className="font-semibold text-slate-700 dark:text-zinc-300">
+                                    {tasks.data.length} di halaman ini
+                                </span>
                             </div>
                         </div>
 
                         {/* 2. Tugas Saya */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">TUGAS SAYA</span>
+                                <span className="text-[11px] font-semibold">
+                                    TUGAS SAYA
+                                </span>
                                 <UserCheck className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -226,14 +236,18 @@ export default function TasksIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Personal Assignment</span>
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">Aktif</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                    Aktif
+                                </span>
                             </div>
                         </div>
 
                         {/* 3. Lewat Tenggat */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">LEWAT TENGGAT</span>
+                                <span className="text-[11px] font-semibold">
+                                    LEWAT TENGGAT
+                                </span>
                                 <AlertCircle className="size-3.5 text-rose-500 transition-colors dark:text-rose-400" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -246,14 +260,18 @@ export default function TasksIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Perlu Tindak Lanjut</span>
-                                <span className="font-semibold text-rose-600 dark:text-rose-400">Atensi Kritis</span>
+                                <span className="font-semibold text-rose-600 dark:text-rose-400">
+                                    Atensi Kritis
+                                </span>
                             </div>
                         </div>
 
                         {/* 4. Selesai */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">SELESAI</span>
+                                <span className="text-[11px] font-semibold">
+                                    SELESAI
+                                </span>
                                 <CheckCircle2 className="size-3.5 text-emerald-600 transition-colors dark:text-emerald-400" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -266,7 +284,9 @@ export default function TasksIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Deliverable Tuntas</span>
-                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">Selesai</span>
+                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                    Selesai
+                                </span>
                             </div>
                         </div>
                     </section>
@@ -276,7 +296,8 @@ export default function TasksIndex({
                         {/* Segmented Quick Status Pills */}
                         <div className="flex flex-wrap items-center gap-1.5">
                             {viewTabs.map((tab) => {
-                                const isCurrent = (filters.view ?? '') === tab.id;
+                                const isCurrent =
+                                    (filters.view ?? '') === tab.id;
                                 return (
                                     <button
                                         key={tab.id}
@@ -284,7 +305,10 @@ export default function TasksIndex({
                                         onClick={() =>
                                             router.get(
                                                 taskRoutes.index(),
-                                                { ...filters, view: tab.id || undefined },
+                                                {
+                                                    ...filters,
+                                                    view: tab.id || undefined,
+                                                },
                                                 { preserveState: true },
                                             )
                                         }
@@ -310,16 +334,27 @@ export default function TasksIndex({
                                         onChange={(e) =>
                                             router.get(
                                                 taskRoutes.index(),
-                                                { ...filters, matter_id: e.target.value || undefined },
+                                                {
+                                                    ...filters,
+                                                    matter_id:
+                                                        e.target.value ||
+                                                        undefined,
+                                                },
                                                 { preserveState: true },
                                             )
                                         }
-                                        className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                        className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                     >
-                                        <option value="">Semua Perkara Hukum</option>
+                                        <option value="">
+                                            Semua Perkara Hukum
+                                        </option>
                                         {matters.map((matter) => (
-                                            <option key={matter.id} value={matter.id}>
-                                                {matter.matter_number} - {matter.title}
+                                            <option
+                                                key={matter.id}
+                                                value={matter.id}
+                                            >
+                                                {matter.matter_number} -{' '}
+                                                {matter.title}
                                             </option>
                                         ))}
                                     </select>
@@ -333,29 +368,54 @@ export default function TasksIndex({
                                         onChange={(e) =>
                                             router.get(
                                                 taskRoutes.index(),
-                                                { ...filters, status: e.target.value || undefined },
+                                                {
+                                                    ...filters,
+                                                    status:
+                                                        e.target.value ||
+                                                        undefined,
+                                                },
                                                 { preserveState: true },
                                             )
                                         }
-                                        className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                        className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                     >
                                         <option value="">Semua Status</option>
-                                        <option value="todo">Belum Mulai</option>
-                                        <option value="in_progress">Sedang Dikerjakan</option>
-                                        <option value="waiting">Menunggu</option>
-                                        <option value="review">Review Partner</option>
-                                        <option value="completed">Selesai</option>
-                                        <option value="cancelled">Dibatalkan</option>
+                                        <option value="todo">
+                                            Belum Mulai
+                                        </option>
+                                        <option value="in_progress">
+                                            Sedang Dikerjakan
+                                        </option>
+                                        <option value="waiting">
+                                            Menunggu
+                                        </option>
+                                        <option value="review">
+                                            Review Partner
+                                        </option>
+                                        <option value="completed">
+                                            Selesai
+                                        </option>
+                                        <option value="cancelled">
+                                            Dibatalkan
+                                        </option>
                                     </select>
                                     <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
                                 </div>
 
-                                {(filters.view || filters.matter_id || filters.status) && (
+                                {(filters.view ||
+                                    filters.matter_id ||
+                                    filters.status) && (
                                     <Button
                                         type="button"
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => router.get(taskRoutes.index(), {}, { preserveState: true })}
+                                        onClick={() =>
+                                            router.get(
+                                                taskRoutes.index(),
+                                                {},
+                                                { preserveState: true },
+                                            )
+                                        }
                                         className="h-8 rounded-lg border-slate-200 px-2.5 text-xs text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
                                     >
                                         <RotateCcw className="mr-1 size-3 text-slate-400" />
@@ -400,12 +460,16 @@ export default function TasksIndex({
                             <EmptyState
                                 icon={CheckSquare}
                                 title={
-                                    filters.status || filters.matter_id || filters.view
+                                    filters.status ||
+                                    filters.matter_id ||
+                                    filters.view
                                         ? 'Tidak ada tugas pada filter ini'
                                         : 'Belum Ada Tugas Terdaftar'
                                 }
                                 description={
-                                    filters.status || filters.matter_id || filters.view
+                                    filters.status ||
+                                    filters.matter_id ||
+                                    filters.view
                                         ? 'Seluruh instruksi kerja pada filter ini telah dituntaskan atau silakan sesuaikan filter pilihan Anda.'
                                         : 'Delegasikan tugas baru kepada staf atau associate untuk memulai alur kerja perkara.'
                                 }
@@ -414,19 +478,26 @@ export default function TasksIndex({
                                         {can.create && (
                                             <Button
                                                 type="button"
-                                                onClick={() => setOpenCreate(true)}
-                                                className="h-8 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 cursor-pointer"
+                                                onClick={() =>
+                                                    setOpenCreate(true)
+                                                }
+                                                className="h-8 cursor-pointer rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
                                             >
-                                                <Plus className="mr-1 size-3.5" /> Buat Tugas Baru
+                                                <Plus className="mr-1 size-3.5" />{' '}
+                                                Buat Tugas Baru
                                             </Button>
                                         )}
-                                        {(filters.status || filters.matter_id || filters.view) && (
+                                        {(filters.status ||
+                                            filters.matter_id ||
+                                            filters.view) && (
                                             <Button
                                                 asChild
                                                 variant="outline"
                                                 className="h-8 rounded-lg border-slate-200 px-3.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
                                             >
-                                                <Link href={taskRoutes.index.url()}>
+                                                <Link
+                                                    href={taskRoutes.index.url()}
+                                                >
                                                     Reset Filter
                                                 </Link>
                                             </Button>
@@ -445,14 +516,17 @@ export default function TasksIndex({
                                     return (
                                         <div
                                             key={task.id}
-                                            onClick={() => setSelectedTask(task)}
+                                            onClick={() =>
+                                                setSelectedTask(task)
+                                            }
                                             className="cursor-pointer space-y-2 p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
                                         >
                                             <div className="flex items-start justify-between gap-2">
                                                 <div className="min-w-0 flex-1">
                                                     <p
                                                         className={`text-xs font-bold text-slate-900 dark:text-white ${
-                                                            task.status === 'completed'
+                                                            task.status ===
+                                                            'completed'
                                                                 ? 'line-through opacity-50'
                                                                 : ''
                                                         }`}
@@ -461,15 +535,24 @@ export default function TasksIndex({
                                                     </p>
                                                     {task.matter && (
                                                         <p className="mt-0.5 truncate font-mono text-[10px] font-semibold text-blue-600 dark:text-blue-400">
-                                                            {task.matter.matter_number} · {task.matter.title}
+                                                            {
+                                                                task.matter
+                                                                    .matter_number
+                                                            }{' '}
+                                                            ·{' '}
+                                                            {task.matter.title}
                                                         </p>
                                                     )}
                                                 </div>
                                                 <ChevronRight className="size-4 shrink-0 text-slate-400" />
                                             </div>
                                             <div className="flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-2 text-[10px] dark:border-white/[0.04]">
-                                                <StatusBadge value={task.status} />
-                                                <StatusBadge value={task.priority} />
+                                                <StatusBadge
+                                                    value={task.status}
+                                                />
+                                                <StatusBadge
+                                                    value={task.priority}
+                                                />
                                                 {task.due_at && (
                                                     <span
                                                         className={`ml-auto font-mono ${
@@ -478,7 +561,9 @@ export default function TasksIndex({
                                                                 : 'text-slate-500 dark:text-zinc-400'
                                                         }`}
                                                     >
-                                                        {formatDate(task.due_at)}
+                                                        {formatDate(
+                                                            task.due_at,
+                                                        )}
                                                     </span>
                                                 )}
                                             </div>
@@ -492,12 +577,24 @@ export default function TasksIndex({
                                 <table className="w-full text-left text-xs">
                                     <thead>
                                         <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <th className="py-2.5 pr-3 pl-4 font-semibold">Tugas &amp; Kasus</th>
-                                            <th className="px-3 py-2.5 text-center font-semibold">Assignee</th>
-                                            <th className="px-3 py-2.5 text-center font-semibold">Reviewer</th>
-                                            <th className="px-3 py-2.5 font-semibold">Tenggat</th>
-                                            <th className="px-3 py-2.5 font-semibold">Prioritas</th>
-                                            <th className="px-3 py-2.5 font-semibold">Status</th>
+                                            <th className="py-2.5 pr-3 pl-4 font-semibold">
+                                                Tugas &amp; Kasus
+                                            </th>
+                                            <th className="px-3 py-2.5 text-center font-semibold">
+                                                Assignee
+                                            </th>
+                                            <th className="px-3 py-2.5 text-center font-semibold">
+                                                Reviewer
+                                            </th>
+                                            <th className="px-3 py-2.5 font-semibold">
+                                                Tenggat
+                                            </th>
+                                            <th className="px-3 py-2.5 font-semibold">
+                                                Prioritas
+                                            </th>
+                                            <th className="px-3 py-2.5 font-semibold">
+                                                Status
+                                            </th>
                                             <th className="py-2.5 pr-4 pl-1 text-right font-semibold"></th>
                                         </tr>
                                     </thead>
@@ -515,9 +612,14 @@ export default function TasksIndex({
                                                         <div className="space-y-0.5">
                                                             <button
                                                                 type="button"
-                                                                onClick={() => setSelectedTask(task)}
+                                                                onClick={() =>
+                                                                    setSelectedTask(
+                                                                        task,
+                                                                    )
+                                                                }
                                                                 className={`text-left text-xs font-semibold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400 ${
-                                                                    task.status === 'completed'
+                                                                    task.status ===
+                                                                    'completed'
                                                                         ? 'line-through opacity-50'
                                                                         : ''
                                                                 }`}
@@ -528,20 +630,34 @@ export default function TasksIndex({
                                                             {task.matter ? (
                                                                 <div>
                                                                     <Link
-                                                                        href={matterRoutes.show(task.matter.id)}
+                                                                        href={matterRoutes.show(
+                                                                            task
+                                                                                .matter
+                                                                                .id,
+                                                                        )}
                                                                         className="inline-flex items-center gap-1 font-mono text-[10px] font-medium text-slate-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400"
                                                                     >
-                                                                        <span className="rounded bg-blue-50/80 px-1 py-0.2 font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                                                            {task.matter.matter_number}
+                                                                        <span className="py-0.2 rounded bg-blue-50/80 px-1 font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                                            {
+                                                                                task
+                                                                                    .matter
+                                                                                    .matter_number
+                                                                            }
                                                                         </span>
                                                                         <span className="max-w-[240px] truncate">
-                                                                            · {task.matter.title}
+                                                                            ·{' '}
+                                                                            {
+                                                                                task
+                                                                                    .matter
+                                                                                    .title
+                                                                            }
                                                                         </span>
                                                                     </Link>
                                                                 </div>
                                                             ) : (
                                                                 <span className="font-mono text-[10px] text-slate-400">
-                                                                    Umum / Non-Perkara
+                                                                    Umum /
+                                                                    Non-Perkara
                                                                 </span>
                                                             )}
                                                         </div>
@@ -550,56 +666,118 @@ export default function TasksIndex({
                                                     {/* Assignee Avatar */}
                                                     <td className="px-3 py-2.5 text-center whitespace-nowrap">
                                                         {task.assignee ? (
-                                                            <TooltipProvider delayDuration={100}>
+                                                            <TooltipProvider
+                                                                delayDuration={
+                                                                    100
+                                                                }
+                                                            >
                                                                 <Tooltip>
-                                                                    <TooltipTrigger asChild>
+                                                                    <TooltipTrigger
+                                                                        asChild
+                                                                    >
                                                                         <div className="inline-flex cursor-pointer items-center justify-center">
                                                                             <Avatar className="size-6 rounded-full border border-slate-200 dark:border-white/10">
-                                                                                <AvatarImage src={task.assignee.avatar_url ?? undefined} />
+                                                                                <AvatarImage
+                                                                                    src={
+                                                                                        task
+                                                                                            .assignee
+                                                                                            .avatar_url ??
+                                                                                        undefined
+                                                                                    }
+                                                                                />
                                                                                 <AvatarFallback className="text-[8px] font-bold">
-                                                                                    {getInitials(task.assignee.name)}
+                                                                                    {getInitials(
+                                                                                        task
+                                                                                            .assignee
+                                                                                            .name,
+                                                                                    )}
                                                                                 </AvatarFallback>
                                                                             </Avatar>
                                                                         </div>
                                                                     </TooltipTrigger>
-                                                                    <TooltipContent side="top" className="rounded-lg border border-slate-800 bg-slate-900 px-2.5 py-1 text-xs text-white shadow-xl dark:border-white/10 dark:bg-white dark:text-slate-900">
-                                                                        <p className="font-semibold">{task.assignee.name}</p>
+                                                                    <TooltipContent
+                                                                        side="top"
+                                                                        className="rounded-lg border border-slate-800 bg-slate-900 px-2.5 py-1 text-xs text-white shadow-xl dark:border-white/10 dark:bg-white dark:text-slate-900"
+                                                                    >
+                                                                        <p className="font-semibold">
+                                                                            {
+                                                                                task
+                                                                                    .assignee
+                                                                                    .name
+                                                                            }
+                                                                        </p>
                                                                         <p className="text-[10px] text-slate-400 dark:text-zinc-500">
-                                                                            {task.assignee.position_title ?? 'Assignee'}
+                                                                            {task
+                                                                                .assignee
+                                                                                .position_title ??
+                                                                                'Assignee'}
                                                                         </p>
                                                                     </TooltipContent>
                                                                 </Tooltip>
-                              </TooltipProvider>
+                                                            </TooltipProvider>
                                                         ) : (
-                                                            <span className="font-mono text-slate-400">-</span>
+                                                            <span className="font-mono text-slate-400">
+                                                                -
+                                                            </span>
                                                         )}
                                                     </td>
 
                                                     {/* Reviewer Avatar */}
                                                     <td className="px-3 py-2.5 text-center whitespace-nowrap">
                                                         {task.reviewer ? (
-                                                            <TooltipProvider delayDuration={100}>
+                                                            <TooltipProvider
+                                                                delayDuration={
+                                                                    100
+                                                                }
+                                                            >
                                                                 <Tooltip>
-                                                                    <TooltipTrigger asChild>
+                                                                    <TooltipTrigger
+                                                                        asChild
+                                                                    >
                                                                         <div className="inline-flex cursor-pointer items-center justify-center">
                                                                             <Avatar className="size-6 rounded-full border border-slate-200 dark:border-white/10">
-                                                                                <AvatarImage src={task.reviewer.avatar_url ?? undefined} />
+                                                                                <AvatarImage
+                                                                                    src={
+                                                                                        task
+                                                                                            .reviewer
+                                                                                            .avatar_url ??
+                                                                                        undefined
+                                                                                    }
+                                                                                />
                                                                                 <AvatarFallback className="text-[8px] font-bold">
-                                                                                    {getInitials(task.reviewer.name)}
+                                                                                    {getInitials(
+                                                                                        task
+                                                                                            .reviewer
+                                                                                            .name,
+                                                                                    )}
                                                                                 </AvatarFallback>
                                                                             </Avatar>
                                                                         </div>
                                                                     </TooltipTrigger>
-                                                                    <TooltipContent side="top" className="rounded-lg border border-slate-800 bg-slate-900 px-2.5 py-1 text-xs text-white shadow-xl dark:border-white/10 dark:bg-white dark:text-slate-900">
-                                                                        <p className="font-semibold">{task.reviewer.name}</p>
+                                                                    <TooltipContent
+                                                                        side="top"
+                                                                        className="rounded-lg border border-slate-800 bg-slate-900 px-2.5 py-1 text-xs text-white shadow-xl dark:border-white/10 dark:bg-white dark:text-slate-900"
+                                                                    >
+                                                                        <p className="font-semibold">
+                                                                            {
+                                                                                task
+                                                                                    .reviewer
+                                                                                    .name
+                                                                            }
+                                                                        </p>
                                                                         <p className="text-[10px] text-slate-400 dark:text-zinc-500">
-                                                                            {task.reviewer.position_title ?? 'Reviewer'}
+                                                                            {task
+                                                                                .reviewer
+                                                                                .position_title ??
+                                                                                'Reviewer'}
                                                                         </p>
                                                                     </TooltipContent>
                                                                 </Tooltip>
                                                             </TooltipProvider>
                                                         ) : (
-                                                            <span className="font-mono text-slate-400">-</span>
+                                                            <span className="font-mono text-slate-400">
+                                                                -
+                                                            </span>
                                                         )}
                                                     </td>
 
@@ -613,34 +791,67 @@ export default function TasksIndex({
                                                                         : 'font-medium text-slate-700 dark:text-zinc-300'
                                                                 }
                                                             >
-                                                                {overdue && <AlertCircle className="size-3 shrink-0 text-rose-500" />}
-                                                                {formatDate(task.due_at)}
+                                                                {overdue && (
+                                                                    <AlertCircle className="size-3 shrink-0 text-rose-500" />
+                                                                )}
+                                                                {formatDate(
+                                                                    task.due_at,
+                                                                )}
                                                             </span>
                                                         ) : (
-                                                            <span className="font-mono text-slate-400">-</span>
+                                                            <span className="font-mono text-slate-400">
+                                                                -
+                                                            </span>
                                                         )}
                                                     </td>
 
                                                     {/* Priority */}
                                                     <td className="px-3 py-2.5 whitespace-nowrap">
-                                                        <StatusBadge value={task.priority} />
+                                                        <StatusBadge
+                                                            value={
+                                                                task.priority
+                                                            }
+                                                        />
                                                     </td>
 
                                                     {/* Status Selector */}
                                                     <td className="px-3 py-2.5 whitespace-nowrap">
                                                         <div className="relative inline-block">
                                                             <select
-                                                                value={task.status}
-                                                                disabled={updatingTaskId === task.id}
-                                                                onChange={(e) => changeStatus(task, e.target.value)}
-                                                                className="h-7 cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-6 pl-2 text-[10.5px] font-medium text-slate-800 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                                value={
+                                                                    task.status
+                                                                }
+                                                                disabled={
+                                                                    updatingTaskId ===
+                                                                    task.id
+                                                                }
+                                                                onChange={(e) =>
+                                                                    changeStatus(
+                                                                        task,
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                className="h-7 cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-6 pl-2 text-[10.5px] font-medium text-slate-800 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                                             >
-                                                                <option value="todo">Belum Mulai</option>
-                                                                <option value="in_progress">Dikerjakan</option>
-                                                                <option value="waiting">Menunggu</option>
-                                                                <option value="review">Review</option>
-                                                                <option value="completed">Selesai</option>
-                                                                <option value="cancelled">Dibatalkan</option>
+                                                                <option value="todo">
+                                                                    Belum Mulai
+                                                                </option>
+                                                                <option value="in_progress">
+                                                                    Dikerjakan
+                                                                </option>
+                                                                <option value="waiting">
+                                                                    Menunggu
+                                                                </option>
+                                                                <option value="review">
+                                                                    Review
+                                                                </option>
+                                                                <option value="completed">
+                                                                    Selesai
+                                                                </option>
+                                                                <option value="cancelled">
+                                                                    Dibatalkan
+                                                                </option>
                                                             </select>
                                                             <ChevronDown className="pointer-events-none absolute top-1/2 right-1.5 size-2.5 -translate-y-1/2 text-slate-400" />
                                                         </div>
@@ -651,7 +862,11 @@ export default function TasksIndex({
                                                         <Button
                                                             size="sm"
                                                             variant="ghost"
-                                                            onClick={() => setSelectedTask(task)}
+                                                            onClick={() =>
+                                                                setSelectedTask(
+                                                                    task,
+                                                                )
+                                                            }
                                                             className="h-7 px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/[0.06]"
                                                         >
                                                             Detail
@@ -668,7 +883,15 @@ export default function TasksIndex({
                             {/* Pagination Footer */}
                             <div className="flex flex-col justify-between gap-3 border-t border-slate-100 bg-slate-50/50 px-4 py-2.5 sm:flex-row sm:items-center dark:border-white/[0.04] dark:bg-[#121418]">
                                 <span className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Menampilkan <span className="font-semibold text-slate-900 dark:text-white">{tasks.data.length}</span> dari <span className="font-semibold text-slate-900 dark:text-white">{tasks.total}</span> tugas
+                                    Menampilkan{' '}
+                                    <span className="font-semibold text-slate-900 dark:text-white">
+                                        {tasks.data.length}
+                                    </span>{' '}
+                                    dari{' '}
+                                    <span className="font-semibold text-slate-900 dark:text-white">
+                                        {tasks.total}
+                                    </span>{' '}
+                                    tugas
                                 </span>
                                 <Pagination links={tasks.links} />
                             </div>
@@ -683,19 +906,26 @@ export default function TasksIndex({
                                     return (
                                         <article
                                             key={task.id}
-                                            onClick={() => setSelectedTask(task)}
+                                            onClick={() =>
+                                                setSelectedTask(task)
+                                            }
                                             className="group flex cursor-pointer flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]"
                                         >
                                             <div className="space-y-2.5">
                                                 <div className="flex items-start justify-between gap-2">
-                                                    <StatusBadge value={task.priority} />
-                                                    <StatusBadge value={task.status} />
+                                                    <StatusBadge
+                                                        value={task.priority}
+                                                    />
+                                                    <StatusBadge
+                                                        value={task.status}
+                                                    />
                                                 </div>
 
                                                 <div>
                                                     <h3
                                                         className={`text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400 ${
-                                                            task.status === 'completed'
+                                                            task.status ===
+                                                            'completed'
                                                                 ? 'line-through opacity-50'
                                                                 : ''
                                                         }`}
@@ -712,8 +942,16 @@ export default function TasksIndex({
                                                 {task.matter && (
                                                     <div className="inline-flex items-center gap-1 rounded-md bg-blue-50/80 px-2 py-0.5 text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
                                                         <Scale className="size-2.5 shrink-0" />
-                                                        <span className="font-mono">{task.matter.matter_number}</span>
-                                                        <span className="truncate">· {task.matter.title}</span>
+                                                        <span className="font-mono">
+                                                            {
+                                                                task.matter
+                                                                    .matter_number
+                                                            }
+                                                        </span>
+                                                        <span className="truncate">
+                                                            ·{' '}
+                                                            {task.matter.title}
+                                                        </span>
                                                     </div>
                                                 )}
                                             </div>
@@ -724,17 +962,34 @@ export default function TasksIndex({
                                                     {task.assignee ? (
                                                         <>
                                                             <Avatar className="size-5 rounded-full border border-slate-200 dark:border-white/10">
-                                                                <AvatarImage src={task.assignee.avatar_url ?? undefined} />
+                                                                <AvatarImage
+                                                                    src={
+                                                                        task
+                                                                            .assignee
+                                                                            .avatar_url ??
+                                                                        undefined
+                                                                    }
+                                                                />
                                                                 <AvatarFallback className="text-[7px] font-bold">
-                                                                    {getInitials(task.assignee.name)}
+                                                                    {getInitials(
+                                                                        task
+                                                                            .assignee
+                                                                            .name,
+                                                                    )}
                                                                 </AvatarFallback>
                                                             </Avatar>
                                                             <span className="text-[10px] text-slate-700 dark:text-zinc-300">
-                                                                {task.assignee.name.split(' ')[0]}
+                                                                {
+                                                                    task.assignee.name.split(
+                                                                        ' ',
+                                                                    )[0]
+                                                                }
                                                             </span>
                                                         </>
                                                     ) : (
-                                                        <span className="text-[10px] text-slate-400">Unassigned</span>
+                                                        <span className="text-[10px] text-slate-400">
+                                                            Unassigned
+                                                        </span>
                                                     )}
                                                 </div>
 
@@ -747,10 +1002,14 @@ export default function TasksIndex({
                                                                 : 'text-slate-500 dark:text-zinc-400'
                                                         }`}
                                                     >
-                                                        {formatDate(task.due_at)}
+                                                        {formatDate(
+                                                            task.due_at,
+                                                        )}
                                                     </span>
                                                 ) : (
-                                                    <span className="font-mono text-[10px] text-slate-400">Tanpa tenggat</span>
+                                                    <span className="font-mono text-[10px] text-slate-400">
+                                                        Tanpa tenggat
+                                                    </span>
                                                 )}
                                             </div>
                                         </article>
@@ -768,40 +1027,50 @@ export default function TasksIndex({
             </div>
 
             {/* Modal Dialog: Detail Ringkasan Tugas & Kolaborasi */}
-            <Dialog open={!!selectedTask} onOpenChange={(open) => !open && setSelectedTask(null)}>
+            <Dialog
+                open={!!selectedTask}
+                onOpenChange={(open) => !open && setSelectedTask(null)}
+            >
                 {selectedTask && (
-                    <DialogContent className="max-h-[92vh] overflow-hidden flex flex-col p-0 rounded-2xl border border-slate-200/90 bg-white shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
+                    <DialogContent className="flex max-h-[92vh] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-0 shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
                         {/* Header: Title, Badges & Action Controls */}
-                        <div className="shrink-0 border-b border-slate-100 bg-white px-6 pt-5 pb-4 pr-14 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="shrink-0 border-b border-slate-100 bg-white px-6 pt-5 pr-14 pb-4 dark:border-white/[0.06] dark:bg-[#14161b]">
                             {/* Top Meta Line: Badges & Matter Pill */}
-                            <div className="flex flex-wrap items-center gap-2 mb-2.5">
+                            <div className="mb-2.5 flex flex-wrap items-center gap-2">
                                 <StatusBadge value={selectedTask.priority} />
                                 <StatusBadge value={selectedTask.status} />
 
                                 {selectedTask.matter && (
                                     <Link
-                                        href={matterRoutes.show(selectedTask.matter.id)}
-                                        className="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-2.5 py-0.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 hover:text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 transition-colors whitespace-nowrap"
+                                        href={matterRoutes.show(
+                                            selectedTask.matter.id,
+                                        )}
+                                        className="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap text-blue-700 transition-colors hover:bg-blue-100 hover:text-blue-800 dark:bg-blue-950/60 dark:text-blue-300"
                                     >
-                                        <Briefcase className="size-3 text-blue-600 dark:text-blue-400 shrink-0" />
-                                        <span className="font-mono font-bold">{selectedTask.matter.matter_number}</span>
-                                        <span className="truncate max-w-[260px] sm:max-w-[360px]">· {selectedTask.matter.title}</span>
-                                        <ArrowUpRight className="size-3 text-blue-500 shrink-0" />
+                                        <Briefcase className="size-3 shrink-0 text-blue-600 dark:text-blue-400" />
+                                        <span className="font-mono font-bold">
+                                            {selectedTask.matter.matter_number}
+                                        </span>
+                                        <span className="max-w-[260px] truncate sm:max-w-[360px]">
+                                            · {selectedTask.matter.title}
+                                        </span>
+                                        <ArrowUpRight className="size-3 shrink-0 text-blue-500" />
                                     </Link>
                                 )}
 
-                                {selectedTask.due_at && isTaskOverdue(selectedTask) && (
-                                    <span className="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-700 uppercase dark:bg-rose-950/60 dark:text-rose-300 whitespace-nowrap">
-                                        <AlertCircle className="size-3 shrink-0" />
-                                        Lewat Tenggat
-                                    </span>
-                                )}
+                                {selectedTask.due_at &&
+                                    isTaskOverdue(selectedTask) && (
+                                        <span className="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-xs font-bold whitespace-nowrap text-rose-700 uppercase dark:bg-rose-950/60 dark:text-rose-300">
+                                            <AlertCircle className="size-3 shrink-0" />
+                                            Lewat Tenggat
+                                        </span>
+                                    )}
                             </div>
 
                             {/* Task Title + Edit Button Row */}
                             <div className="flex items-start justify-between gap-4">
-                                <div className="space-y-1 min-w-0 flex-1">
-                                    <DialogTitle className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white leading-snug break-words">
+                                <div className="min-w-0 flex-1 space-y-1">
+                                    <DialogTitle className="text-lg leading-snug font-bold break-words text-slate-900 sm:text-xl dark:text-white">
                                         {selectedTask.title}
                                     </DialogTitle>
                                     <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
@@ -811,7 +1080,7 @@ export default function TasksIndex({
                                     </DialogDescription>
                                 </div>
 
-                                <div className="flex items-center gap-2 shrink-0">
+                                <div className="flex shrink-0 items-center gap-2">
                                     {can.update && (
                                         <Button
                                             size="sm"
@@ -831,7 +1100,9 @@ export default function TasksIndex({
                                         <Button
                                             size="sm"
                                             variant="outline"
-                                            onClick={() => setTaskToDelete(selectedTask)}
+                                            onClick={() =>
+                                                setTaskToDelete(selectedTask)
+                                            }
                                             className="h-8 rounded-lg border-rose-200 bg-rose-50/50 px-2.5 text-xs font-semibold text-rose-700 shadow-2xs hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300"
                                             title="Hapus Tugas"
                                         >
@@ -844,35 +1115,72 @@ export default function TasksIndex({
 
                         {/* Interactive Workflow Status Pipeline - 4-Column Balanced Grid */}
                         <div className="shrink-0 border-b border-slate-100 bg-slate-50/80 px-6 py-2.5 dark:border-white/[0.06] dark:bg-white/[0.02]">
-                            <div className="grid grid-cols-4 gap-2 w-full">
+                            <div className="grid w-full grid-cols-4 gap-2">
                                 {[
-                                    { key: 'pending', num: '1', label: 'To Do', activeBg: 'bg-slate-900 text-white font-bold shadow-xs dark:bg-white dark:text-slate-900' },
-                                    { key: 'in_progress', num: '2', label: 'Dikerjakan', activeBg: 'bg-blue-600 text-white font-bold shadow-xs' },
-                                    { key: 'review', num: '3', label: 'Review', activeBg: 'bg-amber-600 text-white font-bold shadow-xs' },
-                                    { key: 'completed', num: '4', label: 'Selesai', activeBg: 'bg-emerald-600 text-white font-bold shadow-xs' },
+                                    {
+                                        key: 'pending',
+                                        num: '1',
+                                        label: 'To Do',
+                                        activeBg:
+                                            'bg-slate-900 text-white font-bold shadow-xs dark:bg-white dark:text-slate-900',
+                                    },
+                                    {
+                                        key: 'in_progress',
+                                        num: '2',
+                                        label: 'Dikerjakan',
+                                        activeBg:
+                                            'bg-blue-600 text-white font-bold shadow-xs',
+                                    },
+                                    {
+                                        key: 'review',
+                                        num: '3',
+                                        label: 'Review',
+                                        activeBg:
+                                            'bg-amber-600 text-white font-bold shadow-xs',
+                                    },
+                                    {
+                                        key: 'completed',
+                                        num: '4',
+                                        label: 'Selesai',
+                                        activeBg:
+                                            'bg-emerald-600 text-white font-bold shadow-xs',
+                                    },
                                 ].map((step) => {
-                                    const isActive = selectedTask.status === step.key;
+                                    const isActive =
+                                        selectedTask.status === step.key;
                                     return (
                                         <button
                                             key={step.key}
                                             type="button"
-                                            onClick={() => changeStatus(selectedTask, step.key)}
-                                            className={`flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-center text-xs transition-all cursor-pointer ${
+                                            onClick={() =>
+                                                changeStatus(
+                                                    selectedTask,
+                                                    step.key,
+                                                )
+                                            }
+                                            className={`flex cursor-pointer items-center justify-center gap-1.5 rounded-lg py-1.5 text-center text-xs transition-all ${
                                                 isActive
                                                     ? step.activeBg
-                                                    : 'bg-white text-slate-600 hover:bg-slate-200/70 border border-slate-200/60 font-medium dark:bg-[#16181d] dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/[0.08]'
+                                                    : 'border border-slate-200/60 bg-white font-medium text-slate-600 hover:bg-slate-200/70 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300 dark:hover:bg-white/[0.08]'
                                             }`}
                                         >
-                                            {step.key === 'completed' && isActive ? (
+                                            {step.key === 'completed' &&
+                                            isActive ? (
                                                 <Check className="size-3 shrink-0 stroke-[3]" />
                                             ) : (
-                                                <span className={`size-4 shrink-0 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                                                    isActive ? 'bg-white/20 text-current' : 'bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-zinc-300'
-                                                }`}>
+                                                <span
+                                                    className={`flex size-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                                                        isActive
+                                                            ? 'bg-white/20 text-current'
+                                                            : 'bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-zinc-300'
+                                                    }`}
+                                                >
                                                     {step.num}
                                                 </span>
                                             )}
-                                            <span className="truncate">{step.label}</span>
+                                            <span className="truncate">
+                                                {step.label}
+                                            </span>
                                         </button>
                                     );
                                 })}
@@ -880,46 +1188,53 @@ export default function TasksIndex({
                         </div>
 
                         {/* Scrollable Content Body */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                        <div className="flex-1 space-y-4 overflow-y-auto p-6">
                             {/* Symmetric 4-Card Metadata Grid */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                 {/* 1. Perkara Terkait */}
-                                <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02] flex flex-col justify-between space-y-2">
+                                <div className="flex flex-col justify-between space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02]">
                                     <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400">
                                         <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
                                             <Briefcase className="size-3.5" />
                                         </div>
-                                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                        <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                             Perkara Terkait
                                         </span>
                                     </div>
                                     <div className="min-w-0">
                                         {selectedTask.matter ? (
                                             <Link
-                                                href={matterRoutes.show(selectedTask.matter.id)}
+                                                href={matterRoutes.show(
+                                                    selectedTask.matter.id,
+                                                )}
                                                 className="group block"
                                             >
-                                                <p className="font-mono text-xs font-bold text-blue-600 group-hover:underline dark:text-blue-400 flex items-center gap-1">
-                                                    {selectedTask.matter.matter_number}
-                                                    <ArrowUpRight className="size-3 text-slate-400 inline" />
+                                                <p className="flex items-center gap-1 font-mono text-xs font-bold text-blue-600 group-hover:underline dark:text-blue-400">
+                                                    {
+                                                        selectedTask.matter
+                                                            .matter_number
+                                                    }
+                                                    <ArrowUpRight className="inline size-3 text-slate-400" />
                                                 </p>
-                                                <p className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white pt-0.5">
+                                                <p className="truncate pt-0.5 text-xs font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white">
                                                     {selectedTask.matter.title}
                                                 </p>
                                             </Link>
                                         ) : (
-                                            <p className="text-xs text-slate-400 italic">Tugas independen (tanpa perkara)</p>
+                                            <p className="text-xs text-slate-400 italic">
+                                                Tugas independen (tanpa perkara)
+                                            </p>
                                         )}
                                     </div>
                                 </div>
 
                                 {/* 2. Batas Waktu (Tenggat) */}
-                                <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02] flex flex-col justify-between space-y-2">
+                                <div className="flex flex-col justify-between space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02]">
                                     <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400">
                                         <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
                                             <Clock className="size-3.5" />
                                         </div>
-                                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                        <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                             Batas Waktu (Tenggat WIB)
                                         </span>
                                     </div>
@@ -927,105 +1242,149 @@ export default function TasksIndex({
                                         {selectedTask.due_at ? (
                                             <div>
                                                 <p className="font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                    {formatDate(selectedTask.due_at, true)}
+                                                    {formatDate(
+                                                        selectedTask.due_at,
+                                                        true,
+                                                    )}
                                                 </p>
-                                                <p className="text-[10.5px] text-slate-500 dark:text-zinc-400 pt-0.5">
-                                                    {isTaskOverdue(selectedTask) ? (
+                                                <p className="pt-0.5 text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                    {isTaskOverdue(
+                                                        selectedTask,
+                                                    ) ? (
                                                         <span className="inline-flex items-center gap-1 font-semibold text-rose-600 dark:text-rose-400">
                                                             <AlertCircle className="size-3 text-rose-500" />
                                                             Melewati batas waktu
                                                         </span>
                                                     ) : (
-                                                        <span>Jadwal deliverable perkara</span>
+                                                        <span>
+                                                            Jadwal deliverable
+                                                            perkara
+                                                        </span>
                                                     )}
                                                 </p>
                                             </div>
                                         ) : (
-                                            <p className="text-xs text-slate-400 italic">Tidak ditentukan (fleksibel)</p>
+                                            <p className="text-xs text-slate-400 italic">
+                                                Tidak ditentukan (fleksibel)
+                                            </p>
                                         )}
                                     </div>
                                 </div>
 
                                 {/* 3. Pelaksana (Assignee) */}
-                                <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02] flex flex-col justify-between space-y-2">
+                                <div className="flex flex-col justify-between space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02]">
                                     <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400">
                                         <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
                                             <UserCheck className="size-3.5" />
                                         </div>
-                                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                        <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                             Pelaksana (Assignee)
                                         </span>
                                     </div>
                                     <div>
                                         {selectedTask.assignee ? (
                                             <div className="flex items-center gap-2.5">
-                                                <Avatar className="size-7 rounded-full border border-slate-200 dark:border-white/10 shrink-0">
-                                                    <AvatarImage src={selectedTask.assignee.avatar_url ?? undefined} />
+                                                <Avatar className="size-7 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                                    <AvatarImage
+                                                        src={
+                                                            selectedTask
+                                                                .assignee
+                                                                .avatar_url ??
+                                                            undefined
+                                                        }
+                                                    />
                                                     <AvatarFallback className="text-[9px] font-bold">
-                                                        {getInitials(selectedTask.assignee.name)}
+                                                        {getInitials(
+                                                            selectedTask
+                                                                .assignee.name,
+                                                        )}
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div className="min-w-0">
                                                     <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                                                        {selectedTask.assignee.name}
+                                                        {
+                                                            selectedTask
+                                                                .assignee.name
+                                                        }
                                                     </p>
                                                     <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
-                                                        {selectedTask.assignee.position_title ?? 'Advokat Pelaksana'}
+                                                        {selectedTask.assignee
+                                                            .position_title ??
+                                                            'Advokat Pelaksana'}
                                                     </p>
                                                 </div>
                                             </div>
                                         ) : (
-                                            <p className="text-xs text-slate-400 italic">Belum ditugaskan</p>
+                                            <p className="text-xs text-slate-400 italic">
+                                                Belum ditugaskan
+                                            </p>
                                         )}
                                     </div>
                                 </div>
 
                                 {/* 4. Reviewer (Partner) */}
-                                <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02] flex flex-col justify-between space-y-2">
+                                <div className="flex flex-col justify-between space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02]">
                                     <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400">
                                         <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
                                             <User className="size-3.5" />
                                         </div>
-                                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                                        <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                             Reviewer (Partner)
                                         </span>
                                     </div>
                                     <div>
                                         {selectedTask.reviewer ? (
                                             <div className="flex items-center gap-2.5">
-                                                <Avatar className="size-7 rounded-full border border-slate-200 dark:border-white/10 shrink-0">
-                                                    <AvatarImage src={selectedTask.reviewer.avatar_url ?? undefined} />
+                                                <Avatar className="size-7 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                                    <AvatarImage
+                                                        src={
+                                                            selectedTask
+                                                                .reviewer
+                                                                .avatar_url ??
+                                                            undefined
+                                                        }
+                                                    />
                                                     <AvatarFallback className="text-[9px] font-bold">
-                                                        {getInitials(selectedTask.reviewer.name)}
+                                                        {getInitials(
+                                                            selectedTask
+                                                                .reviewer.name,
+                                                        )}
                                                     </AvatarFallback>
                                                 </Avatar>
                                                 <div className="min-w-0">
                                                     <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                                                        {selectedTask.reviewer.name}
+                                                        {
+                                                            selectedTask
+                                                                .reviewer.name
+                                                        }
                                                     </p>
                                                     <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
-                                                        {selectedTask.reviewer.position_title ?? 'Supervising Partner'}
+                                                        {selectedTask.reviewer
+                                                            .position_title ??
+                                                            'Supervising Partner'}
                                                     </p>
                                                 </div>
                                             </div>
                                         ) : (
-                                            <p className="text-xs text-slate-400 italic">Tanpa reviewer</p>
+                                            <p className="text-xs text-slate-400 italic">
+                                                Tanpa reviewer
+                                            </p>
                                         )}
                                     </div>
                                 </div>
                             </div>
 
                             {/* Instruksi Kerja & Catatan Teknis */}
-                            <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-4 dark:border-white/[0.06] dark:bg-white/[0.02] space-y-1.5">
+                            <div className="space-y-1.5 rounded-xl border border-slate-200/70 bg-slate-50/50 p-4 dark:border-white/[0.06] dark:bg-white/[0.02]">
                                 <div className="flex items-center gap-2 text-slate-600 dark:text-zinc-300">
                                     <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-zinc-300">
                                         <FileText className="size-3.5" />
                                     </div>
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-700 dark:text-zinc-300">
+                                    <span className="text-[10px] font-bold tracking-wider text-slate-700 uppercase dark:text-zinc-300">
                                         Instruksi Kerja &amp; Catatan Teknis
                                     </span>
                                 </div>
-                                <div className="text-xs leading-relaxed text-slate-800 dark:text-zinc-200 whitespace-pre-wrap pt-1 pl-8">
+                                <div className="pt-1 pl-8 text-xs leading-relaxed whitespace-pre-wrap text-slate-800 dark:text-zinc-200">
                                     {selectedTask.description ||
                                         'Tidak ada instruksi kerja tambahan. Kerjakan tugas sesuai SOP dan arahan Partner penanggung jawab.'}
                                 </div>
@@ -1060,7 +1419,8 @@ export default function TasksIndex({
                                     Buat Tugas &amp; Instruksi Baru
                                 </DialogTitle>
                                 <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Tetapkan penugasan advokat, reviewer, dan tenggat waktu.
+                                    Tetapkan penugasan advokat, reviewer, dan
+                                    tenggat waktu.
                                 </DialogDescription>
                             </div>
                         </div>
@@ -1093,12 +1453,18 @@ export default function TasksIndex({
                                         <select
                                             id="matter_id"
                                             name="matter_id"
-                                            className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                            className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                         >
-                                            <option value="">Tanpa matter (Tugas Umum)</option>
+                                            <option value="">
+                                                Tanpa matter (Tugas Umum)
+                                            </option>
                                             {matters.map((matter) => (
-                                                <option key={matter.id} value={matter.id}>
-                                                    {matter.matter_number} - {matter.title}
+                                                <option
+                                                    key={matter.id}
+                                                    value={matter.id}
+                                                >
+                                                    {matter.matter_number} -{' '}
+                                                    {matter.title}
                                                 </option>
                                             ))}
                                         </select>
@@ -1119,18 +1485,28 @@ export default function TasksIndex({
                                             <select
                                                 id="assignee_id"
                                                 name="assignee_id"
-                                                className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                             >
-                                                <option value="">Belum Ditugaskan</option>
+                                                <option value="">
+                                                    Belum Ditugaskan
+                                                </option>
                                                 {users.map((user) => (
-                                                    <option key={user.id} value={user.id}>
-                                                        {user.name} {user.position_title ? `- ${user.position_title}` : ''}
+                                                    <option
+                                                        key={user.id}
+                                                        value={user.id}
+                                                    >
+                                                        {user.name}{' '}
+                                                        {user.position_title
+                                                            ? `- ${user.position_title}`
+                                                            : ''}
                                                     </option>
                                                 ))}
                                             </select>
                                             <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
                                         </div>
-                                        <InputError message={errors.assignee_id} />
+                                        <InputError
+                                            message={errors.assignee_id}
+                                        />
                                     </div>
 
                                     <div className="grid gap-1">
@@ -1144,18 +1520,28 @@ export default function TasksIndex({
                                             <select
                                                 id="reviewer_id"
                                                 name="reviewer_id"
-                                                className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                             >
-                                                <option value="">Tanpa Reviewer</option>
+                                                <option value="">
+                                                    Tanpa Reviewer
+                                                </option>
                                                 {users.map((user) => (
-                                                    <option key={user.id} value={user.id}>
-                                                        {user.name} {user.position_title ? `- ${user.position_title}` : ''}
+                                                    <option
+                                                        key={user.id}
+                                                        value={user.id}
+                                                    >
+                                                        {user.name}{' '}
+                                                        {user.position_title
+                                                            ? `- ${user.position_title}`
+                                                            : ''}
                                                     </option>
                                                 ))}
                                             </select>
                                             <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
                                         </div>
-                                        <InputError message={errors.reviewer_id} />
+                                        <InputError
+                                            message={errors.reviewer_id}
+                                        />
                                     </div>
                                 </div>
 
@@ -1172,12 +1558,20 @@ export default function TasksIndex({
                                                 id="priority"
                                                 name="priority"
                                                 defaultValue="normal"
-                                                className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                             >
-                                                <option value="low">Rendah</option>
-                                                <option value="normal">Normal</option>
-                                                <option value="high">Tinggi</option>
-                                                <option value="critical">Kritis</option>
+                                                <option value="low">
+                                                    Rendah
+                                                </option>
+                                                <option value="normal">
+                                                    Normal
+                                                </option>
+                                                <option value="high">
+                                                    Tinggi
+                                                </option>
+                                                <option value="critical">
+                                                    Kritis
+                                                </option>
                                             </select>
                                             <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
                                         </div>
@@ -1195,12 +1589,20 @@ export default function TasksIndex({
                                                 id="status"
                                                 name="status"
                                                 defaultValue="todo"
-                                                className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                             >
-                                                <option value="todo">Belum Mulai</option>
-                                                <option value="in_progress">Dikerjakan</option>
-                                                <option value="waiting">Menunggu</option>
-                                                <option value="review">Review</option>
+                                                <option value="todo">
+                                                    Belum Mulai
+                                                </option>
+                                                <option value="in_progress">
+                                                    Dikerjakan
+                                                </option>
+                                                <option value="waiting">
+                                                    Menunggu
+                                                </option>
+                                                <option value="review">
+                                                    Review
+                                                </option>
                                             </select>
                                             <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
                                         </div>
@@ -1226,7 +1628,7 @@ export default function TasksIndex({
                                         name="description"
                                         rows={3}
                                         placeholder="Petunjuk teknis, rincian deliverable, atau catatan instruksi..."
-                                        className="w-full rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 transition-colors outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                        className="w-full rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 outline-hidden transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                     />
                                     <InputError message={errors.description} />
                                 </div>
@@ -1263,7 +1665,10 @@ export default function TasksIndex({
             </Dialog>
 
             {/* Modal Dialog: Edit Tugas In-Place */}
-            <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
+            <Dialog
+                open={!!editingTask}
+                onOpenChange={(open) => !open && setEditingTask(null)}
+            >
                 {editingTask && (
                     <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-6 pr-10 shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
                         <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
@@ -1276,7 +1681,8 @@ export default function TasksIndex({
                                         Edit Detail Tugas
                                     </DialogTitle>
                                     <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                        Perbarui penugasan, instruksi, dan tenggat waktu.
+                                        Perbarui penugasan, instruksi, dan
+                                        tenggat waktu.
                                     </DialogDescription>
                                 </div>
                             </div>
@@ -1309,19 +1715,32 @@ export default function TasksIndex({
                                                 <select
                                                     id="assignee_id_edit"
                                                     name="assignee_id"
-                                                    defaultValue={editingTask.assignee_id ?? ''}
-                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                    defaultValue={
+                                                        editingTask.assignee_id ??
+                                                        ''
+                                                    }
+                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                                 >
-                                                    <option value="">Belum Ditugaskan</option>
+                                                    <option value="">
+                                                        Belum Ditugaskan
+                                                    </option>
                                                     {users.map((user) => (
-                                                        <option key={user.id} value={user.id}>
-                                                            {user.name} {user.position_title ? `- ${user.position_title}` : ''}
+                                                        <option
+                                                            key={user.id}
+                                                            value={user.id}
+                                                        >
+                                                            {user.name}{' '}
+                                                            {user.position_title
+                                                                ? `- ${user.position_title}`
+                                                                : ''}
                                                         </option>
                                                     ))}
                                                 </select>
                                                 <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
                                             </div>
-                                            <InputError message={errors.assignee_id} />
+                                            <InputError
+                                                message={errors.assignee_id}
+                                            />
                                         </div>
 
                                         <div className="grid gap-1">
@@ -1335,19 +1754,32 @@ export default function TasksIndex({
                                                 <select
                                                     id="reviewer_id_edit"
                                                     name="reviewer_id"
-                                                    defaultValue={editingTask.reviewer_id ?? ''}
-                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                    defaultValue={
+                                                        editingTask.reviewer_id ??
+                                                        ''
+                                                    }
+                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                                 >
-                                                    <option value="">Tanpa Reviewer</option>
+                                                    <option value="">
+                                                        Tanpa Reviewer
+                                                    </option>
                                                     {users.map((user) => (
-                                                        <option key={user.id} value={user.id}>
-                                                            {user.name} {user.position_title ? `- ${user.position_title}` : ''}
+                                                        <option
+                                                            key={user.id}
+                                                            value={user.id}
+                                                        >
+                                                            {user.name}{' '}
+                                                            {user.position_title
+                                                                ? `- ${user.position_title}`
+                                                                : ''}
                                                         </option>
                                                     ))}
                                                 </select>
                                                 <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
                                             </div>
-                                            <InputError message={errors.reviewer_id} />
+                                            <InputError
+                                                message={errors.reviewer_id}
+                                            />
                                         </div>
                                     </div>
 
@@ -1363,13 +1795,23 @@ export default function TasksIndex({
                                                 <select
                                                     id="priority_edit"
                                                     name="priority"
-                                                    defaultValue={editingTask.priority}
-                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                    defaultValue={
+                                                        editingTask.priority
+                                                    }
+                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                                 >
-                                                    <option value="low">Rendah</option>
-                                                    <option value="normal">Normal</option>
-                                                    <option value="high">Tinggi</option>
-                                                    <option value="critical">Kritis</option>
+                                                    <option value="low">
+                                                        Rendah
+                                                    </option>
+                                                    <option value="normal">
+                                                        Normal
+                                                    </option>
+                                                    <option value="high">
+                                                        Tinggi
+                                                    </option>
+                                                    <option value="critical">
+                                                        Kritis
+                                                    </option>
                                                 </select>
                                                 <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
                                             </div>
@@ -1386,14 +1828,26 @@ export default function TasksIndex({
                                                 <select
                                                     id="status_edit"
                                                     name="status"
-                                                    defaultValue={editingTask.status}
-                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                    defaultValue={
+                                                        editingTask.status
+                                                    }
+                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-xl border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                                 >
-                                                    <option value="todo">Belum Mulai</option>
-                                                    <option value="in_progress">Dikerjakan</option>
-                                                    <option value="waiting">Menunggu</option>
-                                                    <option value="review">Review</option>
-                                                    <option value="completed">Selesai</option>
+                                                    <option value="todo">
+                                                        Belum Mulai
+                                                    </option>
+                                                    <option value="in_progress">
+                                                        Dikerjakan
+                                                    </option>
+                                                    <option value="waiting">
+                                                        Menunggu
+                                                    </option>
+                                                    <option value="review">
+                                                        Review
+                                                    </option>
+                                                    <option value="completed">
+                                                        Selesai
+                                                    </option>
                                                 </select>
                                                 <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3 -translate-y-1/2 text-slate-400" />
                                             </div>
@@ -1405,7 +1859,9 @@ export default function TasksIndex({
                                             type="date"
                                             defaultValue={
                                                 editingTask.due_at
-                                                    ? editingTask.due_at.split('T')[0]
+                                                    ? editingTask.due_at.split(
+                                                          'T',
+                                                      )[0]
                                                     : undefined
                                             }
                                             error={errors.due_at}
@@ -1423,11 +1879,15 @@ export default function TasksIndex({
                                             id="description_edit"
                                             name="description"
                                             rows={3}
-                                            defaultValue={editingTask.description ?? ''}
+                                            defaultValue={
+                                                editingTask.description ?? ''
+                                            }
                                             placeholder="Petunjuk teknis, rincian deliverable, atau catatan instruksi..."
-                                            className="w-full rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 transition-colors outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                            className="w-full rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 outline-hidden transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                         />
-                                        <InputError message={errors.description} />
+                                        <InputError
+                                            message={errors.description}
+                                        />
                                     </div>
 
                                     <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
@@ -1525,7 +1985,7 @@ function Field({
                 defaultValue={defaultValue}
                 required={required}
                 placeholder={placeholder}
-                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 placeholder:text-slate-400 transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 transition-colors placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
             />
             <InputError message={error} />
         </div>

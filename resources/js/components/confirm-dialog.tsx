@@ -92,8 +92,11 @@ export function ConfirmDialog({
     const Icon = config.DefaultIcon;
 
     return (
-        <Dialog open={open} onOpenChange={(val) => !processing && onOpenChange(val)}>
-            <DialogContent className="max-w-md p-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
+        <Dialog
+            open={open}
+            onOpenChange={(val) => !processing && onOpenChange(val)}
+        >
+            <DialogContent className="max-w-md overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
                 <div className="border-b border-slate-100 bg-slate-50/60 p-5 dark:border-white/5 dark:bg-zinc-900/40">
                     <DialogHeader>
                         <div className="flex items-start gap-3">

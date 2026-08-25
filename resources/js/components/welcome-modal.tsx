@@ -1,5 +1,11 @@
 import { Link } from '@inertiajs/react';
-import { Briefcase, Calendar, CheckCircle2, FileText, ShieldCheck } from 'lucide-react';
+import {
+    Briefcase,
+    Calendar,
+    CheckCircle2,
+    FileText,
+    ShieldCheck,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -79,7 +85,9 @@ export function WelcomeModal({
 
                 <div className="space-y-4 px-6 py-4">
                     <DialogDescription className="text-xs leading-relaxed text-slate-600 dark:text-zinc-400">
-                        Selamat bekerja. Berikut rangkuman hal-hal penting untuk memastikan kelancaran administrasi perkara dan kepatuhan standar kerja hari ini:
+                        Selamat bekerja. Berikut rangkuman hal-hal penting untuk
+                        memastikan kelancaran administrasi perkara dan kepatuhan
+                        standar kerja hari ini:
                     </DialogDescription>
 
                     {/* Quick Checklist Reminders */}
@@ -93,7 +101,8 @@ export function WelcomeModal({
                                     Verifikasi Berkas & Dokumen
                                 </p>
                                 <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                    Periksa draft advice hukum dan dokumen perkara yang menunggu review.
+                                    Periksa draft advice hukum dan dokumen
+                                    perkara yang menunggu review.
                                 </p>
                             </div>
                         </div>
@@ -107,7 +116,8 @@ export function WelcomeModal({
                                     Agenda & Tenggat Kritis
                                 </p>
                                 <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                    Pastikan jadwal sidang, rapat koordinasi, dan deadline minggu ini terpantau.
+                                    Pastikan jadwal sidang, rapat koordinasi,
+                                    dan deadline minggu ini terpantau.
                                 </p>
                             </div>
                         </div>
@@ -121,7 +131,8 @@ export function WelcomeModal({
                                     Kerahasiaan & Kepatuhan
                                 </p>
                                 <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                    Seluruh data perkara dan komunikasi klien bersifat konfidensial.
+                                    Seluruh data perkara dan komunikasi klien
+                                    bersifat konfidensial.
                                 </p>
                             </div>
                         </div>
@@ -140,7 +151,8 @@ export function WelcomeModal({
                         </span>
                         <span>•</span>
                         <span>
-                            <strong>{todayDeadlinesCount}</strong> Deadline Hari Ini
+                            <strong>{todayDeadlinesCount}</strong> Deadline Hari
+                            Ini
                         </span>
                     </div>
                 </div>
@@ -154,9 +166,7 @@ export function WelcomeModal({
                         onClick={() => handleClose(false)}
                         className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                     >
-                        <Link href={calendarRoutes.index()}>
-                            Buka Kalender
-                        </Link>
+                        <Link href={calendarRoutes.index()}>Buka Kalender</Link>
                     </Button>
 
                     <Button

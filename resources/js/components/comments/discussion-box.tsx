@@ -71,7 +71,8 @@ function formatRelativeTime(dateString: string): string {
     const diffSec = Math.floor((now.getTime() - date.getTime()) / 1000);
 
     if (diffSec < 45) return 'Baru saja';
-    if (diffSec < 3600) return `${Math.max(1, Math.floor(diffSec / 60))} mnt lalu`;
+    if (diffSec < 3600)
+        return `${Math.max(1, Math.floor(diffSec / 60))} mnt lalu`;
     if (diffSec < 86400) return `${Math.floor(diffSec / 3600)} jam lalu`;
     if (diffSec < 172800) return 'Kemarin';
 
@@ -112,9 +113,12 @@ export function DiscussionBox({
     const currentUser = page.props.auth?.user as DiscussionStaff | undefined;
 
     // Local state for instant optimistic updates without page reload
-    const [localComments, setLocalComments] = useState<DiscussionComment[]>(comments);
+    const [localComments, setLocalComments] =
+        useState<DiscussionComment[]>(comments);
     const [inputText, setInputText] = useState('');
-    const [replyingTo, setReplyingTo] = useState<DiscussionComment | null>(null);
+    const [replyingTo, setReplyingTo] = useState<DiscussionComment | null>(
+        null,
+    );
     const [mentionSearch, setMentionSearch] = useState<string | null>(null);
     const [mentionIndex, setMentionIndex] = useState<number>(-1);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -130,7 +134,12 @@ export function DiscussionBox({
         if (!mentionSearch) return [];
         const q = mentionSearch.toLowerCase();
         return staffList
-            .filter((s) => s.name.toLowerCase().includes(q) || (s.position_title && s.position_title.toLowerCase().includes(q)))
+            .filter(
+                (s) =>
+                    s.name.toLowerCase().includes(q) ||
+                    (s.position_title &&
+                        s.position_title.toLowerCase().includes(q)),
+            )
             .slice(0, 6);
     }, [staffList, mentionSearch]);
 
@@ -143,7 +152,10 @@ export function DiscussionBox({
         const textBeforeCursor = val.slice(0, cursor);
         const lastAt = textBeforeCursor.lastIndexOf('@');
 
-        if (lastAt !== -1 && (lastAt === 0 || /\s/.test(textBeforeCursor[lastAt - 1]))) {
+        if (
+            lastAt !== -1 &&
+            (lastAt === 0 || /\s/.test(textBeforeCursor[lastAt - 1]))
+        ) {
             const query = textBeforeCursor.slice(lastAt + 1);
             if (!query.includes(' ') && query.length <= 20) {
                 setMentionSearch(query);
@@ -157,7 +169,9 @@ export function DiscussionBox({
     const insertMention = (staff: DiscussionStaff) => {
         if (mentionIndex === -1) return;
         const before = inputText.slice(0, mentionIndex);
-        const after = inputText.slice(textareaRef.current?.selectionStart ?? inputText.length);
+        const after = inputText.slice(
+            textareaRef.current?.selectionStart ?? inputText.length,
+        );
         const newText = `${before}@${staff.name} ${after}`;
         setInputText(newText);
         setMentionSearch(null);
@@ -240,7 +254,9 @@ export function DiscussionBox({
             const updateItem = (item: DiscussionComment): DiscussionComment => {
                 if (item.id === commentId) {
                     const existingIdx = item.reactions.findIndex(
-                        (r) => r.emoji === emojiKey && r.user_id === currentUser.id,
+                        (r) =>
+                            r.emoji === emojiKey &&
+                            r.user_id === currentUser.id,
                     );
                     let newReactions = [...item.reactions];
                     if (existingIdx !== -1) {
@@ -250,7 +266,10 @@ export function DiscussionBox({
                             id: `temp-r-${Date.now()}`,
                             user_id: currentUser.id,
                             emoji: emojiKey,
-                            user: { id: currentUser.id, name: currentUser.name },
+                            user: {
+                                id: currentUser.id,
+                                name: currentUser.name,
+                            },
                         });
                     }
                     return { ...item, reactions: newReactions };
@@ -278,7 +297,9 @@ export function DiscussionBox({
                     return {
                         ...c,
                         is_pinned: !c.is_pinned,
-                        pinned_at: !c.is_pinned ? new Date().toISOString() : null,
+                        pinned_at: !c.is_pinned
+                            ? new Date().toISOString()
+                            : null,
                     };
                 }
                 return c;
@@ -307,7 +328,9 @@ export function DiscussionBox({
                 .filter((c) => c.id !== commentId)
                 .map((c) => ({
                     ...c,
-                    replies: (c.replies || []).filter((r) => r.id !== commentId),
+                    replies: (c.replies || []).filter(
+                        (r) => r.id !== commentId,
+                    ),
                 })),
         );
 
@@ -322,12 +345,18 @@ export function DiscussionBox({
         return [...localComments].sort((a, b) => {
             if (a.is_pinned && !b.is_pinned) return -1;
             if (!a.is_pinned && b.is_pinned) return 1;
-            return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+            return (
+                new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime()
+            );
         });
     }, [localComments]);
 
     const totalCommentCount = useMemo(() => {
-        return localComments.reduce((acc, c) => acc + 1 + (c.replies?.length ?? 0), 0);
+        return localComments.reduce(
+            (acc, c) => acc + 1 + (c.replies?.length ?? 0),
+            0,
+        );
     }, [localComments]);
 
     return (
@@ -382,7 +411,8 @@ export function DiscussionBox({
                             Belum Ada Diskusi Tim
                         </h4>
                         <p className="mt-1 max-w-xs text-[11px] text-slate-500 dark:text-zinc-400">
-                            Mulai diskusi atau berikan instruksi kepada tim advokat perkara ini.
+                            Mulai diskusi atau berikan instruksi kepada tim
+                            advokat perkara ini.
                         </p>
                     </div>
                 )}
@@ -395,7 +425,10 @@ export function DiscussionBox({
                     <div className="mb-2.5 flex items-center justify-between rounded-xl bg-blue-50/90 px-3 py-1.5 text-xs font-medium text-blue-900 dark:bg-blue-950/50 dark:text-blue-200">
                         <span className="flex items-center gap-1.5">
                             <CornerDownRight className="size-3.5 text-blue-600 dark:text-blue-400" />
-                            Membalas <strong className="font-bold">{replyingTo.user.name}</strong>
+                            Membalas{' '}
+                            <strong className="font-bold">
+                                {replyingTo.user.name}
+                            </strong>
                         </span>
                         <button
                             type="button"
@@ -424,14 +457,25 @@ export function DiscussionBox({
                                 className="flex w-full items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-left text-xs transition-colors hover:bg-slate-100 dark:hover:bg-white/[0.08]"
                             >
                                 <Avatar className="size-6 rounded-full border border-black/10">
-                                    <AvatarImage src={staff.avatar_url || (staff.avatar_path ? `/storage/${staff.avatar_path}` : '/images/default-avatar.svg')} />
+                                    <AvatarImage
+                                        src={
+                                            staff.avatar_url ||
+                                            (staff.avatar_path
+                                                ? `/storage/${staff.avatar_path}`
+                                                : '/images/default-avatar.svg')
+                                        }
+                                    />
                                     <AvatarFallback className="bg-slate-800 text-[9px] font-bold text-white">
                                         {getInitials(staff.name)}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="min-w-0 flex-1">
-                                    <p className="truncate text-xs font-bold text-slate-900 dark:text-white">{staff.name}</p>
-                                    <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">{staff.position_title ?? 'Advokat'}</p>
+                                    <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                        {staff.name}
+                                    </p>
+                                    <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
+                                        {staff.position_title ?? 'Advokat'}
+                                    </p>
                                 </div>
                             </button>
                         ))}
@@ -439,11 +483,21 @@ export function DiscussionBox({
                 )}
 
                 {/* Main Composer Form */}
-                <form onSubmit={handleSubmit} className="flex items-start gap-3">
+                <form
+                    onSubmit={handleSubmit}
+                    className="flex items-start gap-3"
+                >
                     {/* User Avatar */}
                     <div className="shrink-0 pt-0.5">
                         <Avatar className="size-8.5 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10">
-                            <AvatarImage src={currentUser?.avatar_url || (currentUser?.avatar_path ? `/storage/${currentUser.avatar_path}` : '/images/default-avatar.svg')} />
+                            <AvatarImage
+                                src={
+                                    currentUser?.avatar_url ||
+                                    (currentUser?.avatar_path
+                                        ? `/storage/${currentUser.avatar_path}`
+                                        : '/images/default-avatar.svg')
+                                }
+                            />
                             <AvatarFallback className="bg-slate-900 text-xs font-black text-white dark:bg-slate-800">
                                 {getInitials(currentUser?.name)}
                             </AvatarFallback>
@@ -471,7 +525,9 @@ export function DiscussionBox({
                         <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-2 dark:border-white/[0.04]">
                             {/* Quick Emoji & Tag Helpers */}
                             <div className="flex items-center gap-1">
-                                <span className="mr-1 text-[11px] font-semibold text-slate-400 dark:text-zinc-500">Reaksi cepat:</span>
+                                <span className="mr-1 text-[11px] font-semibold text-slate-400 dark:text-zinc-500">
+                                    Reaksi cepat:
+                                </span>
                                 {['👍', '⚖️', '🎯', '🔥', '❤️'].map((em) => (
                                     <button
                                         key={em}
@@ -487,7 +543,10 @@ export function DiscussionBox({
                             {/* Submit Button */}
                             <div className="flex items-center gap-2">
                                 <span className="hidden font-mono text-[10px] text-slate-400 sm:inline-block">
-                                    Tekan <kbd className="rounded bg-slate-100 px-1 py-0.5 text-slate-600 dark:bg-zinc-800 dark:text-zinc-300">Enter ↵</kbd>
+                                    Tekan{' '}
+                                    <kbd className="rounded bg-slate-100 px-1 py-0.5 text-slate-600 dark:bg-zinc-800 dark:text-zinc-300">
+                                        Enter ↵
+                                    </kbd>
                                 </span>
                                 <Button
                                     type="submit"
@@ -550,11 +609,25 @@ function InstagramCommentRow({
 
     // Group reactions
     const activeReactions = useMemo(() => {
-        const map: Record<string, { count: number; users: string[]; hasReacted: boolean; symbol: string }> = {};
+        const map: Record<
+            string,
+            {
+                count: number;
+                users: string[];
+                hasReacted: boolean;
+                symbol: string;
+            }
+        > = {};
         for (const r of comment.reactions || []) {
-            const sym = EMOJI_OPTIONS.find((e) => e.key === r.emoji)?.symbol ?? '👍';
+            const sym =
+                EMOJI_OPTIONS.find((e) => e.key === r.emoji)?.symbol ?? '👍';
             if (!map[r.emoji]) {
-                map[r.emoji] = { count: 0, users: [], hasReacted: false, symbol: sym };
+                map[r.emoji] = {
+                    count: 0,
+                    users: [],
+                    hasReacted: false,
+                    symbol: sym,
+                };
             }
             map[r.emoji].count += 1;
             if (r.user?.name) {
@@ -568,7 +641,9 @@ function InstagramCommentRow({
     }, [comment.reactions, currentUserId]);
 
     return (
-        <div className={`group relative transition-colors ${isReply ? 'pt-3 pb-1' : 'py-3.5'}`}>
+        <div
+            className={`group relative transition-colors ${isReply ? 'pt-3 pb-1' : 'py-3.5'}`}
+        >
             {/* Pinned Pill Banner */}
             {comment.is_pinned && !isReply && (
                 <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-amber-300/80 bg-amber-50 px-2.5 py-0.5 text-[9.5px] font-extrabold tracking-wider text-amber-800 uppercase dark:border-amber-500/30 dark:bg-amber-950/40 dark:text-amber-300">
@@ -580,8 +655,17 @@ function InstagramCommentRow({
             <div className="flex items-start gap-3">
                 {/* Avatar */}
                 <div className="shrink-0 pt-0.5">
-                    <Avatar className={`${isReply ? 'size-7' : 'size-8'} rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10`}>
-                        <AvatarImage src={comment.user.avatar_url || (comment.user.avatar_path ? `/storage/${comment.user.avatar_path}` : '/images/default-avatar.svg')} />
+                    <Avatar
+                        className={`${isReply ? 'size-7' : 'size-8'} rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10`}
+                    >
+                        <AvatarImage
+                            src={
+                                comment.user.avatar_url ||
+                                (comment.user.avatar_path
+                                    ? `/storage/${comment.user.avatar_path}`
+                                    : '/images/default-avatar.svg')
+                            }
+                        />
                         <AvatarFallback className="bg-slate-800 text-[10px] font-black text-white dark:bg-slate-700">
                             {getInitials(comment.user.name)}
                         </AvatarFallback>
@@ -596,7 +680,7 @@ function InstagramCommentRow({
                             {comment.user.name}
                         </span>
                         {comment.user.position_title && (
-                            <span className="rounded-md bg-slate-100 px-1.5 py-0.2 font-mono text-[9px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
+                            <span className="py-0.2 rounded-md bg-slate-100 px-1.5 font-mono text-[9px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
                                 {comment.user.position_title}
                             </span>
                         )}
@@ -606,7 +690,10 @@ function InstagramCommentRow({
                     </div>
 
                     {/* Text Body */}
-                    <FormattedCommentBody text={comment.body} staffList={staffList} />
+                    <FormattedCommentBody
+                        text={comment.body}
+                        staffList={staffList}
+                    />
 
                     {/* Action Bar */}
                     <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
@@ -661,8 +748,14 @@ function InstagramCommentRow({
                                     : 'hover:text-slate-900 dark:hover:text-white'
                             }`}
                         >
-                            <Pin className={`size-3 ${comment.is_pinned ? 'fill-amber-600' : ''}`} />
-                            <span>{comment.is_pinned ? 'Lepas Pin' : 'Pin Catatan'}</span>
+                            <Pin
+                                className={`size-3 ${comment.is_pinned ? 'fill-amber-600' : ''}`}
+                            />
+                            <span>
+                                {comment.is_pinned
+                                    ? 'Lepas Pin'
+                                    : 'Pin Catatan'}
+                            </span>
                         </button>
 
                         {/* Delete Action (Author only) */}
@@ -680,12 +773,20 @@ function InstagramCommentRow({
                         {activeReactions.length > 0 && (
                             <div className="flex flex-wrap items-center gap-1">
                                 {activeReactions.map(([emojiKey, data]) => (
-                                    <TooltipProvider key={emojiKey} delayDuration={200}>
+                                    <TooltipProvider
+                                        key={emojiKey}
+                                        delayDuration={200}
+                                    >
                                         <Tooltip>
                                             <TooltipTrigger asChild>
                                                 <button
                                                     type="button"
-                                                    onClick={() => onReaction(comment.id, emojiKey)}
+                                                    onClick={() =>
+                                                        onReaction(
+                                                            comment.id,
+                                                            emojiKey,
+                                                        )
+                                                    }
                                                     className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-bold transition-all active:scale-95 ${
                                                         data.hasReacted
                                                             ? 'border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-500/40 dark:bg-blue-950/50 dark:text-blue-300'
@@ -693,11 +794,14 @@ function InstagramCommentRow({
                                                     }`}
                                                 >
                                                     <span>{data.symbol}</span>
-                                                    <span className="font-mono text-[10px]">{data.count}</span>
+                                                    <span className="font-mono text-[10px]">
+                                                        {data.count}
+                                                    </span>
                                                 </button>
                                             </TooltipTrigger>
                                             <TooltipContent className="text-xs">
-                                                {data.users.length > 0 && data.users.join(', ')}
+                                                {data.users.length > 0 &&
+                                                    data.users.join(', ')}
                                             </TooltipContent>
                                         </Tooltip>
                                     </TooltipProvider>
@@ -784,12 +888,15 @@ function FormattedCommentBody({
             .join('|');
 
         // Regex capturing: URLs, @KnownName, or @SingleWord
-        const regex = new RegExp(`((?:https?:\\/\\/[^\\s]+)|(?:@(?:${namePattern}|[A-Za-z0-9_.-]+)))`, 'g');
+        const regex = new RegExp(
+            `((?:https?:\\/\\/[^\\s]+)|(?:@(?:${namePattern}|[A-Za-z0-9_.-]+)))`,
+            'g',
+        );
         return text.split(regex);
     }, [text, knownNames]);
 
     return (
-        <p className="text-xs leading-relaxed font-normal text-slate-800 break-words dark:text-zinc-200">
+        <p className="text-xs leading-relaxed font-normal break-words text-slate-800 dark:text-zinc-200">
             {parts.map((part, index) => {
                 if (/^https?:\/\//i.test(part)) {
                     return (
@@ -800,7 +907,11 @@ function FormattedCommentBody({
                             rel="noreferrer"
                             className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:underline dark:text-blue-400"
                         >
-                            <span>{part.length > 35 ? part.slice(0, 35) + '…' : part}</span>
+                            <span>
+                                {part.length > 35
+                                    ? part.slice(0, 35) + '…'
+                                    : part}
+                            </span>
                             <ExternalLink className="size-2.5 shrink-0" />
                         </a>
                     );

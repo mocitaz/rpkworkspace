@@ -19,7 +19,9 @@ export function EmptyState({
         (typeof Icon === 'object' && Icon !== null && 'render' in Icon);
 
     return (
-        <div className={`flex flex-col items-center justify-center py-10 px-4 text-center ${className}`}>
+        <div
+            className={`flex flex-col items-center justify-center px-4 py-10 text-center ${className}`}
+        >
             <div className="flex size-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 shadow-2xs dark:bg-white/[0.06] dark:text-zinc-300">
                 {isIconComponent ? (
                     // @ts-ignore
@@ -32,7 +34,7 @@ export function EmptyState({
                 {title}
             </h3>
             {description && (
-                <p className="mt-1 max-w-sm text-xs text-slate-500 dark:text-zinc-400 leading-relaxed">
+                <p className="mt-1 max-w-sm text-xs leading-relaxed text-slate-500 dark:text-zinc-400">
                     {description}
                 </p>
             )}

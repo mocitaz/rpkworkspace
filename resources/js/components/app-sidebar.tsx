@@ -138,7 +138,7 @@ export function AppSidebar() {
                 <NavMain label="PENGATURAN" items={adminItems} />
             </SidebarContent>
 
-            <SidebarFooter className="border-t border-slate-100 p-2 group-data-[collapsible=icon]:p-1.5 dark:border-white/[0.06] space-y-1">
+            <SidebarFooter className="space-y-1 border-t border-slate-100 p-2 group-data-[collapsible=icon]:p-1.5 dark:border-white/[0.06]">
                 <NavUser />
                 <SidebarCollapseButton />
             </SidebarFooter>
@@ -162,7 +162,7 @@ function SidebarCollapseButton() {
                 'dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white',
                 isCollapsed
                     ? 'justify-center px-0'
-                    : 'justify-start gap-2 px-2.5 text-xs font-normal text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white',
+                    : 'justify-start gap-2 px-2.5 text-xs font-normal text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white',
             )}
         >
             {isCollapsed ? (
@@ -170,7 +170,9 @@ function SidebarCollapseButton() {
             ) : (
                 <>
                     <ChevronLeft className="size-4 text-slate-400 transition-transform duration-150 group-hover:-translate-x-0.5 group-hover:text-slate-700 dark:text-zinc-500 dark:group-hover:text-zinc-200" />
-                    <span className="text-xs font-medium tracking-tight">Collapse</span>
+                    <span className="text-xs font-medium tracking-tight">
+                        Collapse
+                    </span>
                 </>
             )}
         </button>

@@ -74,20 +74,22 @@ export default function Login({ status, canResetPassword }: Props) {
                                         tabIndex={1}
                                         autoComplete="email"
                                         placeholder="Email Address"
-                                        className={`h-11 rounded-xl bg-[#f8fafc] pl-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 transition-colors focus:bg-white dark:bg-white/[0.03] dark:text-white ${
+                                        className={`h-11 rounded-xl bg-[#f8fafc] pl-10 text-xs font-medium text-slate-900 transition-colors placeholder:text-slate-400 focus:bg-white dark:bg-white/[0.03] dark:text-white ${
                                             emailErrorMessage
                                                 ? 'border-red-300 focus:border-red-500 dark:border-red-800'
                                                 : 'border-slate-200/80 focus:border-blue-600 dark:border-white/10'
                                         }`}
                                     />
                                 </div>
-                                <InputError message={emailErrorMessage ?? undefined} />
+                                <InputError
+                                    message={emailErrorMessage ?? undefined}
+                                />
                             </div>
 
                             {/* Password Input */}
                             <div className="space-y-1">
                                 <div className="relative w-full">
-                                    <Lock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400 dark:text-zinc-500 z-10" />
+                                    <Lock className="pointer-events-none absolute top-1/2 left-3.5 z-10 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
                                     <PasswordInput
                                         id="password"
                                         name="password"
@@ -95,7 +97,7 @@ export default function Login({ status, canResetPassword }: Props) {
                                         tabIndex={2}
                                         autoComplete="current-password"
                                         placeholder="Password"
-                                        className={`h-11 w-full rounded-xl bg-[#f8fafc] pl-10 pr-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 transition-colors focus:bg-white dark:bg-white/[0.03] dark:text-white ${
+                                        className={`h-11 w-full rounded-xl bg-[#f8fafc] pr-10 pl-10 text-xs font-medium text-slate-900 transition-colors placeholder:text-slate-400 focus:bg-white dark:bg-white/[0.03] dark:text-white ${
                                             errors.password
                                                 ? 'border-red-300 focus:border-red-500 dark:border-red-800'
                                                 : 'border-slate-200/80 focus:border-blue-600 dark:border-white/10'
@@ -136,7 +138,7 @@ export default function Login({ status, canResetPassword }: Props) {
                             {/* Primary Action Button */}
                             <Button
                                 type="submit"
-                                className="h-11 w-full rounded-xl bg-[#3b41e2] text-xs font-bold tracking-wide text-white shadow-lg shadow-indigo-500/25 hover:bg-[#3237c5] active:scale-[0.98] transition-all dark:bg-blue-600 dark:hover:bg-blue-500"
+                                className="h-11 w-full rounded-xl bg-[#3b41e2] text-xs font-bold tracking-wide text-white shadow-lg shadow-indigo-500/25 transition-all hover:bg-[#3237c5] active:scale-[0.98] dark:bg-blue-600 dark:hover:bg-blue-500"
                                 tabIndex={4}
                                 disabled={processing}
                                 data-test="login-button"
@@ -164,7 +166,7 @@ export default function Login({ status, canResetPassword }: Props) {
                             {/* Bottom Help Note */}
                             <div className="pt-1 text-center text-xs text-slate-500 dark:text-zinc-400">
                                 Don't have an account?{' '}
-                                <span className="font-semibold text-blue-600 hover:underline cursor-pointer dark:text-blue-400">
+                                <span className="cursor-pointer font-semibold text-blue-600 hover:underline dark:text-blue-400">
                                     Contact Administrator
                                 </span>
                             </div>
@@ -174,7 +176,7 @@ export default function Login({ status, canResetPassword }: Props) {
             </Form>
 
             {status && (
-                <div className="mt-4 rounded-xl bg-emerald-50 p-2.5 text-center text-xs font-medium text-emerald-700 border border-emerald-200">
+                <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-2.5 text-center text-xs font-medium text-emerald-700">
                     {status}
                 </div>
             )}

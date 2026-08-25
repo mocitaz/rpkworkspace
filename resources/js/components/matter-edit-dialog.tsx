@@ -79,7 +79,9 @@ export function MatterEditDialog({
 
     const toggleMember = (id: number) => {
         setSelectedMembers((prev) =>
-            prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+            prev.includes(id)
+                ? prev.filter((item) => item !== id)
+                : [...prev, id],
         );
     };
 
@@ -107,7 +109,8 @@ export function MatterEditDialog({
                                 Edit Parameter Perkara &amp; Tim Advokat
                             </DialogTitle>
                             <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Perubahan status perkara dan penugasan tim dicatat ke dalam log audit firma.
+                                Perubahan status perkara dan penugasan tim
+                                dicatat ke dalam log audit firma.
                             </DialogDescription>
                         </div>
                     </div>
@@ -122,7 +125,7 @@ export function MatterEditDialog({
                         <>
                             {/* Section 1: Informasi & Klasifikasi Perkara */}
                             <div className="space-y-2.5">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                                     1. Informasi &amp; Tata Kelola Perkara
                                 </span>
 
@@ -140,10 +143,16 @@ export function MatterEditDialog({
                                     <Select
                                         label="Area Praktik"
                                         name="practice_area_id"
-                                        value={matter.practice_area_id?.toString() ?? ''}
+                                        value={
+                                            matter.practice_area_id?.toString() ??
+                                            ''
+                                        }
                                         error={errors.practice_area_id}
                                         optional
-                                        options={practiceAreas.map((item) => [item.id, item.name])}
+                                        options={practiceAreas.map((item) => [
+                                            item.id,
+                                            item.name,
+                                        ])}
                                     />
 
                                     <Field
@@ -161,7 +170,10 @@ export function MatterEditDialog({
                                         error={errors.parent_matter_id}
                                         optional
                                         options={[
-                                            { value: '', label: '— Bukan Perkara Turunan / Standalone —' },
+                                            {
+                                                value: '',
+                                                label: '— Bukan Perkara Turunan / Standalone —',
+                                            },
                                             ...parentMatters.map((item) => ({
                                                 value: item.id,
                                                 label: `${item.matter_number} - ${item.title}`,
@@ -172,15 +184,36 @@ export function MatterEditDialog({
                                     <Select
                                         label="Tipe Relasi Tingkat Perkara"
                                         name="relationship_type"
-                                        value={matter.relationship_type ?? 'related_dispute'}
+                                        value={
+                                            matter.relationship_type ??
+                                            'related_dispute'
+                                        }
                                         error={errors.relationship_type}
                                         options={[
-                                            { value: 'related_dispute', label: 'Sengketa Terkait / Turunan' },
-                                            { value: 'appeal_pt', label: 'Tingkat Banding (Pengadilan Tinggi)' },
-                                            { value: 'cassation_ma', label: 'Tingkat Kasasi (Mahkamah Agung)' },
-                                            { value: 'judicial_review_pk', label: 'Peninjauan Kembali (PK)' },
-                                            { value: 'execution', label: 'Permohonan Eksekusi Putusan' },
-                                            { value: 'counterclaim_reconvention', label: 'Gugatan Rekonvensi / Balik' },
+                                            {
+                                                value: 'related_dispute',
+                                                label: 'Sengketa Terkait / Turunan',
+                                            },
+                                            {
+                                                value: 'appeal_pt',
+                                                label: 'Tingkat Banding (Pengadilan Tinggi)',
+                                            },
+                                            {
+                                                value: 'cassation_ma',
+                                                label: 'Tingkat Kasasi (Mahkamah Agung)',
+                                            },
+                                            {
+                                                value: 'judicial_review_pk',
+                                                label: 'Peninjauan Kembali (PK)',
+                                            },
+                                            {
+                                                value: 'execution',
+                                                label: 'Permohonan Eksekusi Putusan',
+                                            },
+                                            {
+                                                value: 'counterclaim_reconvention',
+                                                label: 'Gugatan Rekonvensi / Balik',
+                                            },
                                         ]}
                                     />
 
@@ -220,7 +253,7 @@ export function MatterEditDialog({
 
                             {/* Section 2: Forum Sidang & Register Eksternal */}
                             <div className="space-y-2.5">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                                     2. Forum Pengadilan &amp; Register Eksternal
                                 </span>
 
@@ -261,7 +294,7 @@ export function MatterEditDialog({
 
                             {/* Section 3: Responsible Partner & Lead Supervisi */}
                             <div className="space-y-2.5">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                                     3. Kepemimpinan &amp; Advokat Supervisi
                                 </span>
 
@@ -277,7 +310,10 @@ export function MatterEditDialog({
                                     <Select
                                         label="Supervising Lawyer"
                                         name="supervising_lawyer_id"
-                                        value={matter.supervising_lawyer_id?.toString() ?? ''}
+                                        value={
+                                            matter.supervising_lawyer_id?.toString() ??
+                                            ''
+                                        }
                                         error={errors.supervising_lawyer_id}
                                         optional
                                         options={users.map(userOption)}
@@ -298,11 +334,14 @@ export function MatterEditDialog({
 
                                 <div className="grid gap-1.5 sm:grid-cols-2">
                                     {users.map((user) => {
-                                        const isChecked = selectedMembers.includes(user.id);
+                                        const isChecked =
+                                            selectedMembers.includes(user.id);
                                         return (
                                             <label
                                                 key={user.id}
-                                                onClick={() => toggleMember(user.id)}
+                                                onClick={() =>
+                                                    toggleMember(user.id)
+                                                }
                                                 className={`group flex cursor-pointer items-center justify-between gap-2 rounded-lg border p-2 text-xs transition-all ${
                                                     isChecked
                                                         ? 'border-blue-500/60 bg-white shadow-2xs dark:border-blue-500/40 dark:bg-[#16181d]'
@@ -317,11 +356,18 @@ export function MatterEditDialog({
                                                     onChange={() => {}}
                                                     className="sr-only"
                                                 />
-                                                <div className="flex items-center gap-2 min-w-0">
+                                                <div className="flex min-w-0 items-center gap-2">
                                                     <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
-                                                        <AvatarImage src={user.avatar_url ?? undefined} />
+                                                        <AvatarImage
+                                                            src={
+                                                                user.avatar_url ??
+                                                                undefined
+                                                            }
+                                                        />
                                                         <AvatarFallback className="text-[8px] font-bold">
-                                                            {getInitials(user.name)}
+                                                            {getInitials(
+                                                                user.name,
+                                                            )}
                                                         </AvatarFallback>
                                                     </Avatar>
                                                     <div className="min-w-0">
@@ -329,7 +375,8 @@ export function MatterEditDialog({
                                                             {user.name}
                                                         </p>
                                                         <p className="truncate text-[10px] text-slate-400">
-                                                            {user.position_title ?? 'Advokat'}
+                                                            {user.position_title ??
+                                                                'Advokat'}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -341,7 +388,9 @@ export function MatterEditDialog({
                                                             : 'border-slate-300 bg-white dark:border-zinc-700 dark:bg-zinc-800'
                                                     }`}
                                                 >
-                                                    {isChecked && <Check className="size-3 stroke-[3]" />}
+                                                    {isChecked && (
+                                                        <Check className="size-3 stroke-[3]" />
+                                                    )}
                                                 </div>
                                             </label>
                                         );
@@ -364,7 +413,7 @@ export function MatterEditDialog({
                                     rows={2.5}
                                     defaultValue={matter.summary}
                                     placeholder="Deskripsikan fakta hukum dan ruang lingkup penanganan perkara..."
-                                    className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 transition-colors outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 outline-hidden transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                 />
                                 <InputError message={errors.summary} />
                             </div>
@@ -466,14 +515,15 @@ function Field({
                 defaultValue={value}
                 required={required}
                 placeholder={placeholder}
-                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 placeholder:text-slate-400 transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 transition-colors placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
             />
             <InputError message={error} />
         </div>
     );
 }
 
-type SelectOption = (string | number)[] | { value: string | number; label: string };
+type SelectOption =
+    (string | number)[] | { value: string | number; label: string };
 
 function Select({
     label,
@@ -507,9 +557,7 @@ function Select({
                     {label}
                 </Label>
                 {optional && (
-                    <span className="text-[10px] text-slate-400">
-                        Opsional
-                    </span>
+                    <span className="text-[10px] text-slate-400">Opsional</span>
                 )}
             </div>
             <div className="relative">
@@ -518,7 +566,7 @@ function Select({
                     name={name}
                     defaultValue={value}
                     required={!optional}
-                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                 >
                     {optional && <option value="">Tidak ditentukan</option>}
                     {normalizedOptions.map((opt) => (

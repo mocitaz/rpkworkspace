@@ -36,7 +36,13 @@ import { EmptyState } from '@/components/empty-state';
 import { StatusBadge } from '@/components/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { FileInput } from '@/components/ui/file-input';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -115,14 +121,16 @@ type Client = {
     opened_at?: string;
     closed_at?: string;
     relationship_partner?: Person;
-    contacts: {
-        id: string;
-        full_name: string;
-        job_title?: string;
-        email?: string;
-        mobile?: string;
-    }[];
+    contacts: Contact[];
     compliance_documents?: ComplianceDocument[];
+};
+
+type Contact = {
+    id: string;
+    full_name: string;
+    job_title?: string;
+    email?: string;
+    mobile?: string;
 };
 
 type Document = {
@@ -182,14 +190,21 @@ export default function ClientShow({
     const [tab, setTab] = useState<(typeof tabs)[number]['id']>('Overview');
     const [copiedTax, setCopiedTax] = useState(false);
     const [isAddingCompliance, setIsAddingCompliance] = useState(false);
-    const [editingCompliance, setEditingCompliance] = useState<ComplianceDocument | null>(null);
+    const [editingCompliance, setEditingCompliance] =
+        useState<ComplianceDocument | null>(null);
     const [isAddingContact, setIsAddingContact] = useState(false);
     const [isUploadingDocument, setIsUploadingDocument] = useState(false);
-    const [complianceToDelete, setComplianceToDelete] = useState<ComplianceDocument | null>(null);
+    const [complianceToDelete, setComplianceToDelete] =
+        useState<ComplianceDocument | null>(null);
     const [isDeletingCompliance, setIsDeletingCompliance] = useState(false);
-    const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
+    const [contactToDelete, setContactToDelete] = useState<Contact | null>(
+        null,
+    );
     const [isDeletingContact, setIsDeletingContact] = useState(false);
-    const allMatters = useMemo(() => [...activeMatters, ...closedMatters], [activeMatters, closedMatters]);
+    const allMatters = useMemo(
+        () => [...activeMatters, ...closedMatters],
+        [activeMatters, closedMatters],
+    );
 
     const handleCopyTax = () => {
         if (client.tax_identifier) {
@@ -212,19 +227,28 @@ export default function ClientShow({
                                 <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
                                     {client.client_number}
                                 </span>
-                                <span className="text-slate-300 dark:text-zinc-700">•</span>
+                                <span className="text-slate-300 dark:text-zinc-700">
+                                    •
+                                </span>
                                 <StatusBadge value={client.status} />
-                                <span className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${
-                                    client.type === 'individual' || client.type === 'person'
-                                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
-                                        : 'bg-slate-100 text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300'
-                                }`}>
-                                    {client.type === 'individual' || client.type === 'person' ? 'Individu' : 'Badan Hukum'}
+                                <span
+                                    className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${
+                                        client.type === 'individual' ||
+                                        client.type === 'person'
+                                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                                            : 'bg-slate-100 text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300'
+                                    }`}
+                                >
+                                    {client.type === 'individual' ||
+                                    client.type === 'person'
+                                        ? 'Individu'
+                                        : 'Badan Hukum'}
                                 </span>
                             </div>
 
                             <div className="flex items-center gap-2.5">
-                                {client.type === 'individual' || client.type === 'person' ? (
+                                {client.type === 'individual' ||
+                                client.type === 'person' ? (
                                     <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-emerald-200/60 bg-emerald-50 text-emerald-700 shadow-2xs dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-300">
                                         <User className="size-4" />
                                     </div>
@@ -242,12 +266,20 @@ export default function ClientShow({
                                 <span className="font-medium text-slate-700 dark:text-zinc-200">
                                     {client.legal_name}
                                 </span>
-                                <span className="text-slate-300 dark:text-zinc-700">•</span>
+                                <span className="text-slate-300 dark:text-zinc-700">
+                                    •
+                                </span>
                                 <span>{client.industry ?? 'Umum'}</span>
                                 {client.city && (
                                     <>
-                                        <span className="text-slate-300 dark:text-zinc-700">•</span>
-                                        <span>{[client.city, client.country_code].filter(Boolean).join(', ')}</span>
+                                        <span className="text-slate-300 dark:text-zinc-700">
+                                            •
+                                        </span>
+                                        <span>
+                                            {[client.city, client.country_code]
+                                                .filter(Boolean)
+                                                .join(', ')}
+                                        </span>
                                     </>
                                 )}
                             </div>
@@ -302,22 +334,36 @@ export default function ClientShow({
                         {/* 1. Relationship Partner */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">RELATIONSHIP PARTNER</span>
+                                <span className="text-[11px] font-semibold">
+                                    RELATIONSHIP PARTNER
+                                </span>
                                 <ShieldCheck className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-center gap-2">
                                 <Avatar className="size-6 rounded-full border border-slate-200/80 dark:border-white/10">
-                                    <AvatarImage src={client.relationship_partner?.avatar_url ?? undefined} />
+                                    <AvatarImage
+                                        src={
+                                            client.relationship_partner
+                                                ?.avatar_url ?? undefined
+                                        }
+                                    />
                                     <AvatarFallback className="text-[8px] font-bold">
-                                        {client.relationship_partner ? getInitials(client.relationship_partner.name) : '-'}
+                                        {client.relationship_partner
+                                            ? getInitials(
+                                                  client.relationship_partner
+                                                      .name,
+                                              )
+                                            : '-'}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="min-w-0">
                                     <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                                        {client.relationship_partner?.name ?? 'Belum ditentukan'}
+                                        {client.relationship_partner?.name ??
+                                            'Belum ditentukan'}
                                     </p>
                                     <p className="truncate text-[10px] text-slate-400 dark:text-zinc-500">
-                                        {client.relationship_partner?.position_title ?? 'Partner'}
+                                        {client.relationship_partner
+                                            ?.position_title ?? 'Partner'}
                                     </p>
                                 </div>
                             </div>
@@ -329,7 +375,9 @@ export default function ClientShow({
                         {/* 2. Sektor & Entitas */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">SEKTOR &amp; ENTITAS</span>
+                                <span className="text-[11px] font-semibold">
+                                    SEKTOR &amp; ENTITAS
+                                </span>
                                 <Building2 className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2">
@@ -337,7 +385,9 @@ export default function ClientShow({
                                     {client.industry ?? 'Umum / Korporasi'}
                                 </p>
                                 <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                    {client.type === 'corporate' ? 'Badan Hukum / Korporasi' : 'Perorangan'}
+                                    {client.type === 'corporate'
+                                        ? 'Badan Hukum / Korporasi'
+                                        : 'Perorangan'}
                                 </p>
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
@@ -348,7 +398,9 @@ export default function ClientShow({
                         {/* 3. Portofolio Perkara */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">PORTOFOLIO PERKARA</span>
+                                <span className="text-[11px] font-semibold">
+                                    PORTOFOLIO PERKARA
+                                </span>
                                 <Briefcase className="size-3.5 text-slate-400 transition-colors group-hover:text-amber-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -361,14 +413,18 @@ export default function ClientShow({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Total Tercatat</span>
-                                <span className="font-semibold text-slate-700 dark:text-zinc-300">{allMatters.length} Kasus</span>
+                                <span className="font-semibold text-slate-700 dark:text-zinc-300">
+                                    {allMatters.length} Kasus
+                                </span>
                             </div>
                         </div>
 
                         {/* 4. Kontak Person */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">KONTAK PERSON</span>
+                                <span className="text-[11px] font-semibold">
+                                    KONTAK PERSON
+                                </span>
                                 <ContactRound className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -412,11 +468,13 @@ export default function ClientShow({
                                             : 'text-slate-600 hover:bg-white/60 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
                                     }`}
                                 >
-                                    <Icon className={`size-3.5 shrink-0 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-zinc-500'}`} />
+                                    <Icon
+                                        className={`size-3.5 shrink-0 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-zinc-500'}`}
+                                    />
                                     <span>{item.label}</span>
                                     {count !== null && count > 0 && (
                                         <span
-                                            className={`rounded-full px-1.5 py-0.2 font-mono text-[10px] font-bold ${
+                                            className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] font-bold ${
                                                 isActive
                                                     ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
                                                     : 'bg-slate-200/80 text-slate-700 dark:bg-zinc-800 dark:text-zinc-400'
@@ -462,12 +520,15 @@ export default function ClientShow({
                                             <div className="flex items-center gap-1.5">
                                                 <Briefcase className="size-3.5 text-slate-500 dark:text-zinc-400" />
                                                 <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                    Matter Berjalan ({activeMatters.length})
+                                                    Matter Berjalan (
+                                                    {activeMatters.length})
                                                 </span>
                                             </div>
                                             {allMatters.length > 0 && (
                                                 <button
-                                                    onClick={() => setTab('Matters')}
+                                                    onClick={() =>
+                                                        setTab('Matters')
+                                                    }
                                                     className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                                 >
                                                     Lihat Semua →
@@ -480,28 +541,42 @@ export default function ClientShow({
                                                 {activeMatters.map((matter) => (
                                                     <Link
                                                         key={matter.id}
-                                                        href={matterRoutes.show(matter.id)}
+                                                        href={matterRoutes.show(
+                                                            matter.id,
+                                                        )}
                                                         className="group flex items-center justify-between py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
                                                     >
                                                         <div className="min-w-0 pr-3">
-                                                            <p className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
+                                                            <p className="truncate text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
                                                                 {matter.title}
                                                             </p>
                                                             <div className="mt-0.5 flex items-center gap-2 font-mono text-[10px] text-slate-500 dark:text-zinc-400">
                                                                 <span className="font-semibold text-blue-600 dark:text-blue-400">
-                                                                    {matter.matter_number}
+                                                                    {
+                                                                        matter.matter_number
+                                                                    }
                                                                 </span>
                                                                 <span>•</span>
-                                                                <span>{matter.practice_area?.name ?? 'Umum'}</span>
+                                                                <span>
+                                                                    {matter
+                                                                        .practice_area
+                                                                        ?.name ??
+                                                                        'Umum'}
+                                                                </span>
                                                             </div>
                                                         </div>
-                                                        <StatusBadge value={matter.status} />
+                                                        <StatusBadge
+                                                            value={
+                                                                matter.status
+                                                            }
+                                                        />
                                                     </Link>
                                                 ))}
                                             </div>
                                         ) : (
                                             <p className="text-xs text-slate-400">
-                                                Tidak ada matter yang sedang berjalan saat ini.
+                                                Tidak ada matter yang sedang
+                                                berjalan saat ini.
                                             </p>
                                         )}
                                     </div>
@@ -512,13 +587,16 @@ export default function ClientShow({
                                             <div className="flex items-center gap-1.5">
                                                 <ContactRound className="size-3.5 text-slate-500 dark:text-zinc-400" />
                                                 <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                    Kontak Person ({client.contacts.length})
+                                                    Kontak Person (
+                                                    {client.contacts.length})
                                                 </span>
                                             </div>
                                             {client.contacts.length > 2 && (
                                                 <button
-                                                    onClick={() => setTab('Kontak')}
-                                                    className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400 cursor-pointer"
+                                                    onClick={() =>
+                                                        setTab('Kontak')
+                                                    }
+                                                    className="cursor-pointer text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                                 >
                                                     Lihat Semua →
                                                 </button>
@@ -527,38 +605,48 @@ export default function ClientShow({
 
                                         {client.contacts.length ? (
                                             <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                                                {client.contacts.slice(0, 3).map((contact) => (
-                                                    <div
-                                                        key={contact.id}
-                                                        className="flex items-center justify-between py-2.5 text-xs"
-                                                    >
-                                                        <div className="flex min-w-0 items-center gap-2.5 pr-3">
-                                                            <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[10px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                                                {getInitials(contact.full_name)}
+                                                {client.contacts
+                                                    .slice(0, 3)
+                                                    .map((contact) => (
+                                                        <div
+                                                            key={contact.id}
+                                                            className="flex items-center justify-between py-2.5 text-xs"
+                                                        >
+                                                            <div className="flex min-w-0 items-center gap-2.5 pr-3">
+                                                                <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[10px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                                    {getInitials(
+                                                                        contact.full_name,
+                                                                    )}
+                                                                </div>
+                                                                <div className="min-w-0">
+                                                                    <p className="truncate font-semibold text-slate-900 dark:text-white">
+                                                                        {
+                                                                            contact.full_name
+                                                                        }
+                                                                    </p>
+                                                                    <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
+                                                                        {contact.job_title ??
+                                                                            'Perwakilan Resmi Klien'}
+                                                                    </p>
+                                                                </div>
                                                             </div>
-                                                            <div className="min-w-0">
-                                                                <p className="truncate font-semibold text-slate-900 dark:text-white">
-                                                                    {contact.full_name}
+                                                            <div className="shrink-0 text-right text-xs">
+                                                                <p className="text-slate-700 dark:text-zinc-300">
+                                                                    {contact.email ??
+                                                                        '-'}
                                                                 </p>
-                                                                <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
-                                                                    {contact.job_title ?? 'Perwakilan Resmi Klien'}
+                                                                <p className="font-mono text-[10px] text-slate-400">
+                                                                    {contact.mobile ??
+                                                                        ''}
                                                                 </p>
                                                             </div>
                                                         </div>
-                                                        <div className="shrink-0 text-right text-xs">
-                                                            <p className="text-slate-700 dark:text-zinc-300">
-                                                                {contact.email ?? '-'}
-                                                            </p>
-                                                            <p className="font-mono text-[10px] text-slate-400">
-                                                                {contact.mobile ?? ''}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                                    ))}
                                             </div>
                                         ) : (
                                             <p className="text-xs text-slate-400">
-                                                Belum ada kontak perwakilan yang didaftarkan.
+                                                Belum ada kontak perwakilan yang
+                                                didaftarkan.
                                             </p>
                                         )}
                                     </div>
@@ -573,11 +661,13 @@ export default function ClientShow({
                                             <div className="flex items-center gap-2">
                                                 <Briefcase className="size-4 text-slate-700 dark:text-zinc-300" />
                                                 <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Daftar Perkara Hukum ({allMatters.length})
+                                                    Daftar Perkara Hukum (
+                                                    {allMatters.length})
                                                 </h2>
                                             </div>
                                             <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Seluruh riwayat penanganan perkara aktif maupun selesai.
+                                                Seluruh riwayat penanganan
+                                                perkara aktif maupun selesai.
                                             </p>
                                         </div>
                                         <Button
@@ -597,78 +687,130 @@ export default function ClientShow({
                                             <table className="w-full text-left text-xs">
                                                 <thead>
                                                     <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                                        <th className="py-2.5 pr-3 pl-3 font-semibold">Perkara</th>
-                                                        <th className="px-3 py-2.5 font-semibold">Area Praktik</th>
-                                                        <th className="px-3 py-2.5 text-center font-semibold">Partner</th>
-                                                        <th className="px-3 py-2.5 font-semibold">Diperbarui</th>
-                                                        <th className="px-3 py-2.5 font-semibold">Status</th>
+                                                        <th className="py-2.5 pr-3 pl-3 font-semibold">
+                                                            Perkara
+                                                        </th>
+                                                        <th className="px-3 py-2.5 font-semibold">
+                                                            Area Praktik
+                                                        </th>
+                                                        <th className="px-3 py-2.5 text-center font-semibold">
+                                                            Partner
+                                                        </th>
+                                                        <th className="px-3 py-2.5 font-semibold">
+                                                            Diperbarui
+                                                        </th>
+                                                        <th className="px-3 py-2.5 font-semibold">
+                                                            Status
+                                                        </th>
                                                         <th className="py-2.5 pr-3 pl-1 text-right font-semibold"></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                                                    {allMatters.map((matter) => (
-                                                        <tr
-                                                            key={matter.id}
-                                                            className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
-                                                        >
-                                                            <td className="py-2.5 pr-3 pl-3">
-                                                                <Link
-                                                                    href={matterRoutes.show(matter.id)}
-                                                                    className="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400"
-                                                                >
-                                                                    {matter.title}
-                                                                    <span className="mt-0.5 block font-mono text-[10px] text-blue-600 dark:text-blue-400">
-                                                                        {matter.matter_number}
+                                                    {allMatters.map(
+                                                        (matter) => (
+                                                            <tr
+                                                                key={matter.id}
+                                                                className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                            >
+                                                                <td className="py-2.5 pr-3 pl-3">
+                                                                    <Link
+                                                                        href={matterRoutes.show(
+                                                                            matter.id,
+                                                                        )}
+                                                                        className="font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
+                                                                    >
+                                                                        {
+                                                                            matter.title
+                                                                        }
+                                                                        <span className="mt-0.5 block font-mono text-[10px] text-blue-600 dark:text-blue-400">
+                                                                            {
+                                                                                matter.matter_number
+                                                                            }
+                                                                        </span>
+                                                                    </Link>
+                                                                </td>
+                                                                <td className="px-3 py-2.5 whitespace-nowrap">
+                                                                    <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                                        {matter
+                                                                            .practice_area
+                                                                            ?.name ??
+                                                                            'Umum'}
                                                                     </span>
-                                                                </Link>
-                                                            </td>
-                                                            <td className="px-3 py-2.5 whitespace-nowrap">
-                                                                <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                                    {matter.practice_area?.name ?? 'Umum'}
-                                                                </span>
-                                                            </td>
-                                                            <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                                {matter.responsible_partner ? (
-                                                                    <TooltipProvider delayDuration={100}>
-                                                                        <Tooltip>
-                                                                            <TooltipTrigger asChild>
-                                                                                <div className="inline-flex cursor-pointer items-center justify-center">
-                                                                                    <Avatar className="size-6 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                                                        <AvatarImage src={matter.responsible_partner.avatar_url ?? undefined} />
-                                                                                        <AvatarFallback className="text-[8px] font-bold">
-                                                                                            {getInitials(matter.responsible_partner.name)}
-                                                                                        </AvatarFallback>
-                                                                                    </Avatar>
-                                                                                </div>
-                                                                            </TooltipTrigger>
-                                                                            <TooltipContent
-                                                                                side="top"
-                                                                                className="bg-slate-900 px-2.5 py-1 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800"
-                                                                            >
-                                                                                {matter.responsible_partner.name}
-                                                                            </TooltipContent>
-                                                                        </Tooltip>
-                                                                    </TooltipProvider>
-                                                                ) : (
-                                                                    <span className="text-slate-400">-</span>
-                                                                )}
-                                                            </td>
-                                                            <td className="px-3 py-2.5 font-mono text-[10px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
-                                                                {formatDate(matter.updated_at)}
-                                                            </td>
-                                                            <td className="px-3 py-2.5 whitespace-nowrap">
-                                                                <StatusBadge value={matter.status} />
-                                                            </td>
-                                                            <td className="py-2.5 pr-3 pl-1 text-right whitespace-nowrap">
-                                                                <Link
-                                                                    href={matterRoutes.show(matter.id)}
-                                                                    className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
-                                                                >
-                                                                    <ChevronRight className="size-4" />
-                                                                </Link>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
+                                                                </td>
+                                                                <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                                                                    {matter.responsible_partner ? (
+                                                                        <TooltipProvider
+                                                                            delayDuration={
+                                                                                100
+                                                                            }
+                                                                        >
+                                                                            <Tooltip>
+                                                                                <TooltipTrigger
+                                                                                    asChild
+                                                                                >
+                                                                                    <div className="inline-flex cursor-pointer items-center justify-center">
+                                                                                        <Avatar className="size-6 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                                            <AvatarImage
+                                                                                                src={
+                                                                                                    matter
+                                                                                                        .responsible_partner
+                                                                                                        .avatar_url ??
+                                                                                                    undefined
+                                                                                                }
+                                                                                            />
+                                                                                            <AvatarFallback className="text-[8px] font-bold">
+                                                                                                {getInitials(
+                                                                                                    matter
+                                                                                                        .responsible_partner
+                                                                                                        .name,
+                                                                                                )}
+                                                                                            </AvatarFallback>
+                                                                                        </Avatar>
+                                                                                    </div>
+                                                                                </TooltipTrigger>
+                                                                                <TooltipContent
+                                                                                    side="top"
+                                                                                    className="bg-slate-900 px-2.5 py-1 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800"
+                                                                                >
+                                                                                    {
+                                                                                        matter
+                                                                                            .responsible_partner
+                                                                                            .name
+                                                                                    }
+                                                                                </TooltipContent>
+                                                                            </Tooltip>
+                                                                        </TooltipProvider>
+                                                                    ) : (
+                                                                        <span className="text-slate-400">
+                                                                            -
+                                                                        </span>
+                                                                    )}
+                                                                </td>
+                                                                <td className="px-3 py-2.5 font-mono text-[10px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                                    {formatDate(
+                                                                        matter.updated_at,
+                                                                    )}
+                                                                </td>
+                                                                <td className="px-3 py-2.5 whitespace-nowrap">
+                                                                    <StatusBadge
+                                                                        value={
+                                                                            matter.status
+                                                                        }
+                                                                    />
+                                                                </td>
+                                                                <td className="py-2.5 pr-3 pl-1 text-right whitespace-nowrap">
+                                                                    <Link
+                                                                        href={matterRoutes.show(
+                                                                            matter.id,
+                                                                        )}
+                                                                        className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                                                    >
+                                                                        <ChevronRight className="size-4" />
+                                                                    </Link>
+                                                                </td>
+                                                            </tr>
+                                                        ),
+                                                    )}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -688,18 +830,27 @@ export default function ClientShow({
                                             <div className="flex items-center gap-2">
                                                 <Scale className="size-4 text-slate-700 dark:text-zinc-300" />
                                                 <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Legalitas Korporasi &amp; Kepatuhan Izin ({client.compliance_documents?.length ?? 0})
+                                                    Legalitas Korporasi &amp;
+                                                    Kepatuhan Izin (
+                                                    {client.compliance_documents
+                                                        ?.length ?? 0}
+                                                    )
                                                 </h2>
                                             </div>
                                             <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Monitoring masa berlaku akta pendirian, susunan direksi, SK Menkumham, NIB OSS, dan izin operasional klien.
+                                                Monitoring masa berlaku akta
+                                                pendirian, susunan direksi, SK
+                                                Menkumham, NIB OSS, dan izin
+                                                operasional klien.
                                             </p>
                                         </div>
 
                                         {can.update && (
                                             <Button
                                                 size="sm"
-                                                onClick={() => setIsAddingCompliance(true)}
+                                                onClick={() =>
+                                                    setIsAddingCompliance(true)
+                                                }
                                                 className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                             >
                                                 <Plus className="mr-1.5 size-3.5" />
@@ -711,146 +862,230 @@ export default function ClientShow({
                                     {/* 4 Clean Metric Cards (Matching Brankas Alat Bukti) */}
                                     <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
                                         <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">TOTAL DOKUMEN</span>
+                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                TOTAL DOKUMEN
+                                            </span>
                                             <p className="mt-1 font-mono text-lg font-bold text-slate-900 dark:text-white">
-                                                {client.compliance_documents?.length ?? 0}
+                                                {client.compliance_documents
+                                                    ?.length ?? 0}
                                             </p>
                                         </div>
                                         <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">BERLAKU AKTIF</span>
+                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                BERLAKU AKTIF
+                                            </span>
                                             <p className="mt-1 font-mono text-lg font-bold text-emerald-700 dark:text-emerald-400">
-                                                {client.compliance_documents?.filter((d) => d.compliance_status === 'active' || d.compliance_status === 'no_expiry').length ?? 0}
+                                                {client.compliance_documents?.filter(
+                                                    (d) =>
+                                                        d.compliance_status ===
+                                                            'active' ||
+                                                        d.compliance_status ===
+                                                            'no_expiry',
+                                                ).length ?? 0}
                                             </p>
                                         </div>
                                         <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">SEGERA BERAKHIR (H-60)</span>
+                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                SEGERA BERAKHIR (H-60)
+                                            </span>
                                             <p className="mt-1 font-mono text-lg font-bold text-amber-700 dark:text-amber-400">
-                                                {client.compliance_documents?.filter((d) => d.compliance_status === 'expiring_soon').length ?? 0}
+                                                {client.compliance_documents?.filter(
+                                                    (d) =>
+                                                        d.compliance_status ===
+                                                        'expiring_soon',
+                                                ).length ?? 0}
                                             </p>
                                         </div>
                                         <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">KEDALUWARSA</span>
+                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                KEDALUWARSA
+                                            </span>
                                             <p className="mt-1 font-mono text-lg font-bold text-rose-700 dark:text-rose-400">
-                                                {client.compliance_documents?.filter((d) => d.compliance_status === 'expired').length ?? 0}
+                                                {client.compliance_documents?.filter(
+                                                    (d) =>
+                                                        d.compliance_status ===
+                                                        'expired',
+                                                ).length ?? 0}
                                             </p>
                                         </div>
                                     </div>
 
-                                    {client.compliance_documents && client.compliance_documents.length > 0 ? (
+                                    {client.compliance_documents &&
+                                    client.compliance_documents.length > 0 ? (
                                         <div className="space-y-2.5 pt-1">
-                                            {client.compliance_documents.map((doc) => {
-                                                const isExpired = doc.compliance_status === 'expired';
-                                                const isExpiring = doc.compliance_status === 'expiring_soon';
+                                            {client.compliance_documents.map(
+                                                (doc) => {
+                                                    const isExpired =
+                                                        doc.compliance_status ===
+                                                        'expired';
+                                                    const isExpiring =
+                                                        doc.compliance_status ===
+                                                        'expiring_soon';
 
-                                                return (
-                                                    <div
-                                                        key={doc.id}
-                                                        className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#16181d] dark:hover:border-white/10"
-                                                    >
-                                                        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
-                                                            <div className="min-w-0 flex-1 space-y-1.5">
-                                                                <div className="flex flex-wrap items-center gap-1.5">
-                                                                    <span className="rounded-md bg-slate-900 px-2 py-0.5 font-mono text-[10px] font-bold text-white shadow-2xs dark:bg-white dark:text-slate-900">
-                                                                        {complianceTypeLabels[doc.document_type] ?? doc.document_type}
-                                                                    </span>
-                                                                    {doc.document_number && (
-                                                                        <span className="rounded-md border border-slate-200/70 bg-slate-50 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300">
-                                                                            No: {doc.document_number}
+                                                    return (
+                                                        <div
+                                                            key={doc.id}
+                                                            className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#16181d] dark:hover:border-white/10"
+                                                        >
+                                                            <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+                                                                <div className="min-w-0 flex-1 space-y-1.5">
+                                                                    <div className="flex flex-wrap items-center gap-1.5">
+                                                                        <span className="rounded-md bg-slate-900 px-2 py-0.5 font-mono text-[10px] font-bold text-white shadow-2xs dark:bg-white dark:text-slate-900">
+                                                                            {complianceTypeLabels[
+                                                                                doc
+                                                                                    .document_type
+                                                                            ] ??
+                                                                                doc.document_type}
                                                                         </span>
+                                                                        {doc.document_number && (
+                                                                            <span className="rounded-md border border-slate-200/70 bg-slate-50 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300">
+                                                                                No:{' '}
+                                                                                {
+                                                                                    doc.document_number
+                                                                                }
+                                                                            </span>
+                                                                        )}
+                                                                        {isExpired && (
+                                                                            <span className="flex items-center gap-1 rounded-md border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-400">
+                                                                                <AlertTriangle className="size-3" />
+                                                                                KEDALUWARSA
+                                                                            </span>
+                                                                        )}
+                                                                        {isExpiring && (
+                                                                            <span className="flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-400">
+                                                                                <Clock className="size-3" />
+                                                                                SEGERA
+                                                                                BERAKHIR
+                                                                            </span>
+                                                                        )}
+                                                                        {doc.compliance_status ===
+                                                                            'active' && (
+                                                                            <span className="flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-400">
+                                                                                <CheckCircle2 className="size-3" />
+                                                                                BERLAKU
+                                                                                AKTIF
+                                                                            </span>
+                                                                        )}
+                                                                        {doc.compliance_status ===
+                                                                            'no_expiry' && (
+                                                                            <span className="rounded-md border border-slate-200/70 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300">
+                                                                                TETAP
+                                                                                /
+                                                                                TIDAK
+                                                                                BERAKHIR
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+
+                                                                    <h4 className="text-xs leading-snug font-bold text-slate-900 dark:text-white">
+                                                                        {
+                                                                            doc.title
+                                                                        }
+                                                                    </h4>
+
+                                                                    {doc.notes && (
+                                                                        <p className="text-[11px] leading-relaxed text-slate-600 dark:text-zinc-400">
+                                                                            {
+                                                                                doc.notes
+                                                                            }
+                                                                        </p>
                                                                     )}
-                                                                    {isExpired && (
-                                                                        <span className="flex items-center gap-1 rounded-md border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-400">
-                                                                            <AlertTriangle className="size-3" />
-                                                                            KEDALUWARSA
-                                                                        </span>
-                                                                    )}
-                                                                    {isExpiring && (
-                                                                        <span className="flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-400">
-                                                                            <Clock className="size-3" />
-                                                                            SEGERA BERAKHIR
-                                                                        </span>
-                                                                    )}
-                                                                    {doc.compliance_status === 'active' && (
-                                                                        <span className="flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-400">
-                                                                            <CheckCircle2 className="size-3" />
-                                                                            BERLAKU AKTIF
-                                                                        </span>
-                                                                    )}
-                                                                    {doc.compliance_status === 'no_expiry' && (
-                                                                        <span className="rounded-md border border-slate-200/70 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300">
-                                                                            TETAP / TIDAK BERAKHIR
-                                                                        </span>
-                                                                    )}
+
+                                                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-[11px] text-slate-500 dark:text-zinc-400">
+                                                                        {doc.issuer && (
+                                                                            <span className="flex items-center gap-1.5 text-slate-700 dark:text-zinc-300">
+                                                                                <Building2 className="size-3.5 text-slate-400" />
+                                                                                <span>
+                                                                                    Penerbit:{' '}
+                                                                                    <strong>
+                                                                                        {
+                                                                                            doc.issuer
+                                                                                        }
+                                                                                    </strong>
+                                                                                </span>
+                                                                            </span>
+                                                                        )}
+                                                                        {doc.issued_at && (
+                                                                            <span className="flex items-center gap-1.5 text-slate-700 dark:text-zinc-300">
+                                                                                <Calendar className="size-3.5 text-slate-400" />
+                                                                                <span>
+                                                                                    Terbit:{' '}
+                                                                                    <strong>
+                                                                                        {formatDate(
+                                                                                            doc.issued_at,
+                                                                                        )}
+                                                                                    </strong>
+                                                                                </span>
+                                                                            </span>
+                                                                        )}
+                                                                        {doc.expires_at && (
+                                                                            <span
+                                                                                className={`flex items-center gap-1.5 ${isExpired ? 'text-rose-700 dark:text-rose-400' : isExpiring ? 'text-amber-700 dark:text-amber-400' : 'text-slate-700 dark:text-zinc-300'}`}
+                                                                            >
+                                                                                <Clock className="size-3.5 text-slate-400" />
+                                                                                <span>
+                                                                                    Masa
+                                                                                    Berlaku:{' '}
+                                                                                    <strong>
+                                                                                        {formatDate(
+                                                                                            doc.expires_at,
+                                                                                        )}
+                                                                                    </strong>
+                                                                                </span>
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
 
-                                                                <h4 className="text-xs font-bold text-slate-900 leading-snug dark:text-white">
-                                                                    {doc.title}
-                                                                </h4>
-
-                                                                {doc.notes && (
-                                                                    <p className="text-[11px] text-slate-600 leading-relaxed dark:text-zinc-400">
-                                                                        {doc.notes}
-                                                                    </p>
+                                                                {can.update && (
+                                                                    <div className="flex shrink-0 items-center gap-1.5 self-start pt-1 sm:pt-0">
+                                                                        <Button
+                                                                            type="button"
+                                                                            variant="outline"
+                                                                            size="sm"
+                                                                            onClick={() =>
+                                                                                setEditingCompliance(
+                                                                                    doc,
+                                                                                )
+                                                                            }
+                                                                            className="h-7.5 cursor-pointer rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-300 dark:hover:bg-zinc-800"
+                                                                        >
+                                                                            Ubah
+                                                                        </Button>
+                                                                        <Button
+                                                                            type="button"
+                                                                            variant="ghost"
+                                                                            size="sm"
+                                                                            onClick={() =>
+                                                                                setComplianceToDelete(
+                                                                                    doc,
+                                                                                )
+                                                                            }
+                                                                            className="size-7.5 p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400"
+                                                                            title="Hapus Dokumen Legalitas"
+                                                                        >
+                                                                            <Trash2 className="size-3.5" />
+                                                                        </Button>
+                                                                    </div>
                                                                 )}
-
-                                                                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 pt-1 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                                    {doc.issuer && (
-                                                                        <span className="flex items-center gap-1.5 text-slate-700 dark:text-zinc-300">
-                                                                            <Building2 className="size-3.5 text-slate-400" />
-                                                                            <span>Penerbit: <strong>{doc.issuer}</strong></span>
-                                                                        </span>
-                                                                    )}
-                                                                    {doc.issued_at && (
-                                                                        <span className="flex items-center gap-1.5 text-slate-700 dark:text-zinc-300">
-                                                                            <Calendar className="size-3.5 text-slate-400" />
-                                                                            <span>Terbit: <strong>{formatDate(doc.issued_at)}</strong></span>
-                                                                        </span>
-                                                                    )}
-                                                                    {doc.expires_at && (
-                                                                        <span className={`flex items-center gap-1.5 ${isExpired ? 'text-rose-700 dark:text-rose-400' : isExpiring ? 'text-amber-700 dark:text-amber-400' : 'text-slate-700 dark:text-zinc-300'}`}>
-                                                                            <Clock className="size-3.5 text-slate-400" />
-                                                                            <span>Masa Berlaku: <strong>{formatDate(doc.expires_at)}</strong></span>
-                                                                        </span>
-                                                                    )}
-                                                                </div>
                                                             </div>
-
-                                                            {can.update && (
-                                                                <div className="flex shrink-0 items-center gap-1.5 self-start pt-1 sm:pt-0">
-                                                                    <Button
-                                                                        type="button"
-                                                                        variant="outline"
-                                                                        size="sm"
-                                                                        onClick={() => setEditingCompliance(doc)}
-                                                                        className="h-7.5 cursor-pointer rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-300 dark:hover:bg-zinc-800"
-                                                                    >
-                                                                        Ubah
-                                                                    </Button>
-                                                                    <Button
-                                                                        type="button"
-                                                                        variant="ghost"
-                                                                        size="sm"
-                                                                        onClick={() => setComplianceToDelete(doc)}
-                                                                        className="size-7.5 p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400"
-                                                                        title="Hapus Dokumen Legalitas"
-                                                                    >
-                                                                        <Trash2 className="size-3.5" />
-                                                                    </Button>
-                                                                </div>
-                                                            )}
                                                         </div>
-                                                    </div>
-                                                );
-                                            })}
+                                                    );
+                                                },
+                                            )}
                                         </div>
                                     ) : (
                                         <div className="flex min-h-[180px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-200/80 p-6 text-center dark:border-white/10">
                                             <FileBadge className="size-7 text-slate-300 dark:text-zinc-600" />
                                             <p className="mt-2 text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                                                Belum ada dokumen legalitas korporasi yang dicatat
+                                                Belum ada dokumen legalitas
+                                                korporasi yang dicatat
                                             </p>
                                             <p className="mt-0.5 text-[11px] text-slate-400">
-                                                Daftarkan Akta Pendirian, Akta Perubahan Direksi, NIB, atau SK Menkumham untuk memantau masa berlakunya.
+                                                Daftarkan Akta Pendirian, Akta
+                                                Perubahan Direksi, NIB, atau SK
+                                                Menkumham untuk memantau masa
+                                                berlakunya.
                                             </p>
                                         </div>
                                     )}
@@ -865,18 +1100,23 @@ export default function ClientShow({
                                             <div className="flex items-center gap-2">
                                                 <ContactRound className="size-4 text-slate-700 dark:text-zinc-300" />
                                                 <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Daftar Kontak Perwakilan ({client.contacts.length})
+                                                    Daftar Kontak Perwakilan (
+                                                    {client.contacts.length})
                                                 </h2>
                                             </div>
                                             <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Personil yang dapat dihubungi terkait administrasi dan komunikasi perkara.
+                                                Personil yang dapat dihubungi
+                                                terkait administrasi dan
+                                                komunikasi perkara.
                                             </p>
                                         </div>
                                         <Button
                                             type="button"
                                             size="sm"
-                                            onClick={() => setIsAddingContact(true)}
-                                            className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900 cursor-pointer"
+                                            onClick={() =>
+                                                setIsAddingContact(true)
+                                            }
+                                            className="h-8 cursor-pointer rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
                                             <Plus className="mr-1.5 size-3.5" />
                                             Tambah Kontak
@@ -891,23 +1131,32 @@ export default function ClientShow({
                                                     className="flex flex-col justify-between rounded-xl border border-slate-200/70 bg-slate-50/60 p-3 text-xs transition-all hover:border-slate-300 hover:bg-white dark:border-white/[0.06] dark:bg-[#121418] dark:hover:bg-[#16181d]"
                                                 >
                                                     <div className="flex items-start justify-between gap-2">
-                                                        <div className="flex items-start gap-2.5 min-w-0">
+                                                        <div className="flex min-w-0 items-start gap-2.5">
                                                             <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[10px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                                                {getInitials(contact.full_name)}
+                                                                {getInitials(
+                                                                    contact.full_name,
+                                                                )}
                                                             </div>
                                                             <div className="min-w-0">
                                                                 <h4 className="truncate font-semibold text-slate-900 dark:text-white">
-                                                                    {contact.full_name}
+                                                                    {
+                                                                        contact.full_name
+                                                                    }
                                                                 </h4>
                                                                 <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
-                                                                    {contact.job_title ?? 'Perwakilan Klien'}
+                                                                    {contact.job_title ??
+                                                                        'Perwakilan Klien'}
                                                                 </p>
                                                             </div>
                                                         </div>
                                                         {can.update && (
                                                             <button
                                                                 type="button"
-                                                                onClick={() => setContactToDelete(contact)}
+                                                                onClick={() =>
+                                                                    setContactToDelete(
+                                                                        contact,
+                                                                    )
+                                                                }
                                                                 className="shrink-0 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400"
                                                                 title="Hapus Kontak"
                                                             >
@@ -923,7 +1172,11 @@ export default function ClientShow({
                                                                 className="flex items-center gap-1.5 text-blue-600 hover:underline dark:text-blue-400"
                                                             >
                                                                 <Mail className="size-3 shrink-0" />
-                                                                <span className="truncate">{contact.email}</span>
+                                                                <span className="truncate">
+                                                                    {
+                                                                        contact.email
+                                                                    }
+                                                                </span>
                                                             </a>
                                                         )}
                                                         {contact.mobile && (
@@ -932,7 +1185,11 @@ export default function ClientShow({
                                                                 className="flex items-center gap-1.5 font-mono text-slate-600 hover:text-slate-900 dark:text-zinc-300 dark:hover:text-white"
                                                             >
                                                                 <Phone className="size-3 shrink-0 text-slate-400" />
-                                                                <span>{contact.mobile}</span>
+                                                                <span>
+                                                                    {
+                                                                        contact.mobile
+                                                                    }
+                                                                </span>
                                                             </a>
                                                         )}
                                                     </div>
@@ -945,16 +1202,22 @@ export default function ClientShow({
                                                 <Users className="size-5.5" />
                                             </div>
                                             <h4 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Belum Ada Kontak Perwakilan Terdaftar
+                                                Belum Ada Kontak Perwakilan
+                                                Terdaftar
                                             </h4>
                                             <p className="mt-1 max-w-sm text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Tambahkan kontak personil perwakilan seperti Direksi, Legal Counsel, Finance, atau PIC operasional klien.
+                                                Tambahkan kontak personil
+                                                perwakilan seperti Direksi,
+                                                Legal Counsel, Finance, atau PIC
+                                                operasional klien.
                                             </p>
                                             <Button
                                                 type="button"
                                                 size="sm"
-                                                onClick={() => setIsAddingContact(true)}
-                                                className="mt-4 h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900 cursor-pointer"
+                                                onClick={() =>
+                                                    setIsAddingContact(true)
+                                                }
+                                                className="mt-4 h-8 cursor-pointer rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                             >
                                                 <Plus className="mr-1.5 size-3.5" />
                                                 Tambah Kontak Person Baru
@@ -972,25 +1235,31 @@ export default function ClientShow({
                                             <div className="flex items-center gap-2">
                                                 <ShieldCheck className="size-4 text-slate-700 dark:text-zinc-300" />
                                                 <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Kepatuhan KYC &amp; Anti-Money Laundering (PMPJ)
+                                                    Kepatuhan KYC &amp;
+                                                    Anti-Money Laundering (PMPJ)
                                                 </h2>
                                             </div>
                                             <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Prinsip Mengenali Pengguna Jasa (PMPJ) dan penilaian risiko kepatuhan hukum.
+                                                Prinsip Mengenali Pengguna Jasa
+                                                (PMPJ) dan penilaian risiko
+                                                kepatuhan hukum.
                                             </p>
                                         </div>
                                         <div className="flex flex-wrap items-center gap-2">
-                                            {client.kyc_status === 'rejected' ? (
+                                            {client.kyc_status ===
+                                            'rejected' ? (
                                                 <span className="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
                                                     <ShieldAlert className="size-3 text-rose-600" />
                                                     DITOLAK / RISIKO TINGGI
                                                 </span>
-                                            ) : client.kyc_status === 'pending_documents' ? (
+                                            ) : client.kyc_status ===
+                                              'pending_documents' ? (
                                                 <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
                                                     <ShieldAlert className="size-3 text-amber-600" />
                                                     MENUNGGU BERKAS
                                                 </span>
-                                            ) : client.kyc_status === 'in_review' ? (
+                                            ) : client.kyc_status ===
+                                              'in_review' ? (
                                                 <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
                                                     <ShieldCheck className="size-3 text-blue-600" />
                                                     DALAM PENELAAHAN
@@ -1026,16 +1295,22 @@ export default function ClientShow({
                                             <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                 PROFIL RISIKO AML
                                             </span>
-                                            <p className={`mt-1 text-xs font-bold ${
-                                                client.kyc_risk_level === 'high'
-                                                    ? 'text-rose-600 dark:text-rose-400'
-                                                    : client.kyc_risk_level === 'medium'
-                                                      ? 'text-amber-600 dark:text-amber-400'
-                                                      : 'text-emerald-600 dark:text-emerald-400'
-                                            }`}>
-                                                {client.kyc_risk_level === 'high'
+                                            <p
+                                                className={`mt-1 text-xs font-bold ${
+                                                    client.kyc_risk_level ===
+                                                    'high'
+                                                        ? 'text-rose-600 dark:text-rose-400'
+                                                        : client.kyc_risk_level ===
+                                                            'medium'
+                                                          ? 'text-amber-600 dark:text-amber-400'
+                                                          : 'text-emerald-600 dark:text-emerald-400'
+                                                }`}
+                                            >
+                                                {client.kyc_risk_level ===
+                                                'high'
                                                     ? 'Risiko Tinggi (EDD)'
-                                                    : client.kyc_risk_level === 'medium'
+                                                    : client.kyc_risk_level ===
+                                                        'medium'
                                                       ? 'Risiko Menengah'
                                                       : 'Risiko Rendah (Standar)'}
                                             </p>
@@ -1045,7 +1320,11 @@ export default function ClientShow({
                                                 PARTNER PENILAI KYC
                                             </span>
                                             <p className="mt-1 text-xs font-bold text-slate-900 dark:text-white">
-                                                {client.kyc_assessed_by_user?.name ?? client.relationship_partner?.name ?? 'Managing Partner'}
+                                                {client.kyc_assessed_by_user
+                                                    ?.name ??
+                                                    client.relationship_partner
+                                                        ?.name ??
+                                                    'Managing Partner'}
                                             </p>
                                         </div>
                                         <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
@@ -1053,7 +1332,8 @@ export default function ClientShow({
                                                 YURISDIKSI
                                             </span>
                                             <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                {client.country_code} ({client.city ?? 'Indonesia'})
+                                                {client.country_code} (
+                                                {client.city ?? 'Indonesia'})
                                             </p>
                                         </div>
                                     </div>
@@ -1061,30 +1341,58 @@ export default function ClientShow({
                                     {/* KYC Assessment Notes */}
                                     <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
                                         <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                            CATATAN UJI TUNTAS &amp; BENEFICIAL OWNERSHIP
+                                            CATATAN UJI TUNTAS &amp; BENEFICIAL
+                                            OWNERSHIP
                                         </span>
                                         <p className="mt-1 text-xs leading-relaxed text-slate-800 dark:text-zinc-200">
-                                            {client.kyc_notes ?? client.notes ?? 'Klien terverifikasi resmi. Berkas KYC dan Beneficial Ownership telah ditelaah manual.'}
+                                            {client.kyc_notes ??
+                                                client.notes ??
+                                                'Klien terverifikasi resmi. Berkas KYC dan Beneficial Ownership telah ditelaah manual.'}
                                         </p>
                                     </div>
 
                                     {/* Statutory Documents Checklist */}
                                     <div className="space-y-2 pt-1">
                                         <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                                            Kelengkapan Berkas Legalitas &amp; Dokumen Korporasi
+                                            Kelengkapan Berkas Legalitas &amp;
+                                            Dokumen Korporasi
                                         </h3>
                                         <div className="space-y-1.5">
                                             {[
-                                                { key: 'director_id', label: 'Kartu Identitas Direksi & Penanggung Jawab (KTP / Paspor)' },
-                                                { key: 'tax_id', label: 'Nomor Pokok Wajib Pajak (NPWP Korporasi / Perorangan)' },
-                                                { key: 'business_license', label: 'Nomor Induk Berusaha (NIB) / Izin Usaha Sektoral' },
-                                                { key: 'incorporation_deed', label: 'Akta Pendirian Perusahaan & SK Kemenkumham' },
-                                                { key: 'articles_amendment', label: 'Akta Perubahan Anggaran Dasar (Beneficial Ownership)' },
-                                                { key: 'aml_declaration', label: 'Formulir Deklarasi Kepatuhan AML (AML Statement)' },
+                                                {
+                                                    key: 'director_id',
+                                                    label: 'Kartu Identitas Direksi & Penanggung Jawab (KTP / Paspor)',
+                                                },
+                                                {
+                                                    key: 'tax_id',
+                                                    label: 'Nomor Pokok Wajib Pajak (NPWP Korporasi / Perorangan)',
+                                                },
+                                                {
+                                                    key: 'business_license',
+                                                    label: 'Nomor Induk Berusaha (NIB) / Izin Usaha Sektoral',
+                                                },
+                                                {
+                                                    key: 'incorporation_deed',
+                                                    label: 'Akta Pendirian Perusahaan & SK Kemenkumham',
+                                                },
+                                                {
+                                                    key: 'articles_amendment',
+                                                    label: 'Akta Perubahan Anggaran Dasar (Beneficial Ownership)',
+                                                },
+                                                {
+                                                    key: 'aml_declaration',
+                                                    label: 'Formulir Deklarasi Kepatuhan AML (AML Statement)',
+                                                },
                                             ].map((doc) => {
-                                                const isChecked = client.kyc_checklist
-                                                    ? Boolean(client.kyc_checklist[doc.key])
-                                                    : true;
+                                                const isChecked =
+                                                    client.kyc_checklist
+                                                        ? Boolean(
+                                                              client
+                                                                  .kyc_checklist[
+                                                                  doc.key
+                                                              ],
+                                                          )
+                                                        : true;
 
                                                 return (
                                                     <div
@@ -1112,9 +1420,11 @@ export default function ClientShow({
                                                                 isChecked
                                                                     ? 'bg-emerald-100/70 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
                                                                     : 'bg-amber-100/70 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
-                                                                }`}
+                                                            }`}
                                                         >
-                                                            {isChecked ? 'Lengkap' : 'Belum Terlampir'}
+                                                            {isChecked
+                                                                ? 'Lengkap'
+                                                                : 'Belum Terlampir'}
                                                         </span>
                                                     </div>
                                                 );
@@ -1132,18 +1442,22 @@ export default function ClientShow({
                                             <div className="flex items-center gap-2">
                                                 <FileText className="size-4 text-slate-700 dark:text-zinc-300" />
                                                 <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Dokumen Terkait Klien ({documents.length})
+                                                    Dokumen Terkait Klien (
+                                                    {documents.length})
                                                 </h2>
                                             </div>
                                             <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Arsip legalitas, surat kuasa, dan dokumen perkara terkait.
+                                                Arsip legalitas, surat kuasa,
+                                                dan dokumen perkara terkait.
                                             </p>
                                         </div>
                                         <Button
                                             type="button"
                                             size="sm"
-                                            onClick={() => setIsUploadingDocument(true)}
-                                            className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900 cursor-pointer"
+                                            onClick={() =>
+                                                setIsUploadingDocument(true)
+                                            }
+                                            className="h-8 cursor-pointer rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
                                             <FileUp className="mr-1.5 size-3.5" />
                                             Unggah Dokumen
@@ -1155,11 +1469,21 @@ export default function ClientShow({
                                             <table className="w-full text-left text-xs">
                                                 <thead>
                                                     <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                                        <th className="py-2.5 pr-3 pl-3 font-semibold">Nama Dokumen</th>
-                                                        <th className="px-3 py-2.5 font-semibold">Versi</th>
-                                                        <th className="px-3 py-2.5 font-semibold">Ukuran</th>
-                                                        <th className="px-3 py-2.5 font-semibold">Diperbarui</th>
-                                                        <th className="px-3 py-2.5 font-semibold">Status</th>
+                                                        <th className="py-2.5 pr-3 pl-3 font-semibold">
+                                                            Nama Dokumen
+                                                        </th>
+                                                        <th className="px-3 py-2.5 font-semibold">
+                                                            Versi
+                                                        </th>
+                                                        <th className="px-3 py-2.5 font-semibold">
+                                                            Ukuran
+                                                        </th>
+                                                        <th className="px-3 py-2.5 font-semibold">
+                                                            Diperbarui
+                                                        </th>
+                                                        <th className="px-3 py-2.5 font-semibold">
+                                                            Status
+                                                        </th>
                                                         <th className="py-2.5 pr-3 pl-1 text-right font-semibold"></th>
                                                     </tr>
                                                 </thead>
@@ -1175,28 +1499,48 @@ export default function ClientShow({
                                                                         <FileText className="size-3.5" />
                                                                     </div>
                                                                     <div className="min-w-0">
-                                                                        <p className="truncate font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
-                                                                            {doc.title}
+                                                                        <p className="truncate font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                                                                            {
+                                                                                doc.title
+                                                                            }
                                                                         </p>
                                                                         <p className="text-[10px] text-slate-400">
-                                                                            {doc.current_version?.mime_type ?? 'Dokumen Legalitas'}
+                                                                            {doc
+                                                                                .current_version
+                                                                                ?.mime_type ??
+                                                                                'Dokumen Legalitas'}
                                                                         </p>
                                                                     </div>
                                                                 </div>
                                                             </td>
                                                             <td className="px-3 py-2.5 whitespace-nowrap">
                                                                 <span className="font-mono text-[10px] font-semibold text-slate-700 dark:text-zinc-300">
-                                                                    v{doc.current_version?.version_number ?? 1}.0
+                                                                    v
+                                                                    {doc
+                                                                        .current_version
+                                                                        ?.version_number ??
+                                                                        1}
+                                                                    .0
                                                                 </span>
                                                             </td>
                                                             <td className="px-3 py-2.5 font-mono text-[10px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
-                                                                {formatBytes(doc.current_version?.file_size)}
+                                                                {formatBytes(
+                                                                    doc
+                                                                        .current_version
+                                                                        ?.file_size,
+                                                                )}
                                                             </td>
                                                             <td className="px-3 py-2.5 font-mono text-[10px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
-                                                                {formatDate(doc.updated_at)}
+                                                                {formatDate(
+                                                                    doc.updated_at,
+                                                                )}
                                                             </td>
                                                             <td className="px-3 py-2.5 whitespace-nowrap">
-                                                                <StatusBadge value={doc.status} />
+                                                                <StatusBadge
+                                                                    value={
+                                                                        doc.status
+                                                                    }
+                                                                />
                                                             </td>
                                                             <td className="py-2.5 pr-3 pl-1 text-right whitespace-nowrap">
                                                                 <Button
@@ -1205,7 +1549,11 @@ export default function ClientShow({
                                                                     className="h-7 px-2 text-xs font-semibold text-blue-600 hover:bg-blue-50 dark:text-blue-400"
                                                                     asChild
                                                                 >
-                                                                    <Link href={documentRoutes.show(doc.id)}>
+                                                                    <Link
+                                                                        href={documentRoutes.show(
+                                                                            doc.id,
+                                                                        )}
+                                                                    >
                                                                         Buka
                                                                         <ChevronRight className="ml-0.5 size-3" />
                                                                     </Link>
@@ -1225,13 +1573,18 @@ export default function ClientShow({
                                                 Belum Ada Dokumen Terkait Klien
                                             </h4>
                                             <p className="mt-1 max-w-sm text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Unggah berkas perjanjian, surat kuasa, berkas permohonan, atau dokumen perkara yang terafiliasi dengan klien ini.
+                                                Unggah berkas perjanjian, surat
+                                                kuasa, berkas permohonan, atau
+                                                dokumen perkara yang terafiliasi
+                                                dengan klien ini.
                                             </p>
                                             <Button
                                                 type="button"
                                                 size="sm"
-                                                onClick={() => setIsUploadingDocument(true)}
-                                                className="mt-4 h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900 cursor-pointer"
+                                                onClick={() =>
+                                                    setIsUploadingDocument(true)
+                                                }
+                                                className="mt-4 h-8 cursor-pointer rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                             >
                                                 <FileUp className="mr-1.5 size-3.5" />
                                                 Unggah Dokumen Klien
@@ -1255,13 +1608,17 @@ export default function ClientShow({
                                 <div className="space-y-2.5 text-xs">
                                     {client.tax_identifier && (
                                         <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 dark:border-white/[0.04]">
-                                            <span className="text-slate-500 dark:text-zinc-400">NPWP / Tax ID</span>
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                NPWP / Tax ID
+                                            </span>
                                             <button
                                                 type="button"
                                                 onClick={handleCopyTax}
                                                 className="group inline-flex items-center gap-1 font-mono font-semibold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
                                             >
-                                                <span>{client.tax_identifier}</span>
+                                                <span>
+                                                    {client.tax_identifier}
+                                                </span>
                                                 <Copy className="size-3 text-slate-400 group-hover:text-blue-600" />
                                             </button>
                                         </div>
@@ -1269,7 +1626,9 @@ export default function ClientShow({
 
                                     {client.registration_identifier && (
                                         <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 dark:border-white/[0.04]">
-                                            <span className="text-slate-500 dark:text-zinc-400">No. NIB / AHU</span>
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                No. NIB / AHU
+                                            </span>
                                             <span className="font-mono font-semibold text-slate-900 dark:text-white">
                                                 {client.registration_identifier}
                                             </span>
@@ -1277,7 +1636,9 @@ export default function ClientShow({
                                     )}
 
                                     <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 dark:border-white/[0.04]">
-                                        <span className="text-slate-500 dark:text-zinc-400">Email Resmi</span>
+                                        <span className="text-slate-500 dark:text-zinc-400">
+                                            Email Resmi
+                                        </span>
                                         {client.email ? (
                                             <a
                                                 href={`mailto:${client.email}`}
@@ -1286,12 +1647,16 @@ export default function ClientShow({
                                                 {client.email}
                                             </a>
                                         ) : (
-                                            <span className="text-slate-400">-</span>
+                                            <span className="text-slate-400">
+                                                -
+                                            </span>
                                         )}
                                     </div>
 
                                     <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 dark:border-white/[0.04]">
-                                        <span className="text-slate-500 dark:text-zinc-400">Telepon</span>
+                                        <span className="text-slate-500 dark:text-zinc-400">
+                                            Telepon
+                                        </span>
                                         {client.phone ? (
                                             <a
                                                 href={`tel:${client.phone}`}
@@ -1300,27 +1665,42 @@ export default function ClientShow({
                                                 {client.phone}
                                             </a>
                                         ) : (
-                                            <span className="text-slate-400">-</span>
+                                            <span className="text-slate-400">
+                                                -
+                                            </span>
                                         )}
                                     </div>
 
                                     {client.website && (
                                         <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 dark:border-white/[0.04]">
-                                            <span className="text-slate-500 dark:text-zinc-400">Website</span>
+                                            <span className="text-slate-500 dark:text-zinc-400">
+                                                Website
+                                            </span>
                                             <a
-                                                href={client.website.startsWith('http') ? client.website : `https://${client.website}`}
+                                                href={
+                                                    client.website.startsWith(
+                                                        'http',
+                                                    )
+                                                        ? client.website
+                                                        : `https://${client.website}`
+                                                }
                                                 target="_blank"
                                                 rel="noreferrer"
                                                 className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                             >
-                                                {client.website.replace(/^https?:\/\//, '')}
+                                                {client.website.replace(
+                                                    /^https?:\/\//,
+                                                    '',
+                                                )}
                                                 <ExternalLink className="size-3" />
                                             </a>
                                         </div>
                                     )}
 
                                     <div className="flex items-center justify-between gap-2 pt-0.5">
-                                        <span className="text-slate-500 dark:text-zinc-400">Status Klien</span>
+                                        <span className="text-slate-500 dark:text-zinc-400">
+                                            Status Klien
+                                        </span>
                                         <StatusBadge value={client.status} />
                                     </div>
                                 </div>
@@ -1344,7 +1724,12 @@ export default function ClientShow({
                                         </p>
                                     )}
                                     <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                        {[client.city, client.province, client.postal_code, client.country_code]
+                                        {[
+                                            client.city,
+                                            client.province,
+                                            client.postal_code,
+                                            client.country_code,
+                                        ]
                                             .filter(Boolean)
                                             .join(', ')}
                                     </p>
@@ -1357,7 +1742,8 @@ export default function ClientShow({
                                     <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
                                         <FileText className="size-3.5 text-slate-400" />
                                         <span className="text-[11px] font-semibold uppercase">
-                                            Berkas Legalitas ({documents.length})
+                                            Berkas Legalitas ({documents.length}
+                                            )
                                         </span>
                                     </div>
                                     {documents.length > 0 && (
@@ -1375,17 +1761,22 @@ export default function ClientShow({
                                         {documents.slice(0, 3).map((doc) => (
                                             <Link
                                                 key={doc.id}
-                                                href={documentRoutes.show(doc.id)}
+                                                href={documentRoutes.show(
+                                                    doc.id,
+                                                )}
                                                 className="group flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 transition-all hover:border-slate-200 hover:bg-white dark:border-white/[0.04] dark:bg-[#121418] dark:hover:bg-[#16181d]"
                                             >
                                                 <div className="flex min-w-0 items-center gap-2">
                                                     <FileText className="size-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
-                                                    <span className="truncate text-xs font-medium text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
+                                                    <span className="truncate text-xs font-medium text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
                                                         {doc.title}
                                                     </span>
                                                 </div>
                                                 <span className="shrink-0 font-mono text-[10px] text-slate-400">
-                                                    {formatBytes(doc.current_version?.file_size)}
+                                                    {formatBytes(
+                                                        doc.current_version
+                                                            ?.file_size,
+                                                    )}
                                                 </span>
                                             </Link>
                                         ))}
@@ -1451,12 +1842,15 @@ export default function ClientShow({
                 onConfirm={() => {
                     if (!complianceToDelete) return;
                     setIsDeletingCompliance(true);
-                    router.delete(`/clients/${client.id}/compliance-documents/${complianceToDelete.id}`, {
-                        onFinish: () => {
-                            setIsDeletingCompliance(false);
-                            setComplianceToDelete(null);
+                    router.delete(
+                        `/clients/${client.id}/compliance-documents/${complianceToDelete.id}`,
+                        {
+                            onFinish: () => {
+                                setIsDeletingCompliance(false);
+                                setComplianceToDelete(null);
+                            },
                         },
-                    });
+                    );
                 }}
             />
 
@@ -1513,7 +1907,9 @@ function ComplianceDocumentDialog({
                         </div>
                         <div>
                             <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                {isEdit ? 'Ubah Dokumen Legalitas' : 'Catat Dokumen Legalitas Baru'}
+                                {isEdit
+                                    ? 'Ubah Dokumen Legalitas'
+                                    : 'Catat Dokumen Legalitas Baru'}
                             </DialogTitle>
                             <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
                                 {isEdit
@@ -1524,29 +1920,58 @@ function ComplianceDocumentDialog({
                     </div>
                 </DialogHeader>
 
-                <Form action={action} method={method} className="space-y-3 pt-1" onSuccess={onClose}>
+                <Form
+                    action={action}
+                    method={method}
+                    className="space-y-3 pt-1"
+                    onSuccess={onClose}
+                >
                     {({ processing, errors }) => (
                         <>
                             <div className="grid gap-1">
-                                <Label htmlFor="document_type" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                <Label
+                                    htmlFor="document_type"
+                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                >
                                     Jenis Dokumen Legalitas
                                 </Label>
                                 <div className="relative">
                                     <select
                                         name="document_type"
                                         id="document_type"
-                                        defaultValue={document?.document_type ?? 'deed_establishment'}
+                                        defaultValue={
+                                            document?.document_type ??
+                                            'deed_establishment'
+                                        }
                                         className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                     >
-                                        <option value="deed_establishment">Akta Pendirian Perusahaan</option>
-                                        <option value="deed_amendment_directors">Akta Perubahan Direksi / Saham</option>
-                                        <option value="nib">Nomor Induk Berusaha (NIB OSS)</option>
-                                        <option value="sk_menkumham">SK Pengesahan Kemenkumham</option>
-                                        <option value="kbli_license">Izin Usaha KBLI / Sektoral</option>
-                                        <option value="amdal_environmental">AMDAL / Izin Lingkungan</option>
-                                        <option value="trademark_ip">Sertifikat Merek & HKI</option>
-                                        <option value="tax_id">Surat Keterangan Pajak (SKT)</option>
-                                        <option value="other">Dokumen Legalitas Lainnya</option>
+                                        <option value="deed_establishment">
+                                            Akta Pendirian Perusahaan
+                                        </option>
+                                        <option value="deed_amendment_directors">
+                                            Akta Perubahan Direksi / Saham
+                                        </option>
+                                        <option value="nib">
+                                            Nomor Induk Berusaha (NIB OSS)
+                                        </option>
+                                        <option value="sk_menkumham">
+                                            SK Pengesahan Kemenkumham
+                                        </option>
+                                        <option value="kbli_license">
+                                            Izin Usaha KBLI / Sektoral
+                                        </option>
+                                        <option value="amdal_environmental">
+                                            AMDAL / Izin Lingkungan
+                                        </option>
+                                        <option value="trademark_ip">
+                                            Sertifikat Merek & HKI
+                                        </option>
+                                        <option value="tax_id">
+                                            Surat Keterangan Pajak (SKT)
+                                        </option>
+                                        <option value="other">
+                                            Dokumen Legalitas Lainnya
+                                        </option>
                                     </select>
                                     <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
                                 </div>
@@ -1554,20 +1979,28 @@ function ComplianceDocumentDialog({
 
                             <div className="grid gap-2 sm:grid-cols-2">
                                 <div className="grid gap-1">
-                                    <Label htmlFor="document_number" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                    <Label
+                                        htmlFor="document_number"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                    >
                                         Nomor Dokumen / Akta
                                     </Label>
                                     <Input
                                         id="document_number"
                                         name="document_number"
-                                        defaultValue={document?.document_number ?? ''}
+                                        defaultValue={
+                                            document?.document_number ?? ''
+                                        }
                                         required
                                         placeholder="Contoh: No. 14 Tanggal 05-01-2024"
                                         className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                     />
                                 </div>
                                 <div className="grid gap-1">
-                                    <Label htmlFor="issuer" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                    <Label
+                                        htmlFor="issuer"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                    >
                                         Instansi / Notaris Penerbit
                                     </Label>
                                     <Input
@@ -1581,7 +2014,10 @@ function ComplianceDocumentDialog({
                             </div>
 
                             <div className="grid gap-1">
-                                <Label htmlFor="title" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                <Label
+                                    htmlFor="title"
+                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                >
                                     Judul / Nama Dokumen
                                 </Label>
                                 <Input
@@ -1596,33 +2032,56 @@ function ComplianceDocumentDialog({
 
                             <div className="grid gap-2 sm:grid-cols-2">
                                 <div className="grid gap-1">
-                                    <Label htmlFor="issued_at" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                    <Label
+                                        htmlFor="issued_at"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                    >
                                         Tanggal Diterbitkan
                                     </Label>
                                     <Input
                                         id="issued_at"
                                         name="issued_at"
                                         type="date"
-                                        defaultValue={document?.issued_at ? document.issued_at.slice(0, 10) : ''}
+                                        defaultValue={
+                                            document?.issued_at
+                                                ? document.issued_at.slice(
+                                                      0,
+                                                      10,
+                                                  )
+                                                : ''
+                                        }
                                         className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                     />
                                 </div>
                                 <div className="grid gap-1">
-                                    <Label htmlFor="expires_at" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                    <Label
+                                        htmlFor="expires_at"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                    >
                                         Tanggal Kedaluwarsa (Masa Berlaku)
                                     </Label>
                                     <Input
                                         id="expires_at"
                                         name="expires_at"
                                         type="date"
-                                        defaultValue={document?.expires_at ? document.expires_at.slice(0, 10) : ''}
+                                        defaultValue={
+                                            document?.expires_at
+                                                ? document.expires_at.slice(
+                                                      0,
+                                                      10,
+                                                  )
+                                                : ''
+                                        }
                                         className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                     />
                                 </div>
                             </div>
 
                             <div className="grid gap-1">
-                                <Label htmlFor="notes" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                <Label
+                                    htmlFor="notes"
+                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                >
                                     Catatan / Keterangan Legalitas
                                 </Label>
                                 <textarea
@@ -1687,17 +2146,18 @@ function AddContactModal({
     clientId: string;
     clientName: string;
 }) {
-    const { data, setData, post, processing, errors, reset, clearErrors } = useForm({
-        client_id: clientId,
-        first_name: '',
-        last_name: '',
-        job_title: '',
-        organization_name: clientName,
-        email: '',
-        phone: '',
-        mobile: '',
-        notes: '',
-    });
+    const { data, setData, post, processing, errors, reset, clearErrors } =
+        useForm({
+            client_id: clientId,
+            first_name: '',
+            last_name: '',
+            job_title: '',
+            organization_name: clientName,
+            email: '',
+            phone: '',
+            mobile: '',
+            notes: '',
+        });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -1732,7 +2192,8 @@ function AddContactModal({
                                 Tambah Kontak Perwakilan
                             </DialogTitle>
                             <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Daftarkan PIC, Direksi, Legal Officer, atau Perwakilan Resmi untuk {clientName}.
+                                Daftarkan PIC, Direksi, Legal Officer, atau
+                                Perwakilan Resmi untuk {clientName}.
                             </DialogDescription>
                         </div>
                     </div>
@@ -1741,95 +2202,153 @@ function AddContactModal({
                 <form onSubmit={handleSubmit} className="space-y-3.5 pt-1">
                     <div className="grid gap-2.5 sm:grid-cols-2">
                         <div className="grid gap-1">
-                            <Label htmlFor="first_name" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                Nama Depan <span className="text-rose-500">*</span>
+                            <Label
+                                htmlFor="first_name"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                            >
+                                Nama Depan{' '}
+                                <span className="text-rose-500">*</span>
                             </Label>
                             <Input
                                 id="first_name"
                                 value={data.first_name}
-                                onChange={(e) => setData('first_name', e.target.value)}
+                                onChange={(e) =>
+                                    setData('first_name', e.target.value)
+                                }
                                 placeholder="Contoh: Hendra / Siti"
                                 required
                                 className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                             />
-                            {errors.first_name && <p className="text-[11px] text-rose-500">{errors.first_name}</p>}
+                            {errors.first_name && (
+                                <p className="text-[11px] text-rose-500">
+                                    {errors.first_name}
+                                </p>
+                            )}
                         </div>
                         <div className="grid gap-1">
-                            <Label htmlFor="last_name" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            <Label
+                                htmlFor="last_name"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                            >
                                 Nama Belakang
                             </Label>
                             <Input
                                 id="last_name"
                                 value={data.last_name}
-                                onChange={(e) => setData('last_name', e.target.value)}
+                                onChange={(e) =>
+                                    setData('last_name', e.target.value)
+                                }
                                 placeholder="Contoh: Wijaya / Rahmawati"
                                 className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                             />
-                            {errors.last_name && <p className="text-[11px] text-rose-500">{errors.last_name}</p>}
+                            {errors.last_name && (
+                                <p className="text-[11px] text-rose-500">
+                                    {errors.last_name}
+                                </p>
+                            )}
                         </div>
                     </div>
 
                     <div className="grid gap-2.5 sm:grid-cols-2">
                         <div className="grid gap-1">
-                            <Label htmlFor="job_title" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            <Label
+                                htmlFor="job_title"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                            >
                                 Jabatan / Posisi
                             </Label>
                             <Input
                                 id="job_title"
                                 value={data.job_title}
-                                onChange={(e) => setData('job_title', e.target.value)}
+                                onChange={(e) =>
+                                    setData('job_title', e.target.value)
+                                }
                                 placeholder="Contoh: Direktur Utama / Legal Counsel"
                                 className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                             />
-                            {errors.job_title && <p className="text-[11px] text-rose-500">{errors.job_title}</p>}
+                            {errors.job_title && (
+                                <p className="text-[11px] text-rose-500">
+                                    {errors.job_title}
+                                </p>
+                            )}
                         </div>
                         <div className="grid gap-1">
-                            <Label htmlFor="organization_name" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            <Label
+                                htmlFor="organization_name"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                            >
                                 Nama Instansi / Perusahaan
                             </Label>
                             <Input
                                 id="organization_name"
                                 value={data.organization_name}
-                                onChange={(e) => setData('organization_name', e.target.value)}
+                                onChange={(e) =>
+                                    setData('organization_name', e.target.value)
+                                }
                                 placeholder="Nama perusahaan"
                                 className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                             />
-                            {errors.organization_name && <p className="text-[11px] text-rose-500">{errors.organization_name}</p>}
+                            {errors.organization_name && (
+                                <p className="text-[11px] text-rose-500">
+                                    {errors.organization_name}
+                                </p>
+                            )}
                         </div>
                     </div>
 
                     <div className="grid gap-2.5 sm:grid-cols-2">
                         <div className="grid gap-1">
-                            <Label htmlFor="email" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            <Label
+                                htmlFor="email"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                            >
                                 Alamat Email
                             </Label>
                             <Input
                                 id="email"
                                 type="email"
                                 value={data.email}
-                                onChange={(e) => setData('email', e.target.value)}
+                                onChange={(e) =>
+                                    setData('email', e.target.value)
+                                }
                                 placeholder="nama@perusahaan.co.id"
                                 className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                             />
-                            {errors.email && <p className="text-[11px] text-rose-500">{errors.email}</p>}
+                            {errors.email && (
+                                <p className="text-[11px] text-rose-500">
+                                    {errors.email}
+                                </p>
+                            )}
                         </div>
                         <div className="grid gap-1">
-                            <Label htmlFor="mobile" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            <Label
+                                htmlFor="mobile"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                            >
                                 Nomor Handphone / WhatsApp
                             </Label>
                             <Input
                                 id="mobile"
                                 value={data.mobile}
-                                onChange={(e) => setData('mobile', e.target.value)}
+                                onChange={(e) =>
+                                    setData('mobile', e.target.value)
+                                }
                                 placeholder="0812-xxxx-xxxx"
                                 className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                             />
-                            {errors.mobile && <p className="text-[11px] text-rose-500">{errors.mobile}</p>}
+                            {errors.mobile && (
+                                <p className="text-[11px] text-rose-500">
+                                    {errors.mobile}
+                                </p>
+                            )}
                         </div>
                     </div>
 
                     <div className="grid gap-1">
-                        <Label htmlFor="notes" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                        <Label
+                            htmlFor="notes"
+                            className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                        >
                             Catatan Narahubung
                         </Label>
                         <textarea
@@ -1840,7 +2359,11 @@ function AddContactModal({
                             placeholder="Catatan wewenang, kuasa penandatanganan, waktu hubungi..."
                             className="rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs leading-relaxed text-slate-900 outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                         />
-                        {errors.notes && <p className="text-[11px] text-rose-500">{errors.notes}</p>}
+                        {errors.notes && (
+                            <p className="text-[11px] text-rose-500">
+                                {errors.notes}
+                            </p>
+                        )}
                     </div>
 
                     <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.04]">
@@ -1857,7 +2380,7 @@ function AddContactModal({
                             type="submit"
                             size="sm"
                             disabled={processing}
-                            className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 cursor-pointer"
+                            className="h-8 cursor-pointer rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
                         >
                             {processing ? (
                                 <>
@@ -1889,25 +2412,26 @@ function UploadClientDocModal({
     matters: Matter[];
 }) {
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const { data, setData, post, processing, errors, reset, clearErrors } = useForm<{
-        title: string;
-        client_id: string;
-        matter_id: string;
-        document_type: string;
-        confidentiality_level: string;
-        status: string;
-        file: File | null;
-        notes: string;
-    }>({
-        title: '',
-        client_id: clientId,
-        matter_id: '',
-        document_type: 'Dokumen Legalitas Klien',
-        confidentiality_level: 'standard',
-        status: 'draft',
-        file: null,
-        notes: '',
-    });
+    const { data, setData, post, processing, errors, reset, clearErrors } =
+        useForm<{
+            title: string;
+            client_id: string;
+            matter_id: string;
+            document_type: string;
+            confidentiality_level: string;
+            status: string;
+            file: File | null;
+            notes: string;
+        }>({
+            title: '',
+            client_id: clientId,
+            matter_id: '',
+            document_type: 'Dokumen Legalitas Klien',
+            confidentiality_level: 'standard',
+            status: 'draft',
+            file: null,
+            notes: '',
+        });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -1943,7 +2467,8 @@ function UploadClientDocModal({
                                 Unggah Dokumen Terkait Klien
                             </DialogTitle>
                             <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Berkas legalitas, surat kuasa, atau dokumen perkara untuk {clientName}.
+                                Berkas legalitas, surat kuasa, atau dokumen
+                                perkara untuk {clientName}.
                             </DialogDescription>
                         </div>
                     </div>
@@ -1951,8 +2476,12 @@ function UploadClientDocModal({
 
                 <form onSubmit={handleSubmit} className="space-y-3.5 pt-1">
                     <div className="grid gap-1">
-                        <Label htmlFor="doc_title" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                            Judul / Nama Dokumen <span className="text-rose-500">*</span>
+                        <Label
+                            htmlFor="doc_title"
+                            className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                        >
+                            Judul / Nama Dokumen{' '}
+                            <span className="text-rose-500">*</span>
                         </Label>
                         <Input
                             id="doc_title"
@@ -1962,22 +2491,33 @@ function UploadClientDocModal({
                             required
                             className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                         />
-                        {errors.title && <p className="text-[11px] text-rose-500">{errors.title}</p>}
+                        {errors.title && (
+                            <p className="text-[11px] text-rose-500">
+                                {errors.title}
+                            </p>
+                        )}
                     </div>
 
                     <div className="grid gap-2.5 sm:grid-cols-2">
                         <div className="grid gap-1">
-                            <Label htmlFor="doc_matter" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            <Label
+                                htmlFor="doc_matter"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                            >
                                 Terkait Perkara (Matter)
                             </Label>
                             <div className="relative">
                                 <select
                                     id="doc_matter"
                                     value={data.matter_id}
-                                    onChange={(e) => setData('matter_id', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('matter_id', e.target.value)
+                                    }
                                     className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs text-slate-900 outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                 >
-                                    <option value="">Dokumen Umum Klien (Tanpa Perkara)</option>
+                                    <option value="">
+                                        Dokumen Umum Klien (Tanpa Perkara)
+                                    </option>
                                     {matters.map((m) => (
                                         <option key={m.id} value={m.id}>
                                             {m.matter_number} - {m.title}
@@ -1989,13 +2529,18 @@ function UploadClientDocModal({
                         </div>
 
                         <div className="grid gap-1">
-                            <Label htmlFor="doc_type" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            <Label
+                                htmlFor="doc_type"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                            >
                                 Kategori / Tipe Dokumen
                             </Label>
                             <Input
                                 id="doc_type"
                                 value={data.document_type}
-                                onChange={(e) => setData('document_type', e.target.value)}
+                                onChange={(e) =>
+                                    setData('document_type', e.target.value)
+                                }
                                 placeholder="Surat Kuasa, Kontrak, Salinan Akta"
                                 className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                             />
@@ -2004,40 +2549,65 @@ function UploadClientDocModal({
 
                     <div className="grid gap-2.5 sm:grid-cols-2">
                         <div className="grid gap-1">
-                            <Label htmlFor="doc_confidentiality" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            <Label
+                                htmlFor="doc_confidentiality"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                            >
                                 Tingkat Kerahasiaan
                             </Label>
                             <div className="relative">
                                 <select
                                     id="doc_confidentiality"
                                     value={data.confidentiality_level}
-                                    onChange={(e) => setData('confidentiality_level', e.target.value)}
+                                    onChange={(e) =>
+                                        setData(
+                                            'confidentiality_level',
+                                            e.target.value,
+                                        )
+                                    }
                                     className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs text-slate-900 outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                 >
-                                    <option value="standard">Standar Internal</option>
-                                    <option value="confidential">Confidential (Rahasia)</option>
-                                    <option value="restricted">Restricted (Terbatas)</option>
-                                    <option value="strictly_confidential">Strictly Confidential (Sangat Rahasia)</option>
+                                    <option value="standard">
+                                        Standar Internal
+                                    </option>
+                                    <option value="confidential">
+                                        Confidential (Rahasia)
+                                    </option>
+                                    <option value="restricted">
+                                        Restricted (Terbatas)
+                                    </option>
+                                    <option value="strictly_confidential">
+                                        Strictly Confidential (Sangat Rahasia)
+                                    </option>
                                 </select>
                                 <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
                             </div>
                         </div>
 
                         <div className="grid gap-1">
-                            <Label htmlFor="doc_status" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            <Label
+                                htmlFor="doc_status"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                            >
                                 Status Dokumen
                             </Label>
                             <div className="relative">
                                 <select
                                     id="doc_status"
                                     value={data.status}
-                                    onChange={(e) => setData('status', e.target.value)}
+                                    onChange={(e) =>
+                                        setData('status', e.target.value)
+                                    }
                                     className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs text-slate-900 outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                 >
                                     <option value="draft">Draft Awal</option>
-                                    <option value="under_review">Dalam Telaah (Review)</option>
+                                    <option value="under_review">
+                                        Dalam Telaah (Review)
+                                    </option>
                                     <option value="final">Final / Sah</option>
-                                    <option value="signed">Ditandatangani (Signed)</option>
+                                    <option value="signed">
+                                        Ditandatangani (Signed)
+                                    </option>
                                 </select>
                                 <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
                             </div>
@@ -2045,8 +2615,12 @@ function UploadClientDocModal({
                     </div>
 
                     <div className="grid gap-1">
-                        <Label htmlFor="doc_file" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                            Pilih Berkas File (PDF, DOCX, XLSX, max 50MB) <span className="text-rose-500">*</span>
+                        <Label
+                            htmlFor="doc_file"
+                            className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                        >
+                            Pilih Berkas File (PDF, DOCX, XLSX, max 50MB){' '}
+                            <span className="text-rose-500">*</span>
                         </Label>
                         <FileInput
                             id="doc_file"
@@ -2058,11 +2632,18 @@ function UploadClientDocModal({
                             value={data.file}
                             onFileSelect={(file) => setData('file', file)}
                         />
-                        {errors.file && <p className="text-[11px] text-rose-500">{errors.file}</p>}
+                        {errors.file && (
+                            <p className="text-[11px] text-rose-500">
+                                {errors.file}
+                            </p>
+                        )}
                     </div>
 
                     <div className="grid gap-1">
-                        <Label htmlFor="doc_notes" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                        <Label
+                            htmlFor="doc_notes"
+                            className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                        >
                             Catatan Dokumen / Versi
                         </Label>
                         <textarea
@@ -2089,7 +2670,7 @@ function UploadClientDocModal({
                             type="submit"
                             size="sm"
                             disabled={processing}
-                            className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 cursor-pointer"
+                            className="h-8 cursor-pointer rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
                         >
                             {processing ? (
                                 <>
@@ -2113,5 +2694,3 @@ ClientShow.layout = {
         { title: 'Detail Klien', href: '#' },
     ],
 };
-
-

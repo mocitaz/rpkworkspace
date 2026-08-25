@@ -30,7 +30,10 @@ export default function ConfirmPassword() {
                 {({ processing, errors }) => (
                     <div className="space-y-4">
                         <div className="space-y-1.5">
-                            <Label htmlFor="password" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                            <Label
+                                htmlFor="password"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                            >
                                 Kata Sandi Advokat
                             </Label>
                             <PasswordInput

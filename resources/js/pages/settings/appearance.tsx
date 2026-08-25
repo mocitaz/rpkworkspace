@@ -34,7 +34,8 @@ export default function Appearance() {
             title: 'Otomatis (Sistem)',
             description: 'Mengikuti tema perangkat OS Anda.',
             icon: Monitor,
-            previewBg: 'bg-gradient-to-r from-[#fafafc] to-[#0c0d10] border-slate-300 text-slate-900',
+            previewBg:
+                'bg-gradient-to-r from-[#fafafc] to-[#0c0d10] border-slate-300 text-slate-900',
         },
     ];
 
@@ -48,7 +49,8 @@ export default function Appearance() {
                         Tema &amp; Preferensi Visual
                     </h2>
                     <p className="text-xs text-slate-500 dark:text-zinc-400">
-                        Sesuaikan tema antarmuka workspace advokat agar nyaman digunakan dalam bekerja.
+                        Sesuaikan tema antarmuka workspace advokat agar nyaman
+                        digunakan dalam bekerja.
                     </p>
                 </div>
 
@@ -89,7 +91,7 @@ export default function Appearance() {
 
                                     <div>
                                         <div className="flex items-center justify-between">
-                                            <span className="font-semibold text-xs text-slate-900 dark:text-white">
+                                            <span className="text-xs font-semibold text-slate-900 dark:text-white">
                                                 {theme.title}
                                             </span>
                                             {isSelected && (

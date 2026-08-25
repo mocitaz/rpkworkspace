@@ -41,7 +41,8 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                             Pengaturan Akun
                         </h1>
                         <p className="text-xs text-slate-500 dark:text-zinc-400">
-                            Kelola profil advokat, keamanan otentikasi akun, dan preferensi tampilan antarmuka firma hukum RPK.
+                            Kelola profil advokat, keamanan otentikasi akun, dan
+                            preferensi tampilan antarmuka firma hukum RPK.
                         </p>
                     </div>
                 </div>
@@ -80,7 +81,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                             <Icon className="size-3.5" />
                                         </div>
                                         <div className="min-w-0">
-                                            <span className="block font-semibold text-xs leading-snug">
+                                            <span className="block text-xs leading-snug font-semibold">
                                                 {item.title}
                                             </span>
                                             <span className="block truncate text-[11px] text-slate-500 dark:text-zinc-400">

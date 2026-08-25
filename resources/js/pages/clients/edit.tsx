@@ -56,12 +56,30 @@ type Partner = {
 };
 
 const KYC_DOCUMENT_ITEMS = [
-    { key: 'director_id', label: 'Kartu Identitas Direksi & Penanggung Jawab (KTP / Paspor)' },
-    { key: 'tax_id', label: 'Nomor Pokok Wajib Pajak (NPWP Korporasi / Perorangan)' },
-    { key: 'business_license', label: 'Nomor Induk Berusaha (NIB) / Izin Usaha Sektoral' },
-    { key: 'incorporation_deed', label: 'Akta Pendirian Perusahaan & SK Pengesahan Kemenkumham' },
-    { key: 'articles_amendment', label: 'Akta Perubahan Anggaran Dasar (Beneficial Ownership)' },
-    { key: 'aml_declaration', label: 'Formulir Deklarasi Kepatuhan AML (AML Statement)' },
+    {
+        key: 'director_id',
+        label: 'Kartu Identitas Direksi & Penanggung Jawab (KTP / Paspor)',
+    },
+    {
+        key: 'tax_id',
+        label: 'Nomor Pokok Wajib Pajak (NPWP Korporasi / Perorangan)',
+    },
+    {
+        key: 'business_license',
+        label: 'Nomor Induk Berusaha (NIB) / Izin Usaha Sektoral',
+    },
+    {
+        key: 'incorporation_deed',
+        label: 'Akta Pendirian Perusahaan & SK Pengesahan Kemenkumham',
+    },
+    {
+        key: 'articles_amendment',
+        label: 'Akta Perubahan Anggaran Dasar (Beneficial Ownership)',
+    },
+    {
+        key: 'aml_declaration',
+        label: 'Formulir Deklarasi Kepatuhan AML (AML Statement)',
+    },
 ];
 
 export default function ClientEdit({
@@ -89,7 +107,8 @@ export default function ClientEdit({
                                 Edit Profil &amp; Penilaian KYC
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Perubahan data dan evaluasi kepatuhan dicatat ke dalam log audit firma hukum.
+                                Perubahan data dan evaluasi kepatuhan dicatat ke
+                                dalam log audit firma hukum.
                             </p>
                         </div>
 
@@ -114,18 +133,26 @@ export default function ClientEdit({
                     >
                         {({ errors, processing }) => (
                             <>
-                                <input type="hidden" name="country_code" value={client.country_code ?? 'ID'} />
+                                <input
+                                    type="hidden"
+                                    name="country_code"
+                                    value={client.country_code ?? 'ID'}
+                                />
 
                                 {Object.keys(errors).length > 0 && (
                                     <div className="rounded-xl border border-rose-200 bg-rose-50/90 p-3 text-xs text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
                                         <div className="flex items-center gap-2 font-bold">
                                             <ShieldAlert className="size-4 shrink-0 text-rose-600" />
-                                            <span>Gagal memperbarui profil klien:</span>
+                                            <span>
+                                                Gagal memperbarui profil klien:
+                                            </span>
                                         </div>
                                         <ul className="mt-1 list-inside list-disc space-y-0.5 pl-1 text-[11px]">
-                                            {Object.entries(errors).map(([key, msg]) => (
-                                                <li key={key}>{msg}</li>
-                                            ))}
+                                            {Object.entries(errors).map(
+                                                ([key, msg]) => (
+                                                    <li key={key}>{msg}</li>
+                                                ),
+                                            )}
                                         </ul>
                                     </div>
                                 )}
@@ -136,7 +163,8 @@ export default function ClientEdit({
                                         <div className="flex items-center gap-2">
                                             <Building2 className="size-4 text-blue-600 dark:text-blue-400" />
                                             <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                1. Identitas &amp; Klasifikasi Entitas
+                                                1. Identitas &amp; Klasifikasi
+                                                Entitas
                                             </h2>
                                         </div>
                                     </div>
@@ -148,8 +176,14 @@ export default function ClientEdit({
                                             defaultValue={client.type}
                                             error={errors.type}
                                             options={[
-                                                { value: 'organization', label: 'Badan Hukum / Korporasi' },
-                                                { value: 'individual', label: 'Individu / Perorangan' },
+                                                {
+                                                    value: 'organization',
+                                                    label: 'Badan Hukum / Korporasi',
+                                                },
+                                                {
+                                                    value: 'individual',
+                                                    label: 'Individu / Perorangan',
+                                                },
                                             ]}
                                         />
 
@@ -159,9 +193,18 @@ export default function ClientEdit({
                                             defaultValue={client.status}
                                             error={errors.status}
                                             options={[
-                                                { value: 'active', label: 'Aktif' },
-                                                { value: 'inactive', label: 'Tidak Aktif' },
-                                                { value: 'closed', label: 'Ditutup' },
+                                                {
+                                                    value: 'active',
+                                                    label: 'Aktif',
+                                                },
+                                                {
+                                                    value: 'inactive',
+                                                    label: 'Tidak Aktif',
+                                                },
+                                                {
+                                                    value: 'closed',
+                                                    label: 'Ditutup',
+                                                },
                                             ]}
                                         />
 
@@ -200,7 +243,8 @@ export default function ClientEdit({
                                         <div className="flex items-center gap-2">
                                             <ContactRound className="size-4 text-blue-600 dark:text-blue-400" />
                                             <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                2. Penugasan Partner &amp; Komunikasi Resmi
+                                                2. Penugasan Partner &amp;
+                                                Komunikasi Resmi
                                             </h2>
                                         </div>
                                     </div>
@@ -210,13 +254,20 @@ export default function ClientEdit({
                                             <SelectField
                                                 label="Partner Penanggung Jawab"
                                                 name="relationship_partner_id"
-                                                defaultValue={client.relationship_partner_id?.toString() ?? ''}
-                                                error={errors.relationship_partner_id}
+                                                defaultValue={
+                                                    client.relationship_partner_id?.toString() ??
+                                                    ''
+                                                }
+                                                error={
+                                                    errors.relationship_partner_id
+                                                }
                                                 optional
-                                                options={partners.map((partner) => ({
-                                                    value: partner.id,
-                                                    label: `${partner.name} ${partner.position_title ? `(${partner.position_title})` : ''}`,
-                                                }))}
+                                                options={partners.map(
+                                                    (partner) => ({
+                                                        value: partner.id,
+                                                        label: `${partner.name} ${partner.position_title ? `(${partner.position_title})` : ''}`,
+                                                    }),
+                                                )}
                                             />
                                         </div>
 
@@ -313,8 +364,12 @@ export default function ClientEdit({
                                         <Field
                                             label="Nomor Induk Berusaha (NIB) / No. Akta"
                                             name="registration_identifier"
-                                            defaultValue={client.registration_identifier}
-                                            error={errors.registration_identifier}
+                                            defaultValue={
+                                                client.registration_identifier
+                                            }
+                                            error={
+                                                errors.registration_identifier
+                                            }
                                             placeholder="Nomor registrasi legalitas"
                                             className="sm:col-span-2"
                                         />
@@ -332,9 +387,11 @@ export default function ClientEdit({
                                                 rows={2.5}
                                                 defaultValue={client.notes}
                                                 placeholder="Tambahkan ikhtisar latar belakang klien..."
-                                                className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 transition-colors outline-hidden placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                                className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 outline-hidden transition-colors placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                             />
-                                            <InputError message={errors.notes} />
+                                            <InputError
+                                                message={errors.notes}
+                                            />
                                         </div>
                                     </div>
                                 </section>
@@ -345,7 +402,8 @@ export default function ClientEdit({
                                         <div className="flex items-center gap-2">
                                             <ShieldCheck className="size-4 text-blue-600 dark:text-blue-400" />
                                             <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                4. Penilaian Manual Kepatuhan KYC &amp; AML (PMPJ)
+                                                4. Penilaian Manual Kepatuhan
+                                                KYC &amp; AML (PMPJ)
                                             </h2>
                                         </div>
                                     </div>
@@ -354,25 +412,50 @@ export default function ClientEdit({
                                         <SelectField
                                             label="Status Verifikasi KYC"
                                             name="kyc_status"
-                                            defaultValue={client.kyc_status ?? 'verified'}
+                                            defaultValue={
+                                                client.kyc_status ?? 'verified'
+                                            }
                                             error={errors.kyc_status}
                                             options={[
-                                                { value: 'verified', label: 'Terverifikasi Penuh (Verified)' },
-                                                { value: 'in_review', label: 'Dalam Penelaahan Manual (In Review)' },
-                                                { value: 'pending_documents', label: 'Menunggu Kelengkapan Dokumen (Pending)' },
-                                                { value: 'rejected', label: 'Ditolak / Berisiko Sanksi (Rejected)' },
+                                                {
+                                                    value: 'verified',
+                                                    label: 'Terverifikasi Penuh (Verified)',
+                                                },
+                                                {
+                                                    value: 'in_review',
+                                                    label: 'Dalam Penelaahan Manual (In Review)',
+                                                },
+                                                {
+                                                    value: 'pending_documents',
+                                                    label: 'Menunggu Kelengkapan Dokumen (Pending)',
+                                                },
+                                                {
+                                                    value: 'rejected',
+                                                    label: 'Ditolak / Berisiko Sanksi (Rejected)',
+                                                },
                                             ]}
                                         />
 
                                         <SelectField
                                             label="Tingkat Risiko AML"
                                             name="kyc_risk_level"
-                                            defaultValue={client.kyc_risk_level ?? 'low'}
+                                            defaultValue={
+                                                client.kyc_risk_level ?? 'low'
+                                            }
                                             error={errors.kyc_risk_level}
                                             options={[
-                                                { value: 'low', label: 'Risiko Rendah (Standar)' },
-                                                { value: 'medium', label: 'Risiko Menengah (Perlu Pemantauan)' },
-                                                { value: 'high', label: 'Risiko Tinggi (Enhanced Due Diligence - EDD)' },
+                                                {
+                                                    value: 'low',
+                                                    label: 'Risiko Rendah (Standar)',
+                                                },
+                                                {
+                                                    value: 'medium',
+                                                    label: 'Risiko Menengah (Perlu Pemantauan)',
+                                                },
+                                                {
+                                                    value: 'high',
+                                                    label: 'Risiko Tinggi (Enhanced Due Diligence - EDD)',
+                                                },
                                             ]}
                                         />
 
@@ -386,10 +469,12 @@ export default function ClientEdit({
                                             }
                                             error={errors.kyc_assessed_by}
                                             optional
-                                            options={partners.map((partner) => ({
-                                                value: partner.id,
-                                                label: `${partner.name} ${partner.position_title ? `(${partner.position_title})` : ''}`,
-                                            }))}
+                                            options={partners.map(
+                                                (partner) => ({
+                                                    value: partner.id,
+                                                    label: `${partner.name} ${partner.position_title ? `(${partner.position_title})` : ''}`,
+                                                }),
+                                            )}
                                         />
 
                                         <Field
@@ -397,8 +482,13 @@ export default function ClientEdit({
                                             name="kyc_assessed_at"
                                             type="date"
                                             defaultValue={
-                                                client.kyc_assessed_at?.slice(0, 10) ??
-                                                new Date().toISOString().slice(0, 10)
+                                                client.kyc_assessed_at?.slice(
+                                                    0,
+                                                    10,
+                                                ) ??
+                                                new Date()
+                                                    .toISOString()
+                                                    .slice(0, 10)
                                             }
                                             error={errors.kyc_assessed_at}
                                         />
@@ -406,32 +496,44 @@ export default function ClientEdit({
                                         {/* Document Checklist */}
                                         <div className="space-y-2 sm:col-span-2">
                                             <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                                                Checklist Verifikasi Dokumen Legalitas (Manual)
+                                                Checklist Verifikasi Dokumen
+                                                Legalitas (Manual)
                                             </Label>
                                             <div className="space-y-1.5 rounded-lg border border-slate-200/70 bg-slate-50/50 p-2.5 dark:border-white/10 dark:bg-[#121418]">
-                                                {KYC_DOCUMENT_ITEMS.map((item) => {
-                                                    const isChecked = client.kyc_checklist
-                                                        ? Boolean(client.kyc_checklist[item.key])
-                                                        : true;
+                                                {KYC_DOCUMENT_ITEMS.map(
+                                                    (item) => {
+                                                        const isChecked =
+                                                            client.kyc_checklist
+                                                                ? Boolean(
+                                                                      client
+                                                                          .kyc_checklist[
+                                                                          item
+                                                                              .key
+                                                                      ],
+                                                                  )
+                                                                : true;
 
-                                                    return (
-                                                        <label
-                                                            key={item.key}
-                                                            className="flex cursor-pointer items-start gap-2 rounded p-1 text-xs transition-colors hover:bg-slate-100 dark:hover:bg-zinc-800"
-                                                        >
-                                                            <input
-                                                                type="checkbox"
-                                                                name={`kyc_checklist[${item.key}]`}
-                                                                value="1"
-                                                                defaultChecked={isChecked}
-                                                                className="mt-0.5 size-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                                                            />
-                                                            <span className="text-slate-700 dark:text-zinc-200">
-                                                                {item.label}
-                                                            </span>
-                                                        </label>
-                                                    );
-                                                })}
+                                                        return (
+                                                            <label
+                                                                key={item.key}
+                                                                className="flex cursor-pointer items-start gap-2 rounded p-1 text-xs transition-colors hover:bg-slate-100 dark:hover:bg-zinc-800"
+                                                            >
+                                                                <input
+                                                                    type="checkbox"
+                                                                    name={`kyc_checklist[${item.key}]`}
+                                                                    value="1"
+                                                                    defaultChecked={
+                                                                        isChecked
+                                                                    }
+                                                                    className="mt-0.5 size-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                                                                />
+                                                                <span className="text-slate-700 dark:text-zinc-200">
+                                                                    {item.label}
+                                                                </span>
+                                                            </label>
+                                                        );
+                                                    },
+                                                )}
                                             </div>
                                         </div>
 
@@ -441,7 +543,8 @@ export default function ClientEdit({
                                                 htmlFor="kyc_notes"
                                                 className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                                             >
-                                                Catatan Uji Tuntas &amp; Beneficial Ownership (KYC Notes)
+                                                Catatan Uji Tuntas &amp;
+                                                Beneficial Ownership (KYC Notes)
                                             </Label>
                                             <textarea
                                                 id="kyc_notes"
@@ -452,9 +555,11 @@ export default function ClientEdit({
                                                     'Klien terverifikasi resmi RPK Law Firm. Berkas KYC lengkap, Beneficial Ownership tertelusuri, dan lolos uji tapis sanksi (AML/CFT screening).'
                                                 }
                                                 placeholder="Catat temuan uji tuntas, Beneficial Ownership, konfirmasi PEP..."
-                                                className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs leading-relaxed text-slate-900 transition-colors outline-hidden focus:border-blue-600 dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                                className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs leading-relaxed text-slate-900 outline-hidden transition-colors focus:border-blue-600 dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                             />
-                                            <InputError message={errors.kyc_notes} />
+                                            <InputError
+                                                message={errors.kyc_notes}
+                                            />
                                         </div>
                                     </div>
                                 </section>
@@ -462,7 +567,8 @@ export default function ClientEdit({
                                 {/* Action Bar */}
                                 <div className="flex flex-col justify-between gap-3 border-t border-slate-200/60 pt-4 sm:flex-row sm:items-center dark:border-white/[0.06]">
                                     <p className="text-[11px] text-slate-400">
-                                        Perubahan profil klien akan segera diperbarui di seluruh perkara terkait.
+                                        Perubahan profil klien akan segera
+                                        diperbarui di seluruh perkara terkait.
                                     </p>
                                     <div className="flex items-center gap-2">
                                         <Button
@@ -472,7 +578,11 @@ export default function ClientEdit({
                                             className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
                                             asChild
                                         >
-                                            <Link href={clientRoutes.show(client.id)}>
+                                            <Link
+                                                href={clientRoutes.show(
+                                                    client.id,
+                                                )}
+                                            >
                                                 Batal
                                             </Link>
                                         </Button>
@@ -537,7 +647,7 @@ function Field({
                 defaultValue={defaultValue}
                 required={required}
                 placeholder={placeholder}
-                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 placeholder:text-slate-400 transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 transition-colors placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
             />
             <InputError message={error} />
         </div>
@@ -569,9 +679,7 @@ function SelectField({
                     {label}
                 </Label>
                 {optional && (
-                    <span className="text-[10px] text-slate-400">
-                        Opsional
-                    </span>
+                    <span className="text-[10px] text-slate-400">Opsional</span>
                 )}
             </div>
             <div className="relative">
@@ -580,7 +688,7 @@ function SelectField({
                     name={name}
                     defaultValue={defaultValue}
                     required={!optional}
-                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                 >
                     {optional && <option value="">Tidak ditentukan</option>}
                     {options.map((option) => (

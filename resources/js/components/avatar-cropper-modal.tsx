@@ -38,9 +38,15 @@ export function AvatarCropperModal({
     const [zoom, setZoom] = useState<number>(1);
     const [rotation, setRotation] = useState<number>(0);
     const [isFlipped, setIsFlipped] = useState<boolean>(false);
-    const [position, setPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+    const [position, setPosition] = useState<{ x: number; y: number }>({
+        x: 0,
+        y: 0,
+    });
     const [isDragging, setIsDragging] = useState<boolean>(false);
-    const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+    const [dragStart, setDragStart] = useState<{ x: number; y: number }>({
+        x: 0,
+        y: 0,
+    });
     const [showGrid, setShowGrid] = useState<boolean>(true);
 
     const imageRef = useRef<HTMLImageElement>(null);
@@ -74,7 +80,7 @@ export function AvatarCropperModal({
                 y: e.clientY - dragStart.y,
             });
         },
-        [isDragging, dragStart]
+        [isDragging, dragStart],
     );
 
     const handleMouseUp = useCallback(() => {
@@ -100,7 +106,9 @@ export function AvatarCropperModal({
         const onWheelHandler = (e: WheelEvent) => {
             e.preventDefault();
             const delta = e.deltaY * -0.0015;
-            setZoom((prev) => Math.min(Math.max(0.4, Number((prev + delta).toFixed(2))), 3.5));
+            setZoom((prev) =>
+                Math.min(Math.max(0.4, Number((prev + delta).toFixed(2))), 3.5),
+            );
         };
 
         container.addEventListener('wheel', onWheelHandler, { passive: false });
@@ -159,22 +167,26 @@ export function AvatarCropperModal({
             -img.naturalWidth / 2,
             -img.naturalHeight / 2,
             img.naturalWidth,
-            img.naturalHeight
+            img.naturalHeight,
         );
 
         canvas.toBlob(
             (blob) => {
                 if (!blob) return;
-                const file = new File([blob], originalFileName.replace(/\.[^/.]+$/, '.jpg'), {
-                    type: 'image/jpeg',
-                    lastModified: Date.now(),
-                });
+                const file = new File(
+                    [blob],
+                    originalFileName.replace(/\.[^/.]+$/, '.jpg'),
+                    {
+                        type: 'image/jpeg',
+                        lastModified: Date.now(),
+                    },
+                );
                 const previewUrl = URL.createObjectURL(blob);
                 onCropComplete(file, previewUrl);
                 onClose();
             },
             'image/jpeg',
-            0.92
+            0.92,
         );
     };
 
@@ -192,7 +204,8 @@ export function AvatarCropperModal({
                                 Sesuaikan &amp; Potong Foto Profil
                             </DialogTitle>
                             <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Geser foto untuk memposisikan wajah, perbesar/perkecil, atau putar sudut.
+                                Geser foto untuk memposisikan wajah,
+                                perbesar/perkecil, atau putar sudut.
                             </DialogDescription>
                         </div>
                     </div>
@@ -221,7 +234,9 @@ export function AvatarCropperModal({
                                         isFlipped ? 'scaleX(-1)' : ''
                                     } scale(${zoom})`,
                                     transformOrigin: 'center center',
-                                    transition: isDragging ? 'none' : 'transform 0.1s cubic-bezier(0.16, 1, 0.3, 1)',
+                                    transition: isDragging
+                                        ? 'none'
+                                        : 'transform 0.1s cubic-bezier(0.16, 1, 0.3, 1)',
                                     maxWidth: 'none',
                                 }}
                                 className="pointer-events-none absolute max-h-none select-none"
@@ -262,8 +277,15 @@ export function AvatarCropperModal({
                         <div className="flex items-center gap-2 rounded-xl border border-slate-200/70 bg-white px-3 py-1.5 shadow-2xs dark:border-white/10 dark:bg-[#14161b]">
                             <button
                                 type="button"
-                                onClick={() => setZoom((z) => Math.max(0.4, Number((z - 0.1).toFixed(2))))}
-                                className="rounded-md p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
+                                onClick={() =>
+                                    setZoom((z) =>
+                                        Math.max(
+                                            0.4,
+                                            Number((z - 0.1).toFixed(2)),
+                                        ),
+                                    )
+                                }
+                                className="rounded-md p-1 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
                                 title="Perkecil (Zoom Out)"
                             >
                                 <ZoomOut className="size-3.5" />
@@ -274,18 +296,27 @@ export function AvatarCropperModal({
                                 max="3.5"
                                 step="0.05"
                                 value={zoom}
-                                onChange={(e) => setZoom(parseFloat(e.target.value))}
+                                onChange={(e) =>
+                                    setZoom(parseFloat(e.target.value))
+                                }
                                 className="h-1.5 flex-1 cursor-pointer appearance-none rounded-lg bg-slate-200 accent-blue-600 dark:bg-zinc-700"
                             />
                             <button
                                 type="button"
-                                onClick={() => setZoom((z) => Math.min(3.5, Number((z + 0.1).toFixed(2))))}
-                                className="rounded-md p-1 text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
+                                onClick={() =>
+                                    setZoom((z) =>
+                                        Math.min(
+                                            3.5,
+                                            Number((z + 0.1).toFixed(2)),
+                                        ),
+                                    )
+                                }
+                                className="rounded-md p-1 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
                                 title="Perbesar (Zoom In)"
                             >
                                 <ZoomIn className="size-3.5" />
                             </button>
-                            <span className="w-10 font-mono text-[10px] text-right font-bold text-slate-700 dark:text-zinc-300">
+                            <span className="w-10 text-right font-mono text-[10px] font-bold text-slate-700 dark:text-zinc-300">
                                 {Math.round(zoom * 100)}%
                             </span>
                         </div>
@@ -314,7 +345,7 @@ export function AvatarCropperModal({
                                 <button
                                     type="button"
                                     onClick={handleFlip}
-                                    className={`flex items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-semibold transition-colors shadow-2xs ${
+                                    className={`flex items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-semibold shadow-2xs transition-colors ${
                                         isFlipped
                                             ? 'border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/50 dark:text-blue-300'
                                             : 'border-slate-200/80 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300 dark:hover:bg-white/5'
@@ -327,7 +358,7 @@ export function AvatarCropperModal({
                                 <button
                                     type="button"
                                     onClick={() => setShowGrid((g) => !g)}
-                                    className={`rounded-lg border p-1.5 transition-colors shadow-2xs ${
+                                    className={`rounded-lg border p-1.5 shadow-2xs transition-colors ${
                                         showGrid
                                             ? 'border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-900/50 dark:bg-blue-950/50 dark:text-blue-300'
                                             : 'border-slate-200/80 bg-white text-slate-500 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-400 dark:hover:bg-white/5'
@@ -341,7 +372,7 @@ export function AvatarCropperModal({
                             <button
                                 type="button"
                                 onClick={handleReset}
-                                className="text-[11px] font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white transition-colors"
+                                className="text-[11px] font-semibold text-slate-500 transition-colors hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                             >
                                 Reset
                             </button>
@@ -364,7 +395,7 @@ export function AvatarCropperModal({
                         type="button"
                         size="sm"
                         onClick={handleApplyCrop}
-                        className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95 transition-all"
+                        className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs transition-all hover:bg-blue-700 active:scale-95"
                     >
                         <Check className="mr-1.5 size-3.5" />
                         Terapkan &amp; Potong Foto

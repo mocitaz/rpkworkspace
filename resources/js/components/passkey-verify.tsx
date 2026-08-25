@@ -82,7 +82,7 @@ export default function PasskeyVerify({
         </div>
     );
 
-    const friendlyError = formatPasskeyErrorMessage(error);
+    const friendlyError = formatPasskeyErrorMessage(error ?? undefined);
 
     return (
         <>
@@ -106,7 +106,7 @@ export default function PasskeyVerify({
                         : (label ?? 'Sign in with a passkey')}
                 </Button>
                 {friendlyError && (
-                    <div className="flex items-start gap-2 rounded-lg border border-rose-200/80 bg-rose-50/80 p-2.5 text-left text-[11px] font-medium text-rose-700 dark:border-rose-900/40 dark:bg-rose-950/40 dark:text-rose-300 animate-in fade-in duration-150">
+                    <div className="flex animate-in items-start gap-2 rounded-lg border border-rose-200/80 bg-rose-50/80 p-2.5 text-left text-[11px] font-medium text-rose-700 duration-150 fade-in dark:border-rose-900/40 dark:bg-rose-950/40 dark:text-rose-300">
                         <AlertCircle className="mt-0.5 size-3.5 shrink-0 text-rose-600 dark:text-rose-400" />
                         <span>{friendlyError}</span>
                     </div>

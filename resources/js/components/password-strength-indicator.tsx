@@ -24,7 +24,8 @@ export function evaluatePassword(password: string): {
     criteria: PasswordCriteria[];
     strengthLabel: string;
     strengthColor: string;
-    strengthTone: 'none' | 'very-weak' | 'weak' | 'fair' | 'strong' | 'very-strong';
+    strengthTone:
+        'none' | 'very-weak' | 'weak' | 'fair' | 'strong' | 'very-strong';
 } {
     const hasMinLength = password.length >= 8;
     const hasUppercase = /[A-Z]/.test(password);
@@ -33,18 +34,40 @@ export function evaluatePassword(password: string): {
     const hasSymbol = /[^A-Za-z0-9]/.test(password);
 
     const criteria: PasswordCriteria[] = [
-        { id: 'min_length', label: 'Min. 8 karakter', shortTag: '8+ Char', met: hasMinLength },
-        { id: 'uppercase', label: 'Huruf besar (A-Z)', shortTag: 'A-Z', met: hasUppercase },
-        { id: 'lowercase', label: 'Huruf kecil (a-z)', shortTag: 'a-z', met: hasLowercase },
+        {
+            id: 'min_length',
+            label: 'Min. 8 karakter',
+            shortTag: '8+ Char',
+            met: hasMinLength,
+        },
+        {
+            id: 'uppercase',
+            label: 'Huruf besar (A-Z)',
+            shortTag: 'A-Z',
+            met: hasUppercase,
+        },
+        {
+            id: 'lowercase',
+            label: 'Huruf kecil (a-z)',
+            shortTag: 'a-z',
+            met: hasLowercase,
+        },
         { id: 'number', label: 'Angka (0-9)', shortTag: '0-9', met: hasNumber },
-        { id: 'symbol', label: 'Simbol khusus (!@#$)', shortTag: '@#$', met: hasSymbol },
+        {
+            id: 'symbol',
+            label: 'Simbol khusus (!@#$)',
+            shortTag: '@#$',
+            met: hasSymbol,
+        },
     ];
 
     const score = criteria.filter((c) => c.met).length;
 
     let strengthLabel = 'Belum Diisi';
     let strengthColor = 'bg-slate-200 dark:bg-zinc-700';
-    let strengthTone: 'none' | 'very-weak' | 'weak' | 'fair' | 'strong' | 'very-strong' = 'none';
+    let strengthTone:
+        'none' | 'very-weak' | 'weak' | 'fair' | 'strong' | 'very-strong' =
+        'none';
 
     if (password.length > 0) {
         if (score <= 1) {
@@ -80,14 +103,15 @@ export function PasswordStrengthIndicator({
     password?: string;
     className?: string;
 }) {
-    const { score, criteria, strengthLabel, strengthTone } = evaluatePassword(password);
+    const { score, criteria, strengthLabel, strengthTone } =
+        evaluatePassword(password);
     const hasInput = password.length > 0;
 
     return (
         <div
             className={cn(
                 'group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-gradient-to-b from-slate-50/90 via-white/80 to-slate-50/50 p-3.5 shadow-xs transition-all duration-300 dark:border-white/[0.08] dark:from-[#13161c] dark:via-[#0e1015] dark:to-[#0a0c10]',
-                className
+                className,
             )}
         >
             {/* Top Row: Title, Security Icon & Strength Badge */}
@@ -96,12 +120,18 @@ export function PasswordStrengthIndicator({
                     <div
                         className={cn(
                             'flex size-8 items-center justify-center rounded-xl border transition-colors duration-200',
-                            !hasInput && 'border-slate-200/80 bg-slate-100/80 text-slate-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-400',
-                            strengthTone === 'very-weak' && 'border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-400',
-                            strengthTone === 'weak' && 'border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-400',
-                            strengthTone === 'fair' && 'border-yellow-200 bg-yellow-50 text-yellow-600 dark:border-yellow-900/50 dark:bg-yellow-950/40 dark:text-yellow-400',
-                            strengthTone === 'strong' && 'border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-400',
-                            strengthTone === 'very-strong' && 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-400'
+                            !hasInput &&
+                                'border-slate-200/80 bg-slate-100/80 text-slate-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-400',
+                            strengthTone === 'very-weak' &&
+                                'border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-400',
+                            strengthTone === 'weak' &&
+                                'border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-400',
+                            strengthTone === 'fair' &&
+                                'border-yellow-200 bg-yellow-50 text-yellow-600 dark:border-yellow-900/50 dark:bg-yellow-950/40 dark:text-yellow-400',
+                            strengthTone === 'strong' &&
+                                'border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-400',
+                            strengthTone === 'very-strong' &&
+                                'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-400',
                         )}
                     >
                         {score >= 4 ? (
@@ -130,12 +160,18 @@ export function PasswordStrengthIndicator({
                 <div
                     className={cn(
                         'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wide transition-all duration-200',
-                        !hasInput && 'border-slate-200 bg-slate-100/70 text-slate-500 dark:border-white/10 dark:bg-white/[0.03] dark:text-zinc-400',
-                        strengthTone === 'very-weak' && 'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-800/40 dark:bg-rose-950/50 dark:text-rose-300',
-                        strengthTone === 'weak' && 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800/40 dark:bg-amber-950/50 dark:text-amber-300',
-                        strengthTone === 'fair' && 'border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-800/40 dark:bg-yellow-950/50 dark:text-yellow-300',
-                        strengthTone === 'strong' && 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800/40 dark:bg-blue-950/50 dark:text-blue-300',
-                        strengthTone === 'very-strong' && 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800/50 dark:bg-emerald-950/50 dark:text-emerald-300'
+                        !hasInput &&
+                            'border-slate-200 bg-slate-100/70 text-slate-500 dark:border-white/10 dark:bg-white/[0.03] dark:text-zinc-400',
+                        strengthTone === 'very-weak' &&
+                            'border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-800/40 dark:bg-rose-950/50 dark:text-rose-300',
+                        strengthTone === 'weak' &&
+                            'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800/40 dark:bg-amber-950/50 dark:text-amber-300',
+                        strengthTone === 'fair' &&
+                            'border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-800/40 dark:bg-yellow-950/50 dark:text-yellow-300',
+                        strengthTone === 'strong' &&
+                            'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-800/40 dark:bg-blue-950/50 dark:text-blue-300',
+                        strengthTone === 'very-strong' &&
+                            'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800/50 dark:bg-emerald-950/50 dark:text-emerald-300',
                     )}
                 >
                     <span
@@ -146,7 +182,7 @@ export function PasswordStrengthIndicator({
                             strengthTone === 'weak' && 'bg-amber-500',
                             strengthTone === 'fair' && 'bg-yellow-500',
                             strengthTone === 'strong' && 'bg-blue-500',
-                            strengthTone === 'very-strong' && 'bg-emerald-500'
+                            strengthTone === 'very-strong' && 'bg-emerald-500',
                         )}
                     />
                     <span>{hasInput ? strengthLabel : 'Belum Diisi'}</span>
@@ -175,7 +211,7 @@ export function PasswordStrengthIndicator({
                                                 : strengthTone === 'strong'
                                                   ? 'bg-gradient-to-r from-blue-500 to-indigo-500 shadow-[0_0_8px_rgba(59,130,246,0.4)]'
                                                   : 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-[0_0_10px_rgba(16,185,129,0.5)]'
-                                        : 'opacity-0'
+                                        : 'opacity-0',
                                 )}
                             />
                         </div>
@@ -195,7 +231,7 @@ export function PasswordStrengthIndicator({
                                 isFifth && 'sm:col-span-2 lg:col-span-1',
                                 c.met
                                     ? 'border-emerald-200/90 bg-emerald-50/90 font-medium text-emerald-900 shadow-2xs dark:border-emerald-800/40 dark:bg-emerald-950/30 dark:text-emerald-200'
-                                    : 'border-slate-200/70 bg-white/70 text-slate-500 hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#12151b] dark:text-zinc-400'
+                                    : 'border-slate-200/70 bg-white/70 text-slate-500 hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#12151b] dark:text-zinc-400',
                             )}
                         >
                             <div className="flex items-center gap-1.5 truncate">
@@ -204,7 +240,7 @@ export function PasswordStrengthIndicator({
                                         'flex size-4 shrink-0 items-center justify-center rounded-full text-[9px] transition-all duration-300',
                                         c.met
                                             ? 'bg-emerald-600 text-white shadow-xs dark:bg-emerald-500'
-                                            : 'bg-slate-200/80 text-slate-400 dark:bg-white/10 dark:text-zinc-500'
+                                            : 'bg-slate-200/80 text-slate-400 dark:bg-white/10 dark:text-zinc-500',
                                     )}
                                 >
                                     {c.met ? (
@@ -218,10 +254,10 @@ export function PasswordStrengthIndicator({
 
                             <span
                                 className={cn(
-                                    'rounded px-1 py-0.5 text-[9px] font-mono font-bold tracking-tight',
+                                    'rounded px-1 py-0.5 font-mono text-[9px] font-bold tracking-tight',
                                     c.met
                                         ? 'bg-emerald-100/80 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300'
-                                        : 'bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500'
+                                        : 'bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500',
                                 )}
                             >
                                 {c.shortTag}

@@ -64,12 +64,18 @@ type Message = {
 
 const EMOJI_OPTIONS = ['❤️', '👍', '😂', '😮', '😢', '🙏', '🔥'] as const;
 
-function getRealPresence(contact: { is_online: boolean; status_text: string; last_seen_at?: string | null }): {
+function getRealPresence(contact: {
+    is_online: boolean;
+    status_text: string;
+    last_seen_at?: string | null;
+}): {
     isOnline: boolean;
     statusText: string;
 } {
     if (contact.last_seen_at) {
-        const diffSeconds = Math.floor((Date.now() - new Date(contact.last_seen_at).getTime()) / 1000);
+        const diffSeconds = Math.floor(
+            (Date.now() - new Date(contact.last_seen_at).getTime()) / 1000,
+        );
 
         if (diffSeconds < 0 || diffSeconds <= 120) {
             return { isOnline: true, statusText: 'Aktif sekarang' };
@@ -77,12 +83,18 @@ function getRealPresence(contact: { is_online: boolean; status_text: string; las
 
         const diffMinutes = Math.floor(diffSeconds / 60);
         if (diffMinutes < 60) {
-            return { isOnline: false, statusText: `Aktif ${diffMinutes} menit lalu` };
+            return {
+                isOnline: false,
+                statusText: `Aktif ${diffMinutes} menit lalu`,
+            };
         }
 
         const diffHours = Math.floor(diffMinutes / 60);
         if (diffHours < 24) {
-            return { isOnline: false, statusText: `Aktif ${diffHours} jam lalu` };
+            return {
+                isOnline: false,
+                statusText: `Aktif ${diffHours} jam lalu`,
+            };
         }
 
         const diffDays = Math.floor(diffHours / 24);
@@ -93,11 +105,17 @@ function getRealPresence(contact: { is_online: boolean; status_text: string; las
                 hour12: false,
                 timeZone: 'Asia/Jakarta',
             }).format(new Date(contact.last_seen_at));
-            return { isOnline: false, statusText: `Aktif kemarin pukul ${timeStr} WIB` };
+            return {
+                isOnline: false,
+                statusText: `Aktif kemarin pukul ${timeStr} WIB`,
+            };
         }
 
         if (diffDays < 7) {
-            return { isOnline: false, statusText: `Aktif ${diffDays} hari lalu` };
+            return {
+                isOnline: false,
+                statusText: `Aktif ${diffDays} hari lalu`,
+            };
         }
 
         const dateStr = new Intl.DateTimeFormat('id-ID', {
@@ -110,7 +128,10 @@ function getRealPresence(contact: { is_online: boolean; status_text: string; las
         return { isOnline: false, statusText: `Aktif ${dateStr}` };
     }
 
-    return { isOnline: contact.is_online, statusText: contact.status_text || 'Offline' };
+    return {
+        isOnline: contact.is_online,
+        statusText: contact.status_text || 'Offline',
+    };
 }
 
 export function FloatingChat() {
@@ -122,7 +143,9 @@ export function FloatingChat() {
     const [searchQuery, setSearchQuery] = useState('');
     const [inputText, setInputText] = useState('');
     const [replyingTo, setReplyingTo] = useState<Message | null>(null);
-    const [activeReactionMenu, setActiveReactionMenu] = useState<string | null>(null);
+    const [activeReactionMenu, setActiveReactionMenu] = useState<string | null>(
+        null,
+    );
     const [totalUnread, setTotalUnread] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [isSending, setIsSending] = useState(false);
@@ -156,7 +179,9 @@ export function FloatingChat() {
                     );
                     if (updatedActive) {
                         setActiveContact((prev) =>
-                            prev && prev.id === currentId ? updatedActive : prev,
+                            prev && prev.id === currentId
+                                ? updatedActive
+                                : prev,
                         );
                     }
                 }
@@ -185,7 +210,9 @@ export function FloatingChat() {
                 setMessages(data.messages || []);
                 if (data.contact) {
                     setActiveContact((prev) =>
-                        prev && prev.id === userId ? { ...prev, ...data.contact } : prev,
+                        prev && prev.id === userId
+                            ? { ...prev, ...data.contact }
+                            : prev,
                     );
                 }
                 // Reset unread count locally
@@ -262,7 +289,8 @@ export function FloatingChat() {
                 avatar_url?: string | null;
                 title?: string;
             }>;
-            const { userId, name, email, avatar_url, title } = customEvent.detail || {};
+            const { userId, name, email, avatar_url, title } =
+                customEvent.detail || {};
             if (!userId) return;
 
             setIsOpen(true);
@@ -286,7 +314,11 @@ export function FloatingChat() {
         };
 
         window.addEventListener('open-floating-chat', handleOpenFloatingChat);
-        return () => window.removeEventListener('open-floating-chat', handleOpenFloatingChat);
+        return () =>
+            window.removeEventListener(
+                'open-floating-chat',
+                handleOpenFloatingChat,
+            );
     }, [contacts]);
 
     // Auto-scroll on new messages
@@ -431,21 +463,24 @@ export function FloatingChat() {
         );
 
         try {
-            const res = await fetch(`/api/chat/messages/${messageId}/reaction`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN':
-                        (
-                            document.querySelector(
-                                'meta[name="csrf-token"]',
-                            ) as HTMLMetaElement
-                        )?.content || '',
+            const res = await fetch(
+                `/api/chat/messages/${messageId}/reaction`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN':
+                            (
+                                document.querySelector(
+                                    'meta[name="csrf-token"]',
+                                ) as HTMLMetaElement
+                            )?.content || '',
+                    },
+                    body: JSON.stringify({ reaction: emoji }),
                 },
-                body: JSON.stringify({ reaction: emoji }),
-            });
+            );
 
             if (res.ok) {
                 const data = await res.json();
@@ -469,7 +504,7 @@ export function FloatingChat() {
     );
 
     return (
-        <div className="fixed right-3.5 bottom-17 sm:right-5 sm:bottom-5 z-40 flex flex-col items-end">
+        <div className="fixed right-3.5 bottom-17 z-40 flex flex-col items-end sm:right-5 sm:bottom-5">
             {/* Pop-up Modal Window */}
             {isOpen && (
                 <div className="mb-2.5 flex h-[calc(100svh-8.5rem)] max-h-[520px] w-[calc(100vw-1.75rem)] max-w-[380px] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl transition-all sm:h-[510px] sm:w-[390px] dark:border-white/10 dark:bg-[#14161b]">
@@ -484,7 +519,7 @@ export function FloatingChat() {
                                         Pesan Langsung
                                     </h2>
                                     {totalUnread > 0 && (
-                                        <span className="rounded-full bg-blue-600 px-1.5 py-0.2 font-mono text-[9px] font-bold text-white">
+                                        <span className="py-0.2 rounded-full bg-blue-600 px-1.5 font-mono text-[9px] font-bold text-white">
                                             {totalUnread}
                                         </span>
                                     )}
@@ -524,7 +559,8 @@ export function FloatingChat() {
                                     </div>
                                 ) : (
                                     filteredContacts.map((contact) => {
-                                        const presence = getRealPresence(contact);
+                                        const presence =
+                                            getRealPresence(contact);
 
                                         return (
                                             <button
@@ -543,13 +579,17 @@ export function FloatingChat() {
                                                                 src={
                                                                     contact.avatar_url
                                                                 }
-                                                                alt={contact.name}
+                                                                alt={
+                                                                    contact.name
+                                                                }
                                                                 className="size-full rounded-full object-cover"
                                                             />
                                                         ) : (
                                                             contact.name
                                                                 .split(' ')
-                                                                .map((n) => n[0])
+                                                                .map(
+                                                                    (n) => n[0],
+                                                                )
                                                                 .slice(0, 2)
                                                                 .join('')
                                                         )}
@@ -561,7 +601,9 @@ export function FloatingChat() {
                                                                 ? 'bg-emerald-500'
                                                                 : 'bg-slate-300 dark:bg-zinc-600',
                                                         )}
-                                                        title={presence.statusText}
+                                                        title={
+                                                            presence.statusText
+                                                        }
                                                     />
                                                 </div>
 
@@ -588,7 +630,9 @@ export function FloatingChat() {
                                                                         : 'text-slate-400 dark:text-zinc-500',
                                                                 )}
                                                             >
-                                                                {presence.statusText}
+                                                                {
+                                                                    presence.statusText
+                                                                }
                                                             </span>
                                                         )}
                                                     </div>
@@ -607,8 +651,10 @@ export function FloatingChat() {
                                                                     }
                                                                 </span>
                                                             ) : (
-                                                                <span className="italic text-slate-400">
-                                                                    {contact.title}
+                                                                <span className="text-slate-400 italic">
+                                                                    {
+                                                                        contact.title
+                                                                    }
                                                                 </span>
                                                             )}
                                                         </p>
@@ -633,7 +679,8 @@ export function FloatingChat() {
                         <div className="flex h-full flex-col">
                             {/* Active Chat Header */}
                             {(() => {
-                                const activePresence = getRealPresence(activeContact);
+                                const activePresence =
+                                    getRealPresence(activeContact);
                                 return (
                                     <div className="flex h-13 items-center justify-between border-b border-slate-100 bg-slate-50/60 px-3 dark:border-white/[0.06] dark:bg-[#121418]">
                                         <div className="flex items-center gap-2">
@@ -651,7 +698,9 @@ export function FloatingChat() {
                                                             src={
                                                                 activeContact.avatar_url
                                                             }
-                                                            alt={activeContact.name}
+                                                            alt={
+                                                                activeContact.name
+                                                            }
                                                             className="size-full rounded-full object-cover"
                                                         />
                                                     ) : (
@@ -777,7 +826,7 @@ export function FloatingChat() {
                                                                 {msg.reply_to && (
                                                                     <div
                                                                         className={cn(
-                                                                            'mb-2 rounded-lg px-2.5 py-1.5 text-left border-l-[3px]',
+                                                                            'mb-2 rounded-lg border-l-[3px] px-2.5 py-1.5 text-left',
                                                                             msg.is_outgoing
                                                                                 ? 'border-white/90 bg-blue-700/80 text-white'
                                                                                 : 'border-blue-600 bg-slate-200/80 text-slate-800 dark:bg-zinc-700/80 dark:text-zinc-200',
@@ -817,8 +866,10 @@ export function FloatingChat() {
                                                                     </div>
                                                                 )}
 
-                                                                <p className="text-[12.5px] leading-relaxed break-words font-normal">
-                                                                    {msg.message}
+                                                                <p className="text-[12.5px] leading-relaxed font-normal break-words">
+                                                                    {
+                                                                        msg.message
+                                                                    }
                                                                 </p>
                                                             </div>
 
@@ -925,7 +976,7 @@ export function FloatingChat() {
                                                                             </span>
                                                                             {r.count >
                                                                                 1 && (
-                                                                                <span className="font-bold text-[9px]">
+                                                                                <span className="text-[9px] font-bold">
                                                                                     {
                                                                                         r.count
                                                                                     }
@@ -1025,7 +1076,9 @@ export function FloatingChat() {
                                     <Button
                                         type="submit"
                                         size="sm"
-                                        disabled={!inputText.trim() || isSending}
+                                        disabled={
+                                            !inputText.trim() || isSending
+                                        }
                                         className="h-8 shrink-0 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-slate-900"
                                     >
                                         <Send className="size-3" />

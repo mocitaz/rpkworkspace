@@ -1,9 +1,11 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import {
     AlertTriangle,
+    Award,
     Banknote,
     Briefcase,
     Building2,
+    Calendar,
     Check,
     CheckCheck,
     CheckCircle2,
@@ -12,18 +14,27 @@ import {
     ChevronUp,
     Contact,
     Copy,
+    CreditCard,
+    ExternalLink,
     FileText,
+    GraduationCap,
     KeyRound,
     Layers,
     Mail,
+    MapPin,
     MessageSquare,
     Pencil,
+    Phone,
     RotateCcw,
+    Scale,
     Search,
     Shield,
     ShieldAlert,
     ShieldCheck,
+    Smartphone,
+    Sparkles,
     Trash2,
+    UserCheck,
     UserPlus,
     Users,
 } from 'lucide-react';
@@ -74,6 +85,23 @@ type User = {
     avatar_url?: string | null;
     is_active: boolean;
     created_at?: string;
+    phone?: string | null;
+    address?: string | null;
+    ktp_address?: string | null;
+    birth_date?: string | null;
+    advocate_license_no?: string | null;
+    bas_number?: string | null;
+    bas_date?: string | null;
+    kta_expiry_date?: string | null;
+    practice_areas?: string | null;
+    education?: string | null;
+    hourly_rate?: number | string | null;
+    bank_name?: string | null;
+    bank_account_number?: string | null;
+    bank_account_holder?: string | null;
+    npwp?: string | null;
+    matter_capacity_limit?: number | null;
+    supervisor_name?: string | null;
     roles: Role[];
 };
 type Page = {
@@ -811,11 +839,9 @@ function StaffCard({
             onClick={() => onViewDetail(user)}
             className="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-200/50 dark:border-white/[0.08] dark:bg-[#13151b] dark:hover:border-white/20 dark:hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.5)]"
         >
-            {/* Top subtle ambient highlight */}
             <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-slate-300 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:via-white/20" />
 
             <div className="space-y-3">
-                {/* 1. Header: NIP Monospace Badge & Live Status */}
                 <div className="flex items-center justify-between gap-2">
                     <div className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/70 bg-slate-50/90 px-2.5 py-0.5 font-mono text-[10px] font-bold text-slate-700 shadow-2xs dark:border-white/5 dark:bg-zinc-800/80 dark:text-zinc-300">
                         <Shield className="size-3 text-slate-400 dark:text-zinc-400" />
@@ -845,7 +871,6 @@ function StaffCard({
                     </span>
                 </div>
 
-                {/* 2. Profile Persona: Avatar & Details */}
                 <div className="flex items-center gap-3 pt-0.5">
                     <div className="relative shrink-0">
                         <div className="rounded-2xl bg-gradient-to-b from-slate-200/80 to-slate-100 p-0.5 shadow-2xs transition-all duration-300 group-hover:from-blue-500/40 group-hover:to-indigo-500/20 dark:from-white/15 dark:to-white/5">
@@ -876,18 +901,25 @@ function StaffCard({
                         <p className="line-clamp-1 text-[11px] font-semibold text-slate-600 dark:text-zinc-300">
                             {user.position_title || 'Staf Kantor Hukum'}
                         </p>
-                        {user.department && (
-                            <div className="flex items-center gap-1 truncate text-[10.5px] text-slate-400 dark:text-zinc-400">
-                                <Building2 className="size-3 shrink-0 text-slate-400 dark:text-zinc-500" />
-                                <span className="truncate">
-                                    {user.department}
+                        <div className="flex items-center gap-2 truncate text-[10.5px] text-slate-400 dark:text-zinc-400">
+                            {user.department && (
+                                <span className="flex items-center gap-1 truncate">
+                                    <Building2 className="size-3 shrink-0 text-slate-400 dark:text-zinc-500" />
+                                    <span className="truncate">
+                                        {user.department}
+                                    </span>
                                 </span>
-                            </div>
-                        )}
+                            )}
+                            {user.advocate_license_no && (
+                                <span className="py-0.2 inline-flex items-center gap-0.5 rounded bg-blue-50 px-1.5 font-mono text-[9px] font-semibold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
+                                    <Scale className="size-2.5" />
+                                    Advokat
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                {/* 3. Interactive Email Pill Box with Instant Copy */}
                 <div
                     onClick={handleCopyEmail}
                     title="Klik untuk menyalin email"
@@ -912,7 +944,6 @@ function StaffCard({
                 </div>
             </div>
 
-            {/* 4. Bottom Action Bar */}
             <div className="mt-3.5 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-white/[0.05]">
                 <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-zinc-200 dark:group-hover:text-blue-400">
                     <Contact className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-400 dark:group-hover:text-blue-400" />
@@ -921,6 +952,18 @@ function StaffCard({
                 </div>
 
                 <div className="flex items-center gap-1">
+                    {user.phone && (
+                        <a
+                            href={`https://wa.me/${user.phone.replace(/[^0-9]/g, '')}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            title={`Chat WhatsApp: ${user.phone}`}
+                            className="flex h-7 w-7 items-center justify-center rounded-lg text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/40"
+                        >
+                            <Smartphone className="size-3.5" />
+                        </a>
+                    )}
                     <Button
                         type="button"
                         variant="ghost"
@@ -961,6 +1004,7 @@ function StaffDetailModal({
 }) {
     const getInitials = useInitials();
     const [copiedEmail, setCopiedEmail] = useState(false);
+    const [copiedPhone, setCopiedPhone] = useState(false);
     const [copiedId, setCopiedId] = useState(false);
 
     if (!user) return null;
@@ -968,11 +1012,14 @@ function StaffDetailModal({
     const displayId =
         user.employee_code || `RPK-${user.id.toString().padStart(3, '0')}`;
 
-    const handleCopy = (text: string, type: 'email' | 'id') => {
+    const handleCopy = (text: string, type: 'email' | 'phone' | 'id') => {
         navigator.clipboard.writeText(text);
         if (type === 'email') {
             setCopiedEmail(true);
             setTimeout(() => setCopiedEmail(false), 2000);
+        } else if (type === 'phone') {
+            setCopiedPhone(true);
+            setTimeout(() => setCopiedPhone(false), 2000);
         } else {
             setCopiedId(true);
             setTimeout(() => setCopiedId(false), 2000);
@@ -981,14 +1028,11 @@ function StaffDetailModal({
 
     return (
         <Dialog open={!!user} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-h-[92vh] overflow-y-auto rounded-3xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#12141a]">
-                {/* 1. Luxury Executive Digital ID Pass Header */}
+            <DialogContent className="max-h-[92vh] overflow-y-auto rounded-3xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#12141a]">
                 <div className="relative overflow-hidden bg-gradient-to-b from-slate-950 via-[#0d111c] to-[#121727] p-6 pb-6 text-center text-white">
-                    {/* Ambient Glows */}
                     <div className="pointer-events-none absolute -top-12 -left-12 size-40 rounded-full bg-blue-500/15 blur-2xl" />
                     <div className="pointer-events-none absolute -right-10 -bottom-10 size-44 rounded-full bg-indigo-500/15 blur-2xl" />
 
-                    {/* Top Seal & Holographic Monospace ID */}
                     <div className="relative z-10 mb-4 flex items-center justify-between pr-8 text-[10px] font-bold tracking-wider uppercase">
                         <span className="flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-slate-200 backdrop-blur-md">
                             <Shield className="size-3 text-blue-400" />
@@ -999,7 +1043,6 @@ function StaffDetailModal({
                         </span>
                     </div>
 
-                    {/* Centered Avatar Persona with Glow & Ring */}
                     <div className="relative z-10 flex flex-col items-center">
                         <div className="relative">
                             <div className="rounded-2xl bg-gradient-to-b from-white/30 via-white/10 to-white/5 p-1 shadow-2xl backdrop-blur-md">
@@ -1040,9 +1083,23 @@ function StaffDetailModal({
                             )}
                         </div>
 
-                        {/* Roles Badges if any */}
+                        <div className="mt-2 flex flex-wrap items-center justify-center gap-1.5">
+                            {user.advocate_license_no && (
+                                <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-500/20 px-2.5 py-0.5 text-[10px] font-semibold text-amber-200 backdrop-blur-xs">
+                                    <Scale className="size-3 text-amber-300" />
+                                    NIA: {user.advocate_license_no}
+                                </span>
+                            )}
+                            {user.education && (
+                                <span className="inline-flex items-center gap-1 rounded-full border border-slate-400/30 bg-white/10 px-2.5 py-0.5 text-[10px] font-medium text-slate-200 backdrop-blur-xs">
+                                    <GraduationCap className="size-3 text-slate-300" />
+                                    {user.education}
+                                </span>
+                            )}
+                        </div>
+
                         {user.roles && user.roles.length > 0 && (
-                            <div className="mt-2.5 flex flex-wrap items-center justify-center gap-1">
+                            <div className="mt-2 flex flex-wrap items-center justify-center gap-1">
                                 {user.roles.map((role) => (
                                     <span
                                         key={role.id}
@@ -1057,9 +1114,7 @@ function StaffDetailModal({
                     </div>
                 </div>
 
-                {/* 2. Structured Credential Body (Bento Style) */}
                 <div className="space-y-3 p-5 text-xs">
-                    {/* Box 1: Kontak & Kredensial Login */}
                     <div className="space-y-2 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/[0.06] dark:bg-[#0f1117]">
                         <div className="flex items-center justify-between">
                             <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
@@ -1080,51 +1135,148 @@ function StaffDetailModal({
                             </span>
                         </div>
 
-                        <div className="flex items-center justify-between gap-2 rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
-                            <div className="flex min-w-0 items-center gap-2">
-                                <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-zinc-700 dark:text-zinc-300">
-                                    <Mail className="size-3.5" />
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                            <div className="flex items-center justify-between gap-2 rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
+                                <div className="flex min-w-0 items-center gap-2">
+                                    <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-zinc-700 dark:text-zinc-300">
+                                        <Mail className="size-3.5" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <span className="block text-[9.5px] font-medium text-slate-400 dark:text-zinc-400">
+                                            Email Kerja
+                                        </span>
+                                        <span className="block truncate font-mono text-xs font-semibold text-slate-900 dark:text-white">
+                                            {user.email}
+                                        </span>
+                                    </div>
                                 </div>
-                                <div className="min-w-0">
-                                    <span className="block text-[9.5px] font-medium text-slate-400 dark:text-zinc-400">
-                                        Email Kerja Resmi
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() =>
+                                        handleCopy(user.email, 'email')
+                                    }
+                                    className="h-7 shrink-0 rounded-lg px-2 text-[11px] font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                                    title="Salin Email"
+                                >
+                                    {copiedEmail ? (
+                                        <Check className="size-3 text-emerald-600" />
+                                    ) : (
+                                        <Copy className="size-3 text-slate-400" />
+                                    )}
+                                </Button>
+                            </div>
+
+                            <div className="flex items-center justify-between gap-2 rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
+                                <div className="flex min-w-0 items-center gap-2">
+                                    <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
+                                        <Phone className="size-3.5" />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <span className="block text-[9.5px] font-medium text-slate-400 dark:text-zinc-400">
+                                            WhatsApp / Telepon
+                                        </span>
+                                        <span className="block truncate font-mono text-xs font-semibold text-slate-900 dark:text-white">
+                                            {user.phone || '-'}
+                                        </span>
+                                    </div>
+                                </div>
+                                {user.phone ? (
+                                    <div className="flex items-center gap-1">
+                                        <a
+                                            href={`https://wa.me/${user.phone.replace(/[^0-9]/g, '')}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex h-7 w-7 items-center justify-center rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40"
+                                            title="Chat via WhatsApp"
+                                        >
+                                            <Smartphone className="size-3.5" />
+                                        </a>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                handleCopy(user.phone!, 'phone')
+                                            }
+                                            className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-zinc-200"
+                                            title="Salin Nomor Telepon"
+                                        >
+                                            {copiedPhone ? (
+                                                <Check className="size-3 text-emerald-600" />
+                                            ) : (
+                                                <Copy className="size-3 text-slate-400" />
+                                            )}
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <span className="text-[10px] text-slate-400 dark:text-zinc-500">
+                                        Belum diisi
                                     </span>
-                                    <span className="block truncate font-mono text-xs font-semibold text-slate-900 dark:text-white">
-                                        {user.email}
+                                )}
+                            </div>
+                        </div>
+
+                        {user.address && (
+                            <div className="rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
+                                <span className="flex items-center gap-1 text-[9.5px] font-medium text-slate-400 dark:text-zinc-400">
+                                    <MapPin className="size-3 text-slate-400" />
+                                    Alamat Domisili
+                                </span>
+                                <p className="mt-0.5 text-xs text-slate-800 dark:text-zinc-200">
+                                    {user.address}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    {(user.advocate_license_no ||
+                        user.bas_number ||
+                        user.practice_areas) && (
+                        <div className="space-y-2 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/[0.06] dark:bg-[#0f1117]">
+                            <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                <Scale className="size-3 text-amber-500" />
+                                Legalitas &amp; Kredensial Advokat
+                            </span>
+
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
+                                    <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-400">
+                                        Nomor Induk Advokat (NIA)
+                                    </span>
+                                    <span className="mt-0.5 block font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                        {user.advocate_license_no || '-'}
+                                    </span>
+                                </div>
+                                <div className="rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
+                                    <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-400">
+                                        No. BAS Pengadilan Tinggi
+                                    </span>
+                                    <span className="mt-0.5 block font-mono text-xs font-semibold text-slate-900 dark:text-white">
+                                        {user.bas_number || '-'}
                                     </span>
                                 </div>
                             </div>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleCopy(user.email, 'email')}
-                                className="h-7 shrink-0 rounded-lg px-2 text-[11px] font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-zinc-700"
-                                title="Salin Email"
-                            >
-                                {copiedEmail ? (
-                                    <>
-                                        <Check className="mr-1 size-3 text-emerald-600" />
-                                        Disalin!
-                                    </>
-                                ) : (
-                                    <>
-                                        <Copy className="mr-1 size-3 text-slate-400" />
-                                        Salin
-                                    </>
-                                )}
-                            </Button>
-                        </div>
-                    </div>
 
-                    {/* Box 2: Informasi Identitas Pegawai (2-Col Grid) */}
+                            {user.practice_areas && (
+                                <div className="rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
+                                    <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-400">
+                                        Bidang Keahlian / Practice Areas
+                                    </span>
+                                    <p className="mt-0.5 text-xs text-slate-800 dark:text-zinc-200">
+                                        {user.practice_areas}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     <div className="space-y-2 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/[0.06] dark:bg-[#0f1117]">
                         <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                             <ShieldCheck className="size-3 text-slate-400 dark:text-zinc-500" />
-                            Informasi Identitas Pegawai
+                            Identitas Pegawai &amp; Operasional
                         </span>
 
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                             <div className="rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
                                 <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-400">
                                     Nomor NIP / ID
@@ -1158,10 +1310,33 @@ function StaffDetailModal({
                                     {user.department || '-'}
                                 </span>
                             </div>
+
+                            <div className="rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
+                                <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-400">
+                                    Kapasitas Perkara
+                                </span>
+                                <span className="mt-0.5 block text-xs font-semibold text-slate-900 dark:text-white">
+                                    {user.matter_capacity_limit ?? 10} Perkara
+                                </span>
+                            </div>
                         </div>
+
+                        {user.hourly_rate && (
+                            <div className="flex items-center justify-between rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80">
+                                <span className="text-[10px] font-medium text-slate-500 dark:text-zinc-400">
+                                    Tarif Billing per Jam (Hourly Rate)
+                                </span>
+                                <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                                    Rp{' '}
+                                    {Number(user.hourly_rate).toLocaleString(
+                                        'id-ID',
+                                    )}{' '}
+                                    / jam
+                                </span>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Minimal Verification Watermark */}
                     <div className="flex items-center justify-between rounded-xl border border-dashed border-slate-200 px-3 py-1.5 text-[10px] text-slate-400 dark:border-white/10 dark:text-zinc-500">
                         <span className="flex items-center gap-1 font-medium">
                             <CheckCheck className="size-3 text-emerald-500" />
@@ -1172,7 +1347,6 @@ function StaffDetailModal({
                         </span>
                     </div>
 
-                    {/* 3. Footer Action Buttons */}
                     <div className="flex flex-col items-center justify-between gap-2 border-t border-slate-100 pt-3 sm:flex-row dark:border-white/[0.06]">
                         <div className="flex w-full items-center gap-1.5 sm:w-auto">
                             <Button
@@ -1197,6 +1371,23 @@ function StaffDetailModal({
                                 <MessageSquare className="mr-1.5 size-3.5" />
                                 Kirim Pesan
                             </Button>
+                            {user.phone && (
+                                <Button
+                                    asChild
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 flex-1 rounded-xl border-emerald-200 bg-emerald-50/50 px-3 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 sm:flex-initial dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300"
+                                >
+                                    <a
+                                        href={`https://wa.me/${user.phone.replace(/[^0-9]/g, '')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Smartphone className="mr-1.5 size-3.5" />
+                                        WhatsApp
+                                    </a>
+                                </Button>
+                            )}
                             <Button
                                 asChild
                                 variant="outline"
@@ -1240,6 +1431,663 @@ function StaffDetailModal({
         </Dialog>
     );
 }
+
+function EditUserDialog({
+    user,
+    roles,
+    onOpenChange,
+    onDeleteClick,
+}: {
+    user: User | null;
+    roles: Role[];
+    onOpenChange: (open: boolean) => void;
+    onDeleteClick?: (user: User) => void;
+}) {
+    const getInitials = useInitials();
+    const [activeTab, setActiveTab] = useState<
+        'account' | 'advocate' | 'contact' | 'billing'
+    >('account');
+
+    if (!user) return null;
+
+    const assignedRoleIds = new Set(user.roles.map((role) => role.id));
+
+    return (
+        <Dialog open={!!user} onOpenChange={onOpenChange}>
+            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-2xl dark:border-white/10 dark:bg-[#14161b]">
+                <div className="border-b border-slate-100 bg-slate-50/70 p-5 dark:border-white/[0.06] dark:bg-[#121418]">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <Avatar className="size-11 shrink-0 rounded-xl border border-slate-200 shadow-2xs dark:border-white/10">
+                                <AvatarImage
+                                    src={user.avatar_url ?? undefined}
+                                    className="object-cover"
+                                />
+                                <AvatarFallback className="rounded-xl bg-slate-900 text-xs font-bold text-white dark:bg-zinc-800 dark:text-zinc-200">
+                                    {getInitials(user.name)}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0">
+                                <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                    Kelola Staf: {user.name}
+                                </DialogTitle>
+                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                    {user.email}{' '}
+                                    {user.position_title
+                                        ? `· ${user.position_title}`
+                                        : ''}
+                                </DialogDescription>
+                            </div>
+                        </div>
+
+                        <span className="hidden rounded-lg border border-slate-200/70 bg-white px-2.5 py-1 font-mono text-[10.5px] font-bold text-slate-700 sm:inline-flex dark:border-white/5 dark:bg-zinc-800 dark:text-zinc-300">
+                            {user.employee_code ||
+                                `RPK-${user.id.toString().padStart(3, '0')}`}
+                        </span>
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap gap-1.5 border-t border-slate-200/60 pt-3 dark:border-white/5">
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('account')}
+                            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                activeTab === 'account'
+                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                    : 'text-slate-600 hover:bg-slate-200/60 dark:text-zinc-400 dark:hover:bg-zinc-800'
+                            }`}
+                        >
+                            <UserCheck className="size-3.5" />
+                            Akun &amp; Peran
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('advocate')}
+                            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                activeTab === 'advocate'
+                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                    : 'text-slate-600 hover:bg-slate-200/60 dark:text-zinc-400 dark:hover:bg-zinc-800'
+                            }`}
+                        >
+                            <Scale className="size-3.5" />
+                            Kredensial Advokat
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('contact')}
+                            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                activeTab === 'contact'
+                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                    : 'text-slate-600 hover:bg-slate-200/60 dark:text-zinc-400 dark:hover:bg-zinc-800'
+                            }`}
+                        >
+                            <Phone className="size-3.5" />
+                            Kontak &amp; Domisili
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setActiveTab('billing')}
+                            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                activeTab === 'billing'
+                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                    : 'text-slate-600 hover:bg-slate-200/60 dark:text-zinc-400 dark:hover:bg-zinc-800'
+                            }`}
+                        >
+                            <Banknote className="size-3.5" />
+                            Billing &amp; Keuangan
+                        </button>
+                    </div>
+                </div>
+
+                <Form
+                    {...userRoutes.update.form(user.id)}
+                    className="space-y-4 p-5"
+                    onSuccess={() => onOpenChange(false)}
+                >
+                    {({ errors, processing }) => (
+                        <>
+                            {activeTab === 'account' && (
+                                <div className="space-y-3">
+                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                                        <Field
+                                            name="name"
+                                            label="Nama Lengkap"
+                                            defaultValue={user.name}
+                                            required
+                                        />
+                                        <Field
+                                            name="email"
+                                            label="Alamat Email"
+                                            type="email"
+                                            defaultValue={user.email}
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                                        <Field
+                                            name="position_title"
+                                            label="Jabatan / Posisi"
+                                            defaultValue={
+                                                user.position_title ?? ''
+                                            }
+                                            placeholder="Contoh: Senior Associate / Partner"
+                                        />
+                                        <Field
+                                            name="employee_code"
+                                            label="Nomor NIP / ID Staf"
+                                            defaultValue={
+                                                user.employee_code ?? ''
+                                            }
+                                            placeholder="Contoh: RPK-2026-001"
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+                                        <Field
+                                            name="department"
+                                            label="Departemen / Divisi"
+                                            defaultValue={user.department ?? ''}
+                                            placeholder="Litigasi & Arbitrase"
+                                        />
+                                        <Field
+                                            name="employment_type"
+                                            label="Tipe Kepegawaian"
+                                            defaultValue={
+                                                user.employment_type ?? ''
+                                            }
+                                            placeholder="Full-time / Of Counsel"
+                                        />
+                                        <Field
+                                            name="work_mode"
+                                            label="Mode Kerja"
+                                            defaultValue={user.work_mode ?? ''}
+                                            placeholder="WFO / Hybrid / Remote"
+                                        />
+                                    </div>
+
+                                    <Field
+                                        name="password"
+                                        label="Ubah Password (Opsional)"
+                                        type="password"
+                                        placeholder="Kosongkan jika tidak ingin mengganti password"
+                                    />
+
+                                    <div className="space-y-2 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/[0.06] dark:bg-[#121418]">
+                                        <Label className="text-xs font-semibold text-slate-900 dark:text-white">
+                                            Role Kewenangan Sistem
+                                        </Label>
+                                        <div className="grid grid-cols-1 gap-1 pt-0.5 sm:grid-cols-2">
+                                            {roles.map((role) => (
+                                                <label
+                                                    key={role.id}
+                                                    className="flex cursor-pointer items-center gap-2 rounded-lg p-1.5 text-xs hover:bg-white dark:hover:bg-zinc-800"
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        name="role_ids[]"
+                                                        value={role.id}
+                                                        defaultChecked={assignedRoleIds.has(
+                                                            role.id,
+                                                        )}
+                                                        className="size-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
+                                                    />
+                                                    <span className="font-semibold text-slate-900 dark:text-white">
+                                                        {role.name}
+                                                    </span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                        <InputError message={errors.role_ids} />
+                                    </div>
+
+                                    <div className="flex items-center gap-2 rounded-xl border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/5 dark:bg-zinc-800/40">
+                                        <input
+                                            type="checkbox"
+                                            id="is_active"
+                                            name="is_active"
+                                            value="1"
+                                            defaultChecked={user.is_active}
+                                            className="size-3.5 rounded border-slate-300 text-slate-900"
+                                        />
+                                        <Label
+                                            htmlFor="is_active"
+                                            className="cursor-pointer text-xs font-semibold text-slate-800 dark:text-zinc-200"
+                                        >
+                                            Akun Aktif (Dapat Login &amp;
+                                            Mengakses Sistem)
+                                        </Label>
+                                    </div>
+                                </div>
+                            )}
+
+                            {activeTab === 'advocate' && (
+                                <div className="space-y-3">
+                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                                        <Field
+                                            name="advocate_license_no"
+                                            label="Nomor Induk Advokat (NIA PERADI / KAI)"
+                                            defaultValue={
+                                                user.advocate_license_no ?? ''
+                                            }
+                                            placeholder="Contoh: 18.01234/PERADI"
+                                        />
+                                        <Field
+                                            name="education"
+                                            label="Gelar &amp; Riwayat Pendidikan"
+                                            defaultValue={user.education ?? ''}
+                                            placeholder="Contoh: S.H. (UI), LL.M. (Leiden)"
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                                        <Field
+                                            name="bas_number"
+                                            label="Nomor Berita Acara Sumpah (BAS)"
+                                            defaultValue={user.bas_number ?? ''}
+                                            placeholder="No. Surat Pengadilan Tinggi"
+                                        />
+                                        <Field
+                                            name="bas_date"
+                                            label="Tanggal Sumpah Advokat (BAS)"
+                                            type="date"
+                                            defaultValue={
+                                                user.bas_date
+                                                    ? user.bas_date.split(
+                                                          'T',
+                                                      )[0]
+                                                    : ''
+                                            }
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                                        <Field
+                                            name="kta_expiry_date"
+                                            label="Masa Berlaku KTA Advokat"
+                                            type="date"
+                                            defaultValue={
+                                                user.kta_expiry_date
+                                                    ? user.kta_expiry_date.split(
+                                                          'T',
+                                                      )[0]
+                                                    : ''
+                                            }
+                                            helperText="Sistem akan memberikan pengingat sebelum masa berlaku habis"
+                                        />
+                                    </div>
+
+                                    <TextareaField
+                                        name="practice_areas"
+                                        label="Bidang Keahlian / Spesialisasi Hukum (Practice Areas)"
+                                        defaultValue={user.practice_areas ?? ''}
+                                        placeholder="Contoh: Corporate M&A, Commercial Litigation, Dispute Resolution, IPR, Employment Law"
+                                        rows={3}
+                                    />
+                                </div>
+                            )}
+
+                            {activeTab === 'contact' && (
+                                <div className="space-y-3">
+                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                                        <Field
+                                            name="phone"
+                                            label="Nomor WhatsApp / HP Resmi"
+                                            defaultValue={user.phone ?? ''}
+                                            placeholder="Contoh: 081234567890"
+                                            helperText="Digunakan untuk tombol chat WhatsApp langsung"
+                                        />
+                                        <Field
+                                            name="birth_date"
+                                            label="Tanggal Lahir"
+                                            type="date"
+                                            defaultValue={
+                                                user.birth_date
+                                                    ? user.birth_date.split(
+                                                          'T',
+                                                      )[0]
+                                                    : ''
+                                            }
+                                        />
+                                    </div>
+
+                                    <TextareaField
+                                        name="address"
+                                        label="Alamat Domisili Saat Ini"
+                                        defaultValue={user.address ?? ''}
+                                        placeholder="Alamat tempat tinggal lengkap staf saat ini..."
+                                        rows={2}
+                                    />
+
+                                    <TextareaField
+                                        name="ktp_address"
+                                        label="Alamat Sesuai KTP"
+                                        defaultValue={user.ktp_address ?? ''}
+                                        placeholder="Alamat resmi yang tertera pada kartu identitas KTP..."
+                                        rows={2}
+                                    />
+                                </div>
+                            )}
+
+                            {activeTab === 'billing' && (
+                                <div className="space-y-3">
+                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                                        <Field
+                                            name="hourly_rate"
+                                            label="Tarif Billing per Jam (Hourly Rate Rp)"
+                                            type="number"
+                                            defaultValue={
+                                                user.hourly_rate ?? ''
+                                            }
+                                            placeholder="Contoh: 1500000"
+                                            helperText="Digunakan untuk kalkulasi otomatis timesheet & invoice"
+                                        />
+                                        <Field
+                                            name="npwp"
+                                            label="Nomor Pokok Wajib Pajak (NPWP)"
+                                            defaultValue={user.npwp ?? ''}
+                                            placeholder="Contoh: 01.234.567.8-901.000"
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2 rounded-2xl border border-slate-200/70 bg-slate-50/60 p-3.5 dark:border-white/[0.06] dark:bg-[#121418]">
+                                        <Label className="text-xs font-semibold text-slate-900 dark:text-white">
+                                            Informasi Rekening Bank (Payroll /
+                                            Fee Share)
+                                        </Label>
+                                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                                            <Field
+                                                name="bank_name"
+                                                label="Nama Bank"
+                                                defaultValue={
+                                                    user.bank_name ?? ''
+                                                }
+                                                placeholder="BCA / Mandiri / BNI"
+                                            />
+                                            <Field
+                                                name="bank_account_number"
+                                                label="Nomor Rekening"
+                                                defaultValue={
+                                                    user.bank_account_number ??
+                                                    ''
+                                                }
+                                                placeholder="1234567890"
+                                            />
+                                            <Field
+                                                name="bank_account_holder"
+                                                label="Atas Nama Rekening"
+                                                defaultValue={
+                                                    user.bank_account_holder ??
+                                                    ''
+                                                }
+                                                placeholder="Nama Pemilik Rekening"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                                        <Field
+                                            name="matter_capacity_limit"
+                                            label="Batas Maksimal Beban Perkara Aktif"
+                                            type="number"
+                                            defaultValue={
+                                                user.matter_capacity_limit ?? 10
+                                            }
+                                            placeholder="10"
+                                            helperText="Jumlah maksimal perkara simultan yang dapat ditangani"
+                                        />
+                                        <Field
+                                            name="supervisor_name"
+                                            label="Atasan Langsung / Lead Partner"
+                                            defaultValue={
+                                                user.supervisor_name ?? ''
+                                            }
+                                            placeholder="Nama Managing Partner / Supervisor"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                        const target = user;
+                                        onOpenChange(false);
+                                        onDeleteClick?.(target);
+                                    }}
+                                    className="h-8 cursor-pointer rounded-xl px-3 text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/30"
+                                >
+                                    <Trash2 className="mr-1.5 size-3.5" />
+                                    Hapus Akun
+                                </Button>
+                                <div className="flex items-center gap-2">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => onOpenChange(false)}
+                                        className="h-8 rounded-xl border-slate-200 px-3.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                    >
+                                        Batal
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        disabled={processing}
+                                        className="h-8 cursor-pointer rounded-xl bg-slate-900 px-4.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
+                                    >
+                                        {processing ? (
+                                            <>
+                                                <Spinner className="mr-1.5 size-3.5" />
+                                                Menyimpan...
+                                            </>
+                                        ) : (
+                                            'Simpan Perubahan'
+                                        )}
+                                    </Button>
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </Form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function DeleteUserDialog({
+    user,
+    onOpenChange,
+}: {
+    user: User | null;
+    onOpenChange: (open: boolean) => void;
+}) {
+    const getInitials = useInitials();
+    if (!user) return null;
+
+    return (
+        <Dialog open={!!user} onOpenChange={onOpenChange}>
+            <DialogContent className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
+                            <AlertTriangle className="size-4" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                Hapus Akun Pengguna
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500">
+                                Konfirmasi penghapusan akses akun staf.
+                            </DialogDescription>
+                        </div>
+                    </div>
+                </DialogHeader>
+
+                <div className="space-y-3 pt-2">
+                    <div className="flex items-center gap-2.5 rounded-xl border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/5 dark:bg-[#121418]">
+                        <Avatar className="size-9 shrink-0 rounded-lg border border-slate-200 dark:border-white/10">
+                            <AvatarImage
+                                src={user.avatar_url ?? undefined}
+                                className="object-cover"
+                            />
+                            <AvatarFallback className="rounded-lg bg-rose-50 text-xs font-bold text-rose-700 dark:bg-rose-950 dark:text-rose-300">
+                                {getInitials(user.name)}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
+                            <p className="text-xs font-bold text-slate-900 dark:text-white">
+                                {user.name}
+                            </p>
+                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                {user.email}
+                                {user.position_title
+                                    ? ` · ${user.position_title}`
+                                    : ''}
+                            </p>
+                        </div>
+                    </div>
+
+                    <p className="text-xs leading-relaxed text-slate-600 dark:text-zinc-400">
+                        Apakah Anda yakin ingin menghapus akun{' '}
+                        <strong>{user.name}</strong> ({user.email})? Jika
+                        pengguna memiliki riwayat perkara atau data keuangan
+                        terkait, status akun akan dinonaktifkan secara aman
+                        untuk melindungi integritas berkas.
+                    </p>
+
+                    <Form
+                        {...userRoutes.destroy.form(user.id)}
+                        onSuccess={() => onOpenChange(false)}
+                        className="flex items-center justify-end gap-2 pt-2"
+                    >
+                        {({ processing }) => (
+                            <>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => onOpenChange(false)}
+                                    className="h-7.5 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                                >
+                                    Batal
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    variant="destructive"
+                                    size="sm"
+                                    disabled={processing}
+                                    className="h-7.5 rounded-lg bg-rose-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-rose-700"
+                                >
+                                    {processing ? (
+                                        <Spinner className="size-3.5" />
+                                    ) : (
+                                        <>
+                                            <Trash2 className="mr-1.5 size-3.5" />
+                                            Hapus Pengguna
+                                        </>
+                                    )}
+                                </Button>
+                            </>
+                        )}
+                    </Form>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function Field({
+    name,
+    label,
+    type = 'text',
+    placeholder,
+    defaultValue,
+    required = false,
+    helperText,
+}: {
+    name: string;
+    label: string;
+    type?: string;
+    placeholder?: string;
+    defaultValue?: string | number;
+    required?: boolean;
+    helperText?: string;
+}) {
+    return (
+        <div className="grid gap-1">
+            <Label
+                htmlFor={name}
+                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+            >
+                {label} {required && <span className="text-rose-500">*</span>}
+            </Label>
+            <Input
+                id={name}
+                name={name}
+                type={type}
+                placeholder={placeholder}
+                defaultValue={
+                    defaultValue !== null && defaultValue !== undefined
+                        ? String(defaultValue)
+                        : ''
+                }
+                required={required}
+                className="h-8 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-slate-400 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+            />
+            {helperText && (
+                <p className="text-[10px] text-slate-400 dark:text-zinc-500">
+                    {helperText}
+                </p>
+            )}
+        </div>
+    );
+}
+
+function TextareaField({
+    name,
+    label,
+    placeholder,
+    defaultValue,
+    rows = 2,
+    helperText,
+}: {
+    name: string;
+    label: string;
+    placeholder?: string;
+    defaultValue?: string;
+    rows?: number;
+    helperText?: string;
+}) {
+    return (
+        <div className="grid gap-1">
+            <Label
+                htmlFor={name}
+                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+            >
+                {label}
+            </Label>
+            <textarea
+                id={name}
+                name={name}
+                rows={rows}
+                placeholder={placeholder}
+                defaultValue={defaultValue ?? ''}
+                className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 text-xs text-slate-900 focus:border-slate-400 focus:bg-white focus:outline-none dark:border-white/10 dark:bg-[#121418] dark:text-white"
+            />
+            {helperText && (
+                <p className="text-[10px] text-slate-400 dark:text-zinc-500">
+                    {helperText}
+                </p>
+            )}
+        </div>
+    );
+}
+
+UsersIndex.layout = {
+    breadcrumbs: [{ title: 'Pengguna & Akses', href: userRoutes.index() }],
+};
 
 const PERMISSION_GROUPS = [
     {
@@ -1774,337 +2622,3 @@ function InviteUserDialog({
         </Dialog>
     );
 }
-
-function EditUserDialog({
-    user,
-    roles,
-    onOpenChange,
-    onDeleteClick,
-}: {
-    user: User | null;
-    roles: Role[];
-    onOpenChange: (open: boolean) => void;
-    onDeleteClick?: (user: User) => void;
-}) {
-    const getInitials = useInitials();
-    if (!user) return null;
-
-    const assignedRoleIds = new Set(user.roles.map((role) => role.id));
-
-    return (
-        <Dialog open={!!user} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
-                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                    <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                        Kelola Pengguna: {user.name}
-                    </DialogTitle>
-                    <DialogDescription className="text-xs text-slate-500">
-                        Perbarui role kewenangan, jabatan, departemen, dan
-                        status aktif akun.
-                    </DialogDescription>
-                </DialogHeader>
-
-                <Form
-                    {...userRoutes.update.form(user.id)}
-                    className="space-y-3 pt-1"
-                    onSuccess={() => onOpenChange(false)}
-                >
-                    {({ errors, processing }) => (
-                        <>
-                            {/* Avatar Display */}
-                            <div className="flex items-center gap-2.5 rounded-xl border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/5 dark:bg-[#121418]">
-                                <Avatar className="size-10 shrink-0 rounded-lg border border-slate-200 shadow-2xs dark:border-white/10">
-                                    <AvatarImage
-                                        src={user.avatar_url ?? undefined}
-                                        className="object-cover"
-                                    />
-                                    <AvatarFallback className="rounded-lg bg-slate-100 text-xs font-bold text-slate-800 dark:bg-zinc-800 dark:text-zinc-200">
-                                        {getInitials(user.name)}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="min-w-0">
-                                    <p className="text-xs font-bold text-slate-900 dark:text-white">
-                                        {user.name}
-                                    </p>
-                                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                        {user.email}
-                                    </p>
-                                    {user.position_title && (
-                                        <span className="mt-0.5 inline-block rounded bg-slate-100 px-2 py-0.5 font-mono text-[9.5px] font-semibold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                            {user.position_title}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-
-                            <Field
-                                name="name"
-                                label="Nama Lengkap"
-                                defaultValue={user.name}
-                                required
-                            />
-                            <Field
-                                name="email"
-                                label="Alamat Email"
-                                type="email"
-                                defaultValue={user.email}
-                                required
-                            />
-
-                            <div className="grid grid-cols-2 gap-2">
-                                <Field
-                                    name="position_title"
-                                    label="Jabatan / Posisi"
-                                    defaultValue={user.position_title ?? ''}
-                                />
-                                <Field
-                                    name="employee_code"
-                                    label="Nomor NIP / ID"
-                                    defaultValue={user.employee_code ?? ''}
-                                />
-                            </div>
-
-                            <div className="grid gap-1">
-                                <Field
-                                    name="department"
-                                    label="Departemen / Divisi"
-                                    defaultValue={user.department ?? ''}
-                                />
-                            </div>
-
-                            <Field
-                                name="password"
-                                label="Ubah Password (Opsional)"
-                                type="password"
-                                placeholder="Kosongkan jika tidak ingin mengubah password saat ini"
-                            />
-
-                            <div className="space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/[0.06] dark:bg-[#121418]">
-                                <Label className="text-xs font-semibold text-slate-900 dark:text-white">
-                                    Role Kewenangan
-                                </Label>
-                                <div className="space-y-1 pt-0.5">
-                                    {roles.map((role) => (
-                                        <label
-                                            key={role.id}
-                                            className="flex cursor-pointer items-center gap-2 rounded-md p-1 text-xs hover:bg-white dark:hover:bg-zinc-800"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                name="role_ids[]"
-                                                value={role.id}
-                                                defaultChecked={assignedRoleIds.has(
-                                                    role.id,
-                                                )}
-                                                className="size-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
-                                            />
-                                            <span className="font-semibold text-slate-900 dark:text-white">
-                                                {role.name}
-                                            </span>
-                                        </label>
-                                    ))}
-                                </div>
-                                <InputError message={errors.role_ids} />
-                            </div>
-
-                            <div className="flex items-center gap-2 rounded-xl border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/5 dark:bg-zinc-800/40">
-                                <input
-                                    type="checkbox"
-                                    id="is_active"
-                                    name="is_active"
-                                    value="1"
-                                    defaultChecked={user.is_active}
-                                    className="size-3.5 rounded border-slate-300 text-slate-900"
-                                />
-                                <Label
-                                    htmlFor="is_active"
-                                    className="cursor-pointer text-xs font-semibold text-slate-800 dark:text-zinc-200"
-                                >
-                                    Akun Aktif (Dapat Login &amp; Mengakses
-                                    Sistem)
-                                </Label>
-                            </div>
-
-                            <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-white/[0.06]">
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => {
-                                        const target = user;
-                                        onOpenChange(false);
-                                        onDeleteClick?.(target);
-                                    }}
-                                    className="h-7.5 rounded-lg px-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/30"
-                                >
-                                    <Trash2 className="mr-1 size-3.5" />
-                                    Hapus
-                                </Button>
-                                <div className="flex items-center gap-2">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => onOpenChange(false)}
-                                        className="h-7.5 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                                    >
-                                        Batal
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        disabled={processing}
-                                        className="h-7.5 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
-                                    >
-                                        Simpan Perubahan
-                                    </Button>
-                                </div>
-                            </div>
-                        </>
-                    )}
-                </Form>
-            </DialogContent>
-        </Dialog>
-    );
-}
-
-function DeleteUserDialog({
-    user,
-    onOpenChange,
-}: {
-    user: User | null;
-    onOpenChange: (open: boolean) => void;
-}) {
-    const getInitials = useInitials();
-    if (!user) return null;
-
-    return (
-        <Dialog open={!!user} onOpenChange={onOpenChange}>
-            <DialogContent className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
-                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                    <div className="flex items-center gap-2.5">
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
-                            <AlertTriangle className="size-4" />
-                        </div>
-                        <div>
-                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                Hapus Akun Pengguna
-                            </DialogTitle>
-                            <DialogDescription className="text-xs text-slate-500">
-                                Konfirmasi penghapusan akses akun staf.
-                            </DialogDescription>
-                        </div>
-                    </div>
-                </DialogHeader>
-
-                <div className="space-y-3 pt-2">
-                    <div className="flex items-center gap-2.5 rounded-xl border border-slate-200/70 bg-slate-50/60 p-2.5 dark:border-white/5 dark:bg-[#121418]">
-                        <Avatar className="size-9 shrink-0 rounded-lg border border-slate-200 dark:border-white/10">
-                            <AvatarImage
-                                src={user.avatar_url ?? undefined}
-                                className="object-cover"
-                            />
-                            <AvatarFallback className="rounded-lg bg-rose-50 text-xs font-bold text-rose-700 dark:bg-rose-950 dark:text-rose-300">
-                                {getInitials(user.name)}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0">
-                            <p className="text-xs font-bold text-slate-900 dark:text-white">
-                                {user.name}
-                            </p>
-                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                {user.email}
-                                {user.position_title
-                                    ? ` · ${user.position_title}`
-                                    : ''}
-                            </p>
-                        </div>
-                    </div>
-
-                    <p className="text-xs leading-relaxed text-slate-600 dark:text-zinc-400">
-                        Apakah Anda yakin ingin menghapus akun{' '}
-                        <strong>{user.name}</strong> ({user.email})? Jika
-                        pengguna memiliki riwayat perkara atau data keuangan
-                        terkait, status akun akan dinonaktifkan secara aman
-                        untuk melindungi integritas berkas.
-                    </p>
-
-                    <Form
-                        {...userRoutes.destroy.form(user.id)}
-                        onSuccess={() => onOpenChange(false)}
-                        className="flex items-center justify-end gap-2 pt-2"
-                    >
-                        {({ processing }) => (
-                            <>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => onOpenChange(false)}
-                                    className="h-7.5 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                                >
-                                    Batal
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    variant="destructive"
-                                    size="sm"
-                                    disabled={processing}
-                                    className="h-7.5 rounded-lg bg-rose-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-rose-700"
-                                >
-                                    {processing ? (
-                                        <Spinner className="size-3.5" />
-                                    ) : (
-                                        <>
-                                            <Trash2 className="mr-1.5 size-3.5" />
-                                            Hapus Pengguna
-                                        </>
-                                    )}
-                                </Button>
-                            </>
-                        )}
-                    </Form>
-                </div>
-            </DialogContent>
-        </Dialog>
-    );
-}
-
-function Field({
-    name,
-    label,
-    type = 'text',
-    placeholder,
-    defaultValue,
-    required = false,
-}: {
-    name: string;
-    label: string;
-    type?: string;
-    placeholder?: string;
-    defaultValue?: string;
-    required?: boolean;
-}) {
-    return (
-        <div className="grid gap-1">
-            <Label
-                htmlFor={name}
-                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
-            >
-                {label} {required && <span className="text-rose-500">*</span>}
-            </Label>
-            <Input
-                id={name}
-                name={name}
-                type={type}
-                placeholder={placeholder}
-                defaultValue={defaultValue}
-                required={required}
-                className="h-7.5 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-slate-400 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
-            />
-        </div>
-    );
-}
-
-UsersIndex.layout = {
-    breadcrumbs: [{ title: 'Pengguna & Akses', href: userRoutes.index() }],
-};

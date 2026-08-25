@@ -87,7 +87,7 @@ export function UserMenuContent({ user }: Props) {
 
             {/* Logout Confirmation Dialog Modal */}
             <Dialog open={showLogoutModal} onOpenChange={setShowLogoutModal}>
-                <DialogContent className="max-w-[420px] rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#14161b] sm:max-w-[420px]">
+                <DialogContent className="max-w-[420px] rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-[420px] dark:border-white/10 dark:bg-[#14161b]">
                     <div className="flex items-start gap-3.5">
                         <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-600 dark:border-rose-900/30 dark:bg-rose-950/40 dark:text-rose-400">
                             <LogOut className="size-5" />
@@ -97,7 +97,9 @@ export function UserMenuContent({ user }: Props) {
                                 Konfirmasi Keluar dari Workspace
                             </DialogTitle>
                             <DialogDescription className="text-xs leading-relaxed text-slate-500 dark:text-zinc-400">
-                                Apakah Anda yakin ingin mengakhiri sesi kerja? Pastikan seluruh draf berkas dan catatan Anda telah tersimpan.
+                                Apakah Anda yakin ingin mengakhiri sesi kerja?
+                                Pastikan seluruh draf berkas dan catatan Anda
+                                telah tersimpan.
                             </DialogDescription>
                         </div>
                     </div>
@@ -105,7 +107,14 @@ export function UserMenuContent({ user }: Props) {
                     {/* Clean User Account Card (Fully Contained) */}
                     <div className="my-4 flex items-center gap-3 rounded-xl border border-slate-200/70 bg-slate-50/70 p-3 dark:border-white/[0.05] dark:bg-white/[0.02]">
                         <Avatar className="size-9 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                            <AvatarImage src={user.avatar_url || (user as { avatar_path?: string }).avatar_path || undefined} />
+                            <AvatarImage
+                                src={
+                                    user.avatar_url ||
+                                    (user as { avatar_path?: string })
+                                        .avatar_path ||
+                                    undefined
+                                }
+                            />
                             <AvatarFallback className="text-xs font-bold text-slate-700 dark:text-zinc-300">
                                 {getInitials(user.name)}
                             </AvatarFallback>

@@ -34,7 +34,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
             <Head title="Forgot Password - RPK LawApp" />
 
             {status && (
-                <div className="mb-4 rounded-xl bg-emerald-50 p-3 text-center text-xs font-medium text-emerald-700 border border-emerald-200">
+                <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-center text-xs font-medium text-emerald-700">
                     {status}
                 </div>
             )}
@@ -42,7 +42,8 @@ export default function ForgotPassword({ status }: { status?: string }) {
             <div className="space-y-4">
                 <Form {...emailRoute.form()}>
                     {({ processing, errors }) => {
-                        const emailErrorMessage = errors.email || emailFormatError;
+                        const emailErrorMessage =
+                            errors.email || emailFormatError;
 
                         return (
                             <>
@@ -65,20 +66,22 @@ export default function ForgotPassword({ status }: { status?: string }) {
                                             autoComplete="email"
                                             autoFocus
                                             placeholder="Email Address"
-                                            className={`h-11 rounded-xl bg-[#f8fafc] pl-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 transition-colors focus:bg-white dark:bg-white/[0.03] dark:text-white ${
+                                            className={`h-11 rounded-xl bg-[#f8fafc] pl-10 text-xs font-medium text-slate-900 transition-colors placeholder:text-slate-400 focus:bg-white dark:bg-white/[0.03] dark:text-white ${
                                                 emailErrorMessage
                                                     ? 'border-red-300 focus:border-red-500 dark:border-red-800'
                                                     : 'border-slate-200/80 focus:border-blue-600 dark:border-white/10'
                                             }`}
                                         />
                                     </div>
-                                    <InputError message={emailErrorMessage ?? undefined} />
+                                    <InputError
+                                        message={emailErrorMessage ?? undefined}
+                                    />
                                 </div>
 
                                 <div className="pt-2">
                                     <Button
                                         type="submit"
-                                        className="h-11 w-full rounded-xl bg-[#3b41e2] text-xs font-bold tracking-wide text-white shadow-lg shadow-indigo-500/25 hover:bg-[#3237c5] active:scale-[0.98] transition-all dark:bg-blue-600 dark:hover:bg-blue-500"
+                                        className="h-11 w-full rounded-xl bg-[#3b41e2] text-xs font-bold tracking-wide text-white shadow-lg shadow-indigo-500/25 transition-all hover:bg-[#3237c5] active:scale-[0.98] dark:bg-blue-600 dark:hover:bg-blue-500"
                                         disabled={processing}
                                         data-test="email-password-reset-link-button"
                                     >
@@ -99,7 +102,10 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
                 <div className="border-t border-slate-100 pt-3 text-center text-xs text-slate-500 dark:border-white/[0.06] dark:text-zinc-400">
                     <span>Sudah ingat kata sandi?</span>{' '}
-                    <TextLink href={login()} className="font-semibold text-blue-600 hover:underline dark:text-blue-400">
+                    <TextLink
+                        href={login()}
+                        className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                    >
                         Masuk ke workspace
                     </TextLink>
                 </div>

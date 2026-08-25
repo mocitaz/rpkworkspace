@@ -31,7 +31,12 @@ import {
 import { useMemo, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { WelcomeModal } from '@/components/welcome-modal';
 import { useInitials } from '@/hooks/use-initials';
 import { formatBytes, formatDate } from '@/lib/format';
@@ -152,8 +157,18 @@ type Task = {
     status: string;
     due_at?: string;
     updated_at?: string;
-    matter?: { id: string; matter_number: string; title: string; client?: { id: string; display_name: string } };
-    assignee?: { id: string; name: string; avatar_url?: string; avatar_path?: string };
+    matter?: {
+        id: string;
+        matter_number: string;
+        title: string;
+        client?: { id: string; display_name: string };
+    };
+    assignee?: {
+        id: string;
+        name: string;
+        avatar_url?: string;
+        avatar_path?: string;
+    };
 };
 
 type Deadline = {
@@ -248,7 +263,8 @@ export default function Dashboard({
     const litigationCount = metrics?.litigation_matters ?? 0;
     const openTasksCount = metrics?.open_tasks ?? tasks.length ?? 0;
     const urgentTasksCount = metrics?.urgent_tasks ?? 0;
-    const criticalDeadlinesCount = metrics?.critical_deadlines ?? deadlines.length ?? 0;
+    const criticalDeadlinesCount =
+        metrics?.critical_deadlines ?? deadlines.length ?? 0;
     const todayDeadlinesCount = metrics?.today_deadlines ?? 0;
     const totalDocsCount = metrics?.total_documents ?? documents.length ?? 0;
     const reviewDocsCount = metrics?.review_documents ?? 0;
@@ -273,7 +289,9 @@ export default function Dashboard({
             const d = new Date(monday);
             d.setDate(monday.getDate() + i);
             const dateString = d.toISOString().slice(0, 10);
-            const dayName = new Intl.DateTimeFormat('id-ID', { weekday: 'short' }).format(d);
+            const dayName = new Intl.DateTimeFormat('id-ID', {
+                weekday: 'short',
+            }).format(d);
             const dayNum = d.getDate();
             list.push({
                 dayName,
@@ -286,7 +304,8 @@ export default function Dashboard({
         return list;
     }, [weekOffset]);
 
-    const activeDay = weekDays[selectedDateIndex] ?? weekDays[weekDays.length - 1];
+    const activeDay =
+        weekDays[selectedDateIndex] ?? weekDays[weekDays.length - 1];
 
     const activeDayFormatted = useMemo(() => {
         if (!activeDay?.dateObj) return todayFormatted;
@@ -302,8 +321,14 @@ export default function Dashboard({
     // Dynamic filtered events for the chosen calendar day
     const filteredDayEvents = useMemo(() => {
         if (!activeDay?.dateString) return upcoming_events;
-        const found = upcoming_events.filter((ev) => ev.date === activeDay.dateString);
-        return found.length > 0 ? found : (activeDay.isToday ? upcoming_events.slice(0, 3) : []);
+        const found = upcoming_events.filter(
+            (ev) => ev.date === activeDay.dateString,
+        );
+        return found.length > 0
+            ? found
+            : activeDay.isToday
+              ? upcoming_events.slice(0, 3)
+              : [];
     }, [upcoming_events, activeDay]);
 
     // Current Work Queue items from real DB
@@ -336,7 +361,15 @@ export default function Dashboard({
                                 Halo, {fullName}
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                {todayFormatted} · <span className="font-semibold text-slate-700 dark:text-zinc-300">{activeMattersCount}</span> perkara aktif · <span className="font-semibold text-slate-700 dark:text-zinc-300">{openTasksCount}</span> tugas berjalan
+                                {todayFormatted} ·{' '}
+                                <span className="font-semibold text-slate-700 dark:text-zinc-300">
+                                    {activeMattersCount}
+                                </span>{' '}
+                                perkara aktif ·{' '}
+                                <span className="font-semibold text-slate-700 dark:text-zinc-300">
+                                    {openTasksCount}
+                                </span>{' '}
+                                tugas berjalan
                             </p>
                         </div>
 
@@ -347,7 +380,11 @@ export default function Dashboard({
                                 variant="outline"
                                 className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 active:scale-[0.98] dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                             >
-                                <Link href={tasksRoutes.index({ query: { create: 1 } })}>
+                                <Link
+                                    href={tasksRoutes.index({
+                                        query: { create: 1 },
+                                    })}
+                                >
                                     <Plus className="mr-1 size-3.5 text-slate-400" />
                                     Tugas Baru
                                 </Link>
@@ -369,7 +406,9 @@ export default function Dashboard({
                         {/* Card 1: Perkara Aktif */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">PERKARA AKTIF</span>
+                                <span className="text-[11px] font-semibold">
+                                    PERKARA AKTIF
+                                </span>
                                 <Briefcase className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -377,12 +416,18 @@ export default function Dashboard({
                                     {activeMattersCount}
                                 </span>
                                 <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                    {corporateCount} Corp · {litigationCount} Litigasi
+                                    {corporateCount} Corp · {litigationCount}{' '}
+                                    Litigasi
                                 </span>
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span className="truncate">Portofolio Berjalan</span>
-                                <Link href={mattersRoutes.index()} className="font-semibold text-blue-600 hover:underline dark:text-blue-400">
+                                <span className="truncate">
+                                    Portofolio Berjalan
+                                </span>
+                                <Link
+                                    href={mattersRoutes.index()}
+                                    className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                >
                                     Lihat →
                                 </Link>
                             </div>
@@ -391,7 +436,9 @@ export default function Dashboard({
                         {/* Card 2: Tugas Terbuka */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">TUGAS TERBUKA</span>
+                                <span className="text-[11px] font-semibold">
+                                    TUGAS TERBUKA
+                                </span>
                                 <CheckCircle2 className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -404,7 +451,10 @@ export default function Dashboard({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span className="truncate">Distribusi Tim</span>
-                                <Link href={tasksRoutes.index()} className="font-semibold text-emerald-600 hover:underline dark:text-emerald-400">
+                                <Link
+                                    href={tasksRoutes.index()}
+                                    className="font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
+                                >
                                     Kelola →
                                 </Link>
                             </div>
@@ -413,7 +463,9 @@ export default function Dashboard({
                         {/* Card 3: Tenggat & Sidang */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">TENGGAT &amp; SIDANG</span>
+                                <span className="text-[11px] font-semibold">
+                                    TENGGAT &amp; SIDANG
+                                </span>
                                 <Clock className="size-3.5 text-slate-400 transition-colors group-hover:text-amber-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -421,12 +473,19 @@ export default function Dashboard({
                                     {criticalDeadlinesCount}
                                 </span>
                                 <span className="text-[11px] font-medium text-amber-600 dark:text-amber-400">
-                                    {todayDeadlinesCount > 0 ? `${todayDeadlinesCount} hari ini` : 'minggu ini'}
+                                    {todayDeadlinesCount > 0
+                                        ? `${todayDeadlinesCount} hari ini`
+                                        : 'minggu ini'}
                                 </span>
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span className="truncate">Jadwal Sidang &amp; Deadline</span>
-                                <Link href={calendarRoutes.index()} className="font-semibold text-amber-600 hover:underline dark:text-amber-400">
+                                <span className="truncate">
+                                    Jadwal Sidang &amp; Deadline
+                                </span>
+                                <Link
+                                    href={calendarRoutes.index()}
+                                    className="font-semibold text-amber-600 hover:underline dark:text-amber-400"
+                                >
                                     Kalender →
                                 </Link>
                             </div>
@@ -435,7 +494,9 @@ export default function Dashboard({
                         {/* Card 4: Dokumen Menunggu Review */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">DOKUMEN &amp; REVIEW</span>
+                                <span className="text-[11px] font-semibold">
+                                    DOKUMEN &amp; REVIEW
+                                </span>
                                 <FileText className="size-3.5 text-slate-400 transition-colors group-hover:text-purple-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -447,8 +508,14 @@ export default function Dashboard({
                                 </span>
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span className="truncate">{docApprovedCount} Approved · {docFiledCount} Filed</span>
-                                <Link href={documentsRoutes.index()} className="font-semibold text-purple-600 hover:underline dark:text-purple-400">
+                                <span className="truncate">
+                                    {docApprovedCount} Approved ·{' '}
+                                    {docFiledCount} Filed
+                                </span>
+                                <Link
+                                    href={documentsRoutes.index()}
+                                    className="font-semibold text-purple-600 hover:underline dark:text-purple-400"
+                                >
                                     Arsip →
                                 </Link>
                             </div>
@@ -473,7 +540,7 @@ export default function Dashboard({
                                     <button
                                         type="button"
                                         onClick={() => setQueueTab('pending')}
-                                        className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
+                                        className={`cursor-pointer rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all ${
                                             queueTab === 'pending'
                                                 ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
                                                 : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
@@ -483,8 +550,10 @@ export default function Dashboard({
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => setQueueTab('in_progress')}
-                                        className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
+                                        onClick={() =>
+                                            setQueueTab('in_progress')
+                                        }
+                                        className={`cursor-pointer rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all ${
                                             queueTab === 'in_progress'
                                                 ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
                                                 : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
@@ -495,7 +564,7 @@ export default function Dashboard({
                                     <button
                                         type="button"
                                         onClick={() => setQueueTab('completed')}
-                                        className={`rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all cursor-pointer ${
+                                        className={`cursor-pointer rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all ${
                                             queueTab === 'completed'
                                                 ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
                                                 : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
@@ -508,14 +577,14 @@ export default function Dashboard({
 
                             <div className="flex flex-1 flex-col overflow-hidden py-1">
                                 {currentQueueItems.length === 0 ? (
-                                    <div className="flex flex-1 flex-col items-center justify-center py-4 px-4 text-center">
+                                    <div className="flex flex-1 flex-col items-center justify-center px-4 py-4 text-center">
                                         <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
                                             <CheckCircle2 className="size-4.5 text-slate-400 dark:text-zinc-500" />
                                         </div>
                                         <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
                                             Antrean Tugas Bersih
                                         </p>
-                                        <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
+                                        <p className="mt-0.5 max-w-xs text-[11px] text-slate-400 dark:text-zinc-500">
                                             {queueTab === 'completed'
                                                 ? 'Belum ada tugas yang selesai tercatat.'
                                                 : queueTab === 'in_progress'
@@ -529,16 +598,22 @@ export default function Dashboard({
                                                 size="sm"
                                                 className="mt-2.5 h-7 rounded-lg text-[11px] font-bold text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
                                             >
-                                                <Link href={tasksRoutes.index({ query: { create: 1 } })}>
-                                                    <Plus className="mr-1 size-3" /> Buat Tugas Baru
+                                                <Link
+                                                    href={tasksRoutes.index({
+                                                        query: { create: 1 },
+                                                    })}
+                                                >
+                                                    <Plus className="mr-1 size-3" />{' '}
+                                                    Buat Tugas Baru
                                                 </Link>
                                             </Button>
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="flex-1 overflow-y-auto pr-1 divide-y divide-slate-100 [scrollbar-width:thin] dark:divide-white/[0.04]">
+                                    <div className="flex-1 [scrollbar-width:thin] divide-y divide-slate-100 overflow-y-auto pr-1 dark:divide-white/[0.04]">
                                         {currentQueueItems.map((item, idx) => {
-                                            const isUrgent = item.priority === 'high';
+                                            const isUrgent =
+                                                item.priority === 'high';
 
                                             return (
                                                 <div
@@ -551,51 +626,86 @@ export default function Dashboard({
                                                                 className={`size-1.5 shrink-0 rounded-full ${
                                                                     isUrgent
                                                                         ? 'bg-rose-500'
-                                                                        : queueTab === 'completed'
+                                                                        : queueTab ===
+                                                                            'completed'
                                                                           ? 'bg-emerald-500'
                                                                           : 'bg-blue-500'
                                                                 }`}
                                                             />
                                                             <p
-                                                                className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400"
-                                                                title={item.title}
+                                                                className="truncate text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
+                                                                title={
+                                                                    item.title
+                                                                }
                                                             >
                                                                 {item.title}
                                                             </p>
                                                         </div>
                                                         <div className="flex items-center gap-1.5 pl-3.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                                             <span className="font-mono text-slate-700 dark:text-zinc-300">
-                                                                {item.matter?.matter_number ?? 'RPK-TASK'}
+                                                                {item.matter
+                                                                    ?.matter_number ??
+                                                                    'RPK-TASK'}
                                                             </span>
                                                             <span>·</span>
                                                             <span className="truncate">
-                                                                {item.matter?.client?.display_name ?? item.matter?.title ?? 'Internal'}
+                                                                {item.matter
+                                                                    ?.client
+                                                                    ?.display_name ??
+                                                                    item.matter
+                                                                        ?.title ??
+                                                                    'Internal'}
                                                             </span>
                                                         </div>
                                                     </div>
 
                                                     <div className="flex shrink-0 items-center gap-2.5 text-right">
                                                         <span
-                                                            className={`font-mono text-[10px] font-semibold rounded-md px-1.5 py-0.5 ${
+                                                            className={`rounded-md px-1.5 py-0.5 font-mono text-[10px] font-semibold ${
                                                                 isUrgent
                                                                     ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
                                                                     : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-300'
                                                             }`}
                                                         >
-                                                            {item.due_at ? formatDate(item.due_at) : 'Hari ini'}
+                                                            {item.due_at
+                                                                ? formatDate(
+                                                                      item.due_at,
+                                                                  )
+                                                                : 'Hari ini'}
                                                         </span>
-                                                        <TooltipProvider delayDuration={100}>
+                                                        <TooltipProvider
+                                                            delayDuration={100}
+                                                        >
                                                             <Tooltip>
-                                                                <TooltipTrigger asChild>
+                                                                <TooltipTrigger
+                                                                    asChild
+                                                                >
                                                                     <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                                        <AvatarImage src={item.assignee?.avatar_url} />
+                                                                        <AvatarImage
+                                                                            src={
+                                                                                item
+                                                                                    .assignee
+                                                                                    ?.avatar_url
+                                                                            }
+                                                                        />
                                                                         <AvatarFallback className="text-[8px] font-bold">
-                                                                            {getInitials(item.assignee?.name ?? 'FR')}
+                                                                            {getInitials(
+                                                                                item
+                                                                                    .assignee
+                                                                                    ?.name ??
+                                                                                    'FR',
+                                                                            )}
                                                                         </AvatarFallback>
                                                                     </Avatar>
                                                                 </TooltipTrigger>
-                                                                <TooltipContent side="top" className="bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800">
-                                                                    {item.assignee?.name ?? 'Fajar Roni'}
+                                                                <TooltipContent
+                                                                    side="top"
+                                                                    className="bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800"
+                                                                >
+                                                                    {item
+                                                                        .assignee
+                                                                        ?.name ??
+                                                                        'Fajar Roni'}
                                                                 </TooltipContent>
                                                             </Tooltip>
                                                         </TooltipProvider>
@@ -632,48 +742,55 @@ export default function Dashboard({
                             </div>
 
                             {/* Mini 7-Day Clean Strip */}
-                            <div className="shrink-0 mt-3 grid grid-cols-7 gap-1 rounded-lg bg-slate-50 p-1 text-center dark:bg-white/[0.03]">
+                            <div className="mt-3 grid shrink-0 grid-cols-7 gap-1 rounded-lg bg-slate-50 p-1 text-center dark:bg-white/[0.03]">
                                 {weekDays.map((d, index) => (
                                     <button
                                         key={index}
                                         type="button"
-                                        onClick={() => setSelectedDateIndex(index)}
-                                        className={`flex flex-col items-center justify-center rounded-md py-1 text-xs transition-all cursor-pointer ${
+                                        onClick={() =>
+                                            setSelectedDateIndex(index)
+                                        }
+                                        className={`flex cursor-pointer flex-col items-center justify-center rounded-md py-1 text-xs transition-all ${
                                             selectedDateIndex === index
-                                                ? 'bg-slate-900 text-white font-bold shadow-2xs dark:bg-white dark:text-slate-900'
+                                                ? 'bg-slate-900 font-bold text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                                 : 'text-slate-600 hover:bg-white hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/[0.06]'
                                         }`}
                                     >
-                                        <span className="text-[9px] uppercase opacity-75">{d.dayName}</span>
-                                        <span className="font-mono text-xs font-semibold">{d.dayNum}</span>
+                                        <span className="text-[9px] uppercase opacity-75">
+                                            {d.dayName}
+                                        </span>
+                                        <span className="font-mono text-xs font-semibold">
+                                            {d.dayNum}
+                                        </span>
                                     </button>
                                 ))}
                             </div>
 
-                            <div className="shrink-0 mt-2.5 flex items-center justify-between border-b border-slate-100 pb-1.5 text-[11px] dark:border-white/[0.04]">
+                            <div className="mt-2.5 flex shrink-0 items-center justify-between border-b border-slate-100 pb-1.5 text-[11px] dark:border-white/[0.04]">
                                 <span className="font-semibold text-slate-800 dark:text-zinc-200">
                                     {activeDayFormatted}
                                 </span>
-                                <span className="text-slate-400 font-mono text-[10px]">
+                                <span className="font-mono text-[10px] text-slate-400">
                                     {filteredDayEvents.length} Agenda
                                 </span>
                             </div>
 
                             <div className="flex flex-1 flex-col overflow-hidden py-1">
                                 {filteredDayEvents.length === 0 ? (
-                                    <div className="flex flex-1 flex-col items-center justify-center py-2 px-4 text-center">
+                                    <div className="flex flex-1 flex-col items-center justify-center px-4 py-2 text-center">
                                         <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
                                             <CalendarIcon className="size-4.5" />
                                         </div>
                                         <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
                                             Agenda Lengang
                                         </p>
-                                        <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
-                                            Tidak ada jadwal sidang pengadilan atau agenda pada tanggal ini.
+                                        <p className="mt-0.5 max-w-xs text-[11px] text-slate-400 dark:text-zinc-500">
+                                            Tidak ada jadwal sidang pengadilan
+                                            atau agenda pada tanggal ini.
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="flex-1 overflow-y-auto pr-1 space-y-2 py-1.5 [scrollbar-width:thin]">
+                                    <div className="flex-1 [scrollbar-width:thin] space-y-2 overflow-y-auto py-1.5 pr-1">
                                         {filteredDayEvents.map((ev, idx) => (
                                             <div
                                                 key={ev.id || idx}
@@ -685,7 +802,10 @@ export default function Dashboard({
                                                         {ev.time}
                                                     </span>
                                                     <div className="min-w-0 truncate">
-                                                        <p className="truncate font-medium text-slate-900 dark:text-white" title={ev.title}>
+                                                        <p
+                                                            className="truncate font-medium text-slate-900 dark:text-white"
+                                                            title={ev.title}
+                                                        >
                                                             {ev.title}
                                                         </p>
                                                         <p className="truncate text-[10px] text-slate-400">
@@ -720,11 +840,14 @@ export default function Dashboard({
                                         Prioritas &amp; Tindakan Kemitraan
                                     </h2>
                                     <span className="rounded-full bg-rose-50 px-2 py-0.5 font-mono text-[9px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
-                                        {executive_actions?.length ?? 0} MENDESAK
+                                        {executive_actions?.length ?? 0}{' '}
+                                        MENDESAK
                                     </span>
                                 </div>
                                 <Link
-                                    href={tasksRoutes.index({ query: { priority: 'high' } })}
+                                    href={tasksRoutes.index({
+                                        query: { priority: 'high' },
+                                    })}
                                     className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                                 >
                                     Semua →
@@ -732,81 +855,114 @@ export default function Dashboard({
                             </div>
 
                             <div className="flex flex-1 flex-col overflow-hidden py-1">
-                                {!executive_actions || executive_actions.length === 0 ? (
-                                    <div className="flex flex-1 flex-col items-center justify-center py-4 px-4 text-center">
+                                {!executive_actions ||
+                                executive_actions.length === 0 ? (
+                                    <div className="flex flex-1 flex-col items-center justify-center px-4 py-4 text-center">
                                         <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
                                             <ShieldCheck className="size-4.5" />
                                         </div>
                                         <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
                                             Kondisi Operasional Aman
                                         </p>
-                                        <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
-                                            Tidak ada perkara atau tenggat kritis yang memerlukan tindakan darurat saat ini.
+                                        <p className="mt-0.5 max-w-xs text-[11px] text-slate-400 dark:text-zinc-500">
+                                            Tidak ada perkara atau tenggat
+                                            kritis yang memerlukan tindakan
+                                            darurat saat ini.
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="flex-1 overflow-y-auto pr-1 divide-y divide-slate-100 [scrollbar-width:thin] dark:divide-white/[0.04]">
-                                        {executive_actions.map((action, idx) => {
-                                            return (
-                                                <div
-                                                    key={action.id || idx}
-                                                    className="group flex items-start justify-between gap-3 py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
-                                                >
-                                                    <div className="min-w-0 flex-1 space-y-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <span
-                                                                className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold ${
-                                                                    action.badge_color === 'rose'
-                                                                        ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300'
-                                                                        : action.badge_color === 'amber'
-                                                                          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
-                                                                          : 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
-                                                                }`}
+                                    <div className="flex-1 [scrollbar-width:thin] divide-y divide-slate-100 overflow-y-auto pr-1 dark:divide-white/[0.04]">
+                                        {executive_actions.map(
+                                            (action, idx) => {
+                                                return (
+                                                    <div
+                                                        key={action.id || idx}
+                                                        className="group flex items-start justify-between gap-3 py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                    >
+                                                        <div className="min-w-0 flex-1 space-y-1">
+                                                            <div className="flex items-center gap-2">
+                                                                <span
+                                                                    className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold ${
+                                                                        action.badge_color ===
+                                                                        'rose'
+                                                                            ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300'
+                                                                            : action.badge_color ===
+                                                                                'amber'
+                                                                              ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
+                                                                              : 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
+                                                                    }`}
+                                                                >
+                                                                    {
+                                                                        action.badge_label
+                                                                    }
+                                                                </span>
+                                                                <span className="font-mono text-[10px] text-slate-500 dark:text-zinc-400">
+                                                                    {
+                                                                        action.due_text
+                                                                    }
+                                                                </span>
+                                                            </div>
+                                                            <p
+                                                                className="truncate text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
+                                                                title={
+                                                                    action.title
+                                                                }
                                                             >
-                                                                {action.badge_label}
-                                                            </span>
-                                                            <span className="font-mono text-[10px] text-slate-500 dark:text-zinc-400">
-                                                                {action.due_text}
-                                                            </span>
+                                                                {action.title}
+                                                            </p>
+                                                            <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400">
+                                                                {action.matter}
+                                                            </p>
                                                         </div>
-                                                        <p
-                                                            className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400"
-                                                            title={action.title}
-                                                        >
-                                                            {action.title}
-                                                        </p>
-                                                        <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400">
-                                                            {action.matter}
-                                                        </p>
-                                                    </div>
 
-                                                    <div className="flex shrink-0 items-center gap-1.5 pt-1">
-                                                        <TooltipProvider delayDuration={100}>
-                                                            <Tooltip>
-                                                                <TooltipTrigger asChild>
-                                                                    <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                                        <AvatarImage src={action.assignee_avatar ?? undefined} />
-                                                                        <AvatarFallback className="text-[7px] font-bold">
-                                                                            {getInitials(action.assignee_name)}
-                                                                        </AvatarFallback>
-                                                                    </Avatar>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent side="top" className="bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800">
-                                                                    {action.assignee_name}
-                                                                </TooltipContent>
-                                                            </Tooltip>
-                                                        </TooltipProvider>
+                                                        <div className="flex shrink-0 items-center gap-1.5 pt-1">
+                                                            <TooltipProvider
+                                                                delayDuration={
+                                                                    100
+                                                                }
+                                                            >
+                                                                <Tooltip>
+                                                                    <TooltipTrigger
+                                                                        asChild
+                                                                    >
+                                                                        <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                            <AvatarImage
+                                                                                src={
+                                                                                    action.assignee_avatar ??
+                                                                                    undefined
+                                                                                }
+                                                                            />
+                                                                            <AvatarFallback className="text-[7px] font-bold">
+                                                                                {getInitials(
+                                                                                    action.assignee_name,
+                                                                                )}
+                                                                            </AvatarFallback>
+                                                                        </Avatar>
+                                                                    </TooltipTrigger>
+                                                                    <TooltipContent
+                                                                        side="top"
+                                                                        className="bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800"
+                                                                    >
+                                                                        {
+                                                                            action.assignee_name
+                                                                        }
+                                                                    </TooltipContent>
+                                                                </Tooltip>
+                                                            </TooltipProvider>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            );
-                                        })}
+                                                );
+                                            },
+                                        )}
                                     </div>
                                 )}
                             </div>
 
                             <div className="mt-auto shrink-0 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
                                 <Link
-                                    href={tasksRoutes.index({ query: { priority: 'high' } })}
+                                    href={tasksRoutes.index({
+                                        query: { priority: 'high' },
+                                    })}
                                     className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                                 >
                                     Buka Daftar Prioritas →
@@ -835,60 +991,84 @@ export default function Dashboard({
 
                             <div className="flex flex-1 flex-col overflow-hidden py-1">
                                 {!activities || activities.length === 0 ? (
-                                    <div className="flex flex-1 flex-col items-center justify-center py-4 px-4 text-center">
+                                    <div className="flex flex-1 flex-col items-center justify-center px-4 py-4 text-center">
                                         <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
                                             <Clock className="size-4.5" />
                                         </div>
                                         <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
                                             Log Siap Merekam
                                         </p>
-                                        <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500 max-w-xs">
-                                            Setiap aktivitas tim pada perkara, berkas, dan penagihan akan otomatis tercatat di sini.
+                                        <p className="mt-0.5 max-w-xs text-[11px] text-slate-400 dark:text-zinc-500">
+                                            Setiap aktivitas tim pada perkara,
+                                            berkas, dan penagihan akan otomatis
+                                            tercatat di sini.
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="flex-1 overflow-y-auto pr-1 divide-y divide-slate-100 [scrollbar-width:thin] dark:divide-white/[0.04]">
+                                    <div className="flex-1 [scrollbar-width:thin] divide-y divide-slate-100 overflow-y-auto pr-1 dark:divide-white/[0.04]">
                                         {activities.map((act, idx) => {
                                             const badgeColorClass =
                                                 act.badge_color === 'blue'
                                                     ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
-                                                    : act.badge_color === 'purple'
+                                                    : act.badge_color ===
+                                                        'purple'
                                                       ? 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300'
-                                                      : act.badge_color === 'emerald'
+                                                      : act.badge_color ===
+                                                          'emerald'
                                                         ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
-                                                        : act.badge_color === 'amber'
+                                                        : act.badge_color ===
+                                                            'amber'
                                                           ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
-                                                          : act.badge_color === 'indigo'
+                                                          : act.badge_color ===
+                                                              'indigo'
                                                             ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300'
-                                                            : act.badge_color === 'cyan'
+                                                            : act.badge_color ===
+                                                                'cyan'
                                                               ? 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-300'
-                                                              : act.badge_color === 'teal'
+                                                              : act.badge_color ===
+                                                                  'teal'
                                                                 ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300'
                                                                 : 'bg-slate-100 text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300';
 
                                             const content = (
                                                 <div className="min-w-0 flex-1 space-y-1">
                                                     <div className="flex items-center justify-between gap-2">
-                                                        <div className="flex items-center gap-1.5 min-w-0">
-                                                            <span className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold shrink-0 ${badgeColorClass}`}>
-                                                                {act.badge || 'Aktivitas'}
+                                                        <div className="flex min-w-0 items-center gap-1.5">
+                                                            <span
+                                                                className={`shrink-0 rounded-md px-1.5 py-0.5 text-[9px] font-bold ${badgeColorClass}`}
+                                                            >
+                                                                {act.badge ||
+                                                                    'Aktivitas'}
                                                             </span>
-                                                            <span className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
+                                                            <span className="truncate text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
                                                                 {act.title}
                                                             </span>
                                                         </div>
-                                                        <span className="font-mono text-[10px] text-slate-400 shrink-0 whitespace-nowrap">
+                                                        <span className="shrink-0 font-mono text-[10px] whitespace-nowrap text-slate-400">
                                                             {act.time}
                                                         </span>
                                                     </div>
-                                                    <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400" title={act.detail || act.subject}>
-                                                        {act.detail || act.subject}
+                                                    <p
+                                                        className="truncate text-[11px] text-slate-500 dark:text-zinc-400"
+                                                        title={
+                                                            act.detail ||
+                                                            act.subject
+                                                        }
+                                                    >
+                                                        {act.detail ||
+                                                            act.subject}
                                                     </p>
                                                     <div className="flex items-center gap-1.5 pt-0.5">
                                                         <Avatar className="size-4 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                            <AvatarImage src={act.actor_avatar} />
+                                                            <AvatarImage
+                                                                src={
+                                                                    act.actor_avatar
+                                                                }
+                                                            />
                                                             <AvatarFallback className="text-[6.5px] font-bold">
-                                                                {getInitials(act.actor)}
+                                                                {getInitials(
+                                                                    act.actor,
+                                                                )}
                                                             </AvatarFallback>
                                                         </Avatar>
                                                         <span className="truncate text-[10px] font-medium text-slate-600 dark:text-zinc-400">
@@ -902,14 +1082,14 @@ export default function Dashboard({
                                                 <Link
                                                     key={act.id || idx}
                                                     href={act.url}
-                                                    className="group flex items-start gap-2.5 py-2.5 transition-colors hover:bg-slate-50/70 rounded-lg px-1.5 -mx-1.5 dark:hover:bg-white/[0.02]"
+                                                    className="group -mx-1.5 flex items-start gap-2.5 rounded-lg px-1.5 py-2.5 transition-colors hover:bg-slate-50/70 dark:hover:bg-white/[0.02]"
                                                 >
                                                     {content}
                                                 </Link>
                                             ) : (
                                                 <div
                                                     key={act.id || idx}
-                                                    className="group flex items-start gap-2.5 py-2.5 px-1.5 -mx-1.5"
+                                                    className="group -mx-1.5 flex items-start gap-2.5 px-1.5 py-2.5"
                                                 >
                                                     {content}
                                                 </div>

@@ -74,7 +74,10 @@ const subjectTypeLabels: Record<string, string> = {
 };
 
 // Event labels and color themes
-const eventThemeMap: Record<string, { label: string; bg: string; text: string; border: string }> = {
+const eventThemeMap: Record<
+    string,
+    { label: string; bg: string; text: string; border: string }
+> = {
     created: {
         label: 'Data Baru',
         bg: 'bg-emerald-50 dark:bg-emerald-950/40',
@@ -275,9 +278,7 @@ function formatFieldKey(key: string): string {
     if (fieldLabels[key]) {
         return fieldLabels[key];
     }
-    return key
-        .replace(/_/g, ' ')
-        .replace(/\b\w/g, (c) => c.toUpperCase());
+    return key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function formatCurrency(val: unknown, currency = 'IDR'): string {
@@ -310,9 +311,13 @@ export default function AuditIndex({
         until?: string;
     };
 }) {
-    const { flash } = usePage<{ flash?: { success?: string; error?: string } }>().props;
+    const { flash } = usePage<{
+        flash?: { success?: string; error?: string };
+    }>().props;
     const [cleanOpen, setCleanOpen] = useState(false);
-    const [selectedLogForRaw, setSelectedLogForRaw] = useState<Log | null>(null);
+    const [selectedLogForRaw, setSelectedLogForRaw] = useState<Log | null>(
+        null,
+    );
 
     return (
         <>
@@ -335,7 +340,9 @@ export default function AuditIndex({
                                 Audit Log &amp; Jejak Aktivitas
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Pelacakan riwayat aktivitas, modifikasi berkas perkara, akses finansial, dan audit trail kepatuhan hukum firma.
+                                Pelacakan riwayat aktivitas, modifikasi berkas
+                                perkara, akses finansial, dan audit trail
+                                kepatuhan hukum firma.
                             </p>
                         </div>
 
@@ -345,7 +352,7 @@ export default function AuditIndex({
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setCleanOpen(true)}
-                                className="h-8 rounded-lg border-rose-200 bg-white px-3 text-xs font-semibold text-rose-600 shadow-2xs hover:bg-rose-50 hover:border-rose-300 transition-all dark:border-rose-950/40 dark:bg-[#14161b] dark:text-rose-400 dark:hover:bg-rose-950/20"
+                                className="h-8 rounded-lg border-rose-200 bg-white px-3 text-xs font-semibold text-rose-600 shadow-2xs transition-all hover:border-rose-300 hover:bg-rose-50 dark:border-rose-950/40 dark:bg-[#14161b] dark:text-rose-400 dark:hover:bg-rose-950/20"
                             >
                                 <Trash2 className="mr-1.5 size-3.5 text-rose-600 dark:text-rose-400" />
                                 Bersihkan Log
@@ -375,7 +382,9 @@ export default function AuditIndex({
                         {/* 1. Total Log */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold tracking-wider uppercase">Total Rekaman Audit</span>
+                                <span className="text-[11px] font-semibold tracking-wider uppercase">
+                                    Total Rekaman Audit
+                                </span>
                                 <ShieldCheck className="size-3.5 text-blue-600 dark:text-blue-400" />
                             </div>
                             <div className="mt-2 flex items-baseline gap-1.5">
@@ -388,14 +397,18 @@ export default function AuditIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Ledger Kepatuhan</span>
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">Permanen</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                    Permanen
+                                </span>
                             </div>
                         </div>
 
                         {/* 2. Hari Ini */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold tracking-wider uppercase">Aktivitas Hari Ini</span>
+                                <span className="text-[11px] font-semibold tracking-wider uppercase">
+                                    Aktivitas Hari Ini
+                                </span>
                                 <Activity className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                             </div>
                             <div className="mt-2 flex items-baseline gap-1.5">
@@ -408,19 +421,25 @@ export default function AuditIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>24 Jam Terakhir</span>
-                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">Harian</span>
+                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                    Harian
+                                </span>
                             </div>
                         </div>
 
                         {/* 3. Pelaku Aktif */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold tracking-wider uppercase">Pelaku Teridentifikasi</span>
+                                <span className="text-[11px] font-semibold tracking-wider uppercase">
+                                    Pelaku Teridentifikasi
+                                </span>
                                 <Users className="size-3.5 text-purple-600 dark:text-purple-400" />
                             </div>
                             <div className="mt-2 flex items-baseline gap-1.5">
                                 <span className="font-mono text-2xl font-bold tracking-tight text-purple-600 dark:text-purple-400">
-                                    {metrics.actors_count.toLocaleString('id-ID')}
+                                    {metrics.actors_count.toLocaleString(
+                                        'id-ID',
+                                    )}
                                 </span>
                                 <span className="text-[11px] text-slate-500 dark:text-zinc-400">
                                     pengguna
@@ -428,19 +447,25 @@ export default function AuditIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Tercatat Beraksi</span>
-                                <span className="font-semibold text-purple-600 dark:text-purple-400">Aktif</span>
+                                <span className="font-semibold text-purple-600 dark:text-purple-400">
+                                    Aktif
+                                </span>
                             </div>
                         </div>
 
                         {/* 4. Variasi Event */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold tracking-wider uppercase">Ragam Event</span>
+                                <span className="text-[11px] font-semibold tracking-wider uppercase">
+                                    Ragam Event
+                                </span>
                                 <Layers className="size-3.5 text-amber-500" />
                             </div>
                             <div className="mt-2 flex items-baseline gap-1.5">
                                 <span className="font-mono text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
-                                    {metrics.events_count.toLocaleString('id-ID')}
+                                    {metrics.events_count.toLocaleString(
+                                        'id-ID',
+                                    )}
                                 </span>
                                 <span className="text-[11px] text-slate-500 dark:text-zinc-400">
                                     tipe
@@ -448,7 +473,9 @@ export default function AuditIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Perkara, Berkas &amp; Billing</span>
-                                <span className="font-semibold text-amber-600 dark:text-amber-400">Cakupan</span>
+                                <span className="font-semibold text-amber-600 dark:text-amber-400">
+                                    Cakupan
+                                </span>
                             </div>
                         </div>
                     </section>
@@ -456,7 +483,7 @@ export default function AuditIndex({
                     {/* 3. Filter Bar */}
                     <Form
                         {...auditRoutes.index.form()}
-                        className="rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 space-y-2 dark:border-white/[0.04] dark:bg-[#121418]"
+                        className="space-y-2 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]"
                     >
                         {/* Row 1: Event Dropdown + Actor Dropdown + Reset + Count Badge */}
                         <div className="flex flex-wrap items-center gap-2">
@@ -482,7 +509,9 @@ export default function AuditIndex({
                                     defaultValue={filters.actor_id ?? ''}
                                     className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                 >
-                                    <option value="">Semua Pelaku / Aktor</option>
+                                    <option value="">
+                                        Semua Pelaku / Aktor
+                                    </option>
                                     {actors.map((actor) => (
                                         <option key={actor.id} value={actor.id}>
                                             {actor.name}
@@ -492,7 +521,10 @@ export default function AuditIndex({
                                 <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
                             </div>
 
-                            {(filters.event || filters.actor_id || filters.from || filters.until) && (
+                            {(filters.event ||
+                                filters.actor_id ||
+                                filters.from ||
+                                filters.until) && (
                                 <Button
                                     asChild
                                     variant="outline"
@@ -506,14 +538,14 @@ export default function AuditIndex({
                                 </Button>
                             )}
 
-                            <span className="shrink-0 rounded-md bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 border border-slate-200/70 shadow-2xs dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-300">
+                            <span className="shrink-0 rounded-md border border-slate-200/70 bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
                                 {auditLogs.total} log
                             </span>
                         </div>
 
                         {/* Row 2: Date Pickers + Action Buttons */}
                         <div className="flex flex-wrap items-center gap-2">
-                            <div className="flex items-center gap-2 flex-1 min-w-[280px]">
+                            <div className="flex min-w-[280px] flex-1 items-center gap-2">
                                 <div className="relative flex-1">
                                     <Input
                                         name="from"
@@ -523,7 +555,9 @@ export default function AuditIndex({
                                         className="h-8 rounded-lg border-slate-200 bg-white text-xs text-slate-900 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
                                     />
                                 </div>
-                                <span className="text-xs text-slate-400 font-medium">s/d</span>
+                                <span className="text-xs font-medium text-slate-400">
+                                    s/d
+                                </span>
                                 <div className="relative flex-1">
                                     <Input
                                         name="until"
@@ -540,7 +574,8 @@ export default function AuditIndex({
                                 size="sm"
                                 className="h-8 shrink-0 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                             >
-                                <Filter className="mr-1.5 size-3" /> Terapkan Filter
+                                <Filter className="mr-1.5 size-3" /> Terapkan
+                                Filter
                             </Button>
                         </div>
                     </Form>
@@ -559,36 +594,70 @@ export default function AuditIndex({
                                 <table className="w-full text-left text-xs">
                                     <thead>
                                         <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <th className="py-3 pr-3 pl-4">Waktu (WIB)</th>
-                                            <th className="px-3 py-3 min-w-[160px]">Aktivitas &amp; Objek</th>
-                                            <th className="px-3 py-3 min-w-[160px]">Pelaku / Aktor</th>
-                                            <th className="px-3 py-3 min-w-[340px]">Detail Perubahan</th>
-                                            <th className="py-3 pr-4 pl-3 text-right">IP &amp; Audit</th>
+                                            <th className="py-3 pr-3 pl-4">
+                                                Waktu (WIB)
+                                            </th>
+                                            <th className="min-w-[160px] px-3 py-3">
+                                                Aktivitas &amp; Objek
+                                            </th>
+                                            <th className="min-w-[160px] px-3 py-3">
+                                                Pelaku / Aktor
+                                            </th>
+                                            <th className="min-w-[340px] px-3 py-3">
+                                                Detail Perubahan
+                                            </th>
+                                            <th className="py-3 pr-4 pl-3 text-right">
+                                                IP &amp; Audit
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                                         {auditLogs.data.map((log) => {
-                                            const rawSubjectType = log.subject_type
-                                                ? log.subject_type.split('\\').pop() ?? 'System'
-                                                : 'System';
-                                            const friendlySubjectType = subjectTypeLabels[rawSubjectType] || rawSubjectType;
-                                            const eventKey = log.event.split('.').pop() || log.event;
-                                            const theme = eventThemeMap[eventKey] || {
-                                                label: eventKey.replace(/_/g, ' '),
+                                            const rawSubjectType =
+                                                log.subject_type
+                                                    ? (log.subject_type
+                                                          .split('\\')
+                                                          .pop() ?? 'System')
+                                                    : 'System';
+                                            const friendlySubjectType =
+                                                subjectTypeLabels[
+                                                    rawSubjectType
+                                                ] || rawSubjectType;
+                                            const eventKey =
+                                                log.event.split('.').pop() ||
+                                                log.event;
+                                            const theme = eventThemeMap[
+                                                eventKey
+                                            ] || {
+                                                label: eventKey.replace(
+                                                    /_/g,
+                                                    ' ',
+                                                ),
                                                 bg: 'bg-slate-100 dark:bg-zinc-800',
                                                 text: 'text-slate-700 dark:text-zinc-300',
                                                 border: 'border-slate-200 dark:border-white/10',
                                             };
 
                                             // Determine real readable subject name
-                                            let realSubjectName = friendlySubjectType;
+                                            let realSubjectName =
+                                                friendlySubjectType;
                                             if (log.event === 'audit.pruned') {
-                                                realSubjectName = 'Sistem Log Audit';
+                                                realSubjectName =
+                                                    'Sistem Log Audit';
                                             } else if (log.subject) {
-                                                const s = log.subject as Record<string, unknown>;
-                                                if (s.name && typeof s.name === 'string') {
+                                                const s = log.subject as Record<
+                                                    string,
+                                                    unknown
+                                                >;
+                                                if (
+                                                    s.name &&
+                                                    typeof s.name === 'string'
+                                                ) {
                                                     realSubjectName = s.name;
-                                                } else if (s.title && typeof s.title === 'string') {
+                                                } else if (
+                                                    s.title &&
+                                                    typeof s.title === 'string'
+                                                ) {
                                                     realSubjectName = s.title;
                                                 } else if (s.invoice_number) {
                                                     realSubjectName = `Invoice #${s.invoice_number}`;
@@ -597,10 +666,16 @@ export default function AuditIndex({
                                                 } else if (s.reference_number) {
                                                     realSubjectName = `Surat #${s.reference_number}`;
                                                 } else if (s.court_name) {
-                                                    realSubjectName = String(s.court_name);
+                                                    realSubjectName = String(
+                                                        s.court_name,
+                                                    );
                                                 }
-                                            } else if (rawSubjectType === 'User' && log.actor?.name) {
-                                                realSubjectName = log.actor.name;
+                                            } else if (
+                                                rawSubjectType === 'User' &&
+                                                log.actor?.name
+                                            ) {
+                                                realSubjectName =
+                                                    log.actor.name;
                                             }
 
                                             return (
@@ -610,7 +685,10 @@ export default function AuditIndex({
                                                 >
                                                     {/* Timestamp */}
                                                     <td className="py-3 pr-3 pl-4 align-top font-mono text-xs font-semibold whitespace-nowrap text-slate-600 dark:text-zinc-400">
-                                                        {formatDate(log.created_at, true)}
+                                                        {formatDate(
+                                                            log.created_at,
+                                                            true,
+                                                        )}
                                                     </td>
 
                                                     {/* Event & Target Object */}
@@ -620,19 +698,28 @@ export default function AuditIndex({
                                                                 <span
                                                                     className={`inline-block rounded-md border px-2 py-0.5 text-[10px] font-bold tracking-tight ${theme.bg} ${theme.text} ${theme.border}`}
                                                                 >
-                                                                    {theme.label}
+                                                                    {
+                                                                        theme.label
+                                                                    }
                                                                 </span>
                                                             </div>
                                                             <div>
                                                                 <span
-                                                                    className="font-semibold text-slate-900 dark:text-white block line-clamp-1"
-                                                                    title={realSubjectName}
+                                                                    className="line-clamp-1 block font-semibold text-slate-900 dark:text-white"
+                                                                    title={
+                                                                        realSubjectName
+                                                                    }
                                                                 >
-                                                                    {realSubjectName}
+                                                                    {
+                                                                        realSubjectName
+                                                                    }
                                                                 </span>
-                                                                {log.event !== 'audit.pruned' && (
-                                                                    <span className="text-[10.5px] text-slate-400 dark:text-zinc-500 block">
-                                                                        {friendlySubjectType}
+                                                                {log.event !==
+                                                                    'audit.pruned' && (
+                                                                    <span className="block text-[10.5px] text-slate-400 dark:text-zinc-500">
+                                                                        {
+                                                                            friendlySubjectType
+                                                                        }
                                                                     </span>
                                                                 )}
                                                             </div>
@@ -642,35 +729,49 @@ export default function AuditIndex({
                                                     {/* Actor */}
                                                     <td className="px-3 py-3 align-top whitespace-nowrap">
                                                         <div className="space-y-0.5">
-                                                            <span className="font-semibold text-slate-900 dark:text-white block">
-                                                                {log.actor?.name ?? 'Sistem Otomatis'}
+                                                            <span className="block font-semibold text-slate-900 dark:text-white">
+                                                                {log.actor
+                                                                    ?.name ??
+                                                                    'Sistem Otomatis'}
                                                             </span>
                                                             <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                                                {log.actor?.email ?? 'system@internal'}
+                                                                {log.actor
+                                                                    ?.email ??
+                                                                    'system@internal'}
                                                             </p>
                                                         </div>
                                                     </td>
 
                                                     {/* Simple Human-Readable Narrative Detail */}
                                                     <td className="px-3 py-3 align-top">
-                                                        <AuditDetailCell log={log} />
+                                                        <AuditDetailCell
+                                                            log={log}
+                                                        />
                                                     </td>
 
                                                     {/* IP Address & Raw Modal Trigger */}
-                                                    <td className="py-3 pr-4 pl-3 align-top text-right whitespace-nowrap">
+                                                    <td className="py-3 pr-4 pl-3 text-right align-top whitespace-nowrap">
                                                         <div className="space-y-1">
                                                             <span className="font-mono text-xs font-semibold text-slate-600 dark:text-zinc-400">
-                                                                {log.ip_address ?? '-'}
+                                                                {log.ip_address ??
+                                                                    '-'}
                                                             </span>
                                                             <div>
                                                                 <button
                                                                     type="button"
-                                                                    onClick={() => setSelectedLogForRaw(log)}
-                                                                    className="inline-flex items-center gap-1 text-[10.5px] font-medium text-slate-400 hover:text-blue-600 dark:text-zinc-500 dark:hover:text-blue-400 transition-colors"
+                                                                    onClick={() =>
+                                                                        setSelectedLogForRaw(
+                                                                            log,
+                                                                        )
+                                                                    }
+                                                                    className="inline-flex items-center gap-1 text-[10.5px] font-medium text-slate-400 transition-colors hover:text-blue-600 dark:text-zinc-500 dark:hover:text-blue-400"
                                                                     title="Lihat Rincian Teknis / JSON"
                                                                 >
                                                                     <Code2 className="size-3" />
-                                                                    <span>Data Teknis</span>
+                                                                    <span>
+                                                                        Data
+                                                                        Teknis
+                                                                    </span>
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -727,11 +828,14 @@ function AuditDetailCell({ log }: { log: Log }) {
     if (log.event === 'audit.pruned') {
         const deleted = metadata.records_deleted ?? 0;
         const opt = String(metadata.retention_option ?? 'all');
-        const optLabel = valueLabels[opt] || (opt === 'all' ? 'Semua Riwayat' : `Lebih dari ${opt} Hari`);
+        const optLabel =
+            valueLabels[opt] ||
+            (opt === 'all' ? 'Semua Riwayat' : `Lebih dari ${opt} Hari`);
 
         return (
-            <p className="text-xs text-slate-800 dark:text-zinc-200 leading-relaxed">
-                Membersihkan <strong>{deleted}</strong> rekaman log audit lama (Opsi: {optLabel}).
+            <p className="text-xs leading-relaxed text-slate-800 dark:text-zinc-200">
+                Membersihkan <strong>{String(deleted)}</strong> rekaman log
+                audit lama (Opsi: {optLabel}).
             </p>
         );
     }
@@ -746,9 +850,13 @@ function AuditDetailCell({ log }: { log: Log }) {
             <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-800 dark:text-zinc-200">
                 <span>Mengubah status alur kerja:</span>
                 <div className="inline-flex items-center gap-1.5 rounded-md border border-slate-200/80 bg-slate-50/90 px-2 py-0.5 dark:border-white/10 dark:bg-white/[0.03]">
-                    <span className="font-semibold text-slate-600 dark:text-zinc-400">{fromLabel}</span>
-                    <ArrowRight className="size-3 text-blue-600 dark:text-blue-400 shrink-0" />
-                    <span className="font-bold text-slate-900 dark:text-white">{toLabel}</span>
+                    <span className="font-semibold text-slate-600 dark:text-zinc-400">
+                        {fromLabel}
+                    </span>
+                    <ArrowRight className="size-3 shrink-0 text-blue-600 dark:text-blue-400" />
+                    <span className="font-bold text-slate-900 dark:text-white">
+                        {toLabel}
+                    </span>
                 </div>
             </div>
         );
@@ -756,7 +864,11 @@ function AuditDetailCell({ log }: { log: Log }) {
 
     // 3. Monetary Change (before -> after, currency)
     if (metadata.amount && typeof metadata.amount === 'object') {
-        const amt = metadata.amount as { before?: number; after?: number; currency?: string };
+        const amt = metadata.amount as {
+            before?: number;
+            after?: number;
+            currency?: string;
+        };
         const curr = amt.currency || 'IDR';
 
         return (
@@ -766,7 +878,7 @@ function AuditDetailCell({ log }: { log: Log }) {
                     <span className="font-medium text-slate-500 dark:text-zinc-400">
                         {formatCurrency(amt.before, curr)}
                     </span>
-                    <ArrowRight className="size-3 text-blue-600 dark:text-blue-400 shrink-0" />
+                    <ArrowRight className="size-3 shrink-0 text-blue-600 dark:text-blue-400" />
                     <span className="font-bold text-emerald-700 dark:text-emerald-400">
                         {formatCurrency(amt.after, curr)}
                     </span>
@@ -785,17 +897,22 @@ function AuditDetailCell({ log }: { log: Log }) {
         const afterObj = ch.after ?? {};
 
         const allKeys = Array.from(
-            new Set([...Object.keys(beforeObj), ...Object.keys(afterObj)])
+            new Set([...Object.keys(beforeObj), ...Object.keys(afterObj)]),
         ).filter((k) => {
-            if (['updated_at', 'created_at', 'id', 'remember_token'].includes(k)) return false;
+            if (
+                ['updated_at', 'created_at', 'id', 'remember_token'].includes(k)
+            )
+                return false;
             return JSON.stringify(beforeObj[k]) !== JSON.stringify(afterObj[k]);
         });
 
         if (allKeys.length === 1) {
             const k = allKeys[0];
             return (
-                <p className="text-xs text-slate-800 dark:text-zinc-200 leading-relaxed">
-                    Memperbarui <strong>{formatFieldKey(k)}</strong> dari <em>"{formatValue(beforeObj[k])}"</em> menjadi <strong>"{formatValue(afterObj[k])}"</strong>.
+                <p className="text-xs leading-relaxed text-slate-800 dark:text-zinc-200">
+                    Memperbarui <strong>{formatFieldKey(k)}</strong> dari{' '}
+                    <em>"{formatValue(beforeObj[k])}"</em> menjadi{' '}
+                    <strong>"{formatValue(afterObj[k])}"</strong>.
                 </p>
             );
         }
@@ -815,17 +932,17 @@ function AuditDetailCell({ log }: { log: Log }) {
                                 <span className="font-semibold text-slate-700 dark:text-zinc-300">
                                     {formatFieldKey(k)}:
                                 </span>
-                                <span className="line-through text-slate-400 dark:text-zinc-500">
+                                <span className="text-slate-400 line-through dark:text-zinc-500">
                                     {formatValue(beforeObj[k])}
                                 </span>
-                                <ArrowRight className="size-3 text-blue-600 dark:text-blue-400 shrink-0" />
+                                <ArrowRight className="size-3 shrink-0 text-blue-600 dark:text-blue-400" />
                                 <span className="font-semibold text-slate-900 dark:text-white">
                                     {formatValue(afterObj[k])}
                                 </span>
                             </div>
                         ))}
                         {allKeys.length > 3 && (
-                            <span className="block text-[10.5px] italic text-slate-400 dark:text-zinc-500">
+                            <span className="block text-[10.5px] text-slate-400 italic dark:text-zinc-500">
                                 + {allKeys.length - 3} rincian perubahan lainnya
                             </span>
                         )}
@@ -839,7 +956,8 @@ function AuditDetailCell({ log }: { log: Log }) {
     const namedEvents: Record<string, string> = {
         'client.created': 'Mendaftarkan data profil klien baru.',
         'client.updated': 'Memperbarui rincian informasi klien.',
-        'client.compliance_added': 'Menambahkan dokumen kepatuhan / izin berusaha klien.',
+        'client.compliance_added':
+            'Menambahkan dokumen kepatuhan / izin berusaha klien.',
         'client.compliance_updated': 'Memperbarui dokumen kepatuhan klien.',
         'client.compliance_deleted': 'Menghapus dokumen kepatuhan klien.',
         'matter.created': 'Membuka berkas perkara hukum baru.',
@@ -851,19 +969,28 @@ function AuditDetailCell({ log }: { log: Log }) {
         'matter.evidence_added': 'Menambahkan alat bukti berkas perkara.',
         'matter.evidence_updated': 'Memperbarui data alat bukti perkara.',
         'matter.evidence_deleted': 'Menghapus alat bukti berkas perkara.',
-        'matter.chronology_added': 'Menambahkan kronologi peristiwa hukum perkara.',
+        'matter.chronology_added':
+            'Menambahkan kronologi peristiwa hukum perkara.',
         'matter.chronology_deleted': 'Menghapus catatan kronologi perkara.',
-        'matter.legal_hold_placed': 'Menerapkan status Legal Hold pada berkas perkara.',
-        'matter.legal_hold_released': 'Mencabut status Legal Hold pada berkas perkara.',
+        'matter.legal_hold_placed':
+            'Menerapkan status Legal Hold pada berkas perkara.',
+        'matter.legal_hold_released':
+            'Mencabut status Legal Hold pada berkas perkara.',
         'document.uploaded': 'Mengunggah berkas dokumen baru.',
         'document.downloaded': 'Mengunduh salinan berkas dokumen.',
         'document.approved': 'Menyetujui draf dokumen hukum.',
-        'document.revision_requested': 'Mengajukan permintaan revisi pada draf dokumen.',
-        'document.approval_requested': 'Mengajukan permohonan persetujuan draf dokumen.',
-        'signature.request_sent': 'Mengirimkan permohonan tanda tangan digital kepada pihak terkait.',
-        'signature.signer_completed': 'Penandatangan telah menyelesaikan proses tanda tangan digital.',
-        'signature.signed_final_processed': 'Menghasilkan berkas final bertanda tangan digital tersertifikasi.',
-        'signature.reminder_resent': 'Mengirimkan ulang notifikasi pengingat tanda tangan.',
+        'document.revision_requested':
+            'Mengajukan permintaan revisi pada draf dokumen.',
+        'document.approval_requested':
+            'Mengajukan permohonan persetujuan draf dokumen.',
+        'signature.request_sent':
+            'Mengirimkan permohonan tanda tangan digital kepada pihak terkait.',
+        'signature.signer_completed':
+            'Penandatangan telah menyelesaikan proses tanda tangan digital.',
+        'signature.signed_final_processed':
+            'Menghasilkan berkas final bertanda tangan digital tersertifikasi.',
+        'signature.reminder_resent':
+            'Mengirimkan ulang notifikasi pengingat tanda tangan.',
         'invoice.generated': 'Menerbitkan tagihan invoice baru kepada klien.',
         'invoice.cancelled': 'Membatalkan tagihan invoice.',
         'payment.recorded': 'Mencatat penerimaan pembayaran tagihan klien.',
@@ -871,27 +998,32 @@ function AuditDetailCell({ log }: { log: Log }) {
         'payment.refunded': 'Melakukan pengembalian pembayaran klien (refund).',
         'payment.reversed': 'Membatalkan pencatatan pembayaran (reversal).',
         'correspondence.logged': 'Mencatat surat korespondensi resmi baru.',
-        'correspondence.dispatched': 'Mendistribusikan surat korespondensi keluar.',
+        'correspondence.dispatched':
+            'Mendistribusikan surat korespondensi keluar.',
         'staff.created': 'Mendaftarkan akun staf / advokat baru.',
         'staff.updated': 'Memperbarui data akun staf / advokat.',
         'user.invited': 'Mengundang pengguna baru ke dalam workspace.',
         'user.deleted': 'Menghapus akun pengguna dari workspace.',
-        'conflict.checked': 'Menjalankan pemeriksaan potensi konflik kepentingan.',
+        'conflict.checked':
+            'Menjalankan pemeriksaan potensi konflik kepentingan.',
         'conflict.resolved': 'Menyelesaikan pemeriksaan konflik kepentingan.',
         'template.created': 'Membuat template draf hukum baru.',
         'template.duplicated': 'Menduplikasi template draf hukum.',
-        'template.document_generated': 'Menghasilkan draf dokumen otomatis dari template.',
+        'template.document_generated':
+            'Menghasilkan draf dokumen otomatis dari template.',
     };
 
     if (namedEvents[log.event]) {
         let extraNote = '';
         if (metadata.title) extraNote = ` (${metadata.title})`;
-        else if (metadata.client_number) extraNote = ` (No. ${metadata.client_number})`;
-        else if (metadata.version_number) extraNote = ` (Versi ${metadata.version_number})`;
+        else if (metadata.client_number)
+            extraNote = ` (No. ${metadata.client_number})`;
+        else if (metadata.version_number)
+            extraNote = ` (Versi ${metadata.version_number})`;
         else if (metadata.reason) extraNote = ` (Alasan: ${metadata.reason})`;
 
         return (
-            <p className="text-xs text-slate-800 dark:text-zinc-200 leading-relaxed font-medium">
+            <p className="text-xs leading-relaxed font-medium text-slate-800 dark:text-zinc-200">
                 {namedEvents[log.event]}
                 {extraNote}
             </p>
@@ -899,12 +1031,22 @@ function AuditDetailCell({ log }: { log: Log }) {
     }
 
     // 6. Direct narrative strings (message, reason, note, description)
-    if (metadata.message || metadata.reason || metadata.description || metadata.note || metadata.action) {
+    if (
+        metadata.message ||
+        metadata.reason ||
+        metadata.description ||
+        metadata.note ||
+        metadata.action
+    ) {
         const text = String(
-            metadata.message || metadata.reason || metadata.description || metadata.note || metadata.action
+            metadata.message ||
+                metadata.reason ||
+                metadata.description ||
+                metadata.note ||
+                metadata.action,
         );
         return (
-            <p className="text-xs font-medium leading-relaxed text-slate-800 dark:text-zinc-200">
+            <p className="text-xs leading-relaxed font-medium text-slate-800 dark:text-zinc-200">
                 {text}
             </p>
         );
@@ -912,7 +1054,7 @@ function AuditDetailCell({ log }: { log: Log }) {
 
     // 7. Arbitrary Key-Value Badges (clean pairs)
     const rawKeys = Object.keys(metadata).filter(
-        (k) => !['ip', 'user_agent', 'browser', 'pruned_at'].includes(k)
+        (k) => !['ip', 'user_agent', 'browser', 'pruned_at'].includes(k),
     );
 
     if (rawKeys.length > 0) {
@@ -935,7 +1077,7 @@ function AuditDetailCell({ log }: { log: Log }) {
 
     // Default Fallback
     return (
-        <span className="text-xs italic text-slate-400 dark:text-zinc-500">
+        <span className="text-xs text-slate-400 italic dark:text-zinc-500">
             Aktivitas tercatat tanpa rincian atribut khusus.
         </span>
     );
@@ -963,12 +1105,12 @@ function RawLogDetailDialog({
 
     return (
         <Dialog open={!!log} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-2xl p-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className="max-w-2xl overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
                 <div className="border-b border-slate-100 bg-slate-50/60 p-5 dark:border-white/5 dark:bg-zinc-900/40">
                     <DialogHeader>
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2.5">
-                                <div className="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 border border-blue-100 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-900/40">
+                                <div className="flex size-9 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-blue-600 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-400">
                                     <Code2 className="size-4.5" />
                                 </div>
                                 <div>
@@ -976,7 +1118,8 @@ function RawLogDetailDialog({
                                         Rincian Teknis &amp; Integritas Ledger
                                     </DialogTitle>
                                     <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                        Log #{log.id} · {formatDate(log.created_at, true)}
+                                        Log #{log.id} ·{' '}
+                                        {formatDate(log.created_at, true)}
                                     </DialogDescription>
                                 </div>
                             </div>
@@ -1003,62 +1146,70 @@ function RawLogDetailDialog({
                     </DialogHeader>
                 </div>
 
-                <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+                <div className="max-h-[70vh] space-y-4 overflow-y-auto p-5">
                     {/* Meta Grid */}
                     <div className="grid grid-cols-2 gap-3 text-xs">
-                        <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 space-y-1 dark:border-white/5 dark:bg-white/[0.02]">
-                            <span className="text-[10.5px] font-semibold text-slate-500 uppercase tracking-wider">
+                        <div className="space-y-1 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 dark:border-white/5 dark:bg-white/[0.02]">
+                            <span className="text-[10.5px] font-semibold tracking-wider text-slate-500 uppercase">
                                 Event &amp; Kategori
                             </span>
                             <p className="font-mono font-bold text-slate-900 dark:text-white">
-                                {log.event} {log.category ? `(${log.category})` : ''}
+                                {log.event}{' '}
+                                {log.category ? `(${log.category})` : ''}
                             </p>
                         </div>
-                        <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 space-y-1 dark:border-white/5 dark:bg-white/[0.02]">
-                            <span className="text-[10.5px] font-semibold text-slate-500 uppercase tracking-wider">
+                        <div className="space-y-1 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 dark:border-white/5 dark:bg-white/[0.02]">
+                            <span className="text-[10.5px] font-semibold tracking-wider text-slate-500 uppercase">
                                 Pelaku / Aktor
                             </span>
                             <p className="font-medium text-slate-900 dark:text-white">
                                 {log.actor?.name ?? 'Sistem Otomatis'}{' '}
-                                <span className="font-mono text-slate-400">({log.actor?.email ?? 'system'})</span>
+                                <span className="font-mono text-slate-400">
+                                    ({log.actor?.email ?? 'system'})
+                                </span>
                             </p>
                         </div>
-                        <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 space-y-1 dark:border-white/5 dark:bg-white/[0.02]">
-                            <span className="text-[10.5px] font-semibold text-slate-500 uppercase tracking-wider">
+                        <div className="space-y-1 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 dark:border-white/5 dark:bg-white/[0.02]">
+                            <span className="text-[10.5px] font-semibold tracking-wider text-slate-500 uppercase">
                                 IP Address &amp; Jaringan
                             </span>
                             <p className="font-mono font-medium text-slate-900 dark:text-white">
                                 {log.ip_address ?? '127.0.0.1'}
                             </p>
                         </div>
-                        <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 space-y-1 dark:border-white/5 dark:bg-white/[0.02]">
-                            <span className="text-[10.5px] font-semibold text-slate-500 uppercase tracking-wider">
+                        <div className="space-y-1 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 dark:border-white/5 dark:bg-white/[0.02]">
+                            <span className="text-[10.5px] font-semibold tracking-wider text-slate-500 uppercase">
                                 Target Objek Model
                             </span>
-                            <p className="font-mono font-medium text-slate-900 dark:text-white truncate">
-                                {log.subject_type ?? '-'} (#{log.subject_id ?? '-'})
+                            <p className="truncate font-mono font-medium text-slate-900 dark:text-white">
+                                {log.subject_type ?? '-'} (#
+                                {log.subject_id ?? '-'})
                             </p>
                         </div>
                     </div>
 
                     {/* Cryptographic SHA256 Ledger Hashes */}
                     {(log.entry_hash || log.previous_hash) && (
-                        <div className="rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 space-y-2 text-xs dark:border-white/5 dark:bg-white/[0.02]">
-                            <span className="text-[10.5px] font-semibold text-slate-500 uppercase tracking-wider">
+                        <div className="space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 text-xs dark:border-white/5 dark:bg-white/[0.02]">
+                            <span className="text-[10.5px] font-semibold tracking-wider text-slate-500 uppercase">
                                 Cryptographic Ledger Hashes (SHA-256)
                             </span>
                             {log.entry_hash && (
                                 <div>
-                                    <span className="text-[10px] text-slate-400 block">Entry Hash:</span>
-                                    <p className="font-mono text-[11px] text-slate-800 dark:text-zinc-200 break-all select-all">
+                                    <span className="block text-[10px] text-slate-400">
+                                        Entry Hash:
+                                    </span>
+                                    <p className="font-mono text-[11px] break-all text-slate-800 select-all dark:text-zinc-200">
                                         {log.entry_hash}
                                     </p>
                                 </div>
                             )}
                             {log.previous_hash && (
                                 <div>
-                                    <span className="text-[10px] text-slate-400 block">Previous Hash:</span>
-                                    <p className="font-mono text-[11px] text-slate-500 dark:text-zinc-400 break-all select-all">
+                                    <span className="block text-[10px] text-slate-400">
+                                        Previous Hash:
+                                    </span>
+                                    <p className="font-mono text-[11px] break-all text-slate-500 select-all dark:text-zinc-400">
                                         {log.previous_hash}
                                     </p>
                                 </div>
@@ -1077,7 +1228,7 @@ function RawLogDetailDialog({
                     </div>
                 </div>
 
-                <div className="border-t border-slate-100 bg-slate-50/60 p-4 flex justify-end dark:border-white/5 dark:bg-zinc-900/40">
+                <div className="flex justify-end border-t border-slate-100 bg-slate-50/60 p-4 dark:border-white/5 dark:bg-zinc-900/40">
                     <Button
                         type="button"
                         variant="outline"
@@ -1148,11 +1299,11 @@ function CleanAuditLogsDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-xl p-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className="max-w-xl overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
                 <div className="border-b border-slate-100 bg-slate-50/60 p-5 dark:border-white/5 dark:bg-zinc-900/40">
                     <DialogHeader>
                         <div className="flex items-center gap-2.5">
-                            <div className="flex size-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600 border border-rose-100 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-900/40">
+                            <div className="flex size-9 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-600 dark:border-rose-900/40 dark:bg-rose-950/40 dark:text-rose-400">
                                 <Trash2 className="size-4.5" />
                             </div>
                             <div>
@@ -1160,7 +1311,8 @@ function CleanAuditLogsDialog({
                                     Bersihkan &amp; Pemangkasan Log Audit
                                 </DialogTitle>
                                 <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Pilih durasi retensi penyimpanan untuk menghapus log aktivitas yang sudah lampau.
+                                    Pilih durasi retensi penyimpanan untuk
+                                    menghapus log aktivitas yang sudah lampau.
                                 </DialogDescription>
                             </div>
                         </div>
@@ -1173,17 +1325,18 @@ function CleanAuditLogsDialog({
                         onOpenChange(false);
                         setConfirmed(false);
                     }}
-                    className="p-5 space-y-4"
+                    className="space-y-4 p-5"
                 >
                     {({ processing }) => (
                         <>
                             <div className="space-y-2">
-                                <Label className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-zinc-300">
+                                <Label className="text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-zinc-300">
                                     Pilih Batas Waktu Retensi (Durasi Hilang)
                                 </Label>
                                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                                     {retentionOptions.map((opt) => {
-                                        const isSelected = retention === opt.value;
+                                        const isSelected =
+                                            retention === opt.value;
                                         return (
                                             <label
                                                 key={opt.value}
@@ -1200,15 +1353,17 @@ function CleanAuditLogsDialog({
                                                     name="retention"
                                                     value={opt.value}
                                                     checked={isSelected}
-                                                    onChange={() => setRetention(opt.value)}
+                                                    onChange={() =>
+                                                        setRetention(opt.value)
+                                                    }
                                                     className="sr-only"
                                                 />
                                                 <div className="flex items-center justify-between gap-1">
-                                                    <span className="font-bold text-xs text-slate-900 dark:text-white">
+                                                    <span className="text-xs font-bold text-slate-900 dark:text-white">
                                                         {opt.label}
                                                     </span>
                                                     <span
-                                                        className={`rounded px-1.5 py-0.2 font-mono text-[9.5px] font-bold ${
+                                                        className={`py-0.2 rounded px-1.5 font-mono text-[9.5px] font-bold ${
                                                             opt.isDanger
                                                                 ? 'bg-rose-100 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300'
                                                                 : isSelected
@@ -1231,31 +1386,44 @@ function CleanAuditLogsDialog({
                             {/* Warning Card */}
                             <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-3 text-xs dark:border-amber-900/40 dark:bg-amber-950/20">
                                 <div className="flex items-start gap-2">
-                                    <AlertTriangle className="size-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+                                    <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
                                     <div className="space-y-0.5 text-amber-900 dark:text-amber-300">
-                                        <p className="font-bold">Konfirmasi Integritas &amp; Kepatuhan</p>
+                                        <p className="font-bold">
+                                            Konfirmasi Integritas &amp;
+                                            Kepatuhan
+                                        </p>
                                         <p className="text-[11px] text-amber-800/90 dark:text-amber-400/90">
-                                            Penghapusan log bersifat permanen. Aktivitas pembersihan ini akan dicatat sebagai event audit baru (<code>audit.pruned</code>) untuk menjaga akuntabilitas sistem. Total saat ini: <strong>{totalLogs}</strong> log.
+                                            Penghapusan log bersifat permanen.
+                                            Aktivitas pembersihan ini akan
+                                            dicatat sebagai event audit baru (
+                                            <code>audit.pruned</code>) untuk
+                                            menjaga akuntabilitas sistem. Total
+                                            saat ini:{' '}
+                                            <strong>{totalLogs}</strong> log.
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Safety Checkbox */}
-                            <label className="flex items-start gap-2 pt-1 cursor-pointer select-none">
+                            <label className="flex cursor-pointer items-start gap-2 pt-1 select-none">
                                 <input
                                     type="checkbox"
                                     checked={confirmed}
-                                    onChange={(e) => setConfirmed(e.target.checked)}
+                                    onChange={(e) =>
+                                        setConfirmed(e.target.checked)
+                                    }
                                     className="mt-0.5 size-4 rounded border-slate-300 text-rose-600 focus:ring-rose-500 dark:border-white/20 dark:bg-zinc-800"
                                 />
                                 <span className="text-xs text-slate-700 dark:text-zinc-300">
-                                    Saya mengonfirmasi bahwa saya berwenang melakukan pembersihan data log audit kepatuhan ini.
+                                    Saya mengonfirmasi bahwa saya berwenang
+                                    melakukan pembersihan data log audit
+                                    kepatuhan ini.
                                 </span>
                             </label>
 
                             {/* Actions */}
-                            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-white/5">
+                            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/5">
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -1269,10 +1437,12 @@ function CleanAuditLogsDialog({
                                     type="submit"
                                     size="sm"
                                     disabled={!confirmed || processing}
-                                    className="h-8 rounded-lg bg-rose-600 px-4 text-xs font-bold text-white shadow-2xs hover:bg-rose-700 active:scale-95 transition-all disabled:opacity-50 disabled:pointer-events-none"
+                                    className="h-8 rounded-lg bg-rose-600 px-4 text-xs font-bold text-white shadow-2xs transition-all hover:bg-rose-700 active:scale-95 disabled:pointer-events-none disabled:opacity-50"
                                 >
                                     <Trash2 className="mr-1.5 size-3.5" />
-                                    {processing ? 'Membersihkan...' : 'Bersihkan Log Sekarang'}
+                                    {processing
+                                        ? 'Membersihkan...'
+                                        : 'Bersihkan Log Sekarang'}
                                 </Button>
                             </div>
                         </>

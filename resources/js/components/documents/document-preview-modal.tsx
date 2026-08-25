@@ -74,11 +74,12 @@ export function DocumentPreviewModal({
 }: DocumentPreviewModalProps) {
     if (!document) return null;
 
-    const versions = document.versions && document.versions.length > 0
-        ? document.versions
-        : document.current_version
-          ? [document.current_version]
-          : [];
+    const versions =
+        document.versions && document.versions.length > 0
+            ? document.versions
+            : document.current_version
+              ? [document.current_version]
+              : [];
 
     const [selectedVersionId, setSelectedVersionId] = useState<string>(
         document.current_version?.id || versions[0]?.id || '',
@@ -91,12 +92,17 @@ export function DocumentPreviewModal({
 
     useEffect(() => {
         if (document) {
-            setSelectedVersionId(document.current_version?.id || versions[0]?.id || '');
+            setSelectedVersionId(
+                document.current_version?.id || versions[0]?.id || '',
+            );
             setZoomLevel(100);
         }
     }, [document]);
 
-    const currentVersion = versions.find((v) => v.id === selectedVersionId) || versions[0] || document.current_version;
+    const currentVersion =
+        versions.find((v) => v.id === selectedVersionId) ||
+        versions[0] ||
+        document.current_version;
 
     const previewUrl = currentVersion?.id
         ? versionRoutes.preview.url({
@@ -174,11 +180,13 @@ export function DocumentPreviewModal({
                                     <>
                                         <span>•</span>
                                         <span className="font-mono">
-                                            {formatBytes(currentVersion.file_size)}
+                                            {formatBytes(
+                                                currentVersion.file_size,
+                                            )}
                                         </span>
                                     </>
                                 )}
-                                <span className="inline-flex items-center gap-0.5 rounded bg-emerald-50 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                                <span className="py-0.2 inline-flex items-center gap-0.5 rounded bg-emerald-50 px-1.5 font-mono text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
                                     <ShieldCheck className="size-2.5" />
                                     Terenkripsi
                                 </span>
@@ -209,7 +217,7 @@ export function DocumentPreviewModal({
                     <div className="flex flex-wrap items-center gap-1.5">
                         {versions.length > 1 && (
                             <div className="flex items-center gap-1">
-                                <span className="text-[10px] text-slate-400 uppercase font-mono">
+                                <span className="font-mono text-[10px] text-slate-400 uppercase">
                                     Versi Berkas:
                                 </span>
                                 <div className="flex items-center gap-0.5">
@@ -217,11 +225,14 @@ export function DocumentPreviewModal({
                                         <button
                                             key={ver.id ?? ver.version_number}
                                             type="button"
-                                            onClick={() => ver.id && setSelectedVersionId(ver.id)}
+                                            onClick={() =>
+                                                ver.id &&
+                                                setSelectedVersionId(ver.id)
+                                            }
                                             className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold transition-all ${
                                                 selectedVersionId === ver.id
                                                     ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                                                    : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300'
+                                                    : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-100 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300'
                                             }`}
                                         >
                                             v{ver.version_number}.0
@@ -299,7 +310,10 @@ export function DocumentPreviewModal({
                         {downloadUrl && (
                             <a
                                 href={downloadUrl}
-                                download={currentVersion?.original_filename || 'document'}
+                                download={
+                                    currentVersion?.original_filename ||
+                                    'document'
+                                }
                                 className="inline-flex h-7 items-center rounded-lg bg-slate-900 px-2.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
                             >
                                 <Download className="mr-1 size-3" />
@@ -338,10 +352,12 @@ export function DocumentPreviewModal({
                             <div className="flex flex-col items-center justify-center p-8 text-center">
                                 <FileText className="size-8 text-slate-300 dark:text-zinc-600" />
                                 <p className="mt-2 text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                                    Pratinjau visual difokuskan pada format PDF dan gambar
+                                    Pratinjau visual difokuskan pada format PDF
+                                    dan gambar
                                 </p>
                                 <p className="mt-0.5 text-[11px] text-slate-400">
-                                    Gunakan tombol Unduh untuk membuka berkas ini di perangkat Anda.
+                                    Gunakan tombol Unduh untuk membuka berkas
+                                    ini di perangkat Anda.
                                 </p>
                             </div>
                         )}

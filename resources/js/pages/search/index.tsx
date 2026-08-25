@@ -25,26 +25,34 @@ const iconConfig = {
     matter: {
         icon: FolderKanban,
         label: 'Perkara (Matter)',
-        badgeClass: 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300',
-        iconClass: 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400',
+        badgeClass:
+            'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300',
+        iconClass:
+            'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400',
     },
     client: {
         icon: UsersRound,
         label: 'Entitas Klien',
-        badgeClass: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300',
-        iconClass: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400',
+        badgeClass:
+            'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300',
+        iconClass:
+            'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400',
     },
     contact: {
         icon: UserRound,
         label: 'Buku Kontak',
-        badgeClass: 'bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300',
-        iconClass: 'bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400',
+        badgeClass:
+            'bg-purple-50 text-purple-700 dark:bg-purple-950/40 dark:text-purple-300',
+        iconClass:
+            'bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400',
     },
     document: {
         icon: FileText,
         label: 'Dokumen Vault',
-        badgeClass: 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300',
-        iconClass: 'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400',
+        badgeClass:
+            'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300',
+        iconClass:
+            'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400',
     },
 };
 
@@ -75,7 +83,9 @@ export default function SearchIndex({
                                 Pencarian Global
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Temukan berkas perkara, direktori klien, kontak stakeholder, dan repositori dokumen hukum firma secara instan.
+                                Temukan berkas perkara, direktori klien, kontak
+                                stakeholder, dan repositori dokumen hukum firma
+                                secara instan.
                             </p>
                         </div>
                     </div>
@@ -120,30 +130,37 @@ export default function SearchIndex({
                                 >
                                     Semua Kategori ({results.length})
                                 </button>
-                                {(['matter', 'client', 'contact', 'document'] as const).map(
-                                    (type) => {
-                                        const count = results.filter(
-                                            (r) => r.type === type,
-                                        ).length;
-                                        if (count === 0) return null;
-                                        const config = iconConfig[type];
+                                {(
+                                    [
+                                        'matter',
+                                        'client',
+                                        'contact',
+                                        'document',
+                                    ] as const
+                                ).map((type) => {
+                                    const count = results.filter(
+                                        (r) => r.type === type,
+                                    ).length;
+                                    if (count === 0) return null;
+                                    const config = iconConfig[type];
 
-                                        return (
-                                            <button
-                                                key={type}
-                                                type="button"
-                                                onClick={() => setSelectedType(type)}
-                                                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
-                                                    selectedType === type
-                                                        ? 'bg-blue-600 text-white shadow-2xs'
-                                                        : 'border border-slate-200/80 bg-slate-50/70 text-slate-600 hover:bg-slate-100 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300'
-                                                }`}
-                                            >
-                                                {config.label} ({count})
-                                            </button>
-                                        );
-                                    },
-                                )}
+                                    return (
+                                        <button
+                                            key={type}
+                                            type="button"
+                                            onClick={() =>
+                                                setSelectedType(type)
+                                            }
+                                            className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                                selectedType === type
+                                                    ? 'bg-blue-600 text-white shadow-2xs'
+                                                    : 'border border-slate-200/80 bg-slate-50/70 text-slate-600 hover:bg-slate-100 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300'
+                                            }`}
+                                        >
+                                            {config.label} ({count})
+                                        </button>
+                                    );
+                                })}
                             </div>
                         )}
                     </Form>
@@ -167,7 +184,8 @@ export default function SearchIndex({
                         <div className="space-y-2">
                             <div className="flex items-center justify-between px-1 text-xs font-semibold text-slate-500 dark:text-zinc-400">
                                 <span>
-                                    Menampilkan {filteredResults.length} hasil ditemukan
+                                    Menampilkan {filteredResults.length} hasil
+                                    ditemukan
                                 </span>
                             </div>
 
@@ -191,7 +209,7 @@ export default function SearchIndex({
                                                 <div className="min-w-0">
                                                     <div className="flex items-center gap-2">
                                                         <span
-                                                            className={`rounded px-1.5 py-0.2 font-mono text-[9.5px] font-semibold ${config.badgeClass}`}
+                                                            className={`py-0.2 rounded px-1.5 font-mono text-[9.5px] font-semibold ${config.badgeClass}`}
                                                         >
                                                             {config.label}
                                                         </span>
@@ -225,4 +243,6 @@ export default function SearchIndex({
     );
 }
 
-SearchIndex.layout = { breadcrumbs: [{ title: 'Pencarian Global', href: search() }] };
+SearchIndex.layout = {
+    breadcrumbs: [{ title: 'Pencarian Global', href: search() }],
+};

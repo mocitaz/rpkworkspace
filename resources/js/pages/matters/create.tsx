@@ -55,7 +55,8 @@ export default function MatterCreate({
 }) {
     const isConflictCleared =
         conflictCheck &&
-        (conflictCheck.status === 'clear' || conflictCheck.decision === 'waived');
+        (conflictCheck.status === 'clear' ||
+            conflictCheck.decision === 'waived');
 
     return (
         <>
@@ -70,7 +71,11 @@ export default function MatterCreate({
                                 Registrasi Perkara Baru
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Nomor perkara resmi kantor (contoh: <strong className="font-mono text-slate-700 dark:text-zinc-300">RPK-2026-XXXX</strong>) akan dibuat otomatis oleh sistem.
+                                Nomor perkara resmi kantor (contoh:{' '}
+                                <strong className="font-mono text-slate-700 dark:text-zinc-300">
+                                    RPK-2026-XXXX
+                                </strong>
+                                ) akan dibuat otomatis oleh sistem.
                             </p>
                         </div>
 
@@ -94,7 +99,8 @@ export default function MatterCreate({
                             <div className="flex items-center gap-2">
                                 <ShieldCheck className="size-4 text-blue-600 dark:text-blue-400" />
                                 <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                    Tahap 1: Pemeriksaan Benturan Kepentingan (Conflict Check)
+                                    Tahap 1: Pemeriksaan Benturan Kepentingan
+                                    (Conflict Check)
                                 </h2>
                                 <span className="rounded-md bg-rose-50 px-1.5 py-0.5 text-[9px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
                                     Wajib Etik
@@ -120,20 +126,40 @@ export default function MatterCreate({
                                     <div className="flex-1 space-y-1">
                                         <div className="flex items-center gap-2">
                                             <p className="font-bold">
-                                                Status Conflict Check: <span className="capitalize">{conflictCheck.status.replace('_', ' ')}</span>
+                                                Status Conflict Check:{' '}
+                                                <span className="capitalize">
+                                                    {conflictCheck.status.replace(
+                                                        '_',
+                                                        ' ',
+                                                    )}
+                                                </span>
                                             </p>
-                                            {conflictCheck.decision === 'waived' && (
-                                                <span className="rounded bg-amber-500/20 px-1.5 py-0.2 font-mono text-[9px] font-bold uppercase">
+                                            {conflictCheck.decision ===
+                                                'waived' && (
+                                                <span className="py-0.2 rounded bg-amber-500/20 px-1.5 font-mono text-[9px] font-bold uppercase">
                                                     Waiver Disetujui Partner
                                                 </span>
                                             )}
                                         </div>
                                         <p className="text-[11px] opacity-90">
-                                            <span className="font-semibold">Pihak yang diperiksa:</span> {conflictCheck.searched_names.join(', ')}
+                                            <span className="font-semibold">
+                                                Pihak yang diperiksa:
+                                            </span>{' '}
+                                            {conflictCheck.searched_names.join(
+                                                ', ',
+                                            )}
                                         </p>
                                         {conflictCheck.expires_at && (
                                             <p className="font-mono text-[10px] opacity-75">
-                                                Berlaku hingga: {new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium' }).format(new Date(conflictCheck.expires_at))}
+                                                Berlaku hingga:{' '}
+                                                {new Intl.DateTimeFormat(
+                                                    'id-ID',
+                                                    { dateStyle: 'medium' },
+                                                ).format(
+                                                    new Date(
+                                                        conflictCheck.expires_at,
+                                                    ),
+                                                )}
                                             </p>
                                         )}
                                     </div>
@@ -152,38 +178,46 @@ export default function MatterCreate({
                                                     label="Klien yang Diperiksa"
                                                     name="client_id"
                                                     error={errors.client_id}
-                                                    options={clients.map((item) => ({
-                                                        value: item.id,
-                                                        label: `${item.client_number} - ${item.display_name}`,
-                                                    }))}
+                                                    options={clients.map(
+                                                        (item) => ({
+                                                            value: item.id,
+                                                            label: `${item.client_number} - ${item.display_name}`,
+                                                        }),
+                                                    )}
                                                 />
                                             </div>
 
                                             <div className="space-y-1.5 sm:col-span-2">
                                                 <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                                                    Pihak Lawan / Pihak Terkait yang Diperiksa
+                                                    Pihak Lawan / Pihak Terkait
+                                                    yang Diperiksa
                                                 </Label>
                                                 <div className="grid gap-2 sm:grid-cols-2">
-                                                    {[0, 1, 2, 3].map((index) => (
-                                                        <Input
-                                                            key={index}
-                                                            name={`names[${index}]`}
-                                                            placeholder={
-                                                                index === 0
-                                                                    ? 'Nama pihak lawan / perusahaan...'
-                                                                    : 'Nama pihak lain (opsional)...'
-                                                            }
-                                                            className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
-                                                        />
-                                                    ))}
+                                                    {[0, 1, 2, 3].map(
+                                                        (index) => (
+                                                            <Input
+                                                                key={index}
+                                                                name={`names[${index}]`}
+                                                                placeholder={
+                                                                    index === 0
+                                                                        ? 'Nama pihak lawan / perusahaan...'
+                                                                        : 'Nama pihak lain (opsional)...'
+                                                                }
+                                                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                            />
+                                                        ),
+                                                    )}
                                                 </div>
-                                                <InputError message={errors.names} />
+                                                <InputError
+                                                    message={errors.names}
+                                                />
                                             </div>
                                         </div>
 
                                         <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-white/[0.04]">
                                             <p className="text-[11px] text-slate-400">
-                                                Memindai basis data perkara, sengketa, dan kontak klien.
+                                                Memindai basis data perkara,
+                                                sengketa, dan kontak klien.
                                             </p>
 
                                             <Button
@@ -192,7 +226,9 @@ export default function MatterCreate({
                                                 disabled={processing}
                                                 className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95 dark:bg-blue-600 dark:hover:bg-blue-500"
                                             >
-                                                {processing && <Spinner className="mr-1.5 size-3" />}
+                                                {processing && (
+                                                    <Spinner className="mr-1.5 size-3" />
+                                                )}
                                                 Jalankan Conflict Check
                                             </Button>
                                         </div>
@@ -201,7 +237,9 @@ export default function MatterCreate({
                             </Form>
                         ) : (
                             <div className="mt-3 rounded-lg border border-amber-500/20 bg-amber-50/60 p-3 text-xs text-amber-800 dark:border-amber-500/30 dark:bg-amber-950/20 dark:text-amber-200">
-                                Conflict check wajib diinisiasi oleh partner atau advokat dengan otorisasi penanganan perkara.
+                                Conflict check wajib diinisiasi oleh partner
+                                atau advokat dengan otorisasi penanganan
+                                perkara.
                             </div>
                         )}
                     </section>
@@ -221,7 +259,10 @@ export default function MatterCreate({
                             <div className="mt-3 flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-50/60 p-2.5 text-xs text-amber-900 dark:border-amber-500/30 dark:bg-amber-950/20 dark:text-amber-200">
                                 <Info className="size-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
                                 <span>
-                                    Formulir dapat diisi terlebih dahulu. Tombol simpan perkara akan aktif setelah <strong>Tahap 1 (Conflict Check)</strong> selesai atau disetujui.
+                                    Formulir dapat diisi terlebih dahulu. Tombol
+                                    simpan perkara akan aktif setelah{' '}
+                                    <strong>Tahap 1 (Conflict Check)</strong>{' '}
+                                    selesai atau disetujui.
                                 </span>
                             </div>
                         )}
@@ -263,25 +304,41 @@ export default function MatterCreate({
                                                         <input
                                                             type="hidden"
                                                             name="client_id"
-                                                            value={conflictCheck.client_id}
+                                                            value={
+                                                                conflictCheck.client_id
+                                                            }
                                                         />
                                                         <div className="flex h-8 items-center justify-between rounded-lg border border-slate-200 bg-slate-50/70 px-2.5 text-xs font-medium text-slate-900 dark:border-white/10 dark:bg-[#121418] dark:text-white">
                                                             <span>
-                                                                {clients.find((c) => String(c.id) === conflictCheck.client_id)?.display_name ?? 'Klien dari Conflict Check'}
+                                                                {clients.find(
+                                                                    (c) =>
+                                                                        String(
+                                                                            c.id,
+                                                                        ) ===
+                                                                        conflictCheck.client_id,
+                                                                )
+                                                                    ?.display_name ??
+                                                                    'Klien dari Conflict Check'}
                                                             </span>
                                                             <Lock className="size-3 text-slate-400" />
                                                         </div>
-                                                        <InputError message={errors.client_id} />
+                                                        <InputError
+                                                            message={
+                                                                errors.client_id
+                                                            }
+                                                        />
                                                     </div>
                                                 ) : (
                                                     <SelectField
                                                         label="Klien"
                                                         name="client_id"
                                                         error={errors.client_id}
-                                                        options={clients.map((item) => ({
-                                                            value: item.id,
-                                                            label: `${item.client_number} - ${item.display_name}`,
-                                                        }))}
+                                                        options={clients.map(
+                                                            (item) => ({
+                                                                value: item.id,
+                                                                label: `${item.client_number} - ${item.display_name}`,
+                                                            }),
+                                                        )}
                                                     />
                                                 )}
                                             </div>
@@ -290,11 +347,16 @@ export default function MatterCreate({
                                                 <SelectField
                                                     label="Area Praktik Hukum"
                                                     name="practice_area_id"
-                                                    error={errors.practice_area_id}
-                                                    options={practiceAreas.map((item) => ({
-                                                        value: item.id,
-                                                        label: item.name ?? '',
-                                                    }))}
+                                                    error={
+                                                        errors.practice_area_id
+                                                    }
+                                                    options={practiceAreas.map(
+                                                        (item) => ({
+                                                            value: item.id,
+                                                            label:
+                                                                item.name ?? '',
+                                                        }),
+                                                    )}
                                                 />
                                             </div>
 
@@ -303,13 +365,20 @@ export default function MatterCreate({
                                                     label="Perkara Induk / Parent Matter (Opsional)"
                                                     name="parent_matter_id"
                                                     optional
-                                                    error={errors.parent_matter_id}
+                                                    error={
+                                                        errors.parent_matter_id
+                                                    }
                                                     options={[
-                                                        { value: '', label: '— Bukan Perkara Turunan / Standalone —' },
-                                                        ...parentMatters.map((item) => ({
-                                                            value: item.id,
-                                                            label: `${item.matter_number} - ${item.title}`,
-                                                        })),
+                                                        {
+                                                            value: '',
+                                                            label: '— Bukan Perkara Turunan / Standalone —',
+                                                        },
+                                                        ...parentMatters.map(
+                                                            (item) => ({
+                                                                value: item.id,
+                                                                label: `${item.matter_number} - ${item.title}`,
+                                                            }),
+                                                        ),
                                                     ]}
                                                 />
                                             </div>
@@ -319,14 +388,34 @@ export default function MatterCreate({
                                                     label="Tipe Relasi Tingkat Perkara"
                                                     name="relationship_type"
                                                     defaultValue="related_dispute"
-                                                    error={errors.relationship_type}
+                                                    error={
+                                                        errors.relationship_type
+                                                    }
                                                     options={[
-                                                        { value: 'related_dispute', label: 'Sengketa Terkait / Turunan' },
-                                                        { value: 'appeal_pt', label: 'Tingkat Banding (Pengadilan Tinggi)' },
-                                                        { value: 'cassation_ma', label: 'Tingkat Kasasi (Mahkamah Agung)' },
-                                                        { value: 'judicial_review_pk', label: 'Peninjauan Kembali (PK)' },
-                                                        { value: 'execution', label: 'Permohonan Eksekusi Putusan' },
-                                                        { value: 'counterclaim_reconvention', label: 'Gugatan Rekonvensi / Balik' },
+                                                        {
+                                                            value: 'related_dispute',
+                                                            label: 'Sengketa Terkait / Turunan',
+                                                        },
+                                                        {
+                                                            value: 'appeal_pt',
+                                                            label: 'Tingkat Banding (Pengadilan Tinggi)',
+                                                        },
+                                                        {
+                                                            value: 'cassation_ma',
+                                                            label: 'Tingkat Kasasi (Mahkamah Agung)',
+                                                        },
+                                                        {
+                                                            value: 'judicial_review_pk',
+                                                            label: 'Peninjauan Kembali (PK)',
+                                                        },
+                                                        {
+                                                            value: 'execution',
+                                                            label: 'Permohonan Eksekusi Putusan',
+                                                        },
+                                                        {
+                                                            value: 'counterclaim_reconvention',
+                                                            label: 'Gugatan Rekonvensi / Balik',
+                                                        },
                                                     ]}
                                                 />
                                             </div>
@@ -360,7 +449,9 @@ export default function MatterCreate({
                                             <SelectField
                                                 label="Partner Penanggung Jawab"
                                                 name="responsible_partner_id"
-                                                error={errors.responsible_partner_id}
+                                                error={
+                                                    errors.responsible_partner_id
+                                                }
                                                 options={users.map((item) => ({
                                                     value: item.id,
                                                     label: `${item.name} ${item.position_title ? `(${item.position_title})` : ''}`,
@@ -371,7 +462,9 @@ export default function MatterCreate({
                                                 label="Supervising Lawyer (Opsional)"
                                                 name="supervising_lawyer_id"
                                                 optional
-                                                error={errors.supervising_lawyer_id}
+                                                error={
+                                                    errors.supervising_lawyer_id
+                                                }
                                                 options={users.map((item) => ({
                                                     value: item.id,
                                                     label: `${item.name} ${item.position_title ? `(${item.position_title})` : ''}`,
@@ -392,9 +485,18 @@ export default function MatterCreate({
                                                 defaultValue="active"
                                                 error={errors.status}
                                                 options={[
-                                                    { value: 'prospective', label: 'Prospektif' },
-                                                    { value: 'active', label: 'Aktif' },
-                                                    { value: 'on_hold', label: 'Ditunda' },
+                                                    {
+                                                        value: 'prospective',
+                                                        label: 'Prospektif',
+                                                    },
+                                                    {
+                                                        value: 'active',
+                                                        label: 'Aktif',
+                                                    },
+                                                    {
+                                                        value: 'on_hold',
+                                                        label: 'Ditunda',
+                                                    },
                                                 ]}
                                             />
 
@@ -404,10 +506,22 @@ export default function MatterCreate({
                                                 defaultValue="normal"
                                                 error={errors.priority}
                                                 options={[
-                                                    { value: 'low', label: 'Rendah' },
-                                                    { value: 'normal', label: 'Normal' },
-                                                    { value: 'high', label: 'Tinggi' },
-                                                    { value: 'critical', label: 'Kritis' },
+                                                    {
+                                                        value: 'low',
+                                                        label: 'Rendah',
+                                                    },
+                                                    {
+                                                        value: 'normal',
+                                                        label: 'Normal',
+                                                    },
+                                                    {
+                                                        value: 'high',
+                                                        label: 'Tinggi',
+                                                    },
+                                                    {
+                                                        value: 'critical',
+                                                        label: 'Kritis',
+                                                    },
                                                 ]}
                                             />
 
@@ -415,11 +529,22 @@ export default function MatterCreate({
                                                 label="Tingkat Kerahasiaan"
                                                 name="confidentiality_level"
                                                 defaultValue="standard"
-                                                error={errors.confidentiality_level}
+                                                error={
+                                                    errors.confidentiality_level
+                                                }
                                                 options={[
-                                                    { value: 'standard', label: 'Standar' },
-                                                    { value: 'confidential', label: 'Rahasia' },
-                                                    { value: 'restricted', label: 'Sangat Terbatas' },
+                                                    {
+                                                        value: 'standard',
+                                                        label: 'Standar',
+                                                    },
+                                                    {
+                                                        value: 'confidential',
+                                                        label: 'Rahasia',
+                                                    },
+                                                    {
+                                                        value: 'restricted',
+                                                        label: 'Sangat Terbatas',
+                                                    },
                                                 ]}
                                             />
 
@@ -439,23 +564,27 @@ export default function MatterCreate({
                                                 htmlFor="summary"
                                                 className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                                             >
-                                                Ringkasan &amp; Lingkup Penanganan Perkara
+                                                Ringkasan &amp; Lingkup
+                                                Penanganan Perkara
                                             </Label>
                                             <textarea
                                                 id="summary"
                                                 name="summary"
                                                 rows={3}
                                                 placeholder="Jelaskan secara ringkas latar belakang kasus hukum dan batasan penanganan..."
-                                                className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 transition-colors outline-hidden placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                                className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2.5 text-xs leading-relaxed text-slate-900 outline-hidden transition-colors placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                             />
-                                            <InputError message={errors.summary} />
+                                            <InputError
+                                                message={errors.summary}
+                                            />
                                         </div>
                                     </div>
 
                                     {/* Action Buttons */}
                                     <div className="flex flex-col justify-between gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center dark:border-white/[0.04]">
                                         <p className="text-[11px] text-slate-400">
-                                            Pastikan parameter dan data telah sesuai sebelum menyimpan.
+                                            Pastikan parameter dan data telah
+                                            sesuai sebelum menyimpan.
                                         </p>
 
                                         <div className="flex items-center gap-2">
@@ -465,7 +594,9 @@ export default function MatterCreate({
                                                 className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
                                                 asChild
                                             >
-                                                <Link href={matterRoutes.index()}>
+                                                <Link
+                                                    href={matterRoutes.index()}
+                                                >
                                                     Batal
                                                 </Link>
                                             </Button>
@@ -473,7 +604,10 @@ export default function MatterCreate({
                                             <Button
                                                 type="submit"
                                                 size="sm"
-                                                disabled={processing || !isConflictCleared}
+                                                disabled={
+                                                    processing ||
+                                                    !isConflictCleared
+                                                }
                                                 className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                             >
                                                 {processing ? (
@@ -525,7 +659,7 @@ function Field({
                 name={name}
                 type={type}
                 placeholder={placeholder}
-                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 placeholder:text-slate-400 transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 transition-colors placeholder:text-slate-400 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
             />
             <InputError message={error} />
         </div>
@@ -557,9 +691,7 @@ function SelectField({
                     {label}
                 </Label>
                 {optional && (
-                    <span className="text-[10px] text-slate-400">
-                        Opsional
-                    </span>
+                    <span className="text-[10px] text-slate-400">Opsional</span>
                 )}
             </div>
             <div className="relative">
@@ -568,7 +700,7 @@ function SelectField({
                     name={name}
                     defaultValue={defaultValue}
                     required={!optional}
-                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 transition-colors outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                 >
                     <option value="">
                         {optional ? 'Tidak ditentukan' : 'Pilih...'}

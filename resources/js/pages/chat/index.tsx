@@ -35,12 +35,18 @@ type Contact = {
     unread_count: number;
 };
 
-function getRealPresence(contact: { is_online?: boolean; status_text?: string; last_seen_at?: string | null }): {
+function getRealPresence(contact: {
+    is_online?: boolean;
+    status_text?: string;
+    last_seen_at?: string | null;
+}): {
     isOnline: boolean;
     statusText: string;
 } {
     if (contact.last_seen_at) {
-        const diffSeconds = Math.floor((Date.now() - new Date(contact.last_seen_at).getTime()) / 1000);
+        const diffSeconds = Math.floor(
+            (Date.now() - new Date(contact.last_seen_at).getTime()) / 1000,
+        );
 
         if (diffSeconds < 0 || diffSeconds <= 120) {
             return { isOnline: true, statusText: 'Aktif sekarang' };
@@ -48,12 +54,18 @@ function getRealPresence(contact: { is_online?: boolean; status_text?: string; l
 
         const diffMinutes = Math.floor(diffSeconds / 60);
         if (diffMinutes < 60) {
-            return { isOnline: false, statusText: `Aktif ${diffMinutes} menit lalu` };
+            return {
+                isOnline: false,
+                statusText: `Aktif ${diffMinutes} menit lalu`,
+            };
         }
 
         const diffHours = Math.floor(diffMinutes / 60);
         if (diffHours < 24) {
-            return { isOnline: false, statusText: `Aktif ${diffHours} jam lalu` };
+            return {
+                isOnline: false,
+                statusText: `Aktif ${diffHours} jam lalu`,
+            };
         }
 
         const diffDays = Math.floor(diffHours / 24);
@@ -64,11 +76,17 @@ function getRealPresence(contact: { is_online?: boolean; status_text?: string; l
                 hour12: false,
                 timeZone: 'Asia/Jakarta',
             }).format(new Date(contact.last_seen_at));
-            return { isOnline: false, statusText: `Aktif kemarin pukul ${timeStr} WIB` };
+            return {
+                isOnline: false,
+                statusText: `Aktif kemarin pukul ${timeStr} WIB`,
+            };
         }
 
         if (diffDays < 7) {
-            return { isOnline: false, statusText: `Aktif ${diffDays} hari lalu` };
+            return {
+                isOnline: false,
+                statusText: `Aktif ${diffDays} hari lalu`,
+            };
         }
 
         const dateStr = new Intl.DateTimeFormat('id-ID', {
@@ -81,7 +99,10 @@ function getRealPresence(contact: { is_online?: boolean; status_text?: string; l
         return { isOnline: false, statusText: `Aktif ${dateStr}` };
     }
 
-    return { isOnline: contact.is_online ?? false, statusText: contact.status_text || 'Offline' };
+    return {
+        isOnline: contact.is_online ?? false,
+        statusText: contact.status_text || 'Offline',
+    };
 }
 
 type Message = {
@@ -152,7 +173,9 @@ export default function ChatIndex({
                                 Pesan Langsung
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Komunikasi pesan privat instan dan koordinasi kerja langsung antar advokat dan staf internal RPK Law Firm.
+                                Komunikasi pesan privat instan dan koordinasi
+                                kerja langsung antar advokat dan staf internal
+                                RPK Law Firm.
                             </p>
                         </div>
                     </div>
@@ -169,7 +192,9 @@ export default function ChatIndex({
                                         type="text"
                                         placeholder="Cari rekan advokat..."
                                         value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        onChange={(e) =>
+                                            setSearchQuery(e.target.value)
+                                        }
                                         className="h-8 rounded-lg border-slate-200/80 bg-white pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
                                     />
                                 </div>
@@ -183,8 +208,10 @@ export default function ChatIndex({
                                     </div>
                                 ) : (
                                     filteredContacts.map((contact) => {
-                                        const isActive = activeContact?.id === contact.id;
-                                        const presence = getRealPresence(contact);
+                                        const isActive =
+                                            activeContact?.id === contact.id;
+                                        const presence =
+                                            getRealPresence(contact);
 
                                         return (
                                             <Link
@@ -204,26 +231,34 @@ export default function ChatIndex({
                                                     <div className="flex size-9 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-700 dark:bg-zinc-700 dark:text-zinc-200">
                                                         {contact.avatar_url ? (
                                                             <img
-                                                                src={contact.avatar_url}
-                                                                alt={contact.name}
+                                                                src={
+                                                                    contact.avatar_url
+                                                                }
+                                                                alt={
+                                                                    contact.name
+                                                                }
                                                                 className="size-full rounded-full object-cover"
                                                             />
                                                         ) : (
                                                             contact.name
                                                                 .split(' ')
-                                                                .map((n) => n[0])
+                                                                .map(
+                                                                    (n) => n[0],
+                                                                )
                                                                 .slice(0, 2)
                                                                 .join('')
                                                         )}
                                                     </div>
                                                     <span
                                                         className={cn(
-                                                            'absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-white dark:border-[#14161b]',
+                                                            'absolute right-0 bottom-0 size-2.5 rounded-full border-2 border-white dark:border-[#14161b]',
                                                             presence.isOnline
                                                                 ? 'bg-emerald-500'
                                                                 : 'bg-slate-300 dark:bg-zinc-600',
                                                         )}
-                                                        title={presence.statusText}
+                                                        title={
+                                                            presence.statusText
+                                                        }
                                                     />
                                                 </div>
 
@@ -243,9 +278,13 @@ export default function ChatIndex({
                                                         {contact.last_message ? (
                                                             <span className="shrink-0 text-[10px] text-slate-400 dark:text-zinc-500">
                                                                 {formatDate(
-                                                                    contact.last_message.created_at,
+                                                                    contact
+                                                                        .last_message
+                                                                        .created_at,
                                                                     true,
-                                                                ).split(' ')[1] || ''}
+                                                                ).split(
+                                                                    ' ',
+                                                                )[1] || ''}
                                                             </span>
                                                         ) : (
                                                             <span
@@ -256,7 +295,9 @@ export default function ChatIndex({
                                                                         : 'text-slate-400 dark:text-zinc-500',
                                                                 )}
                                                             >
-                                                                {presence.statusText}
+                                                                {
+                                                                    presence.statusText
+                                                                }
                                                             </span>
                                                         )}
                                                     </div>
@@ -265,19 +306,31 @@ export default function ChatIndex({
                                                         <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400">
                                                             {contact.last_message ? (
                                                                 <span>
-                                                                    {contact.last_message.is_outgoing && 'Anda: '}
-                                                                    {contact.last_message.message}
+                                                                    {contact
+                                                                        .last_message
+                                                                        .is_outgoing &&
+                                                                        'Anda: '}
+                                                                    {
+                                                                        contact
+                                                                            .last_message
+                                                                            .message
+                                                                    }
                                                                 </span>
                                                             ) : (
-                                                                <span className="italic text-slate-400">
-                                                                    {contact.title}
+                                                                <span className="text-slate-400 italic">
+                                                                    {
+                                                                        contact.title
+                                                                    }
                                                                 </span>
                                                             )}
                                                         </p>
 
-                                                        {contact.unread_count > 0 && (
+                                                        {contact.unread_count >
+                                                            0 && (
                                                             <span className="flex size-4.5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-bold text-white shadow-2xs">
-                                                                {contact.unread_count}
+                                                                {
+                                                                    contact.unread_count
+                                                                }
                                                             </span>
                                                         )}
                                                     </div>
@@ -295,7 +348,8 @@ export default function ChatIndex({
                                 <>
                                     {/* Top Chat Header */}
                                     {(() => {
-                                        const activePresence = getRealPresence(activeContact);
+                                        const activePresence =
+                                            getRealPresence(activeContact);
                                         return (
                                             <div className="flex h-14 items-center justify-between border-b border-slate-100 px-5 dark:border-white/[0.06]">
                                                 <div className="flex items-center gap-3">
@@ -303,21 +357,28 @@ export default function ChatIndex({
                                                         <div className="flex size-8 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-700 dark:bg-zinc-700 dark:text-zinc-200">
                                                             {activeContact.avatar_url ? (
                                                                 <img
-                                                                    src={activeContact.avatar_url}
-                                                                    alt={activeContact.name}
+                                                                    src={
+                                                                        activeContact.avatar_url
+                                                                    }
+                                                                    alt={
+                                                                        activeContact.name
+                                                                    }
                                                                     className="size-full rounded-full object-cover"
                                                                 />
                                                             ) : (
                                                                 activeContact.name
                                                                     .split(' ')
-                                                                    .map((n) => n[0])
+                                                                    .map(
+                                                                        (n) =>
+                                                                            n[0],
+                                                                    )
                                                                     .slice(0, 2)
                                                                     .join('')
                                                             )}
                                                         </div>
                                                         <span
                                                             className={cn(
-                                                                'absolute bottom-0 right-0 size-2 rounded-full border-2 border-white dark:border-[#14161b]',
+                                                                'absolute right-0 bottom-0 size-2 rounded-full border-2 border-white dark:border-[#14161b]',
                                                                 activePresence.isOnline
                                                                     ? 'bg-emerald-500'
                                                                     : 'bg-slate-300 dark:bg-zinc-600',
@@ -329,7 +390,10 @@ export default function ChatIndex({
                                                             {activeContact.name}
                                                         </h2>
                                                         <p className="text-[10px] text-slate-500 dark:text-zinc-400">
-                                                            {activeContact.title} &middot;{' '}
+                                                            {
+                                                                activeContact.title
+                                                            }{' '}
+                                                            &middot;{' '}
                                                             <span
                                                                 className={cn(
                                                                     'font-semibold',
@@ -338,7 +402,9 @@ export default function ChatIndex({
                                                                         : 'text-slate-400 dark:text-zinc-500',
                                                                 )}
                                                             >
-                                                                {activePresence.statusText}
+                                                                {
+                                                                    activePresence.statusText
+                                                                }
                                                             </span>
                                                         </p>
                                                     </div>
@@ -362,7 +428,8 @@ export default function ChatIndex({
                                                     <strong className="text-slate-900 dark:text-white">
                                                         {activeContact.name}
                                                     </strong>{' '}
-                                                    untuk koordinasi perkara dan tugas internal.
+                                                    untuk koordinasi perkara dan
+                                                    tugas internal.
                                                 </p>
                                             </div>
                                         ) : (
@@ -371,7 +438,9 @@ export default function ChatIndex({
                                                     key={msg.id}
                                                     className={cn(
                                                         'flex flex-col',
-                                                        msg.is_outgoing ? 'items-end' : 'items-start',
+                                                        msg.is_outgoing
+                                                            ? 'items-end'
+                                                            : 'items-start',
                                                     )}
                                                 >
                                                     <div
@@ -388,7 +457,11 @@ export default function ChatIndex({
                                                     {/* Timestamp & Status Check */}
                                                     <div className="mt-1 flex items-center gap-1 px-1 text-[9.5px] text-slate-400 dark:text-zinc-500">
                                                         <span>
-                                                            {formatDate(msg.created_at, true).split(' ')[1] || ''}
+                                                            {formatDate(
+                                                                msg.created_at,
+                                                                true,
+                                                            ).split(' ')[1] ||
+                                                                ''}
                                                         </span>
                                                         {msg.is_outgoing && (
                                                             <span>
@@ -416,7 +489,11 @@ export default function ChatIndex({
                                                 type="text"
                                                 autoFocus
                                                 value={messageInput}
-                                                onChange={(e) => setMessageInput(e.target.value)}
+                                                onChange={(e) =>
+                                                    setMessageInput(
+                                                        e.target.value,
+                                                    )
+                                                }
                                                 placeholder={`Tulis pesan ke ${activeContact.name.split(' ')[0]}...`}
                                                 className="h-9 flex-1 rounded-lg border-slate-200 bg-white text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
                                             />
@@ -431,7 +508,11 @@ export default function ChatIndex({
                                             </Button>
                                         </div>
                                         <div className="mt-1.5 px-1 text-[10px] text-slate-400 dark:text-zinc-500">
-                                            Tekan <kbd className="rounded border border-slate-200 px-1 py-0.2 font-mono text-[9px] dark:border-white/10">Enter</kbd> untuk mengirim pesan instan.
+                                            Tekan{' '}
+                                            <kbd className="py-0.2 rounded border border-slate-200 px-1 font-mono text-[9px] dark:border-white/10">
+                                                Enter
+                                            </kbd>{' '}
+                                            untuk mengirim pesan instan.
                                         </div>
                                     </form>
                                 </>
@@ -451,4 +532,6 @@ export default function ChatIndex({
     );
 }
 
-ChatIndex.layout = { breadcrumbs: [{ title: 'Pesan Langsung', href: chatRoutes.index() }] };
+ChatIndex.layout = {
+    breadcrumbs: [{ title: 'Pesan Langsung', href: chatRoutes.index() }],
+};

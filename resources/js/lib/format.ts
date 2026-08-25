@@ -7,7 +7,9 @@ export const formatDate = (value?: string | null, withTime = false) => {
         day: '2-digit',
         month: 'short',
         year: 'numeric',
-        ...(withTime ? { hour: '2-digit', minute: '2-digit', hour12: false } : {}),
+        ...(withTime
+            ? { hour: '2-digit', minute: '2-digit', hour12: false }
+            : {}),
         timeZone: 'Asia/Jakarta',
     }).format(new Date(value));
 
@@ -55,8 +57,10 @@ export const formatRelativeTime = (value?: string | null): string => {
     const diffSec = Math.floor((now.getTime() - date.getTime()) / 1000);
 
     if (diffSec < 45 && diffSec >= -5) return 'Baru saja';
-    if (diffSec < 3600 && diffSec > 0) return `${Math.max(1, Math.floor(diffSec / 60))} menit lalu`;
-    if (diffSec < 86400 && diffSec > 0) return `${Math.floor(diffSec / 3600)} jam lalu`;
+    if (diffSec < 3600 && diffSec > 0)
+        return `${Math.max(1, Math.floor(diffSec / 60))} menit lalu`;
+    if (diffSec < 86400 && diffSec > 0)
+        return `${Math.floor(diffSec / 3600)} jam lalu`;
     if (diffSec < 172800 && diffSec > 0) return `Kemarin, ${formatTime(value)}`;
 
     return formatDate(value, true);
@@ -142,12 +146,18 @@ export const formatBytes = (bytes?: number | null) => {
     }).format(bytes / 1024);
 };
 
-export const formatMoney = (amount?: number | string | null, currency = 'IDR') => {
+export const formatMoney = (
+    amount?: number | string | null,
+    currency = 'IDR',
+) => {
     const cleanCurrency =
         typeof currency === 'string' && currency.trim().length === 3
             ? currency.trim().toUpperCase()
             : 'IDR';
-    const num = typeof amount === 'number' && !isNaN(amount) ? amount : (Number(amount) || 0);
+    const num =
+        typeof amount === 'number' && !isNaN(amount)
+            ? amount
+            : Number(amount) || 0;
 
     try {
         return new Intl.NumberFormat('id-ID', {

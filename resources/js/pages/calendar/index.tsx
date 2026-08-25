@@ -87,7 +87,9 @@ export default function CalendarIndex({
     feed?: CalendarFeed;
 }) {
     const [view, setView] = useState<'month' | 'list'>('month');
-    const [selectedCategory, setSelectedCategory] = useState<'all' | 'Agenda' | 'Tenggat' | 'Tugas'>('all');
+    const [selectedCategory, setSelectedCategory] = useState<
+        'all' | 'Agenda' | 'Tenggat' | 'Tugas'
+    >('all');
     const [selectedItem, setSelectedItem] = useState<CalendarItem | null>(null);
     const [liveSyncOpen, setLiveSyncOpen] = useState(false);
 
@@ -111,7 +113,9 @@ export default function CalendarIndex({
                 kind: 'Tugas' as const,
                 icon: ListTodo,
             })),
-        ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        ].sort(
+            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+        );
     }, [deadlines, events, tasks]);
 
     const filteredItems = useMemo(() => {
@@ -140,7 +144,9 @@ export default function CalendarIndex({
                                 {formattedMonthTitle}
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Jadwal sidang pengadilan, mediasi, batas waktu pembuktian (tenggat), dan tugas perkara ({timezone}).
+                                Jadwal sidang pengadilan, mediasi, batas waktu
+                                pembuktian (tenggat), dan tugas perkara (
+                                {timezone}).
                             </p>
                         </div>
 
@@ -257,7 +263,9 @@ export default function CalendarIndex({
                         {/* 1. Sidang & Agenda */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">SIDANG &amp; AGENDA</span>
+                                <span className="text-[11px] font-semibold">
+                                    SIDANG &amp; AGENDA
+                                </span>
                                 <Gavel className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -270,14 +278,18 @@ export default function CalendarIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Pengadilan &amp; Mediasi</span>
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">Terjadwal</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                    Terjadwal
+                                </span>
                             </div>
                         </div>
 
                         {/* 2. Tenggat Kritis */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">TENGGAT KRITIS</span>
+                                <span className="text-[11px] font-semibold">
+                                    TENGGAT KRITIS
+                                </span>
                                 <CalendarClock className="size-3.5 text-rose-500 dark:text-rose-400" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -290,14 +302,18 @@ export default function CalendarIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Batas Waktu Berkas</span>
-                                <span className="font-semibold text-rose-600 dark:text-rose-400">Prioritas</span>
+                                <span className="font-semibold text-rose-600 dark:text-rose-400">
+                                    Prioritas
+                                </span>
                             </div>
                         </div>
 
                         {/* 3. Tugas Terkait */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">TUGAS TERKAIT</span>
+                                <span className="text-[11px] font-semibold">
+                                    TUGAS TERKAIT
+                                </span>
                                 <ListTodo className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -310,14 +326,18 @@ export default function CalendarIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Instruksi Advokat</span>
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">Aktif</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                    Aktif
+                                </span>
                             </div>
                         </div>
 
                         {/* 4. Total Aktivitas */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">TOTAL JADWAL</span>
+                                <span className="text-[11px] font-semibold">
+                                    TOTAL JADWAL
+                                </span>
                                 <CalendarIcon className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
@@ -330,7 +350,9 @@ export default function CalendarIndex({
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Kalender Kantor</span>
-                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">Tercatat</span>
+                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                    Tercatat
+                                </span>
                             </div>
                         </div>
                     </section>
@@ -393,13 +415,19 @@ export default function CalendarIndex({
                             onSelectItem={setSelectedItem}
                         />
                     ) : (
-                        <ListView items={filteredItems} onSelectItem={setSelectedItem} />
+                        <ListView
+                            items={filteredItems}
+                            onSelectItem={setSelectedItem}
+                        />
                     )}
                 </main>
             </div>
 
             {/* Modal Dialog: Detail Ringkasan Agenda / Jadwal */}
-            <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
+            <Dialog
+                open={!!selectedItem}
+                onOpenChange={(open) => !open && setSelectedItem(null)}
+            >
                 {selectedItem && (
                     <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
                         <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
@@ -427,7 +455,9 @@ export default function CalendarIndex({
                                             </span>
                                         )}
                                         {selectedItem.status && (
-                                            <StatusBadge value={selectedItem.status} />
+                                            <StatusBadge
+                                                value={selectedItem.status}
+                                            />
                                         )}
                                     </div>
                                     <DialogTitle className="pt-0.5 text-sm font-bold text-slate-900 dark:text-white">
@@ -447,7 +477,11 @@ export default function CalendarIndex({
                                                 PERKARA HUKUM TERKAIT
                                             </span>
                                             <p className="text-xs font-semibold text-slate-900 dark:text-white">
-                                                {selectedItem.matter.matter_number} · {selectedItem.matter.title}
+                                                {
+                                                    selectedItem.matter
+                                                        .matter_number
+                                                }{' '}
+                                                · {selectedItem.matter.title}
                                             </p>
                                         </div>
                                         <Button
@@ -456,7 +490,11 @@ export default function CalendarIndex({
                                             className="h-7 rounded-lg border-blue-200 bg-white px-2.5 text-xs font-semibold text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300"
                                             asChild
                                         >
-                                            <Link href={matterRoutes.show(selectedItem.matter.id)}>
+                                            <Link
+                                                href={matterRoutes.show(
+                                                    selectedItem.matter.id,
+                                                )}
+                                            >
                                                 Buka
                                                 <ArrowUpRight className="ml-0.5 size-3" />
                                             </Link>
@@ -470,17 +508,26 @@ export default function CalendarIndex({
                             )}
 
                             {/* Schedule & Timing Box */}
-                            <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 space-y-2 text-xs dark:border-white/[0.04] dark:bg-[#121418]">
+                            <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 text-xs dark:border-white/[0.04] dark:bg-[#121418]">
                                 <div className="flex items-center justify-between gap-2 border-b border-slate-200/50 pb-1.5 dark:border-white/[0.04]">
-                                    <span className="text-slate-500 dark:text-zinc-400">Waktu Pelaksanaan</span>
+                                    <span className="text-slate-500 dark:text-zinc-400">
+                                        Waktu Pelaksanaan
+                                    </span>
                                     <span className="font-mono font-semibold text-slate-900 dark:text-white">
-                                        {formatDate(selectedItem.date, true)} ({timezone})
+                                        {formatDate(selectedItem.date, true)} (
+                                        {timezone})
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between gap-2">
-                                    <span className="text-slate-500 dark:text-zinc-400">Kategori Kegiatan</span>
+                                    <span className="text-slate-500 dark:text-zinc-400">
+                                        Kategori Kegiatan
+                                    </span>
                                     <span className="font-semibold text-slate-800 dark:text-zinc-200">
-                                        {selectedItem.kind === 'Agenda' ? 'Sidang / Mediasi Resmi' : selectedItem.kind === 'Tenggat' ? 'Batas Waktu Dokumen Perkara' : 'Tugas Eksekusi Advokat'}
+                                        {selectedItem.kind === 'Agenda'
+                                            ? 'Sidang / Mediasi Resmi'
+                                            : selectedItem.kind === 'Tenggat'
+                                              ? 'Batas Waktu Dokumen Perkara'
+                                              : 'Tugas Eksekusi Advokat'}
                                     </span>
                                 </div>
                             </div>
@@ -530,7 +577,8 @@ function LiveCalendarSyncModal({
                                 Langganan Kalender Otomatis (Live Sync)
                             </DialogTitle>
                             <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Jadwal sidang, mediasi, dan tenggat perkara akan otomatis tersinkronisasi langsung ke HP Anda.
+                                Jadwal sidang, mediasi, dan tenggat perkara akan
+                                otomatis tersinkronisasi langsung ke HP Anda.
                             </DialogDescription>
                         </div>
                     </div>
@@ -544,7 +592,7 @@ function LiveCalendarSyncModal({
                                 <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900">
                                     <Laptop className="size-4" />
                                 </div>
-                                <div className="space-y-0.5 min-w-0">
+                                <div className="min-w-0 space-y-0.5">
                                     <div className="flex items-center gap-1.5">
                                         <span className="font-bold text-slate-900 dark:text-white">
                                             Apple Calendar
@@ -554,7 +602,8 @@ function LiveCalendarSyncModal({
                                         </span>
                                     </div>
                                     <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                        Buka aplikasi Kalender resmi iPhone, iPad, atau Mac.
+                                        Buka aplikasi Kalender resmi iPhone,
+                                        iPad, atau Mac.
                                     </p>
                                 </div>
                             </div>
@@ -578,7 +627,7 @@ function LiveCalendarSyncModal({
                                 <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400">
                                     <Globe className="size-4" />
                                 </div>
-                                <div className="space-y-0.5 min-w-0">
+                                <div className="min-w-0 space-y-0.5">
                                     <div className="flex items-center gap-1.5">
                                         <span className="font-bold text-slate-900 dark:text-white">
                                             Google Calendar
@@ -588,7 +637,8 @@ function LiveCalendarSyncModal({
                                         </span>
                                     </div>
                                     <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                        Tambahkan ke Google Calendar untuk sinkron ke Android.
+                                        Tambahkan ke Google Calendar untuk
+                                        sinkron ke Android.
                                     </p>
                                 </div>
                             </div>
@@ -598,7 +648,11 @@ function LiveCalendarSyncModal({
                                 className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                 asChild
                             >
-                                <a href={feed.google_url} target="_blank" rel="noreferrer">
+                                <a
+                                    href={feed.google_url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
                                     <ExternalLink className="mr-1.5 size-3.5 text-blue-600 dark:text-blue-400" />
                                     Buka di Google
                                 </a>
@@ -610,7 +664,9 @@ function LiveCalendarSyncModal({
                     <div className="space-y-1.5">
                         <div className="flex items-center gap-1.5 font-semibold text-slate-900 dark:text-white">
                             <Link2 className="size-3.5 text-slate-400" />
-                            <span>Tautan Langganan Kalender Pribadi (URL Feed):</span>
+                            <span>
+                                Tautan Langganan Kalender Pribadi (URL Feed):
+                            </span>
                         </div>
                         <div className="flex gap-1.5">
                             <input
@@ -645,25 +701,41 @@ function LiveCalendarSyncModal({
                     <div className="space-y-1.5 rounded-xl border border-slate-200/60 bg-slate-50/70 p-3 text-[11px] text-slate-600 dark:border-white/[0.04] dark:bg-[#121418] dark:text-zinc-400">
                         <div className="flex items-center gap-1.5 font-semibold text-slate-900 dark:text-zinc-200">
                             <Info className="size-3.5 text-blue-600 dark:text-blue-400" />
-                            <span>Panduan Pengaturan Manual (Google Calendar &amp; Outlook):</span>
+                            <span>
+                                Panduan Pengaturan Manual (Google Calendar &amp;
+                                Outlook):
+                            </span>
                         </div>
-                        <ol className="list-decimal pl-4 space-y-1 leading-relaxed">
+                        <ol className="list-decimal space-y-1 pl-4 leading-relaxed">
                             <li>
-                                <strong>Google Calendar (Browser):</strong> Buka <em>calendar.google.com</em>, di bilah kiri klik <strong>Kalender lainnya (+)</strong> &rarr; pilih <strong>Dari URL</strong> &rarr; tempel tautan di atas &rarr; klik <strong>Tambahkan Kalender</strong>.
+                                <strong>Google Calendar (Browser):</strong> Buka{' '}
+                                <em>calendar.google.com</em>, di bilah kiri klik{' '}
+                                <strong>Kalender lainnya (+)</strong> &rarr;
+                                pilih <strong>Dari URL</strong> &rarr; tempel
+                                tautan di atas &rarr; klik{' '}
+                                <strong>Tambahkan Kalender</strong>.
                             </li>
                             <li>
-                                <strong>Microsoft Outlook:</strong> Klik <strong>Tambah Kalender</strong> &rarr; pilih <strong>Berlangganan dari web</strong> &rarr; tempel tautan di atas &rarr; Simpan.
+                                <strong>Microsoft Outlook:</strong> Klik{' '}
+                                <strong>Tambah Kalender</strong> &rarr; pilih{' '}
+                                <strong>Berlangganan dari web</strong> &rarr;
+                                tempel tautan di atas &rarr; Simpan.
                             </li>
                         </ol>
                     </div>
 
                     {/* Keamanan & Rotate Token */}
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                    <div className="flex flex-col gap-2 border-t border-slate-100 pt-3 sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.06]">
                         <div className="flex items-center gap-1.5 text-[10.5px] text-slate-400 dark:text-zinc-500">
                             <Lock className="size-3 text-slate-400" />
-                            <span>Tautan feed bersifat rahasia dan unik per akun.</span>
+                            <span>
+                                Tautan feed bersifat rahasia dan unik per akun.
+                            </span>
                         </div>
-                        <Form {...calendarFeedRoutes.rotate.form()} onSuccess={() => {}}>
+                        <Form
+                            {...calendarFeedRoutes.rotate.form()}
+                            onSuccess={() => {}}
+                        >
                             {({ processing }) => (
                                 <Button
                                     type="submit"
@@ -760,7 +832,7 @@ function MonthGrid({
                                         )}
 
                                         {dayItems.length > 0 && (
-                                            <span className="rounded bg-slate-100 px-1 py-0.2 font-mono text-[9px] font-medium text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                                            <span className="py-0.2 rounded bg-slate-100 px-1 font-mono text-[9px] font-medium text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
                                                 {dayItems.length}
                                             </span>
                                         )}
@@ -780,7 +852,9 @@ function MonthGrid({
                                                 <button
                                                     type="button"
                                                     key={`${item.kind}-${item.id}`}
-                                                    onClick={() => onSelectItem(item)}
+                                                    onClick={() =>
+                                                        onSelectItem(item)
+                                                    }
                                                     title={`${item.kind}: ${item.title}`}
                                                     className={`group flex w-full cursor-pointer items-center justify-between gap-1 truncate rounded border px-1.5 py-0.5 text-left text-[9.5px] font-medium transition-all hover:shadow-2xs ${chipStyle}`}
                                                 >
@@ -788,7 +862,10 @@ function MonthGrid({
                                                         {item.title}
                                                     </span>
                                                     <span className="shrink-0 font-mono text-[8.5px] opacity-75">
-                                                        {formatTime(item.date, timezone)}
+                                                        {formatTime(
+                                                            item.date,
+                                                            timezone,
+                                                        )}
                                                     </span>
                                                 </button>
                                             );
@@ -854,13 +931,16 @@ function ListView({
                                     <IconComp className="size-3.5" />
                                 </div>
                                 <div className="min-w-0">
-                                    <h4 className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 transition-colors dark:text-white dark:group-hover:text-blue-400">
+                                    <h4 className="truncate text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
                                         {item.title}
                                     </h4>
                                     <p className="font-mono text-[10px] text-slate-500 dark:text-zinc-400">
                                         {item.matter ? (
                                             <span>
-                                                <span className="font-semibold text-slate-700 dark:text-zinc-300">{item.matter.matter_number}</span> · {item.matter.title}
+                                                <span className="font-semibold text-slate-700 dark:text-zinc-300">
+                                                    {item.matter.matter_number}
+                                                </span>{' '}
+                                                · {item.matter.title}
                                             </span>
                                         ) : (
                                             'Agenda Operasional Umum'
