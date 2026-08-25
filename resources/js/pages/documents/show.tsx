@@ -440,7 +440,7 @@ export default function DocumentShow({
                     )}
 
                     {/* 4. Workflow Panel: Approval & Signature Requests */}
-                    <div className="grid gap-4 lg:grid-cols-2">
+                    <div className="grid gap-5 lg:grid-cols-2 items-start">
                         {/* 1. Approval Dokumen */}
                         <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
@@ -460,26 +460,40 @@ export default function DocumentShow({
                             <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
                                 {document.approvals.length ? (
                                     document.approvals.map((approval) => (
-                                        <div key={approval.id} className="space-y-1.5 py-3">
+                                        <div key={approval.id} className="space-y-2 py-3 text-xs">
                                             <div className="flex items-center justify-between gap-2">
-                                                <span className="text-xs font-semibold text-slate-900 dark:text-white">
-                                                    Reviewer: {approval.reviewer.name}
-                                                </span>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex size-6 items-center justify-center rounded-full bg-slate-100 text-slate-700 font-bold text-[10px] dark:bg-zinc-800 dark:text-zinc-300">
+                                                        {approval.reviewer.name.charAt(0)}
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-bold text-slate-900 dark:text-white">
+                                                            Reviewer: {approval.reviewer.name}
+                                                        </p>
+                                                    </div>
+                                                </div>
                                                 <StatusBadge value={approval.status} />
                                             </div>
 
-                                            <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                                Diajukan oleh <strong className="text-slate-800 dark:text-zinc-300">{approval.requester.name}</strong>
-                                                {approval.request_note ? ` · "${approval.request_note}"` : ''}
-                                            </p>
+                                            <div className="rounded-lg bg-slate-50/80 p-2.5 dark:bg-zinc-800/40 space-y-1">
+                                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                    Diajukan oleh <strong className="text-slate-800 dark:text-zinc-200">{approval.requester.name}</strong>
+                                                    {approval.request_note ? ` — "${approval.request_note}"` : ''}
+                                                </p>
+                                                {approval.resolution_note && (
+                                                    <p className="text-[11px] font-medium text-slate-700 dark:text-zinc-300 border-t border-slate-200/50 pt-1">
+                                                        Catatan: {approval.resolution_note}
+                                                    </p>
+                                                )}
+                                            </div>
 
                                             {approval.status === 'pending' && can.approve && (
-                                                <div className="flex items-center gap-2 pt-1">
+                                                <div className="flex items-center gap-2 pt-0.5">
                                                     <Form {...approvalRoutes.resolve.form(approval.id)}>
                                                         <input type="hidden" name="approved" value="1" />
                                                         <Button
                                                             size="sm"
-                                                            className="h-7 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white hover:bg-blue-700 shadow-2xs"
+                                                            className="h-7 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white hover:bg-slate-800 shadow-2xs dark:bg-white dark:text-slate-900"
                                                         >
                                                             Setujui
                                                         </Button>
@@ -496,12 +510,6 @@ export default function DocumentShow({
                                                     </Form>
                                                 </div>
                                             )}
-
-                                            {approval.resolution_note && (
-                                                <p className="rounded-lg bg-slate-50 p-2 text-xs text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                                    Catatan Keputusan: {approval.resolution_note}
-                                                </p>
-                                            )}
                                         </div>
                                     ))
                                 ) : (
@@ -516,7 +524,7 @@ export default function DocumentShow({
                         <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
                                 <div className="flex items-center gap-2">
-                                    <div className="flex size-7 items-center justify-center rounded-lg bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400">
+                                    <div className="flex size-7 items-center justify-center rounded-lg bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-zinc-100">
                                         <QrCode className="size-3.5" />
                                     </div>
                                     <h3 className="text-xs font-bold text-slate-900 dark:text-white">
@@ -531,33 +539,36 @@ export default function DocumentShow({
                             <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
                                 {document.signature_requests.length ? (
                                     document.signature_requests.map((request) => (
-                                        <div key={request.id} className="space-y-3 py-3 text-xs">
+                                        <div key={request.id} className="space-y-2.5 py-3 text-xs">
                                             <div className="flex items-center justify-between gap-2">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="font-bold text-slate-900 dark:text-white">
-                                                        Alur: {request.mode === 'sequential' ? 'Berurutan (Sequential)' : 'Paralel (Serentak)'}
+                                                    <span className="font-bold text-slate-900 dark:text-white text-xs">
+                                                        Alur: {request.mode === 'sequential' ? 'Berurutan' : 'Paralel'}
+                                                    </span>
+                                                    <span className="text-[10px] font-mono text-slate-400">
+                                                        · Kode: {request.verification_code}
                                                     </span>
                                                 </div>
                                                 <StatusBadge value={request.status} />
                                             </div>
 
-                                            {/* Signers List with direct signing actions */}
-                                            <div className="space-y-2">
+                                            {/* Signers Compact List */}
+                                            <div className="space-y-1.5">
                                                 {request.signers.map((s, idx) => (
                                                     <div
                                                         key={s.id || idx}
-                                                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border border-slate-200/80 bg-slate-50/70 p-2.5 dark:border-white/10 dark:bg-zinc-800/40"
+                                                        className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2 px-2.5 dark:border-white/10 dark:bg-zinc-800/40"
                                                     >
                                                         <div className="min-w-0 space-y-0.5">
                                                             <div className="flex items-center gap-1.5">
-                                                                <span className="font-bold text-slate-900 dark:text-white">
+                                                                <span className="font-bold text-slate-900 dark:text-white text-xs">
                                                                     {s.name}
                                                                 </span>
-                                                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                                <span className="text-[10px] text-slate-500 truncate">
                                                                     ({s.email})
                                                                 </span>
                                                             </div>
-                                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                            <p className="text-[10.5px]">
                                                                 {s.status === 'signed' ? (
                                                                     <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
                                                                         <Check className="size-3" />
@@ -571,80 +582,71 @@ export default function DocumentShow({
                                                             </p>
                                                         </div>
 
-                                                        {s.status === 'pending' && (
+                                                        {s.status === 'pending' && s.signing_token && (
                                                             <div className="flex items-center gap-1.5 shrink-0">
-                                                                {s.signing_token && (
-                                                                    <>
-                                                                        <a
-                                                                            href={`/sign/${s.signing_token}`}
-                                                                            target="_blank"
-                                                                            rel="noreferrer"
-                                                                            className="inline-flex h-7 items-center gap-1 rounded-lg bg-purple-600 px-2.5 text-xs font-bold text-white shadow-2xs hover:bg-purple-700 active:scale-95 transition-all"
-                                                                        >
-                                                                            <PenLine className="size-3" />
-                                                                            Tanda Tangani
-                                                                            <ExternalLink className="size-2.5 opacity-70" />
-                                                                        </a>
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => {
-                                                                                const url = `${window.location.origin}/sign/${s.signing_token}`;
-                                                                                navigator.clipboard.writeText(url);
-                                                                                alert(`Tautan tanda tangan disalin:\n${url}`);
-                                                                            }}
-                                                                            className="inline-flex h-7 items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
-                                                                            title="Salin link tanda tangan signer"
-                                                                        >
-                                                                            <Copy className="size-3" />
-                                                                            Salin Link
-                                                                        </button>
-                                                                    </>
-                                                                )}
+                                                                <a
+                                                                    href={`/sign/${s.signing_token}`}
+                                                                    target="_blank"
+                                                                    rel="noreferrer"
+                                                                    className="inline-flex h-6.5 items-center gap-1 rounded-md bg-slate-900 px-2 text-[11px] font-bold text-white shadow-2xs hover:bg-black active:scale-95 transition-all dark:bg-white dark:text-slate-900"
+                                                                >
+                                                                    <PenLine className="size-2.5" />
+                                                                    Tanda Tangani
+                                                                    <ExternalLink className="size-2 opacity-70" />
+                                                                </a>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        const url = `${window.location.origin}/sign/${s.signing_token}`;
+                                                                        navigator.clipboard.writeText(url);
+                                                                        alert(`Tautan tanda tangan disalin:\n${url}`);
+                                                                    }}
+                                                                    className="inline-flex h-6.5 items-center gap-1 rounded-md border border-slate-200 bg-white px-2 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                                                    title="Salin tautan signer"
+                                                                >
+                                                                    <Copy className="size-2.5" />
+                                                                    Salin Link
+                                                                </button>
                                                             </div>
                                                         )}
                                                     </div>
                                                 ))}
                                             </div>
 
-                                            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-slate-100/70 px-2.5 py-1.5 dark:bg-zinc-800/60">
-                                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                    QR Code Verifikasi Publik:
-                                                </span>
-                                                <a
-                                                    href={signatureVerificationRoutes.verify.url(request.verification_code)}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className="inline-flex items-center gap-1 font-mono text-[11px] font-bold text-blue-600 hover:underline dark:text-blue-400"
-                                                >
-                                                    Kode: {request.verification_code}
-                                                    <ArrowUpRight className="size-3" />
-                                                </a>
-                                            </div>
-
-                                            {/* Download Artifacts when completed */}
+                                            {/* Completed Action Strip (Compact & Clean) */}
                                             {request.status === 'completed' && (
-                                                <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-3 dark:border-emerald-900/40 dark:bg-emerald-950/20 space-y-2">
-                                                    <p className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
-                                                        <FileCheck2 className="size-3.5" />
-                                                        Dokumen telah selesai ditandatangani! Berkas PDF resmi telah dibubuhi QR Code sertifikasi dan stempel digital.
-                                                    </p>
-                                                    <div className="flex flex-wrap gap-2 text-xs pt-1">
+                                                <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-emerald-50/70 border border-emerald-200/80 p-2 px-2.5 dark:bg-emerald-950/20 dark:border-emerald-900/40">
+                                                    <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1">
+                                                        <CheckCircle2 className="size-3 text-emerald-600" />
+                                                        E-Sign Selesai
+                                                    </span>
+                                                    <div className="flex items-center gap-1.5">
                                                         <a
                                                             href={signatureArtifactRoutes.signedFinal.url(request.id)}
-                                                            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-95 transition-all"
+                                                            className="inline-flex h-6.5 items-center gap-1 rounded-md bg-emerald-600 px-2 text-[11px] font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-95 transition-all"
                                                         >
-                                                            <Download className="size-3.5" />
-                                                            Unduh Berkas PDF (Dibubuhi TTD &amp; QR Code)
+                                                            <Download className="size-2.5" />
+                                                            Unduh PDF
                                                         </a>
                                                         {request.certificate_path && (
                                                             <a
                                                                 href={signatureArtifactRoutes.certificate.url(request.id)}
-                                                                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-bold text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200 active:scale-95 transition-all"
+                                                                className="inline-flex h-6.5 items-center gap-1 rounded-md border border-slate-200 bg-white px-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                                             >
-                                                                <FileCheck className="size-3.5 text-blue-600" />
-                                                                Unduh Sertifikat PDF
+                                                                <FileCheck className="size-2.5" />
+                                                                Sertifikat
                                                             </a>
                                                         )}
+                                                        <a
+                                                            href={signatureVerificationRoutes.verify.url(request.verification_code)}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            className="inline-flex h-6.5 items-center gap-1 rounded-md border border-slate-200 bg-white px-2 text-[11px] font-semibold text-blue-600 hover:bg-blue-50 dark:border-white/10 dark:bg-zinc-800 dark:text-blue-400"
+                                                            title="Verifikasi QR Publik"
+                                                        >
+                                                            <ExternalLink className="size-2.5" />
+                                                            Verifikasi
+                                                        </a>
                                                     </div>
                                                 </div>
                                             )}
