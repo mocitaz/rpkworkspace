@@ -31,7 +31,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
 
     return (
         <>
-            <Head title="Forgot Password - RPK Law Workspace" />
+            <Head title="Forgot Password - RPK LawApp" />
 
             {status && (
                 <div className="mb-4 rounded-xl bg-emerald-50 p-3 text-center text-xs font-medium text-emerald-700 border border-emerald-200">

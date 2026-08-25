@@ -40,7 +40,7 @@ export default function Login({ status, canResetPassword }: Props) {
 
     return (
         <>
-            <Head title="Login to account - RPK Law Workspace" />
+            <Head title="Login to account - RPK LawApp" />
 
             <Form
                 {...store.form()}

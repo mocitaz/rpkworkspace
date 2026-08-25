@@ -13,10 +13,10 @@ export default function AppLogo() {
             {/* Workspace Brand & Subtitle */}
             <div className="flex min-w-0 flex-1 flex-col text-left group-data-[collapsible=icon]:hidden">
                 <span className="truncate text-xs font-black tracking-tight text-slate-900 dark:text-white">
-                    RPK-LMIS
+                    RPK LawApp
                 </span>
                 <span className="truncate font-mono text-[8.5px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
-                    LEGAL MATTER INFO SYSTEM
+                    INTEGRATED LEGAL WORKSPACE
                 </span>
             </div>
         </div>

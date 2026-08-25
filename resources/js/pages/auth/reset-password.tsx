@@ -26,7 +26,7 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
 
     return (
         <>
-            <Head title="Reset Password - RPK Law Workspace" />
+            <Head title="Reset Password - RPK LawApp" />
 
             <Form
                 {...update.form()}
