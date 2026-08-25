@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\GenerateSignedFinalPdf;
 use App\Models\SignatureRequest;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\SvgWriter;
@@ -21,6 +22,11 @@ class SignatureVerificationController extends Controller
             ])
             ->where('verification_code', $verificationCode)
             ->firstOrFail();
+
+        if ($signatureRequest->status === 'completed' && ($signatureRequest->signed_final_status !== 'completed' || empty($signatureRequest->signed_final_path))) {
+            app(GenerateSignedFinalPdf::class)->handle($signatureRequest);
+            $signatureRequest->refresh();
+        }
 
         return view('signature.verify', compact('signatureRequest'));
     }
