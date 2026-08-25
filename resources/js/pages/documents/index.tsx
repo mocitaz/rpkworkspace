@@ -10,6 +10,7 @@ import {
     FileUp,
     FolderKanban,
     Plus,
+    RotateCcw,
     Search,
     ShieldAlert,
     ShieldCheck,
@@ -212,56 +213,78 @@ export default function DocumentsIndex({
                     {/* 3. Filter & Search Toolbar */}
                     <Form
                         {...documentRoutes.index.form()}
-                        className="flex flex-col gap-2 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs sm:flex-row sm:items-center dark:border-white/[0.06] dark:bg-[#14161b]"
+                        className="rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 space-y-2 dark:border-white/[0.04] dark:bg-[#121418]"
                     >
-                        <div className="relative flex-1">
-                            <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
-                            <Input
-                                name="search"
-                                defaultValue={filters.search}
-                                placeholder="Cari judul dokumen atau kata kunci..."
-                                className="h-8 w-full rounded-lg border-slate-200 bg-white pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
-                            />
+                        {/* Row 1: Search, Reset, Count */}
+                        <div className="flex items-center gap-2">
+                            <div className="relative flex-1">
+                                <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                <Input
+                                    name="search"
+                                    defaultValue={filters.search}
+                                    placeholder="Cari judul dokumen, kata kunci, atau nomor perkara..."
+                                    className="h-8 w-full rounded-lg border-slate-200 bg-white pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
+                                />
+                            </div>
+                            {(filters.search || filters.status || filters.matter_id || filters.document_type) && (
+                                <Button
+                                    asChild
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                    title="Reset Semua Filter"
+                                >
+                                    <Link href={documentRoutes.index.url()}>
+                                        <RotateCcw className="size-3.5 text-slate-400" />
+                                    </Link>
+                                </Button>
+                            )}
+                            <span className="shrink-0 rounded-md bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 border border-slate-200/70 shadow-2xs dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-300">
+                                {documents.total} berkas
+                            </span>
                         </div>
 
-                        <div className="relative min-w-[200px]">
-                            <select
-                                name="matter_id"
-                                defaultValue={filters.matter_id ?? ''}
-                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                        {/* Row 2: Select Matter, Select Status, Submit button */}
+                        <div className="flex flex-wrap items-center gap-2">
+                            <div className="relative min-w-[220px] flex-1">
+                                <select
+                                    name="matter_id"
+                                    defaultValue={filters.matter_id ?? ''}
+                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                >
+                                    <option value="">Semua Perkara</option>
+                                    {matters.map((matter) => (
+                                        <option key={matter.id} value={matter.id}>
+                                            {matter.matter_number} - {matter.title}
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
+                            </div>
+
+                            <div className="relative min-w-[160px]">
+                                <select
+                                    name="status"
+                                    defaultValue={filters.status ?? ''}
+                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                >
+                                    <option value="">Semua Status</option>
+                                    <option value="draft">Draf</option>
+                                    <option value="under_review">Dalam Review</option>
+                                    <option value="approved">Disetujui</option>
+                                    <option value="final">Final</option>
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
+                            </div>
+
+                            <Button
+                                type="submit"
+                                size="sm"
+                                className="h-8 shrink-0 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                             >
-                                <option value="">Semua Perkara</option>
-                                {matters.map((matter) => (
-                                    <option key={matter.id} value={matter.id}>
-                                        {matter.matter_number} - {matter.title}
-                                    </option>
-                                ))}
-                            </select>
-                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
+                                Terapkan Filter
+                            </Button>
                         </div>
-
-                        <div className="relative min-w-[140px]">
-                            <select
-                                name="status"
-                                defaultValue={filters.status ?? ''}
-                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
-                            >
-                                <option value="">Semua Status</option>
-                                <option value="draft">Draf</option>
-                                <option value="under_review">Dalam Review</option>
-                                <option value="approved">Disetujui</option>
-                                <option value="final">Final</option>
-                            </select>
-                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
-                        </div>
-
-                        <Button
-                            type="submit"
-                            size="sm"
-                            className="h-8 shrink-0 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
-                        >
-                            Cari
-                        </Button>
                     </Form>
 
                     {/* 4. Documents Database Table */}
@@ -315,7 +338,10 @@ export default function DocumentsIndex({
                                             key={document.id}
                                             className="space-y-2 p-3.5"
                                         >
-                                            <div className="flex items-start justify-between gap-2">
+                                            <div className="flex items-start gap-2.5">
+                                                <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-slate-200/70 bg-blue-50 text-blue-600 dark:border-white/10 dark:bg-blue-950/40 dark:text-blue-400">
+                                                    <FileText className="size-4" />
+                                                </div>
                                                 <div className="min-w-0 flex-1">
                                                     <Link
                                                         href={documentRoutes.show(document.id)}
@@ -384,28 +410,33 @@ export default function DocumentsIndex({
                                                 >
                                                     {/* Document Title & Badges */}
                                                     <td className="py-2.5 pr-3 pl-4">
-                                                        <div className="space-y-0.5">
-                                                            <Link
-                                                                href={documentRoutes.show(document.id)}
-                                                                className="font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
-                                                            >
-                                                                {document.title}
-                                                            </Link>
-                                                            <div className="flex flex-wrap items-center gap-1">
-                                                                <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[9.5px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                                    {document.document_type ?? 'Dokumen Umum'}
-                                                                </span>
-                                                                <span
-                                                                    className={`rounded px-1.5 py-0.2 text-[9.5px] font-semibold ${
-                                                                        document.confidentiality_level === 'strictly_confidential'
-                                                                            ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
-                                                                            : document.confidentiality_level === 'restricted'
-                                                                              ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'
-                                                                              : 'bg-slate-100 text-slate-600 dark:bg-white/[0.06]'
-                                                                    }`}
+                                                        <div className="flex items-center gap-2.5">
+                                                            <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-slate-200/70 bg-blue-50 text-blue-600 transition-transform group-hover:scale-105 dark:border-white/10 dark:bg-blue-950/40 dark:text-blue-400">
+                                                                <FileText className="size-4" />
+                                                            </div>
+                                                            <div className="min-w-0 space-y-0.5">
+                                                                <Link
+                                                                    href={documentRoutes.show(document.id)}
+                                                                    className="font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
                                                                 >
-                                                                    {document.confidentiality_level}
-                                                                </span>
+                                                                    {document.title}
+                                                                </Link>
+                                                                <div className="flex flex-wrap items-center gap-1">
+                                                                    <span className="rounded bg-slate-100 px-1.5 py-0.2 text-[9.5px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                                        {document.document_type ?? 'Dokumen Umum'}
+                                                                    </span>
+                                                                    <span
+                                                                        className={`rounded px-1.5 py-0.2 text-[9.5px] font-semibold ${
+                                                                            document.confidentiality_level === 'strictly_confidential'
+                                                                                ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
+                                                                                : document.confidentiality_level === 'restricted'
+                                                                                  ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'
+                                                                                  : 'bg-slate-100 text-slate-600 dark:bg-white/[0.06]'
+                                                                        }`}
+                                                                    >
+                                                                        {document.confidentiality_level}
+                                                                    </span>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </td>

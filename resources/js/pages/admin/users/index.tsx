@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react';
+import { Form, Head, Link } from '@inertiajs/react';
 import {
     AlertTriangle,
     Check,
@@ -8,6 +8,7 @@ import {
     KeyRound,
     Pencil,
     Plus,
+    RotateCcw,
     Search,
     Shield,
     ShieldCheck,
@@ -237,41 +238,63 @@ export default function UsersIndex({
                             {/* Search & Filter Bar */}
                             <Form
                                 {...userRoutes.index.form()}
-                                className="flex flex-col gap-2 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs sm:flex-row sm:items-center dark:border-white/[0.06] dark:bg-[#14161b]"
+                                className="rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 space-y-2 dark:border-white/[0.04] dark:bg-[#121418]"
                             >
-                                <div className="relative flex-1">
-                                    <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
-                                    <Input
-                                        name="search"
-                                        defaultValue={filters.search}
-                                        placeholder="Cari nama, email, atau jabatan..."
-                                        className="h-8 w-full rounded-lg border-slate-200 bg-white pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
-                                    />
+                                {/* Row 1: Search, Reset, Count */}
+                                <div className="flex items-center gap-2">
+                                    <div className="relative flex-1">
+                                        <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                        <Input
+                                            name="search"
+                                            defaultValue={filters.search}
+                                            placeholder="Cari nama, email, atau jabatan advokat / staf..."
+                                            className="h-8 w-full rounded-lg border-slate-200 bg-white pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
+                                        />
+                                    </div>
+                                    {(filters.search || filters.role_id) && (
+                                        <Button
+                                            asChild
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                            title="Reset Semua Filter"
+                                        >
+                                            <Link href={userRoutes.index.url()}>
+                                                <RotateCcw className="size-3.5 text-slate-400" />
+                                            </Link>
+                                        </Button>
+                                    )}
+                                    <span className="shrink-0 rounded-md bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 border border-slate-200/70 shadow-2xs dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-300">
+                                        {users.total} pengguna
+                                    </span>
                                 </div>
 
-                                <div className="relative min-w-[200px]">
-                                    <select
-                                        name="role_id"
-                                        defaultValue={filters.role_id ?? ''}
-                                        className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                {/* Row 2: Select Role, Submit button */}
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <div className="relative min-w-[200px] flex-1">
+                                        <select
+                                            name="role_id"
+                                            defaultValue={filters.role_id ?? ''}
+                                            className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                        >
+                                            <option value="">Semua Role / Kewenangan</option>
+                                            {roles.map((r) => (
+                                                <option key={r.id} value={r.id}>
+                                                    {r.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
+                                    </div>
+
+                                    <Button
+                                        type="submit"
+                                        size="sm"
+                                        className="h-8 shrink-0 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                     >
-                                        <option value="">Semua Role</option>
-                                        {roles.map((r) => (
-                                            <option key={r.id} value={r.id}>
-                                                {r.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
+                                        Terapkan Filter
+                                    </Button>
                                 </div>
-
-                                <Button
-                                    type="submit"
-                                    size="sm"
-                                    className="h-8 shrink-0 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
-                                >
-                                    Filter
-                                </Button>
                             </Form>
 
                             {/* Users Table Card */}
@@ -436,7 +459,7 @@ export default function UsersIndex({
                                 <div className="flex items-center justify-between">
                                     <span className="text-slate-500">Portal Login</span>
                                     <span className="text-[11px] font-medium text-slate-700 dark:text-zinc-300">
-                                        {typeof window !== 'undefined' ? `${window.location.origin}/login` : 'https://lmis.teknalogi.id/login'}
+                                        {typeof window !== 'undefined' ? `${window.location.origin}/login` : 'https://app.rpklawoffice.com/login'}
                                     </span>
                                 </div>
                             </div>
@@ -449,7 +472,7 @@ export default function UsersIndex({
                                 <Button
                                     type="button"
                                     onClick={() => {
-                                        const origin = typeof window !== 'undefined' ? window.location.origin : 'https://lmis.teknalogi.id';
+                                        const origin = typeof window !== 'undefined' ? window.location.origin : 'https://app.rpklawoffice.com';
                                         const text = `Halo ${createdCreds.name},\nAkun RPK Law Firm Workspace Anda telah aktif:\n\n• Email: ${createdCreds.email}\n• Password: ${createdCreds.password}\n• Tautan Login: ${origin}/login\n\nSilakan login dan ganti password Anda jika diperlukan.`;
                                         navigator.clipboard.writeText(text);
                                         setCopied(true);

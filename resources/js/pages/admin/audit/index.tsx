@@ -216,84 +216,91 @@ export default function AuditIndex({
                     {/* 3. Filter Bar */}
                     <Form
                         {...auditRoutes.index.form()}
-                        className="flex flex-col gap-2 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs sm:flex-row sm:items-center dark:border-white/[0.06] dark:bg-[#14161b]"
+                        className="rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 space-y-2 dark:border-white/[0.04] dark:bg-[#121418]"
                     >
-                        {/* Event Dropdown */}
-                        <div className="relative min-w-[170px] flex-1">
-                            <select
-                                name="event"
-                                defaultValue={filters.event ?? ''}
-                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
-                            >
-                                <option value="">Semua Jenis Event</option>
-                                {events.map((ev) => (
-                                    <option key={ev} value={ev}>
-                                        {ev}
-                                    </option>
-                                ))}
-                            </select>
-                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
+                        {/* Row 1: Event Dropdown + Actor Dropdown + Reset + Count Badge */}
+                        <div className="flex flex-wrap items-center gap-2">
+                            <div className="relative min-w-[200px] flex-1">
+                                <select
+                                    name="event"
+                                    defaultValue={filters.event ?? ''}
+                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                >
+                                    <option value="">Semua Jenis Event</option>
+                                    {events.map((ev) => (
+                                        <option key={ev} value={ev}>
+                                            {ev}
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
+                            </div>
+
+                            <div className="relative min-w-[200px] flex-1">
+                                <select
+                                    name="actor_id"
+                                    defaultValue={filters.actor_id ?? ''}
+                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                >
+                                    <option value="">Semua Pelaku / Aktor</option>
+                                    {actors.map((actor) => (
+                                        <option key={actor.id} value={actor.id}>
+                                            {actor.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
+                            </div>
+
+                            {(filters.event || filters.actor_id || filters.from || filters.until) && (
+                                <Button
+                                    asChild
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                    title="Reset Semua Filter"
+                                >
+                                    <a href={auditRoutes.index.url()}>
+                                        <RotateCcw className="size-3.5 text-slate-400" />
+                                    </a>
+                                </Button>
+                            )}
+
+                            <span className="shrink-0 rounded-md bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 border border-slate-200/70 shadow-2xs dark:bg-zinc-800 dark:border-white/10 dark:text-zinc-300">
+                                {auditLogs.total} log
+                            </span>
                         </div>
 
-                        {/* Actor Dropdown */}
-                        <div className="relative min-w-[170px] flex-1">
-                            <select
-                                name="actor_id"
-                                defaultValue={filters.actor_id ?? ''}
-                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
-                            >
-                                <option value="">Semua Pelaku / Aktor</option>
-                                {actors.map((actor) => (
-                                    <option key={actor.id} value={actor.id}>
-                                        {actor.name}
-                                    </option>
-                                ))}
-                            </select>
-                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
-                        </div>
+                        {/* Row 2: Date Pickers + Action Buttons */}
+                        <div className="flex flex-wrap items-center gap-2">
+                            <div className="flex items-center gap-2 flex-1 min-w-[280px]">
+                                <div className="relative flex-1">
+                                    <Input
+                                        name="from"
+                                        type="date"
+                                        defaultValue={filters.from}
+                                        aria-label="Dari tanggal"
+                                        className="h-8 rounded-lg border-slate-200 bg-white text-xs text-slate-900 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
+                                    />
+                                </div>
+                                <span className="text-xs text-slate-400 font-medium">s/d</span>
+                                <div className="relative flex-1">
+                                    <Input
+                                        name="until"
+                                        type="date"
+                                        defaultValue={filters.until}
+                                        aria-label="Sampai tanggal"
+                                        className="h-8 rounded-lg border-slate-200 bg-white text-xs text-slate-900 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
+                                    />
+                                </div>
+                            </div>
 
-                        {/* From Date */}
-                        <div className="relative min-w-[130px]">
-                            <Input
-                                name="from"
-                                type="date"
-                                defaultValue={filters.from}
-                                className="h-8 rounded-lg border-slate-200 bg-white text-xs text-slate-900 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
-                            />
-                        </div>
-
-                        {/* Until Date */}
-                        <div className="relative min-w-[130px]">
-                            <Input
-                                name="until"
-                                type="date"
-                                defaultValue={filters.until}
-                                className="h-8 rounded-lg border-slate-200 bg-white text-xs text-slate-900 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
-                            />
-                        </div>
-
-                        {/* Buttons */}
-                        <div className="flex items-center gap-1.5 shrink-0">
                             <Button
                                 type="submit"
                                 size="sm"
-                                className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                className="h-8 shrink-0 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                             >
-                                <Filter className="mr-1 size-3" /> Filter
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                className="h-8 rounded-lg border-slate-200 px-2.5 text-xs hover:bg-slate-50"
-                                asChild
-                            >
-                                <a
-                                    href={auditRoutes.index.url()}
-                                    title="Reset Filter"
-                                >
-                                    <RotateCcw className="size-3 text-slate-500" />
-                                </a>
+                                <Filter className="mr-1.5 size-3" /> Terapkan Filter
                             </Button>
                         </div>
                     </Form>
@@ -332,18 +339,23 @@ export default function AuditIndex({
 
                                                 {/* Event & Target Object */}
                                                 <td className="px-3 py-2.5 whitespace-nowrap">
-                                                    <div className="space-y-0.5">
-                                                        <span className="rounded bg-blue-50 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                                            {log.event}
-                                                        </span>
-                                                        <p className="font-mono text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                                            {log.subject_type
-                                                                ? log.subject_type.split('\\').pop()
-                                                                : 'System'}
-                                                            {log.subject_id
-                                                                ? ` · #${log.subject_id.slice(-8)}`
-                                                                : ''}
-                                                        </p>
+                                                    <div className="flex items-center gap-2.5">
+                                                        <div className="flex size-7.5 shrink-0 items-center justify-center rounded-lg border border-slate-200/70 bg-blue-50 text-blue-600 transition-transform group-hover:scale-105 dark:border-white/10 dark:bg-blue-950/40 dark:text-blue-400">
+                                                            <Activity className="size-3.5" />
+                                                        </div>
+                                                        <div className="space-y-0.5 min-w-0">
+                                                            <span className="rounded bg-blue-50 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                                {log.event}
+                                                            </span>
+                                                            <p className="font-mono text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                                {log.subject_type
+                                                                    ? log.subject_type.split('\\').pop()
+                                                                    : 'System'}
+                                                                {log.subject_id
+                                                                    ? ` · #${log.subject_id.slice(-8)}`
+                                                                    : ''}
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 </td>
 
