@@ -75,7 +75,7 @@ class StaffEmailNotificationsTest extends TestCase
         // 1. Task Assigned
         $notif1 = new TaskAssignedNotification($task);
         $mail1 = $notif1->toMail($user);
-        $this->assertStringContainsString('Penugasan Tugas Baru', (string) $mail1->render());
+        $this->assertStringContainsString('Pemberitahuan Tugas Baru', (string) $mail1->render());
 
         // 2. Task Due Reminder
         $notif2 = new TaskDueReminderNotification($task);
