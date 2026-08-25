@@ -306,8 +306,8 @@ export default function GovernanceIndex({
                     <div className="grid gap-4 lg:grid-cols-2">
                         {/* Section 1: Korespondensi Terbaru */}
                         {(activeTab === 'all' || activeTab === 'correspondence') && (
-                            <div className={activeTab === 'correspondence' ? 'lg:col-span-2' : ''}>
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className={activeTab === 'correspondence' ? 'lg:col-span-2' : 'flex h-full flex-col'}>
+                                <div className="flex h-full flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
                                         <div className="flex items-center gap-2">
                                             <div className="flex size-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
@@ -375,36 +375,38 @@ export default function GovernanceIndex({
                                         </div>
                                     </Form>
 
-                                    {/* List Data */}
-                                    <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                    {/* List Data / Empty State */}
+                                    <div className="flex flex-1 flex-col justify-center">
                                         {correspondences.length ? (
-                                            correspondences.map((item) => (
-                                                <Link
-                                                    key={item.id}
-                                                    href={correspondenceRoutes.show.url(item.id)}
-                                                    className="group block py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
-                                                >
-                                                    <div className="flex items-start justify-between gap-2.5">
-                                                        <div className="min-w-0">
-                                                            <h4 className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
-                                                                {item.subject}
-                                                            </h4>
-                                                            <p className="mt-0.5 font-mono text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                                                <span className="font-semibold text-slate-700 dark:text-zinc-300">{item.matter.matter_number}</span> ·{' '}
-                                                                <span className={`font-semibold ${item.direction === 'inbound' ? 'text-blue-600 dark:text-blue-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
-                                                                    {item.direction === 'inbound' ? 'Surat Masuk' : 'Surat Keluar'}
-                                                                </span>{' '}
-                                                                ({item.source})
-                                                            </p>
+                                            <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                                {correspondences.map((item) => (
+                                                    <Link
+                                                        key={item.id}
+                                                        href={correspondenceRoutes.show.url(item.id)}
+                                                        className="group block py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                    >
+                                                        <div className="flex items-start justify-between gap-2.5">
+                                                            <div className="min-w-0">
+                                                                <h4 className="truncate text-xs font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                                                                    {item.subject}
+                                                                </h4>
+                                                                <p className="mt-0.5 font-mono text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                                    <span className="font-semibold text-slate-700 dark:text-zinc-300">{item.matter.matter_number}</span> ·{' '}
+                                                                    <span className={`font-semibold ${item.direction === 'inbound' ? 'text-blue-600 dark:text-blue-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                                                                        {item.direction === 'inbound' ? 'Surat Masuk' : 'Surat Keluar'}
+                                                                    </span>{' '}
+                                                                    ({item.source})
+                                                                </p>
+                                                            </div>
+                                                            <time className="font-mono text-[10.5px] font-semibold text-slate-500 dark:text-zinc-400 shrink-0">
+                                                                {formatDate(item.occurred_at)}
+                                                            </time>
                                                         </div>
-                                                        <time className="font-mono text-[10.5px] font-semibold text-slate-500 dark:text-zinc-400 shrink-0">
-                                                            {formatDate(item.occurred_at)}
-                                                        </time>
-                                                    </div>
-                                                </Link>
-                                            ))
+                                                    </Link>
+                                                ))}
+                                            </div>
                                         ) : (
-                                            <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
+                                            <div className="flex flex-col items-center justify-center py-6 px-4 text-center">
                                                 <div className="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
                                                     <Mail className="size-4.5" />
                                                 </div>
@@ -419,7 +421,7 @@ export default function GovernanceIndex({
                                                         variant="ghost"
                                                         size="sm"
                                                         onClick={() => setCorrespondenceModal(true)}
-                                                        className="mt-2 h-7 rounded-lg text-[11px] font-bold text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
+                                                        className="mt-2.5 h-7 rounded-lg text-[11px] font-bold text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
                                                     >
                                                         <Plus className="mr-1 size-3" /> Catat Korespondensi Baru
                                                     </Button>
@@ -433,8 +435,8 @@ export default function GovernanceIndex({
 
                         {/* Section 2: Conflict Checks */}
                         {(activeTab === 'all' || activeTab === 'conflicts') && (
-                            <div className={activeTab === 'conflicts' ? 'lg:col-span-2' : ''}>
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className={activeTab === 'conflicts' ? 'lg:col-span-2' : 'flex h-full flex-col'}>
+                                <div className="flex h-full flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
                                         <div className="flex items-center gap-2">
                                             <div className="flex size-7 items-center justify-center rounded-lg bg-slate-100 text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
@@ -449,17 +451,42 @@ export default function GovernanceIndex({
                                         </span>
                                     </div>
 
-                                    <div className="divide-y divide-slate-100 pt-1 dark:divide-white/[0.04]">
+                                    {/* Quick Action Sub-bar to mirror the filter header on the left */}
+                                    <div className="my-3 flex items-center justify-between rounded-lg border border-slate-200/60 bg-slate-50/60 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
+                                        <div className="flex items-center gap-2">
+                                            <span className="flex size-5 items-center justify-center rounded bg-slate-200/70 text-slate-700 dark:bg-white/10 dark:text-zinc-300">
+                                                <Scale className="size-3" />
+                                            </span>
+                                            <span className="text-xs text-slate-600 dark:text-zinc-400">
+                                                Audit Kepatuhan &amp; Uji Benturan Pihak Lawan
+                                            </span>
+                                        </div>
+                                        {can.conflict && (
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => setConflictModal(true)}
+                                                className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                            >
+                                                <Plus className="mr-1 size-3" /> Uji Baru
+                                            </Button>
+                                        )}
+                                    </div>
+
+                                    {/* List Data / Empty State */}
+                                    <div className="flex flex-1 flex-col justify-center">
                                         {conflictChecks.length ? (
-                                            conflictChecks.map((item) => (
-                                                <ConflictCheckRow
-                                                    key={item.id}
-                                                    item={item}
-                                                    canApprove={can.conflictApprove}
-                                                />
-                                            ))
+                                            <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                                {conflictChecks.map((item) => (
+                                                    <ConflictCheckRow
+                                                        key={item.id}
+                                                        item={item}
+                                                        canApprove={can.conflictApprove}
+                                                    />
+                                                ))}
+                                            </div>
                                         ) : (
-                                            <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
+                                            <div className="flex flex-col items-center justify-center py-6 px-4 text-center">
                                                 <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
                                                     <Scale className="size-4.5" />
                                                 </div>
@@ -474,7 +501,7 @@ export default function GovernanceIndex({
                                                         variant="ghost"
                                                         size="sm"
                                                         onClick={() => setConflictModal(true)}
-                                                        className="mt-2 h-7 rounded-lg text-[11px] font-bold text-slate-900 hover:bg-slate-100 dark:text-zinc-200 dark:hover:bg-white/[0.08]"
+                                                        className="mt-2.5 h-7 rounded-lg text-[11px] font-bold text-slate-900 hover:bg-slate-100 dark:text-zinc-200 dark:hover:bg-white/[0.08]"
                                                     >
                                                         <Scale className="mr-1 size-3" /> Jalankan Conflict Check
                                                     </Button>
