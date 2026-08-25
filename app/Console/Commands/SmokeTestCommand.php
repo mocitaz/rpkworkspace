@@ -82,7 +82,6 @@ class SmokeTestCommand extends Command
             ['Pembayaran (Detail)', $payment ? "/finance/payments/{$payment->getKey()}" : null],
             ['Kalender & Agenda', '/calendar'],
             ['Chat Internal', '/chat'],
-            ['Template Dokumen', '/templates'],
             ['Admin User', '/admin/users'],
             ['Admin Audit Log', '/admin/audit'],
             ['Admin System Readiness', '/admin/system-readiness'],

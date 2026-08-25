@@ -12,7 +12,6 @@ use App\Http\Controllers\DirectMessageController;
 use App\Http\Controllers\DocumentApprovalController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentPreviewController;
-use App\Http\Controllers\DocumentTemplateController;
 use App\Http\Controllers\DocumentVersionController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\FinanceDetailController;
@@ -65,9 +64,7 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::delete('clients/{client}/compliance-documents/{complianceDocument}', [ClientController::class, 'destroyComplianceDocument'])->name('clients.compliance.destroy');
     Route::resource('contacts', ContactController::class)->only(['index', 'store', 'update']);
     Route::resource('tasks', TaskController::class)->only(['index', 'store', 'update']);
-    Route::get('templates', [DocumentTemplateController::class, 'index'])->name('templates.index');
-    Route::post('templates', [DocumentTemplateController::class, 'store'])->name('templates.store');
-    Route::post('templates/{template}/generate', [DocumentTemplateController::class, 'generate'])->name('templates.generate');
+    Route::redirect('templates', '/documents')->name('templates.index');
     Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
     Route::post('comments/{comment}/reaction', [CommentController::class, 'toggleReaction'])->name('comments.reaction');
     Route::post('comments/{comment}/pin', [CommentController::class, 'togglePin'])->name('comments.pin');

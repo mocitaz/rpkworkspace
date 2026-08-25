@@ -3,12 +3,8 @@
 use App\Models\Client;
 use App\Models\ClientComplianceDocument;
 use App\Models\ConflictCheck;
-use App\Models\DocumentTemplate;
 use App\Models\Matter;
 use App\Models\MatterEvidence;
-use Illuminate\Support\Facades\Storage;
-use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\Writer\Word2007;
 
 it('supports parent-child matter hierarchy for appellate and derivative cases', function () {
     $user = rafUser(['matter.view', 'matter.view.all', 'matter.create', 'matter.update', 'client.view', 'conflict.view']);
@@ -159,47 +155,8 @@ it('tracks client corporate compliance documents and expiry watchdog', function 
     expect(ClientComplianceDocument::query()->find($expiredDoc->id))->toBeNull();
 });
 
-it('renders templates index and allows smart drafting from template', function () {
-    Storage::fake('local');
-    $user = rafUser(['template.view', 'template.manage', 'matter.view', 'document.view', 'document.upload', 'document.manage']);
-    $matter = Matter::factory()->create([
-        'created_by' => $user->id,
-    ]);
-
-    $temporaryTemplate = tempnam(sys_get_temp_dir(), 'raf-docx-');
-    $phpWord = new PhpWord;
-    $phpWord->addSection()->addText('Pemberi Kuasa: {{NAMA_KLIEN}} Perkara: {{NOMOR_PERKARA}}');
-    (new Word2007($phpWord))->save($temporaryTemplate);
-    Storage::disk('local')->put('templates/somasi.docx', file_get_contents($temporaryTemplate));
-    unlink($temporaryTemplate);
-
-    $template = DocumentTemplate::query()->create([
-        'name' => 'Surat Somasi Wanprestasi',
-        'document_type' => 'somasi',
-        'storage_disk' => 'local',
-        'storage_path' => 'templates/somasi.docx',
-        'original_filename' => 'somasi.docx',
-        'checksum' => hash('sha256', Storage::disk('local')->get('templates/somasi.docx')),
-        'placeholders' => ['NAMA_KLIEN', 'NOMOR_PERKARA'],
-        'status' => 'active',
-        'scan_status' => 'clean',
-        'version' => 1,
-        'created_by' => $user->id,
-    ]);
-
-    // 1. Visit index
+it('redirects templates index to documents', function () {
+    $user = rafUser(['document.view']);
     $indexResponse = $this->actingAs($user)->get(route('templates.index'));
-    $indexResponse->assertOk();
-
-    // 2. Generate Document
-    $generateResponse = $this->actingAs($user)->post(route('templates.generate', $template->id), [
-        'matter_id' => $matter->id,
-        'title' => 'Somasi Pertama PT Mitra',
-        'placeholders' => [
-            'NAMA_KLIEN' => 'PT Mitra Utama Perkasa',
-            'NOMOR_PERKARA' => $matter->matter_number,
-        ],
-    ]);
-
-    $generateResponse->assertSessionHasNoErrors();
+    $indexResponse->assertRedirect('/documents');
 });

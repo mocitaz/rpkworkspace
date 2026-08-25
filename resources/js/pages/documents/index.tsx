@@ -113,18 +113,6 @@ export default function DocumentsIndex({
 
                         {/* Right: Actions */}
                         <div className="flex shrink-0 items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
-                                asChild
-                            >
-                                <Link href="/templates">
-                                    <FileSpreadsheet className="mr-1.5 size-3.5 text-blue-600 dark:text-blue-400" />
-                                    Template Generator
-                                </Link>
-                            </Button>
-
                             {can.upload && (
                                 <Button
                                     size="sm"
