@@ -489,14 +489,14 @@ export default function DocumentsIndex({
 
             {/* Modal Dialog: Unggah Dokumen Privat */}
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
-                    <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-6 pr-10 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
+                    <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
                         <div className="flex items-center gap-2.5">
-                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                                <FileUp className="size-4" />
+                            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                                <FileUp className="size-4.5" />
                             </div>
                             <div>
-                                <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
                                     Unggah Dokumen Privat
                                 </DialogTitle>
                                 <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
@@ -514,6 +514,8 @@ export default function DocumentsIndex({
                     >
                         {({ errors, processing }) => (
                             <>
+                                <input type="hidden" name="status" value="draft" />
+
                                 <Field
                                     label="Judul Dokumen"
                                     name="title"
@@ -543,6 +545,7 @@ export default function DocumentsIndex({
                                             </select>
                                             <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                                         </div>
+                                        <InputError message={errors.matter_id} />
                                     </div>
 
                                     <div className="grid gap-1">
@@ -564,6 +567,7 @@ export default function DocumentsIndex({
                                             </select>
                                             <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                                         </div>
+                                        <InputError message={errors.client_id} />
                                     </div>
                                 </div>
 
@@ -587,26 +591,43 @@ export default function DocumentsIndex({
                                                 className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                             >
                                                 <option value="standard">Standar Internal</option>
+                                                <option value="confidential">Confidential (Rahasia)</option>
                                                 <option value="restricted">Restricted (Terbatas)</option>
                                                 <option value="strictly_confidential">Strictly Confidential (Sangat Rahasia)</option>
                                             </select>
                                             <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                                         </div>
+                                        <InputError message={errors.confidentiality_level} />
                                     </div>
                                 </div>
 
                                 <div className="grid gap-1">
                                     <Label htmlFor="file" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                        Pilih Berkas *
+                                        Pilih Berkas Dokumen (PDF, DOCX, XLSX, dll) *
                                     </Label>
                                     <Input
                                         id="file"
                                         name="file"
                                         type="file"
+                                        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png"
                                         required
-                                        className="h-8 rounded-lg border border-slate-200 bg-slate-50/60 text-xs file:mr-2 file:rounded file:border-0 file:bg-slate-100 file:px-2 file:py-0.5 file:text-xs file:font-semibold dark:border-white/10 dark:bg-[#121418]"
+                                        className="h-8 rounded-lg border border-slate-200 bg-slate-50/60 text-xs file:mr-2 file:rounded file:border-0 file:bg-slate-100 file:px-2 file:py-0.5 file:text-xs file:font-semibold focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418]"
                                     />
                                     <InputError message={errors.file} />
+                                </div>
+
+                                <div className="grid gap-1">
+                                    <Label htmlFor="notes" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                        Catatan Dokumen / Keterangan (Opsional)
+                                    </Label>
+                                    <textarea
+                                        id="notes"
+                                        name="notes"
+                                        rows={2}
+                                        placeholder="Keterangan draf, ringkasan berkas, atau instruksi..."
+                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    />
+                                    <InputError message={errors.notes} />
                                 </div>
 
                                 <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">

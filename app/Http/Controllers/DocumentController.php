@@ -66,8 +66,11 @@ class DocumentController extends Controller
         }
 
         $document = DB::transaction(function () use ($request, $createVersion) {
+            $data = $request->safe()->except(['file', 'notes']);
             $document = Document::query()->create([
-                ...$request->safe()->except(['file', 'notes']),
+                ...$data,
+                'status' => $data['status'] ?? 'draft',
+                'confidentiality_level' => $data['confidentiality_level'] ?? 'standard',
                 'created_by' => $request->user()->getKey(),
             ]);
             $createVersion->handle($document, $request->file('file'), $request->user(), $request->validated('notes'));

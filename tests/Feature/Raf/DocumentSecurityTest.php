@@ -49,3 +49,32 @@ it('denies an unauthorized document download', function () {
 
     $this->actingAs($outsider)->get(route('documents.versions.download', [$document, $version]))->assertForbidden();
 });
+
+it('uploads general pdf documents seamlessly without matter_id and with strictly_confidential or default status', function () {
+    Storage::fake('local');
+    $user = rafUser(['document.view', 'document.upload', 'document.download']);
+
+    $response = $this->actingAs($user)->post(route('documents.store'), [
+        'title' => 'Surat Kuasa Khusus',
+        'document_type' => 'Surat Kuasa',
+        'matter_id' => '',
+        'client_id' => '',
+        'confidentiality_level' => 'strictly_confidential',
+        'notes' => 'Draf surat kuasa asli ditandatangani basah.',
+        'file' => UploadedFile::fake()->create('surat_kuasa.pdf', 250, 'application/pdf'),
+    ]);
+
+    $response->assertSessionHasNoErrors();
+    $document = Document::query()->where('title', 'Surat Kuasa Khusus')->firstOrFail();
+    expect($document->status)->toBe('draft')
+        ->and($document->confidentiality_level)->toBe('strictly_confidential')
+        ->and($document->matter_id)->toBeNull()
+        ->and($document->versions)->toHaveCount(1);
+
+    $version = $document->versions->first();
+    expect($version->original_filename)->toBe('surat_kuasa.pdf')
+        ->and($version->mime_type)->toBe('application/pdf')
+        ->and($version->notes)->toBe('Draf surat kuasa asli ditandatangani basah.');
+
+    Storage::disk('local')->assertExists($version->storage_path);
+});
