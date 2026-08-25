@@ -1,19 +1,25 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import {
     AlertTriangle,
+    Banknote,
+    Briefcase,
     Building2,
     Check,
     CheckCircle2,
     ChevronDown,
+    ChevronUp,
     Contact,
     Copy,
+    FileText,
     KeyRound,
+    Layers,
     Mail,
     MessageSquare,
     Pencil,
     RotateCcw,
     Search,
     Shield,
+    ShieldAlert,
     ShieldCheck,
     Trash2,
     UserPlus,
@@ -954,6 +960,65 @@ function StaffDetailModal({
     );
 }
 
+const PERMISSION_GROUPS = [
+    {
+        id: 'matters',
+        title: 'Manajemen Perkara (Matters)',
+        subtitle: 'Pendaftaran perkara, tim penasihat, jadwal sidang, pihak perkara, & arsip',
+        icon: Briefcase,
+        color: 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 border-blue-200/60 dark:border-blue-900/40',
+        match: (name: string) => name.startsWith('matter.'),
+    },
+    {
+        id: 'clients_contacts',
+        title: 'Klien & Direktori Kontak',
+        subtitle: 'Data profil klien, dokumen kepatuhan KYC/AML, dan buku alamat perwakilan',
+        icon: Users,
+        color: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400 border-indigo-200/60 dark:border-indigo-900/40',
+        match: (name: string) => name.startsWith('client.') || name.startsWith('contact.'),
+    },
+    {
+        id: 'tasks',
+        title: 'Manajemen Tugas (Tasks)',
+        subtitle: 'Pendelegasian tugas, pelacakan progress, & tenggat waktu pekerjaan staf',
+        icon: CheckCircle2,
+        color: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 border-emerald-200/60 dark:border-emerald-900/40',
+        match: (name: string) => name.startsWith('task.'),
+    },
+    {
+        id: 'documents',
+        title: 'Dokumen, E-Sign & Template',
+        subtitle: 'Repositori berkas perkara, persetujuan review, tanda tangan digital, & template DOCX',
+        icon: FileText,
+        color: 'bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400 border-amber-200/60 dark:border-amber-900/40',
+        match: (name: string) => name.startsWith('document.') || name.startsWith('template.') || name.startsWith('signature.'),
+    },
+    {
+        id: 'finance',
+        title: 'Keuangan & Penagihan (Finance & Billing)',
+        subtitle: 'Penerbitan invoice, biaya perkara / panjar, kas masuk, & penawaran fee quote',
+        icon: Banknote,
+        color: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 border-emerald-200/60 dark:border-emerald-900/40',
+        match: (name: string) => name.startsWith('billing.') || name.startsWith('expense.') || name.startsWith('payment.') || name.startsWith('quotation.'),
+    },
+    {
+        id: 'governance',
+        title: 'Tata Kelola, Benturan Kepentingan & Arsip',
+        subtitle: 'Log surat masuk/keluar resmi, conflict check, & pembekuan Legal Hold',
+        icon: ShieldCheck,
+        color: 'bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400 border-rose-200/60 dark:border-rose-900/40',
+        match: (name: string) => name.startsWith('correspondence.') || name.startsWith('conflict.') || name.startsWith('archive.'),
+    },
+    {
+        id: 'administration',
+        title: 'Administrasi & Audit Keamanan',
+        subtitle: 'Pengaturan akun pengguna, konfigurasi peran sistem, & rekaman log jejak audit',
+        icon: ShieldAlert,
+        color: 'bg-purple-50 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400 border-purple-200/60 dark:border-purple-900/40',
+        match: (name: string) => name.startsWith('admin.') || name.startsWith('audit.'),
+    },
+];
+
 function RolePermissions({
     roles,
     permissions,
@@ -962,72 +1027,133 @@ function RolePermissions({
     permissions: Permission[];
 }) {
     return (
-        <div className="space-y-3.5">
+        <div className="space-y-4">
             {roles.map((role) => (
                 <div
                     key={role.id}
-                    className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]"
+                    className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]"
                 >
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                        <div className="flex items-center gap-2">
-                            <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                                {role.name}
-                            </h3>
-                            <span className="rounded bg-slate-100 px-1.5 py-0.2 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
-                                {role.slug}
-                            </span>
-                            <span className="text-[11px] text-slate-500">
-                                · {role.permissions.length} dari {permissions.length} izin aktif
-                            </span>
+                    {/* Header Role */}
+                    <div className="flex flex-col gap-2 border-b border-slate-100 bg-slate-50/50 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.04] dark:bg-white/[0.02]">
+                        <div className="space-y-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                    {role.name}
+                                </h3>
+                                <span className="rounded-md bg-slate-200/70 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                    {role.slug}
+                                </span>
+                                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+                                    {role.permissions.length} dari {permissions.length} izin aktif
+                                </span>
+                            </div>
+                            {role.description && (
+                                <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                    {role.description}
+                                </p>
+                            )}
                         </div>
                     </div>
 
                     <Form
                         {...roleRoutes.update.form(role.id)}
-                        className="space-y-3 pt-2.5"
+                        className="space-y-4 p-4"
                     >
                         {({ processing }) => (
                             <>
-                                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                                    {permissions.map((permission) => {
-                                        const isAssigned = role.permissions.some(
-                                            (p) => p.id === permission.id,
+                                <div className="space-y-4">
+                                    {PERMISSION_GROUPS.map((group) => {
+                                        const groupPermissions = permissions.filter((p) =>
+                                            group.match(p.name),
                                         );
+                                        if (groupPermissions.length === 0) return null;
+
+                                        const activeInGroup = groupPermissions.filter((p) =>
+                                            role.permissions.some((rp) => rp.id === p.id),
+                                        ).length;
+                                        const IconComp = group.icon;
 
                                         return (
-                                            <label
-                                                key={permission.id}
-                                                className="flex items-start gap-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 text-xs transition-colors hover:border-slate-300 hover:bg-white dark:border-white/5 dark:bg-zinc-800/40 dark:hover:bg-zinc-800"
+                                            <div
+                                                key={group.id}
+                                                className="rounded-xl border border-slate-200/60 bg-slate-50/30 p-3.5 dark:border-white/[0.04] dark:bg-[#101216]"
                                             >
-                                                <input
-                                                    type="checkbox"
-                                                    name="permission_ids[]"
-                                                    value={permission.id}
-                                                    defaultChecked={isAssigned}
-                                                    className="mt-0.5 size-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900"
-                                                />
-                                                <div className="min-w-0">
-                                                    <span className="font-mono text-xs font-semibold text-slate-900 dark:text-white">
-                                                        {permission.name}
+                                                {/* Group Header */}
+                                                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/50 pb-2.5 dark:border-white/[0.04]">
+                                                    <div className="flex items-center gap-2.5">
+                                                        <div
+                                                            className={`flex size-7 shrink-0 items-center justify-center rounded-lg border shadow-2xs ${group.color}`}
+                                                        >
+                                                            <IconComp className="size-3.5" />
+                                                        </div>
+                                                        <div>
+                                                            <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                                {group.title}
+                                                            </h4>
+                                                            <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                                {group.subtitle}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10.5px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
+                                                        {activeInGroup} / {groupPermissions.length} Aktif
                                                     </span>
-                                                    {permission.description && (
-                                                        <p className="truncate text-[10.5px] text-slate-500">
-                                                            {permission.description}
-                                                        </p>
-                                                    )}
                                                 </div>
-                                            </label>
+
+                                                {/* Permission Checkbox Grid */}
+                                                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                                                    {groupPermissions.map((permission) => {
+                                                        const isAssigned = role.permissions.some(
+                                                            (p) => p.id === permission.id,
+                                                        );
+
+                                                        return (
+                                                            <label
+                                                                key={permission.id}
+                                                                className={`group flex cursor-pointer items-start gap-2.5 rounded-lg border p-2.5 text-xs transition-all ${
+                                                                    isAssigned
+                                                                        ? 'border-slate-300/90 bg-white shadow-2xs dark:border-white/10 dark:bg-[#16181e]'
+                                                                        : 'border-slate-200/60 bg-white/50 opacity-75 hover:border-slate-300 hover:bg-white hover:opacity-100 dark:border-white/[0.03] dark:bg-zinc-900/30 dark:hover:bg-zinc-900'
+                                                                }`}
+                                                            >
+                                                                <input
+                                                                    type="checkbox"
+                                                                    name="permission_ids[]"
+                                                                    value={permission.id}
+                                                                    defaultChecked={isAssigned}
+                                                                    className="mt-0.5 size-3.5 rounded border-slate-300 text-slate-900 focus:ring-slate-900 dark:border-zinc-700 dark:bg-zinc-900"
+                                                                />
+                                                                <div className="min-w-0 flex-1 space-y-0.5">
+                                                                    <p className="font-semibold text-slate-900 group-hover:text-blue-600 dark:text-zinc-100 dark:group-hover:text-blue-400">
+                                                                        {permission.description || permission.name}
+                                                                    </p>
+                                                                    <span className="inline-block font-mono text-[10px] text-slate-400 dark:text-zinc-500">
+                                                                        {permission.name}
+                                                                    </span>
+                                                                </div>
+                                                            </label>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
                                         );
                                     })}
                                 </div>
 
-                                <div className="flex justify-end pt-1">
+                                <div className="flex items-center justify-end border-t border-slate-100 pt-3 dark:border-white/[0.04]">
                                     <Button
                                         size="sm"
                                         disabled={processing}
-                                        className="h-7.5 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                        className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
                                     >
-                                        Simpan Izin Role {role.name}
+                                        {processing ? (
+                                            <>
+                                                <Spinner className="mr-1.5 size-3.5" />
+                                                Menyimpan Izin...
+                                            </>
+                                        ) : (
+                                            `Simpan Izin Peran ${role.name}`
+                                        )}
                                     </Button>
                                 </div>
                             </>
