@@ -152,12 +152,12 @@ export default function UsersIndex({
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-4 px-4 py-4 sm:px-6 lg:px-8">
                     {/* 1. Header Navigation & Action Bar */}
-                    <div className="flex flex-col justify-between gap-3 border-b border-slate-200/60 pb-3 sm:flex-row sm:items-center dark:border-white/[0.06]">
-                        <div className="space-y-0.5">
-                            <h1 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
+                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
+                        <div className="space-y-1">
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                 Personel &amp; Hak Akses
                             </h1>
-                            <p className="text-[11px] text-slate-500 sm:text-xs dark:text-zinc-400">
+                            <p className="text-xs text-slate-500 dark:text-zinc-400">
                                 Direktori staf firma, kartu identitas pegawai
                                 digital, dan matriks hak akses perizinan.
                             </p>
