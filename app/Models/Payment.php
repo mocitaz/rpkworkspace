@@ -15,16 +15,28 @@ class Payment extends Model
     use HasFactory, HasUlids;
 
     protected $fillable = [
-        'client_id', 'matter_id', 'currency', 'amount', 'method', 'reference_number', 'notes',
+        'client_id', 'matter_id', 'account_id', 'currency', 'amount', 'gross_amount', 'tax_withheld', 'net_amount',
+        'method', 'reference_number', 'notes',
         'received_at', 'proof_document_id', 'recorded_by',
         'reversed_at', 'reversal_reason', 'reversed_by', 'refunded_at', 'refund_reason', 'refunded_by',
     ];
 
-    protected $attributes = ['currency' => 'IDR'];
+    protected $attributes = [
+        'currency' => 'IDR',
+        'tax_withheld' => 0,
+    ];
 
     protected function casts(): array
     {
-        return ['received_at' => 'datetime', 'reversed_at' => 'datetime', 'refunded_at' => 'datetime'];
+        return [
+            'amount' => 'integer',
+            'gross_amount' => 'integer',
+            'tax_withheld' => 'integer',
+            'net_amount' => 'integer',
+            'received_at' => 'datetime',
+            'reversed_at' => 'datetime',
+            'refunded_at' => 'datetime',
+        ];
     }
 
     /** @return BelongsTo<Client, $this> */
@@ -37,6 +49,12 @@ class Payment extends Model
     public function matter(): BelongsTo
     {
         return $this->belongsTo(Matter::class);
+    }
+
+    /** @return BelongsTo<FinancialAccount, $this> */
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(FinancialAccount::class, 'account_id');
     }
 
     /** @return BelongsTo<Document, $this> */

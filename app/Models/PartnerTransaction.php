@@ -2,56 +2,60 @@
 
 namespace App\Models;
 
-use Database\Factories\ExpenseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Expense extends Model
+class PartnerTransaction extends Model
 {
-    /** @use HasFactory<ExpenseFactory> */
     use HasFactory, HasUlids;
 
     protected $fillable = [
-        'matter_id', 'category', 'charge_to', 'description', 'vendor', 'incurred_at', 'amount', 'currency',
-        'account_id', 'partner_id', 'is_reimbursable',
-        'status', 'proof_document_id', 'approved_by', 'approved_at', 'created_by',
+        'transaction_number',
+        'partner_id',
+        'matter_id',
+        'type',
+        'amount',
+        'transaction_date',
+        'account_id',
+        'proof_document_id',
+        'notes',
+        'status',
+        'approved_by',
+        'approved_at',
+        'created_by',
     ];
 
     protected $attributes = [
-        'status' => 'draft',
-        'currency' => 'IDR',
-        'charge_to' => 'office',
-        'is_reimbursable' => false,
+        'status' => 'approved',
     ];
 
     protected function casts(): array
     {
         return [
-            'incurred_at' => 'date',
-            'approved_at' => 'datetime',
             'amount' => 'integer',
-            'is_reimbursable' => 'boolean',
+            'transaction_date' => 'date',
+            'approved_at' => 'datetime',
         ];
-    }
-
-    /** @return BelongsTo<Matter, $this> */
-    public function matter(): BelongsTo
-    {
-        return $this->belongsTo(Matter::class);
-    }
-
-    /** @return BelongsTo<FinancialAccount, $this> */
-    public function account(): BelongsTo
-    {
-        return $this->belongsTo(FinancialAccount::class, 'account_id');
     }
 
     /** @return BelongsTo<User, $this> */
     public function partner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'partner_id');
+    }
+
+    /** @return BelongsTo<Matter, $this> */
+    public function matter(): BelongsTo
+    {
+        return $this->belongsTo(Matter::class, 'matter_id');
+    }
+
+    /** @return BelongsTo<FinancialAccount, $this> */
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(FinancialAccount::class, 'account_id');
     }
 
     /** @return BelongsTo<Document, $this> */

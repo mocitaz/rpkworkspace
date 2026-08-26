@@ -1,0 +1,210 @@
+import { DollarSign, HandCoins, Plus, ShieldCheck, UserCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { formatDate, formatMoney } from '@/lib/format';
+
+export type PartnerAdvanceSummaryItem = {
+    account_id: string;
+    account_name: string;
+    partner_id: number;
+    partner_name: string;
+    opening_balance: number;
+    advances_incurred: number;
+    advances_reimbursed: number;
+    profit_distributed: number;
+    prive_drawn: number;
+    net_due_to_partner: number;
+};
+
+export type PartnerTransactionItem = {
+    id: string;
+    transaction_number: string;
+    partner?: { id: number; name: string };
+    matter?: { id: string; matter_number: string; title: string };
+    type: 'advance_incurred' | 'advance_reimbursed' | 'profit_distribution' | 'capital_injection' | 'draw_prive';
+    amount: number;
+    transaction_date: string;
+    account?: { id: string; name: string };
+    notes?: string;
+    status: string;
+};
+
+export function PartnerAdvancesView({
+    advancesSummary,
+    transactions,
+    onOpenPartnerModal,
+}: {
+    advancesSummary: PartnerAdvanceSummaryItem[];
+    transactions: PartnerTransactionItem[];
+    onOpenPartnerModal: () => void;
+}) {
+    const totalDueToPartners = advancesSummary.reduce((acc, p) => acc + p.net_due_to_partner, 0);
+
+    return (
+        <div className="space-y-4">
+            {/* Header & Actions */}
+            <div className="flex flex-col justify-between gap-2.5 sm:flex-row sm:items-center">
+                <div>
+                    <h2 className="text-sm font-bold text-slate-900 uppercase dark:text-white">Talangan &amp; Hak Partner</h2>
+                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                        Rekapitulasi utang kantor kepada partner atas dana pribadi talangan operasional/perkara, pengembalian talangan, prive, dan bagi hasil.
+                    </p>
+                </div>
+                <Button
+                    size="sm"
+                    onClick={onOpenPartnerModal}
+                    className="h-7.5 rounded-lg bg-amber-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 dark:bg-amber-600 dark:text-white dark:hover:bg-amber-500"
+                >
+                    <Plus className="mr-1 size-3.5" />
+                    Catat Transaksi Partner
+                </Button>
+            </div>
+
+            {/* Partner Advances Summary Card & Table (Mirroring Excel Sheet TALANGAN_PARTNER) */}
+            <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                <div className="flex items-center justify-between border-b border-slate-200/60 bg-amber-50/30 px-4 py-2.5 dark:border-white/[0.06] dark:bg-amber-500/5">
+                    <div>
+                        <h3 className="text-xs font-bold text-amber-900 uppercase dark:text-amber-300">Posisi Talangan &amp; Kewajiban Firma ke Partner</h3>
+                        <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">Pembayaran pribadi untuk operasional kantor/perkara tercatat sebagai utang firma ke partner.</p>
+                    </div>
+                    <div className="text-right">
+                        <span className="text-[9.5px] font-semibold text-slate-400 uppercase">Total Utang Partner Bersih:</span>
+                        <p className="font-mono text-base font-bold text-amber-600 dark:text-amber-400">{formatMoney(totalDueToPartners, 'IDR')}</p>
+                    </div>
+                </div>
+
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                        <thead className="border-b border-slate-200/70 bg-slate-50/70 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:border-white/[0.06] dark:bg-[#121418] dark:text-zinc-400">
+                            <tr>
+                                <th className="px-3.5 py-2.5">Nama Partner</th>
+                                <th className="px-3 py-2.5 text-right">Saldo Awal</th>
+                                <th className="px-3 py-2.5 text-right">Talangan Berjalan (+)</th>
+                                <th className="px-3 py-2.5 text-right">Pengembalian (-)</th>
+                                <th className="px-3 py-2.5 text-right">Utang Partner Bersih</th>
+                                <th className="px-3 py-2.5 text-right">Bagi Hasil</th>
+                                <th className="px-3 py-2.5 text-right">Prive</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200/60 font-medium text-slate-700 dark:divide-white/[0.04] dark:text-zinc-300">
+                            {advancesSummary.map((partner) => (
+                                <tr key={partner.partner_id || partner.account_id} className="transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
+                                    <td className="px-3.5 py-2.5">
+                                        <div className="font-bold text-slate-900 dark:text-white">{partner.partner_name}</div>
+                                        <div className="font-mono text-[10px] text-slate-400">{partner.account_name}</div>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-right font-mono text-slate-600 dark:text-zinc-400">
+                                        {formatMoney(partner.opening_balance, 'IDR')}
+                                    </td>
+                                    <td className="px-3 py-2.5 text-right font-mono font-semibold text-rose-600 dark:text-rose-400">
+                                        {formatMoney(partner.advances_incurred, 'IDR')}
+                                    </td>
+                                    <td className="px-3 py-2.5 text-right font-mono font-semibold text-emerald-600 dark:text-emerald-400">
+                                        {formatMoney(partner.advances_reimbursed, 'IDR')}
+                                    </td>
+                                    <td className="px-3 py-2.5 text-right font-mono font-bold text-amber-600 dark:text-amber-400">
+                                        {formatMoney(partner.net_due_to_partner, 'IDR')}
+                                    </td>
+                                    <td className="px-3 py-2.5 text-right font-mono text-blue-600 dark:text-blue-400">
+                                        {formatMoney(partner.profit_distributed, 'IDR')}
+                                    </td>
+                                    <td className="px-3 py-2.5 text-right font-mono text-purple-600 dark:text-purple-400">
+                                        {formatMoney(partner.prive_drawn, 'IDR')}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/* Partner Transactions Table (Mirroring Excel Sheet PARTNER) */}
+            <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                <div className="border-b border-slate-200/60 px-4 py-2.5 dark:border-white/[0.06]">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h3 className="text-xs font-bold text-slate-900 uppercase dark:text-white">Register Transaksi &amp; Mutasi Partner</h3>
+                            <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">Log lengkap pencatatan talangan, reimbursement, penarikan prive, dan pembagian laba.</p>
+                        </div>
+                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-white/10 dark:text-zinc-300">
+                            {transactions.length} Transaksi
+                        </span>
+                    </div>
+                </div>
+
+                {transactions.length === 0 ? (
+                    <div className="p-8 text-center text-xs text-slate-400 dark:text-zinc-500">
+                        Belum ada riwayat transaksi partner.
+                    </div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left text-xs">
+                            <thead className="border-b border-slate-200/70 bg-slate-50/70 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:border-white/[0.06] dark:bg-[#121418] dark:text-zinc-400">
+                                <tr>
+                                    <th className="px-3.5 py-2.5">No Transaksi &amp; Tanggal</th>
+                                    <th className="px-3 py-2.5">Partner</th>
+                                    <th className="px-3 py-2.5">Jenis Transaksi</th>
+                                    <th className="px-3 py-2.5">Perkara / Rekening</th>
+                                    <th className="px-3 py-2.5 text-right">Nominal</th>
+                                    <th className="px-3 py-2.5">Keterangan</th>
+                                    <th className="px-3 py-2.5 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-200/60 font-medium text-slate-700 dark:divide-white/[0.04] dark:text-zinc-300">
+                                {transactions.map((t) => {
+                                    const typeLabels: Record<string, { label: string; color: string }> = {
+                                        advance_incurred: { label: 'Talangan Partner (+)', color: 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400' },
+                                        advance_reimbursed: { label: 'Pengembalian Talangan (-)', color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' },
+                                        profit_distribution: { label: 'Pembagian Bagi Hasil', color: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400' },
+                                        capital_injection: { label: 'Setoran Modal (+)', color: 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400' },
+                                        draw_prive: { label: 'Penarikan Prive (-)', color: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' },
+                                    };
+
+                                    const typeInfo = typeLabels[t.type] || { label: t.type, color: 'bg-slate-100 text-slate-700' };
+
+                                    return (
+                                        <tr key={t.id} className="transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
+                                            <td className="px-3.5 py-2.5">
+                                                <div className="font-mono text-[10.5px] font-bold text-blue-600 dark:text-blue-400">{t.transaction_number}</div>
+                                                <div className="text-[10px] text-slate-400">{formatDate(t.transaction_date)}</div>
+                                            </td>
+                                            <td className="px-3 py-2.5 font-bold text-slate-900 dark:text-white">
+                                                {t.partner?.name || '-'}
+                                            </td>
+                                            <td className="px-3 py-2.5">
+                                                <span className={`rounded-full px-2 py-0.5 text-[9.5px] font-bold ${typeInfo.color}`}>
+                                                    {typeInfo.label}
+                                                </span>
+                                            </td>
+                                            <td className="px-3 py-2.5">
+                                                {t.matter ? (
+                                                    <span className="font-mono text-[10px] font-semibold text-blue-600 dark:text-blue-400">
+                                                        {t.matter.matter_number}
+                                                    </span>
+                                                ) : t.account ? (
+                                                    <span className="text-[10.5px] text-slate-600 dark:text-zinc-400">{t.account.name}</span>
+                                                ) : (
+                                                    <span className="text-[10px] text-slate-400">-</span>
+                                                )}
+                                            </td>
+                                            <td className="px-3 py-2.5 text-right font-mono font-bold text-slate-900 dark:text-white">
+                                                {formatMoney(t.amount, 'IDR')}
+                                            </td>
+                                            <td className="px-3 py-2.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                                {t.notes || '-'}
+                                            </td>
+                                            <td className="px-3 py-2.5 text-center">
+                                                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[9.5px] font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
+                                                    Disetujui
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}

@@ -1,8 +1,11 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
 import {
     AlertCircle,
+    ArrowRightLeft,
     ArrowUpRight,
     Banknote,
+    BarChart3,
+    Building,
     Building2,
     CalendarClock,
     CheckCircle2,
@@ -12,17 +15,24 @@ import {
     DollarSign,
     FileDown,
     FilePlus2,
+    FileSpreadsheet,
     FileText,
     FolderKanban,
+    HandCoins,
     Layers,
+    Lock,
     Plus,
     Receipt,
     ReceiptText,
     RotateCcw,
+    Scale,
     Search,
     Trash2,
     TrendingUp,
     Undo2,
+    User,
+    Users,
+    Wallet,
     WalletCards,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -47,12 +57,24 @@ import * as expenseRoutes from '@/routes/finance/expenses';
 import * as invoiceRoutes from '@/routes/finance/invoices';
 import * as paymentRoutes from '@/routes/finance/payments';
 import * as quotationRoutes from '@/routes/finance/quotations';
+import { ProfitabilityTable, type ProfitabilityItem } from './components/profitability-table';
+import { AccountsView, type FinancialAccountItem, type AccountTransferItem } from './components/accounts-view';
+import { PartnerAdvancesView, type PartnerAdvanceSummaryItem, type PartnerTransactionItem } from './components/partner-advances-view';
+import { ClientTrustView, type ClientTrustSummary, type ClientTrustFundItem } from './components/client-trust-view';
+import { PayrollView, type PayrollItem } from './components/payroll-view';
+import { ReportsView, type IncomeStatementData, type BalanceSheetData } from './components/reports-view';
+import { CreateAccountDialog } from './components/create-account-dialog';
+import { CreateTransferDialog } from './components/create-transfer-dialog';
+import { CreatePartnerTransactionDialog } from './components/create-partner-transaction-dialog';
+import { CreateClientTrustDialog } from './components/create-client-trust-dialog';
+import { CreatePayrollDialog } from './components/create-payroll-dialog';
 
 type Matter = {
     id: string;
     matter_number: string;
     title: string;
     client?: string;
+    budget_amount?: number;
 };
 
 type LedgerItem = {
@@ -61,17 +83,22 @@ type LedgerItem = {
     quotation_number?: string;
     title?: string;
     category?: string;
+    charge_to?: string;
     description?: string;
     status: string;
     total_amount?: number;
     paid_amount?: number;
     amount?: number;
+    gross_amount?: number;
+    tax_withheld?: number;
     outstanding_amount?: number;
     currency: string;
     due_at?: string;
     incurred_at?: string;
     received_at?: string;
     matter?: Matter;
+    account?: { id: string; name: string };
+    partner?: { id: number; name: string };
     reversed_at?: string;
     reversal_reason?: string;
     refunded_at?: string;
@@ -112,6 +139,17 @@ export default function FinanceIndex({
     quotations,
     expenses,
     payments,
+    accounts = [],
+    transfers = [],
+    partnerTransactions = [],
+    partnerAdvances = [],
+    clientTrustFunds = [],
+    clientTrustSummary,
+    payrolls = [],
+    profitability = [],
+    incomeStatement,
+    balanceSheet,
+    staffUsers = [],
     can,
 }: {
     matters: Matter[];
@@ -122,6 +160,17 @@ export default function FinanceIndex({
     quotations: LedgerItem[];
     expenses: LedgerItem[];
     payments: LedgerItem[];
+    accounts?: FinancialAccountItem[];
+    transfers?: AccountTransferItem[];
+    partnerTransactions?: PartnerTransactionItem[];
+    partnerAdvances?: PartnerAdvanceSummaryItem[];
+    clientTrustFunds?: ClientTrustFundItem[];
+    clientTrustSummary?: ClientTrustSummary;
+    payrolls?: PayrollItem[];
+    profitability?: ProfitabilityItem[];
+    incomeStatement?: IncomeStatementData;
+    balanceSheet?: BalanceSheetData;
+    staffUsers?: { id: number; name: string; position_title?: string; department?: string; employee_code?: string; bank_name?: string; bank_account_number?: string }[];
     can: {
         invoice: boolean;
         quotation: boolean;
@@ -132,600 +181,949 @@ export default function FinanceIndex({
     };
 }) {
     const [modal, setModal] = useState<
-        'invoice' | 'quotation' | 'expense' | 'payment' | null
+        'invoice' | 'quotation' | 'expense' | 'payment' | 'account' | 'transfer' | 'partner_transaction' | 'client_trust' | 'payroll' | null
     >(null);
-    const [reversePayment, setReversePayment] = useState<LedgerItem | null>(
-        null,
-    );
+    const [reversePayment, setReversePayment] = useState<LedgerItem | null>(null);
     const [refundPayment, setRefundPayment] = useState<LedgerItem | null>(null);
     const [cancelInvoice, setCancelInvoice] = useState<LedgerItem | null>(null);
-    const [expenseToDelete, setExpenseToDelete] = useState<LedgerItem | null>(
-        null,
-    );
+    const [expenseToDelete, setExpenseToDelete] = useState<LedgerItem | null>(null);
     const [isDeletingExpense, setIsDeletingExpense] = useState(false);
-    const [activeTab, setActiveTab] = useState<
-        'all' | 'invoices' | 'quotations' | 'expenses' | 'payments'
-    >('all');
+
+    // 3 Primary Scopes: Client & Matters, Office Operations, Financial Reports
+    const [scope, setScope] = useState<'client_matters' | 'office_operations' | 'financial_reports'>('client_matters');
+    const [matterTab, setMatterTab] = useState<'profitability' | 'invoices' | 'quotations' | 'trust_funds' | 'disbursements' | 'payments' | 'all'>('profitability');
+    const [officeTab, setOfficeTab] = useState<'accounts' | 'office_expenses' | 'payroll' | 'partner_advances'>('accounts');
     const [showDetailedAnalytics, setShowDetailedAnalytics] = useState(false);
 
     const currency = overview?.currency ?? 'IDR';
+
+    const partnersList = useMemo(() => {
+        return staffUsers.filter((u) => u.name.toLowerCase().includes('partner') || u.id <= 3);
+    }, [staffUsers]);
+
+    const trustAccountsList = useMemo(() => {
+        return accounts.filter((a) => a.type === 'client_trust');
+    }, [accounts]);
+
+    const matterExpenses = useMemo(() => {
+        return expenses.filter((e) => e.charge_to === 'client' || !!e.matter);
+    }, [expenses]);
+
+    const officeExpenses = useMemo(() => {
+        return expenses.filter((e) => e.charge_to === 'office' || !e.matter);
+    }, [expenses]);
+
+    const totalOperationalCashBank = useMemo(() => {
+        return accounts.filter((a) => a.type !== 'client_trust').reduce((sum, a) => sum + (a.current_balance || 0), 0);
+    }, [accounts]);
+
+    const totalClientTrustBank = useMemo(() => {
+        return accounts.filter((a) => a.type === 'client_trust').reduce((sum, a) => sum + (a.current_balance || 0), 0);
+    }, [accounts]);
+
+    const totalOfficeExpenseSum = useMemo(() => {
+        return officeExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
+    }, [officeExpenses]);
+
+    const totalPayrollSum = useMemo(() => {
+        return payrolls.reduce((sum, p) => sum + (p.net_salary || 0), 0);
+    }, [payrolls]);
+
+    const totalPartnerAdvDue = useMemo(() => {
+        return partnerAdvances.reduce((sum, p) => sum + (p.net_balance || 0), 0);
+    }, [partnerAdvances]);
 
     return (
         <>
             <Head title="Keuangan & Billing Operasional - RPK Legal Workspace" />
 
             <div className="min-h-screen bg-[#fafafc] pb-16 dark:bg-[#0c0d10]">
-                <main className="mx-auto max-w-7xl space-y-3.5 px-4 py-3.5 sm:px-6 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-4 px-4 py-3.5 sm:px-6 lg:px-8">
                     {/* 1. Header & Actions */}
                     <div className="flex flex-col justify-between gap-3 border-b border-slate-200/60 pb-3 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-0.5">
                             <h1 className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
-                                Keuangan &amp; Billing Operasional
+                                Keuangan Firma Hukum RPK
                             </h1>
                             <p className="text-[11px] text-slate-500 sm:text-xs dark:text-zinc-400">
-                                Manajemen invoice tagihan klien, quotation tarif
-                                perkara, pengeluaran (disbursement), dan arus
-                                kas firma.
+                                Pusat keuangan terpadu: Penagihan perkara klien, operasional kantor &amp; laporan neraca firma.
                             </p>
                         </div>
 
-                        {/* Right: Actions */}
-                        <div className="flex flex-wrap items-center gap-1.5">
-                            {can.quotation && (
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setModal('quotation')}
-                                    className="h-7.5 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
-                                >
-                                    <FilePlus2 className="mr-1 size-3.5 text-blue-600 dark:text-blue-400" />
-                                    Quotation
-                                </Button>
+                        {/* Right: Single-Line Horizontal Action Buttons */}
+                        <div className="flex [scrollbar-width:none] items-center gap-1.5 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                            {scope === 'client_matters' && (
+                                <>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setModal('client_trust')}
+                                        className="h-7.5 shrink-0 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold whitespace-nowrap text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                    >
+                                        <Lock className="mr-1 size-3.5 text-cyan-600 dark:text-cyan-400" />
+                                        Titipan Klien
+                                    </Button>
+                                    {can.quotation && (
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setModal('quotation')}
+                                            className="h-7.5 shrink-0 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold whitespace-nowrap text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                        >
+                                            <FilePlus2 className="mr-1 size-3.5 text-blue-600 dark:text-blue-400" />
+                                            Quotation
+                                        </Button>
+                                    )}
+                                    {can.expense && (
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setModal('expense')}
+                                            className="h-7.5 shrink-0 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold whitespace-nowrap text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                        >
+                                            <WalletCards className="mr-1 size-3.5 text-rose-600 dark:text-rose-400" />
+                                            Biaya Perkara
+                                        </Button>
+                                    )}
+                                    {can.payment && (
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setModal('payment')}
+                                            className="h-7.5 shrink-0 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold whitespace-nowrap text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                        >
+                                            <Banknote className="mr-1 size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                            Pembayaran
+                                        </Button>
+                                    )}
+                                    {can.invoice && (
+                                        <Button
+                                            onClick={() => setModal('invoice')}
+                                            className="h-7.5 shrink-0 rounded-lg bg-slate-900 px-3 text-xs font-semibold whitespace-nowrap text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                                        >
+                                            <ReceiptText className="mr-1 size-3.5" />
+                                            Buat Invoice
+                                        </Button>
+                                    )}
+                                </>
                             )}
-                            {can.expense && (
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setModal('expense')}
-                                    className="h-7.5 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
-                                >
-                                    <WalletCards className="mr-1 size-3.5 text-rose-600 dark:text-rose-400" />
-                                    Catat Biaya
-                                </Button>
+
+                            {scope === 'office_operations' && (
+                                <>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setModal('account')}
+                                        className="h-7.5 shrink-0 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold whitespace-nowrap text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                    >
+                                        <Building className="mr-1 size-3.5 text-blue-600 dark:text-blue-400" />
+                                        Tambah Akun
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setModal('transfer')}
+                                        className="h-7.5 shrink-0 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold whitespace-nowrap text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                    >
+                                        <ArrowRightLeft className="mr-1 size-3.5 text-purple-600 dark:text-purple-400" />
+                                        Transfer Kas
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setModal('partner_transaction')}
+                                        className="h-7.5 shrink-0 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold whitespace-nowrap text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                    >
+                                        <HandCoins className="mr-1 size-3.5 text-amber-600 dark:text-amber-400" />
+                                        Talangan Partner
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setModal('expense')}
+                                        className="h-7.5 shrink-0 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold whitespace-nowrap text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                    >
+                                        <WalletCards className="mr-1 size-3.5 text-rose-600 dark:text-rose-400" />
+                                        Biaya Kantor
+                                    </Button>
+                                    <Button
+                                        onClick={() => setModal('payroll')}
+                                        className="h-7.5 shrink-0 rounded-lg bg-indigo-600 px-3 text-xs font-semibold whitespace-nowrap text-white shadow-2xs hover:bg-indigo-700 active:scale-95"
+                                    >
+                                        <Users className="mr-1 size-3.5" />
+                                        Input Gaji
+                                    </Button>
+                                </>
                             )}
-                            {can.payment && (
-                                <Button
-                                    variant="outline"
-                                    onClick={() => setModal('payment')}
-                                    className="h-7.5 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+
+                            {scope === 'financial_reports' && (
+                                <a
+                                    href="/finance/export/excel"
+                                    className="inline-flex h-7.5 shrink-0 items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3 text-xs font-bold whitespace-nowrap text-emerald-800 shadow-2xs transition-colors hover:bg-emerald-100 active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
+                                    title="Download Laporan Keuangan Lengkap 11 Sheet Excel (.xlsx) untuk Kesiapan Audit"
                                 >
-                                    <Banknote className="mr-1 size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                    Pembayaran
-                                </Button>
-                            )}
-                            {can.invoice && (
-                                <Button
-                                    onClick={() => setModal('invoice')}
-                                    className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
-                                >
-                                    <ReceiptText className="mr-1 size-3.5" />
-                                    Buat Invoice
-                                </Button>
+                                    <FileSpreadsheet className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                    Export Audit (.xlsx)
+                                </a>
                             )}
                         </div>
                     </div>
 
-                    {/* Filter / Matter Selector Bar */}
-                    <Form
-                        {...financeRoutes.index.form()}
-                        className="flex flex-col gap-2 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs sm:flex-row sm:items-center dark:border-white/[0.06] dark:bg-[#14161b]"
-                    >
-                        <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
-                            <FolderKanban className="size-3.5 shrink-0" />
-                            <span className="text-xs font-semibold whitespace-nowrap">
-                                Lingkup Perkara:
-                            </span>
-                        </div>
-                        <div className="relative flex-1">
-                            <select
-                                name="matter_id"
-                                defaultValue={selectedMatterId}
-                                className="h-7.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
-                            >
-                                <option value="">
-                                    Semua Lingkup Perkara (Ringkasan Finansial
-                                    Global)
-                                </option>
-                                {matters.map((m) => (
-                                    <option value={m.id} key={m.id}>
-                                        {m.matter_number} - {m.title}{' '}
-                                        {m.client ? `(${m.client})` : ''}
-                                    </option>
-                                ))}
-                            </select>
-                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
-                        </div>
-                        <Button
-                            type="submit"
-                            size="sm"
-                            className="h-7.5 w-full shrink-0 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white hover:bg-slate-800 sm:w-auto dark:bg-white dark:text-slate-900"
+                    {/* 2. Top-Level 3-Scope Segmented Switcher */}
+                    <div className="grid grid-cols-1 gap-2 rounded-2xl border border-slate-200/80 bg-slate-100/60 p-1.5 sm:grid-cols-3 dark:border-white/[0.08] dark:bg-[#121418]/80">
+                        {/* Scope 1: Keuangan Perkara & Klien */}
+                        <button
+                            type="button"
+                            onClick={() => setScope('client_matters')}
+                            className={`group relative flex cursor-pointer items-start gap-3 rounded-xl p-3 text-left transition-all duration-200 ${
+                                scope === 'client_matters'
+                                    ? 'bg-white shadow-xs ring-1 ring-slate-900/5 dark:bg-[#181a20] dark:ring-1 dark:ring-white/10'
+                                    : 'hover:bg-white/60 dark:hover:bg-white/[0.04]'
+                            }`}
                         >
-                            Filter Ringkasan
-                        </Button>
-                    </Form>
-
-                    {/* Bento Metric Cards */}
-                    {overview ? (
-                        <div className="space-y-2.5">
-                            {/* Primary 4 Financial Metrics */}
-                            <section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
-                                {/* 1. Invoice Diterbitkan */}
-                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                        <span className="text-[10px] font-bold tracking-wider uppercase">
-                                            TOTAL TAGIHAN
-                                        </span>
-                                        <Receipt className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
-                                    </div>
-                                    <div className="mt-1.5 flex items-baseline justify-between">
-                                        <span className="font-mono text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
-                                            {formatMoney(
-                                                overview.invoiced_amount,
-                                                currency,
-                                            )}
-                                        </span>
-                                    </div>
-                                    <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
-                                        <span>Invoice Diterbitkan</span>
-                                        <span className="font-semibold text-blue-600 dark:text-blue-400">
-                                            Aktif
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* 2. Pembayaran Diterima (Total Kas Masuk) */}
-                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                        <span className="text-[10px] font-bold tracking-wider uppercase">
-                                            TOTAL KAS MASUK
-                                        </span>
-                                        <Banknote className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                    </div>
-                                    <div className="mt-1.5 flex items-baseline justify-between">
-                                        <span className="font-mono text-lg font-bold tracking-tight text-emerald-600 sm:text-xl dark:text-emerald-400">
-                                            {formatMoney(
-                                                overview.total_cash_inflow ??
-                                                    overview.payment_received_amount,
-                                                currency,
-                                            )}
-                                        </span>
-                                    </div>
-                                    <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
-                                        <span className="truncate">
-                                            Teralokasi:{' '}
-                                            {formatMoney(
-                                                overview.payment_received_amount,
-                                                currency,
-                                            )}
-                                            {(overview.unallocated_payment_amount ??
-                                                0) > 0 && (
-                                                <span className="ml-1 text-amber-600 dark:text-amber-400">
-                                                    · DP:{' '}
-                                                    {formatMoney(
-                                                        overview.unallocated_payment_amount ??
-                                                            0,
-                                                        currency,
-                                                    )}
-                                                </span>
-                                            )}
-                                        </span>
-                                        <span className="shrink-0 font-semibold text-emerald-600 dark:text-emerald-400">
-                                            Kas Riil
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* 3. Piutang Berjalan */}
-                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                        <span className="text-[10px] font-bold tracking-wider uppercase">
-                                            PIUTANG (OUTSTANDING)
-                                        </span>
-                                        <CalendarClock className="size-3.5 text-amber-500 dark:text-amber-400" />
-                                    </div>
-                                    <div className="mt-1.5 flex items-baseline justify-between">
-                                        <span className="font-mono text-lg font-bold tracking-tight text-amber-600 sm:text-xl dark:text-amber-400">
-                                            {formatMoney(
-                                                overview.receivable_amount,
-                                                currency,
-                                            )}
-                                        </span>
-                                    </div>
-                                    <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
-                                        <span>Belum Dilunasi</span>
-                                        <span className="font-semibold text-amber-600 dark:text-amber-400">
-                                            Berjalan
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* 4. Net Margin */}
-                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                        <span className="text-[10px] font-bold tracking-wider uppercase">
-                                            MARGIN &amp; PROFIT
-                                        </span>
-                                        <DollarSign className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
-                                    </div>
-                                    <div className="mt-1.5 flex items-baseline justify-between">
-                                        <span className="font-mono text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
-                                            {formatMoney(
-                                                overview.margin_amount,
-                                                currency,
-                                            )}
-                                        </span>
-                                    </div>
-                                    <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
-                                        <span>Net Margin</span>
-                                        <span className="font-semibold text-slate-700 dark:text-zinc-300">
-                                            Setelah Biaya
-                                        </span>
-                                    </div>
-                                </div>
-                            </section>
-
-                            {/* Toggle Button for Operational & Aging Analytics */}
-                            <div className="flex items-center justify-between pt-0.5">
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        setShowDetailedAnalytics(
-                                            (prev) => !prev,
-                                        )
-                                    }
-                                    className="group inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300 dark:hover:bg-zinc-800/60"
-                                >
-                                    <span className="flex size-4 items-center justify-center rounded bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
-                                        {showDetailedAnalytics ? (
-                                            <ChevronUp className="size-3" />
-                                        ) : (
-                                            <ChevronDown className="size-3" />
-                                        )}
-                                    </span>
-                                    <span>
-                                        {showDetailedAnalytics
-                                            ? 'Sembunyikan Rincian Anggaran & Umur Piutang'
-                                            : 'Tampilkan Rincian Anggaran & Umur Piutang (Aging Report)'}
-                                    </span>
-                                </button>
+                            <div
+                                className={`flex size-9 shrink-0 items-center justify-center rounded-xl transition-colors ${
+                                    scope === 'client_matters'
+                                        ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/25'
+                                        : 'bg-blue-50 text-blue-600 group-hover:bg-blue-100/80 dark:bg-blue-950/40 dark:text-blue-400 dark:group-hover:bg-blue-950/60'
+                                }`}
+                            >
+                                <FolderKanban className="size-4.5" />
                             </div>
-
-                            {/* Collapsible Secondary Operational Metrics & Aging Report */}
-                            {showDetailedAnalytics && (
-                                <div className="animate-in space-y-2.5 duration-200 fade-in-50">
-                                    {/* Secondary Operational Metrics Bar */}
-                                    <section className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                                        <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                            <p className="text-[9.5px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                                Anggaran (Budget)
-                                            </p>
-                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                {formatMoney(
-                                                    overview.budget_amount,
-                                                    currency,
-                                                )}
-                                            </p>
-                                        </div>
-                                        <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                            <p className="text-[9.5px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                                Biaya Perkara (Expense)
-                                            </p>
-                                            <p className="mt-0.5 font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
-                                                {formatMoney(
-                                                    overview.expense_amount,
-                                                    currency,
-                                                )}
-                                            </p>
-                                        </div>
-                                        <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                            <p className="text-[9.5px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                                Quotation Diajukan
-                                            </p>
-                                            <p className="mt-0.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                {formatMoney(
-                                                    overview.quotation_amount,
-                                                    currency,
-                                                )}
-                                            </p>
-                                        </div>
-                                        <div className="rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                            <p className="text-[9.5px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                                Lewat Jatuh Tempo
-                                            </p>
-                                            <p className="mt-0.5 font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
-                                                {formatMoney(
-                                                    overview.overdue_amount ??
-                                                        0,
-                                                    currency,
-                                                )}
-                                            </p>
-                                        </div>
-                                    </section>
-
-                                    {/* Aging Analysis Breakdown Bar */}
-                                    {overview.aging && (
-                                        <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                            <div className="mb-2 flex items-center justify-between">
-                                                <div className="flex items-center gap-1.5">
-                                                    <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-slate-700 uppercase dark:bg-zinc-800 dark:text-zinc-300">
-                                                        AGING REPORT
-                                                    </span>
-                                                    <h3 className="text-xs font-semibold text-slate-900 dark:text-white">
-                                                        Analisis Umur Piutang
-                                                        (Receivables Schedule)
-                                                    </h3>
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-5">
-                                                {[
-                                                    [
-                                                        'Belum Jatuh Tempo',
-                                                        overview.aging.current,
-                                                        'text-slate-900 dark:text-white',
-                                                        'border-slate-200 bg-slate-50/60 dark:border-white/5 dark:bg-[#121418]',
-                                                    ],
-                                                    [
-                                                        '1-30 Hari',
-                                                        overview.aging['1_30'],
-                                                        'text-amber-600 dark:text-amber-400',
-                                                        'border-amber-100 bg-amber-50/40 dark:border-amber-900/20 dark:bg-amber-950/10',
-                                                    ],
-                                                    [
-                                                        '31-60 Hari',
-                                                        overview.aging['31_60'],
-                                                        'text-amber-700 dark:text-amber-300',
-                                                        'border-amber-200 bg-amber-50/60 dark:border-amber-900/30 dark:bg-amber-950/20',
-                                                    ],
-                                                    [
-                                                        '61-90 Hari',
-                                                        overview.aging['61_90'],
-                                                        'text-rose-600 dark:text-rose-400',
-                                                        'border-rose-100 bg-rose-50/40 dark:border-rose-900/20 dark:bg-rose-950/10',
-                                                    ],
-                                                    [
-                                                        '>90 Hari (Kritis)',
-                                                        overview.aging.over_90,
-                                                        'text-rose-700 dark:text-rose-300 font-bold',
-                                                        'border-rose-200 bg-rose-50/70 dark:border-rose-900/40 dark:bg-rose-950/30',
-                                                    ],
-                                                ].map(
-                                                    ([
-                                                        label,
-                                                        val,
-                                                        textCls,
-                                                        cardCls,
-                                                    ]) => (
-                                                        <div
-                                                            key={String(label)}
-                                                            className={`rounded-lg border p-2 ${cardCls}`}
-                                                        >
-                                                            <p className="truncate text-[9.5px] font-semibold text-slate-500 dark:text-zinc-400">
-                                                                {label}
-                                                            </p>
-                                                            <p
-                                                                className={`mt-0.5 font-mono text-xs font-bold ${textCls}`}
-                                                            >
-                                                                {formatMoney(
-                                                                    Number(val),
-                                                                    currency,
-                                                                )}
-                                                            </p>
-                                                        </div>
-                                                    ),
-                                                )}
-                                            </div>
-                                        </div>
+                            <div className="min-w-0 flex-1">
+                                <div className="flex items-center justify-between gap-1">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="font-mono text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                                            01
+                                        </span>
+                                        <h3
+                                            className={`text-xs font-bold tracking-tight transition-colors ${
+                                                scope === 'client_matters'
+                                                    ? 'text-slate-900 dark:text-white'
+                                                    : 'text-slate-700 dark:text-zinc-300'
+                                            }`}
+                                        >
+                                            Keuangan Perkara &amp; Klien
+                                        </h3>
+                                    </div>
+                                    {scope === 'client_matters' && (
+                                        <span className="size-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
                                     )}
                                 </div>
+                                <p className="mt-0.5 text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    Billing, Dana Titipan &amp; Profitabilitas
+                                </p>
+                            </div>
+                            {scope === 'client_matters' && (
+                                <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-blue-600 dark:bg-blue-400" />
                             )}
-                        </div>
-                    ) : (
-                        <div className="flex min-h-[160px] items-center justify-center rounded-xl border border-slate-200/70 bg-white p-5 text-center shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <EmptyState
-                                title="Pilih perkara untuk melihat ringkasan keuangan"
-                                description="Pilih perkara melalui menu di atas untuk menampilkan rincian budget, invoice, dan penerimaan."
-                            />
+                        </button>
+
+                        {/* Scope 2: Operasional Kantor & Firma */}
+                        <button
+                            type="button"
+                            onClick={() => setScope('office_operations')}
+                            className={`group relative flex cursor-pointer items-start gap-3 rounded-xl p-3 text-left transition-all duration-200 ${
+                                scope === 'office_operations'
+                                    ? 'bg-white shadow-xs ring-1 ring-slate-900/5 dark:bg-[#181a20] dark:ring-1 dark:ring-white/10'
+                                    : 'hover:bg-white/60 dark:hover:bg-white/[0.04]'
+                            }`}
+                        >
+                            <div
+                                className={`flex size-9 shrink-0 items-center justify-center rounded-xl transition-colors ${
+                                    scope === 'office_operations'
+                                        ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/25'
+                                        : 'bg-indigo-50 text-indigo-600 group-hover:bg-indigo-100/80 dark:bg-indigo-950/40 dark:text-indigo-400 dark:group-hover:bg-indigo-950/60'
+                                }`}
+                            >
+                                <Building2 className="size-4.5" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <div className="flex items-center justify-between gap-1">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="font-mono text-[10px] font-bold text-indigo-600 dark:text-indigo-400">
+                                            02
+                                        </span>
+                                        <h3
+                                            className={`text-xs font-bold tracking-tight transition-colors ${
+                                                scope === 'office_operations'
+                                                    ? 'text-slate-900 dark:text-white'
+                                                    : 'text-slate-700 dark:text-zinc-300'
+                                            }`}
+                                        >
+                                            Operasional Kantor &amp; Firma
+                                        </h3>
+                                    </div>
+                                    {scope === 'office_operations' && (
+                                        <span className="size-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+                                    )}
+                                </div>
+                                <p className="mt-0.5 text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    Kas, Bank, Biaya Rutin, Payroll &amp; Talangan
+                                </p>
+                            </div>
+                            {scope === 'office_operations' && (
+                                <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+                            )}
+                        </button>
+
+                        {/* Scope 3: Laporan Keuangan & Neraca */}
+                        <button
+                            type="button"
+                            onClick={() => setScope('financial_reports')}
+                            className={`group relative flex cursor-pointer items-start gap-3 rounded-xl p-3 text-left transition-all duration-200 ${
+                                scope === 'financial_reports'
+                                    ? 'bg-white shadow-xs ring-1 ring-slate-900/5 dark:bg-[#181a20] dark:ring-1 dark:ring-white/10'
+                                    : 'hover:bg-white/60 dark:hover:bg-white/[0.04]'
+                            }`}
+                        >
+                            <div
+                                className={`flex size-9 shrink-0 items-center justify-center rounded-xl transition-colors ${
+                                    scope === 'financial_reports'
+                                        ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-500/25'
+                                        : 'bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:text-emerald-400 dark:group-hover:bg-emerald-950/60'
+                                }`}
+                            >
+                                <Scale className="size-4.5" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <div className="flex items-center justify-between gap-1">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="font-mono text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                                            03
+                                        </span>
+                                        <h3
+                                            className={`text-xs font-bold tracking-tight transition-colors ${
+                                                scope === 'financial_reports'
+                                                    ? 'text-slate-900 dark:text-white'
+                                                    : 'text-slate-700 dark:text-zinc-300'
+                                            }`}
+                                        >
+                                            Laporan Keuangan &amp; Neraca
+                                        </h3>
+                                    </div>
+                                    {scope === 'financial_reports' && (
+                                        <span className="size-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+                                    )}
+                                </div>
+                                <p className="mt-0.5 text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    Laba Rugi Bulanan, Arus Kas &amp; Neraca
+                                </p>
+                            </div>
+                            {scope === 'financial_reports' && (
+                                <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+                            )}
+                        </button>
+                    </div>
+
+                    {/* ========================================================================= */}
+                    {/* SCOPE 1: KEUANGAN PERKARA & KLIEN */}
+                    {/* ========================================================================= */}
+                    {scope === 'client_matters' && (
+                        <div className="space-y-3.5">
+                            {/* Matter Selector Bar (Wajib Pilih) */}
+                            <Form
+                                {...financeRoutes.index.form()}
+                                className="flex flex-col gap-2 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs sm:flex-row sm:items-center dark:border-white/[0.06] dark:bg-[#14161b]"
+                            >
+                                <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
+                                    <FolderKanban className="size-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
+                                    <span className="text-xs font-semibold whitespace-nowrap">
+                                        Filter Perkara:
+                                    </span>
+                                </div>
+                                <div className="relative flex-1">
+                                    <select
+                                        name="matter_id"
+                                        defaultValue={selectedMatterId}
+                                        className="h-7.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                    >
+                                        <option value="">
+                                            -- Pilih Perkara / Klien Terlebih Dahulu --
+                                        </option>
+                                        {matters.map((m) => (
+                                            <option value={m.id} key={m.id}>
+                                                {m.matter_number} - {m.title}{' '}
+                                                {m.client ? `(${m.client})` : ''}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
+                                </div>
+                                <Button
+                                    type="submit"
+                                    size="sm"
+                                    className="h-7.5 w-full shrink-0 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white hover:bg-blue-700 sm:w-auto"
+                                >
+                                    Tampilkan Data Perkara
+                                </Button>
+                            </Form>
+
+                            {!selectedMatterId ? (
+                                <div className="flex flex-col items-center justify-center rounded-2xl border border-slate-200/80 bg-white p-12 text-center shadow-xs dark:border-white/10 dark:bg-[#14161b]">
+                                    <div className="flex size-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                                        <FolderKanban className="size-7" />
+                                    </div>
+                                    <h3 className="mt-4 text-base font-bold text-slate-900 dark:text-white">
+                                        Pilih Perkara Terlebih Dahulu
+                                    </h3>
+                                    <p className="mt-1.5 max-w-md text-xs text-slate-500 dark:text-zinc-400">
+                                        Seluruh data keuangan perkara, invoice tagihan klien, panjar pengadilan, dan rincian disbursement disembunyikan. Silakan pilih nomor perkara atau nama klien pada menu filter di atas untuk memulai.
+                                    </p>
+                                </div>
+                            ) : (
+                                <>
+                                    {/* Client Matters Bento KPI Cards */}
+                                    {overview && (
+                                        <div className="space-y-2.5">
+                                            <section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+                                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                                    <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                                        <span className="text-[10px] font-bold tracking-wider uppercase">
+                                                            TOTAL TAGIHAN KLIEN
+                                                        </span>
+                                                        <Receipt className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
+                                                    </div>
+                                                    <div className="mt-1.5 flex items-baseline justify-between">
+                                                        <span className="font-mono text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
+                                                            {formatMoney(overview.invoiced_amount, currency)}
+                                                        </span>
+                                                    </div>
+                                                    <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
+                                                        <span>Invoice Terbit</span>
+                                                        <span className="font-semibold text-blue-600 dark:text-blue-400">Aktif</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                                    <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                                        <span className="text-[10px] font-bold tracking-wider uppercase">
+                                                            TERTAGIH RIIL (COLLECTED)
+                                                        </span>
+                                                        <Banknote className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                                    </div>
+                                                    <div className="mt-1.5 flex items-baseline justify-between">
+                                                        <span className="font-mono text-lg font-bold tracking-tight text-emerald-600 sm:text-xl dark:text-emerald-400">
+                                                            {formatMoney(overview.total_cash_inflow ?? overview.payment_received_amount, currency)}
+                                                        </span>
+                                                    </div>
+                                                    <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
+                                                        <span>Penerimaan Kas Klien</span>
+                                                        <span className="font-semibold text-emerald-600 dark:text-emerald-400">Lunas/DP</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                                    <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                                        <span className="text-[10px] font-bold tracking-wider uppercase">
+                                                            SISA PIUTANG (OUTSTANDING)
+                                                        </span>
+                                                        <CalendarClock className="size-3.5 text-amber-500 dark:text-amber-400" />
+                                                    </div>
+                                                    <div className="mt-1.5 flex items-baseline justify-between">
+                                                        <span className="font-mono text-lg font-bold tracking-tight text-amber-600 sm:text-xl dark:text-amber-400">
+                                                            {formatMoney(overview.receivable_amount, currency)}
+                                                        </span>
+                                                    </div>
+                                                    <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
+                                                        <span>Belum Dilunasi Klien</span>
+                                                        <span className="font-semibold text-amber-600 dark:text-amber-400">Berjalan</span>
+                                                    </div>
+                                                </div>
+
+                                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                                    <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
+                                                        <span className="text-[10px] font-bold tracking-wider uppercase">
+                                                            MARGIN LABA PERKARA
+                                                        </span>
+                                                        <DollarSign className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
+                                                    </div>
+                                                    <div className="mt-1.5 flex items-baseline justify-between">
+                                                        <span className="font-mono text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
+                                                            {formatMoney(overview.margin_amount, currency)}
+                                                        </span>
+                                                    </div>
+                                                    <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
+                                                        <span>Setelah Biaya Perkara</span>
+                                                        <span className="font-semibold text-slate-700 dark:text-zinc-300">Netto</span>
+                                                    </div>
+                                                </div>
+                                            </section>
+
+                                            {/* Toggle Button for Aging Report */}
+                                            <div className="flex items-center justify-between pt-0.5">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowDetailedAnalytics((prev) => !prev)}
+                                                    className="group inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300 dark:hover:bg-zinc-800/60"
+                                                >
+                                                    <span className="flex size-4 items-center justify-center rounded bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                                                        {showDetailedAnalytics ? <ChevronUp className="size-3" /> : <ChevronDown className="size-3" />}
+                                                    </span>
+                                                    <span>
+                                                        {showDetailedAnalytics ? 'Sembunyikan Analisis Umur Piutang' : 'Tampilkan Analisis Umur Piutang (Aging Report)'}
+                                                    </span>
+                                                </button>
+                                            </div>
+
+                                            {showDetailedAnalytics && overview.aging && (
+                                                <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                                    <span className="text-xs font-bold text-slate-900 uppercase dark:text-white">
+                                                        Klasifikasi Umur Piutang Klien (Aging Analysis)
+                                                    </span>
+                                                    <div className="mt-2.5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                                                        {Object.entries(overview.aging).map(([bracket, val]) => (
+                                                            <div key={bracket} className="rounded-lg bg-slate-50 p-2.5 text-center dark:bg-zinc-800/50">
+                                                                <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">{bracket}</span>
+                                                                <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                                    {formatMoney(Number(val), currency)}
+                                                                </p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Sub Tabs for Client Matters */}
+                                    <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto border-b border-slate-200/60 pb-2 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
+                                        <button
+                                            type="button"
+                                            onClick={() => setMatterTab('profitability')}
+                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                                matterTab === 'profitability'
+                                                    ? 'bg-blue-600 text-white shadow-2xs'
+                                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
+                                            }`}
+                                        >
+                                            <BarChart3 className="size-3" />
+                                            Profitabilitas Perkara ({profitability.length})
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setMatterTab('invoices')}
+                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                                matterTab === 'invoices'
+                                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
+                                            }`}
+                                        >
+                                            <ReceiptText className="size-3" />
+                                            Invoice Tagihan ({invoices.length})
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setMatterTab('quotations')}
+                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                                matterTab === 'quotations'
+                                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
+                                            }`}
+                                        >
+                                            <FilePlus2 className="size-3" />
+                                            Quotation ({quotations.length})
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setMatterTab('trust_funds')}
+                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                                matterTab === 'trust_funds'
+                                                    ? 'bg-cyan-600 text-white shadow-2xs'
+                                                    : 'border border-slate-200/70 bg-white text-cyan-700 hover:bg-cyan-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-cyan-400'
+                                            }`}
+                                        >
+                                            <Lock className="size-3" />
+                                            Dana Titipan Klien ({clientTrustFunds.length})
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setMatterTab('disbursements')}
+                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                                matterTab === 'disbursements'
+                                                    ? 'bg-rose-600 text-white shadow-2xs'
+                                                    : 'border border-slate-200/70 bg-white text-rose-700 hover:bg-rose-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-rose-400'
+                                            }`}
+                                        >
+                                            <WalletCards className="size-3" />
+                                            Biaya Perkara ({matterExpenses.length})
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setMatterTab('payments')}
+                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                                matterTab === 'payments'
+                                                    ? 'bg-emerald-600 text-white shadow-2xs'
+                                                    : 'border border-slate-200/70 bg-white text-emerald-700 hover:bg-emerald-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-emerald-400'
+                                            }`}
+                                        >
+                                            <Banknote className="size-3" />
+                                            Penerimaan Kas ({payments.length})
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setMatterTab('all')}
+                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                                matterTab === 'all'
+                                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
+                                            }`}
+                                        >
+                                            <Layers className="size-3" />
+                                            Semua Ledger Perkara
+                                        </button>
+                                    </div>
+
+                                    {/* Views for Scope 1 */}
+                                    {matterTab === 'profitability' && (
+                                        <ProfitabilityTable items={profitability} />
+                                    )}
+
+                                    {matterTab === 'trust_funds' && (
+                                        <ClientTrustView
+                                            trustSummary={
+                                                clientTrustSummary || {
+                                                    total_deposit_in: 0,
+                                                    total_disbursement_out: 0,
+                                                    net_trust_balance: 0,
+                                                    by_matter: [],
+                                                }
+                                            }
+                                            trustFunds={clientTrustFunds}
+                                            onOpenTrustModal={() => setModal('client_trust')}
+                                        />
+                                    )}
+
+                                    {(matterTab === 'invoices' ||
+                                        matterTab === 'quotations' ||
+                                        matterTab === 'disbursements' ||
+                                        matterTab === 'payments' ||
+                                        matterTab === 'all') && (
+                                        <div className="grid gap-3 lg:grid-cols-2">
+                                            {(matterTab === 'all' || matterTab === 'invoices') && (
+                                                <div className={matterTab === 'invoices' ? 'lg:col-span-2' : ''}>
+                                                    <Ledger
+                                                        title="Invoice Tagihan Klien"
+                                                        items={invoices}
+                                                        currency={currency}
+                                                        icon={ReceiptText}
+                                                        iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400"
+                                                        value={(i) => i.outstanding_amount ?? i.total_amount ?? 0}
+                                                        date={(i) => i.due_at}
+                                                        canTransition={can.invoiceTransition}
+                                                        canCreate={can.invoice}
+                                                        onCreate={() => setModal('invoice')}
+                                                        actionLabel="Buat Invoice Baru"
+                                                        emptyTitle="Belum Ada Invoice Tagihan"
+                                                        emptyDescription="Belum ada tagihan yang diterbitkan untuk perkara atau klien terpilih. Terbitkan invoice baru untuk mencatat honorarium dan termin pembayaran."
+                                                        onCancel={setCancelInvoice}
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {(matterTab === 'all' || matterTab === 'quotations') && (
+                                                <div className={matterTab === 'quotations' ? 'lg:col-span-2' : ''}>
+                                                    <Ledger
+                                                        title="Quotation & Penawaran Honorarium"
+                                                        items={quotations}
+                                                        currency={currency}
+                                                        icon={FilePlus2}
+                                                        iconBg="bg-slate-100 text-slate-700 dark:bg-zinc-800 dark:text-zinc-300"
+                                                        value={(i) => i.total_amount ?? 0}
+                                                        approveQuotations={can.quotationApprove}
+                                                        canTransition={can.invoiceTransition}
+                                                        canCreate={can.quotation}
+                                                        onCreate={() => setModal('quotation')}
+                                                        actionLabel="Buat Quotation Baru"
+                                                        emptyTitle="Belum Ada Quotation Terdaftar"
+                                                        emptyDescription="Belum ada proposal penawaran tarif jasa hukum atau estimasi biaya perkara yang diajukan ke calon klien."
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {(matterTab === 'all' || matterTab === 'disbursements') && (
+                                                <div className={matterTab === 'disbursements' ? 'lg:col-span-2' : ''}>
+                                                    <Ledger
+                                                        title="Biaya Perkara & Disbursement"
+                                                        items={matterExpenses}
+                                                        currency={currency}
+                                                        icon={WalletCards}
+                                                        iconBg="bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
+                                                        value={(i) => i.amount ?? 0}
+                                                        date={(i) => i.incurred_at}
+                                                        canCreate={can.expense}
+                                                        onCreate={() => setModal('expense')}
+                                                        onDeleteExpense={can.expense ? (exp) => setExpenseToDelete(exp) : undefined}
+                                                        actionLabel="Catat Biaya Perkara"
+                                                        emptyTitle="Belum Ada Catatan Biaya Perkara"
+                                                        emptyDescription="Belum ada pengeluaran operasional perkara seperti panjar pengadilan, materai, akomodasi, atau transportasi yang dicatat."
+                                                    />
+                                                </div>
+                                            )}
+
+                                            {(matterTab === 'all' || matterTab === 'payments') && (
+                                                <div className={matterTab === 'payments' ? 'lg:col-span-2' : ''}>
+                                                    <PaymentLedger
+                                                        items={payments}
+                                                        currency={currency}
+                                                        canManage={can.payment}
+                                                        onCreate={() => setModal('payment')}
+                                                        actionLabel="Catat Penerimaan Kas"
+                                                        emptyTitle="Belum Ada Penerimaan Kas"
+                                                        emptyDescription="Belum ada riwayat transaksi pembayaran invoice, penerimaan retainer fee, atau transfer kas dari klien yang dicatat."
+                                                        onReverse={setReversePayment}
+                                                        onRefund={setRefundPayment}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </>
+                            )}
                         </div>
                     )}
 
-                    {/* Segmented Tab Navigation for Ledgers */}
-                    <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto border-b border-slate-200/60 pb-2 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('all')}
-                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                activeTab === 'all'
-                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
-                            }`}
-                        >
-                            <Layers className="size-3" />
-                            Semua Ledger
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('invoices')}
-                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                activeTab === 'invoices'
-                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
-                            }`}
-                        >
-                            <ReceiptText className="size-3" />
-                            Invoice Tagihan ({invoices.length})
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('quotations')}
-                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                activeTab === 'quotations'
-                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
-                            }`}
-                        >
-                            <FilePlus2 className="size-3" />
-                            Quotation ({quotations.length})
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('expenses')}
-                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                activeTab === 'expenses'
-                                    ? 'bg-rose-600 text-white shadow-2xs'
-                                    : 'border border-slate-200/70 bg-white text-rose-700 hover:bg-rose-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-rose-400'
-                            }`}
-                        >
-                            <WalletCards className="size-3" />
-                            Biaya Perkara ({expenses.length})
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('payments')}
-                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                activeTab === 'payments'
-                                    ? 'bg-emerald-600 text-white shadow-2xs'
-                                    : 'border border-slate-200/70 bg-white text-emerald-700 hover:bg-emerald-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-emerald-400'
-                            }`}
-                        >
-                            <Banknote className="size-3" />
-                            Penerimaan Kas ({payments.length})
-                        </button>
-                    </div>
+                    {/* ========================================================================= */}
+                    {/* SCOPE 2: OPERASIONAL KANTOR & FIRMA */}
+                    {/* ========================================================================= */}
+                    {scope === 'office_operations' && (
+                        <div className="space-y-3.5">
+                            {/* Office Operations KPI Banner */}
+                            <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <span className="text-[10px] font-bold text-blue-600 uppercase dark:text-blue-400">Kas &amp; Bank Operasional</span>
+                                    <p className="mt-1 font-mono text-base font-bold text-slate-900 dark:text-white">
+                                        {formatMoney(totalOperationalCashBank, 'IDR')}
+                                    </p>
+                                    <span className="text-[9.5px] text-slate-400">Kas Kantor + Giro Bank</span>
+                                </div>
 
-                    {/* 4 Ledgers Grid */}
-                    <div className="grid gap-3 lg:grid-cols-2">
-                        {/* 1. Invoice Terbaru */}
-                        {(activeTab === 'all' || activeTab === 'invoices') && (
-                            <div
-                                className={
-                                    activeTab === 'invoices'
-                                        ? 'lg:col-span-2'
-                                        : ''
-                                }
-                            >
-                                <Ledger
-                                    title="Invoice Tagihan Klien"
-                                    items={invoices}
-                                    currency={currency}
-                                    icon={ReceiptText}
-                                    iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400"
-                                    value={(i) =>
-                                        i.outstanding_amount ??
-                                        i.total_amount ??
-                                        0
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <span className="text-[10px] font-bold text-purple-600 uppercase dark:text-purple-400">Titipan Klien di Bank</span>
+                                    <p className="mt-1 font-mono text-base font-bold text-purple-600 dark:text-purple-400">
+                                        {formatMoney(totalClientTrustBank, 'IDR')}
+                                    </p>
+                                    <span className="text-[9.5px] text-slate-400">Rekening Escrow Panjar</span>
+                                </div>
+
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <span className="text-[10px] font-bold text-rose-500 uppercase">Biaya Rutin Kantor</span>
+                                    <p className="mt-1 font-mono text-base font-bold text-rose-600 dark:text-rose-400">
+                                        {formatMoney(totalOfficeExpenseSum, 'IDR')}
+                                    </p>
+                                    <span className="text-[9.5px] text-slate-400">Non-Perkara</span>
+                                </div>
+
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <span className="text-[10px] font-bold text-indigo-500 uppercase">Total Payroll Gaji</span>
+                                    <p className="mt-1 font-mono text-base font-bold text-indigo-600 dark:text-indigo-400">
+                                        {formatMoney(totalPayrollSum, 'IDR')}
+                                    </p>
+                                    <span className="text-[9.5px] text-slate-400">Staf &amp; Honor Advokat</span>
+                                </div>
+
+                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <span className="text-[10px] font-bold text-amber-500 uppercase">Utang Talangan Partner</span>
+                                    <p className="mt-1 font-mono text-base font-bold text-amber-600 dark:text-amber-400">
+                                        {formatMoney(totalPartnerAdvDue, 'IDR')}
+                                    </p>
+                                    <span className="text-[9.5px] text-slate-400">Kewajiban ke Partner</span>
+                                </div>
+                            </section>
+
+                            {/* Sub Tabs for Office Operations */}
+                            <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto border-b border-slate-200/60 pb-2 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
+                                <button
+                                    type="button"
+                                    onClick={() => setOfficeTab('accounts')}
+                                    className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                        officeTab === 'accounts'
+                                            ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                            : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
+                                    }`}
+                                >
+                                    <Building className="size-3" />
+                                    Rekening Kas &amp; Bank ({accounts.length})
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setOfficeTab('office_expenses')}
+                                    className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                        officeTab === 'office_expenses'
+                                            ? 'bg-rose-600 text-white shadow-2xs'
+                                            : 'border border-slate-200/70 bg-white text-rose-700 hover:bg-rose-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-rose-400'
+                                    }`}
+                                >
+                                    <WalletCards className="size-3" />
+                                    Beban Operasional Kantor ({officeExpenses.length})
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setOfficeTab('payroll')}
+                                    className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                        officeTab === 'payroll'
+                                            ? 'bg-indigo-600 text-white shadow-2xs'
+                                            : 'border border-slate-200/70 bg-white text-indigo-700 hover:bg-indigo-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-indigo-400'
+                                    }`}
+                                >
+                                    <Users className="size-3" />
+                                    Penggajian &amp; Slip Gaji ({payrolls.length})
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setOfficeTab('partner_advances')}
+                                    className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                        officeTab === 'partner_advances'
+                                            ? 'bg-amber-600 text-white shadow-2xs'
+                                            : 'border border-slate-200/70 bg-white text-amber-700 hover:bg-amber-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-amber-400'
+                                    }`}
+                                >
+                                    <HandCoins className="size-3" />
+                                    Talangan &amp; Hak Partner ({partnerAdvances.length})
+                                </button>
+                            </div>
+
+                            {/* Views for Scope 2 */}
+                            {officeTab === 'accounts' && (
+                                <AccountsView
+                                    accounts={accounts}
+                                    transfers={transfers}
+                                    onOpenAccountModal={() => setModal('account')}
+                                    onOpenTransferModal={() => setModal('transfer')}
+                                />
+                            )}
+
+                            {officeTab === 'office_expenses' && (
+                                <div className="grid gap-3">
+                                    <Ledger
+                                        title="Beban Operasional Rutin Kantor (Non-Perkara)"
+                                        items={officeExpenses}
+                                        currency={currency}
+                                        icon={WalletCards}
+                                        iconBg="bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
+                                        value={(i) => i.amount ?? 0}
+                                        date={(i) => i.incurred_at}
+                                        canCreate={can.expense}
+                                        onCreate={() => setModal('expense')}
+                                        onDeleteExpense={can.expense ? (exp) => setExpenseToDelete(exp) : undefined}
+                                        actionLabel="Catat Biaya Kantor"
+                                        emptyTitle="Belum Ada Biaya Operasional Kantor"
+                                        emptyDescription="Belum ada pengeluaran rutin kantor seperti sewa gedung, listrik, internet, ATK, atau langganan software yang dicatat."
+                                    />
+                                </div>
+                            )}
+
+                            {officeTab === 'payroll' && (
+                                <PayrollView
+                                    payrolls={payrolls}
+                                    onOpenPayrollModal={() => setModal('payroll')}
+                                />
+                            )}
+
+                            {officeTab === 'partner_advances' && (
+                                <PartnerAdvancesView
+                                    advancesSummary={partnerAdvances}
+                                    transactions={partnerTransactions}
+                                    onOpenPartnerModal={() => setModal('partner_transaction')}
+                                />
+                            )}
+                        </div>
+                    )}
+
+                    {/* ========================================================================= */}
+                    {/* SCOPE 3: LAPORAN KEUANGAN & NERACA */}
+                    {/* ========================================================================= */}
+                    {scope === 'financial_reports' && (
+                        <div className="space-y-3.5">
+                            <ReportsView
+                                incomeStatement={
+                                    incomeStatement || {
+                                        year: new Date().getFullYear(),
+                                        months: [],
+                                        summary: {
+                                            total_revenue: 0,
+                                            total_operational_expense: 0,
+                                            total_payroll_expense: 0,
+                                            total_expenses: 0,
+                                            net_profit: 0,
+                                        },
                                     }
-                                    date={(i) => i.due_at}
-                                    canTransition={can.invoiceTransition}
-                                    canCreate={can.invoice}
-                                    onCreate={() => setModal('invoice')}
-                                    actionLabel="Buat Invoice Baru"
-                                    emptyTitle="Belum Ada Invoice Tagihan"
-                                    emptyDescription="Belum ada tagihan yang diterbitkan untuk perkara atau klien terpilih. Terbitkan invoice baru untuk mencatat honorarium dan termin pembayaran."
-                                    onCancel={setCancelInvoice}
-                                />
-                            </div>
-                        )}
-
-                        {/* 2. Quotation Terbaru */}
-                        {(activeTab === 'all' ||
-                            activeTab === 'quotations') && (
-                            <div
-                                className={
-                                    activeTab === 'quotations'
-                                        ? 'lg:col-span-2'
-                                        : ''
                                 }
-                            >
-                                <Ledger
-                                    title="Quotation & Penawaran Honorarium"
-                                    items={quotations}
-                                    currency={currency}
-                                    icon={FilePlus2}
-                                    iconBg="bg-slate-100 text-slate-700 dark:bg-zinc-800 dark:text-zinc-300"
-                                    value={(i) => i.total_amount ?? 0}
-                                    approveQuotations={can.quotationApprove}
-                                    canTransition={can.invoiceTransition}
-                                    canCreate={can.quotation}
-                                    onCreate={() => setModal('quotation')}
-                                    actionLabel="Buat Quotation Baru"
-                                    emptyTitle="Belum Ada Quotation Terdaftar"
-                                    emptyDescription="Belum ada proposal penawaran tarif jasa hukum atau estimasi biaya perkara yang diajukan ke calon klien."
-                                />
-                            </div>
-                        )}
-
-                        {/* 3. Biaya Perkara & Disbursement */}
-                        {(activeTab === 'all' || activeTab === 'expenses') && (
-                            <div
-                                className={
-                                    activeTab === 'expenses'
-                                        ? 'lg:col-span-2'
-                                        : ''
-                                }
-                            >
-                                <Ledger
-                                    title="Biaya Perkara & Disbursement"
-                                    items={expenses}
-                                    currency={currency}
-                                    icon={WalletCards}
-                                    iconBg="bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400"
-                                    value={(i) => i.amount ?? 0}
-                                    date={(i) => i.incurred_at}
-                                    canCreate={can.expense}
-                                    onCreate={() => setModal('expense')}
-                                    onDeleteExpense={
-                                        can.expense
-                                            ? (exp) => setExpenseToDelete(exp)
-                                            : undefined
+                                balanceSheet={
+                                    balanceSheet || {
+                                        assets: {
+                                            operational_cash_bank: 0,
+                                            client_trust_bank: 0,
+                                            tax_credit_pph23: 0,
+                                            total_assets: 0,
+                                        },
+                                        liabilities: {
+                                            partner_advances_due: 0,
+                                            unpaid_payroll: 0,
+                                            client_trust_liability: 0,
+                                            total_liabilities: 0,
+                                        },
+                                        equity: {
+                                            retained_earnings: 0,
+                                            total_equity: 0,
+                                            total_liabilities_and_equity: 0,
+                                        },
+                                        is_balanced: true,
                                     }
-                                    actionLabel="Catat Biaya Perkara"
-                                    emptyTitle="Belum Ada Catatan Biaya Perkara"
-                                    emptyDescription="Belum ada pengeluaran operasional perkara seperti panjar pengadilan, materai, akomodasi, atau transportasi yang dicatat."
-                                />
-                            </div>
-                        )}
-
-                        {/* 4. Riwayat Penerimaan Pembayaran */}
-                        {(activeTab === 'all' || activeTab === 'payments') && (
-                            <div
-                                className={
-                                    activeTab === 'payments'
-                                        ? 'lg:col-span-2'
-                                        : ''
                                 }
-                            >
-                                <PaymentLedger
-                                    items={payments}
-                                    currency={currency}
-                                    canManage={can.payment}
-                                    onCreate={() => setModal('payment')}
-                                    actionLabel="Catat Penerimaan Kas"
-                                    emptyTitle="Belum Ada Penerimaan Kas"
-                                    emptyDescription="Belum ada riwayat transaksi pembayaran invoice, penerimaan retainer fee, atau transfer kas dari klien yang dicatat."
-                                    onReverse={setReversePayment}
-                                    onRefund={setRefundPayment}
-                                />
-                            </div>
-                        )}
-                    </div>
+                            />
+                        </div>
+                    )}
                 </main>
             </div>
 
             {/* Dialogs */}
             <FinanceDialog
-                type={modal}
+                type={
+                    modal === 'invoice' ||
+                    modal === 'quotation' ||
+                    modal === 'expense' ||
+                    modal === 'payment'
+                        ? modal
+                        : null
+                }
                 onClose={() => setModal(null)}
                 matters={matters}
                 clients={clients}
                 invoices={invoices}
+                accounts={accounts}
+                staffUsers={staffUsers}
+            />
+
+            <CreateAccountDialog
+                open={modal === 'account'}
+                onOpenChange={(open) => setModal(open ? 'account' : null)}
+                partners={partnersList}
+            />
+
+            <CreateTransferDialog
+                open={modal === 'transfer'}
+                onOpenChange={(open) => setModal(open ? 'transfer' : null)}
+                accounts={accounts}
+            />
+
+            <CreatePartnerTransactionDialog
+                open={modal === 'partner_transaction'}
+                onOpenChange={(open) =>
+                    setModal(open ? 'partner_transaction' : null)
+                }
+                partners={partnersList}
+                matters={matters}
+                accounts={accounts}
+            />
+
+            <CreateClientTrustDialog
+                open={modal === 'client_trust'}
+                onOpenChange={(open) =>
+                    setModal(open ? 'client_trust' : null)
+                }
+                clients={clients}
+                matters={matters}
+                trustAccounts={trustAccountsList}
+            />
+
+            <CreatePayrollDialog
+                open={modal === 'payroll'}
+                onOpenChange={(open) => setModal(open ? 'payroll' : null)}
+                staffUsers={staffUsers}
+                accounts={accounts}
             />
             <ReversePaymentDialog
                 payment={reversePayment}
@@ -1640,12 +2038,26 @@ function FinanceDialog({
     matters,
     clients,
     invoices,
+    accounts = [],
+    staffUsers = [],
 }: {
-    type: 'invoice' | 'quotation' | 'expense' | 'payment' | null;
+    type:
+        | 'invoice'
+        | 'quotation'
+        | 'expense'
+        | 'payment'
+        | 'account'
+        | 'transfer'
+        | 'partner_transaction'
+        | 'client_trust'
+        | 'payroll'
+        | null;
     onClose: () => void;
     matters: Matter[];
     clients: { id: string; display_name: string }[];
     invoices: LedgerItem[];
+    accounts?: FinancialAccountItem[];
+    staffUsers?: { id: number; name: string }[];
 }) {
     const [lineItems, setLineItems] = useState([
         { description: '', quantity: '1', unitAmount: '' },
@@ -1693,7 +2105,7 @@ function FinanceDialog({
         payment: Banknote,
     };
 
-    const DialogIcon = dialogIcons[type];
+    const DialogIcon = (dialogIcons as any)[type] || ReceiptText;
 
     return (
         <Dialog open onOpenChange={onClose}>
@@ -1705,7 +2117,7 @@ function FinanceDialog({
                         </div>
                         <div>
                             <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                {dialogTitles[type]}
+                                {(dialogTitles as any)[type] || 'Transaksi Keuangan'}
                             </DialogTitle>
                             <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
                                 Lengkapi formulir transaksi keuangan berikut.
@@ -1731,7 +2143,7 @@ function FinanceDialog({
 
                             <SelectField
                                 name="client_id"
-                                label="Klien"
+                                label="Klien (Client)"
                                 clients={clients}
                                 required={!isExpense}
                             />
@@ -1740,29 +2152,44 @@ function FinanceDialog({
                                 <>
                                     <Field
                                         name="title"
-                                        label="Judul Tagihan / Penawaran"
-                                        placeholder="Contoh: Honorarium Jasa Hukum Tahap Mediasi"
+                                        label="Judul Tagihan / Quotation"
+                                        placeholder="cth: Tagihan Honorarium Retainer Bulan Juni"
                                         required
                                     />
-                                    {type === 'quotation' && (
+                                    <div className="grid gap-2.5 sm:grid-cols-2">
                                         <Field
-                                            name="conflict_check_id"
-                                            label="ID Conflict Check (Wajib jika tanpa matter)"
-                                            placeholder="Masukkan ID conflict check terverifikasi"
+                                            name="currency"
+                                            label="Mata Uang"
+                                            defaultValue="IDR"
+                                            required
                                         />
-                                    )}
+                                        <Field
+                                            name={
+                                                type === 'invoice'
+                                                    ? 'due_at'
+                                                    : 'valid_until'
+                                            }
+                                            label={
+                                                type === 'invoice'
+                                                    ? 'Jatuh Tempo'
+                                                    : 'Berlaku Hingga'
+                                            }
+                                            type="date"
+                                            required
+                                        />
+                                    </div>
 
-                                    {/* Line Items Builder */}
+                                    {/* Line Items Dynamic Builder */}
                                     <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-xs font-semibold text-slate-900 dark:text-white">
-                                                Rincian Item Jasa / Biaya
-                                            </span>
+                                            <Label className="text-xs font-semibold text-slate-900 dark:text-white">
+                                                Rincian Item (Line Items)
+                                            </Label>
                                             <Button
                                                 type="button"
                                                 size="sm"
                                                 variant="outline"
-                                                className="h-6.5 rounded-lg border-slate-200 bg-white px-2 text-[10px] font-semibold hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d]"
+                                                className="h-6 rounded-md px-2 text-[10.5px]"
                                                 onClick={() =>
                                                     setLineItems((items) => [
                                                         ...items,
@@ -1908,88 +2335,91 @@ function FinanceDialog({
                                                                                 items.filter(
                                                                                     (
                                                                                         _,
-                                                                                        idx,
+                                                                                        i,
                                                                                     ) =>
-                                                                                        idx !==
+                                                                                        i !==
                                                                                         index,
                                                                                 ),
                                                                         )
                                                                     }
                                                                 >
-                                                                    <Trash2 className="size-3" />
+                                                                    <Trash2 className="size-3.5" />
                                                                 </Button>
                                                             )}
                                                         </div>
-                                                        {rowTotal > 0 && (
-                                                            <div className="flex justify-end text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
-                                                                Subtotal:{' '}
-                                                                <span className="ml-1 font-mono text-slate-800 dark:text-white">
-                                                                    {formatMoney(
-                                                                        rowTotal,
-                                                                        'IDR',
-                                                                    )}
-                                                                </span>
-                                                            </div>
-                                                        )}
+                                                        <div className="flex justify-end text-[10px] font-mono text-slate-500 dark:text-zinc-400">
+                                                            Subtotal:{' '}
+                                                            {formatMoney(
+                                                                rowTotal,
+                                                                'IDR',
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 );
                                             })}
                                         </div>
                                     </div>
 
-                                    {/* Discount & Tax Rates */}
+                                    {/* Discount & Tax Row */}
                                     <div className="grid gap-2.5 sm:grid-cols-2">
                                         <div className="grid gap-1">
-                                            <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                                Diskon Potongan (IDR)
+                                            <Label
+                                                htmlFor="discount_amount"
+                                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                                            >
+                                                Diskon (IDR)
                                             </Label>
                                             <Input
+                                                id="discount_amount"
                                                 name="discount_amount"
                                                 type="number"
                                                 min="0"
+                                                placeholder="0"
                                                 value={discountAmount}
                                                 onChange={(e) =>
                                                     setDiscountAmount(
                                                         e.target.value,
                                                     )
                                                 }
-                                                placeholder="0"
-                                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs dark:border-white/10 dark:bg-[#121418]"
+                                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs font-mono dark:border-white/10 dark:bg-[#121418]"
                                             />
                                         </div>
                                         <div className="grid gap-1">
-                                            <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                                Tarif Pajak PPN (%)
+                                            <Label
+                                                htmlFor="tax_rate"
+                                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                                            >
+                                                Tarif PPN (%)
                                             </Label>
                                             <Input
+                                                id="tax_rate"
                                                 name="tax_rate"
                                                 type="number"
-                                                step="0.1"
                                                 min="0"
                                                 max="100"
+                                                placeholder="11"
                                                 value={taxRate}
                                                 onChange={(e) =>
                                                     setTaxRate(e.target.value)
                                                 }
-                                                placeholder="11"
-                                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs dark:border-white/10 dark:bg-[#121418]"
+                                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs font-mono dark:border-white/10 dark:bg-[#121418]"
                                             />
                                         </div>
                                     </div>
 
-                                    {/* Live Calculation Preview Card */}
-                                    <div className="space-y-1.5 rounded-lg border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-900/30 dark:bg-blue-950/20">
-                                        <div className="flex items-center justify-between text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                                            <span>Subtotal Item:</span>
-                                            <span className="font-mono">
+                                    {/* Realtime Grand Total Summary Card */}
+                                    <div className="space-y-1 rounded-lg border border-blue-100 bg-blue-50/50 p-2.5 dark:border-blue-900/30 dark:bg-blue-950/20">
+                                        <div className="flex items-center justify-between text-xs text-slate-600 dark:text-zinc-300">
+                                            <span>Subtotal:</span>
+                                            <span className="font-mono font-medium">
                                                 {formatMoney(subtotal, 'IDR')}
                                             </span>
                                         </div>
                                         {discount > 0 && (
-                                            <div className="flex items-center justify-between text-xs font-medium text-rose-600 dark:text-rose-400">
-                                                <span>Diskon Potongan:</span>
-                                                <span className="font-mono">
-                                                    -{' '}
+                                            <div className="flex items-center justify-between text-xs text-emerald-600 dark:text-emerald-400">
+                                                <span>Diskon:</span>
+                                                <span className="font-mono font-medium">
+                                                    -
                                                     {formatMoney(
                                                         discount,
                                                         'IDR',
@@ -1997,12 +2427,10 @@ function FinanceDialog({
                                                 </span>
                                             </div>
                                         )}
-                                        <div className="flex items-center justify-between text-xs font-medium text-slate-600 dark:text-zinc-400">
-                                            <span>
-                                                PPN ({taxRate || '0'}%):
-                                            </span>
-                                            <span className="font-mono">
-                                                + {formatMoney(tax, 'IDR')}
+                                        <div className="flex items-center justify-between text-xs text-slate-600 dark:text-zinc-300">
+                                            <span>PPN ({taxRate || 0}%):</span>
+                                            <span className="font-mono font-medium">
+                                                {formatMoney(tax, 'IDR')}
                                             </span>
                                         </div>
                                         <div className="flex items-center justify-between border-t border-blue-200/80 pt-1.5 text-xs font-bold text-blue-700 dark:border-blue-900/60 dark:text-blue-400">
@@ -2020,6 +2448,23 @@ function FinanceDialog({
                             {isExpense && (
                                 <>
                                     <div className="grid gap-2.5 sm:grid-cols-2">
+                                        <div className="grid gap-1">
+                                            <Label htmlFor="charge_to" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                Beban Biaya (Charge To) *
+                                            </Label>
+                                            <div className="relative mt-0.5">
+                                                <select
+                                                    id="charge_to"
+                                                    name="charge_to"
+                                                    defaultValue="office"
+                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                                >
+                                                    <option value="office">Beban Operasional Kantor</option>
+                                                    <option value="client">Reimbursement Klien</option>
+                                                </select>
+                                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                            </div>
+                                        </div>
                                         <Field
                                             name="category"
                                             label="Kategori Biaya"
@@ -2027,24 +2472,64 @@ function FinanceDialog({
                                             placeholder="Biaya PNBP, Saksi, Notaris..."
                                             required
                                         />
+                                    </div>
+                                    <div className="grid gap-2.5 sm:grid-cols-2">
                                         <Field
                                             name="incurred_at"
                                             label="Tanggal Biaya"
                                             type="date"
                                             required
                                         />
+                                        <Field
+                                            name="amount"
+                                            label="Nominal Pengeluaran (IDR)"
+                                            type="number"
+                                            placeholder="0"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="grid gap-2.5 sm:grid-cols-2">
+                                        <div className="grid gap-1">
+                                            <Label htmlFor="account_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                Sumber Kas / Rekening (Opsional)
+                                            </Label>
+                                            <div className="relative mt-0.5">
+                                                <select
+                                                    id="account_id"
+                                                    name="account_id"
+                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                                >
+                                                    <option value="">Pilih Rekening Kas/Bank</option>
+                                                    {accounts.map((a) => (
+                                                        <option key={a.id} value={a.id}>{a.name}</option>
+                                                    ))}
+                                                </select>
+                                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                            </div>
+                                        </div>
+                                        <div className="grid gap-1">
+                                            <Label htmlFor="partner_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                Ditalangi Partner (Opsional)
+                                            </Label>
+                                            <div className="relative mt-0.5">
+                                                <select
+                                                    id="partner_id"
+                                                    name="partner_id"
+                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                                >
+                                                    <option value="">Bukan Talangan Partner</option>
+                                                    {staffUsers.map((u) => (
+                                                        <option key={u.id} value={u.id}>{u.name}</option>
+                                                    ))}
+                                                </select>
+                                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                            </div>
+                                        </div>
                                     </div>
                                     <Field
                                         name="description"
                                         label="Deskripsi Pengeluaran"
                                         placeholder="Rincian pembayaran biaya pendaftaran..."
-                                        required
-                                    />
-                                    <Field
-                                        name="amount"
-                                        label="Nominal Pengeluaran (IDR)"
-                                        type="number"
-                                        placeholder="0"
                                         required
                                     />
                                     <div className="grid gap-1">
@@ -2075,17 +2560,43 @@ function FinanceDialog({
                                     <div className="grid gap-2.5 sm:grid-cols-2">
                                         <Field
                                             name="amount"
-                                            label="Nominal Pembayaran (IDR)"
+                                            label="Nominal Pembayaran Bersih (IDR)"
                                             type="number"
                                             placeholder="0"
                                             required
                                         />
+                                        <Field
+                                            name="tax_withheld"
+                                            label="Potongan Pajak PPh 23 (2%)"
+                                            type="number"
+                                            placeholder="0"
+                                        />
+                                    </div>
+                                    <div className="grid gap-2.5 sm:grid-cols-2">
                                         <Field
                                             name="method"
                                             label="Metode Pembayaran"
                                             defaultValue="Transfer bank"
                                             required
                                         />
+                                        <div className="grid gap-1">
+                                            <Label htmlFor="pay_account_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                Rekening Kas/Bank Penerima
+                                            </Label>
+                                            <div className="relative mt-0.5">
+                                                <select
+                                                    id="pay_account_id"
+                                                    name="account_id"
+                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                                >
+                                                    <option value="">Pilih Rekening Penerimaan</option>
+                                                    {accounts.map((a) => (
+                                                        <option key={a.id} value={a.id}>{a.name}</option>
+                                                    ))}
+                                                </select>
+                                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                            </div>
+                                        </div>
                                     </div>
                                     <Field
                                         name="received_at"
@@ -2341,12 +2852,12 @@ function SelectField({
             >
                 {label} {required && <span className="text-rose-500">*</span>}
             </Label>
-            <div className="relative">
+            <div className="relative mt-0.5">
                 <select
                     id={name}
                     name={name}
                     required={required}
-                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
                 >
                     <option value="">Pilih {label.toLowerCase()}</option>
                     {data.map((item) => (
@@ -2357,7 +2868,7 @@ function SelectField({
                         </option>
                     ))}
                 </select>
-                <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
+                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
             </div>
         </div>
     );

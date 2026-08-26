@@ -83,6 +83,7 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::get('calendar/export/ics', [CalendarController::class, 'exportIcs'])->name('calendar.export.ics');
     Route::post('calendar/feed/rotate', [CalendarController::class, 'rotateToken'])->name('calendar.feed.rotate');
     Route::get('finance', [FinanceController::class, 'index'])->name('finance.index');
+    Route::get('finance/export/excel', [FinanceController::class, 'exportExcel'])->name('finance.export.excel');
     Route::get('finance/invoices/{invoice}', [FinanceDetailController::class, 'invoice'])->name('finance.invoices.show');
     Route::get('finance/payments/{payment}', [FinanceDetailController::class, 'payment'])->name('finance.payments.show');
     Route::get('finance/payments/{payment}/receipt', [FinanceDetailController::class, 'paymentReceipt'])->name('finance.payments.receipt');
@@ -97,6 +98,13 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::post('finance/payments/{payment}/refund', [FinanceController::class, 'refundPayment'])->name('finance.payments.refund');
     Route::get('finance/invoices/{invoice}/pdf', [FinanceController::class, 'downloadInvoice'])->name('finance.invoices.pdf');
     Route::get('finance/quotations/{quotation}/pdf', [FinanceController::class, 'downloadQuotation'])->name('finance.quotations.pdf');
+    Route::post('finance/accounts', [FinanceController::class, 'storeAccount'])->name('finance.accounts.store');
+    Route::post('finance/transfers', [FinanceController::class, 'storeTransfer'])->name('finance.transfers.store');
+    Route::post('finance/partner-transactions', [FinanceController::class, 'storePartnerTransaction'])->name('finance.partner-transactions.store');
+    Route::post('finance/client-trust-funds', [FinanceController::class, 'storeClientTrustFund'])->name('finance.client-trust-funds.store');
+    Route::post('finance/payrolls', [FinanceController::class, 'storePayroll'])->name('finance.payrolls.store');
+    Route::patch('finance/payrolls/{payroll}/status', [FinanceController::class, 'updatePayrollStatus'])->name('finance.payrolls.status');
+    Route::get('finance/payrolls/{payroll}/slip', [FinanceController::class, 'downloadPayslip'])->name('finance.payrolls.slip');
     Route::get('governance', [GovernanceController::class, 'index'])->name('governance.index');
     Route::post('governance/correspondences', [GovernanceController::class, 'storeCorrespondence'])->name('governance.correspondences.store');
     Route::get('governance/correspondences/{correspondence}', [GovernanceController::class, 'showCorrespondence'])->name('governance.correspondences.show');

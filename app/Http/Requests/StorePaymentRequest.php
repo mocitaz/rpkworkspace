@@ -25,8 +25,12 @@ class StorePaymentRequest extends FormRequest
         return [
             'client_id' => ['required', 'exists:clients,id'],
             'matter_id' => ['nullable', 'exists:matters,id'],
+            'account_id' => ['nullable', 'exists:financial_accounts,id'],
             'currency' => ['required', 'string', 'size:3'],
             'amount' => ['required', 'integer', 'min:1'],
+            'gross_amount' => ['nullable', 'integer', 'min:0'],
+            'tax_withheld' => ['nullable', 'integer', 'min:0'],
+            'net_amount' => ['nullable', 'integer', 'min:0'],
             'method' => ['required', 'string', 'max:100'],
             'reference_number' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:2000'],
