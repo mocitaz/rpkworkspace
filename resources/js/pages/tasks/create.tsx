@@ -133,15 +133,9 @@ export default function TaskCreate({
                     {/* Header Navigation */}
                     <div className="flex flex-col justify-between gap-4 border-b border-slate-200/70 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                                <span className="inline-flex items-center gap-1.5 rounded-md bg-amber-500/10 px-2 py-0.5 font-mono text-xs font-semibold text-amber-700 dark:bg-amber-400/10 dark:text-amber-300">
-                                    <Sparkles className="size-3" />
-                                    {defaultTaskNumber}
-                                </span>
-                                <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                    Delegasi & Penugasan Baru
-                                </h1>
-                            </div>
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                                Delegasi &amp; Penugasan Baru
+                            </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
                                 Delegasikan instruksi pekerjaan hukum, riset, sidang, atau administrasi kantor kepada tim.
                             </p>
