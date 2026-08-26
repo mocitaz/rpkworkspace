@@ -1,4 +1,13 @@
 @extends('errors.layout')
+
 @section('code', '404')
-@section('title', 'Halaman tidak ditemukan')
-@section('message', 'Alamat yang Anda buka tidak tersedia, telah dipindahkan, atau berada di luar akses Anda.')
+@section('badge_label', 'NOT FOUND')
+@section('title', 'Halaman Tidak Ditemukan')
+@section('message', 'Alamat yang Anda tuju tidak tersedia, telah dipindahkan, atau berada di luar jangkauan sistem RPK Workspace.')
+
+@section('icon')
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"></circle>
+    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+</svg>
+@endsection
