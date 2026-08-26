@@ -25,11 +25,14 @@ interface UserPickerProps {
     error?: boolean;
 }
 
-function getInitials(name?: string): string {
-    if (!name) return '??';
-    const parts = name.trim().split(/\s+/);
-    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+function getAvatarUrl(avatarPath?: string | null): string {
+    if (!avatarPath || avatarPath.trim() === '') {
+        return '/images/default-avatar.svg';
+    }
+    if (avatarPath.startsWith('http') || avatarPath.startsWith('/')) {
+        return avatarPath;
+    }
+    return `/storage/${avatarPath}`;
 }
 
 export default function UserPicker({
@@ -138,19 +141,18 @@ export default function UserPicker({
                 <div className="flex min-w-0 flex-1 items-center gap-2.5">
                     {selectedUser ? (
                         <>
-                            <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
-                                {selectedUser.avatar_path ? (
-                                    <AvatarImage
-                                        src={
-                                            selectedUser.avatar_path.startsWith('http')
-                                                ? selectedUser.avatar_path
-                                                : `/storage/${selectedUser.avatar_path}`
-                                        }
-                                        alt={selectedUser.name || 'User'}
+                            <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 bg-slate-100 dark:border-white/10 dark:bg-zinc-800">
+                                <AvatarImage
+                                    src={getAvatarUrl(selectedUser.avatar_path)}
+                                    alt={selectedUser.name || 'User'}
+                                    className="object-cover"
+                                />
+                                <AvatarFallback className="bg-slate-100 dark:bg-zinc-800">
+                                    <img
+                                        src="/images/default-avatar.svg"
+                                        alt="Default Avatar"
+                                        className="size-full object-cover"
                                     />
-                                ) : null}
-                                <AvatarFallback className="bg-blue-100 text-[10px] font-bold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                                    {getInitials(selectedUser.name)}
                                 </AvatarFallback>
                             </Avatar>
                             <div className="min-w-0 flex-1 truncate">
@@ -275,19 +277,18 @@ export default function UserPicker({
                                         }`}
                                     >
                                         <div className="flex min-w-0 items-center gap-2.5">
-                                            <Avatar className="size-7 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
-                                                {user.avatar_path ? (
-                                                    <AvatarImage
-                                                        src={
-                                                            user.avatar_path.startsWith('http')
-                                                                ? user.avatar_path
-                                                                : `/storage/${user.avatar_path}`
-                                                        }
-                                                        alt={user.name || 'User'}
+                                            <Avatar className="size-7 shrink-0 rounded-full border border-slate-200 bg-slate-100 dark:border-white/10 dark:bg-zinc-800">
+                                                <AvatarImage
+                                                    src={getAvatarUrl(user.avatar_path)}
+                                                    alt={user.name || 'User'}
+                                                    className="object-cover"
+                                                />
+                                                <AvatarFallback className="bg-slate-100 dark:bg-zinc-800">
+                                                    <img
+                                                        src="/images/default-avatar.svg"
+                                                        alt="Default Avatar"
+                                                        className="size-full object-cover"
                                                     />
-                                                ) : null}
-                                                <AvatarFallback className="bg-linear-to-br from-blue-500 to-indigo-600 text-[10px] font-bold text-white">
-                                                    {getInitials(user.name)}
                                                 </AvatarFallback>
                                             </Avatar>
 
