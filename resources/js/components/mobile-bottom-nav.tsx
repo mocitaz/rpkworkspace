@@ -61,8 +61,8 @@ export function MobileBottomNav() {
 
     return (
         <nav
-            aria-label="Mobile Navigation"
-            className="pb-safe fixed inset-x-0 bottom-0 z-40 flex h-15 items-center justify-around border-t border-slate-200/90 bg-white/95 px-2 backdrop-blur-xl md:hidden dark:border-white/[0.08] dark:bg-[#121418]/95"
+            aria-label="Navigasi Utama Mobile"
+            className="fixed inset-x-0 bottom-0 z-40 flex h-14 items-center justify-around border-t border-slate-200/80 bg-white/92 px-1 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_20px_rgba(0,0,0,0.04)] backdrop-blur-2xl md:hidden dark:border-white/[0.08] dark:bg-[#101216]/92 dark:shadow-[0_-4px_20px_rgba(0,0,0,0.3)]"
         >
             {navItems.map((item) => {
                 const Icon = item.icon;
@@ -77,33 +77,28 @@ export function MobileBottomNav() {
                             }
                         }}
                         className={cn(
-                            'group flex flex-1 flex-col items-center justify-center gap-1 py-1 text-center transition-all active:scale-95',
+                            'relative flex flex-1 flex-col items-center justify-center py-1 text-center transition-all active:scale-90',
                             item.active
                                 ? 'text-blue-600 dark:text-blue-400'
                                 : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white',
                         )}
                     >
-                        <div
+                        {item.active && (
+                            <span className="absolute top-0 h-0.75 w-6 rounded-full bg-blue-600 dark:bg-blue-400" />
+                        )}
+                        <Icon
                             className={cn(
-                                'flex size-7 items-center justify-center rounded-xl transition-all',
-                                item.active &&
-                                    'bg-blue-50/80 shadow-2xs dark:bg-blue-950/40',
+                                'size-4.5 transition-transform',
+                                item.active
+                                    ? 'stroke-[2.25px] text-blue-600 dark:text-blue-400'
+                                    : 'stroke-[1.75px] text-slate-400 dark:text-zinc-500',
                             )}
-                        >
-                            <Icon
-                                className={cn(
-                                    'size-4.5 transition-transform group-hover:scale-110',
-                                    item.active
-                                        ? 'stroke-[2.35px] text-blue-600 dark:text-blue-400'
-                                        : 'stroke-[1.8px] text-slate-500 dark:text-zinc-400',
-                                )}
-                            />
-                        </div>
+                        />
                         <span
                             className={cn(
-                                'text-[10px] tracking-tight',
+                                'mt-0.5 text-[9.5px] tracking-tight transition-colors',
                                 item.active
-                                    ? 'font-bold text-blue-700 dark:text-blue-300'
+                                    ? 'font-bold text-blue-600 dark:text-blue-400'
                                     : 'font-medium text-slate-500 dark:text-zinc-400',
                             )}
                         >
@@ -118,22 +113,31 @@ export function MobileBottomNav() {
                 type="button"
                 onClick={() => setOpenMobile(!openMobile)}
                 className={cn(
-                    'group flex flex-1 flex-col items-center justify-center gap-1 py-1 text-center transition-all active:scale-95',
+                    'relative flex flex-1 flex-col items-center justify-center py-1 text-center transition-all active:scale-90',
                     openMobile
                         ? 'text-blue-600 dark:text-blue-400'
                         : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white',
                 )}
             >
-                <div
+                {openMobile && (
+                    <span className="absolute top-0 h-0.75 w-6 rounded-full bg-blue-600 dark:bg-blue-400" />
+                )}
+                <Menu
                     className={cn(
-                        'flex size-7 items-center justify-center rounded-xl transition-all',
-                        openMobile &&
-                            'bg-blue-50/80 shadow-2xs dark:bg-blue-950/40',
+                        'size-4.5 transition-transform',
+                        openMobile
+                            ? 'stroke-[2.25px] text-blue-600 dark:text-blue-400'
+                            : 'stroke-[1.75px] text-slate-400 dark:text-zinc-500',
+                    )}
+                />
+                <span
+                    className={cn(
+                        'mt-0.5 text-[9.5px] tracking-tight transition-colors',
+                        openMobile
+                            ? 'font-bold text-blue-600 dark:text-blue-400'
+                            : 'font-medium text-slate-500 dark:text-zinc-400',
                     )}
                 >
-                    <Menu className="size-4.5 stroke-[1.8px]" />
-                </div>
-                <span className="text-[10px] font-medium tracking-tight">
                     Menu
                 </span>
             </button>

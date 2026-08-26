@@ -352,7 +352,7 @@ export default function Dashboard({
                 todayDeadlinesCount={todayDeadlinesCount}
             />
 
-            <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
+            <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-10 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-6 px-4 py-5 sm:px-6 lg:px-8">
                     {/* 1. Sleek Notion-Style Header */}
                     <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
@@ -374,11 +374,11 @@ export default function Dashboard({
                         </div>
 
                         {/* Top Action Cluster */}
-                        <div className="flex shrink-0 items-center gap-2">
+                        <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0 sm:items-center sm:gap-2">
                             <Button
                                 asChild
                                 variant="outline"
-                                className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 active:scale-[0.98] dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                                className="h-8.5 rounded-xl border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 active:scale-[0.98] dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                             >
                                 <Link
                                     href={tasksRoutes.index.url({
@@ -391,7 +391,7 @@ export default function Dashboard({
                             </Button>
                             <Button
                                 asChild
-                                className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                                className="h-8.5 rounded-xl bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                             >
                                 <Link href={mattersRoutes.create.url()}>
                                     <Plus className="mr-1 size-3.5" />
@@ -401,32 +401,31 @@ export default function Dashboard({
                         </div>
                     </div>
 
-                    {/* 2. Streamlined KPI Bento Cards (Compact & Slim) */}
-                    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    {/* 2. Streamlined KPI Bento Cards (2-column on mobile for compact density) */}
+                    <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
                         {/* Card 1: Perkara Aktif */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group flex flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
                                     PERKARA AKTIF
                                 </span>
                                 <Briefcase className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
-                            <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            <div className="mt-2 flex items-baseline justify-between gap-1">
+                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                     {activeMattersCount}
                                 </span>
-                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                    {corporateCount} Corp · {litigationCount}{' '}
-                                    Litigasi
+                                <span className="truncate text-[10px] font-medium text-slate-500 sm:text-[11px] dark:text-zinc-400">
+                                    {corporateCount} Corp · {litigationCount} Lit
                                 </span>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
                                 <span className="truncate">
                                     Portofolio Berjalan
                                 </span>
                                 <Link
                                     href={mattersRoutes.index.url()}
-                                    className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                    className="shrink-0 font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                 >
                                     Lihat →
                                 </Link>
@@ -434,26 +433,26 @@ export default function Dashboard({
                         </div>
 
                         {/* Card 2: Tugas Terbuka */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group flex flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
                                     TUGAS TERBUKA
                                 </span>
                                 <CheckCircle2 className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
                             </div>
-                            <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            <div className="mt-2 flex items-baseline justify-between gap-1">
+                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                     {openTasksCount}
                                 </span>
-                                <span className="text-[11px] font-medium text-rose-600 dark:text-rose-400">
-                                    {urgentTasksCount} prioritas tinggi
+                                <span className="truncate text-[10px] font-medium text-rose-600 sm:text-[11px] dark:text-rose-400">
+                                    {urgentTasksCount} prioritas
                                 </span>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
                                 <span className="truncate">Distribusi Tim</span>
                                 <Link
                                     href={tasksRoutes.index.url()}
-                                    className="font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
+                                    className="shrink-0 font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
                                 >
                                     Kelola →
                                 </Link>
@@ -461,30 +460,30 @@ export default function Dashboard({
                         </div>
 
                         {/* Card 3: Tenggat & Sidang */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group flex flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
                                     TENGGAT &amp; SIDANG
                                 </span>
                                 <Clock className="size-3.5 text-slate-400 transition-colors group-hover:text-amber-600 dark:text-zinc-500" />
                             </div>
-                            <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            <div className="mt-2 flex items-baseline justify-between gap-1">
+                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                     {criticalDeadlinesCount}
                                 </span>
-                                <span className="text-[11px] font-medium text-amber-600 dark:text-amber-400">
+                                <span className="truncate text-[10px] font-medium text-amber-600 sm:text-[11px] dark:text-amber-400">
                                     {todayDeadlinesCount > 0
                                         ? `${todayDeadlinesCount} hari ini`
                                         : 'minggu ini'}
                                 </span>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
                                 <span className="truncate">
-                                    Jadwal Sidang &amp; Deadline
+                                    Jadwal Sidang
                                 </span>
                                 <Link
                                     href={calendarRoutes.index.url()}
-                                    className="font-semibold text-amber-600 hover:underline dark:text-amber-400"
+                                    className="shrink-0 font-semibold text-amber-600 hover:underline dark:text-amber-400"
                                 >
                                     Kalender →
                                 </Link>
@@ -492,29 +491,28 @@ export default function Dashboard({
                         </div>
 
                         {/* Card 4: Dokumen Menunggu Review */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group flex flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
                                     DOKUMEN &amp; REVIEW
                                 </span>
                                 <FileText className="size-3.5 text-slate-400 transition-colors group-hover:text-purple-600 dark:text-zinc-500" />
                             </div>
-                            <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                            <div className="mt-2 flex items-baseline justify-between gap-1">
+                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                     {reviewDocsCount}
                                 </span>
-                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                <span className="truncate text-[10px] font-medium text-slate-500 sm:text-[11px] dark:text-zinc-400">
                                     dari {totalDocsCount} berkas
                                 </span>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
                                 <span className="truncate">
-                                    {docApprovedCount} Approved ·{' '}
-                                    {docFiledCount} Filed
+                                    {docApprovedCount} Disetujui
                                 </span>
                                 <Link
                                     href={documentsRoutes.index.url()}
-                                    className="font-semibold text-purple-600 hover:underline dark:text-purple-400"
+                                    className="shrink-0 font-semibold text-purple-600 hover:underline dark:text-purple-400"
                                 >
                                     Arsip →
                                 </Link>
@@ -525,8 +523,8 @@ export default function Dashboard({
                     {/* 3. Main Bento Hub: Symmetrical 2x2 Grid (Equal Heights & Internal Scroll on Overflow) */}
                     <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                         {/* [Row 1, Col 1] Widget 1: Work Queue & Tugas */}
-                        <div className="flex h-[390px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                        <div className="flex h-[390px] flex-col rounded-xl border border-slate-200/70 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex flex-col gap-2 border-b border-slate-100 pb-3 sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.05]">
                                 <div className="flex items-center gap-2">
                                     <h2 className="text-xs font-bold text-slate-900 dark:text-white">
                                         Work Queue &amp; Tugas
@@ -535,12 +533,12 @@ export default function Dashboard({
                                         ({currentQueueItems.length})
                                     </span>
                                 </div>
-                                {/* Sleek Segmented Switch */}
-                                <div className="flex items-center rounded-lg bg-slate-100 p-0.5 text-xs dark:bg-white/[0.04]">
+                                {/* Sleek Segmented Switch with swipeable container */}
+                                <div className="flex items-center overflow-x-auto rounded-lg bg-slate-100 p-0.5 text-xs [scrollbar-width:none] dark:bg-white/[0.04] [&::-webkit-scrollbar]:hidden">
                                     <button
                                         type="button"
                                         onClick={() => setQueueTab('pending')}
-                                        className={`cursor-pointer rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all ${
+                                        className={`shrink-0 cursor-pointer rounded-md px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap transition-all ${
                                             queueTab === 'pending'
                                                 ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
                                                 : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
@@ -553,7 +551,7 @@ export default function Dashboard({
                                         onClick={() =>
                                             setQueueTab('in_progress')
                                         }
-                                        className={`cursor-pointer rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all ${
+                                        className={`shrink-0 cursor-pointer rounded-md px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap transition-all ${
                                             queueTab === 'in_progress'
                                                 ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
                                                 : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
@@ -564,7 +562,7 @@ export default function Dashboard({
                                     <button
                                         type="button"
                                         onClick={() => setQueueTab('completed')}
-                                        className={`cursor-pointer rounded-md px-2 py-0.5 text-[11px] font-semibold transition-all ${
+                                        className={`shrink-0 cursor-pointer rounded-md px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap transition-all ${
                                             queueTab === 'completed'
                                                 ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
                                                 : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'

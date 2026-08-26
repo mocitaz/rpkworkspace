@@ -44,27 +44,41 @@ export function AppSidebarHeader({
           );
 
     return (
-        <header className="relative sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-slate-200/80 bg-white/80 px-3 backdrop-blur-xl transition-colors sm:px-5 dark:border-white/[0.07] dark:bg-[#101216]/80">
-            {/* 1. Left Section: Mobile Trigger & Crisp Page Path (Hidden on Dashboard) */}
-            <div className="z-10 flex min-w-0 max-w-[28%] items-center gap-2 sm:max-w-[32%] lg:max-w-[36%]">
+        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-slate-200/80 bg-white/80 px-3 backdrop-blur-xl transition-colors sm:px-5 dark:border-white/[0.07] dark:bg-[#101216]/80">
+            {/* 1. Left Section: Mobile Trigger & Crisp Page Path */}
+            <div className="z-10 flex min-w-0 items-center gap-2">
                 <SidebarTrigger className="size-8.5 shrink-0 rounded-xl text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 active:scale-95 md:hidden dark:text-zinc-400 dark:hover:bg-white/[0.08] dark:hover:text-white" />
 
+                {/* Mobile Brand Label on Dashboard */}
+                {isDashboard && (
+                    <div className="flex items-center gap-1.5 md:hidden">
+                        <span className="font-bold text-xs tracking-tight text-slate-900 dark:text-white">
+                            RPK Law Office
+                        </span>
+                    </div>
+                )}
+
                 {!isDashboard && validBreadcrumbs.length > 0 && (
-                    <div className="hidden min-w-0 sm:flex sm:items-center">
+                    <div className="min-w-0 flex items-center">
                         <Breadcrumbs breadcrumbs={validBreadcrumbs} />
                     </div>
                 )}
             </div>
 
-            {/* 2. Center Section: Mathematically Centered Spotlight Search Capsule */}
-            <div className="pointer-events-none absolute inset-x-0 flex items-center justify-center px-4">
-                <div className="pointer-events-auto w-full max-w-[320px] sm:max-w-[380px] md:max-w-[440px] lg:max-w-[480px]">
+            {/* 2. Center Section (Desktop Only): Mathematically Centered Spotlight Search Capsule */}
+            <div className="pointer-events-none absolute inset-x-0 hidden items-center justify-center px-4 sm:flex">
+                <div className="pointer-events-auto w-full max-w-[340px] md:max-w-[420px] lg:max-w-[480px]">
                     <CommandPalette />
                 </div>
             </div>
 
-            {/* 3. Right Section: Notification Center & User Profile Trigger */}
-            <div className="z-10 flex shrink-0 items-center gap-2 sm:gap-2.5">
+            {/* 3. Right Section: Mobile Search Button + Notification Center + User Profile */}
+            <div className="z-10 flex shrink-0 items-center gap-1.5 sm:gap-2.5">
+                {/* Mobile-only compact search icon button */}
+                <div className="sm:hidden">
+                    <CommandPalette compact />
+                </div>
+
                 <NotificationMenu />
 
                 {auth.user && (

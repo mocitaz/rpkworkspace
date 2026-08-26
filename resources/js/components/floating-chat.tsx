@@ -504,7 +504,7 @@ export function FloatingChat() {
     );
 
     return (
-        <div className="fixed right-3.5 bottom-17 z-40 flex flex-col items-end sm:right-5 sm:bottom-5">
+        <div className="fixed right-3.5 bottom-16 z-40 flex flex-col items-end sm:right-5 sm:bottom-5">
             {/* Pop-up Modal Window */}
             {isOpen && (
                 <div className="mb-2.5 flex h-[calc(100svh-8.5rem)] max-h-[520px] w-[calc(100vw-1.75rem)] max-w-[380px] flex-col overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl transition-all sm:h-[510px] sm:w-[390px] dark:border-white/10 dark:bg-[#14161b]">
