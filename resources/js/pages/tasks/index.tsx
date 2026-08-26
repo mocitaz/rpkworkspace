@@ -940,18 +940,24 @@ export default function TasksIndex({
                                                     )}
                                                 </div>
 
-                                                {task.matter && (
-                                                    <div className="inline-flex items-center gap-1 rounded-md bg-blue-50/80 px-2 py-0.5 text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                {task.matter ? (
+                                                    <div className="flex max-w-full items-center gap-1.5 overflow-hidden rounded-md bg-blue-50/80 px-2 py-1 text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
                                                         <Scale className="size-2.5 shrink-0" />
-                                                        <span className="font-mono">
+                                                        <span className="shrink-0 font-mono whitespace-nowrap">
                                                             {
                                                                 task.matter
                                                                     .matter_number
                                                             }
                                                         </span>
-                                                        <span className="truncate">
+                                                        <span className="truncate font-normal text-slate-600 dark:text-zinc-300">
                                                             ·{' '}
                                                             {task.matter.title}
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <div>
+                                                        <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9.5px] font-medium text-slate-500 dark:bg-white/[0.06] dark:text-zinc-400">
+                                                            Umum / Non-Perkara
                                                         </span>
                                                     </div>
                                                 )}
@@ -959,10 +965,10 @@ export default function TasksIndex({
 
                                             <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-xs dark:border-white/[0.04]">
                                                 {/* Personnel */}
-                                                <div className="flex items-center gap-1.5">
+                                                <div className="flex min-w-0 items-center gap-1.5 pr-2">
                                                     {task.assignee ? (
                                                         <>
-                                                            <Avatar className="size-5 rounded-full border border-slate-200 dark:border-white/10">
+                                                            <Avatar className="size-5 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
                                                                 <AvatarImage
                                                                     src={
                                                                         task
@@ -979,11 +985,16 @@ export default function TasksIndex({
                                                                     )}
                                                                 </AvatarFallback>
                                                             </Avatar>
-                                                            <span className="text-[10px] text-slate-700 dark:text-zinc-300">
+                                                            <span
+                                                                className="truncate text-[10px] font-medium text-slate-700 dark:text-zinc-300"
+                                                                title={
+                                                                    task.assignee
+                                                                        .name
+                                                                }
+                                                            >
                                                                 {
-                                                                    task.assignee.name.split(
-                                                                        ' ',
-                                                                    )[0]
+                                                                    task.assignee
+                                                                        .name
                                                                 }
                                                             </span>
                                                         </>
@@ -995,23 +1006,25 @@ export default function TasksIndex({
                                                 </div>
 
                                                 {/* Due Date */}
-                                                {task.due_at ? (
-                                                    <span
-                                                        className={`font-mono text-[10px] font-medium ${
-                                                            overdue
-                                                                ? 'text-rose-600 dark:text-rose-400'
-                                                                : 'text-slate-500 dark:text-zinc-400'
-                                                        }`}
-                                                    >
-                                                        {formatDate(
-                                                            task.due_at,
-                                                        )}
-                                                    </span>
-                                                ) : (
-                                                    <span className="font-mono text-[10px] text-slate-400">
-                                                        Tanpa tenggat
-                                                    </span>
-                                                )}
+                                                <div className="shrink-0">
+                                                    {task.due_at ? (
+                                                        <span
+                                                            className={`font-mono text-[10px] font-medium whitespace-nowrap ${
+                                                                overdue
+                                                                    ? 'font-bold text-rose-600 dark:text-rose-400'
+                                                                    : 'text-slate-500 dark:text-zinc-400'
+                                                            }`}
+                                                        >
+                                                            {formatDate(
+                                                                task.due_at,
+                                                            )}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="font-mono text-[10px] text-slate-400 whitespace-nowrap">
+                                                            Tanpa tenggat
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                         </article>
                                     );
