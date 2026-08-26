@@ -104,7 +104,7 @@ class TaskController extends Controller
             'users' => User::query()
                 ->where('is_active', true)
                 ->orderBy('name')
-                ->get(['id', 'name', 'position_title', 'department', 'avatar_path']),
+                ->get(['id', 'name', 'position_title', 'department', 'avatar_path', 'email']),
             'categories' => self::categories(),
             'stages' => self::stages(),
             'preselectedMatterId' => $request->query('matter_id'),
@@ -236,7 +236,7 @@ class TaskController extends Controller
             'users' => User::query()
                 ->where('is_active', true)
                 ->orderBy('name')
-                ->get(['id', 'name', 'position_title', 'department', 'avatar_path']),
+                ->get(['id', 'name', 'position_title', 'department', 'avatar_path', 'email']),
             'categories' => self::categories(),
             'stages' => self::stages(),
         ]);

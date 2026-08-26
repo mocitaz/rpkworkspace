@@ -26,6 +26,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import UserPicker from '@/components/user-picker';
 import * as matterRoutes from '@/routes/matters';
 import * as taskRoutes from '@/routes/tasks';
 
@@ -419,25 +420,16 @@ export default function TaskEdit({
                                     >
                                         Pelaksana Utama (Assignee) <span className="text-rose-500">*</span>
                                     </Label>
-                                    <div className="relative">
-                                        <select
-                                            id="assignee_id"
-                                            value={data.assignee_id}
-                                            onChange={(e) =>
-                                                setData('assignee_id', e.target.value)
-                                            }
-                                            className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs text-slate-800 shadow-2xs focus:border-indigo-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
-                                            required
-                                        >
-                                            <option value="">-- Pilih Staf / Advokat Pelaksana --</option>
-                                            {users.map((u) => (
-                                                <option key={u.id} value={u.id}>
-                                                    {u.name} ({u.position_title || 'Staf'})
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
-                                    </div>
+                                    <UserPicker
+                                        id="assignee_id"
+                                        value={data.assignee_id}
+                                        onChange={(val) => setData('assignee_id', val)}
+                                        users={users}
+                                        placeholder="Pilih Staf / Advokat Pelaksana..."
+                                        disabledUserIds={data.reviewer_id ? [data.reviewer_id] : []}
+                                        disabledReason="Dipilih sebagai Reviewer"
+                                        error={Boolean(errors.assignee_id)}
+                                    />
                                     <InputError message={errors.assignee_id} />
                                 </div>
 
@@ -448,24 +440,18 @@ export default function TaskEdit({
                                     >
                                         Pemeriksa Hasil (Reviewer / Partner In Charge)
                                     </Label>
-                                    <div className="relative">
-                                        <select
-                                            id="reviewer_id"
-                                            value={data.reviewer_id}
-                                            onChange={(e) =>
-                                                setData('reviewer_id', e.target.value)
-                                            }
-                                            className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs text-slate-800 shadow-2xs focus:border-indigo-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
-                                        >
-                                            <option value="">-- Tanpa Reviewer Khusus (Opsional) --</option>
-                                            {users.map((u) => (
-                                                <option key={u.id} value={u.id}>
-                                                    {u.name} ({u.position_title || 'Advokat'})
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
-                                    </div>
+                                    <UserPicker
+                                        id="reviewer_id"
+                                        value={data.reviewer_id}
+                                        onChange={(val) => setData('reviewer_id', val)}
+                                        users={users}
+                                        placeholder="Pilih Reviewer (Opsional)..."
+                                        emptyOptionLabel="-- Tanpa Reviewer Khusus (Opsional) --"
+                                        allowClear
+                                        disabledUserIds={data.assignee_id ? [data.assignee_id] : []}
+                                        disabledReason="Dipilih sebagai Pelaksana"
+                                        error={Boolean(errors.reviewer_id)}
+                                    />
                                     <InputError message={errors.reviewer_id} />
                                 </div>
                             </div>
