@@ -39,7 +39,7 @@ export function WelcomeModal({
 }: WelcomeModalProps) {
     const [isOpen, setIsOpen] = useState(false);
 
-    // Compute dynamic time-of-day greeting
+    // Dynamic greeting based on current local hour
     const greeting = useMemo(() => {
         const hour = new Date().getHours();
         if (hour >= 4 && hour < 11) return 'Selamat Pagi';
@@ -74,11 +74,11 @@ export function WelcomeModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="max-w-[490px] overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-0 shadow-2xl sm:max-w-[490px] dark:border-white/10 dark:bg-[#14161b]">
-                {/* 1. Sleek Header Bar */}
-                <div className="border-b border-slate-100 bg-slate-50/50 p-5 sm:p-6 dark:border-white/[0.06] dark:bg-[#121418]">
+            <DialogContent className="max-w-[460px] overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-0 shadow-2xl sm:max-w-[460px] dark:border-white/10 dark:bg-[#14161b]">
+                {/* 1. Sleek Compact Header */}
+                <div className="border-b border-slate-100 bg-slate-50/50 px-5 py-4.5 sm:px-6 dark:border-white/[0.06] dark:bg-[#121418]">
                     <div className="flex items-center gap-3.5">
-                        <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-white p-1.5 shadow-2xs dark:border-white/15 dark:bg-zinc-900">
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-white p-1 shadow-2xs dark:border-white/15 dark:bg-zinc-900">
                             <img
                                 src="/logo/logo.png"
                                 alt="RPK Law Firm"
@@ -87,95 +87,109 @@ export function WelcomeModal({
                         </div>
 
                         <div className="min-w-0 flex-1">
-                            <DialogTitle className="truncate text-base font-bold tracking-tight text-slate-900 sm:text-lg dark:text-white">
+                            <DialogTitle className="truncate text-base font-bold tracking-tight text-slate-900 dark:text-white">
                                 {greeting}, {user?.name}
                             </DialogTitle>
-                            <DialogDescription className="mt-0.5 text-xs text-slate-500 dark:text-zinc-400">
-                                Selamat datang kembali di Workspace. Sistem operasional siap digunakan.
+                            <DialogDescription className="mt-0.5 truncate text-xs text-slate-500 dark:text-zinc-400">
+                                Selamat datang kembali di Law Workspace.
                             </DialogDescription>
                         </div>
                     </div>
                 </div>
 
-                {/* 2. Modal Body */}
-                <div className="space-y-3.5 p-5 sm:p-6">
-                    {/* Compact Live Status Strip */}
-                    <div className="flex items-center justify-between rounded-xl border border-slate-200/70 bg-slate-50/70 px-3.5 py-2.5 text-xs dark:border-white/[0.06] dark:bg-white/[0.02]">
-                        <div className="flex items-center gap-1.5">
-                            <Briefcase className="size-3.5 text-blue-600 dark:text-blue-400" />
-                            <span className="font-mono font-bold text-slate-900 dark:text-white">
-                                {activeMattersCount}
-                            </span>
-                            <span className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                Perkara Aktif
-                            </span>
+                {/* 2. Modal Body with Tight Symmetrical Rhythm */}
+                <div className="space-y-3 p-5 sm:p-6">
+                    {/* Compact 3-Column Symmetrical Status Strip */}
+                    <div className="grid grid-cols-3 divide-x divide-slate-200/80 rounded-xl border border-slate-200/70 bg-slate-50/70 py-2 px-1 dark:divide-white/10 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                        <div className="flex items-center justify-center gap-1.5 px-2">
+                            <Briefcase className="size-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
+                            <div className="flex items-baseline gap-1">
+                                <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                    {activeMattersCount}
+                                </span>
+                                <span className="text-[10.5px] font-medium text-slate-500 dark:text-zinc-400">
+                                    Perkara
+                                </span>
+                            </div>
                         </div>
 
-                        <span className="text-slate-300 dark:text-zinc-700">•</span>
-
-                        <div className="flex items-center gap-1.5">
-                            <CheckCircle2 className="size-3.5 text-indigo-600 dark:text-indigo-400" />
-                            <span className="font-mono font-bold text-slate-900 dark:text-white">
-                                {openTasksCount}
-                            </span>
-                            <span className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                Tugas
-                            </span>
+                        <div className="flex items-center justify-center gap-1.5 px-2">
+                            <CheckCircle2 className="size-3.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                            <div className="flex items-baseline gap-1">
+                                <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                    {openTasksCount}
+                                </span>
+                                <span className="text-[10.5px] font-medium text-slate-500 dark:text-zinc-400">
+                                    Tugas
+                                </span>
+                            </div>
                         </div>
 
-                        <span className="text-slate-300 dark:text-zinc-700">•</span>
-
-                        <div className="flex items-center gap-1.5">
-                            <CalendarClock className="size-3.5 text-amber-600 dark:text-amber-400" />
-                            <span className="font-mono font-bold text-slate-900 dark:text-white">
-                                {todayDeadlinesCount}
-                            </span>
-                            <span className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                Deadline Hari Ini
-                            </span>
+                        <div className="flex items-center justify-center gap-1.5 px-2">
+                            <CalendarClock
+                                className={`size-3.5 shrink-0 ${
+                                    todayDeadlinesCount > 0
+                                        ? 'text-rose-600 dark:text-rose-400'
+                                        : 'text-amber-600 dark:text-amber-400'
+                                }`}
+                            />
+                            <div className="flex items-baseline gap-1">
+                                <span
+                                    className={`font-mono text-xs font-bold ${
+                                        todayDeadlinesCount > 0
+                                            ? 'text-rose-600 dark:text-rose-400'
+                                            : 'text-slate-900 dark:text-white'
+                                    }`}
+                                >
+                                    {todayDeadlinesCount}
+                                </span>
+                                <span className="text-[10.5px] font-medium text-slate-500 dark:text-zinc-400">
+                                    Deadline
+                                </span>
+                            </div>
                         </div>
                     </div>
 
-                    {/* Operational Guidance Rows */}
-                    <div className="space-y-2">
-                        <div className="flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/10 dark:bg-[#16181d] dark:hover:border-white/20">
-                            <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                    {/* Unified Grouped Operational Guidance Box */}
+                    <div className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-2xs divide-y divide-slate-100 dark:divide-white/[0.05] dark:border-white/10 dark:bg-[#16181d]">
+                        <div className="flex items-center gap-3 p-3 transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
+                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
                                 <FileCheck2 className="size-4" />
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-xs font-bold text-slate-900 dark:text-white">
                                     Verifikasi Berkas &amp; Dokumen
                                 </p>
-                                <p className="mt-0.5 text-[11px] leading-relaxed text-slate-500 dark:text-zinc-400">
-                                    Periksa draf advice hukum, berkas perkara, dan dokumen yang menunggu review.
+                                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                    Periksa draf advice hukum &amp; dokumen perkara menunggu review.
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/10 dark:bg-[#16181d] dark:hover:border-white/20">
-                            <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+                        <div className="flex items-center gap-3 p-3 transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
+                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
                                 <CalendarDays className="size-4" />
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-xs font-bold text-slate-900 dark:text-white">
                                     Agenda Sidang &amp; Tenggat Kritis
                                 </p>
-                                <p className="mt-0.5 text-[11px] leading-relaxed text-slate-500 dark:text-zinc-400">
-                                    Pantau jadwal sidang peradilan, rapat koordinasi klien, dan deadline minggu ini.
+                                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                    Pantau jadwal sidang peradilan &amp; deadline perkara minggu ini.
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/10 dark:bg-[#16181d] dark:hover:border-white/20">
-                            <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                        <div className="flex items-center gap-3 p-3 transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
+                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
                                 <ShieldCheck className="size-4" />
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-xs font-bold text-slate-900 dark:text-white">
                                     Kerahasiaan Advokat &amp; Kepatuhan
                                 </p>
-                                <p className="mt-0.5 text-[11px] leading-relaxed text-slate-500 dark:text-zinc-400">
-                                    Seluruh informasi perkara dan komunikasi klien bersifat konfidensial di bawah kode etik.
+                                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                    Seluruh komunikasi klien &amp; berkas bersifat konfidensial.
                                 </p>
                             </div>
                         </div>
@@ -190,7 +204,7 @@ export function WelcomeModal({
                         variant="outline"
                         size="sm"
                         onClick={() => handleClose(false)}
-                        className="h-9 rounded-xl border-slate-200/80 px-4 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-100/80 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
+                        className="h-8.5 rounded-xl border-slate-200/80 px-3.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-100/80 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
                     >
                         <Link
                             href={calendarRoutes.index()}
@@ -204,7 +218,7 @@ export function WelcomeModal({
                     <Button
                         type="button"
                         onClick={() => handleClose(false)}
-                        className="h-9 cursor-pointer rounded-xl bg-slate-900 px-5 text-xs font-bold text-white shadow-xs hover:bg-slate-800 active:scale-98 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                        className="h-8.5 cursor-pointer rounded-xl bg-slate-900 px-4.5 text-xs font-bold text-white shadow-xs hover:bg-slate-800 active:scale-98 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                     >
                         <span>Lanjutkan ke Workspace</span>
                         <ArrowRight className="ml-1.5 size-3.5" />
