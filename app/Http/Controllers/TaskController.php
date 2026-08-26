@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
+use App\Models\AuditLog;
+use App\Models\Document;
 use App\Models\Matter;
 use App\Models\Task;
 use App\Models\User;
@@ -28,9 +30,11 @@ class TaskController extends Controller
         $userId = $request->user()->getKey();
 
         $query = Task::query()->with([
-            'matter:id,matter_number,title',
+            'matter:id,matter_number,title,client_id',
+            'matter.client:id,client_number,name,type',
             'assignee:id,name,position_title,avatar_path',
             'reviewer:id,name,position_title,avatar_path',
+            'reporter:id,name,position_title,avatar_path',
             'comments' => fn ($query) => $query->whereNull('parent_id')->with([
                 'user:id,name,position_title,avatar_path',
                 'reactions.user:id,name',
@@ -42,6 +46,7 @@ class TaskController extends Controller
             ->when($request->string('view')->toString() === 'created', fn ($q) => $q->where('reporter_id', $userId))
             ->when($request->string('view')->toString() === 'overdue', fn ($q) => $q->where('due_at', '<', now())->whereNotIn('status', ['completed', 'cancelled']))
             ->when($request->string('status')->toString(), fn ($q, $status) => $q->where('status', $status))
+            ->when($request->string('category')->toString(), fn ($q, $cat) => $q->where('category', $cat))
             ->when($request->string('matter_id')->toString(), fn ($q, $matterId) => $q->where('matter_id', $matterId));
 
         $metrics = [
@@ -55,13 +60,51 @@ class TaskController extends Controller
             'tasks' => $query->orderByRaw('due_at is null, due_at asc')->paginate(15)->withQueryString(),
             'matters' => Matter::query()->visibleTo($request->user())->whereNotIn('status', ['closed', 'archived'])->orderBy('matter_number')->get(['id', 'matter_number', 'title']),
             'users' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title', 'avatar_path']),
+            'categories' => self::categories(),
+            'stages' => self::stages(),
             'metrics' => $metrics,
-            'filters' => $request->only(['view', 'status', 'matter_id']),
+            'filters' => $request->only(['view', 'status', 'category', 'matter_id']),
             'can' => [
                 'create' => $request->user()->can('create', Task::class),
                 'update' => $request->user()->can('update', Task::class),
                 'delete' => $request->user()->can('delete', Task::class),
             ],
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(Request $request): Response
+    {
+        Gate::authorize('create', Task::class);
+
+        $year = now()->format('Y');
+        $lastTask = Task::query()
+            ->where('task_number', 'like', "TSK-{$year}-%")
+            ->orderByDesc('task_number')
+            ->first();
+        $nextSeq = 1;
+        if ($lastTask && preg_match('/TSK-\d{4}-(\d+)/', (string) $lastTask->task_number, $matches)) {
+            $nextSeq = ((int) $matches[1]) + 1;
+        }
+        $nextTaskNumber = sprintf('TSK-%s-%04d', $year, $nextSeq);
+
+        return Inertia::render('tasks/create', [
+            'defaultTaskNumber' => $nextTaskNumber,
+            'matters' => Matter::query()
+                ->visibleTo($request->user())
+                ->whereNotIn('status', ['closed', 'archived'])
+                ->with('client:id,client_number,name,type')
+                ->orderBy('matter_number')
+                ->get(['id', 'matter_number', 'title', 'client_id']),
+            'users' => User::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get(['id', 'name', 'position_title', 'department', 'avatar_path']),
+            'categories' => self::categories(),
+            'stages' => self::stages(),
+            'preselectedMatterId' => $request->query('matter_id'),
         ]);
     }
 
@@ -74,11 +117,105 @@ class TaskController extends Controller
             Gate::authorize('view', Matter::query()->findOrFail($request->validated('matter_id')));
         }
 
-        $task = Task::query()->create([...$request->validated(), 'reporter_id' => $request->user()->getKey()]);
-        $this->notifyAssignee($task, $request->user());
-        $audit->record($task, 'task.created', ['assignee_id' => $task->assignee_id], $request->user(), $request);
+        $attributes = $request->validated();
+        $attributes['reporter_id'] = $request->user()->getKey();
 
-        return back()->with('success', 'Tugas berhasil dibuat.');
+        // Format and clean checklists
+        if (isset($attributes['checklists']) && is_array($attributes['checklists'])) {
+            $attributes['checklists'] = array_values(array_filter(array_map(function ($item, $index) {
+                if (empty($item['title'])) {
+                    return null;
+                }
+
+                return [
+                    'id' => $item['id'] ?? (string) str()->ulid(),
+                    'title' => trim((string) $item['title']),
+                    'is_completed' => (bool) ($item['is_completed'] ?? false),
+                    'completed_at' => ($item['is_completed'] ?? false) ? ($item['completed_at'] ?? now()->toIso8601String()) : null,
+                ];
+            }, $attributes['checklists'], array_keys($attributes['checklists']))));
+        }
+
+        $task = Task::query()->create($attributes);
+        $this->notifyAssignee($task, $request->user());
+        $audit->record($task, 'task.created', [
+            'task_number' => $task->task_number,
+            'assignee_id' => $task->assignee_id,
+            'priority' => $task->priority,
+        ], $request->user(), $request);
+
+        return redirect()->route('tasks.show', $task)->with('success', "Tugas {$task->task_number} berhasil dibuat.");
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Request $request, Task $task): Response
+    {
+        Gate::authorize('view', $task);
+
+        $task->load([
+            'matter:id,matter_number,title,client_id,practice_area_id,status',
+            'matter.client:id,client_number,name,type',
+            'matter.practiceArea:id,name',
+            'assignee:id,name,email,position_title,avatar_path,department',
+            'reviewer:id,name,email,position_title,avatar_path,department',
+            'reporter:id,name,email,position_title,avatar_path,department',
+            'comments' => fn ($query) => $query->whereNull('parent_id')->with([
+                'user:id,name,position_title,avatar_path',
+                'reactions.user:id,name',
+                'replies' => fn ($r) => $r->with(['user:id,name,position_title,avatar_path', 'reactions.user:id,name'])->oldest(),
+            ])->orderByDesc('is_pinned')->latest(),
+        ]);
+
+        $documents = [];
+        if ($task->matter_id) {
+            $documents = Document::query()
+                ->where('matter_id', $task->matter_id)
+                ->with('latestVersion')
+                ->latest()
+                ->take(10)
+                ->get(['id', 'document_number', 'title', 'category', 'status', 'created_at']);
+        }
+
+        $auditLogs = AuditLog::query()
+            ->where(function ($q) use ($task) {
+                $q->where('subject_type', $task->getMorphClass())
+                    ->orWhere('subject_type', Task::class);
+            })
+            ->where('subject_id', (string) $task->getKey())
+            ->with('actor:id,name,avatar_path,position_title')
+            ->latest('created_at')
+            ->take(20)
+            ->get();
+
+        $staffList = User::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'name', 'position_title', 'department', 'avatar_path']);
+
+        return Inertia::render('tasks/show', [
+            'task' => $task,
+            'documents' => $documents,
+            'auditLogs' => $auditLogs,
+            'staffList' => $staffList,
+            'categories' => self::categories(),
+            'stages' => self::stages(),
+            'can' => [
+                'update' => $request->user()->can('update', $task),
+                'delete' => $request->user()->can('delete', $task),
+            ],
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Request $request, Task $task): Response
+    {
+        Gate::authorize('update', $task);
+
+        return $this->show($request, $task);
     }
 
     /**
@@ -90,6 +227,27 @@ class TaskController extends Controller
         $previousStatus = $task->status;
         $attributes = $request->validated();
         $attributes['completed_at'] = $attributes['status'] === 'completed' ? ($task->completed_at ?: now()) : null;
+
+        // Format checklists if provided
+        if (array_key_exists('checklists', $attributes)) {
+            if (is_array($attributes['checklists'])) {
+                $attributes['checklists'] = array_values(array_filter(array_map(function ($item) {
+                    if (empty($item['title'])) {
+                        return null;
+                    }
+
+                    return [
+                        'id' => $item['id'] ?? (string) str()->ulid(),
+                        'title' => trim((string) $item['title']),
+                        'is_completed' => (bool) ($item['is_completed'] ?? false),
+                        'completed_at' => ($item['is_completed'] ?? false) ? ($item['completed_at'] ?? now()->toIso8601String()) : null,
+                    ];
+                }, $attributes['checklists'])));
+            } else {
+                $attributes['checklists'] = null;
+            }
+        }
+
         $task->update($attributes);
 
         if ($task->assignee_id !== $previousAssigneeId) {
@@ -101,9 +259,45 @@ class TaskController extends Controller
             $reporter?->notify((new TaskCompletedNotification($task))->afterCommit());
         }
 
-        $audit->record($task, 'task.updated', ['status' => $task->status, 'assignee_id' => $task->assignee_id], $request->user(), $request);
+        $audit->record($task, 'task.updated', [
+            'task_number' => $task->task_number,
+            'status' => $task->status,
+            'assignee_id' => $task->assignee_id,
+        ], $request->user(), $request);
 
-        return back()->with('success', 'Tugas diperbarui.');
+        return back()->with('success', "Tugas {$task->task_number} berhasil diperbarui.");
+    }
+
+    /**
+     * Toggle a specific checklist item.
+     */
+    public function toggleChecklist(Request $request, Task $task, string $checklistId, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('update', $task);
+
+        $checklists = $task->checklists ?? [];
+        $updated = false;
+        $isCompletedNow = false;
+
+        foreach ($checklists as &$item) {
+            if (($item['id'] ?? '') === $checklistId) {
+                $item['is_completed'] = ! ($item['is_completed'] ?? false);
+                $item['completed_at'] = $item['is_completed'] ? now()->toIso8601String() : null;
+                $isCompletedNow = $item['is_completed'];
+                $updated = true;
+                break;
+            }
+        }
+
+        if ($updated) {
+            $task->update(['checklists' => $checklists]);
+            $audit->record($task, 'task.checklist_toggled', [
+                'checklist_id' => $checklistId,
+                'is_completed' => $isCompletedNow,
+            ], $request->user(), $request);
+        }
+
+        return back()->with('success', 'Status checklist diperbarui.');
     }
 
     /**
@@ -113,12 +307,12 @@ class TaskController extends Controller
     {
         Gate::authorize('delete', $task);
 
-        $title = $task->title;
+        $taskNumber = $task->task_number ?? $task->title;
         $task->delete();
 
-        $audit->record($task, 'task.deleted', ['title' => $title], request()->user(), request());
+        $audit->record($task, 'task.deleted', ['task_number' => $taskNumber], request()->user(), request());
 
-        return back()->with('success', 'Tugas berhasil dihapus.');
+        return redirect()->route('tasks.index')->with('success', "Tugas {$taskNumber} berhasil dihapus.");
     }
 
     private function notifyAssignee(Task $task, User $actor): void
@@ -129,5 +323,38 @@ class TaskController extends Controller
 
         $assignee = User::query()->where('is_active', true)->find($task->assignee_id);
         $assignee?->notify((new TaskAssignedNotification($task))->afterCommit());
+    }
+
+    /**
+     * @return array<int, array{id: string, name: string}>
+     */
+    public static function categories(): array
+    {
+        return [
+            ['id' => 'drafting', 'name' => 'Drafting Dokumen / Surat Kuasa / Gugatan'],
+            ['id' => 'legal_research', 'name' => 'Riset Hukum & Legal Opinion'],
+            ['id' => 'court_hearing', 'name' => 'Kehadiran Sidang Pengadilan'],
+            ['id' => 'investigation', 'name' => 'Penyelidikan / BAP Kepolisian / Kejaksaan'],
+            ['id' => 'meeting_negotiation', 'name' => 'Mediasi / Negosiasi / Rapat Klien'],
+            ['id' => 'agency_filing', 'name' => 'Pendaftaran / PNBP / Berkas Instansi'],
+            ['id' => 'administration', 'name' => 'Administrasi & Operasional Kantor'],
+            ['id' => 'general', 'name' => 'Lain-lain / Umum'],
+        ];
+    }
+
+    /**
+     * @return array<int, array{id: string, name: string}>
+     */
+    public static function stages(): array
+    {
+        return [
+            ['id' => 'pre_litigation', 'name' => 'Pra-Litigasi / Somasi / Konsultasi'],
+            ['id' => 'district_court', 'name' => 'Pengadilan Negeri / Tingkat I'],
+            ['id' => 'high_court', 'name' => 'Pengadilan Tinggi (Banding)'],
+            ['id' => 'supreme_court', 'name' => 'Mahkamah Agung (Kasasi / PK)'],
+            ['id' => 'execution', 'name' => 'Eksekusi Putusan'],
+            ['id' => 'non_litigation', 'name' => 'Non-Litigasi / Corporate Legal'],
+            ['id' => 'general', 'name' => 'Umum / Non-Perkara'],
+        ];
     }
 }

@@ -15,15 +15,48 @@ class Task extends Model
     use HasFactory, HasUlids;
 
     protected $fillable = [
-        'matter_id', 'title', 'description', 'assignee_id', 'reporter_id', 'reviewer_id',
-        'status', 'priority', 'due_at', 'completed_at',
+        'task_number', 'matter_id', 'title', 'category', 'stage', 'description',
+        'assignee_id', 'reporter_id', 'reviewer_id', 'status', 'priority',
+        'due_at', 'completed_at', 'start_date', 'is_billable',
+        'estimated_hours', 'actual_hours', 'checklists', 'completion_notes',
     ];
 
-    protected $attributes = ['status' => 'todo', 'priority' => 'normal'];
+    protected $attributes = [
+        'status' => 'todo',
+        'priority' => 'normal',
+        'is_billable' => false,
+        'category' => 'general',
+    ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Task $task) {
+            if (empty($task->task_number)) {
+                $year = now()->format('Y');
+                $lastTask = static::query()
+                    ->where('task_number', 'like', "TSK-{$year}-%")
+                    ->orderByDesc('task_number')
+                    ->first();
+                $nextSeq = 1;
+                if ($lastTask && preg_match('/TSK-\d{4}-(\d+)/', (string) $lastTask->task_number, $matches)) {
+                    $nextSeq = ((int) $matches[1]) + 1;
+                }
+                $task->task_number = sprintf('TSK-%s-%04d', $year, $nextSeq);
+            }
+        });
+    }
 
     protected function casts(): array
     {
-        return ['due_at' => 'datetime', 'completed_at' => 'datetime'];
+        return [
+            'due_at' => 'datetime',
+            'completed_at' => 'datetime',
+            'start_date' => 'date',
+            'is_billable' => 'boolean',
+            'estimated_hours' => 'decimal:2',
+            'actual_hours' => 'decimal:2',
+            'checklists' => 'array',
+        ];
     }
 
     /** @return BelongsTo<Matter, $this> */

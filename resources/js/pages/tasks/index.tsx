@@ -73,11 +73,19 @@ type Person = {
 
 type Task = {
     id: string;
+    task_number?: string;
     title: string;
+    category?: string;
+    stage?: string;
     description?: string;
     status: string;
     priority: string;
     due_at?: string;
+    start_date?: string;
+    is_billable?: boolean;
+    estimated_hours?: number;
+    actual_hours?: number;
+    checklists?: Array<{ id: string; title: string; is_completed: boolean }>;
     assignee_id?: number;
     reviewer_id?: number;
     matter_id?: string;
@@ -182,11 +190,13 @@ export default function TasksIndex({
                         {can.create && (
                             <div className="flex shrink-0 items-center gap-2">
                                 <Button
-                                    onClick={() => setOpenCreate(true)}
+                                    asChild
                                     className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                 >
-                                    <Plus className="mr-1 size-3.5" />
-                                    Buat Tugas Baru
+                                    <Link href={taskRoutes.create()}>
+                                        <Plus className="mr-1 size-3.5" />
+                                        Buat Tugas Baru
+                                    </Link>
                                 </Button>
                             </div>
                         )}
@@ -477,14 +487,13 @@ export default function TasksIndex({
                                     <div className="flex flex-wrap items-center justify-center gap-2">
                                         {can.create && (
                                             <Button
-                                                type="button"
-                                                onClick={() =>
-                                                    setOpenCreate(true)
-                                                }
+                                                asChild
                                                 className="h-8 cursor-pointer rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
                                             >
-                                                <Plus className="mr-1 size-3.5" />{' '}
-                                                Buat Tugas Baru
+                                                <Link href={taskRoutes.create()}>
+                                                    <Plus className="mr-1 size-3.5" />{' '}
+                                                    Buat Tugas Baru
+                                                </Link>
                                             </Button>
                                         )}
                                         {(filters.status ||
@@ -514,15 +523,18 @@ export default function TasksIndex({
                                 {tasks.data.map((task) => {
                                     const overdue = isTaskOverdue(task);
                                     return (
-                                        <div
+                                        <Link
                                             key={task.id}
-                                            onClick={() =>
-                                                setSelectedTask(task)
-                                            }
-                                            className="cursor-pointer space-y-2 p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
+                                            href={taskRoutes.show({ task: task.id })}
+                                            className="block cursor-pointer space-y-2 p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
                                         >
                                             <div className="flex items-start justify-between gap-2">
                                                 <div className="min-w-0 flex-1">
+                                                    {task.task_number && (
+                                                        <span className="mb-1 inline-block rounded bg-amber-500/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-700 dark:bg-amber-400/10 dark:text-amber-300">
+                                                            {task.task_number}
+                                                        </span>
+                                                    )}
                                                     <p
                                                         className={`text-xs font-bold text-slate-900 dark:text-white ${
                                                             task.status ===
@@ -567,7 +579,7 @@ export default function TasksIndex({
                                                     </span>
                                                 )}
                                             </div>
-                                        </div>
+                                        </Link>
                                     );
                                 })}
                             </div>
@@ -610,22 +622,24 @@ export default function TasksIndex({
                                                     {/* Task Title & Matter Info */}
                                                     <td className="py-2.5 pr-3 pl-4">
                                                         <div className="flex flex-col space-y-1">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() =>
-                                                                    setSelectedTask(
-                                                                        task,
-                                                                    )
-                                                                }
-                                                                className={`block text-left text-xs font-semibold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400 ${
-                                                                    task.status ===
-                                                                    'completed'
-                                                                        ? 'line-through opacity-50'
-                                                                        : ''
-                                                                }`}
-                                                            >
-                                                                {task.title}
-                                                            </button>
+                                                            <div className="flex items-center gap-1.5">
+                                                                {task.task_number && (
+                                                                    <span className="inline-block shrink-0 rounded bg-amber-500/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-700 dark:bg-amber-400/10 dark:text-amber-300">
+                                                                        {task.task_number}
+                                                                    </span>
+                                                                )}
+                                                                <Link
+                                                                    href={taskRoutes.show({ task: task.id })}
+                                                                    className={`block text-left text-xs font-semibold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400 ${
+                                                                        task.status ===
+                                                                        'completed'
+                                                                            ? 'line-through opacity-50'
+                                                                            : ''
+                                                                    }`}
+                                                                >
+                                                                    {task.title}
+                                                                </Link>
+                                                            </div>
 
                                                             {task.matter ? (
                                                                 <div className="flex items-center">
@@ -905,18 +919,23 @@ export default function TasksIndex({
                                     const overdue = isTaskOverdue(task);
 
                                     return (
-                                        <article
+                                        <Link
                                             key={task.id}
-                                            onClick={() =>
-                                                setSelectedTask(task)
-                                            }
+                                            href={taskRoutes.show({ task: task.id })}
                                             className="group flex cursor-pointer flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]"
                                         >
                                             <div className="space-y-2.5">
                                                 <div className="flex items-start justify-between gap-2">
-                                                    <StatusBadge
-                                                        value={task.priority}
-                                                    />
+                                                    <div className="flex items-center gap-1.5">
+                                                        {task.task_number && (
+                                                            <span className="rounded bg-amber-500/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-700 dark:bg-amber-400/10 dark:text-amber-300">
+                                                                {task.task_number}
+                                                            </span>
+                                                        )}
+                                                        <StatusBadge
+                                                            value={task.priority}
+                                                        />
+                                                    </div>
                                                     <StatusBadge
                                                         value={task.status}
                                                     />
@@ -1026,7 +1045,7 @@ export default function TasksIndex({
                                                     )}
                                                 </div>
                                             </div>
-                                        </article>
+                                        </Link>
                                     );
                                 })}
                             </div>

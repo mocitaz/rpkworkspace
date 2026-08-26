@@ -73,7 +73,8 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::put('clients/{client}/compliance-documents/{complianceDocument}', [ClientController::class, 'updateComplianceDocument'])->name('clients.compliance.update');
     Route::delete('clients/{client}/compliance-documents/{complianceDocument}', [ClientController::class, 'destroyComplianceDocument'])->name('clients.compliance.destroy');
     Route::resource('contacts', ContactController::class)->only(['index', 'store', 'update', 'destroy']);
-    Route::resource('tasks', TaskController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('tasks', TaskController::class);
+    Route::patch('tasks/{task}/checklists/{checklistId}/toggle', [TaskController::class, 'toggleChecklist'])->name('tasks.checklists.toggle');
     Route::redirect('templates', '/documents')->name('templates.index');
     Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
     Route::post('comments/{comment}/reaction', [CommentController::class, 'toggleReaction'])->name('comments.reaction');
