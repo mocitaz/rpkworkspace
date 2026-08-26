@@ -46,8 +46,6 @@ import {
     DocumentPreviewModal,
     type PreviewableDocument,
 } from '@/components/documents/document-preview-modal';
-import { EmptyState } from '@/components/empty-state';
-import { MatterEditDialog } from '@/components/matter-edit-dialog';
 import { StatusBadge } from '@/components/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -479,13 +477,18 @@ export default function MatterShow({
                                 </a>
                             </Button>
 
-                            {can.update && editOptions && (
-                                <MatterEditDialog
-                                    matter={matter}
-                                    practiceAreas={editOptions.practiceAreas}
-                                    users={editOptions.users}
-                                    parentMatters={editOptions.parentMatters}
-                                />
+                            {can.update && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
+                                    asChild
+                                >
+                                    <Link href={matterRoutes.edit.url(matter.id)}>
+                                        <Pencil className="mr-1 size-3 text-slate-400" />
+                                        Edit Perkara
+                                    </Link>
+                                </Button>
                             )}
 
                             {can.update && (

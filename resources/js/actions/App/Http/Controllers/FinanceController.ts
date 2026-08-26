@@ -1,0 +1,1495 @@
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+/**
+* @see \App\Http\Controllers\FinanceController::index
+* @see app/Http/Controllers/FinanceController.php:57
+* @route '/finance'
+*/
+export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: index.url(options),
+    method: 'get',
+})
+
+index.definition = {
+    methods: ["get","head"],
+    url: '/finance',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::index
+* @see app/Http/Controllers/FinanceController.php:57
+* @route '/finance'
+*/
+index.url = (options?: RouteQueryOptions) => {
+    return index.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::index
+* @see app/Http/Controllers/FinanceController.php:57
+* @route '/finance'
+*/
+index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::index
+* @see app/Http/Controllers/FinanceController.php:57
+* @route '/finance'
+*/
+index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: index.url(options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::index
+* @see app/Http/Controllers/FinanceController.php:57
+* @route '/finance'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::index
+* @see app/Http/Controllers/FinanceController.php:57
+* @route '/finance'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::index
+* @see app/Http/Controllers/FinanceController.php:57
+* @route '/finance'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::exportExcel
+* @see app/Http/Controllers/FinanceController.php:571
+* @route '/finance/export/excel'
+*/
+export const exportExcel = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: exportExcel.url(options),
+    method: 'get',
+})
+
+exportExcel.definition = {
+    methods: ["get","head"],
+    url: '/finance/export/excel',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::exportExcel
+* @see app/Http/Controllers/FinanceController.php:571
+* @route '/finance/export/excel'
+*/
+exportExcel.url = (options?: RouteQueryOptions) => {
+    return exportExcel.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::exportExcel
+* @see app/Http/Controllers/FinanceController.php:571
+* @route '/finance/export/excel'
+*/
+exportExcel.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: exportExcel.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::exportExcel
+* @see app/Http/Controllers/FinanceController.php:571
+* @route '/finance/export/excel'
+*/
+exportExcel.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: exportExcel.url(options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::exportExcel
+* @see app/Http/Controllers/FinanceController.php:571
+* @route '/finance/export/excel'
+*/
+const exportExcelForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportExcel.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::exportExcel
+* @see app/Http/Controllers/FinanceController.php:571
+* @route '/finance/export/excel'
+*/
+exportExcelForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportExcel.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::exportExcel
+* @see app/Http/Controllers/FinanceController.php:571
+* @route '/finance/export/excel'
+*/
+exportExcelForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: exportExcel.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+exportExcel.form = exportExcelForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeInvoice
+* @see app/Http/Controllers/FinanceController.php:144
+* @route '/finance/invoices'
+*/
+export const storeInvoice = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeInvoice.url(options),
+    method: 'post',
+})
+
+storeInvoice.definition = {
+    methods: ["post"],
+    url: '/finance/invoices',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeInvoice
+* @see app/Http/Controllers/FinanceController.php:144
+* @route '/finance/invoices'
+*/
+storeInvoice.url = (options?: RouteQueryOptions) => {
+    return storeInvoice.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeInvoice
+* @see app/Http/Controllers/FinanceController.php:144
+* @route '/finance/invoices'
+*/
+storeInvoice.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeInvoice.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeInvoice
+* @see app/Http/Controllers/FinanceController.php:144
+* @route '/finance/invoices'
+*/
+const storeInvoiceForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeInvoice.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeInvoice
+* @see app/Http/Controllers/FinanceController.php:144
+* @route '/finance/invoices'
+*/
+storeInvoiceForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeInvoice.url(options),
+    method: 'post',
+})
+
+storeInvoice.form = storeInvoiceForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::transitionInvoice
+* @see app/Http/Controllers/FinanceController.php:162
+* @route '/finance/invoices/{invoice}/status'
+*/
+export const transitionInvoice = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+    url: transitionInvoice.url(args, options),
+    method: 'patch',
+})
+
+transitionInvoice.definition = {
+    methods: ["patch"],
+    url: '/finance/invoices/{invoice}/status',
+} satisfies RouteDefinition<["patch"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::transitionInvoice
+* @see app/Http/Controllers/FinanceController.php:162
+* @route '/finance/invoices/{invoice}/status'
+*/
+transitionInvoice.url = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { invoice: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { invoice: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            invoice: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        invoice: typeof args.invoice === 'object'
+        ? args.invoice.id
+        : args.invoice,
+    }
+
+    return transitionInvoice.definition.url
+            .replace('{invoice}', parsedArgs.invoice.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::transitionInvoice
+* @see app/Http/Controllers/FinanceController.php:162
+* @route '/finance/invoices/{invoice}/status'
+*/
+transitionInvoice.patch = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+    url: transitionInvoice.url(args, options),
+    method: 'patch',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::transitionInvoice
+* @see app/Http/Controllers/FinanceController.php:162
+* @route '/finance/invoices/{invoice}/status'
+*/
+const transitionInvoiceForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: transitionInvoice.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::transitionInvoice
+* @see app/Http/Controllers/FinanceController.php:162
+* @route '/finance/invoices/{invoice}/status'
+*/
+transitionInvoiceForm.patch = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: transitionInvoice.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+transitionInvoice.form = transitionInvoiceForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeQuotation
+* @see app/Http/Controllers/FinanceController.php:153
+* @route '/finance/quotations'
+*/
+export const storeQuotation = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeQuotation.url(options),
+    method: 'post',
+})
+
+storeQuotation.definition = {
+    methods: ["post"],
+    url: '/finance/quotations',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeQuotation
+* @see app/Http/Controllers/FinanceController.php:153
+* @route '/finance/quotations'
+*/
+storeQuotation.url = (options?: RouteQueryOptions) => {
+    return storeQuotation.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeQuotation
+* @see app/Http/Controllers/FinanceController.php:153
+* @route '/finance/quotations'
+*/
+storeQuotation.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeQuotation.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeQuotation
+* @see app/Http/Controllers/FinanceController.php:153
+* @route '/finance/quotations'
+*/
+const storeQuotationForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeQuotation.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeQuotation
+* @see app/Http/Controllers/FinanceController.php:153
+* @route '/finance/quotations'
+*/
+storeQuotationForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeQuotation.url(options),
+    method: 'post',
+})
+
+storeQuotation.form = storeQuotationForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::approveQuotation
+* @see app/Http/Controllers/FinanceController.php:170
+* @route '/finance/quotations/{quotation}/approve'
+*/
+export const approveQuotation = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: approveQuotation.url(args, options),
+    method: 'post',
+})
+
+approveQuotation.definition = {
+    methods: ["post"],
+    url: '/finance/quotations/{quotation}/approve',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::approveQuotation
+* @see app/Http/Controllers/FinanceController.php:170
+* @route '/finance/quotations/{quotation}/approve'
+*/
+approveQuotation.url = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { quotation: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { quotation: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            quotation: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        quotation: typeof args.quotation === 'object'
+        ? args.quotation.id
+        : args.quotation,
+    }
+
+    return approveQuotation.definition.url
+            .replace('{quotation}', parsedArgs.quotation.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::approveQuotation
+* @see app/Http/Controllers/FinanceController.php:170
+* @route '/finance/quotations/{quotation}/approve'
+*/
+approveQuotation.post = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: approveQuotation.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::approveQuotation
+* @see app/Http/Controllers/FinanceController.php:170
+* @route '/finance/quotations/{quotation}/approve'
+*/
+const approveQuotationForm = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: approveQuotation.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::approveQuotation
+* @see app/Http/Controllers/FinanceController.php:170
+* @route '/finance/quotations/{quotation}/approve'
+*/
+approveQuotationForm.post = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: approveQuotation.url(args, options),
+    method: 'post',
+})
+
+approveQuotation.form = approveQuotationForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeExpense
+* @see app/Http/Controllers/FinanceController.php:178
+* @route '/finance/expenses'
+*/
+export const storeExpense = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeExpense.url(options),
+    method: 'post',
+})
+
+storeExpense.definition = {
+    methods: ["post"],
+    url: '/finance/expenses',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeExpense
+* @see app/Http/Controllers/FinanceController.php:178
+* @route '/finance/expenses'
+*/
+storeExpense.url = (options?: RouteQueryOptions) => {
+    return storeExpense.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeExpense
+* @see app/Http/Controllers/FinanceController.php:178
+* @route '/finance/expenses'
+*/
+storeExpense.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeExpense.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeExpense
+* @see app/Http/Controllers/FinanceController.php:178
+* @route '/finance/expenses'
+*/
+const storeExpenseForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeExpense.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeExpense
+* @see app/Http/Controllers/FinanceController.php:178
+* @route '/finance/expenses'
+*/
+storeExpenseForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeExpense.url(options),
+    method: 'post',
+})
+
+storeExpense.form = storeExpenseForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::destroyExpense
+* @see app/Http/Controllers/FinanceController.php:215
+* @route '/finance/expenses/{expense}'
+*/
+export const destroyExpense = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+    url: destroyExpense.url(args, options),
+    method: 'delete',
+})
+
+destroyExpense.definition = {
+    methods: ["delete"],
+    url: '/finance/expenses/{expense}',
+} satisfies RouteDefinition<["delete"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::destroyExpense
+* @see app/Http/Controllers/FinanceController.php:215
+* @route '/finance/expenses/{expense}'
+*/
+destroyExpense.url = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { expense: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { expense: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            expense: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        expense: typeof args.expense === 'object'
+        ? args.expense.id
+        : args.expense,
+    }
+
+    return destroyExpense.definition.url
+            .replace('{expense}', parsedArgs.expense.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::destroyExpense
+* @see app/Http/Controllers/FinanceController.php:215
+* @route '/finance/expenses/{expense}'
+*/
+destroyExpense.delete = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+    url: destroyExpense.url(args, options),
+    method: 'delete',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::destroyExpense
+* @see app/Http/Controllers/FinanceController.php:215
+* @route '/finance/expenses/{expense}'
+*/
+const destroyExpenseForm = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroyExpense.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::destroyExpense
+* @see app/Http/Controllers/FinanceController.php:215
+* @route '/finance/expenses/{expense}'
+*/
+destroyExpenseForm.delete = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroyExpense.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroyExpense.form = destroyExpenseForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePayment
+* @see app/Http/Controllers/FinanceController.php:241
+* @route '/finance/payments'
+*/
+export const storePayment = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storePayment.url(options),
+    method: 'post',
+})
+
+storePayment.definition = {
+    methods: ["post"],
+    url: '/finance/payments',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePayment
+* @see app/Http/Controllers/FinanceController.php:241
+* @route '/finance/payments'
+*/
+storePayment.url = (options?: RouteQueryOptions) => {
+    return storePayment.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePayment
+* @see app/Http/Controllers/FinanceController.php:241
+* @route '/finance/payments'
+*/
+storePayment.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storePayment.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePayment
+* @see app/Http/Controllers/FinanceController.php:241
+* @route '/finance/payments'
+*/
+const storePaymentForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storePayment.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePayment
+* @see app/Http/Controllers/FinanceController.php:241
+* @route '/finance/payments'
+*/
+storePaymentForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storePayment.url(options),
+    method: 'post',
+})
+
+storePayment.form = storePaymentForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::reversePayment
+* @see app/Http/Controllers/FinanceController.php:277
+* @route '/finance/payments/{payment}/reverse'
+*/
+export const reversePayment = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: reversePayment.url(args, options),
+    method: 'post',
+})
+
+reversePayment.definition = {
+    methods: ["post"],
+    url: '/finance/payments/{payment}/reverse',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::reversePayment
+* @see app/Http/Controllers/FinanceController.php:277
+* @route '/finance/payments/{payment}/reverse'
+*/
+reversePayment.url = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { payment: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { payment: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            payment: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        payment: typeof args.payment === 'object'
+        ? args.payment.id
+        : args.payment,
+    }
+
+    return reversePayment.definition.url
+            .replace('{payment}', parsedArgs.payment.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::reversePayment
+* @see app/Http/Controllers/FinanceController.php:277
+* @route '/finance/payments/{payment}/reverse'
+*/
+reversePayment.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: reversePayment.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::reversePayment
+* @see app/Http/Controllers/FinanceController.php:277
+* @route '/finance/payments/{payment}/reverse'
+*/
+const reversePaymentForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: reversePayment.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::reversePayment
+* @see app/Http/Controllers/FinanceController.php:277
+* @route '/finance/payments/{payment}/reverse'
+*/
+reversePaymentForm.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: reversePayment.url(args, options),
+    method: 'post',
+})
+
+reversePayment.form = reversePaymentForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::refundPayment
+* @see app/Http/Controllers/FinanceController.php:289
+* @route '/finance/payments/{payment}/refund'
+*/
+export const refundPayment = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: refundPayment.url(args, options),
+    method: 'post',
+})
+
+refundPayment.definition = {
+    methods: ["post"],
+    url: '/finance/payments/{payment}/refund',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::refundPayment
+* @see app/Http/Controllers/FinanceController.php:289
+* @route '/finance/payments/{payment}/refund'
+*/
+refundPayment.url = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { payment: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { payment: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            payment: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        payment: typeof args.payment === 'object'
+        ? args.payment.id
+        : args.payment,
+    }
+
+    return refundPayment.definition.url
+            .replace('{payment}', parsedArgs.payment.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::refundPayment
+* @see app/Http/Controllers/FinanceController.php:289
+* @route '/finance/payments/{payment}/refund'
+*/
+refundPayment.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: refundPayment.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::refundPayment
+* @see app/Http/Controllers/FinanceController.php:289
+* @route '/finance/payments/{payment}/refund'
+*/
+const refundPaymentForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: refundPayment.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::refundPayment
+* @see app/Http/Controllers/FinanceController.php:289
+* @route '/finance/payments/{payment}/refund'
+*/
+refundPaymentForm.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: refundPayment.url(args, options),
+    method: 'post',
+})
+
+refundPayment.form = refundPaymentForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadInvoice
+* @see app/Http/Controllers/FinanceController.php:545
+* @route '/finance/invoices/{invoice}/pdf'
+*/
+export const downloadInvoice = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: downloadInvoice.url(args, options),
+    method: 'get',
+})
+
+downloadInvoice.definition = {
+    methods: ["get","head"],
+    url: '/finance/invoices/{invoice}/pdf',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadInvoice
+* @see app/Http/Controllers/FinanceController.php:545
+* @route '/finance/invoices/{invoice}/pdf'
+*/
+downloadInvoice.url = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { invoice: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { invoice: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            invoice: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        invoice: typeof args.invoice === 'object'
+        ? args.invoice.id
+        : args.invoice,
+    }
+
+    return downloadInvoice.definition.url
+            .replace('{invoice}', parsedArgs.invoice.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadInvoice
+* @see app/Http/Controllers/FinanceController.php:545
+* @route '/finance/invoices/{invoice}/pdf'
+*/
+downloadInvoice.get = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: downloadInvoice.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadInvoice
+* @see app/Http/Controllers/FinanceController.php:545
+* @route '/finance/invoices/{invoice}/pdf'
+*/
+downloadInvoice.head = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: downloadInvoice.url(args, options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadInvoice
+* @see app/Http/Controllers/FinanceController.php:545
+* @route '/finance/invoices/{invoice}/pdf'
+*/
+const downloadInvoiceForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadInvoice.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadInvoice
+* @see app/Http/Controllers/FinanceController.php:545
+* @route '/finance/invoices/{invoice}/pdf'
+*/
+downloadInvoiceForm.get = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadInvoice.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadInvoice
+* @see app/Http/Controllers/FinanceController.php:545
+* @route '/finance/invoices/{invoice}/pdf'
+*/
+downloadInvoiceForm.head = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadInvoice.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+downloadInvoice.form = downloadInvoiceForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadQuotation
+* @see app/Http/Controllers/FinanceController.php:558
+* @route '/finance/quotations/{quotation}/pdf'
+*/
+export const downloadQuotation = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: downloadQuotation.url(args, options),
+    method: 'get',
+})
+
+downloadQuotation.definition = {
+    methods: ["get","head"],
+    url: '/finance/quotations/{quotation}/pdf',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadQuotation
+* @see app/Http/Controllers/FinanceController.php:558
+* @route '/finance/quotations/{quotation}/pdf'
+*/
+downloadQuotation.url = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { quotation: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { quotation: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            quotation: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        quotation: typeof args.quotation === 'object'
+        ? args.quotation.id
+        : args.quotation,
+    }
+
+    return downloadQuotation.definition.url
+            .replace('{quotation}', parsedArgs.quotation.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadQuotation
+* @see app/Http/Controllers/FinanceController.php:558
+* @route '/finance/quotations/{quotation}/pdf'
+*/
+downloadQuotation.get = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: downloadQuotation.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadQuotation
+* @see app/Http/Controllers/FinanceController.php:558
+* @route '/finance/quotations/{quotation}/pdf'
+*/
+downloadQuotation.head = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: downloadQuotation.url(args, options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadQuotation
+* @see app/Http/Controllers/FinanceController.php:558
+* @route '/finance/quotations/{quotation}/pdf'
+*/
+const downloadQuotationForm = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadQuotation.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadQuotation
+* @see app/Http/Controllers/FinanceController.php:558
+* @route '/finance/quotations/{quotation}/pdf'
+*/
+downloadQuotationForm.get = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadQuotation.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadQuotation
+* @see app/Http/Controllers/FinanceController.php:558
+* @route '/finance/quotations/{quotation}/pdf'
+*/
+downloadQuotationForm.head = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadQuotation.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+downloadQuotation.form = downloadQuotationForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeAccount
+* @see app/Http/Controllers/FinanceController.php:301
+* @route '/finance/accounts'
+*/
+export const storeAccount = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeAccount.url(options),
+    method: 'post',
+})
+
+storeAccount.definition = {
+    methods: ["post"],
+    url: '/finance/accounts',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeAccount
+* @see app/Http/Controllers/FinanceController.php:301
+* @route '/finance/accounts'
+*/
+storeAccount.url = (options?: RouteQueryOptions) => {
+    return storeAccount.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeAccount
+* @see app/Http/Controllers/FinanceController.php:301
+* @route '/finance/accounts'
+*/
+storeAccount.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeAccount.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeAccount
+* @see app/Http/Controllers/FinanceController.php:301
+* @route '/finance/accounts'
+*/
+const storeAccountForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeAccount.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeAccount
+* @see app/Http/Controllers/FinanceController.php:301
+* @route '/finance/accounts'
+*/
+storeAccountForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeAccount.url(options),
+    method: 'post',
+})
+
+storeAccount.form = storeAccountForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeTransfer
+* @see app/Http/Controllers/FinanceController.php:315
+* @route '/finance/transfers'
+*/
+export const storeTransfer = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeTransfer.url(options),
+    method: 'post',
+})
+
+storeTransfer.definition = {
+    methods: ["post"],
+    url: '/finance/transfers',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeTransfer
+* @see app/Http/Controllers/FinanceController.php:315
+* @route '/finance/transfers'
+*/
+storeTransfer.url = (options?: RouteQueryOptions) => {
+    return storeTransfer.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeTransfer
+* @see app/Http/Controllers/FinanceController.php:315
+* @route '/finance/transfers'
+*/
+storeTransfer.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeTransfer.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeTransfer
+* @see app/Http/Controllers/FinanceController.php:315
+* @route '/finance/transfers'
+*/
+const storeTransferForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeTransfer.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeTransfer
+* @see app/Http/Controllers/FinanceController.php:315
+* @route '/finance/transfers'
+*/
+storeTransferForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeTransfer.url(options),
+    method: 'post',
+})
+
+storeTransfer.form = storeTransferForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePartnerTransaction
+* @see app/Http/Controllers/FinanceController.php:355
+* @route '/finance/partner-transactions'
+*/
+export const storePartnerTransaction = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storePartnerTransaction.url(options),
+    method: 'post',
+})
+
+storePartnerTransaction.definition = {
+    methods: ["post"],
+    url: '/finance/partner-transactions',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePartnerTransaction
+* @see app/Http/Controllers/FinanceController.php:355
+* @route '/finance/partner-transactions'
+*/
+storePartnerTransaction.url = (options?: RouteQueryOptions) => {
+    return storePartnerTransaction.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePartnerTransaction
+* @see app/Http/Controllers/FinanceController.php:355
+* @route '/finance/partner-transactions'
+*/
+storePartnerTransaction.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storePartnerTransaction.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePartnerTransaction
+* @see app/Http/Controllers/FinanceController.php:355
+* @route '/finance/partner-transactions'
+*/
+const storePartnerTransactionForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storePartnerTransaction.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePartnerTransaction
+* @see app/Http/Controllers/FinanceController.php:355
+* @route '/finance/partner-transactions'
+*/
+storePartnerTransactionForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storePartnerTransaction.url(options),
+    method: 'post',
+})
+
+storePartnerTransaction.form = storePartnerTransactionForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeClientTrustFund
+* @see app/Http/Controllers/FinanceController.php:418
+* @route '/finance/client-trust-funds'
+*/
+export const storeClientTrustFund = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeClientTrustFund.url(options),
+    method: 'post',
+})
+
+storeClientTrustFund.definition = {
+    methods: ["post"],
+    url: '/finance/client-trust-funds',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeClientTrustFund
+* @see app/Http/Controllers/FinanceController.php:418
+* @route '/finance/client-trust-funds'
+*/
+storeClientTrustFund.url = (options?: RouteQueryOptions) => {
+    return storeClientTrustFund.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeClientTrustFund
+* @see app/Http/Controllers/FinanceController.php:418
+* @route '/finance/client-trust-funds'
+*/
+storeClientTrustFund.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storeClientTrustFund.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeClientTrustFund
+* @see app/Http/Controllers/FinanceController.php:418
+* @route '/finance/client-trust-funds'
+*/
+const storeClientTrustFundForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeClientTrustFund.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storeClientTrustFund
+* @see app/Http/Controllers/FinanceController.php:418
+* @route '/finance/client-trust-funds'
+*/
+storeClientTrustFundForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeClientTrustFund.url(options),
+    method: 'post',
+})
+
+storeClientTrustFund.form = storeClientTrustFundForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePayroll
+* @see app/Http/Controllers/FinanceController.php:464
+* @route '/finance/payrolls'
+*/
+export const storePayroll = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storePayroll.url(options),
+    method: 'post',
+})
+
+storePayroll.definition = {
+    methods: ["post"],
+    url: '/finance/payrolls',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePayroll
+* @see app/Http/Controllers/FinanceController.php:464
+* @route '/finance/payrolls'
+*/
+storePayroll.url = (options?: RouteQueryOptions) => {
+    return storePayroll.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePayroll
+* @see app/Http/Controllers/FinanceController.php:464
+* @route '/finance/payrolls'
+*/
+storePayroll.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: storePayroll.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePayroll
+* @see app/Http/Controllers/FinanceController.php:464
+* @route '/finance/payrolls'
+*/
+const storePayrollForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storePayroll.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::storePayroll
+* @see app/Http/Controllers/FinanceController.php:464
+* @route '/finance/payrolls'
+*/
+storePayrollForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storePayroll.url(options),
+    method: 'post',
+})
+
+storePayroll.form = storePayrollForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::updatePayrollStatus
+* @see app/Http/Controllers/FinanceController.php:508
+* @route '/finance/payrolls/{payroll}/status'
+*/
+export const updatePayrollStatus = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+    url: updatePayrollStatus.url(args, options),
+    method: 'patch',
+})
+
+updatePayrollStatus.definition = {
+    methods: ["patch"],
+    url: '/finance/payrolls/{payroll}/status',
+} satisfies RouteDefinition<["patch"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::updatePayrollStatus
+* @see app/Http/Controllers/FinanceController.php:508
+* @route '/finance/payrolls/{payroll}/status'
+*/
+updatePayrollStatus.url = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { payroll: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { payroll: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            payroll: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        payroll: typeof args.payroll === 'object'
+        ? args.payroll.id
+        : args.payroll,
+    }
+
+    return updatePayrollStatus.definition.url
+            .replace('{payroll}', parsedArgs.payroll.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::updatePayrollStatus
+* @see app/Http/Controllers/FinanceController.php:508
+* @route '/finance/payrolls/{payroll}/status'
+*/
+updatePayrollStatus.patch = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+    url: updatePayrollStatus.url(args, options),
+    method: 'patch',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::updatePayrollStatus
+* @see app/Http/Controllers/FinanceController.php:508
+* @route '/finance/payrolls/{payroll}/status'
+*/
+const updatePayrollStatusForm = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: updatePayrollStatus.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::updatePayrollStatus
+* @see app/Http/Controllers/FinanceController.php:508
+* @route '/finance/payrolls/{payroll}/status'
+*/
+updatePayrollStatusForm.patch = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: updatePayrollStatus.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+updatePayrollStatus.form = updatePayrollStatusForm
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadPayslip
+* @see app/Http/Controllers/FinanceController.php:530
+* @route '/finance/payrolls/{payroll}/slip'
+*/
+export const downloadPayslip = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: downloadPayslip.url(args, options),
+    method: 'get',
+})
+
+downloadPayslip.definition = {
+    methods: ["get","head"],
+    url: '/finance/payrolls/{payroll}/slip',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadPayslip
+* @see app/Http/Controllers/FinanceController.php:530
+* @route '/finance/payrolls/{payroll}/slip'
+*/
+downloadPayslip.url = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { payroll: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { payroll: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            payroll: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        payroll: typeof args.payroll === 'object'
+        ? args.payroll.id
+        : args.payroll,
+    }
+
+    return downloadPayslip.definition.url
+            .replace('{payroll}', parsedArgs.payroll.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadPayslip
+* @see app/Http/Controllers/FinanceController.php:530
+* @route '/finance/payrolls/{payroll}/slip'
+*/
+downloadPayslip.get = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: downloadPayslip.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadPayslip
+* @see app/Http/Controllers/FinanceController.php:530
+* @route '/finance/payrolls/{payroll}/slip'
+*/
+downloadPayslip.head = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: downloadPayslip.url(args, options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadPayslip
+* @see app/Http/Controllers/FinanceController.php:530
+* @route '/finance/payrolls/{payroll}/slip'
+*/
+const downloadPayslipForm = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadPayslip.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadPayslip
+* @see app/Http/Controllers/FinanceController.php:530
+* @route '/finance/payrolls/{payroll}/slip'
+*/
+downloadPayslipForm.get = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadPayslip.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::downloadPayslip
+* @see app/Http/Controllers/FinanceController.php:530
+* @route '/finance/payrolls/{payroll}/slip'
+*/
+downloadPayslipForm.head = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadPayslip.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+downloadPayslip.form = downloadPayslipForm
+
+const FinanceController = { index, exportExcel, storeInvoice, transitionInvoice, storeQuotation, approveQuotation, storeExpense, destroyExpense, storePayment, reversePayment, refundPayment, downloadInvoice, downloadQuotation, storeAccount, storeTransfer, storePartnerTransaction, storeClientTrustFund, storePayroll, updatePayrollStatus, downloadPayslip }
+
+export default FinanceController

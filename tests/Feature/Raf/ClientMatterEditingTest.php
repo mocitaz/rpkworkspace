@@ -57,3 +57,21 @@ it('synchronizes matter members and notifies only newly added active members', f
     Notification::assertSentTo($newMember, MatterAssignedNotification::class);
     Notification::assertNotSentTo($existingMember, MatterAssignedNotification::class);
 });
+
+it('renders the dedicated matter edit page for authorized users', function () {
+    $editor = rafUser(['matter.view', 'matter.update']);
+    $matter = Matter::factory()->recycle($editor)->create([
+        'responsible_partner_id' => $editor->getKey(),
+        'created_by' => $editor->getKey(),
+    ]);
+
+    $this->actingAs($editor)->get(route('matters.edit', $matter))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('matters/edit')
+            ->has('matter')
+            ->has('practiceAreas')
+            ->has('users')
+            ->has('parentMatters')
+        );
+});

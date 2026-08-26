@@ -129,11 +129,30 @@ class MatterController extends Controller
             'matter' => $matter,
             'firmStaff' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title', 'avatar_path']),
             'can' => ['update' => $request->user()->can('update', $matter), 'uploadDocument' => $request->user()->can('create', Document::class)],
-            'editOptions' => $request->user()->can('update', $matter) ? [
-                'practiceAreas' => PracticeArea::query()->where('is_active', true)->orderBy('sort_order')->get(['id', 'name']),
-                'users' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title']),
-                'parentMatters' => Matter::query()->visibleTo($request->user())->where('id', '!=', $matter->id)->whereNotIn('status', ['closed', 'archived'])->orderBy('matter_number')->get(['id', 'matter_number', 'title']),
-            ] : null,
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Request $request, Matter $matter): Response
+    {
+        Gate::authorize('update', $matter);
+
+        $matter->load([
+            'client:id,client_number,display_name,type,legal_name',
+            'practiceArea:id,name',
+            'parentMatter:id,matter_number,title',
+            'responsiblePartner:id,name,position_title,avatar_path',
+            'supervisingLawyer:id,name,position_title,avatar_path',
+            'members:id,name,position_title,avatar_path',
+        ]);
+
+        return Inertia::render('matters/edit', [
+            'matter' => $matter,
+            'practiceAreas' => PracticeArea::query()->where('is_active', true)->orderBy('sort_order')->get(['id', 'name']),
+            'users' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title', 'avatar_path']),
+            'parentMatters' => Matter::query()->visibleTo($request->user())->where('id', '!=', $matter->id)->whereNotIn('status', ['closed', 'archived'])->orderBy('matter_number')->get(['id', 'matter_number', 'title']),
         ]);
     }
 
@@ -145,6 +164,6 @@ class MatterController extends Controller
         $updateMatter->handle($matter, $request->validated(), $request->user());
         $audit->record($matter, 'matter.updated', ['changed' => array_keys($matter->getChanges())], $request->user(), $request);
 
-        return back()->with('success', 'Matter diperbarui.');
+        return to_route('matters.show', $matter)->with('success', 'Perkara berhasil diperbarui.');
     }
 }
