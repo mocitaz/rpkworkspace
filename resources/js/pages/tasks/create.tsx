@@ -5,6 +5,7 @@ import {
     Calendar,
     CalendarClock,
     CheckCircle2,
+    ChevronDown,
     Clock,
     DollarSign,
     FileText,
@@ -13,7 +14,6 @@ import {
     ListChecks,
     Plus,
     Scale,
-    Sparkles,
     Trash2,
     UserCheck,
     Users,
@@ -186,19 +186,22 @@ export default function TaskCreate({
                                     <Label htmlFor="category" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
                                         Kategori Tugas Hukum <span className="text-rose-500">*</span>
                                     </Label>
-                                    <select
-                                        id="category"
-                                        value={data.category}
-                                        onChange={(e) => setData('category', e.target.value)}
-                                        className="h-9 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-800 shadow-2xs focus:border-blue-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
-                                        required
-                                    >
-                                        {categories.map((c) => (
-                                            <option key={c.id} value={c.id}>
-                                                {c.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="relative">
+                                        <select
+                                            id="category"
+                                            value={data.category}
+                                            onChange={(e) => setData('category', e.target.value)}
+                                            className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs text-slate-800 shadow-2xs focus:border-blue-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
+                                            required
+                                        >
+                                            {categories.map((c) => (
+                                                <option key={c.id} value={c.id}>
+                                                    {c.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
+                                    </div>
                                     <InputError message={errors.category} />
                                 </div>
 
@@ -206,18 +209,21 @@ export default function TaskCreate({
                                     <Label htmlFor="stage" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
                                         Tahapan Perkara
                                     </Label>
-                                    <select
-                                        id="stage"
-                                        value={data.stage}
-                                        onChange={(e) => setData('stage', e.target.value)}
-                                        className="h-9 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-800 shadow-2xs focus:border-blue-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
-                                    >
-                                        {stages.map((s) => (
-                                            <option key={s.id} value={s.id}>
-                                                {s.name}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="relative">
+                                        <select
+                                            id="stage"
+                                            value={data.stage}
+                                            onChange={(e) => setData('stage', e.target.value)}
+                                            className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs text-slate-800 shadow-2xs focus:border-blue-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
+                                        >
+                                            {stages.map((s) => (
+                                                <option key={s.id} value={s.id}>
+                                                    {s.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
+                                    </div>
                                     <InputError message={errors.stage} />
                                 </div>
 
@@ -225,19 +231,22 @@ export default function TaskCreate({
                                     <Label htmlFor="matter_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
                                         Hubungkan ke Perkara Terkait
                                     </Label>
-                                    <select
-                                        id="matter_id"
-                                        value={data.matter_id}
-                                        onChange={(e) => setData('matter_id', e.target.value)}
-                                        className="h-9 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-800 shadow-2xs focus:border-blue-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
-                                    >
-                                        <option value="">-- Tanpa Perkara (Tugas Operasional Kantor / Non-Perkara) --</option>
-                                        {matters.map((m) => (
-                                            <option key={m.id} value={m.id}>
-                                                {m.matter_number} - {m.title} {m.client ? `(${m.client.name})` : ''}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="relative">
+                                        <select
+                                            id="matter_id"
+                                            value={data.matter_id}
+                                            onChange={(e) => setData('matter_id', e.target.value)}
+                                            className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs text-slate-800 shadow-2xs focus:border-blue-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
+                                        >
+                                            <option value="">-- Tanpa Perkara (Tugas Operasional Kantor / Non-Perkara) --</option>
+                                            {matters.map((m) => (
+                                                <option key={m.id} value={m.id}>
+                                                    {m.matter_number} - {m.title} {m.client ? `(${m.client.name})` : ''}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
+                                    </div>
                                     <p className="text-[11px] text-slate-500 dark:text-zinc-500">
                                         Jika dihubungkan, tugas akan otomatis tampil pada tab Berkas Kerja Perkara terkait.
                                     </p>
@@ -284,7 +293,7 @@ export default function TaskCreate({
                             <div className="flex items-center gap-2 border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
                                 <Users className="size-4 text-indigo-600 dark:text-indigo-400" />
                                 <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                                    2. Delegasi Staf & Pemeriksa Hasil
+                                    2. Delegasi Staf &amp; Pemeriksa Hasil
                                 </h2>
                             </div>
 
@@ -293,20 +302,23 @@ export default function TaskCreate({
                                     <Label htmlFor="assignee_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
                                         Pelaksana Utama (Assignee) <span className="text-rose-500">*</span>
                                     </Label>
-                                    <select
-                                        id="assignee_id"
-                                        value={data.assignee_id}
-                                        onChange={(e) => setData('assignee_id', e.target.value)}
-                                        className="h-9 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-800 shadow-2xs focus:border-indigo-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
-                                        required
-                                    >
-                                        <option value="">-- Pilih Staf / Advokat Pelaksana --</option>
-                                        {users.map((u) => (
-                                            <option key={u.id} value={u.id}>
-                                                {u.name} ({u.position_title || 'Staf'})
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="relative">
+                                        <select
+                                            id="assignee_id"
+                                            value={data.assignee_id}
+                                            onChange={(e) => setData('assignee_id', e.target.value)}
+                                            className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs text-slate-800 shadow-2xs focus:border-indigo-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
+                                            required
+                                        >
+                                            <option value="">-- Pilih Staf / Advokat Pelaksana --</option>
+                                            {users.map((u) => (
+                                                <option key={u.id} value={u.id}>
+                                                    {u.name} ({u.position_title || 'Staf'})
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
+                                    </div>
                                     <p className="text-[11px] text-slate-500 dark:text-zinc-500">
                                         Staf akan menerima notifikasi penugasan otomatis.
                                     </p>
@@ -317,19 +329,22 @@ export default function TaskCreate({
                                     <Label htmlFor="reviewer_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
                                         Pemeriksa Hasil (Reviewer / Partner In Charge)
                                     </Label>
-                                    <select
-                                        id="reviewer_id"
-                                        value={data.reviewer_id}
-                                        onChange={(e) => setData('reviewer_id', e.target.value)}
-                                        className="h-9 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-800 shadow-2xs focus:border-indigo-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
-                                    >
-                                        <option value="">-- Tanpa Reviewer Khusus (Opsional) --</option>
-                                        {users.map((u) => (
-                                            <option key={u.id} value={u.id}>
-                                                {u.name} ({u.position_title || 'Advokat'})
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div className="relative">
+                                        <select
+                                            id="reviewer_id"
+                                            value={data.reviewer_id}
+                                            onChange={(e) => setData('reviewer_id', e.target.value)}
+                                            className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs text-slate-800 shadow-2xs focus:border-indigo-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
+                                        >
+                                            <option value="">-- Tanpa Reviewer Khusus (Opsional) --</option>
+                                            {users.map((u) => (
+                                                <option key={u.id} value={u.id}>
+                                                    {u.name} ({u.position_title || 'Advokat'})
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
+                                    </div>
                                     <p className="text-[11px] text-slate-500 dark:text-zinc-500">
                                         Partner/Senior yang akan memvalidasi draf sebelum difinalisasi.
                                     </p>
