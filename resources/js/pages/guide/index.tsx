@@ -4,9 +4,11 @@ import {
     ArrowUpRight,
     BookOpen,
     Briefcase,
+    Building2,
     Calendar,
     Check,
     CheckCircle2,
+    CheckSquare,
     ChevronDown,
     Clock,
     Command,
@@ -16,13 +18,18 @@ import {
     FileCheck,
     FileText,
     HelpCircle,
+    Inbox,
     KeyRound,
+    Layers,
+    ListTodo,
     Lock,
+    Mail,
     QrCode,
     Receipt,
     Scale,
     Search,
     Shield,
+    ShieldAlert,
     ShieldCheck,
     Sparkles,
     Terminal,
@@ -49,7 +56,6 @@ interface GuideItem {
         title: string;
         desc: string;
         role: string;
-        legalRef?: string;
     }[];
 }
 
@@ -58,8 +64,8 @@ const GUIDES: GuideItem[] = [
         id: 'matters',
         code: 'SOP-OPS-01',
         category: 'Perkara',
-        title: 'Manajemen Perkara & Uji Konflik Kepentingan',
-        description: 'Alur registrasi perkara terpadu mulai dari conflict check otomatis, pembagian wewenang kuasa hukum, matriks alat bukti, jadwal sidang, hingga inkracht.',
+        title: 'Manajemen Perkara & Uji Benturan Konflik',
+        description: 'Alur registrasi perkara terpadu: conflict check otomatis, penugasan kuasa hukum, brankas bukti surat (P-1 s.d. P-n), hingga inkracht.',
         image: '/images/guide/matter.jpg',
         route: '/matters',
         actionLabel: 'Buka Modul Perkara',
@@ -67,29 +73,21 @@ const GUIDES: GuideItem[] = [
         steps: [
             {
                 num: '1',
-                title: 'Uji Benturan Kepentingan (Conflict Check)',
-                desc: 'Buka menu Perkara → "+ Registrasi Perkara Baru". Masukkan identitas lawan; sistem memverifikasi data silang untuk memastikan tidak ada konflik kepentingan.',
+                title: 'Conflict Check Otomatis',
+                desc: 'Verifikasi nama lawan secara real-time untuk memastikan bebas benturan kepentingan etis.',
                 role: 'Lead Partner',
-                legalRef: 'KEAI Pasal 4',
             },
             {
                 num: '2',
-                title: 'Penugasan Tim Advokat & Kuasa Hukum',
-                desc: 'Tunjuk Lead Partner penanggung jawab, Partner pendamping, dan Paralegal penelaah berkas. Hak akses data perkara otomatis disinkronkan.',
+                title: 'Penetapan Kuasa Hukum',
+                desc: 'Tunjuk Lead Partner dan Associate pendamping; akses berkas tersinkronisasi otomatis.',
                 role: 'Managing Partner',
             },
             {
                 num: '3',
-                title: 'Pencatatan Kronologi & Brankas Bukti Surat (P-1 s.d. P-n)',
-                desc: 'Unggah salinan draf gugatan, jawaban, replik, duplik, dan tandai nomor alat bukti surat di brankas digital.',
+                title: 'Brankas Matriks Bukti Surat',
+                desc: 'Unggah gugatan, replik, kesimpulan, dan tandai nomor alat bukti secara rapi.',
                 role: 'Associate',
-                legalRef: 'HIR / RBg',
-            },
-            {
-                num: '4',
-                title: 'Penyelesaian Putusan & Arsip Inkracht',
-                desc: 'Perbarui status menjadi inkracht, unduh Executive Summary Report untuk klien, dan simpan berkas ke arsip permanen.',
-                role: 'Lead Partner',
             },
         ],
     },
@@ -98,7 +96,7 @@ const GUIDES: GuideItem[] = [
         code: 'SOP-DOC-02',
         category: 'Dokumen',
         title: 'Generator Dokumen & Tanda Tangan Digital',
-        description: 'Pembuatan otomatis draf surat kuasa khusus dari template resmi firma, sirkulasi penandatanganan elektronik, dan verifikasi QR Code keabsahan berkas.',
+        description: 'Penerbitan otomatis draf surat kuasa khusus dari template baku, sirkulasi penandatanganan elektronik, dan segel QR Code keabsahan berkas.',
         image: '/images/guide/signature.jpg',
         route: '/documents',
         actionLabel: 'Buka Modul Dokumen',
@@ -106,22 +104,21 @@ const GUIDES: GuideItem[] = [
         steps: [
             {
                 num: '1',
-                title: 'Generate Draf dari Template Baku',
-                desc: 'Pilih template Surat Kuasa Khusus atau Somasi. Pilih Klien & Perkara; nama penerima kuasa, NIA, dan data lawan terisi otomatis.',
+                title: 'Draf Instan dari Template',
+                desc: 'Pilih template Surat Kuasa Khusus; nama penerima kuasa dan identitas lawan terisi presisi.',
                 role: 'Associate / Admin',
             },
             {
                 num: '2',
-                title: 'Sirkulasi Tanda Tangan Elektronik',
-                desc: 'Kirimkan draf ke penandatangan (Klien & Advokat). Klien menerima tautan verifikasi aman via email untuk menandatangani langsung dari browser.',
+                title: 'Sirkulasi TTD Elektronik',
+                desc: 'Kirim tautan verifikasi via email; klien dapat menandatangani langsung dari layar HP.',
                 role: 'Lead Partner',
             },
             {
                 num: '3',
-                title: 'Pemeriksaan Integritas via Segel QR Code',
-                desc: 'Setiap berkas selesai dilengkapi QR Code dan hash SHA-256 untuk membuktikan keaslian dan legalitas dokumen di hadapan pengadilan.',
+                title: 'Verifikasi Segel QR Code',
+                desc: 'Pindai QR Code resmi untuk memeriksa riwayat integritas hash SHA-256 dokumen.',
                 role: 'Klien / Pihak Ketiga',
-                legalRef: 'Pasal 11 UU ITE',
             },
         ],
     },
@@ -130,7 +127,7 @@ const GUIDES: GuideItem[] = [
         code: 'SOP-FIN-03',
         category: 'Keuangan',
         title: 'Honorarium Hukum, Invoice & Pajak PPh 23',
-        description: 'Penerbitan tagihan profesional, penagihan termin retainer fee, kalkulasi otomatis potongan pajak PPh 23 (2%), dan pencetakan kuitansi resmi.',
+        description: 'Penerbitan tagihan profesional, penagihan termin retainer fee, kalkulasi otomatis potongan pajak PPh 23 (2%), dan kuitansi resmi.',
         image: '/images/guide/finance.jpg',
         route: '/finance',
         actionLabel: 'Buka Modul Keuangan',
@@ -138,15 +135,21 @@ const GUIDES: GuideItem[] = [
         steps: [
             {
                 num: '1',
-                title: 'Penerbitan Invoice Tagihan Klien',
-                desc: 'Buka menu Keuangan → "+ Buat Tagihan / Invoice". Masukkan komponen Legal Retainer Fee, Success Fee, atau Court Fee; pajak terhitung otomatis.',
+                title: 'Penerbitan Invoice Tagihan',
+                desc: 'Input komponen Retainer Fee, Success Fee, atau Court Fee; pajak terhitung otomatis.',
                 role: 'Finance / Partner',
             },
             {
                 num: '2',
-                title: 'Konfirmasi Pembayaran & Kuitansi Resmi',
-                desc: 'Unggah bukti setor bank, verifikasi status pembayaran menjadi Lunas (Paid), dan cetak Kuitansi Resmi ber-barcode untuk diserahkan ke klien.',
+                title: 'Verifikasi Pembayaran',
+                desc: 'Unggah bukti setor bank dan ubah status tagihan menjadi Lunas (Paid).',
                 role: 'Finance Specialist',
+            },
+            {
+                num: '3',
+                title: 'Cetak Kuitansi Resmi',
+                desc: 'Terbitkan Official Receipt ber-barcode tanda tangan firma untuk diserahkan ke klien.',
+                role: 'Finance / Partner',
             },
         ],
     },
@@ -155,7 +158,7 @@ const GUIDES: GuideItem[] = [
         code: 'SOP-CAL-04',
         category: 'Kalender',
         title: 'Kalender Persidangan & Sinkronisasi Agenda',
-        description: 'Pencatatan terpadu sidang pengadilan, mediasi, tenggat waktu banding/kasasi 14 hari, serta sinkronisasi feed kalender iCal ke smartphone.',
+        description: 'Pencatatan terpadu sidang pengadilan, mediasi, tenggat upaya hukum 14 hari, dan feed kalender iCal sinkron langsung ke smartphone.',
         image: '/images/guide/calendar.jpg',
         route: '/calendar',
         actionLabel: 'Buka Kalender Sidang',
@@ -163,52 +166,120 @@ const GUIDES: GuideItem[] = [
         steps: [
             {
                 num: '1',
-                title: 'Input Jadwal Sidang & Instansi Pengadilan',
-                desc: 'Tambahkan agenda persidangan baru dengan rincian instansi pengadilan, nomor ruang sidang, serta advokat yang ditunjuk hadir.',
+                title: 'Input Jadwal Sidang & Ruang',
+                desc: 'Catat institusi pengadilan, nomor ruang sidang, serta advokat yang ditugaskan hadir.',
                 role: 'Associate / Paralegal',
             },
             {
                 num: '2',
-                title: 'Notifikasi Alarm Sidang (H-7 & H-1)',
-                desc: 'Sistem mengirimkan email pengingat dan notifikasi sistem 7 hari dan 24 jam sebelum sidang dilaksanakan.',
+                title: 'Alarm Notifikasi H-7 & H-1',
+                desc: 'Sistem mengirimkan pengingat otomatis sebelum agenda sidang terlaksana.',
                 role: 'Sistem Otomatis',
             },
             {
                 num: '3',
-                title: 'Sinkronisasi iCal Feed ke Ponsel',
-                desc: 'Klik tombol "Sinkronkan iCal Feed" di halaman Kalender untuk menghubungkan seluruh agenda kerja ke Google / Apple Calendar di ponsel Anda.',
+                title: 'Sinkronisasi iCal ke Ponsel',
+                desc: 'Hubungkan link token iCal ke Google / Apple Calendar di ponsel advokat.',
                 role: 'Seluruh Advokat',
             },
         ],
     },
     {
+        id: 'tasks',
+        code: 'SOP-TSK-05',
+        category: 'Tugas',
+        title: 'Manajemen Tugas, Tenggat Waktu & Diskusi',
+        description: 'Distribusi penugasan penyusunan draf hukum, riset yurisprudensi, papan Kanban prioritas, dan ruang diskusi internal perkara.',
+        image: '/images/guide/task.jpg',
+        route: '/tasks',
+        actionLabel: 'Buka Modul Tugas',
+        badge: 'Task Kanban & Diskusi',
+        steps: [
+            {
+                num: '1',
+                title: 'Delegasi Tugas & Prioritas',
+                desc: 'Buat tugas baru, tentukan perkara terkait, tingkat urgensi (High/Critical), dan tenggat waktu.',
+                role: 'Lead Partner / Senior',
+            },
+            {
+                num: '2',
+                title: 'Papan Kanban Interaktif',
+                desc: 'Geser kartu tugas dari Todo → In Progress → Review → Done sesuai progres riil.',
+                role: 'Associate / Paralegal',
+            },
+            {
+                num: '3',
+                title: 'Diskusi & Lampiran Berkas',
+                desc: 'Gunakan kolom komentar untuk mendiskusikan klausul draf tanpa tercecer di chat pribadi.',
+                role: 'Seluruh Tim Perkara',
+            },
+        ],
+    },
+    {
         id: 'clients',
-        code: 'SOP-KYC-05',
+        code: 'SOP-KYC-06',
         category: 'Klien',
         title: 'Direktori Klien & Kepatuhan Legalitas (KYC/AML)',
         description: 'Basis data induk klien perorangan dan korporasi, pemantauan masa berlaku izin legalitas/NIB, serta kepatuhan anti-pencucian uang.',
         image: '/images/guide/kyc.jpg',
         route: '/clients',
         actionLabel: 'Buka Direktori Klien',
-        badge: 'Standar PMPJ & PPATK',
+        badge: 'Prinsip PMPJ & PPATK',
         steps: [
             {
                 num: '1',
                 title: 'Registrasi Entitas Klien',
-                desc: 'Daftarkan identitas resmi pihak yang diwakili (PT, CV, Yayasan, atau Perorangan) beserta kontak pejabat penanggung jawab.',
+                desc: 'Input data legalitas pihak yang diwakili (PT, CV, atau Perorangan) beserta kontak penanggung jawab.',
                 role: 'Admin / Associate',
             },
             {
                 num: '2',
-                title: 'Uji Kelayakan KYC & Monitoring Akta Legalitas',
-                desc: 'Unggah Akta Pendirian, SK Kemenkumham, NPWP, dan NIB. Catat masa berlaku dokumen untuk mengaktifkan pengingat perpanjangan izin.',
+                title: 'Uji Kelayakan KYC Legalitas',
+                desc: 'Unggah Akta Pendirian, SK Kemenkumham, NPWP, dan NIB untuk kelengkapan berkas.',
                 role: 'Compliance / Partner',
+            },
+            {
+                num: '3',
+                title: 'Radar Masa Berlaku Izin',
+                desc: 'Sistem memberi sinyal alarm jika masa berlaku akta/izin berusaha klien mendekati tenggat.',
+                role: 'Sistem Otomatis',
+            },
+        ],
+    },
+    {
+        id: 'governance',
+        code: 'SOP-GOV-07',
+        category: 'Tata Kelola',
+        title: 'Korespondensi Resmi, Legal Hold & Arsip',
+        description: 'Pencatatan surat masuk/keluar firma, penomoran otomatis, proteksi pembekuan bukti (Legal Hold), dan ekspor arsip perkara.',
+        image: '/images/guide/governance.jpg',
+        route: '/governance',
+        actionLabel: 'Buka Tata Kelola',
+        badge: 'Legal Hold & Governance',
+        steps: [
+            {
+                num: '1',
+                title: 'Registrasi Surat Masuk/Keluar',
+                desc: 'Catat korespondensi resmi, pihak pengirim/penerima, dan nomor agenda arsip surat.',
+                role: 'Admin / Paralegal',
+            },
+            {
+                num: '2',
+                title: 'Aktivasi Legal Hold',
+                desc: 'Kunci berkas perkara sensitif dari pengubahan atau penghapusan selama proses hukum berjalan.',
+                role: 'Managing Partner',
+            },
+            {
+                num: '3',
+                title: 'Ekspor Paket Berkas Perkara',
+                desc: 'Unduh seluruh berkas, bukti, dan kronologi perkara dalam satu paket ZIP terverifikasi.',
+                role: 'Lead Partner',
             },
         ],
     },
     {
         id: 'passkeys',
-        code: 'SOP-SEC-06',
+        code: 'SOP-SEC-08',
         category: 'Keamanan',
         title: 'Autentikasi Passkey Biometrik & Keamanan Akun',
         description: 'Login instan aman menggunakan Touch ID, Face ID, atau PIN perangkat berstandar FIDO2 WebAuthn tanpa perlu mengetik kata sandi.',
@@ -219,24 +290,30 @@ const GUIDES: GuideItem[] = [
         steps: [
             {
                 num: '1',
-                title: 'Lengkapi Kredensial Advokat (NIA & BAS)',
-                desc: 'Buka Pengaturan Profil (klik avatar kanan atas → Pengaturan), lalu lengkapi Nomor Induk Advokat dan tanggal Sumpah Advokat.',
+                title: 'Lengkapi Kredensial Advokat',
+                desc: 'Buka Profil, isi Nomor Induk Advokat (NIA) dan tanggal Berita Acara Sumpah advokat.',
                 role: 'Seluruh Pengguna',
             },
             {
                 num: '2',
-                title: 'Aktivasi Sensor Biometrik (Passkey)',
-                desc: 'Masuk tab "Keamanan", klik "Daftarkan Passkey Baru", dan sentuh sensor sidik jari perangkat. Selanjutnya Anda bisa login tanpa password.',
+                title: 'Daftarkan Sensor Biometrik',
+                desc: 'Masuk tab "Keamanan", klik "Daftarkan Passkey Baru", dan sentuh sensor sidik jari.',
+                role: 'Seluruh Pengguna',
+            },
+            {
+                num: '3',
+                title: 'Masuk Tanpa Password',
+                desc: 'Pada login berikutnya, sentuh sensor biometrik untuk masuk ke workspace dalam <1 detik.',
                 role: 'Seluruh Pengguna',
             },
         ],
     },
     {
         id: 'rbac',
-        code: 'SOP-ADM-07',
+        code: 'SOP-ADM-09',
         category: 'Admin',
         title: 'Tata Kelola Staf, 26 Matriks RBAC & Audit Trail',
-        description: 'Pengaturan struktur 8 tingkatan jabatan advokat, pembatasan hak akses berkas sensitif perkara, serta audit log rekaman aktivitas sistem.',
+        description: 'Pengaturan struktur 8 tingkatan wewenang advokat, proteksi isolasi data sensitif, serta audit log rekaman aktivitas sistem real-time.',
         image: '/images/guide/rbac.jpg',
         route: '/admin/users',
         actionLabel: 'Kelola Staf & Peran',
@@ -244,15 +321,21 @@ const GUIDES: GuideItem[] = [
         steps: [
             {
                 num: '1',
-                title: 'Penetapan Role Jabatan & Matriks Izin',
-                desc: 'Buka menu Admin → Manajemen Staf. Tentukan tingkatan wewenang dan sesuaikan 26 parameter izin modul sesuai tanggung jawab staf.',
+                title: 'Penetapan Role & Matriks Izin',
+                desc: 'Tentukan tingkatan jabatan dan atur 26 matriks hak akses modul sesuai tanggung jawab.',
                 role: 'Managing Partner / Admin',
             },
             {
                 num: '2',
-                title: 'Audit Trail & Monitoring Jejak Digital',
-                desc: 'Periksa log aktivitas pada modul Audit Trail untuk memantau alamat IP, waktu presisi, dan rekaman perubahan data sensitif firma.',
+                title: 'Audit Trail Real-Time',
+                desc: 'Pantau log aktivitas staf, alamat IP, waktu akses, dan rekaman perubahan data penting.',
                 role: 'IT Security / Admin',
+            },
+            {
+                num: '3',
+                title: 'Manajemen Akun Staf',
+                desc: 'Nonaktifkan atau rotasi akun staf saat terjadi perpindahan tim secara instan.',
+                role: 'Administrator',
             },
         ],
     },
@@ -287,7 +370,9 @@ const CATEGORIES = [
     'Dokumen',
     'Keuangan',
     'Kalender',
+    'Tugas',
     'Klien',
+    'Tata Kelola',
     'Keamanan',
     'Admin',
 ];
@@ -339,7 +424,7 @@ export default function GuideIndex() {
                                 Panduan Cara Penggunaan RPK App
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Tata kelola operasional terpadu: manajemen perkara, uji konflik etis, surat kuasa digital, dan penagihan honorarium.
+                                Tata kelola operasional terpadu: manajemen perkara, surat kuasa digital, penagihan honorarium, jadwal sidang, dan tata kelola kantor hukum.
                             </p>
                         </div>
 
@@ -351,7 +436,7 @@ export default function GuideIndex() {
                                     type="text"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="Cari panduan alur, berkas, invoice..."
+                                    placeholder="Cari panduan alur, tugas, invoice..."
                                     className="h-9 w-full rounded-lg border-slate-200 bg-white pr-4 pl-9 text-xs shadow-2xs transition-all focus-visible:border-slate-400 focus-visible:ring-1 focus-visible:ring-slate-300 dark:border-white/10 dark:bg-[#14161b] dark:text-white"
                                 />
                                 {searchQuery && (
@@ -385,8 +470,8 @@ export default function GuideIndex() {
                         ))}
                     </div>
 
-                    {/* 3. Main Operational Guides Grid */}
-                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    {/* 3. Main Operational Guides Grid (3 Columns x 3 Rows = 9 Cards) */}
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                         {filteredGuides.map((item) => (
                             <div
                                 key={item.id}
@@ -394,61 +479,59 @@ export default function GuideIndex() {
                             >
                                 <div>
                                     {/* Visual Image Header */}
-                                    <div className="relative h-44 w-full overflow-hidden bg-slate-900 sm:h-48">
+                                    <div className="relative h-40 w-full overflow-hidden bg-slate-900">
                                         <img
                                             src={item.image}
                                             alt={item.title}
                                             className="h-full w-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105"
                                         />
                                         <div className="absolute inset-0 bg-linear-to-t from-slate-950/85 via-slate-950/30 to-transparent" />
-                                        <div className="absolute right-4 bottom-3.5 left-4 flex items-center justify-between text-white">
-                                            <div className="flex items-center gap-2">
-                                                <span className="rounded bg-white/20 px-2 py-0.5 font-mono text-[9.5px] font-bold tracking-wider uppercase backdrop-blur-xs">
-                                                    {item.code}
-                                                </span>
-                                                <span className="font-mono text-[9px] text-white/80">
-                                                    {item.badge}
-                                                </span>
-                                            </div>
+                                        <div className="absolute right-3.5 bottom-3 left-3.5 flex items-center justify-between text-white">
+                                            <span className="rounded bg-white/20 px-2 py-0.5 font-mono text-[9px] font-bold tracking-wider uppercase backdrop-blur-xs">
+                                                {item.code}
+                                            </span>
+                                            <span className="font-mono text-[9px] text-white/80">
+                                                {item.badge}
+                                            </span>
                                         </div>
                                     </div>
 
                                     {/* Guide Content Body */}
-                                    <div className="space-y-4 p-5">
+                                    <div className="space-y-3.5 p-4.5">
                                         <div className="space-y-1">
-                                            <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                                            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
                                                 {item.title}
                                             </h2>
-                                            <p className="text-xs leading-relaxed text-slate-600 dark:text-zinc-400">
+                                            <p className="line-clamp-2 text-xs leading-relaxed text-slate-500 dark:text-zinc-400">
                                                 {item.description}
                                             </p>
                                         </div>
 
                                         {/* Step-by-Step Breakdown */}
-                                        <div className="space-y-2 border-t border-slate-100 pt-3 dark:border-white/[0.04]">
-                                            <span className="font-mono text-[9.5px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
-                                                LANGKAH EKSEKUSI OPERASIONAL:
+                                        <div className="space-y-1.5 border-t border-slate-100 pt-3 dark:border-white/[0.04]">
+                                            <span className="font-mono text-[9px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                                LANGKAH OPERASIONAL:
                                             </span>
 
-                                            <div className="space-y-2">
+                                            <div className="space-y-1.5">
                                                 {item.steps.map((st) => (
                                                     <div
                                                         key={st.num}
-                                                        className="flex items-start gap-2.5 rounded-lg border border-slate-100 bg-slate-50/70 p-2.5 text-xs dark:border-white/[0.03] dark:bg-white/[0.02]"
+                                                        className="flex items-start gap-2 rounded-lg border border-slate-100 bg-slate-50/70 p-2 text-xs dark:border-white/[0.03] dark:bg-white/[0.02]"
                                                     >
-                                                        <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-slate-200 font-mono text-[10px] font-bold text-slate-800 dark:bg-white/10 dark:text-white">
+                                                        <span className="flex size-4.5 shrink-0 items-center justify-center rounded-full bg-slate-200 font-mono text-[9.5px] font-bold text-slate-800 dark:bg-white/10 dark:text-white">
                                                             {st.num}
                                                         </span>
                                                         <div className="min-w-0 flex-1 space-y-0.5">
-                                                            <div className="flex flex-wrap items-center justify-between gap-1">
-                                                                <span className="font-bold text-slate-900 dark:text-white">
+                                                            <div className="flex items-center justify-between gap-1">
+                                                                <span className="font-bold text-slate-900 truncate dark:text-white">
                                                                     {st.title}
                                                                 </span>
-                                                                <span className="font-mono text-[9px] text-slate-500 dark:text-zinc-400">
+                                                                <span className="font-mono text-[8.5px] text-slate-400 shrink-0 dark:text-zinc-500">
                                                                     {st.role}
                                                                 </span>
                                                             </div>
-                                                            <p className="text-[11px] leading-relaxed text-slate-600 dark:text-zinc-400">
+                                                            <p className="line-clamp-2 text-[10.5px] leading-relaxed text-slate-500 dark:text-zinc-400">
                                                                 {st.desc}
                                                             </p>
                                                         </div>
@@ -460,16 +543,16 @@ export default function GuideIndex() {
                                 </div>
 
                                 {/* Direct Action Footer */}
-                                <div className="border-t border-slate-100 bg-slate-50/50 p-3.5 dark:border-white/[0.04] dark:bg-[#12141a]">
+                                <div className="border-t border-slate-100 bg-slate-50/50 p-3 dark:border-white/[0.04] dark:bg-[#12141a]">
                                     <Button
                                         asChild
                                         variant="outline"
                                         size="sm"
-                                        className="h-8 w-full justify-between rounded-lg border-slate-200 bg-white text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200 dark:hover:bg-white/[0.08]"
+                                        className="h-7.5 w-full justify-between rounded-lg border-slate-200 bg-white text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200 dark:hover:bg-white/[0.08]"
                                     >
                                         <Link href={item.route}>
                                             <span>{item.actionLabel}</span>
-                                            <ArrowRight className="size-3.5 text-slate-400" />
+                                            <ArrowRight className="size-3 text-slate-400" />
                                         </Link>
                                     </Button>
                                 </div>
