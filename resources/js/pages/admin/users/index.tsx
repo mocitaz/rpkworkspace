@@ -171,7 +171,7 @@ export default function UsersIndex({
                                     asChild
                                     className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
                                 >
-                                    <Link href={userRoutes.create.url()}>
+                                    <Link href={userRoutes.create?.url ? userRoutes.create.url() : '/admin/users/create'}>
                                         <UserPlus className="mr-1.5 size-3.5" />
                                         Tambah Staf Baru
                                     </Link>
@@ -323,7 +323,7 @@ export default function UsersIndex({
                         <>
                             {/* Search & Filter Bar */}
                             <Form
-                                {...userRoutes.index.form()}
+                                {...(userRoutes.index?.form ? userRoutes.index.form() : { action: '/admin/users', method: 'get' as const })}
                                 className="space-y-2 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2 dark:border-white/[0.04] dark:bg-[#121418]"
                             >
                                 {/* Row 1: Search, Reset, Count */}
@@ -345,7 +345,7 @@ export default function UsersIndex({
                                             className="h-7.5 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
                                             title="Reset Semua Filter"
                                         >
-                                            <Link href={userRoutes.index.url()}>
+                                            <Link href={userRoutes.index?.url ? userRoutes.index.url() : '/admin/users'}>
                                                 <RotateCcw className="size-3.5 text-slate-400" />
                                             </Link>
                                         </Button>
@@ -421,7 +421,7 @@ export default function UsersIndex({
                                                         asChild
                                                         className="mt-3.5 h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                                     >
-                                                        <Link href={userRoutes.create.url()}>
+                                                        <Link href={userRoutes.create?.url ? userRoutes.create.url() : '/admin/users/create'}>
                                                             <UserPlus className="mr-1 size-3" />{' '}
                                                             Tambah Staf Baru
                                                         </Link>
@@ -497,9 +497,9 @@ export default function UsersIndex({
                                                                 </Avatar>
                                                                 <div className="min-w-0">
                                                                     <Link
-                                                                        href={userRoutes.show.url(
+                                                                        href={userRoutes.show?.url ? userRoutes.show.url(
                                                                             user.id,
-                                                                        )}
+                                                                        ) : `/admin/users/${user.id}`}
                                                                         className="text-left font-semibold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
                                                                     >
                                                                         {
@@ -583,9 +583,9 @@ export default function UsersIndex({
                                                                     title="Lihat Profil Staf & CV"
                                                                 >
                                                                     <Link
-                                                                        href={userRoutes.show.url(
+                                                                        href={userRoutes.show?.url ? userRoutes.show.url(
                                                                             user.id,
-                                                                        )}
+                                                                        ) : `/admin/users/${user.id}`}
                                                                     >
                                                                         <UserIcon className="mr-1 size-3" />
                                                                         Profil
@@ -828,7 +828,7 @@ function StaffCard({
 
     return (
         <div
-            onClick={() => router.visit(userRoutes.show.url(user.id))}
+            onClick={() => router.visit(userRoutes.show?.url ? userRoutes.show.url(user.id) : `/admin/users/${user.id}`)}
             className="group relative flex cursor-pointer flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md dark:border-white/[0.06] dark:bg-[#14161b] dark:hover:border-white/[0.12] dark:hover:shadow-none"
         >
             <div className="space-y-3">
@@ -915,7 +915,7 @@ function StaffCard({
             {/* Footer Action Bar */}
             <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-white/[0.04]">
                 <Link
-                    href={userRoutes.show.url(user.id)}
+                    href={userRoutes.show?.url ? userRoutes.show.url(user.id) : `/admin/users/${user.id}`}
                     onClick={(e) => e.stopPropagation()}
                     className="flex items-center gap-1 text-[11px] font-semibold text-slate-700 transition-colors group-hover:text-blue-600 dark:text-zinc-300 dark:group-hover:text-blue-400"
                 >
@@ -1079,7 +1079,7 @@ function EditUserDialog({
 
                 {/* 3. Form Body */}
                 <Form
-                    {...userRoutes.update.form(user.id)}
+                    {...(userRoutes.update?.form ? userRoutes.update.form(user.id) : { action: `/admin/users/${user.id}`, method: 'put' as const })}
                     className="flex min-h-0 flex-1 flex-col"
                     onSuccess={() => onOpenChange(false)}
                 >
@@ -1487,7 +1487,7 @@ function DeleteUserDialog({
                     </p>
 
                     <Form
-                        {...userRoutes.destroy.form(user.id)}
+                        {...(userRoutes.destroy?.form ? userRoutes.destroy.form(user.id) : { action: `/admin/users/${user.id}`, method: 'delete' as const })}
                         onSuccess={() => onOpenChange(false)}
                         className="flex items-center justify-end gap-2 pt-2"
                     >
@@ -1615,7 +1615,7 @@ function TextareaField({
 }
 
 UsersIndex.layout = {
-    breadcrumbs: [{ title: 'Pengguna & Akses', href: userRoutes.index.url() }],
+    breadcrumbs: [{ title: 'Pengguna & Akses', href: userRoutes.index?.url ? userRoutes.index.url() : '/admin/users' }],
 };
 
 const PERMISSION_GROUPS = [
@@ -1980,7 +1980,7 @@ function InviteUserDialog({
                 </DialogHeader>
 
                 <Form
-                    {...userRoutes.store.form()}
+                    {...(userRoutes.store?.form ? userRoutes.store.form() : { action: '/admin/users', method: 'post' as const })}
                     className="space-y-3 pt-1"
                     onSuccess={() => {
                         onCreated({

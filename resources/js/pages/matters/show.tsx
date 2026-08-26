@@ -484,7 +484,7 @@ export default function MatterShow({
                                     className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
                                     asChild
                                 >
-                                    <Link href={matterRoutes.edit.url(matter.id)}>
+                                    <Link href={matterRoutes.edit?.url ? matterRoutes.edit.url(matter.id) : `/matters/${matter.id}/edit`}>
                                         <Pencil className="mr-1 size-3 text-slate-400" />
                                         Edit Perkara
                                     </Link>

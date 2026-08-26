@@ -213,7 +213,7 @@ export default function UserShow({
                         {/* Top Utility & Navigation Row */}
                         <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 dark:border-white/[0.04]">
                             <Link
-                                href={userRoutes.index.url()}
+                                href={userRoutes.index?.url ? userRoutes.index.url() : '/admin/users'}
                                 className="group inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition-colors hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                             >
                                 <ArrowLeft className="size-3.5 transition-transform group-hover:-translate-x-0.5" />
@@ -356,7 +356,7 @@ export default function UserShow({
                                         size="sm"
                                         className="h-9 cursor-pointer rounded-xl bg-slate-900 px-4 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                     >
-                                        <Link href={userRoutes.edit.url(staff.id)}>
+                                        <Link href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}>
                                             <Pencil className="mr-1.5 size-3.5" />
                                             Edit Profil &amp; Akses
                                         </Link>
@@ -680,7 +680,7 @@ export default function UserShow({
                                             asChild
                                             className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
-                                            <Link href={userRoutes.edit.url(staff.id)}>
+                                            <Link href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}>
                                                 <Pencil className="mr-1 size-3" />
                                                 Edit Kredensial
                                             </Link>
@@ -864,7 +864,7 @@ export default function UserShow({
                                             asChild
                                             className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
-                                            <Link href={userRoutes.edit.url(staff.id)}>
+                                            <Link href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}>
                                                 <Pencil className="mr-1 size-3" />
                                                 Edit Kontak
                                             </Link>
@@ -940,7 +940,7 @@ export default function UserShow({
                                             asChild
                                             className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
-                                            <Link href={userRoutes.edit.url(staff.id)}>
+                                            <Link href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}>
                                                 <Pencil className="mr-1 size-3" />
                                                 Edit Keuangan
                                             </Link>
@@ -1005,7 +1005,7 @@ export default function UserShow({
                                             asChild
                                             className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
-                                            <Link href={userRoutes.edit.url(staff.id)}>
+                                            <Link href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}>
                                                 <Pencil className="mr-1 size-3" />
                                                 Kelola Role
                                             </Link>
@@ -1270,7 +1270,7 @@ export default function UserShow({
                 open={isDeleting}
                 onOpenChange={setIsDeleting}
                 onDeleted={() => {
-                    router.visit(userRoutes.index.url());
+                    router.visit(userRoutes.index?.url ? userRoutes.index.url() : '/admin/users');
                 }}
             />
         </TooltipProvider>
@@ -1397,7 +1397,7 @@ function EditUserDialog({
 
                 {/* 3. Form Body */}
                 <Form
-                    {...userRoutes.update.form(user.id)}
+                    {...(userRoutes.update?.form ? userRoutes.update.form(user.id) : { action: `/admin/users/${user.id}`, method: 'put' as const })}
                     className="flex min-h-0 flex-1 flex-col"
                     onSuccess={() => onOpenChange(false)}
                 >
@@ -1808,7 +1808,7 @@ function DeleteUserDialog({
                     </p>
 
                     <Form
-                        {...userRoutes.destroy.form(user.id)}
+                        {...(userRoutes.destroy?.form ? userRoutes.destroy.form(user.id) : { action: `/admin/users/${user.id}`, method: 'delete' as const })}
                         onSuccess={() => {
                             onOpenChange(false);
                             onDeleted?.();
@@ -1940,7 +1940,7 @@ function TextareaField({
 
 UserShow.layout = {
     breadcrumbs: [
-        { title: 'Pengguna & Akses', href: userRoutes.index.url() },
+        { title: 'Pengguna & Akses', href: userRoutes.index?.url ? userRoutes.index.url() : '/admin/users' },
         { title: 'Profil Staf', href: '' },
     ],
 };
