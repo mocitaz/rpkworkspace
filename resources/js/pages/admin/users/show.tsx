@@ -1542,36 +1542,6 @@ function EditUserDialog({
                                                 placeholder="Contoh: 18.01234/PERADI"
                                             />
                                             <Field
-                                                name="education"
-                                                label="Gelar &amp; Riwayat Pendidikan"
-                                                defaultValue={user.education ?? ''}
-                                                placeholder="Contoh: S.H. (UI), LL.M."
-                                            />
-                                        </div>
-
-                                        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-                                            <Field
-                                                name="bas_number"
-                                                label="Nomor BAS"
-                                                defaultValue={user.bas_number ?? ''}
-                                                placeholder="No. Surat Pengadilan Tinggi"
-                                            />
-                                            <Field
-                                                name="bas_date"
-                                                label="Tanggal Sumpah (BAS)"
-                                                type="date"
-                                                defaultValue={
-                                                    user.bas_date
-                                                        ? user.bas_date.split(
-                                                              'T',
-                                                          )[0]
-                                                        : ''
-                                                }
-                                            />
-                                        </div>
-
-                                        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-                                            <Field
                                                 name="kta_expiry_date"
                                                 label="Masa Berlaku KTA Advokat"
                                                 type="date"
@@ -1579,30 +1549,47 @@ function EditUserDialog({
                                                     user.kta_expiry_date
                                                         ? user.kta_expiry_date.split(
                                                               'T',
-                                                          )[0]
+                                                           )[0]
                                                         : ''
                                                 }
                                             />
-                                            <div className="grid gap-1.5">
-                                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                                    Monitoring Legalitas KTA
-                                                </Label>
-                                                <div className="flex h-9 items-center gap-2 rounded-xl border border-blue-200/70 bg-blue-50/60 px-3 text-[11px] font-medium text-blue-700 shadow-2xs dark:border-blue-900/40 dark:bg-blue-950/30 dark:text-blue-300">
-                                                    <Scale className="size-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
-                                                    <span className="truncate">
-                                                        Notifikasi otomatis H-60
-                                                    </span>
-                                                </div>
-                                            </div>
                                         </div>
+
+                                        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
+                                            <Field
+                                                name="bas_number"
+                                                label="Nomor Berita Acara Sumpah (BAS)"
+                                                defaultValue={user.bas_number ?? ''}
+                                                placeholder="No. Surat Pengadilan Tinggi"
+                                            />
+                                            <Field
+                                                name="bas_date"
+                                                label="Tanggal Sumpah Advokat (BAS)"
+                                                type="date"
+                                                defaultValue={
+                                                    user.bas_date
+                                                        ? user.bas_date.split(
+                                                              'T',
+                                                           )[0]
+                                                        : ''
+                                                }
+                                            />
+                                        </div>
+
+                                        <Field
+                                            name="education"
+                                            label="Gelar &amp; Riwayat Pendidikan"
+                                            defaultValue={user.education ?? ''}
+                                            placeholder="Contoh: S.H. (UI), LL.M. (Leiden)"
+                                        />
 
                                         <TextareaField
                                             name="practice_areas"
-                                            label="Bidang Keahlian / Spesialisasi Hukum"
+                                            label="Bidang Keahlian / Spesialisasi Hukum (Practice Areas)"
                                             defaultValue={user.practice_areas ?? ''}
-                                            placeholder="Contoh: Corporate M&A, Litigasi"
+                                            placeholder="Contoh: Corporate M&A, Commercial Litigation, Dispute Resolution, IPR, Employment Law"
                                             rows={2}
-                                            helperText="Pisahkan dengan koma"
+                                            helperText="Pisahkan beberapa keahlian dengan koma"
                                         />
                                     </div>
                                 )}
@@ -1625,7 +1612,7 @@ function EditUserDialog({
                                                     user.birth_date
                                                         ? user.birth_date.split(
                                                               'T',
-                                                          )[0]
+                                                           )[0]
                                                         : ''
                                                 }
                                             />
@@ -1646,7 +1633,7 @@ function EditUserDialog({
                                                 defaultValue={
                                                     user.ktp_address ?? ''
                                                 }
-                                                placeholder="Alamat resmi pada KTP..."
+                                                placeholder="Alamat resmi yang tertera pada kartu identitas KTP..."
                                                 rows={3}
                                             />
                                         </div>
@@ -1656,32 +1643,19 @@ function EditUserDialog({
                                 {/* TAB 4: REKENING & PAJAK */}
                                 {activeTab === 'billing' && (
                                     <div className="space-y-3.5">
-                                        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-                                            <Field
-                                                name="npwp"
-                                                label="Nomor Pokok Wajib Pajak (NPWP)"
-                                                defaultValue={user.npwp ?? ''}
-                                                placeholder="01.234.567.8-901.000"
-                                            />
-                                            <div className="grid gap-1.5">
-                                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                                    Status Pajak (PPh 21)
-                                                </Label>
-                                                <div className="flex h-9 items-center gap-2 rounded-xl border border-emerald-200/70 bg-emerald-50/60 px-3 text-[11px] font-medium text-emerald-700 shadow-2xs dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-300">
-                                                    <CreditCard className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                                                    <span className="truncate">
-                                                        Untuk bukti potong payroll
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <Field
+                                            name="npwp"
+                                            label="Nomor Pokok Wajib Pajak (NPWP)"
+                                            defaultValue={user.npwp ?? ''}
+                                            placeholder="Contoh: 01.234.567.8-901.000"
+                                        />
 
                                         {/* Bank Details Container */}
                                         <div className="space-y-2.5 rounded-xl border border-slate-200/80 bg-slate-50/40 p-3.5 dark:border-white/[0.06] dark:bg-[#121418]">
                                             <div className="flex items-center gap-1.5">
                                                 <CreditCard className="size-3.5 text-slate-600 dark:text-zinc-400" />
                                                 <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Informasi Rekening Bank
+                                                    Informasi Rekening Bank (Payroll &amp; Fee Sharing)
                                                 </span>
                                             </div>
 
