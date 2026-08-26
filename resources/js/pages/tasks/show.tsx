@@ -178,10 +178,18 @@ export default function TaskShow({
         delete: boolean;
     };
 }) {
+    const page = usePage<{ auth?: { user?: { id: number; name: string } } }>();
+    const authUser = page.props.auth?.user;
+    const isAssignee = Boolean(authUser?.id && task.assignee?.id && authUser.id === task.assignee.id);
+    const isReviewer = Boolean(authUser?.id && ((task.reviewer?.id && authUser.id === task.reviewer.id) || (task.reporter?.id && authUser.id === task.reporter.id)));
+
     const initials = useInitials();
     const [activeTab, setActiveTab] = useState<'summary' | 'instructions' | 'documents' | 'discussion' | 'history'>('summary');
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
+    const [isSubmitReviewOpen, setIsSubmitReviewOpen] = useState(false);
+    const [isApproveOpen, setIsApproveOpen] = useState(false);
+    const [isRevisionOpen, setIsRevisionOpen] = useState(false);
     const [previewDoc, setPreviewDoc] = useState<PreviewableDocument | null>(null);
 
     // Checklist progress calculation
@@ -216,6 +224,54 @@ export default function TaskShow({
             },
             { preserveScroll: true }
         );
+    };
+
+    // Review form
+    const reviewForm = useForm({
+        notes: '',
+    });
+
+    const handleSubmitReview = (e: React.FormEvent) => {
+        e.preventDefault();
+        reviewForm.post(taskRoutes.submitReview ? taskRoutes.submitReview.url(task.id) : `/tasks/${task.id}/submit-review`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setIsSubmitReviewOpen(false);
+                reviewForm.reset();
+            },
+        });
+    };
+
+    // Approve form
+    const approveForm = useForm({
+        remarks: '',
+    });
+
+    const handleApprove = (e: React.FormEvent) => {
+        e.preventDefault();
+        approveForm.post(taskRoutes.approve ? taskRoutes.approve.url(task.id) : `/tasks/${task.id}/approve`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setIsApproveOpen(false);
+                approveForm.reset();
+            },
+        });
+    };
+
+    // Revision form
+    const revisionForm = useForm({
+        feedback: '',
+    });
+
+    const handleRequestRevision = (e: React.FormEvent) => {
+        e.preventDefault();
+        revisionForm.post(taskRoutes.requestRevision ? taskRoutes.requestRevision.url(task.id) : `/tasks/${task.id}/request-revision`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setIsRevisionOpen(false);
+                revisionForm.reset();
+            },
+        });
     };
 
     // Edit form
@@ -387,7 +443,7 @@ export default function TaskShow({
                                         <Button
                                             size="sm"
                                             onClick={() => handleStatusChange('in_progress')}
-                                            className="h-8 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white hover:bg-blue-700 shadow-2xs gap-1.5"
+                                            className="h-8 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white hover:bg-blue-700 shadow-2xs gap-1.5"
                                         >
                                             <Play className="size-3.5" />
                                             Mulai Kerjakan
@@ -395,25 +451,48 @@ export default function TaskShow({
                                     )}
 
                                     {task.status === 'in_progress' && (
-                                        <Button
-                                            size="sm"
-                                            onClick={() => handleStatusChange('review')}
-                                            className="h-8 rounded-lg bg-purple-600 px-3 text-xs font-semibold text-white hover:bg-purple-700 shadow-2xs gap-1.5"
-                                        >
-                                            <Send className="size-3.5" />
-                                            Minta Review Partner
-                                        </Button>
+                                        <>
+                                            <Button
+                                                size="sm"
+                                                onClick={() => setIsSubmitReviewOpen(true)}
+                                                className="h-8 rounded-lg bg-purple-600 px-3.5 text-xs font-semibold text-white hover:bg-purple-700 shadow-2xs gap-1.5"
+                                            >
+                                                <Send className="size-3.5" />
+                                                Ajukan Review ke Partner
+                                            </Button>
+
+                                            {!task.reviewer && (
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => setIsCompleteModalOpen(true)}
+                                                    className="h-8 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white hover:bg-emerald-700 shadow-2xs gap-1.5"
+                                                >
+                                                    <CheckCircle2 className="size-3.5" />
+                                                    Tandai Selesai
+                                                </Button>
+                                            )}
+                                        </>
                                     )}
 
-                                    {task.status !== 'completed' && task.status !== 'cancelled' && (
-                                        <Button
-                                            size="sm"
-                                            onClick={() => setIsCompleteModalOpen(true)}
-                                            className="h-8 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white hover:bg-emerald-700 shadow-2xs gap-1.5"
-                                        >
-                                            <CheckCircle2 className="size-3.5" />
-                                            Tandai Selesai
-                                        </Button>
+                                    {task.status === 'review' && (
+                                        <>
+                                            <Button
+                                                size="sm"
+                                                onClick={() => setIsRevisionOpen(true)}
+                                                className="h-8 rounded-lg border border-amber-300 bg-amber-50 px-3 text-xs font-semibold text-amber-800 hover:bg-amber-100 dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-300 shadow-2xs gap-1.5"
+                                            >
+                                                <RotateCcw className="size-3.5" />
+                                                Minta Revisi
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                onClick={() => setIsApproveOpen(true)}
+                                                className="h-8 rounded-lg bg-emerald-600 px-3.5 text-xs font-semibold text-white hover:bg-emerald-700 shadow-2xs gap-1.5"
+                                            >
+                                                <CheckCircle2 className="size-3.5" />
+                                                Setujui &amp; Selesaikan
+                                            </Button>
+                                        </>
                                     )}
 
                                     {task.status === 'completed' && (
@@ -461,8 +540,54 @@ export default function TaskShow({
                         </div>
                     </div>
 
-                    {/* 2. Key Metric KPI Summary Cards (4-Column Layout) */}
-                    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    {/* Notification Banner when in review status */}
+                    {task.status === 'review' && (
+                        <div className="rounded-xl border border-purple-200 bg-purple-50/70 p-4 dark:border-purple-900/50 dark:bg-purple-950/20">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <div className="flex items-start gap-3">
+                                    <div className="rounded-lg bg-purple-600 p-2 text-white shadow-2xs">
+                                        <Clock className="size-5" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-sm font-bold text-purple-950 dark:text-purple-200">
+                                            Tugas Sedang Menunggu Penelaahan &amp; Persetujuan (Review)
+                                        </h3>
+                                        <p className="mt-0.5 text-xs text-purple-800 dark:text-purple-300">
+                                            {task.reviewer
+                                                ? `Tugas telah diajukan oleh ${task.assignee?.name || 'Pelaksana'} dan menunggu penelaahan dari ${task.reviewer.name}.`
+                                                : `Tugas telah diajukan dan menunggu penelaahan dari Partner.`}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-2">
+                                    {(isReviewer || can.update) && (
+                                        <>
+                                            <Button
+                                                size="sm"
+                                                onClick={() => setIsRevisionOpen(true)}
+                                                className="h-8 rounded-lg border border-amber-300 bg-amber-50 px-3 text-xs font-semibold text-amber-800 hover:bg-amber-100 dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-300 shadow-2xs gap-1.5"
+                                            >
+                                                <RotateCcw className="size-3.5" />
+                                                Minta Revisi
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                onClick={() => setIsApproveOpen(true)}
+                                                className="h-8 rounded-lg bg-emerald-600 px-3.5 text-xs font-semibold text-white hover:bg-emerald-700 shadow-2xs gap-1.5"
+                                            >
+                                                <CheckCircle2 className="size-3.5" />
+                                                Setujui &amp; Selesaikan
+                                            </Button>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* KPI Summary Cards (4 Cards Grid) */}
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                         {/* 1. Status & Progres Checklist */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
@@ -586,7 +711,7 @@ export default function TaskShow({
                                 </span>
                             </div>
                         </div>
-                    </section>
+                    </div>
 
                     {/* 3. Segmented Navigation Tabs */}
                     <div className="flex flex-wrap items-center gap-1 rounded-xl border border-slate-200/70 bg-slate-100/70 p-1 dark:border-white/[0.06] dark:bg-[#14161b]">
@@ -954,22 +1079,26 @@ export default function TaskShow({
                                             Pelaksana Utama
                                         </span>
                                         {task.assignee ? (
-                                            <div className="flex items-center gap-2">
-                                                <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                            <div className="flex items-center gap-2.5">
+                                                <Avatar className="size-7 shrink-0 rounded-full border border-slate-200 shadow-2xs dark:border-white/10">
                                                     <AvatarImage
                                                         src={getAvatarUrl(task.assignee)}
-                                                        alt={task.assignee.name}
                                                     />
-                                                    <AvatarFallback className="bg-blue-600 text-[8px] font-bold text-white">
+                                                    <AvatarFallback className="bg-blue-600 text-[9px] font-bold text-white">
                                                         {initials(task.assignee.name)}
                                                     </AvatarFallback>
                                                 </Avatar>
-                                                <span className="font-semibold text-slate-900 dark:text-white truncate max-w-[150px]">
-                                                    {task.assignee.name}
-                                                </span>
+                                                <div className="min-w-0">
+                                                    <p className="font-semibold text-slate-900 dark:text-white truncate max-w-[150px]">
+                                                        {task.assignee.name}
+                                                    </p>
+                                                    <p className="text-[10px] text-slate-500 dark:text-zinc-400 truncate max-w-[150px]">
+                                                        {task.assignee.position_title || 'Staf Pelaksana'}
+                                                    </p>
+                                                </div>
                                             </div>
                                         ) : (
-                                            <div className="flex items-center gap-1.5">
+                                            <div className="flex items-center gap-2">
                                                 <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
                                                     <AvatarImage src="/images/default-avatar.svg" />
                                                     <AvatarFallback className="bg-slate-200 text-[8px] font-bold text-slate-600">-</AvatarFallback>
@@ -985,22 +1114,26 @@ export default function TaskShow({
                                             Pemeriksa (Reviewer)
                                         </span>
                                         {task.reviewer ? (
-                                            <div className="flex items-center gap-2">
-                                                <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                            <div className="flex items-center gap-2.5">
+                                                <Avatar className="size-7 shrink-0 rounded-full border border-slate-200 shadow-2xs dark:border-white/10">
                                                     <AvatarImage
                                                         src={getAvatarUrl(task.reviewer)}
-                                                        alt={task.reviewer.name}
                                                     />
-                                                    <AvatarFallback className="bg-purple-600 text-[8px] font-bold text-white">
+                                                    <AvatarFallback className="bg-purple-600 text-[9px] font-bold text-white">
                                                         {initials(task.reviewer.name)}
                                                     </AvatarFallback>
                                                 </Avatar>
-                                                <span className="font-semibold text-slate-900 dark:text-white truncate max-w-[150px]">
-                                                    {task.reviewer.name}
-                                                </span>
+                                                <div className="min-w-0">
+                                                    <p className="font-semibold text-slate-900 dark:text-white truncate max-w-[150px]">
+                                                        {task.reviewer.name}
+                                                    </p>
+                                                    <p className="text-[10px] text-slate-500 dark:text-zinc-400 truncate max-w-[150px]">
+                                                        {task.reviewer.position_title || 'Supervising Partner'}
+                                                    </p>
+                                                </div>
                                             </div>
                                         ) : (
-                                            <div className="flex items-center gap-1.5">
+                                            <div className="flex items-center gap-2">
                                                 <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
                                                     <AvatarImage src="/images/default-avatar.svg" />
                                                     <AvatarFallback className="bg-slate-200 text-[8px] font-bold text-slate-600">-</AvatarFallback>
@@ -1016,22 +1149,26 @@ export default function TaskShow({
                                             Pemberi Tugas
                                         </span>
                                         {task.reporter ? (
-                                            <div className="flex items-center gap-2">
-                                                <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                            <div className="flex items-center gap-2.5">
+                                                <Avatar className="size-7 shrink-0 rounded-full border border-slate-200 shadow-2xs dark:border-white/10">
                                                     <AvatarImage
                                                         src={getAvatarUrl(task.reporter)}
-                                                        alt={task.reporter.name}
                                                     />
-                                                    <AvatarFallback className="bg-slate-700 text-[8px] font-bold text-white">
+                                                    <AvatarFallback className="bg-slate-700 text-[9px] font-bold text-white">
                                                         {initials(task.reporter.name)}
                                                     </AvatarFallback>
                                                 </Avatar>
-                                                <span className="font-medium text-slate-800 dark:text-zinc-200 truncate max-w-[150px]">
-                                                    {task.reporter.name}
-                                                </span>
+                                                <div className="min-w-0">
+                                                    <p className="font-medium text-slate-800 dark:text-zinc-200 truncate max-w-[150px]">
+                                                        {task.reporter.name}
+                                                    </p>
+                                                    <p className="text-[10px] text-slate-500 dark:text-zinc-400 truncate max-w-[150px]">
+                                                        {task.reporter.position_title || 'Partner / Delegator'}
+                                                    </p>
+                                                </div>
                                             </div>
                                         ) : (
-                                            <div className="flex items-center gap-1.5">
+                                            <div className="flex items-center gap-2">
                                                 <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
                                                     <AvatarImage src="/images/default-avatar.svg" />
                                                     <AvatarFallback className="bg-slate-700 text-[8px] font-bold text-white">S</AvatarFallback>
@@ -1390,6 +1527,151 @@ export default function TaskShow({
                             >
                                 {completeForm.processing ? <Spinner className="size-3.5 mr-1" /> : null}
                                 Konfirmasi Selesai
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* SUBMIT REVIEW MODAL */}
+            <Dialog open={isSubmitReviewOpen} onOpenChange={setIsSubmitReviewOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-base font-bold flex items-center gap-2 text-purple-700 dark:text-purple-400">
+                            <Send className="size-5" />
+                            Ajukan Review Tugas: {task.task_number}
+                        </DialogTitle>
+                        <DialogDescription className="text-xs">
+                            Kirimkan tugas ini kepada {task.reviewer?.name || 'Partner Pemeriksa'} untuk ditelaah dan disetujui.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <form onSubmit={handleSubmitReview} className="space-y-3.5 pt-2">
+                        <div className="space-y-1.5">
+                            <Label className="text-xs font-semibold">Catatan Hasil Pengerjaan / Resume (Opsional)</Label>
+                            <textarea
+                                rows={4}
+                                placeholder="Contoh: Draf gugatan dan somasi termin 1 telah selesai dibuat dan diunggah pada tab Dokumen. Mohon review dan arahan koreksi..."
+                                value={reviewForm.data.notes}
+                                onChange={(e) => reviewForm.setData('notes', e.target.value)}
+                                className="w-full rounded-lg border border-slate-200 bg-white p-3 text-xs dark:border-white/10 dark:bg-[#191c22]"
+                            />
+                        </div>
+
+                        <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-white/10">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setIsSubmitReviewOpen(false)}
+                            >
+                                Batal
+                            </Button>
+                            <Button
+                                type="submit"
+                                size="sm"
+                                disabled={reviewForm.processing}
+                                className="bg-purple-600 text-white hover:bg-purple-700 dark:bg-purple-600"
+                            >
+                                {reviewForm.processing ? <Spinner className="size-3.5 mr-1" /> : null}
+                                Kirim Pengajuan Review
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* APPROVE TASK MODAL */}
+            <Dialog open={isApproveOpen} onOpenChange={setIsApproveOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-base font-bold flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+                            <CheckCircle2 className="size-5" />
+                            Setujui &amp; Selesaikan Tugas: {task.task_number}
+                        </DialogTitle>
+                        <DialogDescription className="text-xs">
+                            Konfirmasi bahwa hasil pengerjaan telah diperiksa dan disetujui. Tugas akan ditandai selesai.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <form onSubmit={handleApprove} className="space-y-3.5 pt-2">
+                        <div className="space-y-1.5">
+                            <Label className="text-xs font-semibold">Catatan Persetujuan / Evaluasi (Opsional)</Label>
+                            <textarea
+                                rows={3}
+                                placeholder="Contoh: Draf sangat baik dan sesuai instruksi. Silakan diproses untuk pengiriman ke klien..."
+                                value={approveForm.data.remarks}
+                                onChange={(e) => approveForm.setData('remarks', e.target.value)}
+                                className="w-full rounded-lg border border-slate-200 bg-white p-3 text-xs dark:border-white/10 dark:bg-[#191c22]"
+                            />
+                        </div>
+
+                        <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-white/10">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setIsApproveOpen(false)}
+                            >
+                                Batal
+                            </Button>
+                            <Button
+                                type="submit"
+                                size="sm"
+                                disabled={approveForm.processing}
+                                className="bg-emerald-600 text-white hover:bg-emerald-700"
+                            >
+                                {approveForm.processing ? <Spinner className="size-3.5 mr-1" /> : null}
+                                Setujui &amp; Selesaikan
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* REQUEST REVISION MODAL */}
+            <Dialog open={isRevisionOpen} onOpenChange={setIsRevisionOpen}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle className="text-base font-bold flex items-center gap-2 text-amber-700 dark:text-amber-400">
+                            <RotateCcw className="size-5" />
+                            Instruksi Revisi: {task.task_number}
+                        </DialogTitle>
+                        <DialogDescription className="text-xs">
+                            Masukkan poin-poin perbaikan yang harus direvisi oleh pelaksana tugas.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <form onSubmit={handleRequestRevision} className="space-y-3.5 pt-2">
+                        <div className="space-y-1.5">
+                            <Label className="text-xs font-semibold">Catatan / Poin Perbaikan <span className="text-rose-500">*</span></Label>
+                            <textarea
+                                rows={4}
+                                required
+                                placeholder="Contoh: Tolong lengkapi dasar hukum pada posita gugatan nomor 4 dan sesuaikan petitum ganti kerugian immateriel..."
+                                value={revisionForm.data.feedback}
+                                onChange={(e) => revisionForm.setData('feedback', e.target.value)}
+                                className="w-full rounded-lg border border-slate-200 bg-white p-3 text-xs dark:border-white/10 dark:bg-[#191c22]"
+                            />
+                        </div>
+
+                        <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-white/10">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setIsRevisionOpen(false)}
+                            >
+                                Batal
+                            </Button>
+                            <Button
+                                type="submit"
+                                size="sm"
+                                disabled={revisionForm.processing || !revisionForm.data.feedback.trim()}
+                                className="bg-amber-600 text-white hover:bg-amber-700"
+                            >
+                                {revisionForm.processing ? <Spinner className="size-3.5 mr-1" /> : null}
+                                Kirim Permintaan Revisi
                             </Button>
                         </div>
                     </form>

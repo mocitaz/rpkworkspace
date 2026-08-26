@@ -52,7 +52,7 @@ class TaskPolicy
         }
 
         return $this->view($user, $task)
-            && ($user->hasPermission('task.manage') || $task->assignee_id === $user->getKey());
+            && ($user->hasPermission('task.manage') || $task->assignee_id === $user->getKey() || $task->reporter_id === $user->getKey() || $task->reviewer_id === $user->getKey());
     }
 
     public function delete(User $user, ?Task $task = null): bool

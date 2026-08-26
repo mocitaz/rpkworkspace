@@ -9,8 +9,11 @@ use App\Models\Document;
 use App\Models\Matter;
 use App\Models\Task;
 use App\Models\User;
+use App\Notifications\TaskApprovedNotification;
 use App\Notifications\TaskAssignedNotification;
 use App\Notifications\TaskCompletedNotification;
+use App\Notifications\TaskReviewRequestedNotification;
+use App\Notifications\TaskRevisionRequestedNotification;
 use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -313,6 +316,132 @@ class TaskController extends Controller
         $audit->record($task, 'task.deleted', ['task_number' => $taskNumber], request()->user(), request());
 
         return redirect()->route('tasks.index')->with('success', "Tugas {$taskNumber} berhasil dihapus.");
+    }
+
+    /**
+     * Submit task for review to reviewer or partner.
+     */
+    public function submitReview(Request $request, Task $task, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('update', $task);
+
+        $validated = $request->validate([
+            'notes' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $notes = ! empty($validated['notes']) ? trim((string) $validated['notes']) : null;
+
+        $task->update([
+            'status' => 'review',
+        ]);
+
+        // If reviewer is set, notify reviewer; otherwise notify reporter
+        $recipientId = $task->reviewer_id ?: $task->reporter_id;
+        if ($recipientId && $recipientId !== $request->user()->getKey()) {
+            $reviewer = User::query()->where('is_active', true)->find($recipientId);
+            $reviewer?->notify((new TaskReviewRequestedNotification($task, $request->user(), $notes))->afterCommit());
+        }
+
+        // Add discussion comment if notes provided
+        if (! empty($notes)) {
+            $task->comments()->create([
+                'user_id' => $request->user()->getKey(),
+                'body' => "📤 **[Pengajuan Review Tugas]**\n\n".$notes,
+            ]);
+        }
+
+        $audit->record($task, 'task.review_requested', [
+            'task_number' => $task->task_number,
+            'reviewer_id' => $task->reviewer_id,
+            'notes' => $notes,
+        ], $request->user(), $request);
+
+        return back()->with('success', "Tugas {$task->task_number} berhasil diajukan untuk ditinjau oleh Pemeriksa.");
+    }
+
+    /**
+     * Approve and complete task.
+     */
+    public function approve(Request $request, Task $task, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('update', $task);
+
+        $validated = $request->validate([
+            'remarks' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $remarks = ! empty($validated['remarks']) ? trim((string) $validated['remarks']) : null;
+
+        $task->update([
+            'status' => 'completed',
+            'completed_at' => now(),
+        ]);
+
+        // Notify assignee if not the approver
+        if ($task->assignee_id && $task->assignee_id !== $request->user()->getKey()) {
+            $assignee = User::query()->where('is_active', true)->find($task->assignee_id);
+            $assignee?->notify((new TaskApprovedNotification($task, $request->user(), $remarks))->afterCommit());
+        }
+
+        // Notify reporter if different from assignee and approver
+        if ($task->reporter_id && $task->reporter_id !== $request->user()->getKey() && $task->reporter_id !== $task->assignee_id) {
+            $reporter = User::query()->where('is_active', true)->find($task->reporter_id);
+            $reporter?->notify((new TaskCompletedNotification($task))->afterCommit());
+        }
+
+        // Add discussion comment if remarks provided
+        if (! empty($remarks)) {
+            $task->comments()->create([
+                'user_id' => $request->user()->getKey(),
+                'body' => "✅ **[Persetujuan & Penyelesaian Tugas]**\n\n".$remarks,
+            ]);
+        }
+
+        $audit->record($task, 'task.approved', [
+            'task_number' => $task->task_number,
+            'approver_id' => $request->user()->getKey(),
+            'remarks' => $remarks,
+        ], $request->user(), $request);
+
+        return back()->with('success', "Tugas {$task->task_number} telah berhasil disetujui & diselesaikan.");
+    }
+
+    /**
+     * Request revision on task.
+     */
+    public function requestRevision(Request $request, Task $task, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('update', $task);
+
+        $validated = $request->validate([
+            'feedback' => ['required', 'string', 'min:3', 'max:2000'],
+        ]);
+
+        $feedback = trim((string) $validated['feedback']);
+
+        $task->update([
+            'status' => 'in_progress',
+        ]);
+
+        // Notify assignee
+        if ($task->assignee_id && $task->assignee_id !== $request->user()->getKey()) {
+            $assignee = User::query()->where('is_active', true)->find($task->assignee_id);
+            $assignee?->notify((new TaskRevisionRequestedNotification($task, $request->user(), $feedback))->afterCommit());
+        }
+
+        // Add discussion comment with feedback
+        $task->comments()->create([
+            'user_id' => $request->user()->getKey(),
+            'body' => "⚠️ **[Permintaan Revisi Tugas]**\n\n".$feedback,
+        ]);
+
+        $audit->record($task, 'task.revision_requested', [
+            'task_number' => $task->task_number,
+            'reviewer_id' => $request->user()->getKey(),
+            'feedback' => $feedback,
+        ], $request->user(), $request);
+
+        return back()->with('success', "Instruksi revisi tugas {$task->task_number} telah dikirimkan kepada pelaksana.");
     }
 
     private function notifyAssignee(Task $task, User $actor): void

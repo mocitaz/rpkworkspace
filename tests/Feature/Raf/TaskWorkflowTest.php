@@ -4,6 +4,10 @@ use App\Models\AuditLog;
 use App\Models\Client;
 use App\Models\Matter;
 use App\Models\Task;
+use App\Notifications\TaskApprovedNotification;
+use App\Notifications\TaskReviewRequestedNotification;
+use App\Notifications\TaskRevisionRequestedNotification;
+use Illuminate\Support\Facades\Notification;
 
 it('creates, assigns, and completes an authorized task with an audit trail', function () {
     $manager = rafUser(['task.view', 'task.create', 'task.manage']);
@@ -85,4 +89,78 @@ it('denies task creation and updates without the required capability', function 
     $this->actingAs($outsider)->put(route('tasks.update', $task), [
         'title' => $task->title, 'status' => 'completed', 'priority' => $task->priority,
     ])->assertForbidden();
+});
+
+it('supports the full review, revision request, and approval workflow lifecycle with notifications and comments', function () {
+    Notification::fake();
+
+    $partner = rafUser(['task.view', 'task.create', 'task.manage', 'matter.view']);
+    $assignee = rafUser(['task.view', 'task.create', 'task.manage', 'matter.view']);
+
+    $task = Task::factory()->create([
+        'reporter_id' => $partner->getKey(),
+        'reviewer_id' => $partner->getKey(),
+        'assignee_id' => $assignee->getKey(),
+        'matter_id' => null,
+        'status' => 'in_progress',
+        'task_number' => 'TSK-2026-0005',
+        'title' => 'Draft Surat Somasi dan Gugatan',
+    ]);
+
+    // 1. Assignee submits task for review
+    $this->actingAs($assignee)->post(route('tasks.submit-review', $task), [
+        'notes' => 'Draf gugatan telah selesai dikerjakan, mohon review partner.',
+    ])->assertSessionHasNoErrors();
+
+    $task->refresh();
+    expect($task->status)->toBe('review')
+        ->and($task->comments()->count())->toBe(1)
+        ->and($task->comments()->first()->body)->toContain('Pengajuan Review Tugas')
+        ->and(AuditLog::query()->where('event', 'task.review_requested')->where('subject_id', $task->getKey())->exists())->toBeTrue();
+
+    Notification::assertSentTo(
+        $partner,
+        TaskReviewRequestedNotification::class
+    );
+
+    // 2. Partner requests revision
+    $this->actingAs($partner)->post(route('tasks.request-revision', $task), [
+        'feedback' => 'Mohon tambahkan pasal 1365 KUHPerdata pada poin 3.',
+    ])->assertSessionHasNoErrors();
+
+    $task->refresh();
+    expect($task->status)->toBe('in_progress')
+        ->and($task->comments()->count())->toBe(2)
+        ->and($task->comments()->where('body', 'like', '%Permintaan Revisi Tugas%')->exists())->toBeTrue()
+        ->and(AuditLog::query()->where('event', 'task.revision_requested')->where('subject_id', $task->getKey())->exists())->toBeTrue();
+
+    Notification::assertSentTo(
+        $assignee,
+        TaskRevisionRequestedNotification::class
+    );
+
+    // 3. Assignee re-submits review
+    $this->actingAs($assignee)->post(route('tasks.submit-review', $task), [
+        'notes' => 'Pasal 1365 KUHPerdata telah ditambahkan.',
+    ])->assertSessionHasNoErrors();
+
+    $task->refresh();
+    expect($task->status)->toBe('review');
+
+    // 4. Partner approves and completes task
+    $this->actingAs($partner)->post(route('tasks.approve', $task), [
+        'remarks' => 'Draf sudah sangat baik dan disetujui.',
+    ])->assertSessionHasNoErrors();
+
+    $task->refresh();
+    expect($task->status)->toBe('completed')
+        ->and($task->completed_at)->not->toBeNull()
+        ->and($task->comments()->count())->toBe(4)
+        ->and($task->comments()->where('body', 'like', '%Persetujuan & Penyelesaian Tugas%')->exists())->toBeTrue()
+        ->and(AuditLog::query()->where('event', 'task.approved')->where('subject_id', $task->getKey())->exists())->toBeTrue();
+
+    Notification::assertSentTo(
+        $assignee,
+        TaskApprovedNotification::class
+    );
 });

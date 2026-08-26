@@ -75,6 +75,9 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::resource('contacts', ContactController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('tasks', TaskController::class);
     Route::patch('tasks/{task}/checklists/{checklistId}/toggle', [TaskController::class, 'toggleChecklist'])->name('tasks.checklists.toggle');
+    Route::post('tasks/{task}/submit-review', [TaskController::class, 'submitReview'])->name('tasks.submit-review');
+    Route::post('tasks/{task}/approve', [TaskController::class, 'approve'])->name('tasks.approve');
+    Route::post('tasks/{task}/request-revision', [TaskController::class, 'requestRevision'])->name('tasks.request-revision');
     Route::redirect('templates', '/documents')->name('templates.index');
     Route::post('comments', [CommentController::class, 'store'])->name('comments.store');
     Route::post('comments/{comment}/reaction', [CommentController::class, 'toggleReaction'])->name('comments.reaction');
