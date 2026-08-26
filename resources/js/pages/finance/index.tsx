@@ -1220,9 +1220,9 @@ function Ledger({
     }, [items, searchQuery]);
 
     return (
-        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
+        <div className="flex h-[440px] flex-col rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
             {/* Header */}
-            <div className="flex flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
+            <div className="flex shrink-0 flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
                 <div className="flex items-center gap-2">
                     <div
                         className={`flex size-7 shrink-0 items-center justify-center rounded-lg ${iconBg}`}
@@ -1258,7 +1258,7 @@ function Ledger({
             </div>
 
             {/* Quick Search Toolbar */}
-            <div className="my-2.5 flex gap-1.5">
+            <div className="my-2.5 flex shrink-0 gap-1.5">
                 <div className="relative flex-1">
                     <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                     <Input
@@ -1280,10 +1280,10 @@ function Ledger({
                 )}
             </div>
 
-            {/* Feed List */}
-            <div className="mt-0.5">
+            {/* Feed List / Empty State */}
+            <div className="flex flex-1 min-h-0 flex-col">
                 {filteredItems.length > 0 ? (
-                    <div className="max-h-[460px] space-y-1.5 overflow-y-auto pr-1">
+                    <div className="flex-1 space-y-1.5 overflow-y-auto pr-1 [scrollbar-width:thin]">
                         {filteredItems.map((i) => (
                             <div
                                 key={i.id}
@@ -1480,7 +1480,7 @@ function Ledger({
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center px-3 py-8 text-center">
+                    <div className="flex h-full flex-1 flex-col items-center justify-center px-3 py-6 text-center">
                         <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
                             <IconComp className="size-4.5" />
                         </div>
@@ -1553,9 +1553,9 @@ function PaymentLedger({
     }, [items, searchQuery]);
 
     return (
-        <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
+        <div className="flex h-[440px] flex-col rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
             {/* Header */}
-            <div className="flex flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
+            <div className="flex shrink-0 flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
                 <div className="flex items-center gap-2">
                     <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
                         <Banknote className="size-3.5" />
@@ -1588,7 +1588,7 @@ function PaymentLedger({
             </div>
 
             {/* Quick Search Toolbar */}
-            <div className="my-2.5 flex gap-1.5">
+            <div className="my-2.5 flex shrink-0 gap-1.5">
                 <div className="relative flex-1">
                     <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                     <Input
@@ -1610,10 +1610,10 @@ function PaymentLedger({
                 )}
             </div>
 
-            {/* Feed List */}
-            <div className="mt-0.5">
+            {/* Feed List / Empty State */}
+            <div className="flex flex-1 min-h-0 flex-col">
                 {filteredItems.length > 0 ? (
-                    <div className="max-h-[460px] space-y-1.5 overflow-y-auto pr-1">
+                    <div className="flex-1 space-y-1.5 overflow-y-auto pr-1 [scrollbar-width:thin]">
                         {filteredItems.map((payment) => (
                             <div
                                 key={payment.id}
@@ -1749,7 +1749,7 @@ function PaymentLedger({
                         ))}
                     </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center px-3 py-8 text-center">
+                    <div className="flex h-full flex-1 flex-col items-center justify-center px-3 py-6 text-center">
                         <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
                             <Banknote className="size-4.5" />
                         </div>
@@ -1768,9 +1768,10 @@ function PaymentLedger({
                                 variant="outline"
                                 size="sm"
                                 onClick={onCreate}
-                                className="mt-3 h-7.5 rounded-lg border-emerald-200 text-xs font-semibold text-emerald-600 hover:bg-emerald-50 dark:border-emerald-900/40 dark:text-emerald-400"
+                                className="mt-3 h-7.5 rounded-lg border-slate-200 text-xs font-semibold text-slate-900 hover:bg-slate-50 dark:border-white/10 dark:text-white dark:hover:bg-zinc-800"
                             >
-                                <Plus className="mr-1 size-3" /> Catat Kas Masuk
+                                <Plus className="mr-1 size-3" />{' '}
+                                {actionLabel || 'Catat Kas Masuk'}
                             </Button>
                         )}
                     </div>
