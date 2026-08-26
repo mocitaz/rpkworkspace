@@ -221,14 +221,25 @@ export default function ClientShow({
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
                     {/* 1. Header Navigation & Client Cockpit Bar */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 lg:flex-row lg:items-center dark:border-white/[0.06]">
-                        <div className="space-y-1.5">
+                    <div className="space-y-3 border-b border-slate-200/60 pb-5 dark:border-white/[0.06]">
+                        {/* Top Tier: Breadcrumbs / Client Code + Action Buttons */}
+                        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                            {/* Left: Breadcrumbs & Badges */}
                             <div className="flex flex-wrap items-center gap-2">
-                                <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="-ml-2 h-7 px-2 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                    asChild
+                                >
+                                    <Link href={clientRoutes.index.url()}>
+                                        <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
+                                        Daftar Klien
+                                    </Link>
+                                </Button>
+                                <span className="text-slate-300 dark:text-zinc-600">/</span>
+                                <span className="inline-block rounded-md bg-blue-600 px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs">
                                     {client.client_number}
-                                </span>
-                                <span className="text-slate-300 dark:text-zinc-700">
-                                    •
                                 </span>
                                 <StatusBadge value={client.status} />
                                 <span
@@ -246,86 +257,91 @@ export default function ClientShow({
                                 </span>
                             </div>
 
+                            {/* Right: Action Buttons */}
+                            <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+                                {can.update && (
+                                    <ClientEditDialog
+                                        client={client}
+                                        partners={partners}
+                                        trigger={
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="h-7.5 cursor-pointer rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
+                                            >
+                                                <Pencil className="mr-1 size-3 text-slate-400" />
+                                                Edit Profil
+                                            </Button>
+                                        }
+                                    />
+                                )}
+
+                                <Button
+                                    size="sm"
+                                    className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                                    asChild
+                                >
+                                    <Link href={matterRoutes.create.url()}>
+                                        <Plus className="mr-1 size-3.5" />
+                                        Buat Matter Baru
+                                    </Link>
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Bottom Tier: Full-Width Client Title & Metadata */}
+                        <div className="space-y-1.5">
                             <div className="flex items-center gap-2.5">
                                 {client.type === 'individual' ||
                                 client.type === 'person' ? (
-                                    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-emerald-200/60 bg-emerald-50 text-emerald-700 shadow-2xs dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-300">
+                                    <div className="flex size-7.5 shrink-0 items-center justify-center rounded-lg border border-emerald-200/60 bg-emerald-50 text-emerald-700 shadow-2xs dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-300">
                                         <User className="size-4" />
                                     </div>
                                 ) : (
-                                    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-blue-200/60 bg-blue-50 text-blue-700 shadow-2xs dark:border-blue-900/40 dark:bg-blue-950/60 dark:text-blue-300">
+                                    <div className="flex size-7.5 shrink-0 items-center justify-center rounded-lg border border-blue-200/60 bg-blue-50 text-blue-700 shadow-2xs dark:border-blue-900/40 dark:bg-blue-950/60 dark:text-blue-300">
                                         <Building2 className="size-4" />
                                     </div>
                                 )}
-                                <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                                <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-[26px] lg:leading-snug dark:text-white">
                                     {client.display_name}
                                 </h1>
                             </div>
 
-                            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-zinc-400">
+                            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-500 dark:text-zinc-400">
                                 <span className="font-medium text-slate-700 dark:text-zinc-200">
                                     {client.legal_name}
                                 </span>
                                 <span className="text-slate-300 dark:text-zinc-700">
                                     •
                                 </span>
-                                <span>{client.industry ?? 'Umum'}</span>
+                                <span>Industri: {client.industry ?? 'Umum'}</span>
                                 {client.city && (
                                     <>
                                         <span className="text-slate-300 dark:text-zinc-700">
                                             •
                                         </span>
                                         <span>
+                                            Lokasi:{' '}
                                             {[client.city, client.country_code]
                                                 .filter(Boolean)
                                                 .join(', ')}
                                         </span>
                                     </>
                                 )}
+                                {client.tax_identifier && (
+                                    <>
+                                        <span className="text-slate-300 dark:text-zinc-700">
+                                            •
+                                        </span>
+                                        <span>
+                                            NPWP:{' '}
+                                            <span className="font-mono">
+                                                {client.tax_identifier}
+                                            </span>
+                                        </span>
+                                    </>
+                                )}
                             </div>
-                        </div>
-
-                        {/* Cockpit Action Buttons */}
-                        <div className="flex shrink-0 flex-wrap items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
-                                asChild
-                            >
-                                <Link href={clientRoutes.index.url()}>
-                                    <ArrowLeft className="mr-1 size-3 text-slate-400" />
-                                    Kembali
-                                </Link>
-                            </Button>
-
-                            {can.update && (
-                                <ClientEditDialog
-                                    client={client}
-                                    partners={partners}
-                                    trigger={
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="h-8 cursor-pointer rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
-                                        >
-                                            <Pencil className="mr-1 size-3 text-slate-400" />
-                                            Edit Profil
-                                        </Button>
-                                    }
-                                />
-                            )}
-
-                            <Button
-                                size="sm"
-                                className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
-                                asChild
-                            >
-                                <Link href={matterRoutes.create.url()}>
-                                    <Plus className="mr-1 size-3" />
-                                    Buat Matter Baru
-                                </Link>
-                            </Button>
                         </div>
                     </div>
 
