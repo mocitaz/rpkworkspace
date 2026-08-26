@@ -530,11 +530,6 @@ export default function TasksIndex({
                                         >
                                             <div className="flex items-start justify-between gap-2">
                                                 <div className="min-w-0 flex-1">
-                                                    {task.task_number && (
-                                                        <span className="mb-1 inline-block rounded bg-amber-500/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-700 dark:bg-amber-400/10 dark:text-amber-300">
-                                                            {task.task_number}
-                                                        </span>
-                                                    )}
                                                     <p
                                                         className={`text-xs font-bold text-slate-900 dark:text-white ${
                                                             task.status ===
@@ -623,11 +618,6 @@ export default function TasksIndex({
                                                     <td className="py-2.5 pr-3 pl-4">
                                                         <div className="flex flex-col space-y-1">
                                                             <div className="flex items-center gap-1.5">
-                                                                {task.task_number && (
-                                                                    <span className="inline-block shrink-0 rounded bg-amber-500/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-700 dark:bg-amber-400/10 dark:text-amber-300">
-                                                                        {task.task_number}
-                                                                    </span>
-                                                                )}
                                                                 <Link
                                                                     href={taskRoutes.show?.url ? taskRoutes.show.url(task.id) : `/tasks/${task.id}`}
                                                                     className={`block text-left text-xs font-semibold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400 ${
@@ -928,7 +918,7 @@ export default function TasksIndex({
                                                 <div className="flex items-start justify-between gap-2">
                                                     <div className="flex items-center gap-1.5">
                                                         {task.task_number && (
-                                                            <span className="rounded bg-amber-500/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-700 dark:bg-amber-400/10 dark:text-amber-300">
+                                                            <span className="inline-block rounded-md bg-blue-600 px-2 py-0.5 font-mono text-[10px] font-bold text-white shadow-2xs">
                                                                 {task.task_number}
                                                             </span>
                                                         )}

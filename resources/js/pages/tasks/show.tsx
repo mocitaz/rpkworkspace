@@ -139,10 +139,24 @@ type AuditEntry = {
         name: string;
         position_title?: string;
         avatar_path?: string | null;
+        avatar_url?: string | null;
     } | null;
     metadata?: Record<string, unknown> | null;
     created_at: string;
 };
+
+function getAvatarUrl(user?: { avatar_url?: string | null; avatar_path?: string | null; avatar?: string | null } | null) {
+    if (!user) return '/images/default-avatar.svg';
+    if (user.avatar_url) return user.avatar_url;
+    if (user.avatar) return user.avatar;
+    if (user.avatar_path) {
+        if (user.avatar_path.startsWith('/') || user.avatar_path.startsWith('http')) {
+            return user.avatar_path;
+        }
+        return `/storage/${user.avatar_path}`;
+    }
+    return '/images/default-avatar.svg';
+}
 
 export default function TaskShow({
     task,
@@ -485,19 +499,43 @@ export default function TaskShow({
                                 </span>
                                 <UserCheck className="size-3.5 text-indigo-600 dark:text-indigo-400" />
                             </div>
-                            <div className="mt-2">
-                                <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                                    {task.assignee?.name || 'Belum Ditugaskan'}
-                                </p>
-                                <p className="text-[11px] text-slate-500 dark:text-zinc-400 truncate">
-                                    {task.assignee?.position_title || 'Staf Hukum'}
-                                </p>
+                            <div className="mt-2 flex items-center gap-2.5">
+                                <Avatar className="size-8 shrink-0 rounded-full border border-slate-200 shadow-2xs dark:border-white/10">
+                                    <AvatarImage
+                                        src={getAvatarUrl(task.assignee)}
+                                        alt={task.assignee?.name || 'Pelaksana'}
+                                    />
+                                    <AvatarFallback className="bg-blue-600 text-[10px] font-bold text-white">
+                                        {task.assignee ? initials(task.assignee.name) : '?'}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="min-w-0 flex-1">
+                                    <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                        {task.assignee?.name || 'Belum Ditugaskan'}
+                                    </p>
+                                    <p className="text-[11px] text-slate-500 dark:text-zinc-400 truncate">
+                                        {task.assignee?.position_title || 'Staf Hukum'}
+                                    </p>
+                                </div>
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span>Pemeriksa (Reviewer)</span>
-                                <span className="font-semibold text-slate-700 dark:text-zinc-300 truncate max-w-[120px]">
-                                    {task.reviewer?.name || '-'}
-                                </span>
+                                <div className="flex items-center gap-1.5 truncate max-w-[150px]">
+                                    {task.reviewer && (
+                                        <Avatar className="size-4 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                            <AvatarImage
+                                                src={getAvatarUrl(task.reviewer)}
+                                                alt={task.reviewer.name}
+                                            />
+                                            <AvatarFallback className="bg-purple-600 text-[6px] font-bold text-white">
+                                                {initials(task.reviewer.name)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    )}
+                                    <span className="font-semibold text-slate-700 dark:text-zinc-300 truncate">
+                                        {task.reviewer?.name || '-'}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -837,20 +875,38 @@ export default function TaskShow({
                                     </div>
 
                                     {auditLogs.length > 0 ? (
-                                        <div className="relative space-y-4 before:absolute before:inset-0 before:left-3.5 before:w-0.5 before:bg-slate-200 dark:before:bg-white/10">
+                                        <div className="relative space-y-4 before:absolute before:inset-0 before:left-4 before:w-0.5 before:bg-slate-200 dark:before:bg-white/10">
                                             {auditLogs.map((log) => (
-                                                <div key={log.id} className="relative flex items-start gap-3 pl-8">
-                                                    <span className="absolute left-2.5 top-1 size-2 rounded-full bg-blue-600 ring-4 ring-white dark:ring-[#14161b]" />
-                                                    <div className="min-w-0 flex-1 space-y-1">
-                                                        <div className="flex flex-wrap items-center justify-between gap-1 text-xs">
-                                                            <span className="font-bold text-slate-900 dark:text-white">
-                                                                {log.actor?.name || 'Sistem'}
-                                                            </span>
-                                                            <span className="text-[10px] text-slate-400 dark:text-zinc-500">
+                                                <div key={log.id} className="relative flex items-start gap-3 pl-9">
+                                                    <span className="absolute left-3 top-3 size-2.5 rounded-full bg-blue-600 ring-4 ring-white dark:ring-[#14161b]" />
+                                                    <div className="min-w-0 flex-1 space-y-1.5 rounded-lg border border-slate-100 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#181a20]">
+                                                        <div className="flex flex-wrap items-center justify-between gap-2">
+                                                            <div className="flex items-center gap-2">
+                                                                <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                                                    <AvatarImage
+                                                                        src={getAvatarUrl(log.actor)}
+                                                                        alt={log.actor?.name || 'Sistem'}
+                                                                    />
+                                                                    <AvatarFallback className="bg-blue-600 text-[8px] font-bold text-white">
+                                                                        {initials(log.actor?.name || 'Sistem')}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+                                                                <div>
+                                                                    <span className="text-xs font-bold text-slate-900 dark:text-white">
+                                                                        {log.actor?.name || 'Sistem'}
+                                                                    </span>
+                                                                    {log.actor?.position_title && (
+                                                                        <span className="ml-1.5 text-[10px] text-slate-500 dark:text-zinc-400">
+                                                                            · {log.actor.position_title}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                            <span className="font-mono text-[10px] text-slate-400 dark:text-zinc-500">
                                                                 {formatDate(log.created_at)}
                                                             </span>
                                                         </div>
-                                                        <p className="text-xs text-slate-600 dark:text-zinc-400 font-mono">
+                                                        <p className="text-xs text-slate-600 dark:text-zinc-300 font-mono">
                                                             {log.event}
                                                         </p>
                                                     </div>
@@ -893,61 +949,96 @@ export default function TaskShow({
 
                                 <div className="divide-y divide-slate-100 text-xs dark:divide-white/[0.04]">
                                     {/* Pelaksana */}
-                                    <div className="flex items-center justify-between py-2">
+                                    <div className="flex items-center justify-between py-2.5">
                                         <span className="text-slate-500 dark:text-zinc-400">
                                             Pelaksana Utama
                                         </span>
                                         {task.assignee ? (
                                             <div className="flex items-center gap-2">
-                                                <Avatar className="size-5.5 ring-1 ring-slate-200 dark:ring-white/10">
-                                                    {task.assignee.avatar_path && (
-                                                        <AvatarImage src={`/storage/${task.assignee.avatar_path}`} />
-                                                    )}
+                                                <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                                    <AvatarImage
+                                                        src={getAvatarUrl(task.assignee)}
+                                                        alt={task.assignee.name}
+                                                    />
                                                     <AvatarFallback className="bg-blue-600 text-[8px] font-bold text-white">
                                                         {initials(task.assignee.name)}
                                                     </AvatarFallback>
                                                 </Avatar>
-                                                <span className="font-semibold text-slate-900 dark:text-white">
+                                                <span className="font-semibold text-slate-900 dark:text-white truncate max-w-[150px]">
                                                     {task.assignee.name}
                                                 </span>
                                             </div>
                                         ) : (
-                                            <span className="font-normal italic text-slate-400">-</span>
+                                            <div className="flex items-center gap-1.5">
+                                                <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                                    <AvatarImage src="/images/default-avatar.svg" />
+                                                    <AvatarFallback className="bg-slate-200 text-[8px] font-bold text-slate-600">-</AvatarFallback>
+                                                </Avatar>
+                                                <span className="font-normal italic text-slate-400">Belum Ditugaskan</span>
+                                            </div>
                                         )}
                                     </div>
 
                                     {/* Reviewer */}
-                                    <div className="flex items-center justify-between py-2">
+                                    <div className="flex items-center justify-between py-2.5">
                                         <span className="text-slate-500 dark:text-zinc-400">
                                             Pemeriksa (Reviewer)
                                         </span>
                                         {task.reviewer ? (
                                             <div className="flex items-center gap-2">
-                                                <Avatar className="size-5.5 ring-1 ring-slate-200 dark:ring-white/10">
-                                                    {task.reviewer.avatar_path && (
-                                                        <AvatarImage src={`/storage/${task.reviewer.avatar_path}`} />
-                                                    )}
+                                                <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                                    <AvatarImage
+                                                        src={getAvatarUrl(task.reviewer)}
+                                                        alt={task.reviewer.name}
+                                                    />
                                                     <AvatarFallback className="bg-purple-600 text-[8px] font-bold text-white">
                                                         {initials(task.reviewer.name)}
                                                     </AvatarFallback>
                                                 </Avatar>
-                                                <span className="font-semibold text-slate-900 dark:text-white">
+                                                <span className="font-semibold text-slate-900 dark:text-white truncate max-w-[150px]">
                                                     {task.reviewer.name}
                                                 </span>
                                             </div>
                                         ) : (
-                                            <span className="font-normal text-slate-400">-</span>
+                                            <div className="flex items-center gap-1.5">
+                                                <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                                    <AvatarImage src="/images/default-avatar.svg" />
+                                                    <AvatarFallback className="bg-slate-200 text-[8px] font-bold text-slate-600">-</AvatarFallback>
+                                                </Avatar>
+                                                <span className="font-normal text-slate-400">-</span>
+                                            </div>
                                         )}
                                     </div>
 
                                     {/* Reporter */}
-                                    <div className="flex items-center justify-between py-2">
+                                    <div className="flex items-center justify-between py-2.5">
                                         <span className="text-slate-500 dark:text-zinc-400">
                                             Pemberi Tugas
                                         </span>
-                                        <span className="font-medium text-slate-800 dark:text-zinc-200">
-                                            {task.reporter?.name || 'Sistem'}
-                                        </span>
+                                        {task.reporter ? (
+                                            <div className="flex items-center gap-2">
+                                                <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                                    <AvatarImage
+                                                        src={getAvatarUrl(task.reporter)}
+                                                        alt={task.reporter.name}
+                                                    />
+                                                    <AvatarFallback className="bg-slate-700 text-[8px] font-bold text-white">
+                                                        {initials(task.reporter.name)}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <span className="font-medium text-slate-800 dark:text-zinc-200 truncate max-w-[150px]">
+                                                    {task.reporter.name}
+                                                </span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-1.5">
+                                                <Avatar className="size-6 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                                    <AvatarImage src="/images/default-avatar.svg" />
+                                                    <AvatarFallback className="bg-slate-700 text-[8px] font-bold text-white">S</AvatarFallback>
+                                                </Avatar>
+                                                <span className="font-medium text-slate-800 dark:text-zinc-200">Sistem</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
