@@ -234,19 +234,19 @@ export default function UserShow({
                         <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
                             {/* Left: Luxury Avatar & Executive Details */}
                             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
-                                {/* Luxury Beveled Profile Avatar without green dot */}
+                                {/* Luxury Profile Avatar circular without green dot */}
                                 <div className="relative shrink-0">
-                                    <div className="relative size-18 rounded-2xl bg-linear-to-b from-slate-200 via-slate-100 to-slate-300 p-0.5 shadow-md sm:size-20 dark:from-white/20 dark:via-white/5 dark:to-white/15">
-                                        <Avatar className="size-full rounded-[14px] bg-slate-900 shadow-inner dark:bg-zinc-800">
+                                    <div className="relative size-18 rounded-full bg-linear-to-b from-slate-200 via-slate-100 to-slate-300 p-0.5 shadow-md sm:size-20 dark:from-white/20 dark:via-white/5 dark:to-white/15">
+                                        <Avatar className="size-full rounded-full bg-slate-900 shadow-inner dark:bg-zinc-800">
                                             <AvatarImage
                                                 src={
                                                     staff.avatar_url ??
                                                     undefined
                                                 }
-                                                className="object-cover"
+                                                className="rounded-full object-cover"
                                                 alt={staff.name}
                                             />
-                                            <AvatarFallback className="rounded-[14px] bg-linear-to-br from-slate-900 via-slate-800 to-indigo-950 text-xl font-bold tracking-wider text-white shadow-inner sm:text-2xl">
+                                            <AvatarFallback className="rounded-full bg-linear-to-br from-slate-900 via-slate-800 to-indigo-950 text-xl font-bold tracking-wider text-white shadow-inner sm:text-2xl">
                                                 {getInitials(staff.name)}
                                             </AvatarFallback>
                                         </Avatar>
@@ -1311,13 +1311,13 @@ function EditUserDialog({
                 <div className="shrink-0 border-b border-slate-100 bg-slate-50/70 px-6 pt-5 pb-3.5 pr-12 dark:border-white/[0.06] dark:bg-[#121418]">
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                            <div className="relative size-10 shrink-0 rounded-xl bg-linear-to-b from-slate-200 via-slate-100 to-slate-300 p-0.5 shadow-xs dark:from-white/20 dark:via-white/5 dark:to-white/15">
-                                <Avatar className="size-full rounded-[10px] bg-slate-900 shadow-inner dark:bg-zinc-800">
+                            <div className="relative size-10 shrink-0 rounded-full bg-linear-to-b from-slate-200 via-slate-100 to-slate-300 p-0.5 shadow-xs dark:from-white/20 dark:via-white/5 dark:to-white/15">
+                                <Avatar className="size-full rounded-full bg-slate-900 shadow-inner dark:bg-zinc-800">
                                     <AvatarImage
                                         src={user.avatar_url ?? undefined}
-                                        className="object-cover"
+                                        className="rounded-full object-cover"
                                     />
-                                    <AvatarFallback className="rounded-[10px] bg-linear-to-br from-slate-900 via-slate-800 to-indigo-950 text-xs font-bold text-white">
+                                    <AvatarFallback className="rounded-full bg-linear-to-br from-slate-900 via-slate-800 to-indigo-950 text-xs font-bold text-white">
                                         {getInitials(user.name)}
                                     </AvatarFallback>
                                 </Avatar>

@@ -827,122 +827,96 @@ function StaffCard({
     return (
         <div
             onClick={() => router.visit(userRoutes.show.url(user.id))}
-            className="group relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-200/50 dark:border-white/[0.08] dark:bg-[#13151b] dark:hover:border-white/20 dark:hover:shadow-[0_12px_24px_-4px_rgba(0,0,0,0.5)]"
+            className="group relative flex cursor-pointer flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md dark:border-white/[0.06] dark:bg-[#14161b] dark:hover:border-white/[0.12] dark:hover:shadow-none"
         >
-            <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-slate-300 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 dark:via-white/20" />
-
             <div className="space-y-3">
+                {/* Header: Employee ID & Status */}
                 <div className="flex items-center justify-between gap-2">
-                    <div className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/70 bg-slate-50/90 px-2.5 py-0.5 font-mono text-[10px] font-bold text-slate-700 shadow-2xs dark:border-white/5 dark:bg-zinc-800/80 dark:text-zinc-300">
-                        <Shield className="size-3 text-slate-400 dark:text-zinc-400" />
-                        <span>{displayId}</span>
-                    </div>
+                    <span className="font-mono text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
+                        {displayId}
+                    </span>
 
                     <span
-                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-semibold tracking-wide ${
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                             user.is_active
-                                ? 'border border-emerald-200/70 bg-emerald-50 text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/40 dark:text-emerald-300'
-                                : 'border border-rose-200/70 bg-rose-50 text-rose-700 dark:border-rose-800/50 dark:bg-rose-950/40 dark:text-rose-300'
+                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
+                                : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-400'
                         }`}
                     >
-                        <span className="relative flex size-1.5">
-                            {user.is_active && (
-                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                            )}
-                            <span
-                                className={`relative inline-flex size-1.5 rounded-full ${
-                                    user.is_active
-                                        ? 'bg-emerald-500'
-                                        : 'bg-rose-500'
-                                }`}
-                            />
-                        </span>
+                        <span
+                            className={`size-1.5 rounded-full ${
+                                user.is_active ? 'bg-emerald-500' : 'bg-slate-400'
+                            }`}
+                        />
                         {user.is_active ? 'Aktif' : 'Nonaktif'}
                     </span>
                 </div>
 
-                <div className="flex items-center gap-3 pt-0.5">
-                    <div className="relative shrink-0">
-                        <div className="rounded-2xl bg-gradient-to-b from-slate-200/80 to-slate-100 p-0.5 shadow-2xs transition-all duration-300 group-hover:from-blue-500/40 group-hover:to-indigo-500/20 dark:from-white/15 dark:to-white/5">
-                            <Avatar className="size-12 rounded-[14px] bg-slate-50 dark:bg-zinc-800">
-                                <AvatarImage
-                                    src={user.avatar_url ?? undefined}
-                                    className="object-cover"
-                                />
-                                <AvatarFallback className="rounded-[14px] bg-gradient-to-br from-slate-800 to-slate-950 text-xs font-extrabold text-white dark:from-zinc-700 dark:to-zinc-900 dark:text-zinc-100">
-                                    {getInitials(user.name)}
-                                </AvatarFallback>
-                            </Avatar>
-                        </div>
-                        {user.is_active && (
-                            <span
-                                className="absolute -right-1 -bottom-1 flex size-4 items-center justify-center rounded-full bg-emerald-500 shadow-xs ring-2 ring-white dark:ring-[#13151b]"
-                                title="Terverifikasi & Aktif"
-                            >
-                                <Check className="size-2.5 stroke-[3.5] text-white" />
-                            </span>
-                        )}
-                    </div>
+                {/* Profile Identity: Clean Circular Avatar & Info */}
+                <div className="flex items-center gap-3">
+                    <Avatar className="size-11 shrink-0 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10 dark:bg-zinc-800">
+                        <AvatarImage
+                            src={user.avatar_url ?? undefined}
+                            className="rounded-full object-cover"
+                        />
+                        <AvatarFallback className="rounded-full bg-slate-900 text-xs font-bold text-white dark:bg-zinc-800 dark:text-zinc-200">
+                            {getInitials(user.name)}
+                        </AvatarFallback>
+                    </Avatar>
 
                     <div className="min-w-0 flex-1 space-y-0.5">
-                        <h4 className="line-clamp-1 text-[13px] font-bold tracking-tight text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                        <h4 className="truncate text-xs font-bold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
                             {user.name}
                         </h4>
-                        <p className="line-clamp-1 text-[11px] font-semibold text-slate-600 dark:text-zinc-300">
+                        <p className="truncate text-[11px] font-medium text-slate-600 dark:text-zinc-300">
                             {user.position_title || 'Staf Kantor Hukum'}
                         </p>
-                        <div className="flex items-center gap-2 truncate text-[10.5px] text-slate-400 dark:text-zinc-400">
+                        <div className="flex items-center gap-1.5 truncate text-[10.5px] text-slate-400 dark:text-zinc-500">
                             {user.department && (
-                                <span className="flex items-center gap-1 truncate">
-                                    <Building2 className="size-3 shrink-0 text-slate-400 dark:text-zinc-500" />
-                                    <span className="truncate">
-                                        {user.department}
-                                    </span>
-                                </span>
+                                <span className="truncate">{user.department}</span>
                             )}
-                            {user.advocate_license_no && (
-                                <span className="inline-flex items-center gap-0.5 rounded bg-amber-50 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
-                                    <Scale className="size-2.5" />
-                                    Advokat
-                                </span>
+                            {user.department && user.practice_areas && <span>·</span>}
+                            {user.practice_areas && (
+                                <span className="truncate">{user.practice_areas}</span>
                             )}
                         </div>
                     </div>
                 </div>
 
+                {/* Email Pill with Copy Action */}
                 <div
                     onClick={handleCopyEmail}
                     title="Klik untuk menyalin email"
-                    className="group/email flex items-center justify-between gap-2 rounded-xl border border-slate-200/70 bg-slate-50/60 px-3 py-1.5 text-[11px] text-slate-600 transition-all hover:border-slate-300 hover:bg-slate-100/90 dark:border-white/[0.05] dark:bg-[#101217] dark:text-zinc-300 dark:hover:border-white/10 dark:hover:bg-zinc-800/60"
+                    className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50/70 px-2.5 py-1.5 text-[11px] text-slate-600 transition-colors hover:border-slate-200 hover:bg-slate-100/70 dark:border-white/[0.04] dark:bg-white/[0.02] dark:text-zinc-300 dark:hover:border-white/[0.08] dark:hover:bg-white/[0.05]"
                 >
                     <div className="flex items-center gap-2 truncate">
-                        <Mail className="size-3.5 shrink-0 text-slate-400 group-hover/email:text-slate-600 dark:text-zinc-400 dark:group-hover/email:text-zinc-200" />
-                        <span className="truncate font-mono text-[10.5px] font-medium text-slate-700 dark:text-zinc-300">
+                        <Mail className="size-3.5 shrink-0 text-slate-400 dark:text-zinc-500" />
+                        <span className="truncate font-mono text-[10.5px] text-slate-600 dark:text-zinc-300">
                             {user.email}
                         </span>
                     </div>
-                    <span className="flex shrink-0 items-center text-[10px] font-medium text-slate-400 group-hover/email:text-slate-700 dark:text-zinc-500 dark:group-hover/email:text-zinc-200">
+                    <span className="flex shrink-0 items-center text-[10px] text-slate-400 dark:text-zinc-500">
                         {copied ? (
-                            <span className="flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
+                            <span className="flex items-center gap-1 font-medium text-emerald-600 dark:text-emerald-400">
                                 <Check className="size-3" />
                                 Disalin
                             </span>
                         ) : (
-                            <Copy className="size-3 opacity-60 transition-opacity group-hover/email:opacity-100" />
+                            <Copy className="size-3 opacity-60 transition-opacity hover:opacity-100" />
                         )}
                     </span>
                 </div>
             </div>
 
-            <div className="mt-3.5 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-white/[0.05]">
+            {/* Footer Action Bar */}
+            <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-white/[0.04]">
                 <Link
                     href={userRoutes.show.url(user.id)}
                     onClick={(e) => e.stopPropagation()}
-                    className="flex items-center gap-1 text-[11px] font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-zinc-200 dark:group-hover:text-blue-400"
+                    className="flex items-center gap-1 text-[11px] font-semibold text-slate-700 transition-colors group-hover:text-blue-600 dark:text-zinc-300 dark:group-hover:text-blue-400"
                 >
-                    <UserIcon className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-400 dark:group-hover:text-blue-400" />
                     <span>Lihat Profil &amp; CV</span>
-                    <ChevronRight className="size-3 text-slate-400 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-blue-600 dark:text-zinc-400 dark:group-hover:text-blue-400" />
+                    <ChevronRight className="size-3 transition-transform duration-150 group-hover:translate-x-0.5" />
                 </Link>
 
                 <div className="flex items-center gap-1">
@@ -953,7 +927,7 @@ function StaffCard({
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
                             title={`Chat WhatsApp: ${user.phone}`}
-                            className="flex h-7 w-7 items-center justify-center rounded-lg text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/40"
+                            className="flex size-7 items-center justify-center rounded-lg text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/40"
                         >
                             <Smartphone className="size-3.5" />
                         </a>
@@ -964,23 +938,25 @@ function StaffCard({
                         size="sm"
                         onClick={handleOpenChat}
                         title="Kirim pesan langsung"
-                        className="h-7 w-7 rounded-lg p-0 text-slate-500 hover:bg-blue-50 hover:text-blue-600 dark:text-zinc-400 dark:hover:bg-blue-950/40 dark:hover:text-blue-300"
+                        className="size-7 rounded-lg p-0 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-zinc-500 dark:hover:bg-white/[0.06] dark:hover:text-zinc-200"
                     >
                         <MessageSquare className="size-3.5" />
                     </Button>
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onEdit(user);
-                        }}
-                        className="h-7 rounded-lg px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-white"
-                    >
-                        <Pencil className="mr-1 size-2.5" />
-                        Edit
-                    </Button>
+                    <Can permission="admin.users.manage">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onEdit(user);
+                            }}
+                            className="h-7 rounded-lg px-2 text-[11px] font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                        >
+                            <Pencil className="mr-1 size-3" />
+                            Edit
+                        </Button>
+                    </Can>
                 </div>
             </div>
         </div>
@@ -1014,13 +990,13 @@ function EditUserDialog({
                 <div className="shrink-0 border-b border-slate-100 bg-slate-50/70 px-6 pt-5 pb-3.5 pr-12 dark:border-white/[0.06] dark:bg-[#121418]">
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                            <div className="relative size-10 shrink-0 rounded-xl bg-linear-to-b from-slate-200 via-slate-100 to-slate-300 p-0.5 shadow-xs dark:from-white/20 dark:via-white/5 dark:to-white/15">
-                                <Avatar className="size-full rounded-[10px] bg-slate-900 shadow-inner dark:bg-zinc-800">
+                            <div className="relative size-10 shrink-0 rounded-full bg-linear-to-b from-slate-200 via-slate-100 to-slate-300 p-0.5 shadow-xs dark:from-white/20 dark:via-white/5 dark:to-white/15">
+                                <Avatar className="size-full rounded-full bg-slate-900 shadow-inner dark:bg-zinc-800">
                                     <AvatarImage
                                         src={user.avatar_url ?? undefined}
-                                        className="object-cover"
+                                        className="rounded-full object-cover"
                                     />
-                                    <AvatarFallback className="rounded-[10px] bg-linear-to-br from-slate-900 via-slate-800 to-indigo-950 text-xs font-bold text-white">
+                                    <AvatarFallback className="rounded-full bg-linear-to-br from-slate-900 via-slate-800 to-indigo-950 text-xs font-bold text-white">
                                         {getInitials(user.name)}
                                     </AvatarFallback>
                                 </Avatar>
