@@ -85,27 +85,70 @@ class FinancialData2026Seeder extends Seeder
                 $dafina->roles()->syncWithoutDetaching([$internRole->id]);
             }
 
-            // 3. Ensure Client PT KKG
-            $client = Client::query()->firstOrCreate(
-                ['display_name' => 'PT KEMBANG KEMBAR GRUP'],
-                [
-                    'client_number' => 'CLI-2026-0001',
+            // 3. Ensure Single Master Client PT KKG (Merge if duplicate exists)
+            $existingClients = Client::query()
+                ->where('client_number', 'RPK-C-2026-YNGZAW')
+                ->orWhere('client_number', 'CLI-2026-0001')
+                ->orWhere('display_name', 'like', '%KKG%')
+                ->orWhere('display_name', 'like', '%Kembang Kembar%')
+                ->orWhere('legal_name', 'like', '%Kembang Kembar%')
+                ->orderBy('created_at', 'asc')
+                ->get();
+
+            if ($existingClients->count() > 0) {
+                // Prefer the user-created client (e.g. RPK-C-2026-YNGZAW or the earliest created)
+                $masterClient = $existingClients->firstWhere('client_number', 'RPK-C-2026-YNGZAW') ?? $existingClients->first();
+                $masterClient->update([
                     'legal_name' => 'PT KEMBANG KEMBAR GRUP',
+                    'display_name' => 'PT KEMBANG KEMBAR GRUP',
+                    'industry' => $masterClient->industry ?? 'Properti / Real Estate Developer',
+                    'email' => $masterClient->email ?? 'finance@kembangkembar.com',
+                    'phone' => $masterClient->phone ?? '021-5550192',
+                    'status' => 'active',
+                ]);
+
+                // Merge and delete any other duplicate clients
+                foreach ($existingClients as $dup) {
+                    if ($dup->getKey() !== $masterClient->getKey()) {
+                        Matter::query()->where('client_id', $dup->getKey())->update(['client_id' => $masterClient->getKey()]);
+                        Invoice::query()->where('client_id', $dup->getKey())->update(['client_id' => $masterClient->getKey()]);
+                        Payment::query()->where('client_id', $dup->getKey())->update(['client_id' => $masterClient->getKey()]);
+                        DB::table('quotations')->where('client_id', $dup->getKey())->update(['client_id' => $masterClient->getKey()]);
+                        DB::table('client_trust_funds')->where('client_id', $dup->getKey())->update(['client_id' => $masterClient->getKey()]);
+                        DB::table('documents')->where('client_id', $dup->getKey())->update(['client_id' => $masterClient->getKey()]);
+                        DB::table('contacts')->where('client_id', $dup->getKey())->update(['client_id' => $masterClient->getKey()]);
+                        $dup->delete();
+                    }
+                }
+                $client = $masterClient;
+            } else {
+                $client = Client::query()->create([
+                    'client_number' => 'RPK-C-2026-YNGZAW',
+                    'legal_name' => 'PT KEMBANG KEMBAR GRUP',
+                    'display_name' => 'PT KEMBANG KEMBAR GRUP',
                     'type' => 'corporate',
+                    'industry' => 'Properti / Real Estate Developer',
                     'status' => 'active',
                     'email' => 'finance@kembangkembar.com',
                     'phone' => '021-5550192',
                     'address_line_1' => 'Jakarta Selatan, DKI Jakarta',
                     'relationship_partner_id' => $fajar->getKey(),
                     'created_by' => $fajar->getKey(),
-                ]
-            );
+                ]);
+            }
 
-            // 4. Ensure Matter PT KKG
-            $matter = Matter::query()->firstOrCreate(
-                ['matter_number' => 'RPK-2026-0001'],
-                [
+            // 4. Ensure Single Matter PT KKG
+            $matter = Matter::query()
+                ->where('client_id', $client->getKey())
+                ->orWhere('matter_number', 'RPK-2026-0001')
+                ->orWhere('matter_number', '001/2026')
+                ->orWhere('title', 'like', '%Kembang Kembar%')
+                ->first();
+
+            if (! $matter) {
+                $matter = Matter::query()->create([
                     'client_id' => $client->getKey(),
+                    'matter_number' => 'RPK-2026-0001',
                     'title' => 'Pendampingan Hukum Korporasi dan Penyelesaian Sengketa Internal PT Kembang Kembar Grup',
                     'summary' => 'Pendampingan Hukum Korporasi dan Penyelesaian Sengketa Internal PT Kembang Kembar Grup',
                     'status' => 'active',
@@ -114,8 +157,15 @@ class FinancialData2026Seeder extends Seeder
                     'budget_amount' => 165000000,
                     'responsible_partner_id' => $fajar->getKey(),
                     'created_by' => $fajar->getKey(),
-                ]
-            );
+                ]);
+            } else {
+                $matter->update([
+                    'client_id' => $client->getKey(),
+                    'title' => 'Pendampingan Hukum Korporasi dan Penyelesaian Sengketa Internal PT Kembang Kembar Grup',
+                    'budget_amount' => 165000000,
+                    'responsible_partner_id' => $fajar->getKey(),
+                ]);
+            }
 
             // 5. Ensure Financial Accounts
             $bankOp = FinancialAccount::query()->firstOrCreate(
