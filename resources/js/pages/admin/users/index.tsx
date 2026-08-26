@@ -830,25 +830,33 @@ function StaffCard({
             className="group relative flex cursor-pointer flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md dark:border-white/[0.06] dark:bg-[#14161b] dark:hover:border-white/[0.12] dark:hover:shadow-none"
         >
             <div className="space-y-3">
-                {/* Header: Employee ID & Status */}
+                {/* Header: Employee ID & Glowing Live Status */}
                 <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
-                        {displayId}
-                    </span>
+                    <div className="inline-flex items-center gap-1.5 rounded-md border border-slate-200/80 bg-slate-50/90 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-600 shadow-2xs dark:border-white/10 dark:bg-zinc-800/80 dark:text-zinc-300">
+                        <span className="size-1 rounded-full bg-slate-400 dark:bg-zinc-500" />
+                        <span>{displayId}</span>
+                    </div>
 
                     <span
-                        className={`inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-wide transition-all ${
                             user.is_active
-                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300'
-                                : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-400'
+                                ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 shadow-[0_0_12px_-2px_rgba(16,185,129,0.3)] backdrop-blur-xs dark:border-emerald-400/40 dark:bg-emerald-500/15 dark:text-emerald-300'
+                                : 'border border-slate-200 bg-slate-100/80 text-slate-500 dark:border-white/10 dark:bg-zinc-800/80 dark:text-zinc-400'
                         }`}
                     >
-                        <span
-                            className={`size-1.5 rounded-full ${
-                                user.is_active ? 'bg-emerald-500' : 'bg-slate-400'
-                            }`}
-                        />
-                        {user.is_active ? 'Aktif' : 'Nonaktif'}
+                        <span className="relative flex size-2">
+                            {user.is_active && (
+                                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                            )}
+                            <span
+                                className={`relative inline-flex size-2 rounded-full ${
+                                    user.is_active
+                                        ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]'
+                                        : 'bg-slate-400'
+                                }`}
+                            />
+                        </span>
+                        <span>{user.is_active ? 'Aktif' : 'Nonaktif'}</span>
                     </span>
                 </div>
 
