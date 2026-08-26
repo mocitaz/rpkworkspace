@@ -394,9 +394,6 @@ export default function UsersIndex({
                                                 <StaffCard
                                                     key={user.id}
                                                     user={user}
-                                                    onEdit={(u) =>
-                                                        setEditing(u)
-                                                    }
                                                 />
                                             ))}
                                         </div>
@@ -595,15 +592,16 @@ export default function UsersIndex({
                                                                     <Button
                                                                         variant="outline"
                                                                         size="sm"
-                                                                        onClick={() =>
-                                                                            setEditing(
-                                                                                user,
-                                                                            )
-                                                                        }
+                                                                        asChild
                                                                         className="h-7 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                                        title="Edit Profil & Hak Akses"
                                                                     >
-                                                                        <Pencil className="mr-1 size-3 text-slate-400" />
-                                                                        Kelola
+                                                                        <Link
+                                                                            href={userRoutes.edit?.url ? userRoutes.edit.url(user.id) : `/admin/users/${user.id}/edit`}
+                                                                        >
+                                                                            <Pencil className="mr-1 size-3 text-slate-400" />
+                                                                            Edit
+                                                                        </Link>
                                                                     </Button>
                                                                     <Button
                                                                         variant="outline"
@@ -794,10 +792,8 @@ export default function UsersIndex({
 
 function StaffCard({
     user,
-    onEdit,
 }: {
     user: User;
-    onEdit: (user: User) => void;
 }) {
     const getInitials = useInitials();
     const [copied, setCopied] = useState(false);
@@ -951,14 +947,16 @@ function StaffCard({
                             type="button"
                             variant="ghost"
                             size="sm"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onEdit(user);
-                            }}
+                            asChild
                             className="h-7 rounded-lg px-2 text-[11px] font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
                         >
-                            <Pencil className="mr-1 size-3" />
-                            Edit
+                            <Link
+                                href={userRoutes.edit?.url ? userRoutes.edit.url(user.id) : `/admin/users/${user.id}/edit`}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <Pencil className="mr-1 size-3" />
+                                Edit
+                            </Link>
                         </Button>
                     </Can>
                 </div>

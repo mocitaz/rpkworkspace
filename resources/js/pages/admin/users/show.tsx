@@ -430,14 +430,12 @@ export default function UserShow({
                                                     Advokat
                                                 </span>
                                             </div>
-                                            <button
-                                                onClick={() =>
-                                                    openEditWithTab('advocate')
-                                                }
+                                            <Link
+                                                href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}
                                                 className="cursor-pointer text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                             >
                                                 Edit Kredensial →
-                                            </button>
+                                            </Link>
                                         </div>
 
                                         {/* Specification List */}
@@ -532,17 +530,12 @@ export default function UserShow({
                                                     </span>
                                                     {practiceAreasList.length ===
                                                         0 && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() =>
-                                                                openEditWithTab(
-                                                                    'advocate',
-                                                                )
-                                                            }
+                                                        <Link
+                                                            href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}
                                                             className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                                         >
                                                             + Tambah
-                                                        </button>
+                                                        </Link>
                                                     )}
                                                 </div>
                                                 <div className="mt-1.5 flex flex-wrap gap-1.5">
@@ -1052,15 +1045,12 @@ export default function UserShow({
                                             Kontak Staf
                                         </span>
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            openEditWithTab('contact')
-                                        }
+                                    <Link
+                                        href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}
                                         className="cursor-pointer text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                     >
                                         Edit
-                                    </button>
+                                    </Link>
                                 </div>
 
                                 <div className="divide-y divide-slate-100 text-xs dark:divide-white/[0.04]">
@@ -1142,15 +1132,12 @@ export default function UserShow({
                                             Rekening &amp; Pajak
                                         </span>
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            openEditWithTab('billing')
-                                        }
+                                    <Link
+                                        href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}
                                         className="cursor-pointer text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                     >
                                         Edit
-                                    </button>
+                                    </Link>
                                 </div>
 
                                 <div className="divide-y divide-slate-100 text-xs dark:divide-white/[0.04]">
