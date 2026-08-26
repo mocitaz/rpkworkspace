@@ -190,7 +190,7 @@ export default function TaskShow({
 
     const handleStatusChange = (newStatus: string) => {
         router.put(
-            taskRoutes.update.url(task.id),
+            taskRoutes.update?.url ? taskRoutes.update.url(task.id) : `/tasks/${task.id}`,
             {
                 title: task.title,
                 status: newStatus,
@@ -222,7 +222,7 @@ export default function TaskShow({
 
     const handleEditSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        editForm.put(taskRoutes.update.url(task.id), {
+        editForm.put(taskRoutes.update?.url ? taskRoutes.update.url(task.id) : `/tasks/${task.id}`, {
             onSuccess: () => setIsEditOpen(false),
             preserveScroll: true,
         });
@@ -239,7 +239,7 @@ export default function TaskShow({
 
     const handleCompleteSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        completeForm.put(taskRoutes.update.url(task.id), {
+        completeForm.put(taskRoutes.update?.url ? taskRoutes.update.url(task.id) : `/tasks/${task.id}`, {
             onSuccess: () => setIsCompleteModalOpen(false),
             preserveScroll: true,
         });
@@ -258,7 +258,7 @@ export default function TaskShow({
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/70 pb-4 dark:border-white/[0.06]">
                         <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-zinc-400">
                             <Link
-                                href={taskRoutes.index.url()}
+                                href={taskRoutes.index?.url ? taskRoutes.index.url() : '/tasks'}
                                 className="flex items-center gap-1 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                             >
                                 <ArrowLeft className="size-3.5" />
@@ -268,7 +268,7 @@ export default function TaskShow({
                             {task.matter && (
                                 <>
                                     <Link
-                                        href={matterRoutes.show.url(task.matter.id)}
+                                        href={matterRoutes.show?.url ? matterRoutes.show.url(task.matter.id) : `/matters/${task.matter.id}`}
                                         className="font-mono text-slate-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400 transition-colors"
                                     >
                                         {task.matter.matter_number}
@@ -300,7 +300,7 @@ export default function TaskShow({
                                     description={`Tugas ${task.task_number} (${task.title}) akan dihapus secara permanen beserta riwayat checklist dan komentarnya.`}
                                     confirmText="Ya, Hapus Tugas"
                                     variant="destructive"
-                                    onConfirm={() => router.delete(taskRoutes.destroy.url(task.id))}
+                                    onConfirm={() => router.delete(taskRoutes.destroy?.url ? taskRoutes.destroy.url(task.id) : `/tasks/${task.id}`)}
                                 >
                                     <Button
                                         variant="outline"
