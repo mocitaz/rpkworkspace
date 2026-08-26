@@ -27,13 +27,26 @@ export default function AuthSimpleLayout({
                         <div className="mb-5 flex flex-col items-center text-center">
                             <Link
                                 href={home()}
-                                className="group mb-4 inline-flex items-center justify-center transition-transform hover:scale-105"
+                                className="group mb-4 flex flex-col items-center gap-2.5 transition-transform hover:scale-[1.02]"
                             >
+                                {/* RPK Law Firm Official Logo */}
                                 <img
                                     src="/logo/raf-law-firm-transparent.png"
                                     alt="RPK Law Firm"
-                                    className="h-14 w-auto max-w-[170px] object-contain drop-shadow-xs"
+                                    className="h-10 w-auto max-w-[170px] object-contain drop-shadow-xs dark:brightness-0 dark:invert"
                                 />
+
+                                {/* RPK App Brand Pill */}
+                                <div className="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-slate-50/90 px-3 py-1 shadow-2xs dark:border-white/10 dark:bg-white/[0.04]">
+                                    <img
+                                        src="/images/rpkapp.png"
+                                        alt="RPK App"
+                                        className="size-4.5 rounded-full object-contain"
+                                    />
+                                    <span className="text-xs font-bold tracking-tight text-slate-800 dark:text-zinc-200">
+                                        RPK App
+                                    </span>
+                                </div>
                             </Link>
 
                             <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
