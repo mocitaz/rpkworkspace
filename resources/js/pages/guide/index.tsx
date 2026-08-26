@@ -343,26 +343,49 @@ const GUIDES: GuideItem[] = [
     },
 ];
 
-const FAQS = [
+interface FaqItem {
+    category: string;
+    q: string;
+    a: string;
+    route?: string;
+    routeLabel?: string;
+}
+
+const FAQS: FaqItem[] = [
     {
+        category: 'Spesimen Tanda Tangan',
         q: 'Bagaimana cara menambahkan tanda tangan saya ke draf dokumen resmi?',
         a: 'Buka menu Pengaturan Profil (klik avatar di pojok kanan atas → Pengaturan), lalu pada bagian "Spesimen Tanda Tangan", goreskan tanda tangan Anda pada canvas digital atau unggah berkas PNG berlatar transparan.',
+        route: '/settings/profile',
+        routeLabel: 'Buka Pengaturan Profil',
     },
     {
+        category: 'Tanda Tangan Klien',
         q: 'Apakah klien wajib memiliki akun aplikasi untuk menandatangani dokumen?',
         a: 'Tidak wajib. Klien akan menerima tautan verifikasi aman melalui email yang memungkinkan mereka meninjau berkas dan menandatangani dokumen secara resmi langsung dari peramban ponsel atau komputer tanpa perlu membuat akun.',
+        route: '/documents',
+        routeLabel: 'Buka Repositori Dokumen',
     },
     {
+        category: 'Kalender Persidangan',
         q: 'Bagaimana cara menghubungkan kalender persidangan ke smartphone saya?',
         a: 'Buka halaman Kalender, klik tombol "Sinkronkan iCal Feed" di sudut atas, lalu salin tautan feed privat ke aplikasi Google Calendar, Apple Calendar, atau Outlook di ponsel Anda.',
+        route: '/calendar',
+        routeLabel: 'Buka Kalender Sidang',
     },
     {
+        category: 'Hak Akses & Wewenang',
         q: 'Mengapa muncul pesan "Akses Ditolak / 403" saat membuka modul tertentu?',
         a: 'Pesan Error 403 menandakan akun Anda belum diberikan wewenang pada modul tersebut oleh Administrator. Silakan hubungi Managing Partner atau Administrator firma untuk penyesuaian hak akses 26 matriks RBAC.',
+        route: '/admin/users',
+        routeLabel: 'Lihat Matriks Staf & Peran',
     },
     {
+        category: 'Keamanan & Biometrik',
         q: 'Bagaimana cara mengaktifkan login biometrik (Touch ID / Face ID)?',
         a: 'Masuk ke menu Pengaturan → tab "Keamanan / Security". Klik "Daftarkan Passkey Baru" dan sentuh sensor biometrik perangkat Anda. Selanjutnya Anda dapat masuk secara instan tanpa mengetik kata sandi.',
+        route: '/settings/profile',
+        routeLabel: 'Daftarkan Passkey Sekarang',
     },
 ];
 
@@ -383,7 +406,6 @@ export default function GuideIndex() {
     const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
-    const [isCopied, setIsCopied] = useState<boolean>(false);
 
     const filteredGuides = useMemo(() => {
         return GUIDES.filter((g) => {
@@ -406,12 +428,6 @@ export default function GuideIndex() {
             );
         });
     }, [selectedCategory, searchQuery]);
-
-    const handleCopyShortcut = () => {
-        navigator.clipboard.writeText('Cmd + K');
-        setIsCopied(true);
-        setTimeout(() => setIsCopied(false), 2000);
-    };
 
     return (
         <>
@@ -581,45 +597,73 @@ export default function GuideIndex() {
                         </div>
                     )}
 
-                    {/* 4. Quick FAQ Container */}
-                    <div className="space-y-3 rounded-xl border border-slate-200/80 bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#14161b]">
-                        <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                            <HelpCircle className="size-3.5 text-slate-700 dark:text-zinc-300" />
-                            <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                Tanya Jawab Kendala &amp; Solusi (FAQ)
+                    {/* 4. Enhanced Clean FAQ Section */}
+                    <div className="space-y-4 rounded-xl border border-slate-200/80 bg-white p-6 shadow-2xs dark:border-white/[0.08] dark:bg-[#14161b]">
+                        <div className="flex flex-col justify-between gap-1 border-b border-slate-100 pb-3 sm:flex-row sm:items-center dark:border-white/[0.04]">
+                            <div className="flex items-center gap-2">
+                                <HelpCircle className="size-4 text-slate-700 dark:text-zinc-300" />
+                                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                    Tanya Jawab Kendala &amp; Solusi (FAQ)
+                                </h3>
+                            </div>
+                            <span className="font-mono text-[10px] text-slate-400 dark:text-zinc-500">
+                                {FAQS.length} Pertanyaan Umum
                             </span>
                         </div>
 
-                        <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                            {FAQS.map((faq, fIdx) => (
-                                <div key={fIdx} className="py-2.5">
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            setOpenFaqIndex(
-                                                openFaqIndex === fIdx
-                                                    ? null
-                                                    : fIdx,
-                                            )
-                                        }
-                                        className="flex w-full items-center justify-between gap-4 text-left text-xs font-bold text-slate-800 hover:text-slate-950 dark:text-zinc-200 dark:hover:text-white"
+                        <div className="grid grid-cols-1 gap-3">
+                            {FAQS.map((faq, fIdx) => {
+                                const isOpen = openFaqIndex === fIdx;
+                                return (
+                                    <div
+                                        key={fIdx}
+                                        className={`overflow-hidden rounded-xl border transition-all duration-200 ${
+                                            isOpen
+                                                ? 'border-slate-300 bg-slate-50/70 shadow-2xs dark:border-white/15 dark:bg-white/[0.03]'
+                                                : 'border-slate-200/80 bg-white hover:border-slate-300 hover:bg-slate-50/40 dark:border-white/[0.06] dark:bg-[#12141a] dark:hover:border-white/10 dark:hover:bg-white/[0.02]'
+                                        }`}
                                     >
-                                        <span>{faq.q}</span>
-                                        <ChevronDown
-                                            className={`size-3.5 shrink-0 text-slate-400 transition-transform ${
-                                                openFaqIndex === fIdx
-                                                    ? 'rotate-180 text-slate-900 dark:text-white'
-                                                    : ''
-                                            }`}
-                                        />
-                                    </button>
-                                    {openFaqIndex === fIdx && (
-                                        <div className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-zinc-400">
-                                            {faq.a}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                                        <button
+                                            type="button"
+                                            onClick={() => setOpenFaqIndex(isOpen ? null : fIdx)}
+                                            className="flex w-full items-center justify-between gap-4 p-4 text-left"
+                                        >
+                                            <div className="space-y-1">
+                                                <span className="inline-block rounded-md border border-slate-200 bg-slate-100/70 px-2 py-0.5 font-mono text-[9px] font-bold text-slate-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-400">
+                                                    {faq.category}
+                                                </span>
+                                                <h4 className="text-xs font-bold text-slate-900 sm:text-sm dark:text-white">
+                                                    {faq.q}
+                                                </h4>
+                                            </div>
+                                            <div className={`flex size-6 shrink-0 items-center justify-center rounded-full border transition-transform duration-200 ${
+                                                isOpen
+                                                    ? 'rotate-180 border-slate-300 bg-slate-900 text-white dark:border-white/20 dark:bg-white dark:text-slate-900'
+                                                    : 'border-slate-200 bg-slate-50 text-slate-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-400'
+                                            }`}>
+                                                <ChevronDown className="size-3.5" />
+                                            </div>
+                                        </button>
+
+                                        {isOpen && (
+                                            <div className="border-t border-slate-200/60 bg-white p-4 text-xs leading-relaxed text-slate-600 dark:border-white/[0.04] dark:bg-transparent dark:text-zinc-300">
+                                                <p>{faq.a}</p>
+                                                {faq.route && faq.routeLabel && (
+                                                    <div className="mt-3 pt-2 border-t border-slate-100 dark:border-white/[0.04]">
+                                                        <Link
+                                                            href={faq.route}
+                                                            className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                                                        >
+                                                            <span>{faq.routeLabel}</span>
+                                                            <ArrowRight className="size-3" />
+                                                        </Link>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 </main>
