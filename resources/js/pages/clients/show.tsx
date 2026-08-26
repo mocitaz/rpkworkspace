@@ -346,11 +346,11 @@ export default function ClientShow({
                     </div>
 
                     {/* 2. Top 4 Overview Stat Cards */}
-                    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
                         {/* 1. Relationship Partner */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
                                     RELATIONSHIP PARTNER
                                 </span>
                                 <ShieldCheck className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
@@ -383,15 +383,15 @@ export default function ClientShow({
                                     </p>
                                 </div>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Penanggung Jawab Klien</span>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
+                                <span>Penanggung Jawab</span>
                             </div>
                         </div>
 
                         {/* 2. Sektor & Entitas */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
                                     SEKTOR &amp; ENTITAS
                                 </span>
                                 <Building2 className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
@@ -400,65 +400,62 @@ export default function ClientShow({
                                 <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
                                     {client.industry ?? 'Umum / Korporasi'}
                                 </p>
-                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                <p className="truncate text-[10px] text-slate-500 sm:text-[11px] dark:text-zinc-400">
                                     {client.type === 'corporate'
-                                        ? 'Badan Hukum / Korporasi'
+                                        ? 'Badan Hukum'
                                         : 'Perorangan'}
                                 </p>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
                                 <span>Profil Usaha</span>
                             </div>
                         </div>
 
                         {/* 3. Portofolio Perkara */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
                                     PORTOFOLIO PERKARA
                                 </span>
                                 <Briefcase className="size-3.5 text-slate-400 transition-colors group-hover:text-amber-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                     {activeMatters.length}
                                 </span>
-                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                <span className="text-[10px] font-medium text-slate-500 sm:text-[11px] dark:text-zinc-400">
                                     matter aktif
                                 </span>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Total Tercatat</span>
-                                <span className="font-semibold text-slate-700 dark:text-zinc-300">
-                                    {allMatters.length} Kasus
-                                </span>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
+                                <span>Total: {allMatters.length}</span>
                             </div>
                         </div>
 
                         {/* 4. Kontak Person */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
                                     KONTAK PERSON
                                 </span>
                                 <ContactRound className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                     {client.contacts.length}
                                 </span>
-                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                    perwakilan resmi
+                                <span className="text-[10px] font-medium text-slate-500 sm:text-[11px] dark:text-zinc-400">
+                                    perwakilan
                                 </span>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Personil Terdaftar</span>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
+                                <span>Personil Resmi</span>
                             </div>
                         </div>
                     </section>
 
-                    {/* 3. Segmented Navigation Tabs */}
-                    <div className="flex flex-wrap items-center gap-1 rounded-xl border border-slate-200/70 bg-slate-100/70 p-1 dark:border-white/[0.06] dark:bg-[#14161b]">
+                    {/* 3. Segmented Navigation Tabs (Horizontal Swipeable on Mobile) */}
+                    <div className="flex items-center gap-1 overflow-x-auto rounded-xl border border-slate-200/70 bg-slate-100/70 p-1 shadow-2xs [scrollbar-width:none] [-ms-overflow-style:none] dark:border-white/[0.06] dark:bg-[#14161b] [&::-webkit-scrollbar]:hidden">
                         {tabs.map((item) => {
                             const isActive = tab === item.id;
                             const Icon = item.icon;
@@ -478,7 +475,7 @@ export default function ClientShow({
                                     key={item.id}
                                     type="button"
                                     onClick={() => setTab(item.id)}
-                                    className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                    className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
                                         isActive
                                             ? 'bg-white text-slate-900 shadow-2xs dark:bg-[#20232a] dark:text-white'
                                             : 'text-slate-600 hover:bg-white/60 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'

@@ -378,24 +378,24 @@ export default function AuditIndex({
                     </div>
 
                     {/* 2. Top 4 Compact KPI Cards */}
-                    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
                         {/* 1. Total Log */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold tracking-wider uppercase">
-                                    Total Rekaman Audit
+                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
+                                    Total Rekaman
                                 </span>
                                 <ShieldCheck className="size-3.5 text-blue-600 dark:text-blue-400" />
                             </div>
                             <div className="mt-2 flex items-baseline gap-1.5">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                     {metrics.total.toLocaleString('id-ID')}
                                 </span>
-                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                <span className="text-[10px] text-slate-500 sm:text-[11px] dark:text-zinc-400">
                                     log
                                 </span>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
                                 <span>Ledger Kepatuhan</span>
                                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                                     Permanen
@@ -404,22 +404,22 @@ export default function AuditIndex({
                         </div>
 
                         {/* 2. Hari Ini */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold tracking-wider uppercase">
-                                    Aktivitas Hari Ini
+                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
+                                    Hari Ini
                                 </span>
                                 <Activity className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                             </div>
                             <div className="mt-2 flex items-baseline gap-1.5">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+                                <span className="font-mono text-xl font-bold tracking-tight text-emerald-600 sm:text-2xl dark:text-emerald-400">
                                     {metrics.today.toLocaleString('id-ID')}
                                 </span>
-                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                <span className="text-[10px] text-slate-500 sm:text-[11px] dark:text-zinc-400">
                                     event
                                 </span>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
                                 <span>24 Jam Terakhir</span>
                                 <span className="font-semibold text-emerald-600 dark:text-emerald-400">
                                     Harian
@@ -428,24 +428,24 @@ export default function AuditIndex({
                         </div>
 
                         {/* 3. Pelaku Aktif */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold tracking-wider uppercase">
-                                    Pelaku Teridentifikasi
+                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
+                                    Pelaku Aktif
                                 </span>
                                 <Users className="size-3.5 text-purple-600 dark:text-purple-400" />
                             </div>
                             <div className="mt-2 flex items-baseline gap-1.5">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-purple-600 dark:text-purple-400">
+                                <span className="font-mono text-xl font-bold tracking-tight text-purple-600 sm:text-2xl dark:text-purple-400">
                                     {metrics.actors_count.toLocaleString(
                                         'id-ID',
                                     )}
                                 </span>
-                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                    pengguna
+                                <span className="text-[10px] text-slate-500 sm:text-[11px] dark:text-zinc-400">
+                                    user
                                 </span>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
                                 <span>Tercatat Beraksi</span>
                                 <span className="font-semibold text-purple-600 dark:text-purple-400">
                                     Aktif
@@ -454,27 +454,27 @@ export default function AuditIndex({
                         </div>
 
                         {/* 4. Variasi Event */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold tracking-wider uppercase">
+                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
                                     Ragam Event
                                 </span>
                                 <Layers className="size-3.5 text-amber-500" />
                             </div>
                             <div className="mt-2 flex items-baseline gap-1.5">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
+                                <span className="font-mono text-xl font-bold tracking-tight text-amber-600 sm:text-2xl dark:text-amber-400">
                                     {metrics.events_count.toLocaleString(
                                         'id-ID',
                                     )}
                                 </span>
-                                <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                <span className="text-[10px] text-slate-500 sm:text-[11px] dark:text-zinc-400">
                                     tipe
                                 </span>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Perkara, Berkas &amp; Billing</span>
+                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
+                                <span>Cakupan Sistem</span>
                                 <span className="font-semibold text-amber-600 dark:text-amber-400">
-                                    Cakupan
+                                    Audit
                                 </span>
                             </div>
                         </div>
@@ -486,8 +486,8 @@ export default function AuditIndex({
                         className="space-y-2 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]"
                     >
                         {/* Row 1: Event Dropdown + Actor Dropdown + Reset + Count Badge */}
-                        <div className="flex flex-wrap items-center gap-2">
-                            <div className="relative min-w-[200px] flex-1">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                            <div className="relative w-full flex-1">
                                 <select
                                     name="event"
                                     defaultValue={filters.event ?? ''}
@@ -503,7 +503,7 @@ export default function AuditIndex({
                                 <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
                             </div>
 
-                            <div className="relative min-w-[200px] flex-1">
+                            <div className="relative w-full flex-1">
                                 <select
                                     name="actor_id"
                                     defaultValue={filters.actor_id ?? ''}
@@ -521,31 +521,33 @@ export default function AuditIndex({
                                 <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
                             </div>
 
-                            {(filters.event ||
-                                filters.actor_id ||
-                                filters.from ||
-                                filters.until) && (
-                                <Button
-                                    asChild
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
-                                    title="Reset Semua Filter"
-                                >
-                                    <a href={auditRoutes.index.url()}>
-                                        <RotateCcw className="size-3.5 text-slate-400" />
-                                    </a>
-                                </Button>
-                            )}
+                            <div className="flex items-center gap-2">
+                                {(filters.event ||
+                                    filters.actor_id ||
+                                    filters.from ||
+                                    filters.until) && (
+                                    <Button
+                                        asChild
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                        title="Reset Semua Filter"
+                                    >
+                                        <a href={auditRoutes.index.url()}>
+                                            <RotateCcw className="size-3.5 text-slate-400" />
+                                        </a>
+                                    </Button>
+                                )}
 
-                            <span className="shrink-0 rounded-md border border-slate-200/70 bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
-                                {auditLogs.total} log
-                            </span>
+                                <span className="shrink-0 rounded-md border border-slate-200/70 bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
+                                    {auditLogs.total} log
+                                </span>
+                            </div>
                         </div>
 
                         {/* Row 2: Date Pickers + Action Buttons */}
-                        <div className="flex flex-wrap items-center gap-2">
-                            <div className="flex min-w-[280px] flex-1 items-center gap-2">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                            <div className="flex w-full flex-1 items-center gap-2">
                                 <div className="relative flex-1">
                                     <Input
                                         name="from"
@@ -572,10 +574,9 @@ export default function AuditIndex({
                             <Button
                                 type="submit"
                                 size="sm"
-                                className="h-8 shrink-0 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                className="h-8 w-full shrink-0 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 sm:w-auto dark:bg-white dark:text-slate-900"
                             >
-                                <Filter className="mr-1.5 size-3" /> Terapkan
-                                Filter
+                                <Filter className="mr-1.5 size-3" /> Terapkan Filter
                             </Button>
                         </div>
                     </Form>

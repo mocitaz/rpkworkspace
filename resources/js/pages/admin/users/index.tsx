@@ -279,12 +279,12 @@ export default function UsersIndex({
                         </div>
                     </section>
 
-                    {/* 3. Segmented View Switcher */}
-                    <div className="flex items-center gap-1 border-b border-slate-200/60 pb-2 dark:border-white/[0.06]">
+                    {/* 3. Segmented View Switcher (Horizontal Swipeable on Mobile) */}
+                    <div className="flex items-center gap-1.5 overflow-x-auto border-b border-slate-200/60 pb-2 [scrollbar-width:none] [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
                         <button
                             type="button"
                             onClick={() => setTab('cards')}
-                            className={`flex h-7.5 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-all ${
+                            className={`flex h-7.5 shrink-0 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold whitespace-nowrap transition-all ${
                                 tab === 'cards'
                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                     : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300'
@@ -296,7 +296,7 @@ export default function UsersIndex({
                         <button
                             type="button"
                             onClick={() => setTab('users')}
-                            className={`flex h-7.5 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-all ${
+                            className={`flex h-7.5 shrink-0 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold whitespace-nowrap transition-all ${
                                 tab === 'users'
                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                     : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300'
@@ -308,7 +308,7 @@ export default function UsersIndex({
                         <button
                             type="button"
                             onClick={() => setTab('roles')}
-                            className={`flex h-7.5 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition-all ${
+                            className={`flex h-7.5 shrink-0 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold whitespace-nowrap transition-all ${
                                 tab === 'roles'
                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                     : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300'
@@ -327,7 +327,7 @@ export default function UsersIndex({
                                 className="space-y-2 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2 dark:border-white/[0.04] dark:bg-[#121418]"
                             >
                                 {/* Row 1: Search, Reset, Count */}
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                                     <div className="relative flex-1">
                                         <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                                         <Input
@@ -337,27 +337,29 @@ export default function UsersIndex({
                                             className="h-7.5 w-full rounded-lg border-slate-200 bg-white pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:ring-0 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
                                         />
                                     </div>
-                                    {(filters.search || filters.role_id) && (
-                                        <Button
-                                            asChild
-                                            variant="outline"
-                                            size="sm"
-                                            className="h-7.5 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
-                                            title="Reset Semua Filter"
-                                        >
-                                            <Link href={userRoutes.index?.url ? userRoutes.index.url() : '/admin/users'}>
-                                                <RotateCcw className="size-3.5 text-slate-400" />
-                                            </Link>
-                                        </Button>
-                                    )}
-                                    <span className="shrink-0 rounded-md border border-slate-200/70 bg-white px-2.5 py-0.5 font-mono text-[10.5px] font-semibold text-slate-700 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
-                                        {users.total} personel
-                                    </span>
+                                    <div className="flex items-center gap-2">
+                                        {(filters.search || filters.role_id) && (
+                                            <Button
+                                                asChild
+                                                variant="outline"
+                                                size="sm"
+                                                className="h-7.5 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                                title="Reset Semua Filter"
+                                            >
+                                                <Link href={userRoutes.index?.url ? userRoutes.index.url() : '/admin/users'}>
+                                                    <RotateCcw className="size-3.5 text-slate-400" />
+                                                </Link>
+                                            </Button>
+                                        )}
+                                        <span className="shrink-0 rounded-md border border-slate-200/70 bg-white px-2.5 py-0.5 font-mono text-[10.5px] font-semibold text-slate-700 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
+                                            {users.total} personel
+                                        </span>
+                                    </div>
                                 </div>
 
                                 {/* Row 2: Select Role, Submit button */}
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <div className="relative min-w-[200px] flex-1">
+                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                                    <div className="relative w-full flex-1 sm:max-w-xs">
                                         <select
                                             name="role_id"
                                             defaultValue={filters.role_id ?? ''}
@@ -378,7 +380,7 @@ export default function UsersIndex({
                                     <Button
                                         type="submit"
                                         size="sm"
-                                        className="h-7.5 shrink-0 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                        className="h-7.5 w-full shrink-0 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 sm:w-auto dark:bg-white dark:text-slate-900"
                                     >
                                         Terapkan Filter
                                     </Button>

@@ -259,11 +259,11 @@ export default function ClientsIndex({
                     </section>
 
                     {/* 3. Filter Controls & Segmented Quick Filter Bar */}
-                    <div className="space-y-2 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
-                        {/* Row 1: Search Form + Reset + Count Badge */}
+                    <div className="space-y-2.5 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
+                        {/* Row 1: Responsive Search Form + Action Buttons */}
                         <form
                             onSubmit={handleSearchSubmit}
-                            className="flex items-center gap-2"
+                            className="flex flex-col gap-2 sm:flex-row sm:items-center"
                         >
                             <div className="relative flex-1">
                                 <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
@@ -277,38 +277,40 @@ export default function ClientsIndex({
                                 />
                             </div>
 
-                            <Button
-                                type="submit"
-                                size="sm"
-                                className="h-8 shrink-0 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
-                            >
-                                Cari
-                            </Button>
-
-                            {(filters.search || filters.status) && (
+                            <div className="flex items-center gap-2">
                                 <Button
-                                    type="button"
-                                    variant="outline"
+                                    type="submit"
                                     size="sm"
-                                    onClick={handleResetFilters}
-                                    className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
-                                    title="Reset Semua Filter"
+                                    className="h-8 flex-1 shrink-0 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 sm:flex-initial dark:bg-white dark:text-slate-900"
                                 >
-                                    <RotateCcw className="size-3.5 text-slate-400" />
+                                    Cari
                                 </Button>
-                            )}
 
-                            <span className="shrink-0 rounded-md border border-slate-200/70 bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
-                                {clients.total} klien
-                            </span>
+                                {(filters.search || filters.status) && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleResetFilters}
+                                        className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                        title="Reset Semua Filter"
+                                    >
+                                        <RotateCcw className="size-3.5 text-slate-400" />
+                                    </Button>
+                                )}
+
+                                <span className="shrink-0 rounded-md border border-slate-200/70 bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
+                                    {clients.total} klien
+                                </span>
+                            </div>
                         </form>
 
-                        {/* Row 2: Segmented Quick Status Pills */}
-                        <div className="flex flex-wrap items-center gap-1 border-t border-slate-200/40 pt-2 dark:border-white/[0.04]">
+                        {/* Row 2: Segmented Quick Status Pills with Smooth Mobile Scroll */}
+                        <div className="flex items-center gap-1 overflow-x-auto border-t border-slate-200/40 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] dark:border-white/[0.04] [&::-webkit-scrollbar]:hidden">
                             <button
                                 type="button"
                                 onClick={() => handleFilterStatus('')}
-                                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
                                     !filters.status
                                         ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                         : 'text-slate-600 hover:bg-white dark:text-zinc-400 dark:hover:bg-zinc-800'
@@ -319,7 +321,7 @@ export default function ClientsIndex({
                             <button
                                 type="button"
                                 onClick={() => handleFilterStatus('active')}
-                                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
                                     filters.status === 'active'
                                         ? 'bg-emerald-600 text-white shadow-2xs'
                                         : 'text-slate-600 hover:bg-white hover:text-emerald-700 dark:text-zinc-400 dark:hover:bg-zinc-800'
@@ -330,7 +332,7 @@ export default function ClientsIndex({
                             <button
                                 type="button"
                                 onClick={() => handleFilterStatus('inactive')}
-                                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
                                     filters.status === 'inactive'
                                         ? 'bg-amber-600 text-white shadow-2xs'
                                         : 'text-slate-600 hover:bg-white hover:text-amber-700 dark:text-zinc-400 dark:hover:bg-zinc-800'
@@ -341,7 +343,7 @@ export default function ClientsIndex({
                             <button
                                 type="button"
                                 onClick={() => handleFilterStatus('closed')}
-                                className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
+                                className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-semibold transition-all ${
                                     filters.status === 'closed'
                                         ? 'bg-slate-700 text-white shadow-2xs dark:bg-zinc-700'
                                         : 'text-slate-600 hover:bg-white dark:text-zinc-400 dark:hover:bg-zinc-800'

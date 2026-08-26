@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\TaskController::toggle
-* @see app/Http/Controllers/TaskController.php:277
+* @see app/Http/Controllers/TaskController.php:298
 * @route '/tasks/{task}/checklists/{checklistId}/toggle'
 */
 export const toggle = (args: { task: string | { id: string }, checklistId: string | number } | [task: string | { id: string }, checklistId: string | number ], options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -16,7 +16,7 @@ toggle.definition = {
 
 /**
 * @see \App\Http\Controllers\TaskController::toggle
-* @see app/Http/Controllers/TaskController.php:277
+* @see app/Http/Controllers/TaskController.php:298
 * @route '/tasks/{task}/checklists/{checklistId}/toggle'
 */
 toggle.url = (args: { task: string | { id: string }, checklistId: string | number } | [task: string | { id: string }, checklistId: string | number ], options?: RouteQueryOptions) => {
@@ -44,7 +44,7 @@ toggle.url = (args: { task: string | { id: string }, checklistId: string | numbe
 
 /**
 * @see \App\Http\Controllers\TaskController::toggle
-* @see app/Http/Controllers/TaskController.php:277
+* @see app/Http/Controllers/TaskController.php:298
 * @route '/tasks/{task}/checklists/{checklistId}/toggle'
 */
 toggle.patch = (args: { task: string | { id: string }, checklistId: string | number } | [task: string | { id: string }, checklistId: string | number ], options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -54,7 +54,7 @@ toggle.patch = (args: { task: string | { id: string }, checklistId: string | num
 
 /**
 * @see \App\Http\Controllers\TaskController::toggle
-* @see app/Http/Controllers/TaskController.php:277
+* @see app/Http/Controllers/TaskController.php:298
 * @route '/tasks/{task}/checklists/{checklistId}/toggle'
 */
 const toggleForm = (args: { task: string | { id: string }, checklistId: string | number } | [task: string | { id: string }, checklistId: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ const toggleForm = (args: { task: string | { id: string }, checklistId: string |
 
 /**
 * @see \App\Http\Controllers\TaskController::toggle
-* @see app/Http/Controllers/TaskController.php:277
+* @see app/Http/Controllers/TaskController.php:298
 * @route '/tasks/{task}/checklists/{checklistId}/toggle'
 */
 toggleForm.patch = (args: { task: string | { id: string }, checklistId: string | number } | [task: string | { id: string }, checklistId: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

@@ -303,8 +303,8 @@ export default function TasksIndex({
 
                     {/* 3. Filter Controls & Segmented Quick Filter Bar */}
                     <div className="space-y-3">
-                        {/* Segmented Quick Status Pills */}
-                        <div className="flex flex-wrap items-center gap-1.5">
+                        {/* Segmented Quick Status Pills with Smooth Mobile Scroll */}
+                        <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                             {viewTabs.map((tab) => {
                                 const isCurrent =
                                     (filters.view ?? '') === tab.id;
@@ -322,7 +322,7 @@ export default function TasksIndex({
                                                 { preserveState: true },
                                             )
                                         }
-                                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                        className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
                                             isCurrent
                                                 ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                                 : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
@@ -338,7 +338,7 @@ export default function TasksIndex({
                         <div className="flex flex-col gap-3 rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center">
                                 {/* Matter Filter */}
-                                <div className="relative min-w-[220px] flex-1 sm:max-w-xs">
+                                <div className="relative w-full flex-1 sm:max-w-xs">
                                     <select
                                         defaultValue={filters.matter_id ?? ''}
                                         onChange={(e) =>
@@ -372,7 +372,7 @@ export default function TasksIndex({
                                 </div>
 
                                 {/* Status Filter */}
-                                <div className="relative min-w-[160px]">
+                                <div className="relative w-full sm:w-44">
                                     <select
                                         defaultValue={filters.status ?? ''}
                                         onChange={(e) =>
@@ -426,7 +426,7 @@ export default function TasksIndex({
                                                 { preserveState: true },
                                             )
                                         }
-                                        className="h-8 rounded-lg border-slate-200 px-2.5 text-xs text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                        className="h-8 w-full rounded-lg border-slate-200 px-2.5 text-xs text-slate-600 hover:bg-slate-50 sm:w-auto dark:border-white/10 dark:text-zinc-300"
                                     >
                                         <RotateCcw className="mr-1 size-3 text-slate-400" />
                                         Reset

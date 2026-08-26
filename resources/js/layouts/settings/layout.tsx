@@ -49,10 +49,10 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
                 {/* Main Settings Body */}
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-                    {/* Left Settings Sidebar */}
+                    {/* Left Settings Sidebar / Mobile Horizontal Swipe Bar */}
                     <aside className="lg:col-span-3">
                         <nav
-                            className="flex flex-col gap-1 rounded-xl border border-slate-200/70 bg-white p-1.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]"
+                            className="flex flex-row gap-1.5 overflow-x-auto rounded-xl border border-slate-200/70 bg-white p-1.5 shadow-2xs [scrollbar-width:none] [-ms-overflow-style:none] lg:flex-col lg:overflow-visible dark:border-white/[0.06] dark:bg-[#14161b] [&::-webkit-scrollbar]:hidden"
                             aria-label="Settings Navigation"
                         >
                             {sidebarNavItems.map((item, index) => {
@@ -64,27 +64,27 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                                         key={`${toUrl(item.href)}-${index}`}
                                         href={item.href}
                                         className={cn(
-                                            'group flex items-start gap-2.5 rounded-lg p-2.5 text-xs transition-colors',
+                                            'group flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs transition-colors lg:items-start lg:p-2.5',
                                             active
-                                                ? 'bg-slate-100/90 text-slate-900 dark:bg-white/[0.06] dark:text-white'
+                                                ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900 lg:bg-slate-100/90 lg:text-slate-900 lg:dark:bg-white/[0.06] lg:dark:text-white'
                                                 : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.02] dark:hover:text-white',
                                         )}
                                     >
                                         <div
                                             className={cn(
-                                                'flex size-7 shrink-0 items-center justify-center rounded-md transition-colors',
+                                                'flex size-6 shrink-0 items-center justify-center rounded-md transition-colors lg:size-7',
                                                 active
-                                                    ? 'bg-blue-600 text-white dark:bg-blue-600'
+                                                    ? 'bg-white/20 text-white lg:bg-blue-600 lg:text-white'
                                                     : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 dark:bg-zinc-800 dark:text-zinc-400',
                                             )}
                                         >
                                             <Icon className="size-3.5" />
                                         </div>
                                         <div className="min-w-0">
-                                            <span className="block text-xs leading-snug font-semibold">
+                                            <span className="block whitespace-nowrap text-xs font-semibold leading-snug">
                                                 {item.title}
                                             </span>
-                                            <span className="block truncate text-[11px] text-slate-500 dark:text-zinc-400">
+                                            <span className="hidden truncate text-[11px] text-slate-500 dark:text-zinc-400 lg:block">
                                                 {item.description}
                                             </span>
                                         </div>

@@ -736,8 +736,8 @@ export default function MatterShow({
                         </div>
                     </section>
 
-                    {/* 3. Segmented Navigation Tabs */}
-                    <div className="flex flex-wrap items-center gap-1 rounded-xl border border-slate-200/70 bg-white p-1 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                    {/* 3. Segmented Navigation Tabs (Horizontal Swipeable on Mobile) */}
+                    <div className="flex items-center gap-1 overflow-x-auto rounded-xl border border-slate-200/70 bg-white p-1 shadow-2xs [scrollbar-width:none] [-ms-overflow-style:none] dark:border-white/[0.06] dark:bg-[#14161b] [&::-webkit-scrollbar]:hidden">
                         {tabs.map((item) => {
                             const isActive = tab === item.id;
                             const count =
@@ -764,14 +764,14 @@ export default function MatterShow({
                                     key={item.id}
                                     type="button"
                                     onClick={() => setTab(item.id)}
-                                    className={`flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                    className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
                                         isActive
                                             ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                             : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
                                     }`}
                                 >
                                     <item.icon
-                                        className={`size-3.5 ${
+                                        className={`size-3.5 shrink-0 ${
                                             isActive
                                                 ? 'text-white dark:text-slate-900'
                                                 : 'text-slate-500 group-hover:text-slate-700 dark:text-zinc-400'

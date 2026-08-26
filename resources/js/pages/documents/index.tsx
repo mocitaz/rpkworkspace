@@ -240,7 +240,7 @@ export default function DocumentsIndex({
                         className="space-y-2 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]"
                     >
                         {/* Row 1: Search, Reset, Count */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                             <div className="relative flex-1">
                                 <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                                 <Input
@@ -250,30 +250,32 @@ export default function DocumentsIndex({
                                     className="h-8 w-full rounded-lg border-slate-200 bg-white pl-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
                                 />
                             </div>
-                            {(filters.search ||
-                                filters.status ||
-                                filters.matter_id ||
-                                filters.document_type) && (
-                                <Button
-                                    asChild
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
-                                    title="Reset Semua Filter"
-                                >
-                                    <Link href={documentRoutes.index.url()}>
-                                        <RotateCcw className="size-3.5 text-slate-400" />
-                                    </Link>
-                                </Button>
-                            )}
-                            <span className="shrink-0 rounded-md border border-slate-200/70 bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
-                                {documents.total} berkas
-                            </span>
+                            <div className="flex items-center gap-2">
+                                {(filters.search ||
+                                    filters.status ||
+                                    filters.matter_id ||
+                                    filters.document_type) && (
+                                    <Button
+                                        asChild
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                        title="Reset Semua Filter"
+                                    >
+                                        <Link href={documentRoutes.index.url()}>
+                                            <RotateCcw className="size-3.5 text-slate-400" />
+                                        </Link>
+                                    </Button>
+                                )}
+                                <span className="shrink-0 rounded-md border border-slate-200/70 bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 shadow-2xs dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
+                                    {documents.total} berkas
+                                </span>
+                            </div>
                         </div>
 
                         {/* Row 2: Select Matter, Select Status, Submit button */}
-                        <div className="flex flex-wrap items-center gap-2">
-                            <div className="relative min-w-[220px] flex-1">
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                            <div className="relative w-full flex-1">
                                 <select
                                     name="matter_id"
                                     defaultValue={filters.matter_id ?? ''}
@@ -293,7 +295,7 @@ export default function DocumentsIndex({
                                 <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
                             </div>
 
-                            <div className="relative min-w-[160px]">
+                            <div className="relative w-full sm:w-44">
                                 <select
                                     name="status"
                                     defaultValue={filters.status ?? ''}
@@ -313,7 +315,7 @@ export default function DocumentsIndex({
                             <Button
                                 type="submit"
                                 size="sm"
-                                className="h-8 shrink-0 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                className="h-8 w-full shrink-0 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 sm:w-auto dark:bg-white dark:text-slate-900"
                             >
                                 Terapkan Filter
                             </Button>
