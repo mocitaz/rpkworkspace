@@ -609,7 +609,7 @@ export default function TasksIndex({
                                                 >
                                                     {/* Task Title & Matter Info */}
                                                     <td className="py-2.5 pr-3 pl-4">
-                                                        <div className="space-y-0.5">
+                                                        <div className="flex flex-col space-y-1">
                                                             <button
                                                                 type="button"
                                                                 onClick={() =>
@@ -617,7 +617,7 @@ export default function TasksIndex({
                                                                         task,
                                                                     )
                                                                 }
-                                                                className={`text-left text-xs font-semibold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400 ${
+                                                                className={`block text-left text-xs font-semibold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400 ${
                                                                     task.status ===
                                                                     'completed'
                                                                         ? 'line-through opacity-50'
@@ -628,7 +628,7 @@ export default function TasksIndex({
                                                             </button>
 
                                                             {task.matter ? (
-                                                                <div>
+                                                                <div className="flex items-center">
                                                                     <Link
                                                                         href={matterRoutes.show(
                                                                             task
@@ -637,7 +637,7 @@ export default function TasksIndex({
                                                                         )}
                                                                         className="inline-flex items-center gap-1 font-mono text-[10px] font-medium text-slate-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400"
                                                                     >
-                                                                        <span className="py-0.2 rounded bg-blue-50/80 px-1 font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                                        <span className="rounded bg-blue-50/80 px-1 py-0.5 font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
                                                                             {
                                                                                 task
                                                                                     .matter
@@ -655,10 +655,11 @@ export default function TasksIndex({
                                                                     </Link>
                                                                 </div>
                                                             ) : (
-                                                                <span className="font-mono text-[10px] text-slate-400">
-                                                                    Umum /
-                                                                    Non-Perkara
-                                                                </span>
+                                                                <div>
+                                                                    <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9.5px] font-medium text-slate-500 dark:bg-white/[0.06] dark:text-zinc-400">
+                                                                        Umum / Non-Perkara
+                                                                    </span>
+                                                                </div>
                                                             )}
                                                         </div>
                                                     </td>
