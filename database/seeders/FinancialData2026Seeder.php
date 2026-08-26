@@ -69,24 +69,32 @@ class FinancialData2026Seeder extends Seeder
 
                     foreach ($duplicates as $dup) {
                         // Re-link all related data across tables to the master user
-                        DB::table('payrolls')->where('user_id', $dup->id)->update(['user_id' => $master->id]);
-                        DB::table('expenses')->where('created_by', $dup->id)->update(['created_by' => $master->id]);
-                        DB::table('expenses')->where('approved_by', $dup->id)->update(['approved_by' => $master->id]);
-                        DB::table('expenses')->where('partner_id', $dup->id)->update(['partner_id' => $master->id]);
-                        DB::table('payments')->where('recorded_by', $dup->id)->update(['recorded_by' => $master->id]);
-                        DB::table('invoices')->where('created_by', $dup->id)->update(['created_by' => $master->id]);
-                        DB::table('quotations')->where('created_by', $dup->id)->update(['created_by' => $master->id]);
-                        DB::table('client_trust_funds')->where('recorded_by', $dup->id)->update(['recorded_by' => $master->id]);
-                        DB::table('account_transfers')->where('transferred_by', $dup->id)->update(['transferred_by' => $master->id]);
-                        DB::table('partner_transactions')->where('partner_id', $dup->id)->update(['partner_id' => $master->id]);
+                        $relink = function (string $table, string $column) use ($dup, $master) {
+                            if (Schema::hasTable($table) && Schema::hasColumn($table, $column)) {
+                                DB::table($table)->where($column, $dup->id)->update([$column => $master->id]);
+                            }
+                        };
 
-                        if (Schema::hasTable('tasks')) {
-                            DB::table('tasks')->where('assignee_id', $dup->id)->update(['assignee_id' => $master->id]);
-                            DB::table('tasks')->where('created_by', $dup->id)->update(['created_by' => $master->id]);
-                        }
-                        if (Schema::hasTable('documents')) {
-                            DB::table('documents')->where('created_by', $dup->id)->update(['created_by' => $master->id]);
-                        }
+                        $relink('payrolls', 'user_id');
+                        $relink('payrolls', 'created_by');
+                        $relink('payrolls', 'approved_by');
+                        $relink('expenses', 'created_by');
+                        $relink('expenses', 'approved_by');
+                        $relink('expenses', 'partner_id');
+                        $relink('payments', 'recorded_by');
+                        $relink('invoices', 'created_by');
+                        $relink('quotations', 'created_by');
+                        $relink('client_trust_funds', 'created_by');
+                        $relink('client_trust_funds', 'approved_by');
+                        $relink('account_transfers', 'created_by');
+                        $relink('account_transfers', 'approved_by');
+                        $relink('partner_transactions', 'partner_id');
+                        $relink('partner_transactions', 'created_by');
+                        $relink('partner_transactions', 'approved_by');
+                        $relink('tasks', 'assignee_id');
+                        $relink('tasks', 'created_by');
+                        $relink('documents', 'created_by');
+
                         if (Schema::hasTable('matter_user')) {
                             DB::table('matter_user')->where('user_id', $dup->id)->delete();
                         }
