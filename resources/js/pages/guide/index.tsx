@@ -581,87 +581,45 @@ export default function GuideIndex() {
                         </div>
                     )}
 
-                    {/* 4. Keyboard Shortcuts & Support Row */}
-                    <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-                        {/* Keyboard Shortcuts */}
-                        <div className="space-y-3 rounded-xl border border-slate-200/80 bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                <div className="flex items-center gap-2">
-                                    <Terminal className="size-3.5 text-slate-700 dark:text-zinc-300" />
-                                    <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                        Pintasan Keyboard
-                                    </span>
-                                </div>
-                                <button
-                                    type="button"
-                                    onClick={handleCopyShortcut}
-                                    className="font-mono text-[9px] font-bold text-slate-400 hover:text-slate-700 dark:text-zinc-500 dark:hover:text-zinc-300"
-                                >
-                                    {isCopied ? 'TERSALIN' : 'SALIN'}
-                                </button>
-                            </div>
-                            <div className="space-y-2 text-xs">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-slate-600 dark:text-zinc-400">Command Palette</span>
-                                    <kbd className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-mono text-[10px] font-bold text-slate-700 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
-                                        ⌘K / Ctrl+K
-                                    </kbd>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-slate-600 dark:text-zinc-400">Tutup Modal Dialog</span>
-                                    <kbd className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-mono text-[10px] font-bold text-slate-700 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
-                                        ESC
-                                    </kbd>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-slate-600 dark:text-zinc-400">Pindah Form Berikutnya</span>
-                                    <kbd className="rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 font-mono text-[10px] font-bold text-slate-700 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
-                                        Tab
-                                    </kbd>
-                                </div>
-                            </div>
+                    {/* 4. Quick FAQ Container */}
+                    <div className="space-y-3 rounded-xl border border-slate-200/80 bg-white p-5 shadow-2xs dark:border-white/[0.08] dark:bg-[#14161b]">
+                        <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                            <HelpCircle className="size-3.5 text-slate-700 dark:text-zinc-300" />
+                            <span className="text-xs font-bold text-slate-900 dark:text-white">
+                                Tanya Jawab Kendala &amp; Solusi (FAQ)
+                            </span>
                         </div>
 
-                        {/* Quick FAQ Container */}
-                        <div className="space-y-3 rounded-xl border border-slate-200/80 bg-white p-5 shadow-2xs lg:col-span-2 dark:border-white/[0.08] dark:bg-[#14161b]">
-                            <div className="flex items-center gap-2 border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                <HelpCircle className="size-3.5 text-slate-700 dark:text-zinc-300" />
-                                <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                    Tanya Jawab Kendala &amp; Solusi (FAQ)
-                                </span>
-                            </div>
-
-                            <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                                {FAQS.map((faq, fIdx) => (
-                                    <div key={fIdx} className="py-2.5">
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                setOpenFaqIndex(
-                                                    openFaqIndex === fIdx
-                                                        ? null
-                                                        : fIdx,
-                                                )
-                                            }
-                                            className="flex w-full items-center justify-between gap-4 text-left text-xs font-bold text-slate-800 hover:text-slate-950 dark:text-zinc-200 dark:hover:text-white"
-                                        >
-                                            <span>{faq.q}</span>
-                                            <ChevronDown
-                                                className={`size-3.5 shrink-0 text-slate-400 transition-transform ${
-                                                    openFaqIndex === fIdx
-                                                        ? 'rotate-180 text-slate-900 dark:text-white'
-                                                        : ''
-                                                }`}
-                                            />
-                                        </button>
-                                        {openFaqIndex === fIdx && (
-                                            <div className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-zinc-400">
-                                                {faq.a}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
+                        <div className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                            {FAQS.map((faq, fIdx) => (
+                                <div key={fIdx} className="py-2.5">
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setOpenFaqIndex(
+                                                openFaqIndex === fIdx
+                                                    ? null
+                                                    : fIdx,
+                                            )
+                                        }
+                                        className="flex w-full items-center justify-between gap-4 text-left text-xs font-bold text-slate-800 hover:text-slate-950 dark:text-zinc-200 dark:hover:text-white"
+                                    >
+                                        <span>{faq.q}</span>
+                                        <ChevronDown
+                                            className={`size-3.5 shrink-0 text-slate-400 transition-transform ${
+                                                openFaqIndex === fIdx
+                                                    ? 'rotate-180 text-slate-900 dark:text-white'
+                                                    : ''
+                                            }`}
+                                        />
+                                    </button>
+                                    {openFaqIndex === fIdx && (
+                                        <div className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-zinc-400">
+                                            {faq.a}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </main>
