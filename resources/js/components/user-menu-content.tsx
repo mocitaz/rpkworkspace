@@ -1,5 +1,5 @@
 import { Link, router } from '@inertiajs/react';
-import { LogOut, Settings } from 'lucide-react';
+import { BookOpen, LogOut, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -64,6 +64,17 @@ export function UserMenuContent({ user }: Props) {
                     >
                         <Settings className="mr-2 size-3.5 text-slate-400 dark:text-zinc-400" />
                         Pengaturan / Settings
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link
+                        className="flex w-full cursor-pointer items-center rounded-xl px-2.5 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-900 dark:text-zinc-200 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                        href="/guide"
+                        prefetch
+                        onClick={cleanup}
+                    >
+                        <BookOpen className="mr-2 size-3.5 text-slate-400 dark:text-zinc-400" />
+                        Cara Penggunaan
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuGroup>

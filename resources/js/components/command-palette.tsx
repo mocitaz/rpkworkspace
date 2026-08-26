@@ -48,6 +48,11 @@ const commands = [
         icon: FileUp,
         action: () => router.visit(documents.index({ query: { upload: 1 } })),
     },
+    {
+        label: 'Cara Penggunaan & Panduan Sistem',
+        icon: BookOpen,
+        action: () => router.visit('/guide'),
+    },
 ];
 
 export function CommandPalette({ className }: { className?: string } = {}) {

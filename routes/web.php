@@ -16,6 +16,7 @@ use App\Http\Controllers\DocumentVersionController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\FinanceDetailController;
 use App\Http\Controllers\GovernanceController;
+use App\Http\Controllers\GuideController;
 use App\Http\Controllers\InboundEmailController;
 use App\Http\Controllers\MatterChronologyController;
 use App\Http\Controllers\MatterController;
@@ -48,6 +49,7 @@ Route::post('inbound/email', [InboundEmailController::class, 'store'])->middlewa
 
 Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
+    Route::get('guide', [GuideController::class, 'index'])->name('guide.index');
     Route::resource('matters', MatterController::class)->only(['index', 'create', 'store', 'show', 'update']);
     Route::post('matters/conflict-checks', [MatterController::class, 'storeConflictCheck'])->name('matters.conflict-checks.store');
     Route::post('matters/{matter}/parties', [MatterOperationController::class, 'storeParty'])->name('matters.parties.store');
