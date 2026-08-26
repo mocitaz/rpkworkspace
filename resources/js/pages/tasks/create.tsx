@@ -344,7 +344,7 @@ export default function TaskCreate({
                             </div>
                         </section>
 
-                        {/* 3. Waktu & Estimasi Jam Kerja */}
+                        {/* 3. Jadwal & Finansial */}
                         <section className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-2xs dark:border-white/[0.07] dark:bg-[#13151a]">
                             <div className="flex items-center gap-2 border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
                                 <Clock className="size-4 text-emerald-600 dark:text-emerald-400" />
@@ -353,7 +353,7 @@ export default function TaskCreate({
                                 </h2>
                             </div>
 
-                            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div className="space-y-1.5">
                                     <Label htmlFor="start_date" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
                                         Tanggal Mulai
@@ -382,24 +382,7 @@ export default function TaskCreate({
                                     <InputError message={errors.due_at} />
                                 </div>
 
-                                <div className="space-y-1.5">
-                                    <Label htmlFor="estimated_hours" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                                        Estimasi Jam Kerja (Jam)
-                                    </Label>
-                                    <Input
-                                        id="estimated_hours"
-                                        type="number"
-                                        step="0.25"
-                                        min="0"
-                                        placeholder="Misal: 3.5"
-                                        value={data.estimated_hours}
-                                        onChange={(e) => setData('estimated_hours', e.target.value)}
-                                        className="h-9 text-xs"
-                                    />
-                                    <InputError message={errors.estimated_hours} />
-                                </div>
-
-                                <div className="sm:col-span-3 rounded-lg border border-slate-200/80 bg-slate-50/70 p-3 dark:border-white/[0.07] dark:bg-[#181a20]">
+                                <div className="sm:col-span-2 rounded-lg border border-slate-200/80 bg-slate-50/70 p-3 dark:border-white/[0.07] dark:bg-[#181a20]">
                                     <label className="flex items-center gap-3 cursor-pointer">
                                         <input
                                             type="checkbox"
@@ -413,7 +396,7 @@ export default function TaskCreate({
                                                 Dapat Ditagihkan ke Klien (Billable Task)
                                             </span>
                                             <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Centang jika jam kerja advokat untuk tugas ini akan dicatat ke tagihan/invoice klien.
+                                                Centang jika tugas ini akan dicatat ke tagihan/invoice klien.
                                             </p>
                                         </div>
                                     </label>

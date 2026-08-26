@@ -885,12 +885,12 @@ export default function TaskShow({
                                 </div>
                             </section>
 
-                            {/* Card 3: Finansial & Jam Kerja */}
+                            {/* Card 3: Finansial & Status Tagihan */}
                             <section className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-2xs dark:border-white/[0.07] dark:bg-[#13151a] space-y-4">
                                 <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                                     <DollarSign className="size-4 text-blue-600 dark:text-blue-400" />
                                     <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-                                        Finansial & Jam Kerja
+                                        Finansial & Status Tagihan
                                     </h3>
                                 </div>
 
@@ -899,20 +899,6 @@ export default function TaskShow({
                                         <span className="text-slate-500 dark:text-zinc-400">Status Tagihan:</span>
                                         <span className={`font-bold ${task.is_billable ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-600 dark:text-zinc-400'}`}>
                                             {task.is_billable ? 'Billable to Client' : 'Non-Billable (Internal)'}
-                                        </span>
-                                    </div>
-
-                                    <div className="flex items-center justify-between text-xs">
-                                        <span className="text-slate-500 dark:text-zinc-400">Estimasi Jam:</span>
-                                        <span className="font-semibold text-slate-900 dark:text-white">
-                                            {task.estimated_hours ? `${task.estimated_hours} Jam` : '-'}
-                                        </span>
-                                    </div>
-
-                                    <div className="flex items-center justify-between text-xs">
-                                        <span className="text-slate-500 dark:text-zinc-400">Realisasi Jam:</span>
-                                        <span className="font-semibold text-slate-900 dark:text-white">
-                                            {task.actual_hours ? `${task.actual_hours} Jam` : '-'}
                                         </span>
                                     </div>
                                 </div>
@@ -1037,7 +1023,9 @@ export default function TaskShow({
                                     <option value="critical">Mendesak (Critical)</option>
                                 </select>
                             </div>
+                        </div>
 
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             <div className="space-y-1.5">
                                 <Label className="text-xs font-semibold">Tanggal Mulai</Label>
                                 <Input
@@ -1054,28 +1042,6 @@ export default function TaskShow({
                                     type="datetime-local"
                                     value={editForm.data.due_at}
                                     onChange={(e) => editForm.setData('due_at', e.target.value)}
-                                    className="h-9 text-xs"
-                                />
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <Label className="text-xs font-semibold">Estimasi Jam</Label>
-                                <Input
-                                    type="number"
-                                    step="0.25"
-                                    value={editForm.data.estimated_hours}
-                                    onChange={(e) => editForm.setData('estimated_hours', e.target.value)}
-                                    className="h-9 text-xs"
-                                />
-                            </div>
-
-                            <div className="space-y-1.5">
-                                <Label className="text-xs font-semibold">Realisasi Jam</Label>
-                                <Input
-                                    type="number"
-                                    step="0.25"
-                                    value={editForm.data.actual_hours}
-                                    onChange={(e) => editForm.setData('actual_hours', e.target.value)}
                                     className="h-9 text-xs"
                                 />
                             </div>
@@ -1134,22 +1100,11 @@ export default function TaskShow({
                             Selesaikan Tugas: {task.task_number}
                         </DialogTitle>
                         <DialogDescription className="text-xs">
-                            Masukkan realisasi jam kerja dan catatan resume hasil penyelesaian tugas ini.
+                            Masukkan catatan resume hasil penyelesaian tugas ini.
                         </DialogDescription>
                     </DialogHeader>
 
                     <form onSubmit={handleCompleteSubmit} className="space-y-3.5 pt-2">
-                        <div className="space-y-1.5">
-                            <Label className="text-xs font-semibold">Realisasi Jam Kerja (Jam)</Label>
-                            <Input
-                                type="number"
-                                step="0.25"
-                                placeholder="Contoh: 3.5"
-                                value={completeForm.data.actual_hours}
-                                onChange={(e) => completeForm.setData('actual_hours', e.target.value)}
-                                className="h-9 text-xs"
-                            />
-                        </div>
 
                         <div className="space-y-1.5">
                             <Label className="text-xs font-semibold">Catatan / Resume Hasil Penyelesaian</Label>
