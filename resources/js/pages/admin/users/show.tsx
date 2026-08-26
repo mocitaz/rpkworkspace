@@ -205,116 +205,71 @@ export default function UserShow({
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-4 px-4 py-5 sm:px-6 lg:px-8">
-                    {/* 1. Executive Partner Dossier Header Card */}
-                    <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs sm:p-6 dark:border-white/[0.08] dark:bg-[#14161b]">
-                        {/* Subtle Luxury Ambient Radial Glow */}
-                        <div className="pointer-events-none absolute -top-24 -right-24 size-80 rounded-full bg-linear-to-br from-blue-500/8 via-indigo-500/5 to-purple-500/5 blur-3xl dark:from-blue-500/10 dark:to-indigo-500/5" />
+                    {/* 1. Executive Dossier Header Card (Unified 2-Tier Concept) */}
+                    <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs sm:p-5 dark:border-white/[0.08] dark:bg-[#14161b]">
+                        {/* Subtle Luxury Ambient Glow */}
+                        <div className="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full bg-linear-to-br from-blue-500/8 via-indigo-500/5 to-purple-500/5 blur-3xl dark:from-blue-500/10 dark:to-indigo-500/5" />
 
-                        {/* Top Utility & Navigation Row */}
-                        <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 dark:border-white/[0.04]">
-                            <Link
-                                href={userRoutes.index?.url ? userRoutes.index.url() : '/admin/users'}
-                                className="group inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 transition-colors hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
-                            >
-                                <ArrowLeft className="size-3.5 transition-transform group-hover:-translate-x-0.5" />
-                                <span>Direktori Tim &amp; Staf</span>
-                            </Link>
+                        {/* Top Tier: Utility Row, Identity & Actions */}
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 dark:border-white/[0.04]">
+                            <div className="flex flex-wrap items-center gap-2 text-xs">
+                                <Button
+                                    asChild
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-7.5 -ml-1.5 rounded-lg px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                >
+                                    <Link
+                                        href={
+                                            userRoutes.index?.url
+                                                ? userRoutes.index.url()
+                                                : '/admin/users'
+                                        }
+                                    >
+                                        <ArrowLeft className="mr-1.5 size-3.5" />
+                                        Direktori Tim &amp; Staf
+                                    </Link>
+                                </Button>
 
-                            <div className="flex items-center gap-2">
-                                <span className="font-mono text-[11px] font-medium text-slate-400 dark:text-zinc-500">
-                                    NIP / ID:
-                                </span>
-                                <span className="inline-flex items-center rounded-md border border-slate-200/80 bg-slate-50 px-2 py-0.5 font-mono text-[11px] font-bold text-slate-800 shadow-2xs dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-200">
+                                <span className="h-3.5 w-px bg-slate-200 dark:bg-white/10" />
+
+                                <span className="inline-flex items-center rounded-md border border-slate-200/80 bg-slate-50 px-2 py-0.5 font-mono text-[11px] font-bold text-slate-700 shadow-2xs dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-200">
                                     {displayId}
                                 </span>
-                            </div>
-                        </div>
 
-                        {/* Main Identity & Actions */}
-                        <div className="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
-                            {/* Left: Luxury Avatar & Executive Details */}
-                            <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
-                                {/* Luxury Profile Avatar circular without green dot */}
-                                <div className="relative shrink-0">
-                                    <div className="relative size-18 rounded-full bg-linear-to-b from-slate-200 via-slate-100 to-slate-300 p-0.5 shadow-md sm:size-20 dark:from-white/20 dark:via-white/5 dark:to-white/15">
-                                        <Avatar className="size-full rounded-full bg-slate-900 shadow-inner dark:bg-zinc-800">
-                                            <AvatarImage
-                                                src={
-                                                    staff.avatar_url ??
-                                                    undefined
-                                                }
-                                                className="rounded-full object-cover"
-                                                alt={staff.name}
-                                            />
-                                            <AvatarFallback className="rounded-full bg-linear-to-br from-slate-900 via-slate-800 to-indigo-950 text-xl font-bold tracking-wider text-white shadow-inner sm:text-2xl">
-                                                {getInitials(staff.name)}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                    </div>
-                                </div>
+                                <span
+                                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                                        staff.is_active
+                                            ? 'border border-emerald-200/80 bg-emerald-50 text-emerald-700 dark:border-emerald-800/60 dark:bg-emerald-950/50 dark:text-emerald-300'
+                                            : 'border border-slate-200/80 bg-slate-100 text-slate-600 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-400'
+                                    }`}
+                                >
+                                    <span
+                                        className={`size-1.5 rounded-full ${
+                                            staff.is_active
+                                                ? 'bg-emerald-500'
+                                                : 'bg-slate-400'
+                                        }`}
+                                    />
+                                    {staff.is_active ? 'Aktif' : 'Non-aktif'}
+                                </span>
 
-                                {/* Name, Active Pill, & Attribute Tags */}
-                                <div className="min-w-0 space-y-2">
-                                    <div className="flex flex-wrap items-center gap-2.5">
-                                        <h1 className="truncate text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                            {staff.name}
-                                        </h1>
-                                        <span
-                                            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
-                                                staff.is_active
-                                                    ? 'border border-emerald-200/80 bg-emerald-50 text-emerald-700 dark:border-emerald-800/60 dark:bg-emerald-950/50 dark:text-emerald-300'
-                                                    : 'border border-slate-200/80 bg-slate-100 text-slate-600 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-400'
-                                            }`}
-                                        >
-                                            <span
-                                                className={`size-1.5 rounded-full ${
-                                                    staff.is_active
-                                                        ? 'bg-emerald-500'
-                                                        : 'bg-slate-400'
-                                                }`}
-                                            />
-                                            {staff.is_active
-                                                ? 'Aktif'
-                                                : 'Non-aktif'}
-                                        </span>
-                                    </div>
-
-                                    {/* Executive Pills Row */}
-                                    <div className="flex flex-wrap items-center gap-2 pt-0.5 text-xs">
-                                        {/* Position Title Pill */}
-                                        <span className="inline-flex items-center gap-1.5 rounded-lg border border-blue-200/70 bg-blue-50/80 px-2.5 py-1 text-xs font-semibold text-blue-700 shadow-2xs dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-300">
-                                            <Scale className="size-3 text-blue-600 dark:text-blue-400" />
-                                            {staff.position_title ||
-                                                'Staf Hukum'}
-                                        </span>
-
-                                        {/* Department / Division Pill */}
-                                        {staff.department && (
-                                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-50/90 px-2.5 py-1 text-xs font-medium text-slate-700 shadow-2xs dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300">
-                                                <Building2 className="size-3 text-slate-400 dark:text-zinc-500" />
-                                                {staff.department}
-                                            </span>
-                                        )}
-
-                                        {/* Education / Honorific Pill */}
-                                        {staff.education && (
-                                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-purple-200/70 bg-purple-50/80 px-2.5 py-1 text-xs font-medium text-purple-700 shadow-2xs dark:border-purple-900/40 dark:bg-purple-950/40 dark:text-purple-300">
-                                                <GraduationCap className="size-3.5 text-purple-600 dark:text-purple-400" />
-                                                {staff.education}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
+                                {staff.email_verified_at && (
+                                    <span className="hidden items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[10.5px] font-semibold text-blue-700 sm:inline-flex dark:bg-blue-950/50 dark:text-blue-300">
+                                        <UserCheck className="size-3 text-blue-600 dark:text-blue-400" />
+                                        Terverifikasi
+                                    </span>
+                                )}
                             </div>
 
-                            {/* Right: Quick Action Controls */}
-                            <div className="flex shrink-0 flex-wrap items-center gap-2 pt-2 lg:pt-0">
+                            {/* Right: Quick Action Buttons */}
+                            <div className="flex shrink-0 flex-wrap items-center gap-2">
                                 <Button
                                     type="button"
                                     variant="outline"
                                     size="sm"
                                     onClick={handleOpenChat}
-                                    className="h-9 rounded-xl border-slate-200/80 bg-white px-3.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                                    className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
                                 >
                                     <MessageSquare className="mr-1.5 size-3.5 text-blue-500" />
                                     Kirim Pesan
@@ -325,7 +280,7 @@ export default function UserShow({
                                         asChild
                                         variant="outline"
                                         size="sm"
-                                        className="h-9 rounded-xl border-emerald-200/80 bg-emerald-50/70 px-3.5 text-xs font-semibold text-emerald-700 shadow-2xs hover:bg-emerald-100 dark:border-emerald-900/40 dark:bg-emerald-950/50 dark:text-emerald-300"
+                                        className="h-7.5 rounded-lg border-emerald-200/80 bg-emerald-50/70 px-2.5 text-xs font-semibold text-emerald-700 shadow-2xs hover:bg-emerald-100 dark:border-emerald-900/40 dark:bg-emerald-950/50 dark:text-emerald-300"
                                     >
                                         <a
                                             href={`https://wa.me/${staff.phone.replace(/[^0-9]/g, '')}`}
@@ -342,7 +297,7 @@ export default function UserShow({
                                     asChild
                                     variant="outline"
                                     size="sm"
-                                    className="h-9 rounded-xl border-slate-200/80 bg-white px-3.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                                    className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
                                 >
                                     <a href={`mailto:${staff.email}`}>
                                         <Mail className="mr-1.5 size-3.5 text-slate-400" />
@@ -354,20 +309,224 @@ export default function UserShow({
                                     <Button
                                         asChild
                                         size="sm"
-                                        className="h-9 cursor-pointer rounded-xl bg-slate-900 px-4 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                                        className="h-7.5 cursor-pointer rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
                                     >
-                                        <Link href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}>
-                                            <Pencil className="mr-1.5 size-3.5" />
+                                        <Link
+                                            href={
+                                                userRoutes.edit?.url
+                                                    ? userRoutes.edit.url(
+                                                          staff.id,
+                                                      )
+                                                    : `/admin/users/${staff.id}/edit`
+                                            }
+                                        >
+                                            <Pencil className="mr-1.5 size-3" />
                                             Edit Profil &amp; Akses
                                         </Link>
                                     </Button>
                                 </Can>
                             </div>
                         </div>
+
+                        {/* Bottom Tier: Full-Width Executive Profile Title & Metadata */}
+                        <div className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center sm:gap-5">
+                            {/* Profile Avatar with luxury border */}
+                            <div className="relative shrink-0">
+                                <Avatar className="size-16 rounded-2xl border-2 border-slate-200/80 shadow-xs sm:size-18 dark:border-white/10">
+                                    <AvatarImage
+                                        src={staff.avatar_url ?? undefined}
+                                        className="rounded-2xl object-cover"
+                                        alt={staff.name}
+                                    />
+                                    <AvatarFallback className="rounded-2xl bg-linear-to-br from-slate-900 via-slate-800 to-indigo-950 font-mono text-xl font-bold text-white shadow-inner sm:text-2xl">
+                                        {getInitials(staff.name)}
+                                    </AvatarFallback>
+                                </Avatar>
+                            </div>
+
+                            {/* Identity, Titles & Metadata */}
+                            <div className="min-w-0 flex-1 space-y-1.5">
+                                <div className="flex flex-wrap items-center gap-2.5">
+                                    <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-[26px] lg:leading-snug dark:text-white">
+                                        {staff.name}
+                                    </h1>
+                                    {staff.position_title && (
+                                        <span className="inline-flex items-center gap-1 rounded-md border border-blue-200/70 bg-blue-50/80 px-2 py-0.5 text-[11px] font-semibold text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-300">
+                                            <Scale className="size-3 text-blue-600 dark:text-blue-400" />
+                                            {staff.position_title}
+                                        </span>
+                                    )}
+                                    {staff.department && (
+                                        <span className="inline-flex items-center gap-1 rounded-md border border-slate-200/80 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300">
+                                            <Building2 className="size-3 text-slate-400 dark:text-zinc-500" />
+                                            {staff.department}
+                                        </span>
+                                    )}
+                                    {staff.education && (
+                                        <span className="hidden items-center gap-1 rounded-md border border-purple-200/70 bg-purple-50/80 px-2 py-0.5 text-[11px] font-medium text-purple-700 sm:inline-flex dark:border-purple-900/40 dark:bg-purple-950/40 dark:text-purple-300">
+                                            <GraduationCap className="size-3 text-purple-600 dark:text-purple-400" />
+                                            {staff.education}
+                                        </span>
+                                    )}
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-500 dark:text-zinc-400">
+                                    <a
+                                        href={`mailto:${staff.email}`}
+                                        className="inline-flex items-center gap-1 text-slate-600 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
+                                    >
+                                        <Mail className="size-3 text-slate-400" />
+                                        <span>{staff.email}</span>
+                                    </a>
+                                    {staff.phone && (
+                                        <>
+                                            <span className="text-slate-300 dark:text-zinc-700">
+                                                •
+                                            </span>
+                                            <span className="inline-flex items-center gap-1 text-slate-600 dark:text-zinc-300">
+                                                <Phone className="size-3 text-slate-400" />
+                                                <span>{staff.phone}</span>
+                                            </span>
+                                        </>
+                                    )}
+                                    {staff.advocate_license_no && (
+                                        <>
+                                            <span className="text-slate-300 dark:text-zinc-700">
+                                                •
+                                            </span>
+                                            <span className="inline-flex items-center gap-1">
+                                                <Scale className="size-3 text-slate-400" />
+                                                <span>
+                                                    NIA:{' '}
+                                                    <strong className="font-mono text-slate-700 dark:text-zinc-300">
+                                                        {
+                                                            staff.advocate_license_no
+                                                        }
+                                                    </strong>
+                                                </span>
+                                            </span>
+                                        </>
+                                    )}
+                                    {staff.roles.length > 0 && (
+                                        <>
+                                            <span className="text-slate-300 dark:text-zinc-700">
+                                                •
+                                            </span>
+                                            <span className="inline-flex items-center gap-1">
+                                                <ShieldCheck className="size-3 text-slate-400" />
+                                                <span>
+                                                    Akses:{' '}
+                                                    {staff.roles
+                                                        .map((r) => r.name)
+                                                        .join(', ')}
+                                                </span>
+                                            </span>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    {/* 2. Segmented Navigation Tabs */}
-                    <div className="flex flex-wrap items-center gap-1 rounded-xl border border-slate-200/70 bg-slate-100/70 p-1 dark:border-white/[0.06] dark:bg-[#14161b]">
+                    {/* 2. Top 4 Compact Bento KPI Stat Cards */}
+                    <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+                        {/* 1. Hak Akses & Peran */}
+                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                    HAK AKSES UTAMA
+                                </span>
+                                <div className="flex size-6 items-center justify-center rounded-md bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                                    <ShieldCheck className="size-3.5" />
+                                </div>
+                            </div>
+                            <div className="mt-2 space-y-0.5">
+                                <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                    {staff.roles[0]?.name ?? 'Staf Internal'}
+                                </p>
+                                <p className="truncate text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                    {staff.position_title ?? 'Personel Firma'}
+                                </p>
+                            </div>
+                            <div className="mt-2.5 border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 dark:border-white/[0.04]">
+                                <span>{staff.roles.length} Peran Sistem Aktif</span>
+                            </div>
+                        </div>
+
+                        {/* 2. Perkara Ditangani */}
+                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                    PORTOFOLIO PERKARA
+                                </span>
+                                <div className="flex size-6 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                                    <Briefcase className="size-3.5" />
+                                </div>
+                            </div>
+                            <div className="mt-2 flex items-baseline gap-1.5">
+                                <span className="font-mono text-xl font-bold tracking-tight text-emerald-600 sm:text-2xl dark:text-emerald-400">
+                                    {metrics.active_matters_count}
+                                </span>
+                                <span className="text-xs text-slate-500 dark:text-zinc-400">
+                                    perkara aktif
+                                </span>
+                            </div>
+                            <div className="mt-2.5 border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 dark:border-white/[0.04]">
+                                <span>Total {metrics.total_matters_count} perkara terhubung</span>
+                            </div>
+                        </div>
+
+                        {/* 3. Status Advokat & Kredensial */}
+                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                    STATUS ADVOKAT
+                                </span>
+                                <div className="flex size-6 items-center justify-center rounded-md bg-purple-50 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400">
+                                    <Scale className="size-3.5" />
+                                </div>
+                            </div>
+                            <div className="mt-2 space-y-0.5">
+                                <p className="truncate font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                    {staff.advocate_license_no || 'Non-Litigasi'}
+                                </p>
+                                <p className="truncate text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                    {ktaStatus ? ktaStatus.label : 'Staf Internal'}
+                                </p>
+                            </div>
+                            <div className="mt-2.5 border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 dark:border-white/[0.04]">
+                                <span>{staff.advocate_license_no ? 'Izin Advokat Resmi' : 'Kredensial Non-Advokat'}</span>
+                            </div>
+                        </div>
+
+                        {/* 4. Status Akun & Keamanan */}
+                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                    STATUS SISTEM
+                                </span>
+                                <div className="flex size-6 items-center justify-center rounded-md bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+                                    <UserCheck className="size-3.5" />
+                                </div>
+                            </div>
+                            <div className="mt-2 space-y-0.5">
+                                <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                    {staff.is_active ? 'Akun Aktif' : 'Non-aktif'}
+                                </p>
+                                <p className="truncate text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                    {staff.last_seen_at
+                                        ? `Aktif ${formatDate(staff.last_seen_at, true)}`
+                                        : 'Terdaftar di Sistem'}
+                                </p>
+                            </div>
+                            <div className="mt-2.5 border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 dark:border-white/[0.04]">
+                                <span>{staff.email_verified_at ? 'Email Terverifikasi' : 'Belum Verifikasi'}</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* 3. Segmented Navigation Tabs (Horizontal Swipeable on Mobile) */}
+                    <div className="flex items-center gap-1 overflow-x-auto rounded-xl border border-slate-200/70 bg-slate-100/70 p-1 shadow-2xs [scrollbar-width:none] [-ms-overflow-style:none] dark:border-white/[0.06] dark:bg-[#14161b] [&::-webkit-scrollbar]:hidden">
                         {tabs.map((item) => {
                             const isActive = tab === item.id;
                             const Icon = item.icon;
@@ -383,7 +542,7 @@ export default function UserShow({
                                     key={item.id}
                                     type="button"
                                     onClick={() => setTab(item.id)}
-                                    className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                                    className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
                                         isActive
                                             ? 'bg-white text-slate-900 shadow-2xs dark:bg-[#20232a] dark:text-white'
                                             : 'text-slate-600 hover:bg-white/60 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
@@ -399,7 +558,7 @@ export default function UserShow({
                                     <span>{item.label}</span>
                                     {count !== null && count > 0 && (
                                         <span
-                                            className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] font-bold ${
+                                            className={`rounded-full px-1.5 py-0.2 font-mono text-[10px] font-bold ${
                                                 isActive
                                                     ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
                                                     : 'bg-slate-200/80 text-slate-700 dark:bg-zinc-800 dark:text-zinc-400'
