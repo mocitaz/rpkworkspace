@@ -540,12 +540,14 @@ export default function MatterShow({
                     {/* 2. Top 4 Bento Stat Cards */}
                     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                         {/* 1. Responsible Partner */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                     LEAD PARTNER
                                 </span>
-                                <UserCheck className="size-3.5 text-slate-400 dark:text-zinc-500" />
+                                <div className="flex size-6 items-center justify-center rounded-md bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                                    <UserCheck className="size-3.5" />
+                                </div>
                             </div>
                             <div className="mt-2 flex items-center gap-2.5">
                                 <Avatar className="size-7 rounded-full border border-slate-200/80 dark:border-white/10">
@@ -580,12 +582,14 @@ export default function MatterShow({
                         </div>
 
                         {/* 2. Area Praktik */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                     AREA PRAKTIK
                                 </span>
-                                <Scale className="size-3.5 text-slate-400 dark:text-zinc-500" />
+                                <div className="flex size-6 items-center justify-center rounded-md bg-purple-50 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400">
+                                    <Scale className="size-3.5" />
+                                </div>
                             </div>
                             <div className="mt-2 space-y-0.5">
                                 <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
@@ -602,12 +606,14 @@ export default function MatterShow({
                         </div>
 
                         {/* 3. Tim Advokat */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                     TIM ADVOKAT
                                 </span>
-                                <Users className="size-3.5 text-slate-400 dark:text-zinc-500" />
+                                <div className="flex size-6 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                                    <Users className="size-3.5" />
+                                </div>
                             </div>
                             <div className="mt-2 flex items-center justify-between">
                                 <div className="flex -space-x-1.5 overflow-hidden">
@@ -645,12 +651,14 @@ export default function MatterShow({
                         </div>
 
                         {/* 4. Tenggat Terdekat */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                     TENGGAT TERDEKAT
                                 </span>
-                                <Clock className="size-3.5 text-slate-400 dark:text-zinc-500" />
+                                <div className="flex size-6 items-center justify-center rounded-md bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+                                    <Clock className="size-3.5" />
+                                </div>
                             </div>
                             <div className="mt-2 min-w-0">
                                 {nextDeadline ? (
@@ -1677,52 +1685,99 @@ export default function MatterShow({
                                         )}
                                     </div>
 
-                                    {/* 4 Clean Metric Cards */}
+                                    {/* 4 Symmetrical Metric Cards */}
                                     <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                                TOTAL BUKTI
-                                            </span>
-                                            <p className="mt-1 font-mono text-lg font-bold text-slate-900 dark:text-white">
-                                                {matter.evidences?.length ?? 0}
-                                            </p>
+                                        {/* 1. Total Bukti */}
+                                        <div className="group flex min-h-[88px] flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#121418] dark:hover:border-white/15">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                    TOTAL BUKTI
+                                                </span>
+                                                <div className="flex size-6 items-center justify-center rounded-md bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                                                    <Archive className="size-3.5" />
+                                                </div>
+                                            </div>
+                                            <div className="mt-2 flex items-baseline justify-between">
+                                                <p className="font-mono text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+                                                    {matter.evidences?.length ?? 0}
+                                                </p>
+                                                <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
+                                                    berkas
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                                DI BRANKAS FIRMA
-                                            </span>
-                                            <p className="mt-1 font-mono text-lg font-bold text-emerald-700 dark:text-emerald-400">
-                                                {matter.evidences?.filter(
-                                                    (e) =>
-                                                        e.status === 'in_vault',
-                                                ).length ?? 0}
-                                            </p>
+
+                                        {/* 2. Di Brankas Firma */}
+                                        <div className="group flex min-h-[88px] flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#121418] dark:hover:border-white/15">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                    DI BRANKAS FIRMA
+                                                </span>
+                                                <div className="flex size-6 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                                                    <ShieldCheck className="size-3.5" />
+                                                </div>
+                                            </div>
+                                            <div className="mt-2 flex items-baseline justify-between">
+                                                <p className="font-mono text-lg font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+                                                    {matter.evidences?.filter(
+                                                        (e) =>
+                                                            e.status === 'in_vault',
+                                                    ).length ?? 0}
+                                                </p>
+                                                <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
+                                                    tersimpan
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                                DOKUMEN ASLI
-                                            </span>
-                                            <p className="mt-1 font-mono text-lg font-bold text-blue-700 dark:text-blue-400">
-                                                {matter.evidences?.filter(
-                                                    (e) =>
-                                                        e.originality ===
-                                                        'original',
-                                                ).length ?? 0}
-                                            </p>
+
+                                        {/* 3. Dokumen Asli */}
+                                        <div className="group flex min-h-[88px] flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#121418] dark:hover:border-white/15">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                    DOKUMEN ASLI
+                                                </span>
+                                                <div className="flex size-6 items-center justify-center rounded-md bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
+                                                    <FileText className="size-3.5" />
+                                                </div>
+                                            </div>
+                                            <div className="mt-2 flex items-baseline justify-between">
+                                                <p className="font-mono text-lg font-bold tracking-tight text-indigo-600 dark:text-indigo-400">
+                                                    {matter.evidences?.filter(
+                                                        (e) =>
+                                                            e.originality ===
+                                                            'original',
+                                                    ).length ?? 0}
+                                                </p>
+                                                <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
+                                                    orisinil
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                                DIPINJAM / SIDANG
-                                            </span>
-                                            <p className="mt-1 font-mono text-lg font-bold text-slate-800 dark:text-zinc-200">
-                                                {matter.evidences?.filter(
-                                                    (e) =>
-                                                        e.status !==
-                                                            'in_vault' &&
-                                                        e.status !==
-                                                            'returned_to_client',
-                                                ).length ?? 0}
-                                            </p>
+
+                                        {/* 4. Dipinjam / Sidang */}
+                                        <div className="group flex min-h-[88px] flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#121418] dark:hover:border-white/15">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                    DIPINJAM / SIDANG
+                                                </span>
+                                                <div className="flex size-6 items-center justify-center rounded-md bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+                                                    <Scale className="size-3.5" />
+                                                </div>
+                                            </div>
+                                            <div className="mt-2 flex items-baseline justify-between">
+                                                <p className="font-mono text-lg font-bold tracking-tight text-amber-600 dark:text-amber-400">
+                                                    {matter.evidences?.filter(
+                                                        (e) =>
+                                                            e.status !==
+                                                                'in_vault' &&
+                                                            e.status !==
+                                                                'returned_to_client',
+                                                    ).length ?? 0}
+                                                </p>
+                                                <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
+                                                    aktif
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
 

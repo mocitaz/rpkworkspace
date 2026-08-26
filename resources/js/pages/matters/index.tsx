@@ -160,15 +160,17 @@ export default function MattersIndex({
                         </div>
                     </div>
 
-                    {/* 2. Streamlined KPI Bento Cards (Compact & Slim) */}
+                    {/* 2. Streamlined KPI Bento Cards (Compact & Symmetrical) */}
                     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                         {/* 1. Total Matters */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                     TOTAL PERKARA
                                 </span>
-                                <FolderKanban className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
+                                <div className="flex size-6 items-center justify-center rounded-md bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                                    <FolderKanban className="size-3.5" />
+                                </div>
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
                                 <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -187,12 +189,14 @@ export default function MattersIndex({
                         </div>
 
                         {/* 2. Active Matters */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                     PERKARA AKTIF
                                 </span>
-                                <Briefcase className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
+                                <div className="flex size-6 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                                    <Briefcase className="size-3.5" />
+                                </div>
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
                                 <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -212,12 +216,14 @@ export default function MattersIndex({
                         </div>
 
                         {/* 3. High/Critical Priority */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                     PRIORITAS TINGGI
                                 </span>
-                                <ShieldAlert className="size-3.5 text-slate-400 transition-colors group-hover:text-rose-600 dark:text-zinc-500" />
+                                <div className="flex size-6 items-center justify-center rounded-md bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400">
+                                    <ShieldAlert className="size-3.5" />
+                                </div>
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
                                 <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -236,12 +242,14 @@ export default function MattersIndex({
                         </div>
 
                         {/* 4. Practice Area */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
+                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                     AREA PRAKTIK
                                 </span>
-                                <Scale className="size-3.5 text-slate-400 transition-colors group-hover:text-purple-600 dark:text-zinc-500" />
+                                <div className="flex size-6 items-center justify-center rounded-md bg-purple-50 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400">
+                                    <Scale className="size-3.5" />
+                                </div>
                             </div>
                             <div className="mt-2 flex items-baseline justify-between">
                                 <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
