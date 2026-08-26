@@ -10,15 +10,10 @@ export default function AppLogo() {
 
             {/* Premium Editorial Typography & Brand Subtitle */}
             <div className="flex min-w-0 flex-1 flex-col justify-center text-left group-data-[collapsible=icon]:hidden">
-                <div className="flex items-center gap-1.5 leading-none">
-                    <span className="truncate text-[13.5px] font-black tracking-tight text-slate-900 dark:text-white">
-                        RPK App
-                    </span>
-                    <span className="rounded-md bg-blue-500/10 px-1.5 py-0.5 font-mono text-[8px] font-bold text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
-                        WORKSPACE
-                    </span>
-                </div>
-                <span className="truncate font-mono text-[8px] font-bold tracking-[0.16em] text-slate-400 uppercase dark:text-zinc-500 mt-1 leading-none">
+                <span className="truncate text-sm font-black tracking-tight text-slate-900 dark:text-white leading-none">
+                    RPK App
+                </span>
+                <span className="truncate font-mono text-[8.5px] font-bold tracking-[0.16em] text-slate-400 uppercase dark:text-zinc-500 mt-1 leading-none">
                     ADVOCATES &amp; LEGAL SYSTEM
                 </span>
             </div>
