@@ -23,27 +23,30 @@ export default function AuthSimpleLayout({
             <main className="relative z-10 flex flex-1 items-center justify-center p-3 sm:p-6 lg:p-8">
                 <div className="w-full max-w-[420px]">
                     <div className="rounded-3xl border border-slate-200/80 bg-white/95 p-5 shadow-2xl shadow-slate-900/10 backdrop-blur-xl sm:p-9 dark:border-white/10 dark:bg-[#14161b]/95 dark:shadow-2xl">
-                        {/* Brand Logo & Header */}
+                        {/* Brand Logo & Header (Side-by-side with divider) */}
                         <div className="mb-5 flex flex-col items-center text-center">
                             <Link
                                 href={home()}
-                                className="group mb-4 flex flex-col items-center gap-2.5 transition-transform hover:scale-[1.02]"
+                                className="group mb-4 inline-flex items-center justify-center gap-3.5 transition-transform hover:scale-[1.02]"
                             >
-                                {/* RPK Law Firm Official Logo */}
+                                {/* Kiri: Logo RPK Law Firm */}
                                 <img
                                     src="/logo/raf-law-firm-transparent.png"
                                     alt="RPK Law Firm"
-                                    className="h-10 w-auto max-w-[170px] object-contain drop-shadow-xs dark:brightness-0 dark:invert"
+                                    className="h-9 w-auto max-w-[130px] object-contain drop-shadow-xs dark:brightness-0 dark:invert"
                                 />
 
-                                {/* RPK App Brand Pill */}
-                                <div className="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-slate-50/90 px-3 py-1 shadow-2xs dark:border-white/10 dark:bg-white/[0.04]">
+                                {/* Pembatas / Divider */}
+                                <div className="h-6 w-px bg-slate-200 dark:bg-white/15" />
+
+                                {/* Kanan: Logo RPK App + Teks */}
+                                <div className="flex items-center gap-2">
                                     <img
                                         src="/images/rpkapp.png"
                                         alt="RPK App"
-                                        className="size-4.5 rounded-full object-contain"
+                                        className="size-6 object-contain"
                                     />
-                                    <span className="text-xs font-bold tracking-tight text-slate-800 dark:text-zinc-200">
+                                    <span className="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
                                         RPK App
                                     </span>
                                 </div>

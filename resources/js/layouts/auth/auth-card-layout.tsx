@@ -23,20 +23,21 @@ export default function AuthCardLayout({
             <div className="flex w-full max-w-md flex-col gap-6">
                 <Link
                     href={home()}
-                    className="flex flex-col items-center gap-2 self-center font-medium"
+                    className="inline-flex items-center justify-center gap-3.5 self-center font-medium"
                 >
                     <img
                         src="/logo/raf-law-firm-transparent.png"
                         alt="RPK Law Firm"
-                        className="h-10 w-auto dark:brightness-0 dark:invert"
+                        className="h-9 w-auto max-w-[130px] object-contain dark:brightness-0 dark:invert"
                     />
-                    <div className="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-slate-50/90 px-3 py-1 shadow-2xs dark:border-white/10 dark:bg-white/[0.04]">
+                    <div className="h-6 w-px bg-slate-200 dark:bg-white/15" />
+                    <div className="flex items-center gap-2">
                         <img
                             src="/images/rpkapp.png"
                             alt="RPK App"
-                            className="size-4.5 rounded-full object-contain"
+                            className="size-6 object-contain"
                         />
-                        <span className="text-xs font-bold tracking-tight text-slate-800 dark:text-zinc-200">
+                        <span className="text-sm font-extrabold tracking-tight text-slate-900 dark:text-white">
                             RPK App
                         </span>
                     </div>
