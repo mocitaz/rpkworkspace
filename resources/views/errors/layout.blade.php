@@ -15,22 +15,28 @@
             --text-muted: #94a3b8;
             --accent-blue: #2563eb;
             --accent-cyan: #06b6d4;
-            --accent-glow: rgba(37, 99, 235, 0.15);
-            --holo-border: rgba(37, 99, 235, 0.25);
-            --holo-bg: rgba(255, 255, 255, 0.85);
+            --accent-glow: rgba(37, 99, 235, 0.16);
+            --num-gradient: linear-gradient(180deg, #1e293b 0%, #64748b 100%);
+            --num-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
             --badge-bg: rgba(239, 246, 255, 0.95);
-            --badge-border: rgba(191, 219, 254, 0.9);
+            --badge-border: rgba(191, 219, 254, 0.8);
             --badge-text: #1d4ed8;
+            --emblem-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(241, 245, 249, 0.85));
+            --emblem-border: rgba(255, 255, 255, 0.9);
             --btn-primary-bg: #0f172a;
             --btn-primary-hover: #1e293b;
             --btn-primary-text: #ffffff;
-            --btn-primary-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.25);
-            --btn-sec-bg: rgba(255, 255, 255, 0.9);
+            --btn-primary-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.25);
+            --btn-sec-bg: rgba(255, 255, 255, 0.85);
             --btn-sec-border: rgba(203, 213, 225, 0.8);
             --btn-sec-text: #334155;
+            --quick-link-bg: rgba(255, 255, 255, 0.6);
+            --quick-link-border: rgba(226, 232, 240, 0.8);
+            --quick-link-text: #64748b;
             --grid-color: rgba(148, 163, 184, 0.08);
-            --code-text: rgba(15, 23, 42, 0.06);
-            --stage-glow: radial-gradient(ellipse at center, rgba(37, 99, 235, 0.14) 0%, rgba(6, 182, 212, 0.06) 45%, transparent 70%);
+            --orb-1: rgba(37, 99, 235, 0.12);
+            --orb-2: rgba(6, 182, 212, 0.10);
+            --platform-glow: radial-gradient(ellipse at center, rgba(37, 99, 235, 0.2) 0%, rgba(6, 182, 212, 0.06) 50%, transparent 75%);
         }
 
         @media (prefers-color-scheme: dark) {
@@ -42,21 +48,27 @@
                 --accent-blue: #60a5fa;
                 --accent-cyan: #38bdf8;
                 --accent-glow: rgba(96, 165, 250, 0.22);
-                --holo-border: rgba(96, 165, 250, 0.3);
-                --holo-bg: rgba(18, 22, 34, 0.8);
+                --num-gradient: linear-gradient(180deg, #ffffff 0%, #94a3b8 100%);
+                --num-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
                 --badge-bg: rgba(30, 58, 138, 0.35);
                 --badge-border: rgba(96, 165, 250, 0.3);
                 --badge-text: #93c5fd;
+                --emblem-bg: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.9));
+                --emblem-border: rgba(255, 255, 255, 0.12);
                 --btn-primary-bg: #ffffff;
                 --btn-primary-hover: #f1f5f9;
                 --btn-primary-text: #090a0f;
-                --btn-primary-shadow: 0 12px 30px -6px rgba(255, 255, 255, 0.2);
+                --btn-primary-shadow: 0 12px 28px -6px rgba(255, 255, 255, 0.2);
                 --btn-sec-bg: rgba(255, 255, 255, 0.06);
                 --btn-sec-border: rgba(255, 255, 255, 0.12);
                 --btn-sec-text: #f1f5f9;
+                --quick-link-bg: rgba(255, 255, 255, 0.04);
+                --quick-link-border: rgba(255, 255, 255, 0.08);
+                --quick-link-text: #94a3b8;
                 --grid-color: rgba(255, 255, 255, 0.03);
-                --code-text: rgba(255, 255, 255, 0.04);
-                --stage-glow: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.22) 0%, rgba(56, 189, 248, 0.1) 45%, transparent 70%);
+                --orb-1: rgba(59, 130, 246, 0.18);
+                --orb-2: rgba(56, 189, 248, 0.12);
+                --platform-glow: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.28) 0%, rgba(56, 189, 248, 0.12) 50%, transparent 75%);
             }
         }
 
@@ -74,7 +86,7 @@
             background-color: var(--bg-base);
             color: var(--text-primary);
             font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            padding: 2rem 1.5rem;
+            padding: 2.5rem 1.5rem;
             position: relative;
             overflow-x: hidden;
             perspective: 1200px;
@@ -100,212 +112,187 @@
             filter: blur(100px);
             pointer-events: none;
             z-index: 0;
-            opacity: 0.8;
-            animation: lightFloat 16s ease-in-out infinite alternate;
+            opacity: 0.85;
+            animation: lightFloat 18s ease-in-out infinite alternate;
         }
         .light-1 {
-            width: 480px;
-            height: 480px;
-            background: rgba(37, 99, 235, 0.12);
+            width: 500px;
+            height: 500px;
+            background: var(--orb-1);
             top: -15%;
-            left: 10%;
+            left: 20%;
         }
         .light-2 {
-            width: 450px;
-            height: 450px;
-            background: rgba(6, 182, 212, 0.10);
+            width: 460px;
+            height: 460px;
+            background: var(--orb-2);
             bottom: -15%;
-            right: 10%;
-            animation-delay: -6s;
+            right: 20%;
+            animation-delay: -7s;
         }
         @keyframes lightFloat {
             0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(30px, -20px) scale(1.08); }
-            100% { transform: translate(-20px, 30px) scale(0.95); }
+            50% { transform: translate(35px, -25px) scale(1.1); }
+            100% { transform: translate(-25px, 35px) scale(0.95); }
         }
 
-        /* 2. Open Canvas Layout (No White Container Box) */
-        .error-canvas {
+        /* 2. Open Hero Layout (No Container Box) */
+        .error-layout {
             position: relative;
             z-index: 1;
             width: 100%;
-            max-width: 68rem;
+            max-width: 44rem;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1.15fr;
-            align-items: center;
-            gap: 3.5rem;
-            animation: canvasFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        @keyframes canvasFadeIn {
-            0% { opacity: 0; transform: translateY(24px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        /* 3. Left: Character Stage with 3D Holographic Elements */
-        .character-stage {
-            position: relative;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 420px;
+            text-align: center;
+            animation: heroFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
             transform-style: preserve-3d;
         }
 
-        /* Radial Glow Stage Platform under character */
-        .stage-platform {
-            position: absolute;
-            bottom: 5px;
-            width: 320px;
-            height: 90px;
-            background: var(--stage-glow);
-            border-radius: 50%;
-            pointer-events: none;
-            filter: blur(10px);
-            animation: stagePulse 4s ease-in-out infinite alternate;
+        @keyframes heroFadeIn {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes stagePulse {
-            0% { transform: scale(0.92); opacity: 0.7; }
-            100% { transform: scale(1.08); opacity: 1; }
-        }
-
-        /* Anime Character Image with Floating Animation */
-        .character-img-wrapper {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            max-width: 340px;
-            aspect-ratio: 1 / 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: characterFloat 5s ease-in-out infinite;
-            filter: drop-shadow(0 20px 35px rgba(15, 23, 42, 0.15));
-        }
-
-        @keyframes characterFloat {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-12px) rotate(1deg); }
-        }
-
-        .character-img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            user-select: none;
-            pointer-events: none;
-            border-radius: 1.5rem;
-        }
-
-        /* Floating Holographic Chips */
-        .holo-chip {
-            position: absolute;
-            z-index: 3;
+        /* 3. Firm Brand Header */
+        .firm-brand {
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
-            padding: 0.4rem 0.85rem;
-            border-radius: 0.75rem;
-            background: var(--holo-bg);
-            border: 1px solid var(--holo-border);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08), 0 0 12px var(--accent-glow);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.675rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            animation: chipFloat 6s ease-in-out infinite;
-            white-space: nowrap;
-        }
-
-        .holo-chip-top {
-            top: 20px;
-            right: 0px;
-            animation-delay: -1.5s;
-        }
-        .holo-chip-bottom {
-            bottom: 30px;
-            left: -10px;
-            animation-delay: -3s;
-        }
-
-        .holo-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--accent-cyan);
-            box-shadow: 0 0 8px var(--accent-cyan);
-            animation: dotBlink 1.8s ease-in-out infinite;
-        }
-
-        @keyframes chipFloat {
-            0%, 100% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-8px) scale(1.02); }
-        }
-        @keyframes dotBlink {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.8); }
-        }
-
-        /* 4. Right: Content Column */
-        .content-col {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            text-align: left;
-        }
-
-        /* Giant Background Code Watermark */
-        .bg-code-watermark {
-            position: absolute;
-            top: -2.5rem;
-            left: -1.5rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 14rem;
-            font-weight: 800;
-            line-height: 0.8;
-            letter-spacing: -0.06em;
-            color: var(--code-text);
-            user-select: none;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .content-inner {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-        }
-
-        /* Firm Logo Header */
-        .firm-logo-link {
-            display: inline-flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             transition: transform 0.2s ease;
         }
-        .firm-logo-link:hover {
-            transform: translateY(-2px);
+        .firm-brand:hover {
+            transform: scale(1.03);
         }
-        .firm-logo-link img {
-            height: 2.25rem;
+        .firm-brand img {
+            height: 2.75rem;
             width: auto;
             object-fit: contain;
         }
         @media (prefers-color-scheme: dark) {
-            .firm-logo-link img {
+            .firm-brand img {
                 filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(255,255,255,0.1));
             }
         }
 
-        /* Status Badge Pill */
-        .status-badge {
+        /* 4. Interactive 3D Kinetic Sculpture */
+        .kinetic-sculpture {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-style: preserve-3d;
+            transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        /* Ambient glowing floor under sculpture */
+        .stage-glow-floor {
+            position: absolute;
+            bottom: -15px;
+            width: 220px;
+            height: 70px;
+            background: var(--platform-glow);
+            border-radius: 50%;
+            filter: blur(12px);
+            pointer-events: none;
+            animation: floorPulse 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes floorPulse {
+            0% { transform: scale(0.9); opacity: 0.7; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* Outer Orbit Ring with glowing satellite */
+        .orbit-ring {
+            position: absolute;
+            inset: 10px;
+            border-radius: 50%;
+            border: 1.5px dashed var(--badge-border);
+            animation: spin3D 20s linear infinite;
+        }
+
+        .orbit-satellite {
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            margin-left: -4px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 12px var(--accent-cyan);
+        }
+
+        .inner-aura {
+            position: absolute;
+            inset: 28px;
+            border-radius: 50%;
+            background: var(--accent-glow);
+            border: 1px solid var(--badge-border);
+            animation: auraPulse 3s ease-in-out infinite alternate;
+        }
+
+        /* Center 3D Floating Prism Box */
+        .prism-box {
+            position: relative;
+            z-index: 2;
+            width: 76px;
+            height: 76px;
+            border-radius: 1.25rem;
+            background: var(--emblem-bg);
+            border: 1px solid var(--emblem-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-blue);
+            box-shadow: 0 16px 36px -8px var(--accent-glow), 0 0 20px rgba(37, 99, 235, 0.12);
+            animation: prismLevitate 4.5s ease-in-out infinite;
+        }
+
+        .prism-box svg {
+            width: 36px;
+            height: 36px;
+            stroke-width: 1.8;
+        }
+
+        @keyframes spin3D {
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes auraPulse {
+            0% { transform: scale(0.92); opacity: 0.6; }
+            100% { transform: scale(1.08); opacity: 1; }
+        }
+        @keyframes prismLevitate {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
+        }
+
+        /* 5. Giant Stylized 3D Numerals */
+        .hero-numeral {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(4.5rem, 12vw, 7.5rem);
+            font-weight: 800;
+            line-height: 0.9;
+            letter-spacing: -0.06em;
+            background: var(--num-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: var(--num-shadow);
+            margin-bottom: 0.75rem;
+            user-select: none;
+            position: relative;
+        }
+
+        /* 6. Monospace Status LED Pill */
+        .status-pill {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
@@ -314,49 +301,55 @@
             font-weight: 700;
             letter-spacing: 0.08em;
             text-transform: uppercase;
-            padding: 0.35rem 0.85rem;
+            padding: 0.35rem 0.9rem;
             border-radius: 9999px;
             background: var(--badge-bg);
             border: 1px solid var(--badge-border);
             color: var(--badge-text);
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
             box-shadow: 0 2px 10px -2px var(--accent-glow);
         }
 
-        .status-badge-dot {
+        .status-led {
             width: 6px;
             height: 6px;
             border-radius: 50%;
             background-color: var(--accent-blue);
             box-shadow: 0 0 8px var(--accent-blue);
-            animation: dotBlink 2s ease-in-out infinite;
+            animation: ledBlink 2s ease-in-out infinite;
         }
 
-        /* Headline & Paragraph */
+        @keyframes ledBlink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(0.85); }
+        }
+
+        /* 7. Typography */
         h1 {
-            font-size: 2.25rem;
+            font-size: clamp(1.6rem, 4vw, 2.25rem);
             font-weight: 800;
             letter-spacing: -0.035em;
             color: var(--text-primary);
-            margin-bottom: 0.85rem;
-            line-height: 1.2;
+            margin-bottom: 0.75rem;
+            line-height: 1.25;
         }
 
         p {
-            font-size: 0.975rem;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
             color: var(--text-secondary);
             line-height: 1.65;
-            max-width: 28rem;
+            max-width: 32rem;
             margin-bottom: 2.25rem;
         }
 
-        /* Action Buttons */
+        /* 8. Action Buttons */
         .actions-group {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
+            justify-content: center;
             gap: 0.85rem;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2.25rem;
         }
 
         .btn {
@@ -420,8 +413,35 @@
             transform: translateX(-3px);
         }
 
-        /* Minimalist Footer */
-        .footer-brand-note {
+        /* 9. Quick Navigation Pills */
+        .quick-nav {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .quick-nav-link {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--quick-link-text);
+            background: var(--quick-link-bg);
+            border: 1px solid var(--quick-link-border);
+            padding: 0.35rem 0.85rem;
+            border-radius: 9999px;
+            text-decoration: none;
+            backdrop-filter: blur(8px);
+            transition: all 0.15s ease;
+        }
+        .quick-nav-link:hover {
+            color: var(--text-primary);
+            border-color: var(--accent-blue);
+            transform: translateY(-1px);
+        }
+
+        /* 10. Minimalist Footer */
+        .footer-brand {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
@@ -431,46 +451,12 @@
             letter-spacing: 0.02em;
         }
 
-        .footer-status-indicator {
+        .status-dot {
             width: 7px;
             height: 7px;
             border-radius: 50%;
             background-color: #10b981;
             box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
-        }
-
-        /* Mobile Responsiveness */
-        @media (max-width: 860px) {
-            .error-canvas {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-                text-align: center;
-            }
-            .content-col {
-                align-items: center;
-                text-align: center;
-            }
-            .bg-code-watermark {
-                left: 50%;
-                transform: translateX(-50%);
-                font-size: 10rem;
-                top: -1.5rem;
-            }
-            .character-stage {
-                min-height: 280px;
-            }
-            .character-img-wrapper {
-                max-width: 260px;
-            }
-            .actions-group {
-                justify-content: center;
-            }
-            h1 {
-                font-size: 1.75rem;
-            }
-            p {
-                font-size: 0.9rem;
-            }
         }
     </style>
 </head>
@@ -482,106 +468,92 @@
     <div class="ambient-light light-1"></div>
     <div class="ambient-light light-2"></div>
 
-    <!-- Main Container-less Open Canvas -->
-    <main class="error-canvas" id="errorCanvas">
-        <!-- 1. Left: 3D Holographic Anime Stage -->
-        <div class="character-stage" id="characterStage">
-            <div class="stage-platform"></div>
+    <!-- Open Hero Layout (Container-less) -->
+    <main class="error-layout" id="errorLayout">
+        <!-- 1. Law Firm Brand -->
+        <a href="{{ route('home') }}" class="firm-brand" title="RPK Law App">
+            <img src="/logo/raf-law-firm-transparent.png" alt="RPK Law Firm Logo" onerror="this.onerror=null; this.src='/logo/logo.png';" />
+        </a>
 
-            <!-- Floating Holographic Badge 1 -->
-            <div class="holo-chip holo-chip-top">
-                <span class="holo-dot"></span>
-                <span>@yield('chip_label', 'CASE FILE #24097')</span>
+        <!-- 2. 3D Kinetic Hologram Sculpture -->
+        <div class="kinetic-sculpture" id="sculpture">
+            <div class="stage-glow-floor"></div>
+            <div class="orbit-ring">
+                <div class="orbit-satellite"></div>
             </div>
-
-            <!-- Anime Character -->
-            <div class="character-img-wrapper" id="characterWrapper">
-                @sectionMissing('character_image')
-                    <img 
-                        src="/images/anime-404-character.png" 
-                        alt="RPK Legal Tech Character" 
-                        class="character-img"
-                    />
-                @else
-                    @yield('character_image')
-                @endif
-            </div>
-
-            <!-- Floating Holographic Badge 2 -->
-            <div class="holo-chip holo-chip-bottom">
-                <span class="holo-dot" style="background: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue);"></span>
-                <span>RPK LAW APP &middot; SYSTEM ONLINE</span>
+            <div class="inner-aura"></div>
+            <div class="prism-box">
+                @yield('icon')
             </div>
         </div>
 
-        <!-- 2. Right: Content & Action Controls -->
-        <div class="content-col">
-            <!-- Background Giant Number Watermark -->
-            <div class="bg-code-watermark">@yield('code')</div>
+        <!-- 3. Giant Stylized 3D Numerals -->
+        <div class="hero-numeral">@yield('code')</div>
 
-            <div class="content-inner">
-                <!-- Law Firm Logo -->
-                <a href="{{ route('home') }}" class="firm-logo-link" title="Kembali ke Dashboard">
-                    <img src="/logo/raf-law-firm-transparent.png" alt="RPK Law Firm Logo" onerror="this.onerror=null; this.src='/logo/logo.png';" />
-                </a>
+        <!-- 4. Status Badge Pill -->
+        <div class="status-pill">
+            <span class="status-led"></span>
+            <span>ERROR @yield('code') &middot; @yield('badge_label', 'SYSTEM EVENT')</span>
+        </div>
 
-                <!-- Status Badge -->
-                <div>
-                    <div class="status-badge">
-                        <span class="status-badge-dot"></span>
-                        <span>ERROR @yield('code') &middot; @yield('badge_label', 'STATUS EVENT')</span>
-                    </div>
-                </div>
+        <!-- 5. Headline & Description -->
+        <h1>@yield('title')</h1>
+        <p>@yield('message')</p>
 
-                <!-- Error Headline & Subtitle -->
-                <h1>@yield('title')</h1>
-                <p>@yield('message')</p>
+        <!-- 6. Action Button Group -->
+        <div class="actions-group">
+            <a href="{{ route('home') }}" class="btn btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Kembali ke Workspace</span>
+            </a>
 
-                <!-- Action Button Group -->
-                <div class="actions-group">
-                    <a href="{{ route('home') }}" class="btn btn-primary">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="19" y1="12" x2="5" y2="12"></line>
-                            <polyline points="12 19 5 12 12 5"></polyline>
-                        </svg>
-                        <span>Kembali ke Workspace</span>
-                    </a>
+            <button type="button" onclick="window.location.reload()" class="btn btn-secondary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <polyline points="1 20 1 14 7 14"></polyline>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+                <span>Muat Ulang</span>
+            </button>
+        </div>
 
-                    <button type="button" onclick="window.location.reload()" class="btn btn-secondary">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="23 4 23 10 17 10"></polyline>
-                            <polyline points="1 20 1 14 7 14"></polyline>
-                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
-                        </svg>
-                        <span>Muat Ulang</span>
-                    </button>
-                </div>
+        <!-- 7. Quick Jump Links -->
+        <div class="quick-nav">
+            <a href="{{ route('dashboard') }}" class="quick-nav-link">Dashboard</a>
+            <a href="{{ url('/matters') }}" class="quick-nav-link">Perkara</a>
+            <a href="{{ url('/clients') }}" class="quick-nav-link">Klien</a>
+            <a href="{{ url('/documents') }}" class="quick-nav-link">Dokumen</a>
+        </div>
 
-                <!-- Minimalist Footer -->
-                <div class="footer-brand-note">
-                    <span class="footer-status-indicator"></span>
-                    <span>RPK Law App</span>
-                </div>
-            </div>
+        <!-- 8. Minimalist Footer -->
+        <div class="footer-brand">
+            <span class="status-dot"></span>
+            <span>RPK Law App</span>
         </div>
     </main>
 
-    <!-- Parallax 3D Mouse Movement Script -->
+    <!-- Interactive 3D Parallax Script -->
     <script>
         (function() {
-            const stage = document.getElementById('characterStage');
-            const wrapper = document.getElementById('characterWrapper');
-            if (!stage || !wrapper) return;
+            const layout = document.getElementById('errorLayout');
+            const sculpture = document.getElementById('sculpture');
+            if (!layout || !sculpture) return;
 
             window.addEventListener('mousemove', (e) => {
-                const x = (e.clientX / window.innerWidth - 0.5) * 20;
-                const y = (e.clientY / window.innerHeight - 0.5) * 20;
+                const xPct = (e.clientX / window.innerWidth - 0.5);
+                const yPct = (e.clientY / window.innerHeight - 0.5);
 
-                wrapper.style.transform = `translate3d(${x * 0.8}px, ${y * 0.8}px, 0px) rotateY(${x * 0.5}deg) rotateX(${-y * 0.5}deg)`;
+                const rotX = yPct * -16;
+                const rotY = xPct * 16;
+
+                sculpture.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale3d(1.03, 1.03, 1.03)`;
             });
 
             window.addEventListener('mouseleave', () => {
-                wrapper.style.transform = 'translate3d(0, 0, 0) rotateY(0deg) rotateX(0deg)';
+                sculpture.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
             });
         })();
     </script>

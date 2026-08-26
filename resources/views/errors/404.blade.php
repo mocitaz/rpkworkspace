@@ -2,14 +2,12 @@
 
 @section('code', '404')
 @section('badge_label', 'NOT FOUND')
-@section('chip_label', 'CASE FILE #24097 · NOT FOUND')
 @section('title', 'Halaman Tidak Ditemukan')
-@section('message', 'Alamat atau berkas yang Anda cari tidak tersedia, telah dipindahkan, atau berada di luar jangkauan sistem RPK Workspace.')
+@section('message', 'Alamat atau tautan berkas yang Anda tuju tidak tersedia, telah dipindahkan, atau berada di luar jangkauan sistem RPK Law App.')
 
-@section('character_image')
-<img 
-    src="/images/anime-404-character.png" 
-    alt="RPK Legal Tech Detective" 
-    class="character-img"
-/>
+@section('icon')
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="10"></circle>
+    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+</svg>
 @endsection
