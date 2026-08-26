@@ -168,11 +168,13 @@ export default function UsersIndex({
                             <Can permission="admin.users.manage">
                                 <Button
                                     size="sm"
-                                    onClick={() => setInviteOpen(true)}
+                                    asChild
                                     className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
                                 >
-                                    <UserPlus className="mr-1.5 size-3.5" />
-                                    Tambah Staf Baru
+                                    <Link href={userRoutes.create()}>
+                                        <UserPlus className="mr-1.5 size-3.5" />
+                                        Tambah Staf Baru
+                                    </Link>
                                 </Button>
                             </Can>
                         </div>
@@ -416,13 +418,13 @@ export default function UsersIndex({
                                                 !filters.role_id && (
                                                     <Button
                                                         size="sm"
-                                                        onClick={() =>
-                                                            setInviteOpen(true)
-                                                        }
+                                                        asChild
                                                         className="mt-3.5 h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                                     >
-                                                        <UserPlus className="mr-1 size-3" />{' '}
-                                                        Tambah Staf Baru
+                                                        <Link href={userRoutes.create()}>
+                                                            <UserPlus className="mr-1 size-3" />{' '}
+                                                            Tambah Staf Baru
+                                                        </Link>
                                                     </Button>
                                                 )}
                                         </div>

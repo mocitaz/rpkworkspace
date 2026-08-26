@@ -352,13 +352,14 @@ export default function UserShow({
 
                                 <Can permission="admin.users.manage">
                                     <Button
-                                        type="button"
+                                        asChild
                                         size="sm"
-                                        onClick={() => openEditWithTab('account')}
                                         className="h-9 cursor-pointer rounded-xl bg-slate-900 px-4 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                     >
-                                        <Pencil className="mr-1.5 size-3.5" />
-                                        Edit Profil
+                                        <Link href={userRoutes.edit({ user: staff.id })}>
+                                            <Pencil className="mr-1.5 size-3.5" />
+                                            Edit Profil &amp; Akses
+                                        </Link>
                                     </Button>
                                 </Can>
                             </div>
@@ -676,13 +677,13 @@ export default function UserShow({
 
                                         <Button
                                             size="sm"
-                                            onClick={() =>
-                                                openEditWithTab('advocate')
-                                            }
+                                            asChild
                                             className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
-                                            <Pencil className="mr-1 size-3" />
-                                            Edit Kredensial
+                                            <Link href={userRoutes.edit({ user: staff.id })}>
+                                                <Pencil className="mr-1 size-3" />
+                                                Edit Kredensial
+                                            </Link>
                                         </Button>
                                     </div>
 
@@ -860,13 +861,13 @@ export default function UserShow({
                                         </div>
                                         <Button
                                             size="sm"
-                                            onClick={() =>
-                                                openEditWithTab('contact')
-                                            }
+                                            asChild
                                             className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
-                                            <Pencil className="mr-1 size-3" />
-                                            Edit Kontak
+                                            <Link href={userRoutes.edit({ user: staff.id })}>
+                                                <Pencil className="mr-1 size-3" />
+                                                Edit Kontak
+                                            </Link>
                                         </Button>
                                     </div>
 
@@ -936,13 +937,13 @@ export default function UserShow({
                                         </div>
                                         <Button
                                             size="sm"
-                                            onClick={() =>
-                                                openEditWithTab('billing')
-                                            }
+                                            asChild
                                             className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
-                                            <Pencil className="mr-1 size-3" />
-                                            Edit Keuangan
+                                            <Link href={userRoutes.edit({ user: staff.id })}>
+                                                <Pencil className="mr-1 size-3" />
+                                                Edit Keuangan
+                                            </Link>
                                         </Button>
                                     </div>
 
@@ -1001,13 +1002,13 @@ export default function UserShow({
                                         </div>
                                         <Button
                                             size="sm"
-                                            onClick={() =>
-                                                openEditWithTab('account')
-                                            }
+                                            asChild
                                             className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
-                                            <Pencil className="mr-1 size-3" />
-                                            Kelola Role
+                                            <Link href={userRoutes.edit({ user: staff.id })}>
+                                                <Pencil className="mr-1 size-3" />
+                                                Kelola Role
+                                            </Link>
                                         </Button>
                                     </div>
 

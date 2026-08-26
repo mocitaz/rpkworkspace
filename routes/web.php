@@ -144,7 +144,7 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::redirect('audit-logs', '/admin/audit');
     Route::redirect('audit', '/admin/audit');
     Route::get('admin/system-readiness', SystemReadinessController::class)->name('admin.system-readiness');
-    Route::resource('admin/users', AdminUserController::class)->only(['index', 'show', 'store', 'update', 'destroy'])->names('admin.users');
+    Route::resource('admin/users', AdminUserController::class)->names('admin.users');
     Route::put('admin/roles/{role}', [AdminRoleController::class, 'update'])->name('admin.roles.update');
 });
 

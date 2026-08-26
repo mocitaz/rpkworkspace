@@ -14,6 +14,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -59,6 +60,45 @@ class UserController extends Controller
     }
 
     /**
+     * Show the form for creating a new user / staff member.
+     */
+    public function create(Request $request): Response
+    {
+        abort_unless($request->user()->hasPermission('admin.users.manage'), 403);
+
+        $latestUser = User::query()->whereNotNull('employee_code')->latest('id')->first();
+        $nextEmployeeCode = 'RPK-'.str_pad((string) (User::query()->count() + 1), 3, '0', STR_PAD_LEFT);
+
+        return Inertia::render('admin/users/create', [
+            'roles' => Role::query()->with('permissions:id,name,description')->orderBy('name')->get(),
+            'departments' => $this->departmentOptions(),
+            'positions' => $this->positionOptions(),
+            'employmentTypes' => $this->employmentTypeOptions(),
+            'workModes' => $this->workModeOptions(),
+            'defaultEmployeeCode' => $nextEmployeeCode,
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified user / staff member.
+     */
+    public function edit(Request $request, User $user): Response
+    {
+        abort_unless($request->user()->hasPermission('admin.users.manage'), 403);
+
+        $user->load(['roles:id,name,slug,description', 'roles.permissions:id,name']);
+
+        return Inertia::render('admin/users/edit', [
+            'staff' => $user,
+            'roles' => Role::query()->with('permissions:id,name,description')->orderBy('name')->get(),
+            'departments' => $this->departmentOptions(),
+            'positions' => $this->positionOptions(),
+            'employmentTypes' => $this->employmentTypeOptions(),
+            'workModes' => $this->workModeOptions(),
+        ]);
+    }
+
+    /**
      * Display the specified user profile details.
      */
     public function show(Request $request, User $user): Response
@@ -89,12 +129,16 @@ class UserController extends Controller
         $initialPassword = $hasCustomPassword ? (string) $request->input('password') : 'password';
 
         $user = DB::transaction(function () use ($request, $initialPassword) {
-            $user = User::query()->create([
-                ...$request->safe()->except(['role_ids', 'password']),
-                'password' => $initialPassword,
-                'email_verified_at' => now(),
-                'is_active' => true,
-            ]);
+            $data = $request->safe()->except(['role_ids', 'password', 'avatar']);
+            $data['password'] = $initialPassword;
+            $data['email_verified_at'] = now();
+            $data['is_active'] = true;
+
+            if ($request->hasFile('avatar')) {
+                $data['avatar_path'] = $request->file('avatar')->store('avatars', 'public');
+            }
+
+            $user = User::query()->create($data);
             $user->roles()->sync($this->roleAssignments($request->validated('role_ids'), $request->user()));
 
             return $user;
@@ -109,7 +153,7 @@ class UserController extends Controller
             $user->notify((new NewStaffWelcomeNotification($user, $initialPassword))->afterCommit());
         }
 
-        return back()->with(
+        return redirect()->route('admin.users.show', $user)->with(
             'success',
             "Pengguna {$user->name} berhasil ditambahkan. Password login: {$initialPassword}"
         );
@@ -131,7 +175,7 @@ class UserController extends Controller
         abort_if($request->user()->is($user) && ! $selectedRolesRetainAdministration, 422, 'Anda tidak dapat mencabut akses administrasi akun sendiri.');
 
         DB::transaction(function () use ($validated, $request, $user): void {
-            $data = collect($validated)->except(['role_ids', 'password'])->all();
+            $data = collect($validated)->except(['role_ids', 'password', 'avatar', 'remove_avatar'])->all();
             if ($request->filled('password')) {
                 $data['password'] = (string) $request->input('password');
             }
@@ -143,6 +187,19 @@ class UserController extends Controller
                 $data['email_verified_at'] = now();
             }
 
+            // Handle avatar removal or update
+            if ($request->boolean('remove_avatar') && $user->avatar_path) {
+                Storage::disk('public')->delete($user->avatar_path);
+                $data['avatar_path'] = null;
+            }
+
+            if ($request->hasFile('avatar')) {
+                if ($user->avatar_path) {
+                    Storage::disk('public')->delete($user->avatar_path);
+                }
+                $data['avatar_path'] = $request->file('avatar')->store('avatars', 'public');
+            }
+
             $user->update($data);
             $user->roles()->sync($this->roleAssignments($validated['role_ids'], $request->user()));
         });
@@ -152,7 +209,7 @@ class UserController extends Controller
             'password_changed' => $request->filled('password'),
         ], $request->user(), $request);
 
-        return back()->with('success', 'Data pengguna berhasil diperbarui.');
+        return redirect()->route('admin.users.show', $user)->with('success', 'Profil dan data pengguna berhasil diperbarui.');
     }
 
     /**
@@ -205,5 +262,64 @@ class UserController extends Controller
         }
 
         return $assignments;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function departmentOptions(): array
+    {
+        return [
+            'Litigasi dan Non Litigasi',
+            'Corporate Legal',
+            'Executive & Strategic Litigation',
+            'Finance & Accounting',
+            'General Affairs & Operations',
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function positionOptions(): array
+    {
+        return [
+            'Managing Partner',
+            'Senior Partner',
+            'Partner',
+            'Senior Associate',
+            'Junior Associate',
+            'Advokat Magang',
+            'Paralegal',
+            'Legal Assistant',
+            'Finance Manager',
+            'Office Administrator',
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function employmentTypeOptions(): array
+    {
+        return [
+            'Permanent',
+            'Contract',
+            'Internship',
+            'Of Counsel',
+            'Partner',
+        ];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function workModeOptions(): array
+    {
+        return [
+            'WFO',
+            'Hybrid',
+            'Remote',
+        ];
     }
 }

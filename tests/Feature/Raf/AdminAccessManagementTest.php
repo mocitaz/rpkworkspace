@@ -139,3 +139,27 @@ it('supports creating and updating users with staff hr fields and searching by t
             ->where('users.data.0.name', 'Citra Dewi, S.H., LL.M.')
         );
 });
+
+it('can render dedicated admin.users.create and admin.users.edit pages', function () {
+    $administrator = rafUser(['admin.users.manage']);
+    $role = Role::query()->create(['name' => 'Associate Counsel', 'slug' => 'associate-counsel']);
+    $staff = User::factory()->create();
+    $staff->roles()->sync([$role->getKey() => ['assigned_by' => $administrator->getKey()]]);
+
+    $this->actingAs($administrator)->get(route('admin.users.create'))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('admin/users/create')
+            ->has('roles')
+            ->has('departments')
+            ->has('positions')
+            ->has('defaultEmployeeCode')
+        );
+
+    $this->actingAs($administrator)->get(route('admin.users.edit', $staff))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page->component('admin/users/edit')
+            ->has('staff')
+            ->has('roles')
+            ->has('departments')
+        );
+});
