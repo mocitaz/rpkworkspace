@@ -1,14 +1,11 @@
 import { Link, router } from '@inertiajs/react';
-import { AlertCircle, LogOut, Settings } from 'lucide-react';
+import { LogOut, Settings } from 'lucide-react';
 import { useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogFooter,
-    DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
 import {
@@ -19,7 +16,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Spinner } from '@/components/ui/spinner';
 import { UserInfo } from '@/components/user-info';
-import { useInitials } from '@/hooks/use-initials';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
@@ -31,7 +27,6 @@ type Props = {
 
 export function UserMenuContent({ user }: Props) {
     const cleanup = useMobileNavigation();
-    const getInitials = useInitials();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -85,58 +80,29 @@ export function UserMenuContent({ user }: Props) {
                 Keluar / Log out
             </DropdownMenuItem>
 
-            {/* Logout Confirmation Dialog Modal */}
+            {/* Symmetrical & Clean Executive Logout Dialog */}
             <Dialog open={showLogoutModal} onOpenChange={setShowLogoutModal}>
-                <DialogContent className="max-w-[420px] rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-[420px] dark:border-white/10 dark:bg-[#14161b]">
-                    <div className="flex items-start gap-3.5">
-                        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-600 dark:border-rose-900/30 dark:bg-rose-950/40 dark:text-rose-400">
-                            <LogOut className="size-5" />
+                <DialogContent className="max-w-[380px] rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-[380px] dark:border-white/10 dark:bg-[#14161b]">
+                    <div className="flex flex-col items-center text-center">
+                        <div className="flex size-12 items-center justify-center rounded-2xl border border-rose-200/80 bg-rose-50/80 text-rose-600 shadow-xs dark:border-rose-900/40 dark:bg-rose-950/50 dark:text-rose-400">
+                            <LogOut className="size-5.5" />
                         </div>
-                        <div className="min-w-0 flex-1 space-y-1">
-                            <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
-                                Konfirmasi Keluar dari Workspace
-                            </DialogTitle>
-                            <DialogDescription className="text-xs leading-relaxed text-slate-500 dark:text-zinc-400">
-                                Apakah Anda yakin ingin mengakhiri sesi kerja?
-                                Pastikan seluruh draf berkas dan catatan Anda
-                                telah tersimpan.
-                            </DialogDescription>
-                        </div>
+
+                        <DialogTitle className="mt-4 text-base font-bold text-slate-900 dark:text-white">
+                            Keluar dari Workspace?
+                        </DialogTitle>
+                        <DialogDescription className="mt-1.5 text-xs leading-relaxed text-slate-500 dark:text-zinc-400">
+                            Sesi kerja Anda akan diakhiri. Pastikan seluruh draf berkas dan catatan Anda telah tersimpan sebelum keluar.
+                        </DialogDescription>
                     </div>
 
-                    {/* Clean User Account Card (Fully Contained) */}
-                    <div className="my-4 flex items-center gap-3 rounded-xl border border-slate-200/70 bg-slate-50/70 p-3 dark:border-white/[0.05] dark:bg-white/[0.02]">
-                        <Avatar className="size-9 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                            <AvatarImage
-                                src={
-                                    user.avatar_url ||
-                                    (user as { avatar_path?: string })
-                                        .avatar_path ||
-                                    undefined
-                                }
-                            />
-                            <AvatarFallback className="text-xs font-bold text-slate-700 dark:text-zinc-300">
-                                {getInitials(user.name)}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0 flex-1">
-                            <p className="truncate text-xs font-semibold text-slate-900 dark:text-white">
-                                {user.name}
-                            </p>
-                            <p className="truncate font-mono text-[11px] text-slate-500 dark:text-zinc-400">
-                                {user.email}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Dialog Footer Actions */}
-                    <div className="flex items-center justify-end gap-2 pt-1">
+                    <div className="mt-6 grid grid-cols-2 gap-2.5">
                         <Button
                             type="button"
                             variant="outline"
                             onClick={() => setShowLogoutModal(false)}
                             disabled={isLoggingOut}
-                            className="h-8.5 rounded-xl border-slate-200 bg-white px-3.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-transparent dark:text-zinc-300 dark:hover:bg-white/[0.06]"
+                            className="h-9.5 w-full cursor-pointer rounded-xl border-slate-200/80 bg-white text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-transparent dark:text-zinc-300 dark:hover:bg-white/[0.06]"
                         >
                             Batal
                         </Button>
@@ -144,17 +110,17 @@ export function UserMenuContent({ user }: Props) {
                             type="button"
                             onClick={handleConfirmLogout}
                             disabled={isLoggingOut}
-                            className="h-8.5 rounded-xl bg-rose-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-rose-700 active:scale-95 dark:bg-rose-600 dark:hover:bg-rose-700"
+                            className="h-9.5 w-full cursor-pointer rounded-xl bg-rose-600 text-xs font-bold text-white shadow-xs hover:bg-rose-700 active:scale-98 dark:bg-rose-600 dark:hover:bg-rose-700"
                         >
                             {isLoggingOut ? (
                                 <>
-                                    <Spinner className="mr-1.5 size-3" />
+                                    <Spinner className="mr-1.5 size-3.5" />
                                     Keluar...
                                 </>
                             ) : (
                                 <>
                                     <LogOut className="mr-1.5 size-3.5" />
-                                    Ya, Keluar Akun
+                                    Ya, Keluar
                                 </>
                             )}
                         </Button>
