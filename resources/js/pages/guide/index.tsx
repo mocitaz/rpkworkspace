@@ -9,16 +9,12 @@ import {
     Check,
     CheckCircle2,
     ChevronDown,
-    ChevronRight,
     Clock,
     Command,
     Copy,
     CreditCard,
-    ExternalLink,
     FileCheck,
-    FileCode2,
     FileText,
-    FolderKanban,
     HelpCircle,
     Info,
     KeyRound,
@@ -30,7 +26,6 @@ import {
     Search,
     Shield,
     ShieldCheck,
-    Sliders,
     Sparkles,
     Terminal,
     UserCheck,
@@ -59,13 +54,19 @@ interface GuideWorkflow {
     title: string;
     tagline: string;
     icon: any;
+    imagePath?: string;
     targetRoute: string;
     targetRouteLabel: string;
     estimatedTime: string;
     complianceNote: string;
+    accentColor: {
+        badge: string;
+        border: string;
+        bg: string;
+        text: string;
+    };
     steps: WorkflowStep[];
     simulation: {
-        type: 'matter' | 'signature' | 'invoice' | 'calendar' | 'kyc' | 'passkey' | 'rbac';
         headline: string;
         subheadline: string;
         metaPills: { label: string; value: string; variant?: 'default' | 'success' | 'warning' | 'info' }[];
@@ -83,42 +84,49 @@ const WORKFLOWS: GuideWorkflow[] = [
         title: 'Manajemen Perkara & Uji Benturan Kepentingan',
         tagline: 'Alur komprehensif mulai dari conflict of interest check, penugasan tim kuasa hukum, persidangan, hingga arsip perkara inkracht.',
         icon: Briefcase,
+        imagePath: '/images/guide/matter.jpg',
         targetRoute: '/matters',
         targetRouteLabel: 'Buka Modul Perkara',
         estimatedTime: '3 Menit Registrasi',
         complianceNote: 'Mematuhi Kode Etik Advokat Indonesia (KEAI) Pasal 4 & Standar Manajemen Perkara Firma',
+        accentColor: {
+            badge: 'border-blue-200/80 bg-blue-50/80 text-blue-800 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-300',
+            border: 'border-blue-200/70 dark:border-blue-900/40',
+            bg: 'bg-blue-50/40 dark:bg-blue-950/20',
+            text: 'text-blue-700 dark:text-blue-400',
+        },
         steps: [
             {
                 step: '01',
                 title: 'Uji Konflik Kepentingan (Conflict of Interest Check)',
-                description: 'Verifikasi otomatis terhadap pihak lawan, afiliasi bisnis, dan saksi untuk mencegah benturan kepentingan.',
+                description: 'Verifikasi otomatis terhadap pihak lawan, afiliasi bisnis, dan saksi untuk mencegah benturan kepentingan sebelum menerima kuasa.',
                 actionableItems: [
-                    'Buka menu Perkara → Klik "+ Buka Perkara Baru".',
+                    'Buka menu Perkara → Klik tombol "+ Buka Perkara Baru".',
                     'Masukkan nama pihak pemohon, pihak lawan, dan kuasa hukum lawan.',
-                    'Sistem mencocokkan riwayat perkara aktif dan arsip firma secara instan.',
+                    'Sistem mencocokkan riwayat perkara aktif dan arsip klien firma secara instan.',
                 ],
                 actorRole: 'Managing Partner / Lead Partner',
                 legalBasis: 'KEAI Pasal 4 Huruf j',
             },
             {
                 step: '02',
-                title: 'Pembentukan Tim Kuasa Hukum & Hak Akses Berkas',
-                description: 'Penetapan Lead Partner penanggung jawab, Partner pendamping, Senior Associate, dan Paralegal.',
+                title: 'Pembentukan Tim Kuasa Hukum & Pembagian Hak Akses',
+                description: 'Penetapan Lead Partner penanggung jawab, Partner pendamping, Senior Associate, dan Paralegal pelaksana.',
                 actionableItems: [
-                    'Tentukan Lead Partner yang menandatangani draf dan persetujuan pengadilan.',
+                    'Tentukan Lead Partner yang menandatangani draf dan mewakili di muka persidangan.',
                     'Tambahkan anggota tim hukum pendamping perkara.',
-                    'Izin akses berkas digital perkara secara otomatis disinkronkan ke seluruh personel terpilih.',
+                    'Hak akses terhadap dokumen sensitif perkara otomatis disinkronkan ke seluruh personel terpilih.',
                 ],
                 actorRole: 'Managing Partner',
             },
             {
                 step: '03',
                 title: 'Pencatatan Kronologi, Pihak Terkait & Matriks Alat Bukti',
-                description: 'Dokumentasi peristiwa hukum dan penomoran alat bukti surat secara sistematis.',
+                description: 'Dokumentasi peristiwa hukum dan penomoran alat bukti surat secara sistematis (P-1 s.d. P-n).',
                 actionableItems: [
-                    'Catat peristiwa kronologis dengan tanggal presisi dan kode referensi bukti (P-1 s.d. P-n / T-1 s.d. T-n).',
-                    'Unggah salinan draf gugatan, jawaban, replik, duplik, dan kesimpulan ke brankas digital perkara.',
-                    'Catat hasil dan risalah sidang setiap kali agenda persidangan selesai dilaksanakan.',
+                    'Catat peristiwa kronologis dengan tanggal presisi dan kode referensi bukti surat.',
+                    'Unggah salinan gugatan, eksepsi, replik, duplik, dan kesimpulan ke brankas digital perkara.',
+                    'Catat catatan perkembangan setiap kali persidangan selesai dilaksanakan.',
                 ],
                 actorRole: 'Lead Partner / Associate',
                 legalBasis: 'Pasal 164 HIR / 284 RBg',
@@ -128,15 +136,14 @@ const WORKFLOWS: GuideWorkflow[] = [
                 title: 'Penyelesaian Amar Putusan & Pengarsipan Inkracht',
                 description: 'Penutupan perkara pasca berkekuatan hukum tetap dan penerbitan laporan akhir ke klien.',
                 actionableItems: [
-                    'Ubah tahapan perkara menjadi "Selesai / Putusan Inkracht" dan lampirkan salinan putusan resmi.',
+                    'Ubah tahapan perkara menjadi "Selesai / Putusan Inkracht" dan catat amar putusan.',
                     'Unduh Executive Summary Case Report (PDF) untuk diserahkan ke klien.',
-                    'Arsipkan berkas digital ke gudang digital jangka panjang firma.',
+                    'Arsipkan berkas digital ke penyimpanan jangka panjang firma.',
                 ],
                 actorRole: 'Lead Partner',
             },
         ],
         simulation: {
-            type: 'matter',
             headline: 'Gugatan Perbuatan Melawan Hukum (PMH) &mdash; Sengketa Kontrak Kerjasama',
             subheadline: 'Perkara No. 142/Pdt.G/2026/PN.Jkt.Sel &bull; Klien: PT Graha Nusantara Sentosa',
             metaPills: [
@@ -161,10 +168,17 @@ const WORKFLOWS: GuideWorkflow[] = [
         title: 'Generator Dokumen & Tanda Tangan Elektronik Resmi',
         tagline: 'Pembuatan draf surat kuasa instan dari template baku, sirkulasi penandatanganan elektronik, dan verifikasi QR Code keabsahan berkas.',
         icon: FileCheck,
+        imagePath: '/images/guide/signature.jpg',
         targetRoute: '/documents',
         targetRouteLabel: 'Buka Modul Dokumen',
         estimatedTime: '2 Menit Penandatanganan',
         complianceNote: 'Memenuhi Ketentuan UU ITE No. 1/2024 Pasal 11 & PP No. 71/2019 tentang Tanda Tangan Elektronik',
+        accentColor: {
+            badge: 'border-cyan-200/80 bg-cyan-50/80 text-cyan-800 dark:border-cyan-900/50 dark:bg-cyan-950/40 dark:text-cyan-300',
+            border: 'border-cyan-200/70 dark:border-cyan-900/40',
+            bg: 'bg-cyan-50/40 dark:bg-cyan-950/20',
+            text: 'text-cyan-700 dark:text-cyan-400',
+        },
         steps: [
             {
                 step: '01',
@@ -202,7 +216,6 @@ const WORKFLOWS: GuideWorkflow[] = [
             },
         ],
         simulation: {
-            type: 'signature',
             headline: 'Surat Kuasa Khusus &mdash; Perkara Perdata No. 142/Pdt.G/2026',
             subheadline: 'Penandatangan: Direktur Utama PT Graha Nusantara & Adv. Roni Hidayat, S.H.',
             metaPills: [
@@ -227,10 +240,17 @@ const WORKFLOWS: GuideWorkflow[] = [
         title: 'Honorarium Hukum, Penagihan Invoice & Pajak PPh 23/21',
         tagline: 'Penerbitan tagihan profesional, pencatatan termin fee advokat, verifikasi pembayaran, dan kepatuhan pemotongan pajak.',
         icon: CreditCard,
+        imagePath: '/images/guide/finance.jpg',
         targetRoute: '/finance',
         targetRouteLabel: 'Buka Modul Keuangan',
         estimatedTime: '2 Menit Terbit Invoice',
         complianceNote: 'Sesuai Standar Akuntansi Kantor Hukum & Ketentuan PMK No. 168/2023 (PPh 23/21)',
+        accentColor: {
+            badge: 'border-emerald-200/80 bg-emerald-50/80 text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300',
+            border: 'border-emerald-200/70 dark:border-emerald-900/40',
+            bg: 'bg-emerald-50/40 dark:bg-emerald-950/20',
+            text: 'text-emerald-700 dark:text-emerald-400',
+        },
         steps: [
             {
                 step: '01',
@@ -256,7 +276,6 @@ const WORKFLOWS: GuideWorkflow[] = [
             },
         ],
         simulation: {
-            type: 'invoice',
             headline: 'Invoice Penagihan Jasa Hukum &mdash; INV/2026/09/0142',
             subheadline: 'Perkara: Gugatan PMH &bull; Klien: PT Graha Nusantara Sentosa',
             metaPills: [
@@ -281,10 +300,17 @@ const WORKFLOWS: GuideWorkflow[] = [
         title: 'Kalender Persidangan & Sinkronisasi Agenda Mobile',
         tagline: 'Manajemen terpadu seluruh agenda sidang pengadilan, mediasi, tenggat waktu banding/kasasi, dan sinkronisasi ke ponsel.',
         icon: Calendar,
+        imagePath: '/images/guide/calendar.jpg',
         targetRoute: '/calendar',
         targetRouteLabel: 'Buka Kalender Sidang',
         estimatedTime: '1 Menit Sinkronisasi',
         complianceNote: 'Mengakomodasi PERMA No. 1/2019 tentang Administrasi Perkara dan Persidangan Elektronik (e-Court)',
+        accentColor: {
+            badge: 'border-amber-200/80 bg-amber-50/80 text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300',
+            border: 'border-amber-200/70 dark:border-amber-900/40',
+            bg: 'bg-amber-50/40 dark:bg-amber-950/20',
+            text: 'text-amber-700 dark:text-amber-400',
+        },
         steps: [
             {
                 step: '01',
@@ -319,7 +345,6 @@ const WORKFLOWS: GuideWorkflow[] = [
             },
         ],
         simulation: {
-            type: 'calendar',
             headline: 'Agenda Persidangan & Upaya Hukum Bulan Berjalan',
             subheadline: 'Terhubung secara live dengan feed kalender iCal smartphone seluruh tim advokat',
             metaPills: [
@@ -347,6 +372,12 @@ const WORKFLOWS: GuideWorkflow[] = [
         targetRouteLabel: 'Buka Direktori Klien',
         estimatedTime: '3 Menit Verifikasi',
         complianceNote: 'Sesuai Prinsip Mengenali Pengguna Jasa (PMPJ) & Kepatuhan PPATK bagi Profesi Advokat',
+        accentColor: {
+            badge: 'border-purple-200/80 bg-purple-50/80 text-purple-800 dark:border-purple-900/50 dark:bg-purple-950/40 dark:text-purple-300',
+            border: 'border-purple-200/70 dark:border-purple-900/40',
+            bg: 'bg-purple-50/40 dark:bg-purple-950/20',
+            text: 'text-purple-700 dark:text-purple-400',
+        },
         steps: [
             {
                 step: '01',
@@ -371,7 +402,6 @@ const WORKFLOWS: GuideWorkflow[] = [
             },
         ],
         simulation: {
-            type: 'kyc',
             headline: 'Profil Kepatuhan Entitas Klien &mdash; PT Graha Nusantara Sentosa',
             subheadline: 'Status Kepatuhan: Terverifikasi Lengkap (Full KYC Approved)',
             metaPills: [
@@ -399,6 +429,12 @@ const WORKFLOWS: GuideWorkflow[] = [
         targetRouteLabel: 'Buka Pengaturan Keamanan',
         estimatedTime: '30 Detik Aktivasi',
         complianceNote: 'Standar Kriptografi Kunci Asimetris FIDO2 / WebAuthn & Kebal Terhadap Serangan Phising',
+        accentColor: {
+            badge: 'border-indigo-200/80 bg-indigo-50/80 text-indigo-800 dark:border-indigo-900/50 dark:bg-indigo-950/40 dark:text-indigo-300',
+            border: 'border-indigo-200/70 dark:border-indigo-900/40',
+            bg: 'bg-indigo-50/40 dark:bg-indigo-950/20',
+            text: 'text-indigo-700 dark:text-indigo-400',
+        },
         steps: [
             {
                 step: '01',
@@ -423,7 +459,6 @@ const WORKFLOWS: GuideWorkflow[] = [
             },
         ],
         simulation: {
-            type: 'passkey',
             headline: 'Autentikasi Kredensial Biometrik Perangkat (FIDO2 Hardware)',
             subheadline: 'Terkonfirmasi melalui Touch ID / Face ID &bull; Nol Kerentanan Kata Sandi',
             metaPills: [
@@ -451,6 +486,12 @@ const WORKFLOWS: GuideWorkflow[] = [
         targetRouteLabel: 'Kelola Staf & Peran',
         estimatedTime: '2 Menit Konfigurasi',
         complianceNote: 'Prinsip Pembagian Wewenang & Standar Audit Integritas Digital Firma Hukum',
+        accentColor: {
+            badge: 'border-rose-200/80 bg-rose-50/80 text-rose-800 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300',
+            border: 'border-rose-200/70 dark:border-rose-900/40',
+            bg: 'bg-rose-50/40 dark:bg-rose-950/20',
+            text: 'text-rose-700 dark:text-rose-400',
+        },
         steps: [
             {
                 step: '01',
@@ -475,7 +516,6 @@ const WORKFLOWS: GuideWorkflow[] = [
             },
         ],
         simulation: {
-            type: 'rbac',
             headline: 'Matriks Kewenangan & Rekaman Audit Trail Sistem',
             subheadline: '26 Parameter Hak Akses Mandiri &bull; Jejak Digital Lengkap',
             metaPills: [
@@ -563,14 +603,14 @@ export default function GuideIndex() {
                     <div className="flex flex-col justify-between gap-4 border-b border-slate-200/80 pb-5 md:flex-row md:items-end dark:border-white/[0.06]">
                         <div className="space-y-1">
                             <div className="flex items-center gap-2 font-mono text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:text-zinc-400">
-                                <BookOpen className="size-3.5" />
+                                <BookOpen className="size-3.5 text-slate-700 dark:text-zinc-300" />
                                 <span>PUSAT DOKUMENTASI &amp; STANDAR OPERASIONAL RPK APP</span>
                             </div>
                             <h1 className="text-xl font-bold tracking-tight text-slate-950 sm:text-2xl lg:text-3xl dark:text-white">
                                 Panduan Cara Penggunaan RPK App
                             </h1>
                             <p className="text-xs text-slate-600 dark:text-zinc-400">
-                                Tata kelola operasional terintegrasi: registrasi perkara, kepatuhan KYC, tanda tangan digital tersertifikasi, dan penagihan honorarium.
+                                Tata kelola operasional terpadu: registrasi perkara, uji konflik, tanda tangan digital tersertifikasi, dan penagihan honorarium.
                             </p>
                         </div>
 
@@ -703,7 +743,7 @@ export default function GuideIndex() {
                                 <div className="flex flex-col justify-between gap-4 border-b border-slate-100 bg-slate-50/70 p-5 sm:flex-row sm:items-center sm:px-6 dark:border-white/[0.04] dark:bg-[#151820]">
                                     <div className="space-y-1">
                                         <div className="flex flex-wrap items-center gap-2">
-                                            <span className="font-mono text-[10px] font-black tracking-widest text-blue-700 dark:text-blue-400">
+                                            <span className="font-mono text-[10px] font-black tracking-widest text-slate-700 dark:text-zinc-300">
                                                 {activeWorkflow.code} &bull; {activeWorkflow.categoryLabel}
                                             </span>
                                             <span className="rounded-md border border-slate-200 bg-white px-2 py-0.5 font-mono text-[10px] font-bold text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300">
@@ -726,6 +766,31 @@ export default function GuideIndex() {
                                         <ArrowRight className="size-3.5" />
                                     </Link>
                                 </div>
+
+                                {/* Tasteful 3D Graphic Banner (if present) */}
+                                {activeWorkflow.imagePath && (
+                                    <div className="relative border-b border-slate-100 dark:border-white/[0.04]">
+                                        <div className="relative h-44 w-full overflow-hidden bg-slate-900 sm:h-52">
+                                            <img
+                                                src={activeWorkflow.imagePath}
+                                                alt={activeWorkflow.title}
+                                                className="h-full w-full object-cover object-center opacity-90 transition-transform duration-700 hover:scale-105"
+                                            />
+                                            <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-slate-950/30 to-transparent" />
+                                            <div className="absolute right-4 bottom-4 left-4 flex items-center justify-between text-white">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="size-2 rounded-full bg-emerald-400" />
+                                                    <span className="font-mono text-[10px] font-bold tracking-wider uppercase drop-shadow-xs">
+                                                        Visual Workflow Blueprint &bull; {activeWorkflow.code}
+                                                    </span>
+                                                </div>
+                                                <span className="rounded-md border border-white/20 bg-black/40 px-2 py-0.5 font-mono text-[9px] font-bold text-white/90 backdrop-blur-md">
+                                                    RPK Legal Practice Standard
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Interactive Visual Simulation Mockup Screen */}
                                 <div className="border-b border-slate-100 p-5 sm:p-6 dark:border-white/[0.04]">
