@@ -59,6 +59,16 @@ export default function TwoFactorChallenge() {
                     className="space-y-4"
                     resetOnError
                     resetOnSuccess={!showRecoveryInput}
+                    onSubmit={() => {
+                        try {
+                            sessionStorage.setItem(
+                                'rpk_just_logged_in',
+                                'true',
+                            );
+                        } catch {
+                            // Ignore
+                        }
+                    }}
                 >
                     {({ errors, processing, clearErrors }) => (
                         <>

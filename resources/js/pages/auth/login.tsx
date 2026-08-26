@@ -1,6 +1,6 @@
 import { Form, Head } from '@inertiajs/react';
 import { Lock, Mail } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import InputError from '@/components/input-error';
 import PasskeyVerify from '@/components/passkey-verify';
 import PasswordInput from '@/components/password-input';
@@ -24,6 +24,15 @@ export default function Login({ status, canResetPassword }: Props) {
     const [email, setEmail] = useState('');
     const [emailTouched, setEmailTouched] = useState(false);
 
+    useEffect(() => {
+        // Prepare login session flag so welcome modal shows immediately upon arriving at dashboard
+        try {
+            sessionStorage.setItem('rpk_just_logged_in', 'true');
+        } catch {
+            // Ignore if storage is restricted
+        }
+    }, []);
+
     const emailFormatError = useMemo(() => {
         if (!emailTouched || !email) {
             return null;
@@ -45,6 +54,13 @@ export default function Login({ status, canResetPassword }: Props) {
             <Form
                 {...store.form()}
                 resetOnSuccess={['password']}
+                onSubmit={() => {
+                    try {
+                        sessionStorage.setItem('rpk_just_logged_in', 'true');
+                    } catch {
+                        // Ignore
+                    }
+                }}
                 className="space-y-4"
             >
                 {({ processing, errors }) => {

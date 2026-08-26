@@ -61,6 +61,11 @@ export default function PasskeyVerify({
             },
         }),
         onSuccess: (response) => {
+            try {
+                sessionStorage.setItem('rpk_just_logged_in', 'true');
+            } catch {
+                // Ignore
+            }
             router.visit(response.redirect ?? '/dashboard');
         },
     });
