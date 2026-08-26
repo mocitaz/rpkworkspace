@@ -333,210 +333,230 @@ export default function TaskShow({
             <div className="min-h-screen bg-[#fafafc] pb-24 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-4 px-4 py-4 sm:px-6 lg:px-8">
                     {/* 1. Header Navigation & Task Cockpit Bar */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-4 lg:flex-row lg:items-center dark:border-white/[0.06]">
-                        <div className="space-y-1.5">
-                            {/* Badges and tags */}
+                    <div className="space-y-3 border-b border-slate-200/60 pb-5 dark:border-white/[0.06]">
+                        {/* Top Tier: Breadcrumbs / Task Code + Badges + Action Buttons */}
+                        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                            {/* Left: Breadcrumbs & Badges */}
                             <div className="flex flex-wrap items-center gap-2">
-                                <span className="inline-block rounded-md bg-blue-600 px-2.5 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="-ml-2 h-7 px-2 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                    asChild
+                                >
+                                    <Link href={taskRoutes.index?.url ? taskRoutes.index.url() : '/tasks'}>
+                                        <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
+                                        Manajemen Tugas
+                                    </Link>
+                                </Button>
+                                <span className="text-slate-300 dark:text-zinc-600">/</span>
+                                <span className="inline-block rounded-md bg-blue-600 px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs">
                                     {task.task_number}
                                 </span>
 
                                 <StatusBadge value={task.status} />
                                 <StatusBadge value={task.priority} />
 
-                                <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
+                                <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
                                     {categoryName}
                                 </span>
 
                                 {task.stage && (
-                                    <span className="rounded-md bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
+                                    <span className="rounded-md bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
                                         {stageName}
                                     </span>
                                 )}
 
                                 {task.is_billable && (
-                                    <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
+                                    <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
                                         <DollarSign className="size-3" />
                                         Billable
                                     </span>
                                 )}
 
                                 {isOverdue && (
-                                    <span className="inline-flex items-center gap-1 rounded-md bg-rose-500 px-2 py-0.5 text-[11px] font-bold text-white shadow-xs animate-pulse">
+                                    <span className="inline-flex items-center gap-1 rounded-md bg-rose-500 px-2 py-0.5 text-[10px] font-bold text-white shadow-xs animate-pulse">
                                         <AlertCircle className="size-3" />
                                         Terlewat (Overdue)
                                     </span>
                                 )}
                             </div>
 
-                            {/* Main Task Title */}
-                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white leading-tight">
+                            {/* Right: Actions */}
+                            <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+                                {/* Workflow Status Actions */}
+                                {can.update && (
+                                    <>
+                                        {task.status === 'todo' && (
+                                            <Button
+                                                size="sm"
+                                                onClick={() => handleStatusChange('in_progress')}
+                                                className="h-7.5 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 gap-1.5"
+                                            >
+                                                <Play className="size-3.5" />
+                                                Mulai Kerjakan
+                                            </Button>
+                                        )}
+
+                                        {task.status === 'in_progress' && (
+                                            <>
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => setIsSubmitReviewOpen(true)}
+                                                    className="h-7.5 rounded-lg bg-purple-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-purple-700 gap-1.5"
+                                                >
+                                                    <Send className="size-3.5" />
+                                                    Ajukan Review
+                                                </Button>
+
+                                                {!task.reviewer && (
+                                                    <Button
+                                                        size="sm"
+                                                        onClick={() => setIsCompleteModalOpen(true)}
+                                                        className="h-7.5 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-emerald-700 gap-1.5"
+                                                    >
+                                                        <CheckCircle2 className="size-3.5" />
+                                                        Tandai Selesai
+                                                    </Button>
+                                                )}
+                                            </>
+                                        )}
+
+                                        {task.status === 'review' && (
+                                            <>
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => setIsRevisionOpen(true)}
+                                                    className="h-7.5 rounded-lg border border-amber-300 bg-amber-50 px-2.5 text-xs font-semibold text-amber-800 hover:bg-amber-100 dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-300 shadow-2xs gap-1.5"
+                                                >
+                                                    <RotateCcw className="size-3.5" />
+                                                    Minta Revisi
+                                                </Button>
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => setIsApproveOpen(true)}
+                                                    className="h-7.5 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-emerald-700 gap-1.5"
+                                                >
+                                                    <CheckCircle2 className="size-3.5" />
+                                                    Setujui &amp; Selesaikan
+                                                </Button>
+                                            </>
+                                        )}
+
+                                        {task.status === 'completed' && (
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => handleStatusChange('in_progress')}
+                                                className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300 gap-1.5"
+                                            >
+                                                <RotateCcw className="size-3.5" />
+                                                Buka Kembali
+                                            </Button>
+                                        )}
+
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setIsEditOpen(true)}
+                                            className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
+                                        >
+                                            <Pencil className="mr-1 size-3 text-slate-400" />
+                                            Edit Tugas
+                                        </Button>
+                                    </>
+                                )}
+
+                                {can.delete && (
+                                    <ConfirmDialog
+                                        title="Hapus Tugas Ini?"
+                                        description={`Tugas ${task.task_number} (${task.title}) akan dihapus secara permanen beserta riwayat checklist dan diskusinya.`}
+                                        confirmText="Ya, Hapus Tugas"
+                                        variant="destructive"
+                                        onConfirm={() => router.delete(taskRoutes.destroy?.url ? taskRoutes.destroy.url(task.id) : `/tasks/${task.id}`)}
+                                    >
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2 text-xs font-semibold text-rose-600 shadow-2xs hover:bg-rose-50 hover:text-rose-700 dark:border-white/10 dark:bg-[#16181d] dark:text-rose-400 dark:hover:bg-rose-950/40"
+                                            title="Hapus Tugas"
+                                        >
+                                            <Trash2 className="size-3.5" />
+                                        </Button>
+                                    </ConfirmDialog>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Bottom Tier: Full-Width Task Title & Context Metadata */}
+                        <div className="space-y-1.5">
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-[26px] lg:leading-snug dark:text-white">
                                 {task.title}
                             </h1>
 
-                            {/* Subtitle Metadata */}
-                            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-zinc-400">
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-zinc-400">
                                 {task.matter ? (
                                     <>
-                                        <Briefcase className="size-3.5 text-blue-600 dark:text-blue-400" />
-                                        <span>Perkara:</span>
-                                        <Link
-                                            href={matterRoutes.show?.url ? matterRoutes.show.url(task.matter.id) : `/matters/${task.matter.id}`}
-                                            className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
-                                        >
-                                            {task.matter.title} ({task.matter.matter_number})
-                                        </Link>
+                                        <div className="flex items-center gap-1.5">
+                                            <Briefcase className="size-3.5 text-blue-600 dark:text-blue-400" />
+                                            <span>Perkara:</span>
+                                            <Link
+                                                href={
+                                                    matterRoutes.show?.url
+                                                        ? matterRoutes.show.url(
+                                                              task.matter.id,
+                                                          )
+                                                        : `/matters/${task.matter.id}`
+                                                }
+                                                className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                            >
+                                                {task.matter.title} ({task.matter.matter_number})
+                                            </Link>
+                                        </div>
 
                                         {task.matter.client && (
                                             <>
                                                 <span>·</span>
-                                                {task.matter.client.type === 'corporate' ? (
-                                                    <Building2 className="size-3.5 text-slate-400 dark:text-zinc-500" />
-                                                ) : (
-                                                    <User className="size-3.5 text-slate-400 dark:text-zinc-500" />
-                                                )}
-                                                <span>Klien:</span>
-                                                <Link
-                                                    href={clientRoutes.show?.url ? clientRoutes.show.url(task.matter.client.id) : `/clients/${task.matter.client.id}`}
-                                                    className="font-medium text-slate-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
-                                                >
-                                                    {clientName}
-                                                </Link>
+                                                <div className="flex items-center gap-1.5">
+                                                    {task.matter.client.type === 'corporate' ? (
+                                                        <Building2 className="size-3.5 text-slate-400 dark:text-zinc-500" />
+                                                    ) : (
+                                                        <User className="size-3.5 text-slate-400 dark:text-zinc-500" />
+                                                    )}
+                                                    <span>Klien:</span>
+                                                    <Link
+                                                        href={
+                                                            clientRoutes.show?.url
+                                                                ? clientRoutes.show.url(
+                                                                      task.matter
+                                                                          .client
+                                                                          .id,
+                                                                  )
+                                                                : `/clients/${task.matter.client.id}`
+                                                        }
+                                                        className="font-medium text-slate-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
+                                                    >
+                                                        {clientName}
+                                                    </Link>
+                                                </div>
                                             </>
                                         )}
                                     </>
                                 ) : (
-                                    <>
+                                    <div className="flex items-center gap-1.5">
                                         <Layers className="size-3.5 text-slate-400" />
                                         <span>Tugas Operasional Internal</span>
-                                    </>
+                                    </div>
                                 )}
 
                                 <span>·</span>
-                                <span>
+                                <div>
                                     Pelaksana:{' '}
                                     <strong className="font-semibold text-slate-800 dark:text-zinc-200">
                                         {task.assignee?.name || 'Belum Ditugaskan'}
                                     </strong>
-                                </span>
+                                </div>
                             </div>
-                        </div>
-
-                        {/* Cockpit Actions */}
-                        <div className="flex shrink-0 flex-wrap items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300 shadow-2xs"
-                                asChild
-                            >
-                                <Link href={taskRoutes.index?.url ? taskRoutes.index.url() : '/tasks'}>
-                                    <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
-                                    Kembali
-                                </Link>
-                            </Button>
-
-                            {/* Workflow Status Actions */}
-                            {can.update && (
-                                <>
-                                    {task.status === 'todo' && (
-                                        <Button
-                                            size="sm"
-                                            onClick={() => handleStatusChange('in_progress')}
-                                            className="h-8 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white hover:bg-blue-700 shadow-2xs gap-1.5"
-                                        >
-                                            <Play className="size-3.5" />
-                                            Mulai Kerjakan
-                                        </Button>
-                                    )}
-
-                                    {task.status === 'in_progress' && (
-                                        <>
-                                            <Button
-                                                size="sm"
-                                                onClick={() => setIsSubmitReviewOpen(true)}
-                                                className="h-8 rounded-lg bg-purple-600 px-3.5 text-xs font-semibold text-white hover:bg-purple-700 shadow-2xs gap-1.5"
-                                            >
-                                                <Send className="size-3.5" />
-                                                Ajukan Review ke Partner
-                                            </Button>
-
-                                            {!task.reviewer && (
-                                                <Button
-                                                    size="sm"
-                                                    onClick={() => setIsCompleteModalOpen(true)}
-                                                    className="h-8 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white hover:bg-emerald-700 shadow-2xs gap-1.5"
-                                                >
-                                                    <CheckCircle2 className="size-3.5" />
-                                                    Tandai Selesai
-                                                </Button>
-                                            )}
-                                        </>
-                                    )}
-
-                                    {task.status === 'review' && (
-                                        <>
-                                            <Button
-                                                size="sm"
-                                                onClick={() => setIsRevisionOpen(true)}
-                                                className="h-8 rounded-lg border border-amber-300 bg-amber-50 px-3 text-xs font-semibold text-amber-800 hover:bg-amber-100 dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-300 shadow-2xs gap-1.5"
-                                            >
-                                                <RotateCcw className="size-3.5" />
-                                                Minta Revisi
-                                            </Button>
-                                            <Button
-                                                size="sm"
-                                                onClick={() => setIsApproveOpen(true)}
-                                                className="h-8 rounded-lg bg-emerald-600 px-3.5 text-xs font-semibold text-white hover:bg-emerald-700 shadow-2xs gap-1.5"
-                                            >
-                                                <CheckCircle2 className="size-3.5" />
-                                                Setujui &amp; Selesaikan
-                                            </Button>
-                                        </>
-                                    )}
-
-                                    {task.status === 'completed' && (
-                                        <Button
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={() => handleStatusChange('in_progress')}
-                                            className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300 shadow-2xs gap-1.5"
-                                        >
-                                            <RotateCcw className="size-3.5" />
-                                            Buka Kembali
-                                        </Button>
-                                    )}
-
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setIsEditOpen(true)}
-                                        className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300 shadow-2xs"
-                                    >
-                                        <Pencil className="mr-1 size-3.5 text-slate-400" />
-                                        Edit Tugas
-                                    </Button>
-                                </>
-                            )}
-
-                            {can.delete && (
-                                <ConfirmDialog
-                                    title="Hapus Tugas Ini?"
-                                    description={`Tugas ${task.task_number} (${task.title}) akan dihapus secara permanen beserta riwayat checklist dan diskusinya.`}
-                                    confirmText="Ya, Hapus Tugas"
-                                    variant="destructive"
-                                    onConfirm={() => router.delete(taskRoutes.destroy?.url ? taskRoutes.destroy.url(task.id) : `/tasks/${task.id}`)}
-                                >
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="h-8 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:border-white/10 dark:bg-[#16181d] dark:text-rose-400 dark:hover:bg-rose-950/40 shadow-2xs"
-                                        title="Hapus Tugas"
-                                    >
-                                        <Trash2 className="size-3.5" />
-                                    </Button>
-                                </ConfirmDialog>
-                            )}
                         </div>
                     </div>
 
