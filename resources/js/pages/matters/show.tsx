@@ -23,6 +23,7 @@ import {
     MapPin,
     MessageSquare,
     Package,
+    Pencil,
     Plus,
     Printer,
     Scale,
@@ -3411,6 +3412,30 @@ function TaskList({
         </div>
     ) : (
         <p className="text-xs text-slate-400">Tidak ada tugas aktif.</p>
+    );
+}
+
+function EmptyState({
+    title,
+    description,
+}: {
+    title: string;
+    description?: string;
+}) {
+    return (
+        <div className="flex flex-col items-center justify-center p-6 text-center">
+            <div className="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-zinc-800 dark:text-zinc-500">
+                <FolderKanban className="size-5" />
+            </div>
+            <p className="mt-3 text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                {title}
+            </p>
+            {description && (
+                <p className="mt-1 text-[11px] text-slate-400 dark:text-zinc-500">
+                    {description}
+                </p>
+            )}
+        </div>
     );
 }
 

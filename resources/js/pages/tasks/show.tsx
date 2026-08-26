@@ -345,7 +345,7 @@ export default function TaskShow({
                                         </span>
                                     )}
 
-                                    <StatusBadge status={task.status} />
+                                    <StatusBadge value={task.status} />
 
                                     <span
                                         className={`rounded-md px-2 py-0.5 text-xs font-bold ${
@@ -703,8 +703,7 @@ export default function TaskShow({
                                         commentableId={task.id}
                                         comments={task.comments || []}
                                         staffList={staffList}
-                                        currentUserId={auth.user.id}
-                                        headerTitle={`Diskusi Internal Tugas: ${task.task_number}`}
+                                        title={`Diskusi Internal Tugas: ${task.task_number}`}
                                     />
                                 </section>
                             )}

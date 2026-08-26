@@ -167,7 +167,7 @@ export function CreateTransferDialog({
                         </Label>
                         <FileInput
                             className="mt-1"
-                            onChange={(file) => form.setData('proof', file)}
+                            onFileSelect={(file) => form.setData('proof', file)}
                         />
                     </div>
 

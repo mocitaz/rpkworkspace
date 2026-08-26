@@ -230,7 +230,7 @@ export default function FinanceIndex({
     }, [payrolls]);
 
     const totalPartnerAdvDue = useMemo(() => {
-        return partnerAdvances.reduce((sum, p) => sum + (p.net_balance || 0), 0);
+        return partnerAdvances.reduce((sum, p) => sum + (p.net_due_to_partner || 0), 0);
     }, [partnerAdvances]);
 
     return (
