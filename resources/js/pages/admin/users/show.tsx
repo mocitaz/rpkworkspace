@@ -1303,12 +1303,12 @@ function EditUserDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[92vh] max-w-2xl overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 gap-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className="flex max-h-[90vh] max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 gap-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
                 {/* 1. Modal Cockpit Header */}
-                <div className="border-b border-slate-100 bg-slate-50/60 px-5 py-4 sm:px-6 sm:py-4.5 dark:border-white/[0.06] dark:bg-[#121418]">
+                <div className="shrink-0 border-b border-slate-100 bg-slate-50/70 px-6 pt-5 pb-3.5 pr-12 dark:border-white/[0.06] dark:bg-[#121418]">
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                            <div className="relative size-11 shrink-0 rounded-xl bg-linear-to-b from-slate-200 via-slate-100 to-slate-300 p-0.5 shadow-xs dark:from-white/20 dark:via-white/5 dark:to-white/15">
+                            <div className="relative size-10 shrink-0 rounded-xl bg-linear-to-b from-slate-200 via-slate-100 to-slate-300 p-0.5 shadow-xs dark:from-white/20 dark:via-white/5 dark:to-white/15">
                                 <Avatar className="size-full rounded-[10px] bg-slate-900 shadow-inner dark:bg-zinc-800">
                                     <AvatarImage
                                         src={user.avatar_url ?? undefined}
@@ -1339,7 +1339,7 @@ function EditUserDialog({
                     </div>
 
                     {/* 2. Segmented Navigation Tabs */}
-                    <div className="mt-3.5 grid grid-cols-2 gap-1 rounded-xl border border-slate-200/70 bg-slate-100/80 p-1 sm:grid-cols-4 dark:border-white/5 dark:bg-[#181a20]">
+                    <div className="mt-3.5 grid grid-cols-4 gap-1 rounded-xl border border-slate-200/70 bg-slate-200/50 p-1 dark:border-white/5 dark:bg-[#181a20]">
                         <button
                             type="button"
                             onClick={() => setActiveTab('account')}
@@ -1350,7 +1350,7 @@ function EditUserDialog({
                             }`}
                         >
                             <UserCheck className="size-3.5 shrink-0" />
-                            <span>Akun &amp; Peran</span>
+                            <span>Akun</span>
                         </button>
                         <button
                             type="button"
@@ -1391,18 +1391,18 @@ function EditUserDialog({
                     </div>
                 </div>
 
-                {/* 3. Form Body with Controlled Scrollable Area */}
+                {/* 3. Form Body */}
                 <Form
                     {...userRoutes.update.form(user.id)}
-                    className="flex flex-col"
+                    className="flex min-h-0 flex-1 flex-col"
                     onSuccess={() => onOpenChange(false)}
                 >
                     {({ errors, processing }) => (
                         <>
-                            <div className="max-h-[calc(88vh-160px)] overflow-y-auto p-5 sm:p-6">
+                            <div className="max-h-[60vh] overflow-y-auto px-6 py-4.5">
                                 {/* TAB 1: AKUN & PERAN */}
                                 {activeTab === 'account' && (
-                                    <div className="space-y-4">
+                                    <div className="space-y-3.5">
                                         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
                                             <Field
                                                 name="name"
@@ -1426,7 +1426,7 @@ function EditUserDialog({
                                                 defaultValue={
                                                     user.position_title ?? ''
                                                 }
-                                                placeholder="Contoh: Senior Associate / Partner"
+                                                placeholder="Contoh: Senior Associate"
                                             />
                                             <Field
                                                 name="employee_code"
@@ -1443,7 +1443,7 @@ function EditUserDialog({
                                                 name="department"
                                                 label="Departemen / Divisi"
                                                 defaultValue={user.department ?? ''}
-                                                placeholder="Litigasi & Arbitrase / Corporate"
+                                                placeholder="Litigasi & Arbitrase"
                                             />
                                             <Field
                                                 name="password"
@@ -1454,7 +1454,7 @@ function EditUserDialog({
                                         </div>
 
                                         {/* Role Selection Grid */}
-                                        <div className="space-y-2 rounded-xl border border-slate-200/80 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-[#121418]">
+                                        <div className="space-y-2 rounded-xl border border-slate-200/80 bg-slate-50/40 p-3.5 dark:border-white/[0.06] dark:bg-[#121418]">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-1.5">
                                                     <Shield className="size-3.5 text-purple-600 dark:text-purple-400" />
@@ -1513,7 +1513,7 @@ function EditUserDialog({
                                                         Status Akun Aktif
                                                     </p>
                                                     <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                        Izinkan staf untuk login dan mengakses modul aplikasi
+                                                        Izinkan staf untuk login
                                                     </p>
                                                 </div>
                                             </div>
@@ -1529,7 +1529,7 @@ function EditUserDialog({
                                     </div>
                                 )}
 
-                                {/* TAB 2: KREDENSIAL ADVOKAT (Symmetrical Rows) */}
+                                {/* TAB 2: KREDENSIAL ADVOKAT */}
                                 {activeTab === 'advocate' && (
                                     <div className="space-y-3.5">
                                         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
@@ -1545,20 +1545,20 @@ function EditUserDialog({
                                                 name="education"
                                                 label="Gelar &amp; Riwayat Pendidikan"
                                                 defaultValue={user.education ?? ''}
-                                                placeholder="Contoh: S.H. (UI), LL.M. (Leiden)"
+                                                placeholder="Contoh: S.H. (UI), LL.M."
                                             />
                                         </div>
 
                                         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
                                             <Field
                                                 name="bas_number"
-                                                label="Nomor Berita Acara Sumpah (BAS)"
+                                                label="Nomor BAS"
                                                 defaultValue={user.bas_number ?? ''}
                                                 placeholder="No. Surat Pengadilan Tinggi"
                                             />
                                             <Field
                                                 name="bas_date"
-                                                label="Tanggal Sumpah Advokat (BAS)"
+                                                label="Tanggal Sumpah (BAS)"
                                                 type="date"
                                                 defaultValue={
                                                     user.bas_date
@@ -1587,10 +1587,10 @@ function EditUserDialog({
                                                 <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
                                                     Monitoring Legalitas KTA
                                                 </Label>
-                                                <div className="flex h-9 items-center gap-2 rounded-xl border border-blue-200/70 bg-blue-50/50 px-3 text-[11px] font-medium text-blue-700 shadow-2xs dark:border-blue-900/40 dark:bg-blue-950/30 dark:text-blue-300">
+                                                <div className="flex h-9 items-center gap-2 rounded-xl border border-blue-200/70 bg-blue-50/60 px-3 text-[11px] font-medium text-blue-700 shadow-2xs dark:border-blue-900/40 dark:bg-blue-950/30 dark:text-blue-300">
                                                     <Scale className="size-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
                                                     <span className="truncate">
-                                                        Notifikasi otomatis H-60 sebelum kadaluwarsa
+                                                        Notifikasi otomatis H-60
                                                     </span>
                                                 </div>
                                             </div>
@@ -1598,11 +1598,11 @@ function EditUserDialog({
 
                                         <TextareaField
                                             name="practice_areas"
-                                            label="Bidang Keahlian / Spesialisasi Hukum (Practice Areas)"
+                                            label="Bidang Keahlian / Spesialisasi Hukum"
                                             defaultValue={user.practice_areas ?? ''}
-                                            placeholder="Contoh: Corporate M&A, Commercial Litigation, Dispute Resolution, IPR, Employment Law"
+                                            placeholder="Contoh: Corporate M&A, Litigasi"
                                             rows={2}
-                                            helperText="Pisahkan beberapa keahlian dengan koma"
+                                            helperText="Pisahkan dengan koma"
                                         />
                                     </div>
                                 )}
@@ -1637,7 +1637,7 @@ function EditUserDialog({
                                                 label="Alamat Domisili Saat Ini"
                                                 defaultValue={user.address ?? ''}
                                                 placeholder="Alamat tempat tinggal lengkap saat ini..."
-                                                rows={2}
+                                                rows={3}
                                             />
 
                                             <TextareaField
@@ -1646,8 +1646,8 @@ function EditUserDialog({
                                                 defaultValue={
                                                     user.ktp_address ?? ''
                                                 }
-                                                placeholder="Alamat resmi yang tertera pada kartu identitas KTP..."
-                                                rows={2}
+                                                placeholder="Alamat resmi pada KTP..."
+                                                rows={3}
                                             />
                                         </div>
                                     </div>
@@ -1661,27 +1661,27 @@ function EditUserDialog({
                                                 name="npwp"
                                                 label="Nomor Pokok Wajib Pajak (NPWP)"
                                                 defaultValue={user.npwp ?? ''}
-                                                placeholder="Contoh: 01.234.567.8-901.000"
+                                                placeholder="01.234.567.8-901.000"
                                             />
                                             <div className="grid gap-1.5">
                                                 <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
                                                     Status Pajak (PPh 21)
                                                 </Label>
-                                                <div className="flex h-9 items-center gap-2 rounded-xl border border-emerald-200/70 bg-emerald-50/50 px-3 text-[11px] font-medium text-emerald-700 shadow-2xs dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-300">
+                                                <div className="flex h-9 items-center gap-2 rounded-xl border border-emerald-200/70 bg-emerald-50/60 px-3 text-[11px] font-medium text-emerald-700 shadow-2xs dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-300">
                                                     <CreditCard className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
                                                     <span className="truncate">
-                                                        Untuk bukti potong honorarium &amp; payroll
+                                                        Untuk bukti potong payroll
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         {/* Bank Details Container */}
-                                        <div className="space-y-2.5 rounded-xl border border-slate-200/80 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-[#121418]">
+                                        <div className="space-y-2.5 rounded-xl border border-slate-200/80 bg-slate-50/40 p-3.5 dark:border-white/[0.06] dark:bg-[#121418]">
                                             <div className="flex items-center gap-1.5">
                                                 <CreditCard className="size-3.5 text-slate-600 dark:text-zinc-400" />
                                                 <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Informasi Rekening Bank (Payroll &amp; Fee Sharing)
+                                                    Informasi Rekening Bank
                                                 </span>
                                             </div>
 
@@ -1692,7 +1692,7 @@ function EditUserDialog({
                                                     defaultValue={
                                                         user.bank_name ?? ''
                                                     }
-                                                    placeholder="BCA / Mandiri / BNI"
+                                                    placeholder="BCA / Mandiri"
                                                 />
                                                 <Field
                                                     name="bank_account_number"
@@ -1701,16 +1701,16 @@ function EditUserDialog({
                                                         user.bank_account_number ??
                                                         ''
                                                     }
-                                                    placeholder="Contoh: 1234567890"
+                                                    placeholder="1234567890"
                                                 />
                                                 <Field
                                                     name="bank_account_holder"
-                                                    label="Atas Nama Rekening"
+                                                    label="Atas Nama"
                                                     defaultValue={
                                                         user.bank_account_holder ??
                                                         ''
                                                     }
-                                                    placeholder="Nama Pemilik Rekening"
+                                                    placeholder="Nama Pemilik"
                                                 />
                                             </div>
                                         </div>
@@ -1719,7 +1719,7 @@ function EditUserDialog({
                             </div>
 
                             {/* 4. Modal Action Footer */}
-                            <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/60 px-5 py-3.5 sm:px-6 dark:border-white/[0.06] dark:bg-[#121418]">
+                            <div className="flex shrink-0 items-center justify-between border-t border-slate-100 bg-slate-50/70 px-6 py-3.5 dark:border-white/[0.06] dark:bg-[#121418]">
                                 <Button
                                     type="button"
                                     variant="ghost"
@@ -1728,7 +1728,7 @@ function EditUserDialog({
                                         onOpenChange(false);
                                         onDeleteClick?.();
                                     }}
-                                    className="h-8.5 cursor-pointer rounded-xl px-3 text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/30"
+                                    className="h-9 cursor-pointer rounded-xl px-3 text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/30"
                                 >
                                     <Trash2 className="mr-1.5 size-3.5" />
                                     Hapus Akun
@@ -1740,7 +1740,7 @@ function EditUserDialog({
                                         variant="outline"
                                         size="sm"
                                         onClick={() => onOpenChange(false)}
-                                        className="h-8.5 rounded-xl border-slate-200/80 px-4 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-100/80 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                        className="h-9 rounded-xl border-slate-200/80 px-4 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-100/80 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
                                     >
                                         Batal
                                     </Button>
@@ -1748,16 +1748,11 @@ function EditUserDialog({
                                         type="submit"
                                         size="sm"
                                         disabled={processing}
-                                        className="h-8.5 cursor-pointer rounded-xl bg-slate-900 px-4 text-xs font-bold text-white shadow-xs hover:bg-slate-800 active:scale-98 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                                        className="h-9 cursor-pointer rounded-xl bg-slate-900 px-5 text-xs font-semibold text-white shadow-xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                     >
-                                        {processing ? (
-                                            <>
-                                                <Spinner className="mr-1.5 size-3.5" />
-                                                Menyimpan...
-                                            </>
-                                        ) : (
-                                            'Simpan Perubahan'
-                                        )}
+                                        {processing
+                                            ? 'Menyimpan...'
+                                            : 'Simpan Perubahan'}
                                     </Button>
                                 </div>
                             </div>
