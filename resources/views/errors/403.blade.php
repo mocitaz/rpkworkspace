@@ -1,4 +1,5 @@
 @extends('errors.layout')
 @section('code', '403')
-@section('title', 'Akses tidak diizinkan')
-@section('message', 'Anda tidak memiliki kewenangan untuk melihat atau mengubah informasi ini. Hubungi administrator apabila akses ini diperlukan untuk pekerjaan Anda.')
+@section('title', 'Akses Terbatas / Ditolak')
+@section('message', 'Akun Anda tidak memiliki hak akses atau wewenang untuk membuka modul ini. Silakan hubungi Managing Partner atau Administrator firma jika akses ini diperlukan untuk tugas Anda.')
+
