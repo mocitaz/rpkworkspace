@@ -41,7 +41,6 @@ import {
     Zap,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import AppLayout from '@/layouts/app-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -409,12 +408,7 @@ export default function GuideIndex() {
     };
 
     return (
-        <AppLayout
-            breadcrumbs={[
-                { title: 'Dashboard', href: '/dashboard' },
-                { title: 'Cara Penggunaan', href: '/guide' },
-            ]}
-        >
+        <>
             <Head title="Cara Penggunaan & Panduan Sistem - RPK App" />
 
             <div className="min-h-screen bg-[#fcfcfd] pb-24 text-slate-900 dark:bg-[#0b0c0f] dark:text-zinc-100">
@@ -967,6 +961,6 @@ export default function GuideIndex() {
                     </div>
                 </div>
             </div>
-        </AppLayout>
+        </>
     );
 }
