@@ -15,7 +15,6 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogTitle,
 } from '@/components/ui/dialog';
 import * as calendarRoutes from '@/routes/calendar';
@@ -74,9 +73,9 @@ export function WelcomeModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="max-w-[450px] overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-0 shadow-2xl sm:max-w-[450px] dark:border-white/10 dark:bg-[#14161b]">
-                {/* 1. Modal Body & Content with Tight Harmonious Rhythm */}
-                <div className="space-y-3 p-5 sm:p-6">
+            <DialogContent className="max-w-[450px] overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-0 gap-0 shadow-2xl sm:max-w-[450px] dark:border-white/10 dark:bg-[#14161b]">
+                {/* 1. Modal Content Body with Tight Harmonious Spacing */}
+                <div className="p-5 sm:p-6 space-y-3">
                     {/* Header: Logo + Greeting */}
                     <div className="flex items-center gap-3">
                         <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-white p-1 shadow-2xs dark:border-white/15 dark:bg-zinc-900">
@@ -150,7 +149,7 @@ export function WelcomeModal({
 
                     {/* Unified Grouped Operational Guidance Box */}
                     <div className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-2xs divide-y divide-slate-100 dark:divide-white/[0.05] dark:border-white/10 dark:bg-[#16181d]">
-                        <div className="flex items-center gap-3 p-3 transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
+                        <div className="flex items-center gap-3 p-2.5 sm:p-3 transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
                             <div className="flex size-7.5 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
                                 <FileCheck2 className="size-3.5" />
                             </div>
@@ -164,7 +163,7 @@ export function WelcomeModal({
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 p-3 transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
+                        <div className="flex items-center gap-3 p-2.5 sm:p-3 transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
                             <div className="flex size-7.5 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
                                 <CalendarDays className="size-3.5" />
                             </div>
@@ -178,7 +177,7 @@ export function WelcomeModal({
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 p-3 transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
+                        <div className="flex items-center gap-3 p-2.5 sm:p-3 transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
                             <div className="flex size-7.5 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
                                 <ShieldCheck className="size-3.5" />
                             </div>
@@ -194,8 +193,8 @@ export function WelcomeModal({
                     </div>
                 </div>
 
-                {/* 2. Modal Actions Footer */}
-                <DialogFooter className="flex-row items-center justify-between border-t border-slate-100 bg-slate-50/50 px-5 py-3 sm:px-6 dark:border-white/[0.06] dark:bg-[#121418]">
+                {/* 2. Modal Actions Footer (Flush border-t without stray grid gap) */}
+                <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/60 px-5 py-3.5 sm:px-6 dark:border-white/[0.06] dark:bg-[#121418]">
                     <Button
                         asChild
                         type="button"
@@ -221,7 +220,7 @@ export function WelcomeModal({
                         <span>Lanjutkan ke Workspace</span>
                         <ArrowRight className="ml-1.5 size-3.5" />
                     </Button>
-                </DialogFooter>
+                </div>
             </DialogContent>
         </Dialog>
     );
