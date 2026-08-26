@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
-    <title>@yield('code') - @yield('title') · RPK Law App</title>
+    <title>@yield('code') - @yield('title') · RPK App</title>
     <link rel="icon" type="image/png" href="/images/rpkapp.png">
     <link rel="apple-touch-icon" href="/images/rpkapp.png">
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -276,7 +276,7 @@
     <!-- Main Content -->
     <main class="error-container">
         <!-- 1. Law Firm Logo -->
-        <a href="{{ route('home') }}" class="firm-brand" title="RPK Law App">
+        <a href="{{ route('home') }}" class="firm-brand" title="RPK App">
             <img src="/logo/raf-law-firm-transparent.png" alt="RPK Law Firm Logo" onerror="this.onerror=null; this.src='/logo/logo.png';" />
         </a>
 
@@ -314,7 +314,7 @@
 
         <!-- 6. Footer -->
         <div class="footer-brand">
-            RPK Law App
+            RPK App
         </div>
     </main>
 </body>

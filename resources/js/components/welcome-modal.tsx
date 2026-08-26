@@ -91,7 +91,7 @@ export function WelcomeModal({
                                 {greeting}, {user?.name}
                             </DialogTitle>
                             <DialogDescription className="mt-0.5 truncate text-xs text-slate-500 dark:text-zinc-400">
-                                Selamat datang kembali di LawApp.
+                                Selamat datang kembali di RPK App.
                             </DialogDescription>
                         </div>
                     </div>

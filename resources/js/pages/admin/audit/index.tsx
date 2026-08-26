@@ -321,7 +321,7 @@ export default function AuditIndex({
 
     return (
         <>
-            <Head title="Audit Log & Jejak Aktivitas - RPK LawApp" />
+            <Head title="Audit Log & Jejak Aktivitas - RPK App" />
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">

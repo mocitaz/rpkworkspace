@@ -49,7 +49,7 @@ export default function Login({ status, canResetPassword }: Props) {
 
     return (
         <>
-            <Head title="Login to account - RPK LawApp" />
+            <Head title="Login to account - RPK App" />
 
             <Form
                 {...store.form()}
