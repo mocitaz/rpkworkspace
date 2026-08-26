@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\ConflictCheck;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +19,12 @@ class ConflictCheckFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'subject_name' => fake()->company(),
+            'searched_names' => [fake()->company(), fake()->name()],
+            'matches' => [],
+            'status' => 'clear',
+            'decision' => 'pending',
+            'requested_by' => User::factory(),
         ];
     }
 }

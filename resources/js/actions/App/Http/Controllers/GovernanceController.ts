@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\GovernanceController::index
-* @see app/Http/Controllers/GovernanceController.php:35
+* @see app/Http/Controllers/GovernanceController.php:36
 * @route '/governance'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::index
-* @see app/Http/Controllers/GovernanceController.php:35
+* @see app/Http/Controllers/GovernanceController.php:36
 * @route '/governance'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::index
-* @see app/Http/Controllers/GovernanceController.php:35
+* @see app/Http/Controllers/GovernanceController.php:36
 * @route '/governance'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\GovernanceController::index
-* @see app/Http/Controllers/GovernanceController.php:35
+* @see app/Http/Controllers/GovernanceController.php:36
 * @route '/governance'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\GovernanceController::index
-* @see app/Http/Controllers/GovernanceController.php:35
+* @see app/Http/Controllers/GovernanceController.php:36
 * @route '/governance'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\GovernanceController::index
-* @see app/Http/Controllers/GovernanceController.php:35
+* @see app/Http/Controllers/GovernanceController.php:36
 * @route '/governance'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\GovernanceController::index
-* @see app/Http/Controllers/GovernanceController.php:35
+* @see app/Http/Controllers/GovernanceController.php:36
 * @route '/governance'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:88
+* @see app/Http/Controllers/GovernanceController.php:94
 * @route '/governance/correspondences'
 */
 export const storeCorrespondence = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -97,7 +97,7 @@ storeCorrespondence.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:88
+* @see app/Http/Controllers/GovernanceController.php:94
 * @route '/governance/correspondences'
 */
 storeCorrespondence.url = (options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ storeCorrespondence.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:88
+* @see app/Http/Controllers/GovernanceController.php:94
 * @route '/governance/correspondences'
 */
 storeCorrespondence.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -116,7 +116,7 @@ storeCorrespondence.post = (options?: RouteQueryOptions): RouteDefinition<'post'
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:88
+* @see app/Http/Controllers/GovernanceController.php:94
 * @route '/governance/correspondences'
 */
 const storeCorrespondenceForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -126,7 +126,7 @@ const storeCorrespondenceForm = (options?: RouteQueryOptions): RouteFormDefiniti
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:88
+* @see app/Http/Controllers/GovernanceController.php:94
 * @route '/governance/correspondences'
 */
 storeCorrespondenceForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -138,7 +138,7 @@ storeCorrespondence.form = storeCorrespondenceForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::showCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:100
+* @see app/Http/Controllers/GovernanceController.php:106
 * @route '/governance/correspondences/{correspondence}'
 */
 export const showCorrespondence = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -153,7 +153,7 @@ showCorrespondence.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::showCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:100
+* @see app/Http/Controllers/GovernanceController.php:106
 * @route '/governance/correspondences/{correspondence}'
 */
 showCorrespondence.url = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -186,7 +186,7 @@ showCorrespondence.url = (args: { correspondence: string | { id: string } } | [c
 
 /**
 * @see \App\Http\Controllers\GovernanceController::showCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:100
+* @see app/Http/Controllers/GovernanceController.php:106
 * @route '/governance/correspondences/{correspondence}'
 */
 showCorrespondence.get = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -196,7 +196,7 @@ showCorrespondence.get = (args: { correspondence: string | { id: string } } | [c
 
 /**
 * @see \App\Http\Controllers\GovernanceController::showCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:100
+* @see app/Http/Controllers/GovernanceController.php:106
 * @route '/governance/correspondences/{correspondence}'
 */
 showCorrespondence.head = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -206,7 +206,7 @@ showCorrespondence.head = (args: { correspondence: string | { id: string } } | [
 
 /**
 * @see \App\Http\Controllers\GovernanceController::showCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:100
+* @see app/Http/Controllers/GovernanceController.php:106
 * @route '/governance/correspondences/{correspondence}'
 */
 const showCorrespondenceForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -216,7 +216,7 @@ const showCorrespondenceForm = (args: { correspondence: string | { id: string } 
 
 /**
 * @see \App\Http\Controllers\GovernanceController::showCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:100
+* @see app/Http/Controllers/GovernanceController.php:106
 * @route '/governance/correspondences/{correspondence}'
 */
 showCorrespondenceForm.get = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -226,7 +226,7 @@ showCorrespondenceForm.get = (args: { correspondence: string | { id: string } } 
 
 /**
 * @see \App\Http\Controllers\GovernanceController::showCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:100
+* @see app/Http/Controllers/GovernanceController.php:106
 * @route '/governance/correspondences/{correspondence}'
 */
 showCorrespondenceForm.head = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -243,7 +243,7 @@ showCorrespondence.form = showCorrespondenceForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroyCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:135
+* @see app/Http/Controllers/GovernanceController.php:141
 * @route '/governance/correspondences/{correspondence}'
 */
 export const destroyCorrespondence = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -258,7 +258,7 @@ destroyCorrespondence.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroyCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:135
+* @see app/Http/Controllers/GovernanceController.php:141
 * @route '/governance/correspondences/{correspondence}'
 */
 destroyCorrespondence.url = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -291,7 +291,7 @@ destroyCorrespondence.url = (args: { correspondence: string | { id: string } } |
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroyCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:135
+* @see app/Http/Controllers/GovernanceController.php:141
 * @route '/governance/correspondences/{correspondence}'
 */
 destroyCorrespondence.delete = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -301,7 +301,7 @@ destroyCorrespondence.delete = (args: { correspondence: string | { id: string } 
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroyCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:135
+* @see app/Http/Controllers/GovernanceController.php:141
 * @route '/governance/correspondences/{correspondence}'
 */
 const destroyCorrespondenceForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -316,7 +316,7 @@ const destroyCorrespondenceForm = (args: { correspondence: string | { id: string
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroyCorrespondence
-* @see app/Http/Controllers/GovernanceController.php:135
+* @see app/Http/Controllers/GovernanceController.php:141
 * @route '/governance/correspondences/{correspondence}'
 */
 destroyCorrespondenceForm.delete = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -333,7 +333,7 @@ destroyCorrespondence.form = destroyCorrespondenceForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeCorrespondenceAttachment
-* @see app/Http/Controllers/GovernanceController.php:115
+* @see app/Http/Controllers/GovernanceController.php:121
 * @route '/governance/correspondences/{correspondence}/attachments'
 */
 export const storeCorrespondenceAttachment = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -348,7 +348,7 @@ storeCorrespondenceAttachment.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeCorrespondenceAttachment
-* @see app/Http/Controllers/GovernanceController.php:115
+* @see app/Http/Controllers/GovernanceController.php:121
 * @route '/governance/correspondences/{correspondence}/attachments'
 */
 storeCorrespondenceAttachment.url = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -381,7 +381,7 @@ storeCorrespondenceAttachment.url = (args: { correspondence: string | { id: stri
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeCorrespondenceAttachment
-* @see app/Http/Controllers/GovernanceController.php:115
+* @see app/Http/Controllers/GovernanceController.php:121
 * @route '/governance/correspondences/{correspondence}/attachments'
 */
 storeCorrespondenceAttachment.post = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -391,7 +391,7 @@ storeCorrespondenceAttachment.post = (args: { correspondence: string | { id: str
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeCorrespondenceAttachment
-* @see app/Http/Controllers/GovernanceController.php:115
+* @see app/Http/Controllers/GovernanceController.php:121
 * @route '/governance/correspondences/{correspondence}/attachments'
 */
 const storeCorrespondenceAttachmentForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -401,7 +401,7 @@ const storeCorrespondenceAttachmentForm = (args: { correspondence: string | { id
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeCorrespondenceAttachment
-* @see app/Http/Controllers/GovernanceController.php:115
+* @see app/Http/Controllers/GovernanceController.php:121
 * @route '/governance/correspondences/{correspondence}/attachments'
 */
 storeCorrespondenceAttachmentForm.post = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -413,7 +413,7 @@ storeCorrespondenceAttachment.form = storeCorrespondenceAttachmentForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeConflictCheck
-* @see app/Http/Controllers/GovernanceController.php:152
+* @see app/Http/Controllers/GovernanceController.php:158
 * @route '/governance/conflict-checks'
 */
 export const storeConflictCheck = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -428,7 +428,7 @@ storeConflictCheck.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeConflictCheck
-* @see app/Http/Controllers/GovernanceController.php:152
+* @see app/Http/Controllers/GovernanceController.php:158
 * @route '/governance/conflict-checks'
 */
 storeConflictCheck.url = (options?: RouteQueryOptions) => {
@@ -437,7 +437,7 @@ storeConflictCheck.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeConflictCheck
-* @see app/Http/Controllers/GovernanceController.php:152
+* @see app/Http/Controllers/GovernanceController.php:158
 * @route '/governance/conflict-checks'
 */
 storeConflictCheck.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -447,7 +447,7 @@ storeConflictCheck.post = (options?: RouteQueryOptions): RouteDefinition<'post'>
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeConflictCheck
-* @see app/Http/Controllers/GovernanceController.php:152
+* @see app/Http/Controllers/GovernanceController.php:158
 * @route '/governance/conflict-checks'
 */
 const storeConflictCheckForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -457,7 +457,7 @@ const storeConflictCheckForm = (options?: RouteQueryOptions): RouteFormDefinitio
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeConflictCheck
-* @see app/Http/Controllers/GovernanceController.php:152
+* @see app/Http/Controllers/GovernanceController.php:158
 * @route '/governance/conflict-checks'
 */
 storeConflictCheckForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -468,8 +468,64 @@ storeConflictCheckForm.post = (options?: RouteQueryOptions): RouteFormDefinition
 storeConflictCheck.form = storeConflictCheckForm
 
 /**
+* @see \App\Http\Controllers\GovernanceController::previewConflictCheck
+* @see app/Http/Controllers/GovernanceController.php:184
+* @route '/governance/conflict-checks/preview'
+*/
+export const previewConflictCheck = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: previewConflictCheck.url(options),
+    method: 'post',
+})
+
+previewConflictCheck.definition = {
+    methods: ["post"],
+    url: '/governance/conflict-checks/preview',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\GovernanceController::previewConflictCheck
+* @see app/Http/Controllers/GovernanceController.php:184
+* @route '/governance/conflict-checks/preview'
+*/
+previewConflictCheck.url = (options?: RouteQueryOptions) => {
+    return previewConflictCheck.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\GovernanceController::previewConflictCheck
+* @see app/Http/Controllers/GovernanceController.php:184
+* @route '/governance/conflict-checks/preview'
+*/
+previewConflictCheck.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: previewConflictCheck.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::previewConflictCheck
+* @see app/Http/Controllers/GovernanceController.php:184
+* @route '/governance/conflict-checks/preview'
+*/
+const previewConflictCheckForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: previewConflictCheck.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::previewConflictCheck
+* @see app/Http/Controllers/GovernanceController.php:184
+* @route '/governance/conflict-checks/preview'
+*/
+previewConflictCheckForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: previewConflictCheck.url(options),
+    method: 'post',
+})
+
+previewConflictCheck.form = previewConflictCheckForm
+
+/**
 * @see \App\Http\Controllers\GovernanceController::resolveConflictCheck
-* @see app/Http/Controllers/GovernanceController.php:168
+* @see app/Http/Controllers/GovernanceController.php:174
 * @route '/governance/conflict-checks/{conflictCheck}'
 */
 export const resolveConflictCheck = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -484,7 +540,7 @@ resolveConflictCheck.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::resolveConflictCheck
-* @see app/Http/Controllers/GovernanceController.php:168
+* @see app/Http/Controllers/GovernanceController.php:174
 * @route '/governance/conflict-checks/{conflictCheck}'
 */
 resolveConflictCheck.url = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -517,7 +573,7 @@ resolveConflictCheck.url = (args: { conflictCheck: string | { id: string } } | [
 
 /**
 * @see \App\Http\Controllers\GovernanceController::resolveConflictCheck
-* @see app/Http/Controllers/GovernanceController.php:168
+* @see app/Http/Controllers/GovernanceController.php:174
 * @route '/governance/conflict-checks/{conflictCheck}'
 */
 resolveConflictCheck.patch = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -527,7 +583,7 @@ resolveConflictCheck.patch = (args: { conflictCheck: string | { id: string } } |
 
 /**
 * @see \App\Http\Controllers\GovernanceController::resolveConflictCheck
-* @see app/Http/Controllers/GovernanceController.php:168
+* @see app/Http/Controllers/GovernanceController.php:174
 * @route '/governance/conflict-checks/{conflictCheck}'
 */
 const resolveConflictCheckForm = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -542,7 +598,7 @@ const resolveConflictCheckForm = (args: { conflictCheck: string | { id: string }
 
 /**
 * @see \App\Http\Controllers\GovernanceController::resolveConflictCheck
-* @see app/Http/Controllers/GovernanceController.php:168
+* @see app/Http/Controllers/GovernanceController.php:174
 * @route '/governance/conflict-checks/{conflictCheck}'
 */
 resolveConflictCheckForm.patch = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -558,8 +614,113 @@ resolveConflictCheckForm.patch = (args: { conflictCheck: string | { id: string }
 resolveConflictCheck.form = resolveConflictCheckForm
 
 /**
+* @see \App\Http\Controllers\GovernanceController::showCertificate
+* @see app/Http/Controllers/GovernanceController.php:209
+* @route '/governance/conflict-checks/{conflictCheck}/certificate'
+*/
+export const showCertificate = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: showCertificate.url(args, options),
+    method: 'get',
+})
+
+showCertificate.definition = {
+    methods: ["get","head"],
+    url: '/governance/conflict-checks/{conflictCheck}/certificate',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\GovernanceController::showCertificate
+* @see app/Http/Controllers/GovernanceController.php:209
+* @route '/governance/conflict-checks/{conflictCheck}/certificate'
+*/
+showCertificate.url = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { conflictCheck: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { conflictCheck: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            conflictCheck: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        conflictCheck: typeof args.conflictCheck === 'object'
+        ? args.conflictCheck.id
+        : args.conflictCheck,
+    }
+
+    return showCertificate.definition.url
+            .replace('{conflictCheck}', parsedArgs.conflictCheck.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\GovernanceController::showCertificate
+* @see app/Http/Controllers/GovernanceController.php:209
+* @route '/governance/conflict-checks/{conflictCheck}/certificate'
+*/
+showCertificate.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: showCertificate.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::showCertificate
+* @see app/Http/Controllers/GovernanceController.php:209
+* @route '/governance/conflict-checks/{conflictCheck}/certificate'
+*/
+showCertificate.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: showCertificate.url(args, options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::showCertificate
+* @see app/Http/Controllers/GovernanceController.php:209
+* @route '/governance/conflict-checks/{conflictCheck}/certificate'
+*/
+const showCertificateForm = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showCertificate.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::showCertificate
+* @see app/Http/Controllers/GovernanceController.php:209
+* @route '/governance/conflict-checks/{conflictCheck}/certificate'
+*/
+showCertificateForm.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showCertificate.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::showCertificate
+* @see app/Http/Controllers/GovernanceController.php:209
+* @route '/governance/conflict-checks/{conflictCheck}/certificate'
+*/
+showCertificateForm.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showCertificate.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+showCertificate.form = showCertificateForm
+
+/**
 * @see \App\Http\Controllers\GovernanceController::placeLegalHold
-* @see app/Http/Controllers/GovernanceController.php:178
+* @see app/Http/Controllers/GovernanceController.php:227
 * @route '/governance/matters/{matter}/legal-hold'
 */
 export const placeLegalHold = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -574,7 +735,7 @@ placeLegalHold.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::placeLegalHold
-* @see app/Http/Controllers/GovernanceController.php:178
+* @see app/Http/Controllers/GovernanceController.php:227
 * @route '/governance/matters/{matter}/legal-hold'
 */
 placeLegalHold.url = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -607,7 +768,7 @@ placeLegalHold.url = (args: { matter: string | { id: string } } | [matter: strin
 
 /**
 * @see \App\Http\Controllers\GovernanceController::placeLegalHold
-* @see app/Http/Controllers/GovernanceController.php:178
+* @see app/Http/Controllers/GovernanceController.php:227
 * @route '/governance/matters/{matter}/legal-hold'
 */
 placeLegalHold.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -617,7 +778,7 @@ placeLegalHold.post = (args: { matter: string | { id: string } } | [matter: stri
 
 /**
 * @see \App\Http\Controllers\GovernanceController::placeLegalHold
-* @see app/Http/Controllers/GovernanceController.php:178
+* @see app/Http/Controllers/GovernanceController.php:227
 * @route '/governance/matters/{matter}/legal-hold'
 */
 const placeLegalHoldForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -627,7 +788,7 @@ const placeLegalHoldForm = (args: { matter: string | { id: string } } | [matter:
 
 /**
 * @see \App\Http\Controllers\GovernanceController::placeLegalHold
-* @see app/Http/Controllers/GovernanceController.php:178
+* @see app/Http/Controllers/GovernanceController.php:227
 * @route '/governance/matters/{matter}/legal-hold'
 */
 placeLegalHoldForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -639,7 +800,7 @@ placeLegalHold.form = placeLegalHoldForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::releaseLegalHold
-* @see app/Http/Controllers/GovernanceController.php:187
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/matters/{matter}/legal-hold'
 */
 export const releaseLegalHold = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -654,7 +815,7 @@ releaseLegalHold.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::releaseLegalHold
-* @see app/Http/Controllers/GovernanceController.php:187
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/matters/{matter}/legal-hold'
 */
 releaseLegalHold.url = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -687,7 +848,7 @@ releaseLegalHold.url = (args: { matter: string | { id: string } } | [matter: str
 
 /**
 * @see \App\Http\Controllers\GovernanceController::releaseLegalHold
-* @see app/Http/Controllers/GovernanceController.php:187
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/matters/{matter}/legal-hold'
 */
 releaseLegalHold.delete = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -697,7 +858,7 @@ releaseLegalHold.delete = (args: { matter: string | { id: string } } | [matter: 
 
 /**
 * @see \App\Http\Controllers\GovernanceController::releaseLegalHold
-* @see app/Http/Controllers/GovernanceController.php:187
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/matters/{matter}/legal-hold'
 */
 const releaseLegalHoldForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -712,7 +873,7 @@ const releaseLegalHoldForm = (args: { matter: string | { id: string } } | [matte
 
 /**
 * @see \App\Http\Controllers\GovernanceController::releaseLegalHold
-* @see app/Http/Controllers/GovernanceController.php:187
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/matters/{matter}/legal-hold'
 */
 releaseLegalHoldForm.delete = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -729,7 +890,7 @@ releaseLegalHold.form = releaseLegalHoldForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::archive
-* @see app/Http/Controllers/GovernanceController.php:196
+* @see app/Http/Controllers/GovernanceController.php:245
 * @route '/governance/matters/{matter}/archive'
 */
 export const archive = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -744,7 +905,7 @@ archive.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::archive
-* @see app/Http/Controllers/GovernanceController.php:196
+* @see app/Http/Controllers/GovernanceController.php:245
 * @route '/governance/matters/{matter}/archive'
 */
 archive.url = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -777,7 +938,7 @@ archive.url = (args: { matter: string | { id: string } } | [matter: string | { i
 
 /**
 * @see \App\Http\Controllers\GovernanceController::archive
-* @see app/Http/Controllers/GovernanceController.php:196
+* @see app/Http/Controllers/GovernanceController.php:245
 * @route '/governance/matters/{matter}/archive'
 */
 archive.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -787,7 +948,7 @@ archive.post = (args: { matter: string | { id: string } } | [matter: string | { 
 
 /**
 * @see \App\Http\Controllers\GovernanceController::archive
-* @see app/Http/Controllers/GovernanceController.php:196
+* @see app/Http/Controllers/GovernanceController.php:245
 * @route '/governance/matters/{matter}/archive'
 */
 const archiveForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -797,7 +958,7 @@ const archiveForm = (args: { matter: string | { id: string } } | [matter: string
 
 /**
 * @see \App\Http\Controllers\GovernanceController::archive
-* @see app/Http/Controllers/GovernanceController.php:196
+* @see app/Http/Controllers/GovernanceController.php:245
 * @route '/governance/matters/{matter}/archive'
 */
 archiveForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -809,7 +970,7 @@ archive.form = archiveForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::requestExport
-* @see app/Http/Controllers/GovernanceController.php:204
+* @see app/Http/Controllers/GovernanceController.php:253
 * @route '/governance/matters/{matter}/exports'
 */
 export const requestExport = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -824,7 +985,7 @@ requestExport.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::requestExport
-* @see app/Http/Controllers/GovernanceController.php:204
+* @see app/Http/Controllers/GovernanceController.php:253
 * @route '/governance/matters/{matter}/exports'
 */
 requestExport.url = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -857,7 +1018,7 @@ requestExport.url = (args: { matter: string | { id: string } } | [matter: string
 
 /**
 * @see \App\Http\Controllers\GovernanceController::requestExport
-* @see app/Http/Controllers/GovernanceController.php:204
+* @see app/Http/Controllers/GovernanceController.php:253
 * @route '/governance/matters/{matter}/exports'
 */
 requestExport.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -867,7 +1028,7 @@ requestExport.post = (args: { matter: string | { id: string } } | [matter: strin
 
 /**
 * @see \App\Http\Controllers\GovernanceController::requestExport
-* @see app/Http/Controllers/GovernanceController.php:204
+* @see app/Http/Controllers/GovernanceController.php:253
 * @route '/governance/matters/{matter}/exports'
 */
 const requestExportForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -877,7 +1038,7 @@ const requestExportForm = (args: { matter: string | { id: string } } | [matter: 
 
 /**
 * @see \App\Http\Controllers\GovernanceController::requestExport
-* @see app/Http/Controllers/GovernanceController.php:204
+* @see app/Http/Controllers/GovernanceController.php:253
 * @route '/governance/matters/{matter}/exports'
 */
 requestExportForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -889,7 +1050,7 @@ requestExport.form = requestExportForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::downloadExport
-* @see app/Http/Controllers/GovernanceController.php:213
+* @see app/Http/Controllers/GovernanceController.php:262
 * @route '/governance/exports/{matterExport}/download'
 */
 export const downloadExport = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -904,7 +1065,7 @@ downloadExport.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::downloadExport
-* @see app/Http/Controllers/GovernanceController.php:213
+* @see app/Http/Controllers/GovernanceController.php:262
 * @route '/governance/exports/{matterExport}/download'
 */
 downloadExport.url = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -937,7 +1098,7 @@ downloadExport.url = (args: { matterExport: string | { id: string } } | [matterE
 
 /**
 * @see \App\Http\Controllers\GovernanceController::downloadExport
-* @see app/Http/Controllers/GovernanceController.php:213
+* @see app/Http/Controllers/GovernanceController.php:262
 * @route '/governance/exports/{matterExport}/download'
 */
 downloadExport.get = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -947,7 +1108,7 @@ downloadExport.get = (args: { matterExport: string | { id: string } } | [matterE
 
 /**
 * @see \App\Http\Controllers\GovernanceController::downloadExport
-* @see app/Http/Controllers/GovernanceController.php:213
+* @see app/Http/Controllers/GovernanceController.php:262
 * @route '/governance/exports/{matterExport}/download'
 */
 downloadExport.head = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -957,7 +1118,7 @@ downloadExport.head = (args: { matterExport: string | { id: string } } | [matter
 
 /**
 * @see \App\Http\Controllers\GovernanceController::downloadExport
-* @see app/Http/Controllers/GovernanceController.php:213
+* @see app/Http/Controllers/GovernanceController.php:262
 * @route '/governance/exports/{matterExport}/download'
 */
 const downloadExportForm = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -967,7 +1128,7 @@ const downloadExportForm = (args: { matterExport: string | { id: string } } | [m
 
 /**
 * @see \App\Http\Controllers\GovernanceController::downloadExport
-* @see app/Http/Controllers/GovernanceController.php:213
+* @see app/Http/Controllers/GovernanceController.php:262
 * @route '/governance/exports/{matterExport}/download'
 */
 downloadExportForm.get = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -977,7 +1138,7 @@ downloadExportForm.get = (args: { matterExport: string | { id: string } } | [mat
 
 /**
 * @see \App\Http\Controllers\GovernanceController::downloadExport
-* @see app/Http/Controllers/GovernanceController.php:213
+* @see app/Http/Controllers/GovernanceController.php:262
 * @route '/governance/exports/{matterExport}/download'
 */
 downloadExportForm.head = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -992,6 +1153,6 @@ downloadExportForm.head = (args: { matterExport: string | { id: string } } | [ma
 
 downloadExport.form = downloadExportForm
 
-const GovernanceController = { index, storeCorrespondence, showCorrespondence, destroyCorrespondence, storeCorrespondenceAttachment, storeConflictCheck, resolveConflictCheck, placeLegalHold, releaseLegalHold, archive, requestExport, downloadExport }
+const GovernanceController = { index, storeCorrespondence, showCorrespondence, destroyCorrespondence, storeCorrespondenceAttachment, storeConflictCheck, previewConflictCheck, resolveConflictCheck, showCertificate, placeLegalHold, releaseLegalHold, archive, requestExport, downloadExport }
 
 export default GovernanceController

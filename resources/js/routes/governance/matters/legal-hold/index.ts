@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:178
+* @see app/Http/Controllers/GovernanceController.php:227
 * @route '/governance/matters/{matter}/legal-hold'
 */
 export const store = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:178
+* @see app/Http/Controllers/GovernanceController.php:227
 * @route '/governance/matters/{matter}/legal-hold'
 */
 store.url = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ store.url = (args: { matter: string | { id: string } } | [matter: string | { id:
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:178
+* @see app/Http/Controllers/GovernanceController.php:227
 * @route '/governance/matters/{matter}/legal-hold'
 */
 store.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ store.post = (args: { matter: string | { id: string } } | [matter: string | { id
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:178
+* @see app/Http/Controllers/GovernanceController.php:227
 * @route '/governance/matters/{matter}/legal-hold'
 */
 const storeForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ const storeForm = (args: { matter: string | { id: string } } | [matter: string |
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:178
+* @see app/Http/Controllers/GovernanceController.php:227
 * @route '/governance/matters/{matter}/legal-hold'
 */
 storeForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -81,7 +81,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroy
-* @see app/Http/Controllers/GovernanceController.php:187
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/matters/{matter}/legal-hold'
 */
 export const destroy = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -96,7 +96,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroy
-* @see app/Http/Controllers/GovernanceController.php:187
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/matters/{matter}/legal-hold'
 */
 destroy.url = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -129,7 +129,7 @@ destroy.url = (args: { matter: string | { id: string } } | [matter: string | { i
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroy
-* @see app/Http/Controllers/GovernanceController.php:187
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/matters/{matter}/legal-hold'
 */
 destroy.delete = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -139,7 +139,7 @@ destroy.delete = (args: { matter: string | { id: string } } | [matter: string | 
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroy
-* @see app/Http/Controllers/GovernanceController.php:187
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/matters/{matter}/legal-hold'
 */
 const destroyForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -154,7 +154,7 @@ const destroyForm = (args: { matter: string | { id: string } } | [matter: string
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroy
-* @see app/Http/Controllers/GovernanceController.php:187
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/matters/{matter}/legal-hold'
 */
 destroyForm.delete = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

@@ -1,3 +1,9 @@
+@php
+    $verificationUrl = route('verify.invoice', $invoice->invoice_number);
+    $qrDataUri = (new \Endroid\QrCode\Writer\PngWriter())->write(
+        new \Endroid\QrCode\QrCode(data: $verificationUrl, size: 160, margin: 0)
+    )->getDataUri();
+@endphp
 <!doctype html>
 <html lang="id">
 <head>
@@ -302,14 +308,20 @@
         </tr>
     </table>
 
-    <!-- Legal Notes & Signatures -->
+    <!-- Legal Notes, QR Verification & Signatures -->
     <table class="closing-layout">
         <tr>
-            <td class="legal-clause">
+            <td class="legal-clause" style="width: 50%;">
                 <strong>Catatan Hukum &amp; Kepatuhan:</strong><br>
                 Faktur ini diterbitkan secara sah berdasarkan Perjanjian Jasa Hukum yang disepakati. Pembayaran dianggap sah setelah dana efektif masuk ke salah satu rekening resmi firma hukum Roni, Putra &amp; Kusumah di atas. Dokumen ini merupakan bukti tagihan yang sah menurut hukum.
             </td>
-            <td class="sig-col">
+            <td class="qr-col" style="width: 18%; vertical-align: middle; text-align: center;">
+                <img src="{{ $qrDataUri }}" style="width: 48px; height: 48px; border: 1px solid #cbd5e1; padding: 2px; border-radius: 3px;" alt="QR Verifikasi" />
+                <div style="font-size: 5.5px; color: #475569; margin-top: 2px; font-weight: bold; line-height: 1.2;">
+                    SCAN VERIFIKASI<br><span style="font-weight: normal; color: #64748b;">Keaslian Faktur</span>
+                </div>
+            </td>
+            <td class="sig-col" style="width: 32%;">
                 <div style="font-size: 7px; color: #64748b;">Hormat Kami,</div>
                 <div class="sig-firm">RONI, PUTRA &amp; KUSUMAH LAW FIRM</div>
                 <div class="sig-space"></div>

@@ -160,6 +160,23 @@ export default function CorrespondenceShow({
                                 className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                                 asChild
                             >
+                                <a
+                                    href={`/verify/correspondence/${correspondence.id}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    <ShieldCheck className="mr-1 size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                    Verifikasi Publik
+                                    <ExternalLink className="ml-1 size-2.5 text-slate-400" />
+                                </a>
+                            </Button>
+
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                                asChild
+                            >
                                 <Link href={governanceRoutes.index.url()}>
                                     <ArrowLeft className="mr-1 size-3 text-slate-400" />
                                     Kembali ke Tata Kelola
@@ -547,6 +564,51 @@ export default function CorrespondenceShow({
                                     </div>
                                 </div>
                             )}
+
+                            {/* QR Code Verifikasi Keabsahan Card */}
+                            <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                        VERIFIKASI KEABSAHAN
+                                    </span>
+                                    <span className="inline-flex items-center gap-1 rounded bg-emerald-50 px-1.5 py-0.5 text-[9.5px] font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+                                        <CheckCircle2 className="size-2.5" />
+                                        Otentik
+                                    </span>
+                                </div>
+                                <div className="mt-3 flex items-center gap-3">
+                                    <img
+                                        src={`/verify/correspondence/${correspondence.id}/qr.svg`}
+                                        alt="QR Verifikasi Korespondensi"
+                                        className="size-16 rounded-lg border border-slate-200 bg-white p-1 shadow-2xs dark:border-white/10 dark:bg-[#121418]"
+                                    />
+                                    <div className="min-w-0 space-y-1 text-xs">
+                                        <p className="text-[11px] font-bold text-slate-900 dark:text-white">
+                                            QR Registrasi Surat
+                                        </p>
+                                        <p className="text-[10px] text-slate-500 leading-tight dark:text-zinc-400">
+                                            Pindai untuk memvalidasi keaslian surat ini di server firma.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="mt-3 border-t border-slate-100 pt-2 dark:border-white/[0.04]">
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-7 w-full rounded-lg text-xs font-semibold"
+                                        asChild
+                                    >
+                                        <a
+                                            href={`/verify/correspondence/${correspondence.id}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                        >
+                                            Buka Sertifikat Verifikasi
+                                            <ExternalLink className="ml-1 size-3 text-slate-400" />
+                                        </a>
+                                    </Button>
+                                </div>
+                            </div>
 
                             {/* Audit Meta Card */}
                             <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">

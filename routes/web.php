@@ -24,6 +24,7 @@ use App\Http\Controllers\MatterEventChecklistController;
 use App\Http\Controllers\MatterOperationController;
 use App\Http\Controllers\MatterReportController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PublicVerificationController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SignatureArtifactController;
 use App\Http\Controllers\SignatureReminderController;
@@ -41,6 +42,10 @@ Route::get('verify/signature/{verificationCode}', [SignatureVerificationControll
 Route::get('verify/signature/{verificationCode}/qr.svg', [SignatureVerificationController::class, 'qr'])->name('signature.qr');
 Route::get('verify/signature/{verificationCode}/download-signed', [SignatureVerificationController::class, 'downloadSigned'])->name('signature.verify.download-signed');
 Route::get('verify/signature/{verificationCode}/download-certificate', [SignatureVerificationController::class, 'downloadCertificate'])->name('signature.verify.download-certificate');
+Route::get('verify/invoice/{invoiceNumber}', [PublicVerificationController::class, 'verifyInvoice'])->name('verify.invoice');
+Route::get('verify/invoice/{invoiceNumber}/qr.svg', [PublicVerificationController::class, 'invoiceQr'])->name('verify.invoice.qr');
+Route::get('verify/correspondence/{correspondence}', [PublicVerificationController::class, 'verifyCorrespondence'])->name('verify.correspondence');
+Route::get('verify/correspondence/{correspondence}/qr.svg', [PublicVerificationController::class, 'correspondenceQr'])->name('verify.correspondence.qr');
 Route::get('sign/{token}', [SignatureSigningController::class, 'show'])->middleware('throttle:signature-sign')->name('signature.sign.show');
 Route::get('sign/{token}/preview-pdf', [SignatureSigningController::class, 'pdf'])->middleware('throttle:signature-sign')->name('signature.sign.pdf');
 Route::post('sign/{token}', [SignatureSigningController::class, 'store'])->middleware('throttle:signature-sign')->name('signature.sign.store');
@@ -116,7 +121,9 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::delete('governance/correspondences/{correspondence}', [GovernanceController::class, 'destroyCorrespondence'])->name('governance.correspondences.destroy');
     Route::post('governance/correspondences/{correspondence}/attachments', [GovernanceController::class, 'storeCorrespondenceAttachment'])->name('governance.correspondences.attachments.store');
     Route::post('governance/conflict-checks', [GovernanceController::class, 'storeConflictCheck'])->name('governance.conflict-checks.store');
+    Route::post('governance/conflict-checks/preview', [GovernanceController::class, 'previewConflictCheck'])->name('governance.conflict-checks.preview');
     Route::patch('governance/conflict-checks/{conflictCheck}', [GovernanceController::class, 'resolveConflictCheck'])->name('governance.conflict-checks.resolve');
+    Route::get('governance/conflict-checks/{conflictCheck}/certificate', [GovernanceController::class, 'showCertificate'])->name('governance.conflict-checks.certificate');
     Route::post('governance/matters/{matter}/legal-hold', [GovernanceController::class, 'placeLegalHold'])->name('governance.matters.legal-hold.store');
     Route::delete('governance/matters/{matter}/legal-hold', [GovernanceController::class, 'releaseLegalHold'])->name('governance.matters.legal-hold.destroy');
     Route::post('governance/matters/{matter}/archive', [GovernanceController::class, 'archive'])->name('governance.matters.archive');

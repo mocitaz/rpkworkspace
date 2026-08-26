@@ -1,4 +1,5 @@
 import SignatureVerificationController from './SignatureVerificationController'
+import PublicVerificationController from './PublicVerificationController'
 import SignatureSigningController from './SignatureSigningController'
 import CalendarController from './CalendarController'
 import InboundEmailController from './InboundEmailController'
@@ -33,6 +34,7 @@ import Settings from './Settings'
 
 const Controllers = {
     SignatureVerificationController: Object.assign(SignatureVerificationController, SignatureVerificationController),
+    PublicVerificationController: Object.assign(PublicVerificationController, PublicVerificationController),
     SignatureSigningController: Object.assign(SignatureSigningController, SignatureSigningController),
     CalendarController: Object.assign(CalendarController, CalendarController),
     InboundEmailController: Object.assign(InboundEmailController, InboundEmailController),

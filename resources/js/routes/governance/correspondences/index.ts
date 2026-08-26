@@ -2,7 +2,7 @@ import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFo
 import attachments from './attachments'
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:88
+* @see app/Http/Controllers/GovernanceController.php:94
 * @route '/governance/correspondences'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -17,7 +17,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:88
+* @see app/Http/Controllers/GovernanceController.php:94
 * @route '/governance/correspondences'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -26,7 +26,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:88
+* @see app/Http/Controllers/GovernanceController.php:94
 * @route '/governance/correspondences'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -36,7 +36,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:88
+* @see app/Http/Controllers/GovernanceController.php:94
 * @route '/governance/correspondences'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -46,7 +46,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:88
+* @see app/Http/Controllers/GovernanceController.php:94
 * @route '/governance/correspondences'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -58,7 +58,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::show
-* @see app/Http/Controllers/GovernanceController.php:100
+* @see app/Http/Controllers/GovernanceController.php:106
 * @route '/governance/correspondences/{correspondence}'
 */
 export const show = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -73,7 +73,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::show
-* @see app/Http/Controllers/GovernanceController.php:100
+* @see app/Http/Controllers/GovernanceController.php:106
 * @route '/governance/correspondences/{correspondence}'
 */
 show.url = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ show.url = (args: { correspondence: string | { id: string } } | [correspondence:
 
 /**
 * @see \App\Http\Controllers\GovernanceController::show
-* @see app/Http/Controllers/GovernanceController.php:100
+* @see app/Http/Controllers/GovernanceController.php:106
 * @route '/governance/correspondences/{correspondence}'
 */
 show.get = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -116,7 +116,7 @@ show.get = (args: { correspondence: string | { id: string } } | [correspondence:
 
 /**
 * @see \App\Http\Controllers\GovernanceController::show
-* @see app/Http/Controllers/GovernanceController.php:100
+* @see app/Http/Controllers/GovernanceController.php:106
 * @route '/governance/correspondences/{correspondence}'
 */
 show.head = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -126,7 +126,7 @@ show.head = (args: { correspondence: string | { id: string } } | [correspondence
 
 /**
 * @see \App\Http\Controllers\GovernanceController::show
-* @see app/Http/Controllers/GovernanceController.php:100
+* @see app/Http/Controllers/GovernanceController.php:106
 * @route '/governance/correspondences/{correspondence}'
 */
 const showForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -136,7 +136,7 @@ const showForm = (args: { correspondence: string | { id: string } } | [correspon
 
 /**
 * @see \App\Http\Controllers\GovernanceController::show
-* @see app/Http/Controllers/GovernanceController.php:100
+* @see app/Http/Controllers/GovernanceController.php:106
 * @route '/governance/correspondences/{correspondence}'
 */
 showForm.get = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -146,7 +146,7 @@ showForm.get = (args: { correspondence: string | { id: string } } | [corresponde
 
 /**
 * @see \App\Http\Controllers\GovernanceController::show
-* @see app/Http/Controllers/GovernanceController.php:100
+* @see app/Http/Controllers/GovernanceController.php:106
 * @route '/governance/correspondences/{correspondence}'
 */
 showForm.head = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -163,7 +163,7 @@ show.form = showForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroy
-* @see app/Http/Controllers/GovernanceController.php:135
+* @see app/Http/Controllers/GovernanceController.php:141
 * @route '/governance/correspondences/{correspondence}'
 */
 export const destroy = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -178,7 +178,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroy
-* @see app/Http/Controllers/GovernanceController.php:135
+* @see app/Http/Controllers/GovernanceController.php:141
 * @route '/governance/correspondences/{correspondence}'
 */
 destroy.url = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -211,7 +211,7 @@ destroy.url = (args: { correspondence: string | { id: string } } | [corresponden
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroy
-* @see app/Http/Controllers/GovernanceController.php:135
+* @see app/Http/Controllers/GovernanceController.php:141
 * @route '/governance/correspondences/{correspondence}'
 */
 destroy.delete = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -221,7 +221,7 @@ destroy.delete = (args: { correspondence: string | { id: string } } | [correspon
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroy
-* @see app/Http/Controllers/GovernanceController.php:135
+* @see app/Http/Controllers/GovernanceController.php:141
 * @route '/governance/correspondences/{correspondence}'
 */
 const destroyForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -236,7 +236,7 @@ const destroyForm = (args: { correspondence: string | { id: string } } | [corres
 
 /**
 * @see \App\Http\Controllers\GovernanceController::destroy
-* @see app/Http/Controllers/GovernanceController.php:135
+* @see app/Http/Controllers/GovernanceController.php:141
 * @route '/governance/correspondences/{correspondence}'
 */
 destroyForm.delete = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

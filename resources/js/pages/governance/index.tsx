@@ -8,8 +8,11 @@ import {
     CheckCircle2,
     ChevronDown,
     ChevronRight,
+    ChevronUp,
     Clock,
     Download,
+    ExternalLink,
+    FileCheck,
     FileText,
     FolderKanban,
     Inbox,
@@ -25,7 +28,9 @@ import {
     Send,
     ShieldAlert,
     ShieldCheck,
+    Trash2,
     Users,
+    Zap,
 } from 'lucide-react';
 import { useState } from 'react';
 import { EmptyState } from '@/components/empty-state';
@@ -79,6 +84,22 @@ type Document = {
     title: string;
 };
 
+type MatchItem = {
+    type: string;
+    id: string;
+    name: string;
+    searched_query?: string;
+    risk: 'blocked' | 'potential_match';
+    similarity: number;
+    role_label?: string;
+    details?: string;
+    matter_id?: string;
+    matter_number?: string;
+    matter_title?: string;
+    matter_status?: string;
+    responsible_partner?: string;
+};
+
 type ConflictCheck = {
     id: string;
     subject_name: string;
@@ -87,8 +108,13 @@ type ConflictCheck = {
     decision_note?: string;
     searched_names?: string[];
     expires_at?: string;
-    matches?: unknown[];
+    created_at?: string;
+    reviewed_at?: string;
+    matches?: MatchItem[];
     matter?: Matter;
+    client?: { id: string; client_number: string; display_name: string };
+    requester?: { id: number; name: string };
+    reviewer?: { id: number; name: string };
 };
 
 type Export = {
@@ -1353,118 +1379,11 @@ export default function GovernanceIndex({
             </Dialog>
 
             {/* Modal: Conflict Check */}
-            <Dialog open={conflictModal} onOpenChange={setConflictModal}>
-                <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
-                    <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                        <div className="flex items-center gap-2.5">
-                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
-                                <Scale className="size-4" />
-                            </div>
-                            <div>
-                                <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                    Jalankan Conflict Check
-                                </DialogTitle>
-                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Pemeriksaan silang nama pihak lawan &amp;
-                                    relasi bisnis.
-                                </DialogDescription>
-                            </div>
-                        </div>
-                    </DialogHeader>
-
-                    <Form
-                        {...conflictRoutes.store.form()}
-                        className="space-y-3.5 pt-1"
-                        onSuccess={() => setConflictModal(false)}
-                    >
-                        {({ processing, errors }) => (
-                            <>
-                                <div className="grid gap-1">
-                                    <Label
-                                        htmlFor="conflict-matter_id"
-                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
-                                    >
-                                        Terkait Perkara (Opsional)
-                                    </Label>
-                                    <div className="relative">
-                                        <select
-                                            id="conflict-matter_id"
-                                            name="matter_id"
-                                            className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-slate-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
-                                        >
-                                            <option value="">
-                                                Pra-Matter / Calon Klien Baru
-                                            </option>
-                                            {matters.map((matter) => (
-                                                <option
-                                                    key={matter.id}
-                                                    value={matter.id}
-                                                >
-                                                    {matter.matter_number} -{' '}
-                                                    {matter.title}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
-                                    </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                        Nama-Nama Pihak yang Diperiksa *
-                                    </Label>
-                                    <div className="space-y-1.5">
-                                        {[0, 1, 2, 3].map((index) => (
-                                            <Input
-                                                key={index}
-                                                name={`names[${index}]`}
-                                                placeholder={
-                                                    index === 0
-                                                        ? 'Nama utama / pihak lawan (Wajib)'
-                                                        : `Pihak terafiliasi ${index + 1} (Opsional)`
-                                                }
-                                                required={index === 0}
-                                                className="h-8 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-slate-500 focus:bg-white dark:border-white/10 dark:bg-[#121418]"
-                                            />
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="rounded-lg bg-blue-50/70 p-3 text-xs text-blue-800 dark:bg-blue-950/30 dark:text-blue-300">
-                                    Pemeriksaan mencocokkan basis data perkara,
-                                    klien, dan lawan. Berlaku 30 hari.
-                                </div>
-
-                                <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setConflictModal(false)}
-                                        className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-                                    >
-                                        Batal
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        disabled={processing}
-                                        className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
-                                    >
-                                        {processing ? (
-                                            <>
-                                                <Spinner className="mr-1.5 size-3.5" />
-                                                Memeriksa...
-                                            </>
-                                        ) : (
-                                            'Jalankan Pemeriksaan'
-                                        )}
-                                    </Button>
-                                </div>
-                            </>
-                        )}
-                    </Form>
-                </DialogContent>
-            </Dialog>
+            <ConflictCheckModal
+                open={conflictModal}
+                onOpenChange={setConflictModal}
+                matters={matters}
+            />
 
             {/* Handover Export Bundles Modal */}
             <Dialog open={showExportsModal} onOpenChange={setShowExportsModal}>
@@ -1536,6 +1455,353 @@ export default function GovernanceIndex({
     );
 }
 
+function ConflictCheckModal({
+    open,
+    onOpenChange,
+    matters,
+}: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    matters: Matter[];
+}) {
+    const [names, setNames] = useState<string[]>(['', '', '']);
+    const [selectedMatterId, setSelectedMatterId] = useState<string>('');
+    const [previewLoading, setPreviewLoading] = useState(false);
+    const [previewResult, setPreviewResult] = useState<{
+        status: string;
+        match_count: number;
+        matches: MatchItem[];
+    } | null>(null);
+
+    const handleNameChange = (index: number, val: string) => {
+        const next = [...names];
+        next[index] = val;
+        setNames(next);
+    };
+
+    const addNameField = () => {
+        if (names.length < 10) {
+            setNames([...names, '']);
+        }
+    };
+
+    const removeNameField = (index: number) => {
+        if (names.length > 1) {
+            setNames(names.filter((_, i) => i !== index));
+        }
+    };
+
+    const runLiveScan = async () => {
+        const validNames = names.filter((n) => n.trim().length > 0);
+        if (!validNames.length) return;
+
+        setPreviewLoading(true);
+        try {
+            const res = await fetch(conflictRoutes.preview.url(), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN':
+                        (
+                            document.querySelector(
+                                'meta[name="csrf-token"]',
+                            ) as HTMLMetaElement
+                        )?.content ?? '',
+                    Accept: 'application/json',
+                },
+                body: JSON.stringify({
+                    names: validNames,
+                    matter_id: selectedMatterId || null,
+                }),
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setPreviewResult(data);
+            }
+        } catch (e) {
+            console.error('Error running live scan:', e);
+        } finally {
+            setPreviewLoading(false);
+        }
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-xl dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+                            <Scale className="size-4" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                Conflict of Interest Checker (Pemeriksaan
+                                Benturan Kepentingan)
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                Pindai silang seluruh basis data klien, mantan
+                                klien, pihak lawan, dan saksi perkara firma.
+                            </DialogDescription>
+                        </div>
+                    </div>
+                </DialogHeader>
+
+                <Form
+                    {...conflictRoutes.store.form()}
+                    className="space-y-4 pt-1"
+                    onSuccess={() => {
+                        onOpenChange(false);
+                        setPreviewResult(null);
+                    }}
+                >
+                    {({ processing, errors }) => (
+                        <>
+                            <div className="grid gap-1">
+                                <Label
+                                    htmlFor="conflict-matter_id"
+                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                                >
+                                    Terkait Perkara (Opsional)
+                                </Label>
+                                <div className="relative">
+                                    <select
+                                        id="conflict-matter_id"
+                                        name="matter_id"
+                                        value={selectedMatterId}
+                                        onChange={(e) =>
+                                            setSelectedMatterId(e.target.value)
+                                        }
+                                        className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-slate-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                    >
+                                        <option value="">
+                                            Pra-Matter / Calon Klien Baru
+                                        </option>
+                                        {matters.map((matter) => (
+                                            <option
+                                                key={matter.id}
+                                                value={matter.id}
+                                            >
+                                                {matter.matter_number} -{' '}
+                                                {matter.title}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                        Daftar Nama Pihak yang Diperiksa *
+                                    </Label>
+                                    <span className="text-[10px] text-slate-400">
+                                        Mencakup nama PT, CV, perorangan, NIK,
+                                        atau NPWP
+                                    </span>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    {names.map((val, idx) => (
+                                        <div
+                                            key={idx}
+                                            className="flex items-center gap-1.5"
+                                        >
+                                            <div className="relative flex-1">
+                                                <Input
+                                                    name={`names[${idx}]`}
+                                                    value={val}
+                                                    onChange={(e) =>
+                                                        handleNameChange(
+                                                            idx,
+                                                            e.target.value,
+                                                        )
+                                                    }
+                                                    placeholder={
+                                                        idx === 0
+                                                            ? '1. Calon Klien / Nama Utama (Wajib)'
+                                                            : idx === 1
+                                                              ? '2. Pihak Lawan 1 (Adverse Party)'
+                                                              : idx === 2
+                                                                ? '3. Pihak Lawan 2 / Kuasa Hukum Lawan'
+                                                                : `${idx + 1}. Afiliasi / Direksi / Pemilik Manfaat (UBO)`
+                                                    }
+                                                    required={idx === 0}
+                                                    className="h-8 rounded-lg border-slate-200 bg-slate-50/60 text-xs text-slate-900 focus:border-slate-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-100"
+                                                />
+                                            </div>
+                                            {idx > 0 && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        removeNameField(idx)
+                                                    }
+                                                    className="flex size-8 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40"
+                                                    title="Hapus baris"
+                                                >
+                                                    <Trash2 className="size-3.5" />
+                                                </button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {names.length < 10 && (
+                                    <button
+                                        type="button"
+                                        onClick={addNameField}
+                                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                                    >
+                                        <Plus className="size-3" /> Tambah
+                                        Pihak / Afiliasi Lainnya
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Live Scan Action & Results Box */}
+                            <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 dark:border-white/10 dark:bg-[#121418]">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-1.5">
+                                        <Zap className="size-3.5 text-amber-500" />
+                                        <span className="text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                            Pemindaian Kilat (Live Scan Preview)
+                                        </span>
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={
+                                            previewLoading ||
+                                            !names.some(
+                                                (n) => n.trim().length > 0,
+                                            )
+                                        }
+                                        onClick={runLiveScan}
+                                        className="h-7 rounded-lg border-amber-300 bg-amber-50/80 px-2.5 text-xs font-semibold text-amber-800 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300"
+                                    >
+                                        {previewLoading ? (
+                                            <>
+                                                <Spinner className="mr-1 size-3" />
+                                                Memindai...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Zap className="mr-1 size-3" />
+                                                Pindai Kilat
+                                            </>
+                                        )}
+                                    </Button>
+                                </div>
+
+                                {previewResult && (
+                                    <div className="mt-3 space-y-2 border-t border-slate-200/60 pt-2.5 dark:border-white/10">
+                                        <div className="flex items-center justify-between text-xs">
+                                            <span className="font-semibold text-slate-700 dark:text-zinc-300">
+                                                Hasil Preview:{' '}
+                                                <strong>
+                                                    {previewResult.match_count}{' '}
+                                                    Temuan
+                                                </strong>
+                                            </span>
+                                            <span
+                                                className={`rounded px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${
+                                                    previewResult.status ===
+                                                    'clear'
+                                                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                                                        : previewResult.status ===
+                                                            'blocked'
+                                                          ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                                                          : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                                                }`}
+                                            >
+                                                {previewResult.status ===
+                                                'clear'
+                                                    ? '✓ Bebas Benturan (Clear)'
+                                                    : previewResult.status ===
+                                                        'blocked'
+                                                      ? '✕ Benturan Langsung (Blocked)'
+                                                      : '⚠ Potensi Benturan'}
+                                            </span>
+                                        </div>
+
+                                        {previewResult.matches.length > 0 && (
+                                            <div className="max-h-36 space-y-1.5 overflow-y-auto pr-1">
+                                                {previewResult.matches.map(
+                                                    (m, i) => (
+                                                        <div
+                                                            key={i}
+                                                            className="flex items-start justify-between gap-2 rounded-lg border border-slate-200 bg-white p-2 text-[11px] dark:border-white/10 dark:bg-zinc-800"
+                                                        >
+                                                            <div className="min-w-0 flex-1">
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <span className="font-bold text-slate-900 dark:text-white">
+                                                                        {m.name}
+                                                                    </span>
+                                                                    <span className="rounded bg-slate-100 px-1 py-0.2 text-[9.5px] font-semibold text-slate-600 dark:bg-zinc-700 dark:text-zinc-300">
+                                                                        {m.role_label ??
+                                                                            m.type}
+                                                                    </span>
+                                                                </div>
+                                                                {m.details && (
+                                                                    <p className="mt-0.5 text-[10px] text-slate-500 dark:text-zinc-400">
+                                                                        {
+                                                                            m.details
+                                                                        }
+                                                                    </p>
+                                                                )}
+                                                            </div>
+                                                            <span className="shrink-0 font-mono text-[10px] font-bold text-slate-700 dark:text-zinc-300">
+                                                                {m.similarity}%
+                                                            </span>
+                                                        </div>
+                                                    ),
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="rounded-lg bg-blue-50/70 p-3 text-xs text-blue-800 dark:bg-blue-950/30 dark:text-blue-300">
+                                Pemeriksaan mencakup database perkara, klien,
+                                mantan klien, dan pihak lawan. Sertifikat
+                                berlaku 30 hari kalender.
+                            </div>
+
+                            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => onOpenChange(false)}
+                                    className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                >
+                                    Batal
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    disabled={processing}
+                                    className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                                >
+                                    {processing ? (
+                                        <>
+                                            <Spinner className="mr-1.5 size-3.5" />
+                                            Menerbitkan...
+                                        </>
+                                    ) : (
+                                        'Simpan & Terbitkan Hasil Resmi'
+                                    )}
+                                </Button>
+                            </div>
+                        </>
+                    )}
+                </Form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 function ConflictCheckRow({
     item,
     canApprove,
@@ -1543,199 +1809,319 @@ function ConflictCheckRow({
     item: ConflictCheck;
     canApprove: boolean;
 }) {
-    const [open, setOpen] = useState(false);
-    const isClear = item.status === 'clear';
+    const [openDecisionModal, setOpenDecisionModal] = useState(false);
+    const [showMatches, setShowMatches] = useState(false);
+    const isClear =
+        item.status === 'clear' ||
+        item.decision === 'cleared' ||
+        item.decision === 'approved';
+    const isWaived = item.decision === 'waived';
+    const isBlocked = item.status === 'blocked' && item.decision !== 'waived';
     const requiresDecision =
         item.status !== 'clear' && item.decision === 'pending';
+    const matchesCount = item.matches?.length ?? 0;
 
     return (
-        <div className="group flex flex-col justify-between gap-2.5 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50/20 hover:shadow-xs sm:flex-row sm:items-center sm:p-3 dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-white/10 dark:hover:bg-white/[0.02]">
-            <div className="flex min-w-0 flex-1 items-start gap-2.5">
-                {/* Status Icon Badge */}
-                <div
-                    className={`mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg border transition-transform group-hover:scale-105 ${
-                        isClear
-                            ? 'border-emerald-200/80 bg-emerald-50 text-emerald-600 dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-400'
-                            : 'border-amber-200/80 bg-amber-50 text-amber-600 dark:border-amber-900/40 dark:bg-amber-950/60 dark:text-amber-400'
-                    }`}
-                >
-                    {isClear ? (
-                        <CheckCircle2 className="size-3.5" />
-                    ) : (
-                        <Scale className="size-3.5" />
-                    )}
+        <div className="group rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50/20 hover:shadow-xs sm:p-3 dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-white/10 dark:hover:bg-white/[0.02]">
+            <div className="flex flex-col justify-between gap-2.5 sm:flex-row sm:items-center">
+                <div className="flex min-w-0 flex-1 items-start gap-2.5">
+                    {/* Status Icon Badge */}
+                    <div
+                        className={`mt-0.5 flex size-7.5 shrink-0 items-center justify-center rounded-lg border transition-transform group-hover:scale-105 ${
+                            isClear
+                                ? 'border-emerald-200/80 bg-emerald-50 text-emerald-600 dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-400'
+                                : isWaived
+                                  ? 'border-blue-200/80 bg-blue-50 text-blue-600 dark:border-blue-900/40 dark:bg-blue-950/60 dark:text-blue-400'
+                                  : 'border-amber-200/80 bg-amber-50 text-amber-600 dark:border-amber-900/40 dark:bg-amber-950/60 dark:text-amber-400'
+                        }`}
+                    >
+                        {isClear ? (
+                            <CheckCircle2 className="size-4" />
+                        ) : isWaived ? (
+                            <ShieldCheck className="size-4" />
+                        ) : (
+                            <Scale className="size-4" />
+                        )}
+                    </div>
+
+                    {/* Text & Meta Details */}
+                    <div className="min-w-0 flex-1 space-y-0.5">
+                        <div className="flex flex-wrap items-center gap-1.5 text-[9.5px]">
+                            <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
+                                {item.matter?.matter_number ??
+                                    'Pra-Matter / Calon Klien'}
+                            </span>
+                            <StatusBadge value={item.status} />
+                            <span
+                                className={`inline-flex items-center rounded px-1.5 py-0.5 font-semibold uppercase ${
+                                    item.decision === 'approved' ||
+                                    item.decision === 'cleared'
+                                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                                        : item.decision === 'waived'
+                                          ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300'
+                                          : item.decision === 'blocked'
+                                            ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
+                                            : 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300'
+                                }`}
+                            >
+                                Keputusan: {item.decision}
+                            </span>
+                            {item.reviewer && (
+                                <span className="text-slate-400 dark:text-zinc-500">
+                                    • Ditinjau oleh: {item.reviewer.name}
+                                </span>
+                            )}
+                        </div>
+
+                        <h4 className="line-clamp-1 text-xs font-bold text-slate-900 dark:text-white">
+                            {item.subject_name}
+                        </h4>
+
+                        <div className="flex flex-wrap items-center gap-x-1.5 text-[10.5px] text-slate-500 dark:text-zinc-400">
+                            {item.searched_names &&
+                            item.searched_names.length > 0 ? (
+                                <span className="max-w-[320px] truncate">
+                                    Pihak diperiksa:{' '}
+                                    {item.searched_names.join(', ')}
+                                </span>
+                            ) : (
+                                <span>Pemeriksaan tunggal nama pihak</span>
+                            )}
+                            {item.matter?.title && (
+                                <>
+                                    <span>·</span>
+                                    <span className="max-w-[220px] truncate font-medium text-slate-600 dark:text-zinc-300">
+                                        {item.matter.title}
+                                    </span>
+                                </>
+                            )}
+                        </div>
+
+                        {item.decision_note && (
+                            <p className="mt-1 rounded-md bg-slate-50 p-2 text-[10.5px] text-slate-700 dark:bg-zinc-800/80 dark:text-zinc-200">
+                                <MessageSquare className="mr-1 inline size-3 text-slate-500" />
+                                <strong>Catatan Justifikasi Partner:</strong>{' '}
+                                {item.decision_note}
+                            </p>
+                        )}
+                    </div>
                 </div>
 
-                {/* Text & Meta Details */}
-                <div className="min-w-0 flex-1 space-y-0.5">
-                    <div className="flex flex-wrap items-center gap-1 text-[9.5px]">
-                        <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
-                            {item.matter?.matter_number ??
-                                'Pra-Matter / Calon Klien'}
-                        </span>
-                        <StatusBadge value={item.status} />
-                        <span
-                            className={`inline-flex items-center rounded px-1.5 py-0.5 font-semibold uppercase ${
-                                item.decision === 'approved'
-                                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
-                                    : item.decision === 'rejected'
-                                      ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
-                                      : 'bg-slate-100 text-slate-700 dark:bg-zinc-800 dark:text-zinc-300'
+                {/* Right Action Toolbar */}
+                <div className="flex flex-wrap items-center gap-1.5 pl-10 sm:pl-0">
+                    {matchesCount > 0 && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowMatches(!showMatches)}
+                            className="h-7 px-2 text-xs text-slate-600 hover:bg-slate-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                        >
+                            {matchesCount} Temuan
+                            {showMatches ? (
+                                <ChevronUp className="ml-1 size-3" />
+                            ) : (
+                                <ChevronDown className="ml-1 size-3" />
+                            )}
+                        </Button>
+                    )}
+
+                    {/* Certificate Action Button */}
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 rounded-lg border-slate-200 px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                        asChild
+                    >
+                        <Link href={conflictRoutes.certificate.url(item.id)}>
+                            <FileCheck className="mr-1 size-3 text-blue-600 dark:text-blue-400" />
+                            Sertifikat
+                        </Link>
+                    </Button>
+
+                    {/* Partner Waiver Action Button */}
+                    {canApprove && (
+                        <Button
+                            size="sm"
+                            onClick={() => setOpenDecisionModal(true)}
+                            className={`h-7 rounded-lg px-2.5 text-xs font-semibold text-white shadow-2xs ${
+                                requiresDecision
+                                    ? 'bg-amber-600 hover:bg-amber-700'
+                                    : 'bg-slate-700 hover:bg-slate-800 dark:bg-zinc-700'
                             }`}
                         >
-                            {item.decision}
-                        </span>
-                    </div>
-
-                    <h4 className="line-clamp-1 text-xs font-bold text-slate-900 dark:text-white">
-                        {item.subject_name}
-                    </h4>
-
-                    <div className="flex flex-wrap items-center gap-x-1.5 text-[10.5px] text-slate-500 dark:text-zinc-400">
-                        {item.searched_names &&
-                        item.searched_names.length > 0 ? (
-                            <span className="max-w-[280px] truncate">
-                                Diperiksa: {item.searched_names.join(', ')}
-                            </span>
-                        ) : (
-                            <span>Pemeriksaan tunggal nama pihak</span>
-                        )}
-                        {item.matter?.title && (
-                            <>
-                                <span>·</span>
-                                <span className="max-w-[200px] truncate font-medium text-slate-600 dark:text-zinc-300">
-                                    {item.matter.title}
-                                </span>
-                            </>
-                        )}
-                    </div>
-
-                    {item.decision_note && (
-                        <p className="mt-0.5 rounded-md bg-slate-50 p-1.5 text-[10px] text-slate-600 dark:bg-zinc-800/80 dark:text-zinc-300">
-                            <MessageSquare className="mr-1 inline size-2.5 text-slate-500" />
-                            <strong>Catatan Partner:</strong>{' '}
-                            {item.decision_note}
-                        </p>
+                            <Scale className="mr-1 size-3" />
+                            {requiresDecision
+                                ? 'Beri Keputusan Partner'
+                                : 'Ubah Keputusan'}
+                        </Button>
                     )}
                 </div>
             </div>
 
-            {canApprove && requiresDecision && (
-                <div className="flex shrink-0 items-center pl-9.5 sm:pl-0">
-                    <Button
-                        size="sm"
-                        onClick={() => setOpen(true)}
-                        className="h-7 rounded-lg bg-amber-600 px-2.5 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700"
-                    >
-                        Keputusan Partner
-                    </Button>
-
-                    <Dialog open={open} onOpenChange={setOpen}>
-                        <DialogContent className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
-                            <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                                <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                    Keputusan Partner Conflict Check
-                                </DialogTitle>
-                                <DialogDescription className="text-xs text-slate-500">
-                                    Tetapkan persetujuan penanganan perkara atau
-                                    penolakan kuasa.
-                                </DialogDescription>
-                            </DialogHeader>
-
-                            <Form
-                                {...conflictRoutes.resolve.form(item.id)}
-                                className="space-y-3.5 pt-1"
-                                onSuccess={() => setOpen(false)}
-                            >
-                                {({ processing, errors }) => (
-                                    <>
-                                        <div className="grid gap-1">
-                                            <Label
-                                                htmlFor={`decision-${item.id}`}
-                                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
-                                            >
-                                                Keputusan Akhir
-                                            </Label>
-                                            <div className="relative">
-                                                <select
-                                                    id={`decision-${item.id}`}
-                                                    name="decision"
-                                                    defaultValue={
-                                                        item.status ===
-                                                        'blocked'
-                                                            ? 'blocked'
-                                                            : 'waived'
-                                                    }
-                                                    className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none focus:border-slate-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
-                                                >
-                                                    <option value="waived">
-                                                        Waive / Disetujui
-                                                        Bersyarat
-                                                    </option>
-                                                    <option value="blocked">
-                                                        Tolak / Blocked
-                                                        (Dilarang)
-                                                    </option>
-                                                    {item.status !==
-                                                        'blocked' && (
-                                                        <option value="cleared">
-                                                            Clear (Bebas
-                                                            Benturan)
-                                                        </option>
-                                                    )}
-                                                </select>
-                                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
-                                            </div>
-                                        </div>
-
-                                        <div className="grid gap-1">
-                                            <Label
-                                                htmlFor={`note-${item.id}`}
-                                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
-                                            >
-                                                Alasan &amp; Dasar Keputusan *
-                                            </Label>
-                                            <textarea
-                                                id={`note-${item.id}`}
-                                                name="decision_note"
-                                                rows={3}
-                                                placeholder="Berikan justifikasi kepatuhan hukum / etika profesi..."
-                                                required
-                                                minLength={8}
-                                                className="w-full rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 text-xs text-slate-900 outline-none focus:border-slate-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
-                                            />
-                                            {errors.decision_note && (
-                                                <p className="text-xs text-rose-500">
-                                                    {errors.decision_note}
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
-                                            <Button
-                                                type="button"
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => setOpen(false)}
-                                                className="h-8 rounded-lg px-3 text-xs font-semibold"
-                                            >
-                                                Batal
-                                            </Button>
-                                            <Button
-                                                size="sm"
-                                                disabled={processing}
-                                                className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
-                                            >
-                                                Simpan Keputusan
-                                            </Button>
-                                        </div>
-                                    </>
-                                )}
-                            </Form>
-                        </DialogContent>
-                    </Dialog>
+            {/* Expandable Matches Breakdown Table */}
+            {showMatches && item.matches && item.matches.length > 0 && (
+                <div className="mt-3 border-t border-slate-100 pt-2.5 dark:border-white/[0.06]">
+                    <div className="space-y-1.5">
+                        <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                            Rincian Hasil Pencocokan Database Firma:
+                        </p>
+                        <div className="grid gap-1.5 sm:grid-cols-2">
+                            {item.matches.map((match, idx) => (
+                                <div
+                                    key={idx}
+                                    className={`rounded-lg border p-2 text-xs ${
+                                        match.risk === 'blocked'
+                                            ? 'border-rose-200 bg-rose-50/50 dark:border-rose-950 dark:bg-rose-950/20'
+                                            : 'border-slate-200 bg-slate-50/70 dark:border-white/10 dark:bg-zinc-900/60'
+                                    }`}
+                                >
+                                    <div className="flex items-center justify-between gap-1.5">
+                                        <span className="font-bold text-slate-900 dark:text-white">
+                                            {match.name}
+                                        </span>
+                                        <span className="font-mono text-[10.5px] font-bold text-slate-700 dark:text-zinc-300">
+                                            {match.similarity}% Kemiripan
+                                        </span>
+                                    </div>
+                                    <div className="mt-1 flex flex-wrap items-center gap-1 text-[9.5px]">
+                                        <span
+                                            className={`rounded px-1.5 py-0.2 font-bold uppercase ${
+                                                match.risk === 'blocked'
+                                                    ? 'bg-rose-200 text-rose-900 dark:bg-rose-900 dark:text-rose-200'
+                                                    : 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200'
+                                            }`}
+                                        >
+                                            {match.role_label ?? match.type}
+                                        </span>
+                                        {match.responsible_partner && (
+                                            <span className="text-slate-500">
+                                                Partner:{' '}
+                                                {match.responsible_partner}
+                                            </span>
+                                        )}
+                                    </div>
+                                    {match.details && (
+                                        <p className="mt-1 text-[10px] text-slate-600 dark:text-zinc-400">
+                                            {match.details}
+                                        </p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             )}
+
+            {/* Partner Decision Modal */}
+            <Dialog
+                open={openDecisionModal}
+                onOpenChange={setOpenDecisionModal}
+            >
+                <DialogContent className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                    <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                        <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                            Keputusan Etik Partner — Conflict Check
+                        </DialogTitle>
+                        <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                            Tetapkan persetujuan penanganan perkara (Waiver /
+                            Clearance) atau penolakan kuasa (Blocked).
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <Form
+                        {...conflictRoutes.resolve.form(item.id)}
+                        className="space-y-3.5 pt-1"
+                        onSuccess={() => setOpenDecisionModal(false)}
+                    >
+                        {({ processing, errors }) => (
+                            <>
+                                <div className="grid gap-1">
+                                    <Label
+                                        htmlFor={`decision-${item.id}`}
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                                    >
+                                        Keputusan Akhir *
+                                    </Label>
+                                    <div className="relative">
+                                        <select
+                                            id={`decision-${item.id}`}
+                                            name="decision"
+                                            defaultValue={
+                                                item.decision !== 'pending'
+                                                    ? item.decision
+                                                    : item.status === 'blocked'
+                                                      ? 'waived'
+                                                      : 'cleared'
+                                            }
+                                            className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none focus:border-slate-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                        >
+                                            <option value="waived">
+                                                Waive / Disetujui Bersyarat
+                                                (Waiver Etik)
+                                            </option>
+                                            <option value="blocked">
+                                                Tolak / Blocked (Dilarang
+                                                Ditangani)
+                                            </option>
+                                            {item.status !== 'blocked' && (
+                                                <option value="cleared">
+                                                    Clear (Bebas Benturan)
+                                                </option>
+                                            )}
+                                        </select>
+                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                    </div>
+                                </div>
+
+                                <div className="grid gap-1">
+                                    <Label
+                                        htmlFor={`note-${item.id}`}
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
+                                    >
+                                        Alasan &amp; Dasar Keputusan Etik *
+                                    </Label>
+                                    <textarea
+                                        id={`note-${item.id}`}
+                                        name="decision_note"
+                                        rows={3}
+                                        defaultValue={item.decision_note ?? ''}
+                                        placeholder="Berikan justifikasi kepatuhan hukum / pertimbangan independensi etik..."
+                                        required
+                                        minLength={8}
+                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 text-xs text-slate-900 outline-none focus:border-slate-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    />
+                                    {errors.decision_note && (
+                                        <p className="text-xs text-rose-500">
+                                            {errors.decision_note}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                            setOpenDecisionModal(false)
+                                        }
+                                        className="h-8 rounded-lg px-3 text-xs font-semibold"
+                                    >
+                                        Batal
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        disabled={processing}
+                                        className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                    >
+                                        Simpan Keputusan
+                                    </Button>
+                                </div>
+                            </>
+                        )}
+                    </Form>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

@@ -36,6 +36,7 @@ import {
     User,
     UserCheck,
     Users,
+    Zap,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import {
@@ -80,6 +81,7 @@ import * as eventChecklistRoutes from '@/routes/matters/events/checklist';
 import * as noteRoutes from '@/routes/matters/notes';
 import * as partyRoutes from '@/routes/matters/parties';
 import * as reportRoutes from '@/routes/matters/status-report';
+import * as governanceConflictRoutes from '@/routes/governance/conflict-checks';
 
 type Person = {
     id: number;
@@ -2894,20 +2896,7 @@ function MatterOperationDialog({
                         {({ processing, errors }) => (
                             <>
                                 {operation === 'party' && (
-                                    <>
-                                        <Field
-                                            name="party_type"
-                                            label="Peran / Jenis Pihak"
-                                            required
-                                            placeholder="Contoh: Lawan, Penggugat, Tergugat, Saksi Ahli"
-                                        />
-                                        <Field
-                                            name="name"
-                                            label="Nama Lengkap / Entitas Perusahaan"
-                                            required
-                                            placeholder="Nama pihak terkait"
-                                        />
-                                    </>
+                                    <PartyOperationFields matterId={matterId} />
                                 )}
 
                                 {operation === 'evidence' && (
@@ -3472,6 +3461,159 @@ function UpdateEvidenceDialog({
                 </Form>
             </DialogContent>
         </Dialog>
+    );
+}
+
+function PartyOperationFields({ matterId }: { matterId: string }) {
+    const [partyName, setPartyName] = useState('');
+    const [previewLoading, setPreviewLoading] = useState(false);
+    const [previewResult, setPreviewResult] = useState<{
+        status: string;
+        match_count: number;
+        matches: Array<{
+            name: string;
+            type: string;
+            role_label?: string;
+            risk: string;
+            similarity?: number;
+            details?: string;
+            matter_title?: string;
+        }>;
+    } | null>(null);
+
+    const runScan = async () => {
+        if (!partyName.trim()) return;
+        setPreviewLoading(true);
+        try {
+            const res = await fetch(governanceConflictRoutes.preview.url(), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN':
+                        (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
+                },
+                body: JSON.stringify({
+                    matter_id: matterId,
+                    names: [partyName.trim()],
+                }),
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setPreviewResult(data);
+            }
+        } catch (e) {
+            console.error('Error running party conflict scan:', e);
+        } finally {
+            setPreviewLoading(false);
+        }
+    };
+
+    return (
+        <div className="space-y-3">
+            <div className="grid gap-1">
+                <Label htmlFor="party_type" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                    Peran / Jenis Pihak <span className="text-rose-500">*</span>
+                </Label>
+                <div className="relative">
+                    <select
+                        id="party_type"
+                        name="party_type"
+                        defaultValue="opposing_party"
+                        required
+                        className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-8 pl-2.5 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                    >
+                        <option value="opposing_party">Pihak Lawan (Adverse / Opponent)</option>
+                        <option value="opposing_counsel">Kuasa Hukum Lawan (Opposing Counsel)</option>
+                        <option value="co_defendant">Turut Tergugat / Pihak Ketiga</option>
+                        <option value="witness">Saksi / Saksi Ahli</option>
+                        <option value="related_party">Pihak Terafiliasi / Terkait Lainnya</option>
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                </div>
+            </div>
+
+            <div className="grid gap-1">
+                <div className="flex items-center justify-between">
+                    <Label htmlFor="party_name" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                        Nama Lengkap / Entitas Perusahaan <span className="text-rose-500">*</span>
+                    </Label>
+                    <span className="text-[10px] text-slate-400">Pindai benturan etik otomatis</span>
+                </div>
+                <div className="flex gap-1.5">
+                    <Input
+                        id="party_name"
+                        name="name"
+                        value={partyName}
+                        onChange={(e) => {
+                            setPartyName(e.target.value);
+                            if (previewResult) setPreviewResult(null);
+                        }}
+                        required
+                        placeholder="Contoh: PT Sumber Rezeki / John Doe"
+                        className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                    />
+                    <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={previewLoading || !partyName.trim()}
+                        onClick={runScan}
+                        className="h-8 shrink-0 rounded-lg border-amber-300 bg-amber-50/80 px-2.5 text-xs font-semibold text-amber-800 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300"
+                    >
+                        {previewLoading ? (
+                            <Spinner className="size-3" />
+                        ) : (
+                            <>
+                                <Zap className="mr-1 size-3" />
+                                Pindai
+                            </>
+                        )}
+                    </Button>
+                </div>
+            </div>
+
+            {/* Live Scan Results & Conflict Warnings */}
+            {previewResult && (
+                <div className={`rounded-lg border p-2.5 text-xs ${
+                    previewResult.status === 'clear'
+                        ? 'border-emerald-500/30 bg-emerald-50/80 text-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300'
+                        : previewResult.status === 'blocked'
+                          ? 'border-rose-500/40 bg-rose-50/90 text-rose-900 dark:bg-rose-950/40 dark:text-rose-200'
+                          : 'border-amber-500/30 bg-amber-50/80 text-amber-900 dark:bg-amber-950/30 dark:text-amber-300'
+                }`}>
+                    <div className="flex items-center gap-1.5 font-bold">
+                        {previewResult.status === 'clear' ? (
+                            <>
+                                <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                <span>✓ Bebas Benturan Kepentingan</span>
+                            </>
+                        ) : previewResult.status === 'blocked' ? (
+                            <>
+                                <ShieldAlert className="size-3.5 text-rose-600 dark:text-rose-400" />
+                                <span>🛑 Peringatan Benturan Kepentingan Langsung</span>
+                            </>
+                        ) : (
+                            <>
+                                <ShieldAlert className="size-3.5 text-amber-600 dark:text-amber-400" />
+                                <span>⚠ Potensi Benturan Kepentingan Terdeteksi</span>
+                            </>
+                        )}
+                    </div>
+
+                    {previewResult.matches.length > 0 && (
+                        <div className="mt-1.5 space-y-1">
+                            {previewResult.matches.map((m, idx) => (
+                                <p key={idx} className="text-[11px] leading-relaxed">
+                                    • Cocok dengan <strong>{m.name}</strong> ({m.role_label ?? m.type}{m.similarity ? ` - ${m.similarity}%` : ''})
+                                    {m.details && <span className="opacity-80"> — {m.details}</span>}
+                                </p>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
     );
 }
 

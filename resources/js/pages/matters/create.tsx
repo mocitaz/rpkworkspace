@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { Form, Head, Link } from '@inertiajs/react';
 import {
     ArrowLeft,
     Briefcase,
     CheckCircle2,
     ChevronDown,
+    ExternalLink,
+    FileCheck,
     Info,
     Lock,
     Scale,
@@ -11,6 +14,7 @@ import {
     ShieldCheck,
     UserCheck,
     Users,
+    Zap,
 } from 'lucide-react';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
@@ -19,6 +23,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import * as matterRoutes from '@/routes/matters';
 import * as conflictRoutes from '@/routes/matters/conflict-checks';
+import * as governanceConflictRoutes from '@/routes/governance/conflict-checks';
 
 type Choice = {
     id: number | string;
@@ -26,6 +31,22 @@ type Choice = {
     display_name?: string;
     client_number?: string;
     position_title?: string;
+};
+
+type MatchItem = {
+    id?: string | number;
+    type: string;
+    name: string;
+    searched_query?: string;
+    risk: 'clear' | 'potential_match' | 'blocked';
+    similarity?: number;
+    role_label?: string;
+    matter_id?: string;
+    matter_number?: string;
+    matter_title?: string;
+    matter_status?: string;
+    responsible_partner?: string;
+    details?: string;
 };
 
 export default function MatterCreate({
@@ -47,16 +68,56 @@ export default function MatterCreate({
         decision: string;
         subject_name: string;
         searched_names: string[];
-        matches: unknown[];
+        matches: MatchItem[];
         decision_note?: string;
         expires_at?: string;
     } | null;
     canRunConflictCheck: boolean;
 }) {
+    const [previewLoading, setPreviewLoading] = useState(false);
+    const [previewResult, setPreviewResult] = useState<{
+        status: string;
+        match_count: number;
+        matches: MatchItem[];
+    } | null>(null);
+
+    const [selectedClientId, setSelectedClientId] = useState<string>('');
+    const [adverseNames, setAdverseNames] = useState<string[]>(['', '', '', '']);
+
     const isConflictCleared =
         conflictCheck &&
         (conflictCheck.status === 'clear' ||
             conflictCheck.decision === 'waived');
+
+    const runLiveScan = async () => {
+        const activeNames = adverseNames.map((n) => n.trim()).filter((n) => n.length > 0);
+        if (activeNames.length === 0 && !selectedClientId) return;
+
+        setPreviewLoading(true);
+        try {
+            const res = await fetch(governanceConflictRoutes.preview.url(), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN':
+                        (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
+                },
+                body: JSON.stringify({
+                    client_id: selectedClientId || undefined,
+                    names: activeNames,
+                }),
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setPreviewResult(data);
+            }
+        } catch (e) {
+            console.error('Error running live scan:', e);
+        } finally {
+            setPreviewLoading(false);
+        }
+    };
 
     return (
         <>
@@ -109,12 +170,14 @@ export default function MatterCreate({
                         </div>
 
                         {conflictCheck ? (
-                            <div className="mt-3">
+                            <div className="mt-3 space-y-3">
                                 <div
                                     className={`flex items-start gap-3 rounded-lg border p-3 text-xs ${
                                         isConflictCleared
                                             ? 'border-emerald-500/20 bg-emerald-50/60 text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-950/20 dark:text-emerald-200'
-                                            : 'border-amber-500/20 bg-amber-50/60 text-amber-900 dark:border-amber-500/30 dark:bg-amber-950/20 dark:text-amber-200'
+                                            : conflictCheck.status === 'blocked'
+                                              ? 'border-rose-500/20 bg-rose-50/60 text-rose-900 dark:border-rose-500/30 dark:bg-rose-950/20 dark:text-rose-200'
+                                              : 'border-amber-500/20 bg-amber-50/60 text-amber-900 dark:border-amber-500/30 dark:bg-amber-950/20 dark:text-amber-200'
                                     }`}
                                 >
                                     {isConflictCleared ? (
@@ -123,23 +186,37 @@ export default function MatterCreate({
                                         <ShieldAlert className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
                                     )}
 
-                                    <div className="flex-1 space-y-1">
-                                        <div className="flex items-center gap-2">
-                                            <p className="font-bold">
-                                                Status Conflict Check:{' '}
-                                                <span className="capitalize">
-                                                    {conflictCheck.status.replace(
-                                                        '_',
-                                                        ' ',
-                                                    )}
-                                                </span>
-                                            </p>
-                                            {conflictCheck.decision ===
-                                                'waived' && (
-                                                <span className="py-0.2 rounded bg-amber-500/20 px-1.5 font-mono text-[9px] font-bold uppercase">
-                                                    Waiver Disetujui Partner
-                                                </span>
-                                            )}
+                                    <div className="flex-1 space-y-1.5">
+                                        <div className="flex flex-wrap items-center justify-between gap-2">
+                                            <div className="flex items-center gap-2">
+                                                <p className="font-bold">
+                                                    Status Conflict Check:{' '}
+                                                    <span className="capitalize">
+                                                        {conflictCheck.status.replace(
+                                                            '_',
+                                                            ' ',
+                                                        )}
+                                                    </span>
+                                                </p>
+                                                {conflictCheck.decision ===
+                                                    'waived' && (
+                                                    <span className="py-0.2 rounded bg-amber-500/20 px-1.5 font-mono text-[9px] font-bold uppercase text-amber-800 dark:text-amber-300">
+                                                        Waiver Disetujui Partner
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            <Link
+                                                href={governanceConflictRoutes.certificate.url(
+                                                    conflictCheck.id,
+                                                )}
+                                                target="_blank"
+                                                className="inline-flex items-center gap-1 rounded-md border border-slate-300 bg-white px-2 py-1 text-[10.5px] font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
+                                            >
+                                                <FileCheck className="size-3 text-blue-600 dark:text-blue-400" />
+                                                Buka Sertifikat Resmi
+                                                <ExternalLink className="size-2.5 text-slate-400" />
+                                            </Link>
                                         </div>
                                         <p className="text-[11px] opacity-90">
                                             <span className="font-semibold">
@@ -162,6 +239,37 @@ export default function MatterCreate({
                                                 )}
                                             </p>
                                         )}
+
+                                        {conflictCheck.matches &&
+                                            conflictCheck.matches.length > 0 && (
+                                                <div className="mt-2 space-y-1 rounded-lg border border-slate-200/60 bg-white/70 p-2 dark:border-white/10 dark:bg-black/20">
+                                                    <p className="text-[10.5px] font-bold text-slate-700 dark:text-zinc-300">
+                                                        Daftar Entitas yang Cocok ({conflictCheck.matches.length}):
+                                                    </p>
+                                                    <div className="max-h-28 space-y-1 overflow-y-auto">
+                                                        {conflictCheck.matches.map(
+                                                            (m, i) => (
+                                                                <div
+                                                                    key={i}
+                                                                    className="flex items-center justify-between text-[10px]"
+                                                                >
+                                                                    <span className="font-medium">
+                                                                        • {m.name} (
+                                                                        {m.role_label ??
+                                                                            m.type}
+                                                                        )
+                                                                    </span>
+                                                                    {m.similarity && (
+                                                                        <span className="font-mono font-bold text-slate-500">
+                                                                            {m.similarity}%
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
                                     </div>
                                 </div>
                             </div>
@@ -174,17 +282,46 @@ export default function MatterCreate({
                                     <>
                                         <div className="grid gap-3 sm:grid-cols-2">
                                             <div className="sm:col-span-2">
-                                                <SelectField
-                                                    label="Klien yang Diperiksa"
-                                                    name="client_id"
-                                                    error={errors.client_id}
-                                                    options={clients.map(
-                                                        (item) => ({
-                                                            value: item.id,
-                                                            label: `${item.client_number} - ${item.display_name}`,
-                                                        }),
-                                                    )}
-                                                />
+                                                <div className="grid gap-1">
+                                                    <Label
+                                                        htmlFor="conflict_client_id"
+                                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                                    >
+                                                        Klien yang Diperiksa
+                                                    </Label>
+                                                    <div className="relative">
+                                                        <select
+                                                            id="conflict_client_id"
+                                                            name="client_id"
+                                                            value={selectedClientId}
+                                                            onChange={(e) =>
+                                                                setSelectedClientId(
+                                                                    e.target.value,
+                                                                )
+                                                            }
+                                                            className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-8 pl-2.5 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                        >
+                                                            <option value="">
+                                                                -- Pilih Klien --
+                                                            </option>
+                                                            {clients.map(
+                                                                (item) => (
+                                                                    <option
+                                                                        key={item.id}
+                                                                        value={item.id}
+                                                                    >
+                                                                        {item.client_number} -{' '}
+                                                                        {item.display_name}
+                                                                    </option>
+                                                                ),
+                                                            )}
+                                                        </select>
+                                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                                    </div>
+                                                    <InputError
+                                                        message={errors.client_id}
+                                                    />
+                                                </div>
                                             </div>
 
                                             <div className="space-y-1.5 sm:col-span-2">
@@ -198,6 +335,19 @@ export default function MatterCreate({
                                                             <Input
                                                                 key={index}
                                                                 name={`names[${index}]`}
+                                                                value={
+                                                                    adverseNames[index]
+                                                                }
+                                                                onChange={(e) => {
+                                                                    const updated = [
+                                                                        ...adverseNames,
+                                                                    ];
+                                                                    updated[index] =
+                                                                        e.target.value;
+                                                                    setAdverseNames(
+                                                                        updated,
+                                                                    );
+                                                                }}
                                                                 placeholder={
                                                                     index === 0
                                                                         ? 'Nama pihak lawan / perusahaan...'
@@ -212,6 +362,113 @@ export default function MatterCreate({
                                                     message={errors.names}
                                                 />
                                             </div>
+                                        </div>
+
+                                        {/* Live Scan Action & Results Box */}
+                                        <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 dark:border-white/10 dark:bg-[#121418]">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-1.5">
+                                                    <Zap className="size-3.5 text-amber-500" />
+                                                    <span className="text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                                        Pemindaian Kilat (Live Scan Preview)
+                                                    </span>
+                                                </div>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    disabled={
+                                                        previewLoading ||
+                                                        (!selectedClientId &&
+                                                            !adverseNames.some(
+                                                                (n) =>
+                                                                    n.trim().length >
+                                                                    0,
+                                                            ))
+                                                    }
+                                                    onClick={runLiveScan}
+                                                    className="h-7 rounded-lg border-amber-300 bg-amber-50/80 px-2.5 text-xs font-semibold text-amber-800 hover:bg-amber-100 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300"
+                                                >
+                                                    {previewLoading ? (
+                                                        <>
+                                                            <Spinner className="mr-1 size-3" />
+                                                            Memindai...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Zap className="mr-1 size-3" />
+                                                            Pindai Kilat
+                                                        </>
+                                                    )}
+                                                </Button>
+                                            </div>
+
+                                            {previewResult && (
+                                                <div className="mt-2.5 space-y-2 border-t border-slate-200/60 pt-2 dark:border-white/10">
+                                                    <div className="flex items-center justify-between text-xs">
+                                                        <span className="font-semibold text-slate-700 dark:text-zinc-300">
+                                                            Hasil Preview:{' '}
+                                                            <strong>
+                                                                {previewResult.match_count}{' '}
+                                                                Temuan
+                                                            </strong>
+                                                        </span>
+                                                        <span
+                                                            className={`rounded px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${
+                                                                previewResult.status ===
+                                                                'clear'
+                                                                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                                                                    : previewResult.status ===
+                                                                        'blocked'
+                                                                      ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                                                                      : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                                                            }`}
+                                                        >
+                                                            {previewResult.status ===
+                                                            'clear'
+                                                                ? '✓ Bebas Benturan'
+                                                                : previewResult.status ===
+                                                                    'blocked'
+                                                                  ? '✕ Benturan Langsung'
+                                                                  : '⚠ Potensi Benturan'}
+                                                        </span>
+                                                    </div>
+
+                                                    {previewResult.matches.length >
+                                                        0 && (
+                                                        <div className="max-h-28 space-y-1 overflow-y-auto pr-1">
+                                                            {previewResult.matches.map(
+                                                                (m, i) => (
+                                                                    <div
+                                                                        key={i}
+                                                                        className="flex items-start justify-between gap-2 rounded-lg border border-slate-200 bg-white p-1.5 text-[10.5px] dark:border-white/10 dark:bg-zinc-800"
+                                                                    >
+                                                                        <div className="min-w-0 flex-1">
+                                                                            <div className="flex items-center gap-1.5">
+                                                                                <span className="font-bold text-slate-900 dark:text-white">
+                                                                                    {m.name}
+                                                                                </span>
+                                                                                <span className="rounded bg-slate-100 px-1 py-0.2 text-[9px] font-semibold text-slate-600 dark:bg-zinc-700 dark:text-zinc-300">
+                                                                                    {m.role_label ??
+                                                                                        m.type}
+                                                                                </span>
+                                                                            </div>
+                                                                            {m.details && (
+                                                                                <p className="mt-0.5 text-[9.5px] text-slate-500 dark:text-zinc-400">
+                                                                                    {m.details}
+                                                                                </p>
+                                                                            )}
+                                                                        </div>
+                                                                        <span className="shrink-0 font-mono text-[9.5px] font-bold text-slate-700 dark:text-zinc-300">
+                                                                            {m.similarity}%
+                                                                        </span>
+                                                                    </div>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
 
                                         <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-white/[0.04]">
@@ -229,7 +486,7 @@ export default function MatterCreate({
                                                 {processing && (
                                                     <Spinner className="mr-1.5 size-3" />
                                                 )}
-                                                Jalankan Conflict Check
+                                                Simpan &amp; Lanjutkan Intake
                                             </Button>
                                         </div>
                                     </>

@@ -22,6 +22,7 @@ use App\Models\Document;
 use App\Models\Matter;
 use App\Models\MatterExport;
 use App\Services\AuditService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -68,7 +69,12 @@ class GovernanceController extends Controller
                     ->latest('occurred_at')->limit(50)->get()
                 : [],
             'conflictChecks' => $request->user()->hasPermission('conflict.view')
-                ? ConflictCheck::query()->where(fn ($query) => $query->whereIn('matter_id', $matterIds)->orWhereNull('matter_id'))->with('matter:id,matter_number,title')->latest()->limit(20)->get()
+                ? ConflictCheck::query()->where(fn ($query) => $query->whereIn('matter_id', $matterIds)->orWhereNull('matter_id'))->with([
+                    'matter:id,matter_number,title',
+                    'client:id,client_number,display_name',
+                    'requester:id,name',
+                    'reviewer:id,name',
+                ])->latest()->limit(50)->get()
                 : [],
             'exports' => MatterExport::query()->whereIn('matter_id', $matterIds)->with('matter:id,matter_number,title')->latest()->limit(20)->get(),
             'documents' => $request->user()->hasPermission('document.view')
@@ -173,6 +179,49 @@ class GovernanceController extends Controller
         $resolve->handle($conflictCheck, $request->user(), $request->validated('decision'), $request->validated('decision_note'));
 
         return back()->with('success', 'Keputusan conflict check disimpan.');
+    }
+
+    public function previewConflictCheck(Request $request, RunConflictCheck $run): JsonResponse
+    {
+        abort_unless(
+            $request->user()->hasPermission('conflict.manage') ||
+            $request->user()->hasPermission('conflict.view') ||
+            $request->user()->hasPermission('matter.create') ||
+            $request->user()->hasPermission('matter.update'),
+            403
+        );
+
+        $validated = $request->validate([
+            'names' => ['required', 'array', 'min:1'],
+            'names.*' => ['nullable', 'string', 'max:255'],
+            'client_id' => ['nullable', 'exists:clients,id'],
+            'matter_id' => ['nullable', 'exists:matters,id'],
+        ]);
+
+        $client = ! empty($validated['client_id']) ? Client::query()->find($validated['client_id']) : null;
+        $matter = ! empty($validated['matter_id']) ? Matter::query()->find($validated['matter_id']) : null;
+
+        $scan = $run->scan($validated['names'], $client, $matter);
+
+        return response()->json($scan);
+    }
+
+    public function showCertificate(ConflictCheck $conflictCheck): Response
+    {
+        if ($conflictCheck->matter !== null) {
+            Gate::authorize('view', $conflictCheck->matter);
+        }
+
+        $conflictCheck->load([
+            'matter:id,matter_number,title',
+            'client:id,client_number,display_name,tax_id',
+            'requester:id,name,email,position_title',
+            'reviewer:id,name,email,position_title',
+        ]);
+
+        return Inertia::render('governance/conflict-certificate', [
+            'conflictCheck' => $conflictCheck,
+        ]);
     }
 
     public function placeLegalHold(UpdateMatterGovernanceRequest $request, Matter $matter, PlaceMatterOnLegalHold $legalHold): RedirectResponse

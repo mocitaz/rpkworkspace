@@ -9,6 +9,7 @@ import {
     CheckCircle2,
     Copy,
     Download,
+    ExternalLink,
     FileDown,
     FileText,
     FolderKanban,
@@ -19,6 +20,7 @@ import {
     ReceiptText,
     Scale,
     ShieldAlert,
+    ShieldCheck,
     UserCheck,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -171,6 +173,22 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
 
                         {/* Top Action Buttons */}
                         <div className="flex flex-wrap items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 rounded-lg border-slate-200/70 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                asChild
+                            >
+                                <a
+                                    href={`/verify/invoice/${invoice.invoice_number}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    <ShieldCheck className="mr-1 size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                    Verifikasi Publik
+                                    <ExternalLink className="ml-1 size-2.5 text-slate-400" />
+                                </a>
+                            </Button>
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -682,10 +700,10 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                             </div>
                         </div>
 
-                        {/* 5. Terms & Signature Block */}
+                        {/* 5. Terms, QR Code & Signature Block */}
                         <div className="mt-8 border-t border-slate-100 pt-6 dark:border-white/[0.04]">
-                            <div className="grid gap-4 sm:grid-cols-12">
-                                <div className="space-y-1.5 text-xs text-slate-500 sm:col-span-8 dark:text-zinc-400">
+                            <div className="grid gap-4 sm:grid-cols-12 items-center">
+                                <div className="space-y-1.5 text-xs text-slate-500 sm:col-span-5 dark:text-zinc-400">
                                     <p className="font-semibold text-slate-900 dark:text-white">
                                         Ketentuan &amp; Catatan Penagihan:
                                     </p>
@@ -710,6 +728,31 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                     </ul>
                                 </div>
 
+                                <div className="flex items-center gap-2.5 rounded-lg border border-slate-200/80 bg-slate-50/70 p-2 sm:col-span-3 dark:border-white/10 dark:bg-[#121418]">
+                                    <img
+                                        src={`/verify/invoice/${invoice.invoice_number}/qr.svg`}
+                                        alt="QR Verifikasi"
+                                        className="size-12 rounded border border-slate-200 bg-white p-0.5 dark:border-white/10"
+                                    />
+                                    <div className="min-w-0 space-y-0.5">
+                                        <p className="text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                                            QR Verifikasi
+                                        </p>
+                                        <p className="text-[9px] text-slate-500 dark:text-zinc-400 leading-tight">
+                                            Pindai keaslian tagihan
+                                        </p>
+                                        <a
+                                            href={`/verify/invoice/${invoice.invoice_number}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="inline-flex items-center gap-0.5 font-mono text-[8.5px] font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                        >
+                                            Verifikasi
+                                            <ExternalLink className="size-2" />
+                                        </a>
+                                    </div>
+                                </div>
+
                                 <div className="text-center sm:col-span-4 sm:text-right">
                                     <p className="text-[11px] text-slate-500">
                                         Bandung,{' '}
@@ -721,7 +764,7 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                     <p className="text-xs font-bold text-slate-900 dark:text-white">
                                         RPK Law Firm &amp; Partners
                                     </p>
-                                    <div className="my-6 hidden border-b border-slate-200 sm:block dark:border-white/10" />
+                                    <div className="my-5 hidden border-b border-slate-200 sm:block dark:border-white/10" />
                                     <p className="text-xs font-semibold text-slate-900 dark:text-white">
                                         Managing Partner / Finance Director
                                     </p>

@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\GovernanceController::download
-* @see app/Http/Controllers/GovernanceController.php:213
+* @see app/Http/Controllers/GovernanceController.php:262
 * @route '/governance/exports/{matterExport}/download'
 */
 export const download = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ download.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::download
-* @see app/Http/Controllers/GovernanceController.php:213
+* @see app/Http/Controllers/GovernanceController.php:262
 * @route '/governance/exports/{matterExport}/download'
 */
 download.url = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ download.url = (args: { matterExport: string | { id: string } } | [matterExport:
 
 /**
 * @see \App\Http\Controllers\GovernanceController::download
-* @see app/Http/Controllers/GovernanceController.php:213
+* @see app/Http/Controllers/GovernanceController.php:262
 * @route '/governance/exports/{matterExport}/download'
 */
 download.get = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -59,7 +59,7 @@ download.get = (args: { matterExport: string | { id: string } } | [matterExport:
 
 /**
 * @see \App\Http\Controllers\GovernanceController::download
-* @see app/Http/Controllers/GovernanceController.php:213
+* @see app/Http/Controllers/GovernanceController.php:262
 * @route '/governance/exports/{matterExport}/download'
 */
 download.head = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -69,7 +69,7 @@ download.head = (args: { matterExport: string | { id: string } } | [matterExport
 
 /**
 * @see \App\Http\Controllers\GovernanceController::download
-* @see app/Http/Controllers/GovernanceController.php:213
+* @see app/Http/Controllers/GovernanceController.php:262
 * @route '/governance/exports/{matterExport}/download'
 */
 const downloadForm = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ const downloadForm = (args: { matterExport: string | { id: string } } | [matterE
 
 /**
 * @see \App\Http\Controllers\GovernanceController::download
-* @see app/Http/Controllers/GovernanceController.php:213
+* @see app/Http/Controllers/GovernanceController.php:262
 * @route '/governance/exports/{matterExport}/download'
 */
 downloadForm.get = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -89,7 +89,7 @@ downloadForm.get = (args: { matterExport: string | { id: string } } | [matterExp
 
 /**
 * @see \App\Http\Controllers\GovernanceController::download
-* @see app/Http/Controllers/GovernanceController.php:213
+* @see app/Http/Controllers/GovernanceController.php:262
 * @route '/governance/exports/{matterExport}/download'
 */
 downloadForm.head = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
