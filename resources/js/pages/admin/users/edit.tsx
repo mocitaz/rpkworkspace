@@ -136,14 +136,9 @@ export default function UserEdit({
                     {/* 1. Header Navigation */}
                     <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                                <span className="inline-flex items-center rounded-md bg-amber-500/10 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-700 dark:bg-amber-400/10 dark:text-amber-300">
-                                    EDIT PROFIL &amp; KREDENSIAL
-                                </span>
-                                <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                    Edit Profil: {staff.name}
-                                </h1>
-                            </div>
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                                Edit Profil: {staff.name}
+                            </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
                                 Perbarui data identitas staf, jabatan struktural, nomor KTA/BAS advokat, nomor rekening, dan hak akses.
                             </p>
@@ -380,14 +375,15 @@ export default function UserEdit({
                                         {/* Jabatan / Position Title */}
                                         <div className="space-y-1">
                                             <Label htmlFor="position_title" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                                                Jabatan Resmi (Position Title)
+                                                Jabatan Resmi (Position Title) <span className="text-rose-500">*</span>
                                             </Label>
                                             <input
                                                 list="position-options"
                                                 id="position_title"
                                                 name="position_title"
                                                 defaultValue={staff.position_title ?? ''}
-                                                placeholder="Pilih atau ketik jabatan..."
+                                                required
+                                                placeholder="Pilih atau ketik jabatan (contoh: Partner, Associate, Staf)..."
                                                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-xs shadow-2xs transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                                             />
                                             <datalist id="position-options">

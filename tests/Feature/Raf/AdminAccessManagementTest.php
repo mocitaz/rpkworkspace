@@ -63,6 +63,7 @@ it('allows an administrator to create a user with a manual password without send
     $this->actingAs($administrator)->put(route('admin.users.update', $user), [
         'name' => 'Budi Staff Updated',
         'email' => 'budi@example.test',
+        'position_title' => 'Associate',
         'password' => 'NewPassword999!',
         'is_active' => true,
         'role_ids' => [$associate->getKey()],

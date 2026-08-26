@@ -32,7 +32,7 @@ class UpdateAdminUserRequest extends FormRequest
                 'max:255',
                 Rule::unique((new User)->getTable(), 'email')->ignore($this->route('user')),
             ],
-            'position_title' => ['nullable', 'string', 'max:150'],
+            'position_title' => ['required', 'string', 'max:150'],
             'employee_code' => [
                 'nullable',
                 'string',
