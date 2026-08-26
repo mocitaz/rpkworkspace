@@ -1,4 +1,5 @@
 import { createInertiaApp } from '@inertiajs/react';
+import { HttpErrorModal } from '@/components/http-error-modal';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { initializeTheme } from '@/hooks/use-appearance';
@@ -27,6 +28,7 @@ createInertiaApp({
         return (
             <TooltipProvider delayDuration={0}>
                 {app}
+                <HttpErrorModal />
                 <Toaster />
             </TooltipProvider>
         );

@@ -24,6 +24,8 @@ import {
     Users,
 } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
+import { showEntityTooLargeAlert } from '@/components/http-error-modal';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -68,6 +70,18 @@ export default function UserCreate({
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                const fileSizeMb = (file.size / (1024 * 1024)).toFixed(1);
+                toast.error(`Ukuran foto (${fileSizeMb} MB) melebihi batas maksimal 5MB.`);
+                showEntityTooLargeAlert({
+                    title: 'Ukuran Foto Terlalu Besar (Maksimal 5MB)',
+                    description: `Foto "${file.name}" berukuran ${fileSizeMb} MB. Batas kapasitas maksimal foto profil adalah 5MB agar tidak ditolak oleh server.`,
+                    fileInfo: `${file.name} (${fileSizeMb} MB)`,
+                });
+                e.target.value = '';
+                return;
+            }
+
             setAvatarFile(file);
             const reader = new FileReader();
             reader.onload = (event) => {

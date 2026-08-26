@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { FileUp, X } from 'lucide-react';
+import { toast } from 'sonner';
+import { showEntityTooLargeAlert } from '@/components/http-error-modal';
 import { cn } from '@/lib/utils';
 
 export interface FileInputProps
@@ -9,6 +11,7 @@ export interface FileInputProps
     clearable?: boolean;
     buttonText?: string;
     placeholder?: string;
+    maxSizeBytes?: number;
 }
 
 export const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
@@ -26,6 +29,7 @@ export const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
             buttonText = 'Pilih Berkas',
             placeholder = 'Belum ada berkas dipilih...',
             clearable = true,
+            maxSizeBytes = 20 * 1024 * 1024, // default 20MB
             ...props
         },
         forwardedRef
@@ -41,15 +45,34 @@ export const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
             }
         }, [value]);
 
-        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-            const file = e.target.files?.[0] || null;
+        const validateAndSetFile = (file: File | null, e?: React.ChangeEvent<HTMLInputElement>) => {
+            if (file && maxSizeBytes && file.size > maxSizeBytes) {
+                const maxMb = (maxSizeBytes / (1024 * 1024)).toFixed(0);
+                const fileMb = (file.size / (1024 * 1024)).toFixed(1);
+                toast.error(`Ukuran berkas "${file.name}" (${fileMb} MB) melebihi batas maksimal ${maxMb}MB.`);
+                showEntityTooLargeAlert({
+                    title: `Ukuran Berkas Terlalu Besar (Maksimal ${maxMb}MB)`,
+                    description: `Berkas "${file.name}" berukuran ${fileMb} MB, melebihi batas maksimal yang diizinkan (${maxMb}MB).`,
+                    fileInfo: `${file.name} (${fileMb} MB)`,
+                });
+                if (ref && 'current' in ref && ref.current) {
+                    ref.current.value = '';
+                }
+                return;
+            }
+
             setSelectedFile(file);
             if (onFileSelect) {
                 onFileSelect(file);
             }
-            if (onChange) {
+            if (onChange && e) {
                 onChange(e);
             }
+        };
+
+        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0] || null;
+            validateAndSetFile(file, e);
         };
 
         const handleClear = (e: React.MouseEvent) => {
@@ -102,15 +125,7 @@ export const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
                             dataTransfer.items.add(file);
                             ref.current.files = dataTransfer.files;
                         }
-                        setSelectedFile(file);
-                        if (onFileSelect) onFileSelect(file);
-                        if (onChange && ref && 'current' in ref && ref.current) {
-                            const event = {
-                                target: ref.current,
-                                currentTarget: ref.current,
-                            } as unknown as React.ChangeEvent<HTMLInputElement>;
-                            onChange(event);
-                        }
+                        validateAndSetFile(file);
                     }
                 }}
                 className={cn(

@@ -24,6 +24,8 @@ import {
     Users,
 } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
+import { showEntityTooLargeAlert } from '@/components/http-error-modal';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,41 +42,41 @@ type Role = {
     permissions: Permission[];
 };
 
-type Staff = {
+type User = {
     id: number;
     name: string;
     email: string;
-    position_title?: string | null;
-    employee_code?: string | null;
-    department?: string | null;
-    employment_type?: string | null;
-    employment_status?: string | null;
-    work_mode?: string | null;
-    joined_at?: string | null;
-    contract_end?: string | null;
-    supervisor_name?: string | null;
-    avatar_url?: string | null;
+    position_title: string;
+    employee_code?: string;
+    department?: string;
+    employment_type?: string;
+    employment_status?: string;
+    work_mode?: string;
+    joined_at?: string;
+    contract_end?: string;
+    supervisor_name?: string;
+    phone?: string;
+    address?: string;
+    ktp_address?: string;
+    birth_date?: string;
+    advocate_license_no?: string;
+    bas_number?: string;
+    bas_date?: string;
+    kta_expiry_date?: string;
+    practice_areas?: string;
+    education?: string;
+    hourly_rate?: number;
+    bank_name?: string;
+    bank_account_number?: string;
+    bank_account_holder?: string;
+    npwp?: string;
+    avatar_url?: string;
     is_active: boolean;
-    phone?: string | null;
-    address?: string | null;
-    ktp_address?: string | null;
-    birth_date?: string | null;
-    advocate_license_no?: string | null;
-    bas_number?: string | null;
-    bas_date?: string | null;
-    kta_expiry_date?: string | null;
-    practice_areas?: string | null;
-    education?: string | null;
-    hourly_rate?: number | string | null;
-    bank_name?: string | null;
-    bank_account_number?: string | null;
-    bank_account_holder?: string | null;
-    npwp?: string | null;
-    roles: Role[];
+    roles?: Role[];
 };
 
 type PageProps = {
-    staff: Staff;
+    staff: User;
     roles: Role[];
     departments: string[];
     positions: string[];
@@ -105,6 +107,18 @@ export default function UserEdit({
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                const fileSizeMb = (file.size / (1024 * 1024)).toFixed(1);
+                toast.error(`Ukuran foto (${fileSizeMb} MB) melebihi batas maksimal 5MB.`);
+                showEntityTooLargeAlert({
+                    title: 'Ukuran Foto Terlalu Besar (Maksimal 5MB)',
+                    description: `Foto "${file.name}" berukuran ${fileSizeMb} MB. Batas kapasitas maksimal foto profil adalah 5MB agar tidak ditolak oleh server.`,
+                    fileInfo: `${file.name} (${fileSizeMb} MB)`,
+                });
+                e.target.value = '';
+                return;
+            }
+
             setRemoveAvatar(false);
             const reader = new FileReader();
             reader.onload = (event) => {

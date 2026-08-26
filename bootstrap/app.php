@@ -5,6 +5,7 @@ use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Exceptions\PostTooLargeException;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Request;
 
@@ -38,5 +39,19 @@ return Application::configure(basePath: dirname(__DIR__))
             return response()->json([
                 'message' => $e->getMessage(),
             ], 422);
+        });
+
+        $exceptions->render(function (PostTooLargeException $e, Request $request) {
+            $msg = 'Ukuran berkas yang diunggah melebihi batas maksimal server. Silakan unggah berkas yang lebih kecil.';
+            if ($request->header('X-Inertia') || ! $request->expectsJson()) {
+                return back()->with('error', $msg)->withErrors([
+                    'avatar' => $msg,
+                    'file' => $msg,
+                ]);
+            }
+
+            return response()->json([
+                'message' => $msg,
+            ], 413);
         });
     })->create();
