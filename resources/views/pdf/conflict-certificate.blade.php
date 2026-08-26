@@ -128,14 +128,23 @@
 
             <!-- Status Box -->
             <div class="status-box">
-                <div class="status-label">KESIMPULAN HASIL PENELUSURAN &amp; KELAYAKAN PERKARA</div>
+                <div class="status-label">KESIMPULAN UJI INDEPENDENSI PROFESI &amp; KELAYAKAN PERKARA</div>
                 <div class="status-val">
                     @if ($isClear)
-                        &#10003; BEBAS BENTURAN KEPENTINGAN (CLEAR &amp; ETHICALLY APPROVED)
+                        MEMENUHI SYARAT INDEPENDENSI • LAYAK DITANGANI
                     @elseif ($isWaived)
-                        &#9888; WAIVER DISETUJUI PARTNER (ETHICAL BARRIER APPROVED)
+                        DISETUJUI DENGAN KETENTUAN KHUSUS (ETHICAL WALL WAIVER)
                     @else
-                        &#10007; DITOLAK KARENA BENTURAN KEPENTINGAN (BLOCKED - ADVERSE MATCH)
+                        TIDAK DAPAT DITANGANI • BENTURAN LANGSUNG DITEMUKAN
+                    @endif
+                </div>
+                <div style="font-size: 6.8px; color: #475569; margin-top: 2px; font-style: italic;">
+                    @if ($isClear)
+                        Berdasarkan penelusuran basis data perkara dan para pihak, tidak ditemukan benturan kepentingan dan perkara dinyatakan sah untuk diproses.
+                    @elseif ($isWaived)
+                        Terdapat potensi benturan yang telah ditinjau dan disetujui Managing Partner dengan pembatasan akses data (Ethical Barrier).
+                    @else
+                        Ditemukan benturan kepentingan langsung dengan pihak lawan atau portofolio perkara aktif firma hukum.
                     @endif
                 </div>
             </div>

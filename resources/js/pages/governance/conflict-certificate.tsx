@@ -1,8 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import {
     ArrowLeft,
-    CheckCircle2,
-    Clock,
+    Check,
     Download,
     FileCheck,
     Gavel,
@@ -166,45 +165,42 @@ export default function ConflictCertificate({
                     </div>
                 </div>
 
-                {/* 2. Certificate Title Header */}
+                {/* 2. Certificate Title Header & Verdict Card */}
                 <div className="my-7 text-center space-y-2">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1 font-mono text-[9.5px] font-bold text-white uppercase shadow-2xs dark:bg-white dark:text-slate-900">
-                        <FileCheck className="size-3 text-emerald-400 dark:text-emerald-600" />
-                        FORMULIR KEPATUHAN ETIKA NOMOR: CC/{new Date(conflictCheck.created_at).getFullYear()}/{conflictCheck.id.slice(0, 8).toUpperCase()}
-                    </span>
+                    <div className="inline-flex items-center gap-2 rounded-md bg-slate-900 px-3 py-1 font-mono text-[10px] font-bold text-white uppercase tracking-wider dark:bg-white dark:text-slate-900">
+                        <FileCheck className="size-3 text-amber-400 dark:text-amber-600" />
+                        NO. REGISTRASI KEPATUHAN: CC/{new Date(conflictCheck.created_at).getFullYear()}/{conflictCheck.id.slice(0, 8).toUpperCase()}
+                    </div>
 
-                    <h2 className="font-serif text-xl font-black tracking-tight text-slate-900 uppercase sm:text-2xl dark:text-white">
+                    <h2 className="font-serif text-xl sm:text-2xl font-black tracking-tight text-slate-900 uppercase dark:text-white">
                         SURAT KETERANGAN PEMERIKSAAN BENTURAN KEPENTINGAN
                     </h2>
                     <p className="font-sans text-xs tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                         CERTIFICATE OF CONFLICT OF INTEREST CLEARANCE &amp; ETHICAL REVIEW
                     </p>
 
-                    {/* Result Status Badge */}
-                    <div className="pt-2">
-                        <div
-                            className={`inline-flex items-center gap-2 rounded-xl border px-5 py-2 font-mono text-xs font-bold uppercase shadow-2xs ${
-                                isClear
-                                    ? 'border-emerald-300/80 bg-emerald-50 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200'
-                                    : isWaived
-                                      ? 'border-amber-300/80 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200'
-                                      : 'border-rose-300/80 bg-rose-50 text-rose-900 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-200'
-                            }`}
-                        >
-                            {isClear ? (
-                                <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
-                            ) : isWaived ? (
-                                <ShieldCheck className="size-4 text-amber-600 dark:text-amber-400" />
-                            ) : (
-                                <ShieldAlert className="size-4 text-rose-600 dark:text-rose-400" />
-                            )}
-                            <span>
-                                {isClear
-                                    ? 'STATUS: BEBAS BENTURAN KEPENTINGAN (CLEAR & ETHICALLY APPROVED)'
-                                    : isWaived
-                                      ? 'STATUS: WAIVER DISETUJUI PARTNER (ETHICAL BARRIER APPROVED)'
-                                      : 'STATUS: DITOLAK KARENA BENTURAN (BLOCKED - ADVERSE MATCH)'}
+                    {/* Executive Legal Verdict Card */}
+                    <div className="mx-auto mt-4 max-w-2xl">
+                        <div className="rounded-xl border border-slate-300/80 bg-slate-50/80 p-4 sm:p-5 text-center shadow-xs dark:border-white/10 dark:bg-[#121418]">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-zinc-500">
+                                KESIMPULAN UJI INDEPENDENSI PROFESI
                             </span>
+                            <div className="mt-1 flex items-center justify-center gap-2">
+                                <span className="font-serif text-base sm:text-lg font-black tracking-tight text-slate-900 uppercase dark:text-white">
+                                    {isClear
+                                        ? 'MEMENUHI SYARAT INDEPENDENSI • LAYAK DITANGANI'
+                                        : isWaived
+                                          ? 'DISETUJUI DENGAN KETENTUAN KHUSUS (ETHICAL WALL WAIVER)'
+                                          : 'TIDAK DAPAT DITANGANI • BENTURAN LANGSUNG DITEMUKAN'}
+                                </span>
+                            </div>
+                            <p className="mt-1 text-[11.5px] text-slate-600 dark:text-zinc-400 font-medium">
+                                {isClear
+                                    ? 'Berdasarkan penelusuran basis data perkara dan para pihak, tidak ditemukan benturan kepentingan dan perkara dinyatakan sah untuk diproses.'
+                                    : isWaived
+                                      ? 'Terdapat potensi benturan yang telah ditinjau dan disetujui Managing Partner dengan pembatasan akses data (Ethical Barrier).'
+                                      : 'Ditemukan benturan kepentingan langsung dengan pihak lawan atau portofolio perkara aktif firma hukum.'}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -351,8 +347,8 @@ export default function ConflictCertificate({
                     ) : (
                         <div className="rounded-xl border border-slate-200/90 bg-slate-50/70 p-4 text-slate-800 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200">
                             <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white">
-                                <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
-                                <span>Hasil Penelusuran Nihil (Zero Conflicts Found)</span>
+                                <Scale className="size-4 text-slate-700 dark:text-zinc-300" />
+                                <span>Hasil Penelusuran: Nihil Benturan Kepentingan (Zero Conflicts)</span>
                             </div>
                             <p className="mt-1 text-xs text-slate-600 dark:text-zinc-400 leading-relaxed">
                                 Tidak ditemukan adanya irisan atau kesamaan nama pihak dengan klien aktif, mantan klien, maupun pihak lawan pada seluruh portofolio perkara yang sedang atau pernah ditangani oleh RPK Law Firm.
