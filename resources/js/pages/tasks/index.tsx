@@ -867,15 +867,13 @@ export default function TasksIndex({
                                                         <Button
                                                             size="sm"
                                                             variant="ghost"
-                                                            onClick={() =>
-                                                                setSelectedTask(
-                                                                    task,
-                                                                )
-                                                            }
+                                                            asChild
                                                             className="h-7 px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/[0.06]"
                                                         >
-                                                            Detail
-                                                            <ChevronRight className="ml-0.5 size-3 text-slate-400" />
+                                                            <Link href={taskRoutes.show?.url ? taskRoutes.show.url(task.id) : `/tasks/${task.id}`}>
+                                                                Detail
+                                                                <ChevronRight className="ml-0.5 size-3 text-slate-400" />
+                                                            </Link>
                                                         </Button>
                                                     </td>
                                                 </tr>
