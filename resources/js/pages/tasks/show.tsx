@@ -10,7 +10,6 @@ import {
     CheckCircle2,
     ChevronRight,
     Clock,
-    Copy,
     DollarSign,
     Download,
     Eye,
@@ -29,7 +28,6 @@ import {
     Scale,
     Send,
     Shield,
-    Sparkles,
     Trash2,
     TrendingUp,
     User,
@@ -170,7 +168,6 @@ export default function TaskShow({
     const [activeTab, setActiveTab] = useState<'summary' | 'instructions' | 'documents' | 'discussion' | 'history'>('summary');
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isCompleteModalOpen, setIsCompleteModalOpen] = useState(false);
-    const [isCopied, setIsCopied] = useState(false);
     const [previewDoc, setPreviewDoc] = useState<PreviewableDocument | null>(null);
 
     // Checklist progress calculation
@@ -184,12 +181,6 @@ export default function TaskShow({
         if (!task.due_at || task.status === 'completed' || task.status === 'cancelled') return false;
         return new Date(task.due_at).getTime() < Date.now();
     }, [task.due_at, task.status]);
-
-    const copyTaskNumber = () => {
-        navigator.clipboard.writeText(task.task_number || task.id);
-        setIsCopied(true);
-        setTimeout(() => setIsCopied(false), 2000);
-    };
 
     const handleToggleChecklist = (checklistId: string) => {
         router.patch(
@@ -276,20 +267,9 @@ export default function TaskShow({
                         <div className="space-y-1.5">
                             {/* Badges and tags */}
                             <div className="flex flex-wrap items-center gap-2">
-                                <button
-                                    type="button"
-                                    onClick={copyTaskNumber}
-                                    title="Salin Nomor Tugas"
-                                    className="inline-flex items-center gap-1.5 rounded-md bg-blue-600 px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs hover:bg-blue-700 transition-colors"
-                                >
-                                    <Sparkles className="size-3 text-amber-300" />
+                                <span className="inline-block rounded-md bg-blue-600 px-2.5 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs">
                                     {task.task_number}
-                                    {isCopied ? (
-                                        <Check className="size-3 text-emerald-300" />
-                                    ) : (
-                                        <Copy className="size-3 text-blue-200" />
-                                    )}
-                                </button>
+                                </span>
 
                                 <StatusBadge value={task.status} />
                                 <StatusBadge value={task.priority} />
@@ -534,7 +514,7 @@ export default function TaskShow({
                                     {task.due_at ? formatDate(task.due_at) : 'Tanpa Tenggat'}
                                 </p>
                                 <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                    {isOverdue ? '⚠️ Melewati batas waktu' : task.start_date ? `Mulai: ${formatDate(task.start_date)}` : 'Jadwal Normal'}
+                                    {isOverdue ? 'Melewati batas waktu' : task.start_date ? `Mulai: ${formatDate(task.start_date)}` : 'Jadwal Normal'}
                                 </p>
                             </div>
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
