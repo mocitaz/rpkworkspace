@@ -938,7 +938,7 @@ export default function GovernanceIndex({
                                         size="sm"
                                         className="h-7 rounded-lg bg-slate-900 px-2.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                     >
-                                        <Link href={matterRoutes.create()}>
+                                        <Link href={matterRoutes.create.url()}>
                                             <Plus className="mr-1 size-3" />
                                             Perkara Baru
                                         </Link>
@@ -1037,7 +1037,7 @@ export default function GovernanceIndex({
                                                         </div>
 
                                                         <Link
-                                                            href={matterRoutes.show(
+                                                            href={matterRoutes.show.url(
                                                                 matter.id,
                                                             )}
                                                             className="line-clamp-1 block text-xs font-bold text-slate-900 transition-colors hover:text-emerald-600 dark:text-white dark:hover:text-emerald-400"
@@ -1144,7 +1144,7 @@ export default function GovernanceIndex({
                                             size="sm"
                                             className="mt-3.5 h-8 rounded-lg border-emerald-200 text-xs font-semibold text-emerald-600 hover:bg-emerald-50 dark:border-emerald-900/40 dark:text-emerald-400 dark:hover:bg-emerald-950/40"
                                         >
-                                            <Link href={matterRoutes.create()}>
+                                            <Link href={matterRoutes.create.url()}>
                                                 <Plus className="mr-1 size-3.5" />{' '}
                                                 Registrasi Perkara Baru
                                             </Link>

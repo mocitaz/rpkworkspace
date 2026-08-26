@@ -453,7 +453,7 @@ export default function MatterShow({
                                 className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                                 asChild
                             >
-                                <Link href={matterRoutes.index()}>
+                                <Link href={matterRoutes.index.url()}>
                                     <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
                                     Kembali
                                 </Link>
@@ -3411,7 +3411,7 @@ function TaskList({
 
 MatterShow.layout = {
     breadcrumbs: [
-        { title: 'Perkara', href: matterRoutes.index() },
+        { title: 'Perkara', href: matterRoutes.index.url() },
         { title: 'Detail Perkara', href: '#' },
     ],
 };

@@ -53,7 +53,7 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
                                 className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                                 asChild
                             >
-                                <Link href={clientRoutes.index()}>
+                                <Link href={clientRoutes.index.url()}>
                                     <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
                                     Kembali ke Direktori Klien
                                 </Link>
@@ -278,7 +278,7 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
                                             className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
                                             asChild
                                         >
-                                            <Link href={clientRoutes.index()}>
+                                            <Link href={clientRoutes.index.url()}>
                                                 Batal
                                             </Link>
                                         </Button>
@@ -401,7 +401,7 @@ function SelectField({
 
 ClientCreate.layout = {
     breadcrumbs: [
-        { title: 'Klien', href: clientRoutes.index() },
-        { title: 'Buat Klien Baru', href: clientRoutes.create() },
+        { title: 'Klien', href: clientRoutes.index.url() },
+        { title: 'Buat Klien Baru', href: clientRoutes.create.url() },
     ],
 };

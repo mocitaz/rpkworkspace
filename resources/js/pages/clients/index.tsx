@@ -90,7 +90,7 @@ export default function ClientsIndex({
             queryParams.delete('status');
         }
         router.get(
-            clientRoutes.index(),
+            clientRoutes.index.url(),
             Object.fromEntries(queryParams.entries()),
             {
                 preserveState: true,
@@ -108,7 +108,7 @@ export default function ClientsIndex({
             queryParams.delete('search');
         }
         router.get(
-            clientRoutes.index(),
+            clientRoutes.index.url(),
             Object.fromEntries(queryParams.entries()),
             {
                 preserveState: true,
@@ -120,7 +120,7 @@ export default function ClientsIndex({
     const handleResetFilters = () => {
         setSearchQuery('');
         router.get(
-            clientRoutes.index(),
+            clientRoutes.index.url(),
             {},
             { preserveState: true, preserveScroll: true },
         );
@@ -150,7 +150,7 @@ export default function ClientsIndex({
                                     asChild
                                     className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                 >
-                                    <Link href={clientRoutes.create()}>
+                                    <Link href={clientRoutes.create.url()}>
                                         <Plus className="mr-1 size-3.5" />
                                         Registrasi Klien Baru
                                     </Link>
@@ -380,7 +380,7 @@ export default function ClientsIndex({
                                                     className="h-8 cursor-pointer rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
                                                 >
                                                     <Link
-                                                        href={clientRoutes.create()}
+                                                        href={clientRoutes.create.url()}
                                                     >
                                                         <Plus className="mr-1 size-3.5" />{' '}
                                                         Tambah Klien Baru
@@ -413,7 +413,7 @@ export default function ClientsIndex({
                                     {clients.data.map((client) => (
                                         <Link
                                             key={client.id}
-                                            href={clientRoutes.show(client.id)}
+                                            href={clientRoutes.show.url(client.id)}
                                             className="block p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
                                         >
                                             <div className="flex items-start justify-between gap-2">
@@ -498,7 +498,7 @@ export default function ClientsIndex({
                                                     {/* 1. Client Info */}
                                                     <td className="py-2.5 pr-3 pl-4">
                                                         <Link
-                                                            href={clientRoutes.show(
+                                                            href={clientRoutes.show.url(
                                                                 client.id,
                                                             )}
                                                             className="flex items-center gap-2.5"
@@ -638,7 +638,7 @@ export default function ClientsIndex({
                                                     {/* 7. Action */}
                                                     <td className="py-2.5 pr-4 pl-1 text-right whitespace-nowrap">
                                                         <Link
-                                                            href={clientRoutes.show(
+                                                            href={clientRoutes.show.url(
                                                                 client.id,
                                                             )}
                                                             className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
@@ -678,5 +678,5 @@ export default function ClientsIndex({
 }
 
 ClientsIndex.layout = {
-    breadcrumbs: [{ title: 'Klien', href: clientRoutes.index() }],
+    breadcrumbs: [{ title: 'Klien', href: clientRoutes.index.url() }],
 };

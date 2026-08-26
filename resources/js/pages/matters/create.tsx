@@ -85,7 +85,7 @@ export default function MatterCreate({
                                 className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                                 asChild
                             >
-                                <Link href={matterRoutes.index()}>
+                                <Link href={matterRoutes.index.url()}>
                                     <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
                                     Kembali ke Daftar Perkara
                                 </Link>
@@ -595,7 +595,7 @@ export default function MatterCreate({
                                                 asChild
                                             >
                                                 <Link
-                                                    href={matterRoutes.index()}
+                                                    href={matterRoutes.index.url()}
                                                 >
                                                     Batal
                                                 </Link>
@@ -720,7 +720,7 @@ function SelectField({
 
 MatterCreate.layout = {
     breadcrumbs: [
-        { title: 'Perkara', href: matterRoutes.index() },
-        { title: 'Registrasi Perkara Baru', href: matterRoutes.create() },
+        { title: 'Perkara', href: matterRoutes.index.url() },
+        { title: 'Registrasi Perkara Baru', href: matterRoutes.create.url() },
     ],
 };

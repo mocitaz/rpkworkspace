@@ -118,7 +118,7 @@ export default function ClientEdit({
                                 className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                                 asChild
                             >
-                                <Link href={clientRoutes.show(client.id)}>
+                                <Link href={clientRoutes.show.url(client.id)}>
                                     <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
                                     Kembali ke Detail Klien
                                 </Link>
@@ -579,7 +579,7 @@ export default function ClientEdit({
                                             asChild
                                         >
                                             <Link
-                                                href={clientRoutes.show(
+                                                href={clientRoutes.show.url(
                                                     client.id,
                                                 )}
                                             >
@@ -706,7 +706,7 @@ function SelectField({
 
 ClientEdit.layout = {
     breadcrumbs: [
-        { title: 'Klien', href: clientRoutes.index() },
+        { title: 'Klien', href: clientRoutes.index.url() },
         { title: 'Edit Klien', href: '#' },
     ],
 };

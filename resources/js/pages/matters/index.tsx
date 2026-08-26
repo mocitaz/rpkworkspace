@@ -116,7 +116,7 @@ export default function MattersIndex({
             queryParams.delete('status');
         }
         router.get(
-            matterRoutes.index(),
+            matterRoutes.index.url(),
             Object.fromEntries(queryParams.entries()),
             {
                 preserveState: true,
@@ -151,7 +151,7 @@ export default function MattersIndex({
                                     asChild
                                     className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                 >
-                                    <Link href={matterRoutes.create()}>
+                                    <Link href={matterRoutes.create.url()}>
                                         <Plus className="mr-1 size-3.5" />
                                         Registrasi Perkara Baru
                                     </Link>
@@ -322,7 +322,7 @@ export default function MattersIndex({
                                     className="h-8 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
                                     title="Reset Semua Filter"
                                 >
-                                    <Link href={matterRoutes.index()}>
+                                    <Link href={matterRoutes.index.url()}>
                                         <RotateCcw className="size-3.5 text-slate-400" />
                                     </Link>
                                 </Button>
@@ -412,7 +412,7 @@ export default function MattersIndex({
                                                     className="h-8 cursor-pointer rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
                                                 >
                                                     <Link
-                                                        href={matterRoutes.create()}
+                                                        href={matterRoutes.create.url()}
                                                     >
                                                         <Plus className="mr-1 size-3.5" />{' '}
                                                         Buka Perkara Baru
@@ -446,7 +446,7 @@ export default function MattersIndex({
                                     {matters.data.map((matter) => (
                                         <Link
                                             key={matter.id}
-                                            href={matterRoutes.show(matter.id)}
+                                            href={matterRoutes.show.url(matter.id)}
                                             className="block p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
                                         >
                                             <div className="flex items-start justify-between gap-2">
@@ -534,7 +534,7 @@ export default function MattersIndex({
                                                     {/* 1. Title & Number */}
                                                     <td className="py-2.5 pr-3 pl-4">
                                                         <Link
-                                                            href={matterRoutes.show(
+                                                            href={matterRoutes.show.url(
                                                                 matter.id,
                                                             )}
                                                             className="flex items-center gap-2.5"
@@ -692,7 +692,7 @@ export default function MattersIndex({
                                                     {/* 8. Action Arrow */}
                                                     <td className="py-2.5 pr-4 pl-1 text-right">
                                                         <Link
-                                                            href={matterRoutes.show(
+                                                            href={matterRoutes.show.url(
                                                                 matter.id,
                                                             )}
                                                             className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
@@ -732,5 +732,5 @@ export default function MattersIndex({
 }
 
 MattersIndex.layout = {
-    breadcrumbs: [{ title: 'Perkara', href: matterRoutes.index() }],
+    breadcrumbs: [{ title: 'Perkara', href: matterRoutes.index.url() }],
 };
