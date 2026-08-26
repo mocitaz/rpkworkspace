@@ -83,8 +83,14 @@ it('allows partner to record ethical waiver on conflict checks', function () {
 });
 
 it('renders the official conflict clearance certificate page', function () {
-    $partner = rafUser(['conflict.view', 'governance.view']);
+    $partner = rafUser(['conflict.view', 'governance.view', 'matter.view']);
+    $client = Client::factory()->create([
+        'tax_identifier' => '01.234.567.8-901.000',
+    ]);
+    $matter = Matter::factory()->create(['client_id' => $client->id]);
     $check = ConflictCheck::factory()->create([
+        'client_id' => $client->id,
+        'matter_id' => $matter->id,
         'status' => 'clear',
         'decision' => 'cleared',
         'searched_names' => ['PT Bumi Sejahtera', 'John Doe'],
@@ -99,5 +105,6 @@ it('renders the official conflict clearance certificate page', function () {
         ->component('governance/conflict-certificate')
         ->has('conflictCheck')
         ->where('conflictCheck.id', $check->getKey())
+        ->where('conflictCheck.client.id', $client->id)
     );
 });

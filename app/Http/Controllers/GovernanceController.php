@@ -206,15 +206,17 @@ class GovernanceController extends Controller
         return response()->json($scan);
     }
 
-    public function showCertificate(ConflictCheck $conflictCheck): Response
+    public function showCertificate(Request $request, ConflictCheck $conflictCheck): Response
     {
-        if ($conflictCheck->matter !== null) {
-            Gate::authorize('view', $conflictCheck->matter);
+        abort_unless($request->user()->hasPermission('conflict.view') || $request->user()->hasPermission('governance.view') || $request->user()->hasPermission('matter.view'), 403);
+
+        if ($conflictCheck->matter !== null && $request->user()->cannot('view', $conflictCheck->matter)) {
+            abort(403);
         }
 
         $conflictCheck->load([
             'matter:id,matter_number,title',
-            'client:id,client_number,display_name,tax_id',
+            'client:id,client_number,display_name,tax_identifier',
             'requester:id,name,email,position_title',
             'reviewer:id,name,email,position_title',
         ]);

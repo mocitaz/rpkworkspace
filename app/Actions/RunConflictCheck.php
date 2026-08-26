@@ -110,8 +110,8 @@ class RunConflictCheck
                 $tokens->each(fn (string $token) => $query->orWhereRaw('LOWER(display_name) LIKE ?', ['%'.$token.'%']));
                 $digits = preg_replace('/\D/', '', $name);
                 if (mb_strlen($digits) >= 6) {
-                    $query->orWhere('tax_id', 'like', "%{$digits}%")
-                        ->orWhere('registration_number', 'like', "%{$digits}%");
+                    $query->orWhere('tax_identifier', 'like', "%{$digits}%")
+                        ->orWhere('registration_identifier', 'like', "%{$digits}%");
                 }
             })->limit(50)->get()->map(function (Client $client) use ($cleanName, $name) {
                 $percent = $this->similarity($cleanName, $client->display_name);
