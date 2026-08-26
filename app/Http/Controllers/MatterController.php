@@ -63,7 +63,7 @@ class MatterController extends Controller
         return Inertia::render('matters/create', [
             'clients' => Client::query()->where('status', 'active')->orderBy('display_name')->get(['id', 'client_number', 'display_name']),
             'practiceAreas' => PracticeArea::query()->where('is_active', true)->orderBy('sort_order')->get(['id', 'name']),
-            'users' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title']),
+            'users' => User::query()->where('is_active', true)->orderBy('id')->get(['id', 'name', 'position_title', 'department', 'avatar_path', 'email']),
             'parentMatters' => Matter::query()->visibleTo($request->user())->whereNotIn('status', ['closed', 'archived'])->orderBy('matter_number')->get(['id', 'matter_number', 'title']),
             'conflictCheck' => $conflictCheck,
             'canRunConflictCheck' => $request->user()->hasPermission('conflict.manage'),
@@ -127,7 +127,7 @@ class MatterController extends Controller
 
         return Inertia::render('matters/show', [
             'matter' => $matter,
-            'firmStaff' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title', 'avatar_path']),
+            'firmStaff' => User::query()->where('is_active', true)->orderBy('id')->get(['id', 'name', 'position_title', 'department', 'avatar_path', 'email']),
             'can' => ['update' => $request->user()->can('update', $matter), 'uploadDocument' => $request->user()->can('create', Document::class)],
         ]);
     }
@@ -151,7 +151,7 @@ class MatterController extends Controller
         return Inertia::render('matters/edit', [
             'matter' => $matter,
             'practiceAreas' => PracticeArea::query()->where('is_active', true)->orderBy('sort_order')->get(['id', 'name']),
-            'users' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title', 'avatar_path']),
+            'users' => User::query()->where('is_active', true)->orderBy('id')->get(['id', 'name', 'position_title', 'department', 'avatar_path', 'email']),
             'parentMatters' => Matter::query()->visibleTo($request->user())->where('id', '!=', $matter->id)->whereNotIn('status', ['closed', 'archived'])->orderBy('matter_number')->get(['id', 'matter_number', 'title']),
         ]);
     }

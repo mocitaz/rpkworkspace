@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import UserPicker, { type UserOption } from '@/components/user-picker';
 import * as matterRoutes from '@/routes/matters';
 import * as conflictRoutes from '@/routes/matters/conflict-checks';
 import * as governanceConflictRoutes from '@/routes/governance/conflict-checks';
@@ -31,6 +32,9 @@ type Choice = {
     display_name?: string;
     client_number?: string;
     position_title?: string;
+    department?: string;
+    avatar_path?: string | null;
+    email?: string;
 };
 
 type MatchItem = {
@@ -83,6 +87,8 @@ export default function MatterCreate({
 
     const [selectedClientId, setSelectedClientId] = useState<string>('');
     const [adverseNames, setAdverseNames] = useState<string[]>(['', '', '', '']);
+    const [responsiblePartnerId, setResponsiblePartnerId] = useState<string>('');
+    const [supervisingLawyerId, setSupervisingLawyerId] = useState<string>('');
 
     const isConflictCleared =
         conflictCheck &&
@@ -698,30 +704,83 @@ export default function MatterCreate({
                                             B. Penugasan Advokat &amp; Tim Hukum
                                         </h3>
                                         <div className="grid gap-3 sm:grid-cols-2">
-                                            <SelectField
-                                                label="Partner Penanggung Jawab"
-                                                name="responsible_partner_id"
-                                                error={
-                                                    errors.responsible_partner_id
-                                                }
-                                                options={users.map((item) => ({
-                                                    value: item.id,
-                                                    label: `${item.name} ${item.position_title ? `(${item.position_title})` : ''}`,
-                                                }))}
-                                            />
+                                            <div className="space-y-1.5">
+                                                <Label
+                                                    htmlFor="responsible_partner_id"
+                                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                                >
+                                                    Partner Penanggung Jawab{' '}
+                                                    <span className="text-rose-500">*</span>
+                                                </Label>
+                                                <input
+                                                    type="hidden"
+                                                    name="responsible_partner_id"
+                                                    value={responsiblePartnerId}
+                                                />
+                                                <UserPicker
+                                                    id="responsible_partner_id"
+                                                    value={responsiblePartnerId}
+                                                    onChange={setResponsiblePartnerId}
+                                                    users={users as UserOption[]}
+                                                    placeholder="Pilih Partner Penanggung Jawab..."
+                                                    disabledUserIds={
+                                                        supervisingLawyerId
+                                                            ? [supervisingLawyerId]
+                                                            : []
+                                                    }
+                                                    disabledReason="Dipilih sebagai Supervising Lawyer"
+                                                    error={Boolean(
+                                                        errors.responsible_partner_id,
+                                                    )}
+                                                />
+                                                <InputError
+                                                    message={
+                                                        errors.responsible_partner_id
+                                                    }
+                                                />
+                                            </div>
 
-                                            <SelectField
-                                                label="Supervising Lawyer (Opsional)"
-                                                name="supervising_lawyer_id"
-                                                optional
-                                                error={
-                                                    errors.supervising_lawyer_id
-                                                }
-                                                options={users.map((item) => ({
-                                                    value: item.id,
-                                                    label: `${item.name} ${item.position_title ? `(${item.position_title})` : ''}`,
-                                                }))}
-                                            />
+                                            <div className="space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <Label
+                                                        htmlFor="supervising_lawyer_id"
+                                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                                    >
+                                                        Supervising Lawyer (Opsional)
+                                                    </Label>
+                                                    <span className="text-[10px] text-slate-400 dark:text-zinc-500">
+                                                        Opsional
+                                                    </span>
+                                                </div>
+                                                <input
+                                                    type="hidden"
+                                                    name="supervising_lawyer_id"
+                                                    value={supervisingLawyerId}
+                                                />
+                                                <UserPicker
+                                                    id="supervising_lawyer_id"
+                                                    value={supervisingLawyerId}
+                                                    onChange={setSupervisingLawyerId}
+                                                    users={users as UserOption[]}
+                                                    placeholder="Pilih Supervising Lawyer (Opsional)..."
+                                                    emptyOptionLabel="-- Tanpa Supervising Lawyer --"
+                                                    allowClear
+                                                    disabledUserIds={
+                                                        responsiblePartnerId
+                                                            ? [responsiblePartnerId]
+                                                            : []
+                                                    }
+                                                    disabledReason="Dipilih sebagai Partner Penanggung Jawab"
+                                                    error={Boolean(
+                                                        errors.supervising_lawyer_id,
+                                                    )}
+                                                />
+                                                <InputError
+                                                    message={
+                                                        errors.supervising_lawyer_id
+                                                    }
+                                                />
+                                            </div>
                                         </div>
                                     </div>
 

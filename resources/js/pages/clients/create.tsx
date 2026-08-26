@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Form, Head, Link } from '@inertiajs/react';
 import {
     ArrowLeft,
@@ -16,16 +17,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import UserPicker, { type UserOption } from '@/components/user-picker';
 import * as clientRoutes from '@/routes/clients';
 
 type Partner = {
-    id: number;
+    id: number | string;
     name: string;
     position_title?: string;
+    department?: string;
     avatar_path?: string | null;
+    email?: string;
 };
 
 export default function ClientCreate({ partners }: { partners: Partner[] }) {
+    const [relationshipPartnerId, setRelationshipPartnerId] = useState<string>('');
     return (
         <>
             <Head title="Registrasi Klien Baru" />
@@ -150,20 +155,41 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
 
                                     <div className="mt-3.5 grid gap-3 sm:grid-cols-3">
                                         <div className="sm:col-span-3">
-                                            <SelectField
-                                                label="Relationship Partner (Penanggung Jawab)"
-                                                name="relationship_partner_id"
-                                                error={
-                                                    errors.relationship_partner_id
-                                                }
-                                                optional
-                                                options={partners.map(
-                                                    (partner) => ({
-                                                        value: partner.id,
-                                                        label: `${partner.name} ${partner.position_title ? `(${partner.position_title})` : ''}`,
-                                                    }),
-                                                )}
-                                            />
+                                            <div className="space-y-1.5">
+                                                <div className="flex items-center justify-between">
+                                                    <Label
+                                                        htmlFor="relationship_partner_id"
+                                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                                    >
+                                                        Relationship Partner (Penanggung Jawab)
+                                                    </Label>
+                                                    <span className="text-[10px] text-slate-400 dark:text-zinc-500">
+                                                        Opsional
+                                                    </span>
+                                                </div>
+                                                <input
+                                                    type="hidden"
+                                                    name="relationship_partner_id"
+                                                    value={relationshipPartnerId}
+                                                />
+                                                <UserPicker
+                                                    id="relationship_partner_id"
+                                                    value={relationshipPartnerId}
+                                                    onChange={setRelationshipPartnerId}
+                                                    users={partners as UserOption[]}
+                                                    placeholder="Pilih Partner Penanggung Jawab (Opsional)..."
+                                                    emptyOptionLabel="-- Tanpa Relationship Partner --"
+                                                    allowClear
+                                                    error={Boolean(
+                                                        errors.relationship_partner_id,
+                                                    )}
+                                                />
+                                                <InputError
+                                                    message={
+                                                        errors.relationship_partner_id
+                                                    }
+                                                />
+                                            </div>
                                         </div>
 
                                         <Field

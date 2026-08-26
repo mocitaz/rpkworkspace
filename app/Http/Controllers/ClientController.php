@@ -46,7 +46,7 @@ class ClientController extends Controller
         Gate::authorize('create', Client::class);
 
         return Inertia::render('clients/create', [
-            'partners' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title', 'avatar_path']),
+            'partners' => User::query()->where('is_active', true)->orderBy('id')->get(['id', 'name', 'position_title', 'department', 'avatar_path', 'email']),
         ]);
     }
 
@@ -100,7 +100,7 @@ class ClientController extends Controller
             'closedMatters' => $visibleMatters->whereIn('status', ['closed', 'archived'])->values(),
             'documents' => Document::query()->visibleTo($request->user())->whereBelongsTo($client)
                 ->with('currentVersion:id,document_id,version_number,file_size')->latest('updated_at')->limit(8)->get(),
-            'partners' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title', 'avatar_path']),
+            'partners' => User::query()->where('is_active', true)->orderBy('id')->get(['id', 'name', 'position_title', 'department', 'avatar_path', 'email']),
             'can' => ['update' => $canUpdate],
         ]);
     }
@@ -118,7 +118,7 @@ class ClientController extends Controller
 
         return Inertia::render('clients/edit', [
             'client' => $client,
-            'partners' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title', 'avatar_path']),
+            'partners' => User::query()->where('is_active', true)->orderBy('id')->get(['id', 'name', 'position_title', 'department', 'avatar_path', 'email']),
         ]);
     }
 
