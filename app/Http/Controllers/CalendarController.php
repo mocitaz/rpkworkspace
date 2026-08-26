@@ -33,6 +33,8 @@ class CalendarController extends Controller
         $from = $month->startOfWeek(CarbonInterface::MONDAY)->startOfDay();
         $until = $month->endOfMonth()->endOfWeek(CarbonInterface::SUNDAY)->endOfDay();
 
+        $userId = $request->user()->getKey();
+
         $token = $request->user()->ensureCalendarToken();
         $feedUrl = route('calendar.feed', ['token' => $token]);
         $webcalUrl = preg_replace('/^https?:\/\//i', 'webcal://', $feedUrl);
@@ -43,7 +45,14 @@ class CalendarController extends Controller
                 ->whereBetween('due_at', [$from, $until])->orderBy('due_at')->get(),
             'events' => MatterEvent::query()->with('matter:id,matter_number,title')->whereIn('matter_id', $matterIds)
                 ->whereBetween('starts_at', [$from, $until])->orderBy('starts_at')->get(),
-            'tasks' => Task::query()->with('matter:id,matter_number,title')->where('assignee_id', $request->user()->getKey())
+            'tasks' => Task::query()->with('matter:id,matter_number,title')
+                ->where(function ($q) use ($userId, $matterIds) {
+                    $q->where('assignee_id', $userId)
+                        ->orWhere('reporter_id', $userId)
+                        ->orWhere('reviewer_id', $userId)
+                        ->orWhereIn('matter_id', $matterIds)
+                        ->orWhereNull('matter_id');
+                })
                 ->whereBetween('due_at', [$from, $until])->whereNotIn('status', ['cancelled'])->orderBy('due_at')->get(),
             'range' => ['from' => $from->toDateString(), 'until' => $until->toDateString()],
             'month' => $month->format('Y-m'),
@@ -78,6 +87,7 @@ class CalendarController extends Controller
             abort(404);
         }
 
+        $userId = $user->getKey();
         $matterIds = Matter::query()->visibleTo($user)->select('id');
         $from = CarbonImmutable::now()->subDays(30)->startOfDay();
         $until = CarbonImmutable::now()->addDays(180)->endOfDay();
@@ -95,7 +105,13 @@ class CalendarController extends Controller
             ->get();
 
         $tasks = Task::query()->with('matter:id,matter_number,title')
-            ->where('assignee_id', $user->getKey())
+            ->where(function ($q) use ($userId, $matterIds) {
+                $q->where('assignee_id', $userId)
+                    ->orWhere('reporter_id', $userId)
+                    ->orWhere('reviewer_id', $userId)
+                    ->orWhereIn('matter_id', $matterIds)
+                    ->orWhereNull('matter_id');
+            })
             ->whereBetween('due_at', [$from, $until])
             ->whereNotIn('status', ['cancelled'])
             ->orderBy('due_at')
@@ -125,6 +141,7 @@ class CalendarController extends Controller
 
     public function exportIcs(Request $request, IcsCalendarGenerator $generator): SymfonyResponse
     {
+        $userId = $request->user()->getKey();
         $matterIds = Matter::query()->visibleTo($request->user())->select('id');
         $from = CarbonImmutable::now()->subDays(14)->startOfDay();
         $until = CarbonImmutable::now()->addDays(90)->endOfDay();
@@ -142,7 +159,13 @@ class CalendarController extends Controller
             ->get();
 
         $tasks = Task::query()->with('matter:id,matter_number,title')
-            ->where('assignee_id', $request->user()->getKey())
+            ->where(function ($q) use ($userId, $matterIds) {
+                $q->where('assignee_id', $userId)
+                    ->orWhere('reporter_id', $userId)
+                    ->orWhere('reviewer_id', $userId)
+                    ->orWhereIn('matter_id', $matterIds)
+                    ->orWhereNull('matter_id');
+            })
             ->whereBetween('due_at', [$from, $until])
             ->whereNotIn('status', ['cancelled'])
             ->orderBy('due_at')

@@ -40,6 +40,8 @@ class UpdateAdminUserRequest extends FormRequest
                 Rule::unique((new User)->getTable(), 'employee_code')->ignore($this->route('user')),
             ],
             'department' => ['nullable', 'string', 'max:100'],
+            'employment_type' => ['nullable', 'string', 'max:50'],
+            'work_mode' => ['nullable', 'string', 'max:50'],
             'phone' => ['nullable', 'string', 'max:30'],
             'address' => ['nullable', 'string', 'max:1000'],
             'ktp_address' => ['nullable', 'string', 'max:1000'],
