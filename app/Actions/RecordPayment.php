@@ -57,8 +57,8 @@ class RecordPayment
                     throw new LogicException('Invoice harus berada pada matter yang sama dengan pembayaran.');
                 }
 
-                if (! in_array($invoice->status, ['sent', 'overdue'], true)) {
-                    throw new LogicException('Pembayaran hanya dapat dialokasikan ke invoice terkirim atau overdue.');
+                if (! in_array($invoice->status, ['sent', 'overdue', 'partially_paid'], true)) {
+                    throw new LogicException('Pembayaran hanya dapat dialokasikan ke invoice terkirim, overdue, atau partially paid.');
                 }
 
                 if ($allocationAmount > $invoice->outstanding_amount) {

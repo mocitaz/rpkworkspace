@@ -214,7 +214,7 @@ class FinancialData2026Seeder extends Seeder
                     'client_id' => $client->getKey(),
                     'matter_id' => $matter->getKey(),
                     'title' => 'Honorarium Termin 2 & Penyesuaian Termin 1',
-                    'status' => 'issued',
+                    'status' => 'sent',
                     'currency' => 'IDR',
                     'subtotal_amount' => 33500000,
                     'discount_amount' => 0,

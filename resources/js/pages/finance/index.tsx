@@ -2628,13 +2628,17 @@ function FinanceDialog({
                                                     [
                                                         'sent',
                                                         'overdue',
+                                                        'partially_paid',
                                                     ].includes(inv.status) &&
                                                     (inv.outstanding_amount ??
                                                         0) > 0,
                                             );
                                         const draftInvoices = invoices.filter(
                                             (inv) =>
-                                                inv.status === 'draft' &&
+                                                [
+                                                    'draft',
+                                                    'pending_approval',
+                                                ].includes(inv.status) &&
                                                 (inv.outstanding_amount ?? 0) >
                                                     0,
                                         );
