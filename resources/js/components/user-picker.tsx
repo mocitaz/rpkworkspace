@@ -90,11 +90,20 @@ export default function UserPicker({
         };
     }, [isOpen]);
 
-    // Filter users based on query
+    // Filter and sort users based on id
     const filteredUsers = useMemo(() => {
+        const sorted = [...users].sort((a, b) => {
+            const numA = Number(a.id);
+            const numB = Number(b.id);
+            if (!isNaN(numA) && !isNaN(numB)) {
+                return numA - numB;
+            }
+            return String(a.id).localeCompare(String(b.id));
+        });
+
         const query = searchQuery.toLowerCase().trim();
-        if (!query) return users;
-        return users.filter((u) => {
+        if (!query) return sorted;
+        return sorted.filter((u) => {
             const name = (u.name || '').toLowerCase();
             const position = (u.position_title || '').toLowerCase();
             const department = (u.department || '').toLowerCase();

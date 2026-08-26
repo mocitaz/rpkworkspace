@@ -62,7 +62,7 @@ class TaskController extends Controller
         return Inertia::render('tasks/index', [
             'tasks' => $query->orderByRaw('due_at is null, due_at asc')->paginate(15)->withQueryString(),
             'matters' => Matter::query()->visibleTo($request->user())->whereNotIn('status', ['closed', 'archived'])->orderBy('matter_number')->get(['id', 'matter_number', 'title']),
-            'users' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title', 'avatar_path']),
+            'users' => User::query()->where('is_active', true)->orderBy('id')->get(['id', 'name', 'position_title', 'avatar_path']),
             'categories' => self::categories(),
             'stages' => self::stages(),
             'metrics' => $metrics,
@@ -85,7 +85,7 @@ class TaskController extends Controller
         $year = now()->format('Y');
         $lastTask = Task::query()
             ->where('task_number', 'like', "TSK-{$year}-%")
-            ->orderByDesc('task_number')
+            ->orderByDesc('id')
             ->first();
         $nextSeq = 1;
         if ($lastTask && preg_match('/TSK-\d{4}-(\d+)/', (string) $lastTask->task_number, $matches)) {
@@ -103,7 +103,7 @@ class TaskController extends Controller
                 ->get(['id', 'matter_number', 'title', 'client_id']),
             'users' => User::query()
                 ->where('is_active', true)
-                ->orderBy('name')
+                ->orderBy('id')
                 ->get(['id', 'name', 'position_title', 'department', 'avatar_path', 'email']),
             'categories' => self::categories(),
             'stages' => self::stages(),
@@ -194,7 +194,7 @@ class TaskController extends Controller
 
         $staffList = User::query()
             ->where('is_active', true)
-            ->orderBy('name')
+            ->orderBy('id')
             ->get(['id', 'name', 'position_title', 'department', 'avatar_path']);
 
         return Inertia::render('tasks/show', [
@@ -235,7 +235,7 @@ class TaskController extends Controller
                 ->get(['id', 'matter_number', 'title', 'client_id']),
             'users' => User::query()
                 ->where('is_active', true)
-                ->orderBy('name')
+                ->orderBy('id')
                 ->get(['id', 'name', 'position_title', 'department', 'avatar_path', 'email']),
             'categories' => self::categories(),
             'stages' => self::stages(),
