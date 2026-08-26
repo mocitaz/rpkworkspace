@@ -218,7 +218,28 @@ class TaskController extends Controller
     {
         Gate::authorize('update', $task);
 
-        return $this->show($request, $task);
+        $task->load([
+            'matter:id,matter_number,title,client_id',
+            'matter.client:id,client_number,display_name,legal_name,type',
+            'assignee:id,name,position_title,avatar_path',
+            'reviewer:id,name,position_title,avatar_path',
+        ]);
+
+        return Inertia::render('tasks/edit', [
+            'task' => $task,
+            'matters' => Matter::query()
+                ->visibleTo($request->user())
+                ->whereNotIn('status', ['closed', 'archived'])
+                ->with('client:id,client_number,display_name,legal_name,type')
+                ->orderBy('matter_number')
+                ->get(['id', 'matter_number', 'title', 'client_id']),
+            'users' => User::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get(['id', 'name', 'position_title', 'department', 'avatar_path']),
+            'categories' => self::categories(),
+            'stages' => self::stages(),
+        ]);
     }
 
     /**
@@ -268,7 +289,7 @@ class TaskController extends Controller
             'assignee_id' => $task->assignee_id,
         ], $request->user(), $request);
 
-        return back()->with('success', "Tugas {$task->task_number} berhasil diperbarui.");
+        return redirect()->route('tasks.show', $task)->with('success', "Tugas {$task->task_number} berhasil diperbarui.");
     }
 
     /**

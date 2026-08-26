@@ -1106,15 +1106,13 @@ export default function TasksIndex({
                                         <Button
                                             size="sm"
                                             variant="outline"
-                                            onClick={() => {
-                                                const t = selectedTask;
-                                                setSelectedTask(null);
-                                                setEditingTask(t);
-                                            }}
+                                            asChild
                                             className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
                                         >
-                                            <Pencil className="mr-1.5 size-3.5 text-slate-400" />
-                                            Edit Tugas
+                                            <Link href={taskRoutes.edit.url(selectedTask.id)}>
+                                                <Pencil className="mr-1.5 size-3.5 text-slate-400" />
+                                                Edit Tugas
+                                            </Link>
                                         </Button>
                                     )}
                                     {can.delete && (
