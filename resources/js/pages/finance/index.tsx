@@ -191,7 +191,7 @@ export default function FinanceIndex({
 
     // 3 Primary Scopes: Client & Matters, Office Operations, Financial Reports
     const [scope, setScope] = useState<'client_matters' | 'office_operations' | 'financial_reports'>('client_matters');
-    const [matterTab, setMatterTab] = useState<'profitability' | 'invoices' | 'quotations' | 'trust_funds' | 'disbursements' | 'payments' | 'all'>('profitability');
+    const [matterTab, setMatterTab] = useState<'all' | 'profitability' | 'invoices' | 'quotations' | 'trust_funds' | 'disbursements' | 'payments'>('all');
     const [officeTab, setOfficeTab] = useState<'accounts' | 'office_expenses' | 'payroll' | 'partner_advances'>('accounts');
     const [showDetailedAnalytics, setShowDetailedAnalytics] = useState(false);
 
@@ -680,91 +680,91 @@ export default function FinanceIndex({
 
                                     {/* Sub Tabs for Client Matters */}
                                     <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto border-b border-slate-200/60 pb-2 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
-                                        <button
-                                            type="button"
-                                            onClick={() => setMatterTab('profitability')}
-                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                                matterTab === 'profitability'
-                                                    ? 'bg-blue-600 text-white shadow-2xs'
-                                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
-                                            }`}
-                                        >
-                                            <BarChart3 className="size-3" />
-                                            Profitabilitas Perkara ({profitability.length})
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setMatterTab('invoices')}
-                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                                matterTab === 'invoices'
-                                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
-                                            }`}
-                                        >
-                                            <ReceiptText className="size-3" />
-                                            Invoice Tagihan ({invoices.length})
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setMatterTab('quotations')}
-                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                                matterTab === 'quotations'
-                                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
-                                            }`}
-                                        >
-                                            <FilePlus2 className="size-3" />
-                                            Quotation ({quotations.length})
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setMatterTab('trust_funds')}
-                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                                matterTab === 'trust_funds'
-                                                    ? 'bg-cyan-600 text-white shadow-2xs'
-                                                    : 'border border-slate-200/70 bg-white text-cyan-700 hover:bg-cyan-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-cyan-400'
-                                            }`}
-                                        >
-                                            <Lock className="size-3" />
-                                            Dana Titipan Klien ({clientTrustFunds.length})
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setMatterTab('disbursements')}
-                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                                matterTab === 'disbursements'
-                                                    ? 'bg-rose-600 text-white shadow-2xs'
-                                                    : 'border border-slate-200/70 bg-white text-rose-700 hover:bg-rose-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-rose-400'
-                                            }`}
-                                        >
-                                            <WalletCards className="size-3" />
-                                            Biaya Perkara ({matterExpenses.length})
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setMatterTab('payments')}
-                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                                matterTab === 'payments'
-                                                    ? 'bg-emerald-600 text-white shadow-2xs'
-                                                    : 'border border-slate-200/70 bg-white text-emerald-700 hover:bg-emerald-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-emerald-400'
-                                            }`}
-                                        >
-                                            <Banknote className="size-3" />
-                                            Penerimaan Kas ({payments.length})
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setMatterTab('all')}
-                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                                matterTab === 'all'
-                                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
-                                            }`}
-                                        >
-                                            <Layers className="size-3" />
-                                            Semua Ledger Perkara
-                                        </button>
-                                    </div>
+                                         <button
+                                             type="button"
+                                             onClick={() => setMatterTab('all')}
+                                             className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                                 matterTab === 'all'
+                                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                                     : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
+                                             }`}
+                                         >
+                                             <Layers className="size-3" />
+                                             Semua Ledger Perkara
+                                         </button>
+                                         <button
+                                             type="button"
+                                             onClick={() => setMatterTab('profitability')}
+                                             className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                                 matterTab === 'profitability'
+                                                     ? 'bg-blue-600 text-white shadow-2xs'
+                                                     : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
+                                             }`}
+                                         >
+                                             <BarChart3 className="size-3" />
+                                             Profitabilitas Perkara ({profitability.length})
+                                         </button>
+                                         <button
+                                             type="button"
+                                             onClick={() => setMatterTab('invoices')}
+                                             className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                                 matterTab === 'invoices'
+                                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                                     : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
+                                             }`}
+                                         >
+                                             <ReceiptText className="size-3" />
+                                             Invoice Tagihan ({invoices.length})
+                                         </button>
+                                         <button
+                                             type="button"
+                                             onClick={() => setMatterTab('quotations')}
+                                             className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                                 matterTab === 'quotations'
+                                                     ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                                     : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
+                                             }`}
+                                         >
+                                             <FilePlus2 className="size-3" />
+                                             Quotation ({quotations.length})
+                                         </button>
+                                         <button
+                                             type="button"
+                                             onClick={() => setMatterTab('trust_funds')}
+                                             className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                                 matterTab === 'trust_funds'
+                                                     ? 'bg-cyan-600 text-white shadow-2xs'
+                                                     : 'border border-slate-200/70 bg-white text-cyan-700 hover:bg-cyan-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-cyan-400'
+                                             }`}
+                                         >
+                                             <Lock className="size-3" />
+                                             Dana Titipan Klien ({clientTrustFunds.length})
+                                         </button>
+                                         <button
+                                             type="button"
+                                             onClick={() => setMatterTab('disbursements')}
+                                             className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                                 matterTab === 'disbursements'
+                                                     ? 'bg-rose-600 text-white shadow-2xs'
+                                                     : 'border border-slate-200/70 bg-white text-rose-700 hover:bg-rose-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-rose-400'
+                                             }`}
+                                         >
+                                             <WalletCards className="size-3" />
+                                             Biaya Perkara ({matterExpenses.length})
+                                         </button>
+                                         <button
+                                             type="button"
+                                             onClick={() => setMatterTab('payments')}
+                                             className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                                                 matterTab === 'payments'
+                                                     ? 'bg-emerald-600 text-white shadow-2xs'
+                                                     : 'border border-slate-200/70 bg-white text-emerald-700 hover:bg-emerald-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-emerald-400'
+                                             }`}
+                                         >
+                                             <Banknote className="size-3" />
+                                             Penerimaan Kas ({payments.length})
+                                         </button>
+                                     </div>
 
                                     {/* Views for Scope 1 */}
                                     {matterTab === 'profitability' && (
