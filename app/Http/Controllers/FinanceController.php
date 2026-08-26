@@ -177,9 +177,16 @@ class FinanceController extends Controller
 
     public function storeExpense(StoreExpenseRequest $request, CreateExpense $create, CreateFinanceProofDocument $createProof, AuditService $audit): RedirectResponse
     {
-        $this->authorizeMatter($request, $request->validated('matter_id'));
+        $matterId = $request->validated('matter_id');
+        $matter = null;
+        if (! empty($matterId)) {
+            $this->authorizeMatter($request, $matterId);
+            $matter = Matter::query()->whereKey($matterId)->first();
+        } else {
+            $this->authorizeFinanceAccess($request, null);
+        }
+
         $attributes = $request->safe()->except('proof');
-        $matter = Matter::query()->whereKey($attributes['matter_id'])->sole();
         if ($request->hasFile('proof')) {
             $proof = $createProof->handle($request->file('proof'), $request->user(), 'Bukti biaya: '.$attributes['description'], $matter);
             $attributes['proof_document_id'] = $proof->getKey();

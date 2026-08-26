@@ -23,18 +23,18 @@ class StoreExpenseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'matter_id' => ['required', 'exists:matters,id'],
+            'matter_id' => ['nullable', 'exists:matters,id'],
             'category' => ['required', 'string', 'max:100'],
             'charge_to' => ['nullable', 'string', 'in:office,client'],
             'description' => ['required', 'string', 'max:1000'],
             'vendor' => ['nullable', 'string', 'max:255'],
             'incurred_at' => ['required', 'date'],
             'amount' => ['required', 'integer', 'min:0'],
-            'currency' => ['required', 'string', 'size:3'],
+            'currency' => ['nullable', 'string', 'size:3'],
             'account_id' => ['nullable', 'exists:financial_accounts,id'],
             'partner_id' => ['nullable', 'exists:users,id'],
             'is_reimbursable' => ['nullable', 'boolean'],
-            'status' => ['required', 'in:draft,pending_approval,approved,rejected'],
+            'status' => ['nullable', 'string', 'in:draft,pending_approval,approved,rejected'],
             'proof' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:10240'],
         ];
     }

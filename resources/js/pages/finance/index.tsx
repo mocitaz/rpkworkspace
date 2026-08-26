@@ -2139,15 +2139,22 @@ function FinanceDialog({
                                 name="matter_id"
                                 label="Terkait Perkara (Matter)"
                                 matters={matters}
-                                required={isExpense}
+                                required={false}
+                                placeholder={
+                                    isExpense
+                                        ? 'Tanpa Perkara (Beban Operasional Kantor / Non-Perkara)'
+                                        : 'Pilih Perkara (Opsional)'
+                                }
                             />
 
-                            <SelectField
-                                name="client_id"
-                                label="Klien (Client)"
-                                clients={clients}
-                                required={!isExpense}
-                            />
+                            {!isExpense && !isPayment && (
+                                <SelectField
+                                    name="client_id"
+                                    label="Klien (Client)"
+                                    clients={clients}
+                                    required={!isExpense}
+                                />
+                            )}
 
                             {!isExpense && !isPayment && (
                                 <>
@@ -2748,11 +2755,11 @@ function FinanceDialog({
                             )}
 
                             <input type="hidden" name="currency" value="IDR" />
-                            {!isExpense && !isPayment && (
+                            {!isPayment && (
                                 <input
                                     type="hidden"
                                     name="status"
-                                    value="draft"
+                                    value={isExpense ? 'approved' : 'draft'}
                                 />
                             )}
 
@@ -2840,12 +2847,14 @@ function SelectField({
     matters,
     clients,
     required,
+    placeholder,
 }: {
     name: string;
     label: string;
     matters?: Matter[];
     clients?: { id: string; display_name: string }[];
     required?: boolean;
+    placeholder?: string;
 }) {
     const data = matters ?? clients ?? [];
 
@@ -2864,7 +2873,7 @@ function SelectField({
                     required={required}
                     className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
                 >
-                    <option value="">Pilih {label.toLowerCase()}</option>
+                    <option value="">{placeholder || `Pilih ${label.toLowerCase()}`}</option>
                     {data.map((item) => (
                         <option value={item.id} key={item.id}>
                             {'matter_number' in item
