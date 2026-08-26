@@ -859,54 +859,101 @@ export default function ClientShow({
                                         )}
                                     </div>
 
-                                    {/* 4 Clean Metric Cards (Matching Brankas Alat Bukti) */}
+                                    {/* 4 Symmetrical Metric Cards */}
                                     <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                                TOTAL DOKUMEN
-                                            </span>
-                                            <p className="mt-1 font-mono text-lg font-bold text-slate-900 dark:text-white">
-                                                {client.compliance_documents
-                                                    ?.length ?? 0}
-                                            </p>
+                                        {/* 1. Total Dokumen */}
+                                        <div className="group flex min-h-[88px] flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#121418] dark:hover:border-white/15">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                    TOTAL DOKUMEN
+                                                </span>
+                                                <div className="flex size-6 items-center justify-center rounded-md bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                                                    <FileText className="size-3.5" />
+                                                </div>
+                                            </div>
+                                            <div className="mt-2 flex items-baseline justify-between">
+                                                <p className="font-mono text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+                                                    {client.compliance_documents
+                                                        ?.length ?? 0}
+                                                </p>
+                                                <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
+                                                    berkas
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                                BERLAKU AKTIF
-                                            </span>
-                                            <p className="mt-1 font-mono text-lg font-bold text-emerald-700 dark:text-emerald-400">
-                                                {client.compliance_documents?.filter(
-                                                    (d) =>
-                                                        d.compliance_status ===
-                                                            'active' ||
-                                                        d.compliance_status ===
-                                                            'no_expiry',
-                                                ).length ?? 0}
-                                            </p>
+
+                                        {/* 2. Berlaku Aktif */}
+                                        <div className="group flex min-h-[88px] flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#121418] dark:hover:border-white/15">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                    BERLAKU AKTIF
+                                                </span>
+                                                <div className="flex size-6 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                                                    <CheckCircle2 className="size-3.5" />
+                                                </div>
+                                            </div>
+                                            <div className="mt-2 flex items-baseline justify-between">
+                                                <p className="font-mono text-lg font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+                                                    {client.compliance_documents?.filter(
+                                                        (d) =>
+                                                            d.compliance_status ===
+                                                                'active' ||
+                                                            d.compliance_status ===
+                                                                'no_expiry',
+                                                    ).length ?? 0}
+                                                </p>
+                                                <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
+                                                    valid
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                                SEGERA BERAKHIR (H-60)
-                                            </span>
-                                            <p className="mt-1 font-mono text-lg font-bold text-amber-700 dark:text-amber-400">
-                                                {client.compliance_documents?.filter(
-                                                    (d) =>
-                                                        d.compliance_status ===
-                                                        'expiring_soon',
-                                                ).length ?? 0}
-                                            </p>
+
+                                        {/* 3. Tenggat H-60 */}
+                                        <div className="group flex min-h-[88px] flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#121418] dark:hover:border-white/15">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                    TENGGAT H-60
+                                                </span>
+                                                <div className="flex size-6 items-center justify-center rounded-md bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+                                                    <Clock className="size-3.5" />
+                                                </div>
+                                            </div>
+                                            <div className="mt-2 flex items-baseline justify-between">
+                                                <p className="font-mono text-lg font-bold tracking-tight text-amber-600 dark:text-amber-400">
+                                                    {client.compliance_documents?.filter(
+                                                        (d) =>
+                                                            d.compliance_status ===
+                                                            'expiring_soon',
+                                                    ).length ?? 0}
+                                                </p>
+                                                <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
+                                                    perpanjang
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.06] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                                KEDALUWARSA
-                                            </span>
-                                            <p className="mt-1 font-mono text-lg font-bold text-rose-700 dark:text-rose-400">
-                                                {client.compliance_documents?.filter(
-                                                    (d) =>
-                                                        d.compliance_status ===
-                                                        'expired',
-                                                ).length ?? 0}
-                                            </p>
+
+                                        {/* 4. Kedaluwarsa */}
+                                        <div className="group flex min-h-[88px] flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#121418] dark:hover:border-white/15">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                    KEDALUWARSA
+                                                </span>
+                                                <div className="flex size-6 items-center justify-center rounded-md bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400">
+                                                    <AlertTriangle className="size-3.5" />
+                                                </div>
+                                            </div>
+                                            <div className="mt-2 flex items-baseline justify-between">
+                                                <p className="font-mono text-lg font-bold tracking-tight text-rose-600 dark:text-rose-400">
+                                                    {client.compliance_documents?.filter(
+                                                        (d) =>
+                                                            d.compliance_status ===
+                                                            'expired',
+                                                    ).length ?? 0}
+                                                </p>
+                                                <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
+                                                    expired
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -1290,13 +1337,16 @@ export default function ClientShow({
                                     </div>
 
                                     {/* AML Risk & Verification Summary Card */}
-                                    <div className="grid gap-3 sm:grid-cols-3">
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                PROFIL RISIKO AML
-                                            </span>
+                                    <div className="grid gap-2.5 sm:grid-cols-3">
+                                        <div className="flex min-h-[84px] flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 shadow-2xs dark:border-white/[0.08] dark:bg-[#121418]">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                    PROFIL RISIKO AML
+                                                </span>
+                                                <Shield className="size-3.5 text-slate-400 dark:text-zinc-500" />
+                                            </div>
                                             <p
-                                                className={`mt-1 text-xs font-bold ${
+                                                className={`mt-2 text-xs font-bold ${
                                                     client.kyc_risk_level ===
                                                     'high'
                                                         ? 'text-rose-600 dark:text-rose-400'
@@ -1315,11 +1365,14 @@ export default function ClientShow({
                                                       : 'Risiko Rendah (Standar)'}
                                             </p>
                                         </div>
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                PARTNER PENILAI KYC
-                                            </span>
-                                            <p className="mt-1 text-xs font-bold text-slate-900 dark:text-white">
+                                        <div className="flex min-h-[84px] flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 shadow-2xs dark:border-white/[0.08] dark:bg-[#121418]">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                    PARTNER PENILAI KYC
+                                                </span>
+                                                <ShieldCheck className="size-3.5 text-slate-400 dark:text-zinc-500" />
+                                            </div>
+                                            <p className="mt-2 truncate text-xs font-bold text-slate-900 dark:text-white">
                                                 {client.kyc_assessed_by_user
                                                     ?.name ??
                                                     client.relationship_partner
@@ -1327,11 +1380,14 @@ export default function ClientShow({
                                                     'Managing Partner'}
                                             </p>
                                         </div>
-                                        <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                YURISDIKSI
-                                            </span>
-                                            <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                        <div className="flex min-h-[84px] flex-col justify-between rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 shadow-2xs dark:border-white/[0.08] dark:bg-[#121418]">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                    YURISDIKSI
+                                                </span>
+                                                <Globe className="size-3.5 text-slate-400 dark:text-zinc-500" />
+                                            </div>
+                                            <p className="mt-2 font-mono text-xs font-bold text-slate-900 dark:text-white">
                                                 {client.country_code} (
                                                 {client.city ?? 'Indonesia'})
                                             </p>
