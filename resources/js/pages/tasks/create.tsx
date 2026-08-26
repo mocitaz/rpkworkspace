@@ -121,7 +121,7 @@ export default function TaskCreate({
         e.preventDefault();
         const validChecklists = checklistItems.filter((c) => c.title.trim().length > 0);
         data.checklists = validChecklists;
-        post(taskRoutes.store());
+        post(taskRoutes.store.url());
     };
 
     return (
@@ -153,7 +153,7 @@ export default function TaskCreate({
                                 className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                                 asChild
                             >
-                                <Link href={taskRoutes.index()}>
+                                <Link href={taskRoutes.index.url()}>
                                     <ArrowLeft className="mr-1.5 size-3.5 text-slate-400" />
                                     Kembali ke Daftar Tugas
                                 </Link>
@@ -507,7 +507,7 @@ export default function TaskCreate({
                                 className="h-9 px-4 text-xs font-semibold"
                                 asChild
                             >
-                                <Link href={taskRoutes.index()}>Batal</Link>
+                                <Link href={taskRoutes.index.url()}>Batal</Link>
                             </Button>
                             <Button
                                 type="submit"

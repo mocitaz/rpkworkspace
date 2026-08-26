@@ -155,7 +155,7 @@ export default function UserEdit({
                                 className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                                 asChild
                             >
-                                <Link href={userRoutes.show({ user: staff.id })}>
+                                <Link href={userRoutes.show.url(staff.id)}>
                                     <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
                                     Kembali ke Profil
                                 </Link>
@@ -164,7 +164,7 @@ export default function UserEdit({
                     </div>
 
                     <Form
-                        action={userRoutes.update({ user: staff.id })}
+                        action={userRoutes.update.url(staff.id)}
                         method="post"
                         encType="multipart/form-data"
                         className="space-y-5"
@@ -841,7 +841,7 @@ export default function UserEdit({
                                         asChild
                                         className="h-9 w-full rounded-lg border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 sm:w-auto dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                                     >
-                                        <Link href={userRoutes.show({ user: staff.id })}>Batal</Link>
+                                        <Link href={userRoutes.show.url(staff.id)}>Batal</Link>
                                     </Button>
 
                                     <div className="flex w-full items-center justify-end gap-2 sm:w-auto">

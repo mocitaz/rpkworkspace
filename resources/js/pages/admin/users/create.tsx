@@ -118,7 +118,7 @@ export default function UserCreate({
                                 className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                                 asChild
                             >
-                                <Link href={userRoutes.index()}>
+                                <Link href={userRoutes.index.url()}>
                                     <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
                                     Kembali ke Daftar Tim
                                 </Link>
@@ -127,7 +127,7 @@ export default function UserCreate({
                     </div>
 
                     <Form
-                        action={userRoutes.store()}
+                        action={userRoutes.store.url()}
                         method="post"
                         encType="multipart/form-data"
                         className="space-y-5"
@@ -745,7 +745,7 @@ export default function UserCreate({
                                         asChild
                                         className="h-9 w-full rounded-lg border-slate-200 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 sm:w-auto dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                                     >
-                                        <Link href={userRoutes.index()}>Batal</Link>
+                                        <Link href={userRoutes.index.url()}>Batal</Link>
                                     </Button>
 
                                     <div className="flex w-full items-center justify-end gap-2 sm:w-auto">

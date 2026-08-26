@@ -135,7 +135,7 @@ export default function TasksIndex({
     const changeStatus = (task: Task, status: string) => {
         setUpdatingTaskId(task.id);
         router.patch(
-            taskRoutes.update(task.id),
+            taskRoutes.update.url(task.id),
             {
                 title: task.title,
                 description: task.description ?? '',
@@ -193,7 +193,7 @@ export default function TasksIndex({
                                     asChild
                                     className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                 >
-                                    <Link href={taskRoutes.create()}>
+                                    <Link href={taskRoutes.create.url()}>
                                         <Plus className="mr-1 size-3.5" />
                                         Buat Tugas Baru
                                     </Link>
@@ -314,7 +314,7 @@ export default function TasksIndex({
                                         type="button"
                                         onClick={() =>
                                             router.get(
-                                                taskRoutes.index(),
+                                                taskRoutes.index.url(),
                                                 {
                                                     ...filters,
                                                     view: tab.id || undefined,
@@ -343,7 +343,7 @@ export default function TasksIndex({
                                         defaultValue={filters.matter_id ?? ''}
                                         onChange={(e) =>
                                             router.get(
-                                                taskRoutes.index(),
+                                                taskRoutes.index.url(),
                                                 {
                                                     ...filters,
                                                     matter_id:
@@ -377,7 +377,7 @@ export default function TasksIndex({
                                         defaultValue={filters.status ?? ''}
                                         onChange={(e) =>
                                             router.get(
-                                                taskRoutes.index(),
+                                                taskRoutes.index.url(),
                                                 {
                                                     ...filters,
                                                     status:
@@ -421,7 +421,7 @@ export default function TasksIndex({
                                         size="sm"
                                         onClick={() =>
                                             router.get(
-                                                taskRoutes.index(),
+                                                taskRoutes.index.url(),
                                                 {},
                                                 { preserveState: true },
                                             )
@@ -490,7 +490,7 @@ export default function TasksIndex({
                                                 asChild
                                                 className="h-8 cursor-pointer rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
                                             >
-                                                <Link href={taskRoutes.create()}>
+                                                <Link href={taskRoutes.create.url()}>
                                                     <Plus className="mr-1 size-3.5" />{' '}
                                                     Buat Tugas Baru
                                                 </Link>
@@ -525,7 +525,7 @@ export default function TasksIndex({
                                     return (
                                         <Link
                                             key={task.id}
-                                            href={taskRoutes.show({ task: task.id })}
+                                            href={taskRoutes.show.url(task.id)}
                                             className="block cursor-pointer space-y-2 p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
                                         >
                                             <div className="flex items-start justify-between gap-2">
@@ -629,7 +629,7 @@ export default function TasksIndex({
                                                                     </span>
                                                                 )}
                                                                 <Link
-                                                                    href={taskRoutes.show({ task: task.id })}
+                                                                    href={taskRoutes.show.url(task.id)}
                                                                     className={`block text-left text-xs font-semibold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400 ${
                                                                         task.status ===
                                                                         'completed'
@@ -644,7 +644,7 @@ export default function TasksIndex({
                                                             {task.matter ? (
                                                                 <div className="flex items-center">
                                                                     <Link
-                                                                        href={matterRoutes.show(
+                                                                        href={matterRoutes.show.url(
                                                                             task
                                                                                 .matter
                                                                                 .id,
@@ -921,7 +921,7 @@ export default function TasksIndex({
                                     return (
                                         <Link
                                             key={task.id}
-                                            href={taskRoutes.show({ task: task.id })}
+                                            href={taskRoutes.show.url(task.id)}
                                             className="group flex cursor-pointer flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]"
                                         >
                                             <div className="space-y-2.5">
@@ -2026,5 +2026,5 @@ function Field({
 }
 
 TasksIndex.layout = {
-    breadcrumbs: [{ title: 'Tugas', href: taskRoutes.index() }],
+    breadcrumbs: [{ title: 'Tugas', href: taskRoutes.index.url() }],
 };

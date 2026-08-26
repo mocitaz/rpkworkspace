@@ -190,7 +190,7 @@ export default function TaskShow({
 
     const handleStatusChange = (newStatus: string) => {
         router.put(
-            taskRoutes.update({ task: task.id }),
+            taskRoutes.update.url(task.id),
             {
                 title: task.title,
                 status: newStatus,
@@ -222,7 +222,7 @@ export default function TaskShow({
 
     const handleEditSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        editForm.put(taskRoutes.update({ task: task.id }), {
+        editForm.put(taskRoutes.update.url(task.id), {
             onSuccess: () => setIsEditOpen(false),
             preserveScroll: true,
         });
@@ -239,7 +239,7 @@ export default function TaskShow({
 
     const handleCompleteSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        completeForm.put(taskRoutes.update({ task: task.id }), {
+        completeForm.put(taskRoutes.update.url(task.id), {
             onSuccess: () => setIsCompleteModalOpen(false),
             preserveScroll: true,
         });
@@ -258,7 +258,7 @@ export default function TaskShow({
                     <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200/70 pb-4 dark:border-white/[0.06]">
                         <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-zinc-400">
                             <Link
-                                href={taskRoutes.index()}
+                                href={taskRoutes.index.url()}
                                 className="flex items-center gap-1 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                             >
                                 <ArrowLeft className="size-3.5" />
@@ -268,7 +268,7 @@ export default function TaskShow({
                             {task.matter && (
                                 <>
                                     <Link
-                                        href={matterRoutes.show({ matter: task.matter.id })}
+                                        href={matterRoutes.show.url(task.matter.id)}
                                         className="font-mono text-slate-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400 transition-colors"
                                     >
                                         {task.matter.matter_number}
@@ -300,7 +300,7 @@ export default function TaskShow({
                                     description={`Tugas ${task.task_number} (${task.title}) akan dihapus secara permanen beserta riwayat checklist dan komentarnya.`}
                                     confirmText="Ya, Hapus Tugas"
                                     variant="destructive"
-                                    onConfirm={() => router.delete(taskRoutes.destroy({ task: task.id }))}
+                                    onConfirm={() => router.delete(taskRoutes.destroy.url(task.id))}
                                 >
                                     <Button
                                         variant="outline"
@@ -385,8 +385,8 @@ export default function TaskShow({
                                         <Briefcase className="size-3.5 text-blue-600 dark:text-blue-400" />
                                         <span>Perkara Terkait:</span>
                                         <Link
-                                            href={matterRoutes.show({ matter: task.matter.id })}
-                                            className="font-semibold text-slate-900 hover:text-blue-600 underline dark:text-white dark:hover:text-blue-400"
+                                            href={matterRoutes.show.url(task.matter.id)}
+                                            className="font-bold text-blue-600 hover:underline dark:text-blue-400"
                                         >
                                             {task.matter.title} ({task.matter.matter_number})
                                         </Link>
@@ -633,7 +633,7 @@ export default function TaskShow({
                                                 className="h-7 text-xs"
                                                 asChild
                                             >
-                                                <Link href={documentRoutes.index({ matter_id: task.matter_id })}>
+                                                <Link href={documentRoutes.index.url({ query: task.matter_id ? { matter_id: task.matter_id } : undefined })}>
                                                     Lihat Semua Dokumen
                                                 </Link>
                                             </Button>
@@ -653,7 +653,7 @@ export default function TaskShow({
                                                         </div>
                                                         <div>
                                                             <Link
-                                                                href={documentRoutes.show({ document: doc.id })}
+                                                                href={documentRoutes.show.url(doc.id)}
                                                                 className="text-xs font-bold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
                                                             >
                                                                 {doc.title}
@@ -671,7 +671,7 @@ export default function TaskShow({
                                                         className="h-7 text-xs"
                                                         asChild
                                                     >
-                                                        <Link href={documentRoutes.show({ document: doc.id })}>
+                                                        <Link href={documentRoutes.show.url(doc.id)}>
                                                             <Eye className="size-3.5 mr-1" />
                                                             Buka
                                                         </Link>

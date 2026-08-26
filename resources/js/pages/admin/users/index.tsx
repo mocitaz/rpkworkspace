@@ -171,7 +171,7 @@ export default function UsersIndex({
                                     asChild
                                     className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
                                 >
-                                    <Link href={userRoutes.create()}>
+                                    <Link href={userRoutes.create.url()}>
                                         <UserPlus className="mr-1.5 size-3.5" />
                                         Tambah Staf Baru
                                     </Link>
@@ -421,7 +421,7 @@ export default function UsersIndex({
                                                         asChild
                                                         className="mt-3.5 h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                                     >
-                                                        <Link href={userRoutes.create()}>
+                                                        <Link href={userRoutes.create.url()}>
                                                             <UserPlus className="mr-1 size-3" />{' '}
                                                             Tambah Staf Baru
                                                         </Link>
@@ -1615,7 +1615,7 @@ function TextareaField({
 }
 
 UsersIndex.layout = {
-    breadcrumbs: [{ title: 'Pengguna & Akses', href: userRoutes.index() }],
+    breadcrumbs: [{ title: 'Pengguna & Akses', href: userRoutes.index.url() }],
 };
 
 const PERMISSION_GROUPS = [
