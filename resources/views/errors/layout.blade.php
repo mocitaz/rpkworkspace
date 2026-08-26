@@ -4,63 +4,59 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
-    <title>@yield('code') - @yield('title') · RPK Law Firm Workspace</title>
+    <title>@yield('code') - @yield('title') · RPK Law App</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700|jetbrains-mono:500,600" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700,800|jetbrains-mono:500,700" rel="stylesheet" />
     <style>
         :root {
             --bg-base: #f8fafc;
-            --card-bg: rgba(255, 255, 255, 0.82);
-            --card-border: rgba(226, 232, 240, 0.8);
-            --card-inner-border: rgba(255, 255, 255, 0.9);
             --text-primary: #0f172a;
-            --text-secondary: #64748b;
-            --text-tertiary: #94a3b8;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
             --accent-blue: #2563eb;
+            --accent-cyan: #06b6d4;
             --accent-glow: rgba(37, 99, 235, 0.15);
-            --badge-bg: rgba(239, 246, 255, 0.9);
-            --badge-border: rgba(191, 219, 254, 0.8);
+            --holo-border: rgba(37, 99, 235, 0.25);
+            --holo-bg: rgba(255, 255, 255, 0.85);
+            --badge-bg: rgba(239, 246, 255, 0.95);
+            --badge-border: rgba(191, 219, 254, 0.9);
             --badge-text: #1d4ed8;
-            --btn-primary-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --btn-primary-bg: #0f172a;
+            --btn-primary-hover: #1e293b;
             --btn-primary-text: #ffffff;
-            --btn-primary-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.25);
-            --btn-sec-bg: rgba(255, 255, 255, 0.8);
-            --btn-sec-border: rgba(203, 213, 225, 0.7);
+            --btn-primary-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.25);
+            --btn-sec-bg: rgba(255, 255, 255, 0.9);
+            --btn-sec-border: rgba(203, 213, 225, 0.8);
             --btn-sec-text: #334155;
-            --grid-line: rgba(148, 163, 184, 0.08);
-            --orb-1: rgba(59, 130, 246, 0.12);
-            --orb-2: rgba(99, 102, 241, 0.10);
-            --orb-3: rgba(16, 185, 129, 0.08);
-            --watermark: rgba(15, 23, 42, 0.03);
-            --card-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+            --grid-color: rgba(148, 163, 184, 0.08);
+            --code-text: rgba(15, 23, 42, 0.06);
+            --stage-glow: radial-gradient(ellipse at center, rgba(37, 99, 235, 0.14) 0%, rgba(6, 182, 212, 0.06) 45%, transparent 70%);
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg-base: #090a0d;
-                --card-bg: rgba(18, 20, 26, 0.78);
-                --card-border: rgba(255, 255, 255, 0.08);
-                --card-inner-border: rgba(255, 255, 255, 0.04);
+                --bg-base: #090a0f;
                 --text-primary: #f8fafc;
                 --text-secondary: #94a3b8;
-                --text-tertiary: #64748b;
+                --text-muted: #64748b;
                 --accent-blue: #60a5fa;
-                --accent-glow: rgba(96, 165, 250, 0.18);
+                --accent-cyan: #38bdf8;
+                --accent-glow: rgba(96, 165, 250, 0.22);
+                --holo-border: rgba(96, 165, 250, 0.3);
+                --holo-bg: rgba(18, 22, 34, 0.8);
                 --badge-bg: rgba(30, 58, 138, 0.35);
-                --badge-border: rgba(96, 165, 250, 0.25);
+                --badge-border: rgba(96, 165, 250, 0.3);
                 --badge-text: #93c5fd;
-                --btn-primary-bg: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
-                --btn-primary-text: #0f172a;
-                --btn-primary-shadow: 0 10px 25px -5px rgba(255, 255, 255, 0.18);
-                --btn-sec-bg: rgba(255, 255, 255, 0.05);
-                --btn-sec-border: rgba(255, 255, 255, 0.1);
-                --btn-sec-text: #e2e8f0;
-                --grid-line: rgba(255, 255, 255, 0.03);
-                --orb-1: rgba(59, 130, 246, 0.18);
-                --orb-2: rgba(139, 92, 246, 0.14);
-                --orb-3: rgba(16, 185, 129, 0.10);
-                --watermark: rgba(255, 255, 255, 0.02);
-                --card-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+                --btn-primary-bg: #ffffff;
+                --btn-primary-hover: #f1f5f9;
+                --btn-primary-text: #090a0f;
+                --btn-primary-shadow: 0 12px 30px -6px rgba(255, 255, 255, 0.2);
+                --btn-sec-bg: rgba(255, 255, 255, 0.06);
+                --btn-sec-border: rgba(255, 255, 255, 0.12);
+                --btn-sec-text: #f1f5f9;
+                --grid-color: rgba(255, 255, 255, 0.03);
+                --code-text: rgba(255, 255, 255, 0.04);
+                --stage-glow: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.22) 0%, rgba(56, 189, 248, 0.1) 45%, transparent 70%);
             }
         }
 
@@ -78,306 +74,289 @@
             background-color: var(--bg-base);
             color: var(--text-primary);
             font-family: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            padding: 1.5rem;
+            padding: 2rem 1.5rem;
             position: relative;
             overflow-x: hidden;
             perspective: 1200px;
         }
 
-        /* 1. Animated Ambient Grid Background */
+        /* 1. Ambient Background Grid & Floating Lights */
         .bg-grid {
             position: fixed;
             inset: 0;
             background-image: 
-                linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-                linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-            background-size: 32px 32px;
-            mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 80%);
-            -webkit-mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 80%);
+                linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+            background-size: 36px 36px;
+            mask-image: radial-gradient(circle at 50% 50%, black 50%, transparent 85%);
+            -webkit-mask-image: radial-gradient(circle at 50% 50%, black 50%, transparent 85%);
             pointer-events: none;
             z-index: 0;
         }
 
-        /* 2. Floating 3D Ambient Orbs */
-        .orb {
+        .ambient-light {
             position: fixed;
             border-radius: 50%;
-            filter: blur(80px);
+            filter: blur(100px);
             pointer-events: none;
             z-index: 0;
-            opacity: 0.85;
-            animation: orbFloat 18s ease-in-out infinite alternate;
+            opacity: 0.8;
+            animation: lightFloat 16s ease-in-out infinite alternate;
         }
-        .orb-1 {
-            width: 420px;
-            height: 420px;
-            background: var(--orb-1);
-            top: -10%;
-            left: 15%;
-            animation-duration: 16s;
+        .light-1 {
+            width: 480px;
+            height: 480px;
+            background: rgba(37, 99, 235, 0.12);
+            top: -15%;
+            left: 10%;
         }
-        .orb-2 {
-            width: 380px;
-            height: 380px;
-            background: var(--orb-2);
-            bottom: -5%;
-            right: 15%;
-            animation-duration: 20s;
-            animation-delay: -5s;
+        .light-2 {
+            width: 450px;
+            height: 450px;
+            background: rgba(6, 182, 212, 0.10);
+            bottom: -15%;
+            right: 10%;
+            animation-delay: -6s;
         }
-        .orb-3 {
-            width: 300px;
-            height: 300px;
-            background: var(--orb-3);
-            top: 40%;
-            right: 5%;
-            animation-duration: 14s;
-            animation-delay: -8s;
-        }
-
-        @keyframes orbFloat {
+        @keyframes lightFloat {
             0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(40px, -30px) scale(1.1); }
-            100% { transform: translate(-30px, 40px) scale(0.95); }
+            50% { transform: translate(30px, -20px) scale(1.08); }
+            100% { transform: translate(-20px, 30px) scale(0.95); }
         }
 
-        /* 3. Main 3D Interactive Card */
-        .card-wrapper {
+        /* 2. Open Canvas Layout (No White Container Box) */
+        .error-canvas {
             position: relative;
             z-index: 1;
             width: 100%;
-            max-width: 32rem;
-            transform-style: preserve-3d;
-            transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1);
-            animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+            max-width: 68rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            align-items: center;
+            gap: 3.5rem;
+            animation: canvasFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
-        @keyframes cardEntrance {
-            0% {
-                opacity: 0;
-                transform: translateY(30px) scale(0.96) rotateX(6deg);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1) rotateX(0deg);
-            }
+        @keyframes canvasFadeIn {
+            0% { opacity: 0; transform: translateY(24px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
-        .card {
+        /* 3. Left: Character Stage with 3D Holographic Elements */
+        .character-stage {
             position: relative;
-            background: var(--card-bg);
-            backdrop-filter: blur(28px) saturate(190%);
-            -webkit-backdrop-filter: blur(28px) saturate(190%);
-            border: 1px solid var(--card-border);
-            border-radius: 1.5rem;
-            padding: 2.75rem 2.25rem 2.25rem;
-            text-align: center;
-            box-shadow: var(--card-shadow);
-            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 420px;
+            transform-style: preserve-3d;
         }
 
-        /* Glare effect on mouse hover */
-        .card-glare {
+        /* Radial Glow Stage Platform under character */
+        .stage-platform {
             position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.12) 0%, transparent 60%);
+            bottom: 5px;
+            width: 320px;
+            height: 90px;
+            background: var(--stage-glow);
+            border-radius: 50%;
             pointer-events: none;
-            z-index: 1;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .card-wrapper:hover .card-glare {
-            opacity: 1;
+            filter: blur(10px);
+            animation: stagePulse 4s ease-in-out infinite alternate;
         }
 
-        /* Big Watermark Number */
-        .watermark-number {
+        @keyframes stagePulse {
+            0% { transform: scale(0.92); opacity: 0.7; }
+            100% { transform: scale(1.08); opacity: 1; }
+        }
+
+        /* Anime Character Image with Floating Animation */
+        .character-img-wrapper {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 340px;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: characterFloat 5s ease-in-out infinite;
+            filter: drop-shadow(0 20px 35px rgba(15, 23, 42, 0.15));
+        }
+
+        @keyframes characterFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(1deg); }
+        }
+
+        .character-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            user-select: none;
+            pointer-events: none;
+            border-radius: 1.5rem;
+        }
+
+        /* Floating Holographic Chips */
+        .holo-chip {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -55%);
+            z-index: 3;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.85rem;
+            border-radius: 0.75rem;
+            background: var(--holo-bg);
+            border: 1px solid var(--holo-border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08), 0 0 12px var(--accent-glow);
             font-family: 'JetBrains Mono', monospace;
-            font-size: 15rem;
+            font-size: 0.675rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            animation: chipFloat 6s ease-in-out infinite;
+            white-space: nowrap;
+        }
+
+        .holo-chip-top {
+            top: 20px;
+            right: 0px;
+            animation-delay: -1.5s;
+        }
+        .holo-chip-bottom {
+            bottom: 30px;
+            left: -10px;
+            animation-delay: -3s;
+        }
+
+        .holo-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 8px var(--accent-cyan);
+            animation: dotBlink 1.8s ease-in-out infinite;
+        }
+
+        @keyframes chipFloat {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-8px) scale(1.02); }
+        }
+        @keyframes dotBlink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.8); }
+        }
+
+        /* 4. Right: Content Column */
+        .content-col {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        /* Giant Background Code Watermark */
+        .bg-code-watermark {
+            position: absolute;
+            top: -2.5rem;
+            left: -1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14rem;
             font-weight: 800;
-            line-height: 1;
-            color: var(--watermark);
+            line-height: 0.8;
+            letter-spacing: -0.06em;
+            color: var(--code-text);
             user-select: none;
             pointer-events: none;
             z-index: 0;
-            letter-spacing: -0.05em;
         }
 
-        .card-content {
+        .content-inner {
             position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            z-index: 1;
+            width: 100%;
         }
 
         /* Firm Logo Header */
-        .firm-brand {
+        .firm-logo-link {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            margin-bottom: 2rem;
-            transition: transform 0.3s ease;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease;
         }
-        .firm-brand:hover {
-            transform: scale(1.03);
+        .firm-logo-link:hover {
+            transform: translateY(-2px);
         }
-        .firm-brand img {
-            height: 2.75rem;
+        .firm-logo-link img {
+            height: 2.25rem;
             width: auto;
             object-fit: contain;
         }
         @media (prefers-color-scheme: dark) {
-            .firm-brand img {
+            .firm-logo-link img {
                 filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(255,255,255,0.1));
             }
         }
 
-        /* 4. Hero 3D Holographic Emblem */
-        .emblem-container {
-            position: relative;
-            width: 88px;
-            height: 88px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Concentric animated pulse rings */
-        .ring-outer {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            border: 1.5px dashed var(--badge-border);
-            animation: spinClockwise 24s linear infinite;
-        }
-        .ring-inner {
-            position: absolute;
-            inset: 8px;
-            border-radius: 50%;
-            background: var(--accent-glow);
-            border: 1px solid var(--badge-border);
-            animation: pulseGlow 3s ease-in-out infinite alternate;
-        }
-
-        .emblem-icon-box {
-            position: relative;
-            z-index: 2;
-            width: 52px;
-            height: 52px;
-            border-radius: 1rem;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(241, 245, 249, 0.8));
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--accent-blue);
-            box-shadow: 0 10px 25px -5px var(--accent-glow), 0 2px 6px rgba(0,0,0,0.05);
-            animation: iconFloat 4s ease-in-out infinite;
-        }
-        @media (prefers-color-scheme: dark) {
-            .emblem-icon-box {
-                background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.8));
-                border-color: rgba(255, 255, 255, 0.12);
-                box-shadow: 0 10px 25px -5px var(--accent-glow), 0 0 15px rgba(96, 165, 250, 0.2);
-            }
-        }
-
-        .emblem-icon-box svg {
-            width: 26px;
-            height: 26px;
-            stroke-width: 2;
-        }
-
-        /* Orbiting Satellite Dot */
-        .satellite {
-            position: absolute;
-            top: 2px;
-            left: 50%;
-            width: 7px;
-            height: 7px;
-            margin-left: -3.5px;
-            border-radius: 50%;
-            background: var(--accent-blue);
-            box-shadow: 0 0 10px var(--accent-blue);
-        }
-
-        @keyframes spinClockwise {
-            100% { transform: rotate(360deg); }
-        }
-        @keyframes pulseGlow {
-            0% { transform: scale(0.95); opacity: 0.6; }
-            100% { transform: scale(1.05); opacity: 1; }
-        }
-        @keyframes iconFloat {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-5px) rotate(2deg); }
-        }
-
-        /* 5. Monospace Status Badge */
-        .badge-pill {
+        /* Status Badge Pill */
+        .status-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.725rem;
-            font-weight: 600;
+            font-weight: 700;
             letter-spacing: 0.08em;
             text-transform: uppercase;
-            padding: 0.325rem 0.85rem;
+            padding: 0.35rem 0.85rem;
             border-radius: 9999px;
             background: var(--badge-bg);
             border: 1px solid var(--badge-border);
             color: var(--badge-text);
-            margin-bottom: 1.25rem;
-            box-shadow: 0 2px 8px -2px var(--accent-glow);
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px -2px var(--accent-glow);
         }
 
-        .badge-led {
+        .status-badge-dot {
             width: 6px;
             height: 6px;
             border-radius: 50%;
             background-color: var(--accent-blue);
             box-shadow: 0 0 8px var(--accent-blue);
-            animation: ledBlink 2s ease-in-out infinite;
+            animation: dotBlink 2s ease-in-out infinite;
         }
 
-        @keyframes ledBlink {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.85); }
-        }
-
-        /* 6. Typography */
+        /* Headline & Paragraph */
         h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: -0.03em;
+            font-size: 2.25rem;
+            font-weight: 800;
+            letter-spacing: -0.035em;
             color: var(--text-primary);
-            margin-bottom: 0.625rem;
-            line-height: 1.3;
+            margin-bottom: 0.85rem;
+            line-height: 1.2;
         }
 
         p {
-            font-size: 0.875rem;
+            font-size: 0.975rem;
             color: var(--text-secondary);
             line-height: 1.65;
-            max-width: 24rem;
-            margin-bottom: 2rem;
+            max-width: 28rem;
+            margin-bottom: 2.25rem;
         }
 
-        /* 7. Action Button Group */
+        /* Action Buttons */
         .actions-group {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            width: 100%;
+            gap: 0.85rem;
+            margin-bottom: 2.5rem;
         }
 
         .btn {
@@ -385,10 +364,10 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            height: 2.625rem;
-            padding: 0 1.375rem;
-            border-radius: 0.75rem;
-            font-size: 0.8125rem;
+            height: 2.75rem;
+            padding: 0 1.5rem;
+            border-radius: 0.85rem;
+            font-size: 0.825rem;
             font-weight: 600;
             text-decoration: none;
             cursor: pointer;
@@ -403,8 +382,9 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
         }
         .btn-primary:hover {
+            background: var(--btn-primary-hover);
             transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 15px 30px -8px rgba(15, 23, 42, 0.35);
+            box-shadow: 0 16px 32px -6px rgba(15, 23, 42, 0.35);
         }
         .btn-primary:active {
             transform: translateY(0px) scale(0.98);
@@ -414,17 +394,17 @@
             background: var(--btn-sec-bg);
             border: 1px solid var(--btn-sec-border);
             color: var(--btn-sec-text);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
         }
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.95);
-            border-color: rgba(148, 163, 184, 0.8);
+            border-color: rgba(148, 163, 184, 0.9);
             transform: translateY(-1px);
         }
         @media (prefers-color-scheme: dark) {
             .btn-secondary:hover {
-                background: rgba(255, 255, 255, 0.1);
-                border-color: rgba(255, 255, 255, 0.2);
+                background: rgba(255, 255, 255, 0.12);
+                border-color: rgba(255, 255, 255, 0.25);
             }
         }
         .btn-secondary:active {
@@ -440,39 +420,56 @@
             transform: translateX(-3px);
         }
 
-        /* 8. Footer Legal Note */
-        .card-footer-note {
-            margin-top: 2.25rem;
-            padding-top: 1.25rem;
-            border-top: 1px solid var(--card-inner-border);
-            width: 100%;
-            font-size: 0.6875rem;
-            font-weight: 500;
-            color: var(--text-tertiary);
-            display: flex;
+        /* Minimalist Footer */
+        .footer-brand-note {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-        }
-        .card-footer-note svg {
-            width: 12px;
-            height: 12px;
-            opacity: 0.7;
+            gap: 0.5rem;
+            font-size: 0.775rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.02em;
         }
 
-        @media (max-width: 480px) {
-            .card {
-                padding: 2.25rem 1.5rem 1.75rem;
-                border-radius: 1.25rem;
+        .footer-status-indicator {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 860px) {
+            .error-canvas {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                text-align: center;
             }
-            .watermark-number {
-                font-size: 11rem;
+            .content-col {
+                align-items: center;
+                text-align: center;
+            }
+            .bg-code-watermark {
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 10rem;
+                top: -1.5rem;
+            }
+            .character-stage {
+                min-height: 280px;
+            }
+            .character-img-wrapper {
+                max-width: 260px;
             }
             .actions-group {
-                flex-direction: column;
+                justify-content: center;
             }
-            .btn {
-                width: 100%;
+            h1 {
+                font-size: 1.75rem;
+            }
+            p {
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -481,50 +478,69 @@
     <!-- Background Ambient Grid -->
     <div class="bg-grid"></div>
 
-    <!-- 3D Floating Mesh Orbs -->
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
+    <!-- Floating Ambient Lights -->
+    <div class="ambient-light light-1"></div>
+    <div class="ambient-light light-2"></div>
 
-    <!-- 3D Interactive Card Wrapper -->
-    <div class="card-wrapper" id="cardWrapper">
-        <div class="card" id="card">
-            <div class="card-glare"></div>
+    <!-- Main Container-less Open Canvas -->
+    <main class="error-canvas" id="errorCanvas">
+        <!-- 1. Left: 3D Holographic Anime Stage -->
+        <div class="character-stage" id="characterStage">
+            <div class="stage-platform"></div>
 
-            <!-- Giant Watermark Error Code -->
-            <div class="watermark-number">@yield('code')</div>
+            <!-- Floating Holographic Badge 1 -->
+            <div class="holo-chip holo-chip-top">
+                <span class="holo-dot"></span>
+                <span>@yield('chip_label', 'CASE FILE #24097')</span>
+            </div>
 
-            <div class="card-content">
+            <!-- Anime Character -->
+            <div class="character-img-wrapper" id="characterWrapper">
+                @sectionMissing('character_image')
+                    <img 
+                        src="/images/anime-404-character.png" 
+                        alt="RPK Legal Tech Character" 
+                        class="character-img"
+                    />
+                @else
+                    @yield('character_image')
+                @endif
+            </div>
+
+            <!-- Floating Holographic Badge 2 -->
+            <div class="holo-chip holo-chip-bottom">
+                <span class="holo-dot" style="background: var(--accent-blue); box-shadow: 0 0 8px var(--accent-blue);"></span>
+                <span>RPK LAW APP &middot; SYSTEM ONLINE</span>
+            </div>
+        </div>
+
+        <!-- 2. Right: Content & Action Controls -->
+        <div class="content-col">
+            <!-- Background Giant Number Watermark -->
+            <div class="bg-code-watermark">@yield('code')</div>
+
+            <div class="content-inner">
                 <!-- Law Firm Logo -->
-                <a href="{{ route('home') }}" class="firm-brand" title="RPK Law Firm Workspace">
+                <a href="{{ route('home') }}" class="firm-logo-link" title="Kembali ke Dashboard">
                     <img src="/logo/raf-law-firm-transparent.png" alt="RPK Law Firm Logo" onerror="this.onerror=null; this.src='/logo/logo.png';" />
                 </a>
 
-                <!-- 3D Hologram Emblem -->
-                <div class="emblem-container">
-                    <div class="ring-outer">
-                        <div class="satellite"></div>
-                    </div>
-                    <div class="ring-inner"></div>
-                    <div class="emblem-icon-box">
-                        @yield('icon')
+                <!-- Status Badge -->
+                <div>
+                    <div class="status-badge">
+                        <span class="status-badge-dot"></span>
+                        <span>ERROR @yield('code') &middot; @yield('badge_label', 'STATUS EVENT')</span>
                     </div>
                 </div>
 
-                <!-- Monospace Status Pill -->
-                <div class="badge-pill">
-                    <span class="badge-led"></span>
-                    <span>ERROR @yield('code') · @yield('badge_label', 'SYSTEM EVENT')</span>
-                </div>
-
-                <!-- Error Title & Descriptive Message -->
+                <!-- Error Headline & Subtitle -->
                 <h1>@yield('title')</h1>
                 <p>@yield('message')</p>
 
                 <!-- Action Button Group -->
                 <div class="actions-group">
                     <a href="{{ route('home') }}" class="btn btn-primary">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="19" y1="12" x2="5" y2="12"></line>
                             <polyline points="12 19 5 12 12 5"></polyline>
                         </svg>
@@ -532,7 +548,7 @@
                     </a>
 
                     <button type="button" onclick="window.location.reload()" class="btn btn-secondary">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="23 4 23 10 17 10"></polyline>
                             <polyline points="1 20 1 14 7 14"></polyline>
                             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
@@ -541,49 +557,31 @@
                     </button>
                 </div>
 
-                <!-- Footer Legal Security Assurance -->
-                <div class="card-footer-note">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                    </svg>
-                    <span>RPK Law Firm Internal Workspace &middot; Kerahasiaan Terjamin</span>
+                <!-- Minimalist Footer -->
+                <div class="footer-brand-note">
+                    <span class="footer-status-indicator"></span>
+                    <span>RPK Law App</span>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Interactive 3D Card Tilt Script -->
+    <!-- Parallax 3D Mouse Movement Script -->
     <script>
         (function() {
-            const cardWrapper = document.getElementById('cardWrapper');
-            const card = document.getElementById('card');
-            if (!cardWrapper || !card) return;
+            const stage = document.getElementById('characterStage');
+            const wrapper = document.getElementById('characterWrapper');
+            if (!stage || !wrapper) return;
 
-            let bounds;
-            function updateBounds() {
-                bounds = cardWrapper.getBoundingClientRect();
-            }
-            updateBounds();
-            window.addEventListener('resize', updateBounds);
-            window.addEventListener('scroll', updateBounds);
+            window.addEventListener('mousemove', (e) => {
+                const x = (e.clientX / window.innerWidth - 0.5) * 20;
+                const y = (e.clientY / window.innerHeight - 0.5) * 20;
 
-            cardWrapper.addEventListener('mousemove', (e) => {
-                const mouseX = e.clientX - bounds.left;
-                const mouseY = e.clientY - bounds.top;
-                const xPct = mouseX / bounds.width;
-                const yPct = mouseY / bounds.height;
-
-                const tiltX = (yPct - 0.5) * -14;
-                const tiltY = (xPct - 0.5) * 14;
-
-                card.style.setProperty('--mouse-x', `${xPct * 100}%`);
-                card.style.setProperty('--mouse-y', `${yPct * 100}%`);
-                cardWrapper.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.015, 1.015, 1.015)`;
+                wrapper.style.transform = `translate3d(${x * 0.8}px, ${y * 0.8}px, 0px) rotateY(${x * 0.5}deg) rotateX(${-y * 0.5}deg)`;
             });
 
-            cardWrapper.addEventListener('mouseleave', () => {
-                cardWrapper.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+            window.addEventListener('mouseleave', () => {
+                wrapper.style.transform = 'translate3d(0, 0, 0) rotateY(0deg) rotateX(0deg)';
             });
         })();
     </script>
