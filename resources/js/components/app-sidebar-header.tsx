@@ -1,5 +1,5 @@
 import { usePage } from '@inertiajs/react';
-import { ChevronDown, Sparkles } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { CommandPalette } from '@/components/command-palette';
 import { NotificationMenu } from '@/components/notification-menu';
@@ -19,30 +19,52 @@ export function AppSidebarHeader({
 }: {
     breadcrumbs?: BreadcrumbItemType[];
 }) {
-    const { auth } = usePage().props;
+    const page = usePage();
+    const { auth } = page.props;
     const getInitials = useInitials();
+    const url = page.url;
+
+    // Detect if current active page is the main Dashboard
+    const isDashboard =
+        url === '/' ||
+        url === '/dashboard' ||
+        url.startsWith('/dashboard?') ||
+        breadcrumbs.length === 0 ||
+        (breadcrumbs.length === 1 &&
+            (breadcrumbs[0].title.toLowerCase() === 'dashboard' ||
+                breadcrumbs[0].title.toLowerCase() === 'workspace dashboard'));
+
+    // Filter out root "Dashboard" crumb if already present so subpages look clean & direct
+    const validBreadcrumbs = isDashboard
+        ? []
+        : breadcrumbs.filter(
+              (b) =>
+                  b.title.toLowerCase() !== 'dashboard' &&
+                  b.title.toLowerCase() !== 'workspace dashboard',
+          );
 
     return (
-        <header className="sticky top-0 z-30 flex h-13 shrink-0 items-center justify-between gap-2 border-b border-slate-200/80 bg-white/95 px-2.5 backdrop-blur-xl transition-colors sm:gap-3 sm:px-5 dark:border-white/[0.08] dark:bg-[#121418]/95">
-            {/* Left: Breadcrumbs & Mobile Toggle */}
-            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-                <SidebarTrigger className="size-8.5 rounded-xl text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 active:scale-95 md:hidden dark:text-zinc-400 dark:hover:bg-white/[0.08] dark:hover:text-white" />
-                {breadcrumbs.length > 0 && (
-                    <div className="hidden min-w-0 sm:flex">
-                        <Breadcrumbs breadcrumbs={breadcrumbs} />
+        <header className="relative sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-slate-200/80 bg-white/80 px-3 backdrop-blur-xl transition-colors sm:px-5 dark:border-white/[0.07] dark:bg-[#101216]/80">
+            {/* 1. Left Section: Mobile Trigger & Crisp Page Path (Hidden on Dashboard) */}
+            <div className="z-10 flex min-w-0 max-w-[28%] items-center gap-2 sm:max-w-[32%] lg:max-w-[36%]">
+                <SidebarTrigger className="size-8.5 shrink-0 rounded-xl text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 active:scale-95 md:hidden dark:text-zinc-400 dark:hover:bg-white/[0.08] dark:hover:text-white" />
+
+                {!isDashboard && validBreadcrumbs.length > 0 && (
+                    <div className="hidden min-w-0 sm:flex sm:items-center">
+                        <Breadcrumbs breadcrumbs={validBreadcrumbs} />
                     </div>
                 )}
             </div>
 
-            {/* Center: Symmetrical Spotlight Search Capsule */}
-            <div className="flex flex-1 items-center justify-center px-1 sm:px-4">
-                <div className="w-full max-w-md">
-                    <CommandPalette className="shadow-2xs" />
+            {/* 2. Center Section: Mathematically Centered Spotlight Search Capsule */}
+            <div className="pointer-events-none absolute inset-x-0 flex items-center justify-center px-4">
+                <div className="pointer-events-auto w-full max-w-[320px] sm:max-w-[380px] md:max-w-[440px] lg:max-w-[480px]">
+                    <CommandPalette />
                 </div>
             </div>
 
-            {/* Right: Notifications & Clean Unboxed User Profile */}
-            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            {/* 3. Right Section: Notification Center & User Profile Trigger */}
+            <div className="z-10 flex shrink-0 items-center gap-2 sm:gap-2.5">
                 <NotificationMenu />
 
                 {auth.user && (
