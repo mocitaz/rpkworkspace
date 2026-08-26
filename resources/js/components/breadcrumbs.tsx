@@ -22,11 +22,10 @@ export function Breadcrumbs({
                                 {isLast ? (
                                     <span
                                         aria-current="page"
-                                        className="flex max-w-[200px] items-center gap-1.5 truncate font-bold text-slate-900 sm:max-w-[280px] md:max-w-[340px] dark:text-white"
+                                        className="max-w-[220px] truncate font-bold text-slate-900 sm:max-w-[300px] md:max-w-[380px] dark:text-white"
                                         title={item.title}
                                     >
-                                        <span className="size-1.5 shrink-0 rounded-full bg-blue-600 dark:bg-blue-400" />
-                                        <span className="truncate">{item.title}</span>
+                                        {item.title}
                                     </span>
                                 ) : (
                                     <Link
