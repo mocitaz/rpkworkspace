@@ -165,86 +165,27 @@ export default function DocumentShow({
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
-                    {/* 1. Header Navigation & Title Toolbar (2 Baris Terpisah Rapi) */}
-                    <div className="space-y-3.5 border-b border-slate-200/60 pb-5 dark:border-white/[0.06]">
-                        {/* Baris 1: Navigasi Kembali & Action Buttons */}
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                asChild
-                                className="h-8 shrink-0 rounded-lg border-slate-200/70 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
-                            >
-                                <Link href={documentRoutes.index.url()}>
-                                    <ArrowLeft className="mr-1.5 size-3.5 text-slate-500" />
-                                    Kembali ke Repositori
-                                </Link>
-                            </Button>
-
-                            {/* Actions Toolbar */}
+                    {/* 1. Header Navigation & Document Cockpit Bar */}
+                    <div className="space-y-3 border-b border-slate-200/60 pb-5 dark:border-white/[0.06]">
+                        {/* Top Tier: Breadcrumbs & Badges + Action Buttons */}
+                        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                            {/* Left: Breadcrumbs & Status Badges */}
                             <div className="flex flex-wrap items-center gap-2">
-                                {can.uploadVersion &&
-                                    !document.matter?.legal_hold_at && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() =>
-                                                setWorkflowOpen('review')
-                                            }
-                                            className="h-8 shrink-0 rounded-lg border-slate-200/70 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
-                                        >
-                                            <PenLine className="mr-1.5 size-3.5 text-slate-500" />
-                                            Ajukan Review
-                                        </Button>
-                                    )}
-                                {can.signature &&
-                                    !document.matter?.legal_hold_at && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() =>
-                                                setWorkflowOpen('signature')
-                                            }
-                                            className="h-8 shrink-0 rounded-lg border-purple-200 bg-purple-50/50 px-3 text-xs font-semibold text-purple-700 shadow-2xs hover:bg-purple-100/50 dark:border-purple-900 dark:bg-purple-950/40 dark:text-purple-300"
-                                        >
-                                            <QrCode className="mr-1.5 size-3.5 text-purple-600" />
-                                            E-Sign Internal
-                                        </Button>
-                                    )}
-                                {can.uploadVersion &&
-                                    !document.matter?.legal_hold_at && (
-                                        <Button
-                                            size="sm"
-                                            onClick={() => setOpen(true)}
-                                            className="h-8 shrink-0 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
-                                        >
-                                            <FileUp className="mr-1.5 size-3.5" />
-                                            + Versi Baru
-                                        </Button>
-                                    )}
-                                {can.delete &&
-                                    !document.matter?.legal_hold_at && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() =>
-                                                setShowDeleteConfirm(true)
-                                            }
-                                            className="h-8 shrink-0 rounded-lg border-rose-200 bg-rose-50/50 px-3 text-xs font-semibold text-rose-700 shadow-2xs hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300"
-                                        >
-                                            <Trash2 className="mr-1.5 size-3.5 text-rose-600 dark:text-rose-400" />
-                                            Hapus Dokumen
-                                        </Button>
-                                    )}
-                            </div>
-                        </div>
-
-                        {/* Baris 2: Status Badges, Judul Dokumen & Metadata */}
-                        <div className="space-y-1">
-                            <div className="flex flex-wrap items-center gap-1.5">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    asChild
+                                    className="-ml-2 h-7 px-2 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                >
+                                    <Link href={documentRoutes.index.url()}>
+                                        <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
+                                        Repositori Dokumen
+                                    </Link>
+                                </Button>
+                                <span className="text-slate-300 dark:text-zinc-600">/</span>
                                 <StatusBadge value={document.status} />
                                 <span
-                                    className={`py-0.2 rounded px-1.5 text-[9.5px] font-semibold uppercase ${
+                                    className={`rounded px-1.5 py-0.5 text-[9.5px] font-semibold uppercase ${
                                         document.confidentiality_level ===
                                         'strictly_confidential'
                                             ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
@@ -256,57 +197,124 @@ export default function DocumentShow({
                                 >
                                     {document.confidentiality_level}
                                 </span>
-                                <span className="py-0.2 rounded bg-slate-100 px-1.5 text-[9.5px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
+                                <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[9.5px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
                                     {document.document_type ?? 'Dokumen'}
                                 </span>
                                 {document.matter?.legal_hold_at && (
-                                    <span className="py-0.2 inline-flex items-center gap-1 rounded bg-rose-50 px-1.5 text-[9.5px] font-semibold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
+                                    <span className="inline-flex items-center gap-1 rounded bg-rose-50 px-1.5 py-0.5 text-[9.5px] font-semibold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
                                         <ShieldAlert className="size-2.5" />
                                         Legal Hold Aktif
                                     </span>
                                 )}
                             </div>
 
-                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+                            {/* Right: Action Buttons */}
+                            <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+                                {can.uploadVersion &&
+                                    !document.matter?.legal_hold_at && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                                setWorkflowOpen('review')
+                                            }
+                                            className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                                        >
+                                            <PenLine className="mr-1 size-3 text-slate-400" />
+                                            Ajukan Review
+                                        </Button>
+                                    )}
+
+                                {can.signature &&
+                                    !document.matter?.legal_hold_at && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                                setWorkflowOpen('signature')
+                                            }
+                                            className="h-7.5 rounded-lg border-purple-200 bg-purple-50/50 px-2.5 text-xs font-semibold text-purple-700 shadow-2xs hover:bg-purple-100/50 dark:border-purple-900/50 dark:bg-purple-950/40 dark:text-purple-300"
+                                        >
+                                            <QrCode className="mr-1 size-3 text-purple-600 dark:text-purple-400" />
+                                            E-Sign Internal
+                                        </Button>
+                                    )}
+
+                                {can.uploadVersion &&
+                                    !document.matter?.legal_hold_at && (
+                                        <Button
+                                            size="sm"
+                                            onClick={() => setOpen(true)}
+                                            className="h-7.5 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
+                                        >
+                                            <FileUp className="mr-1 size-3.5" />
+                                            + Versi Baru
+                                        </Button>
+                                    )}
+
+                                {can.delete &&
+                                    !document.matter?.legal_hold_at && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                                setShowDeleteConfirm(true)
+                                            }
+                                            className="h-7.5 rounded-lg border-rose-200 bg-rose-50/50 px-2.5 text-xs font-semibold text-rose-700 shadow-2xs hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300"
+                                        >
+                                            <Trash2 className="mr-1 size-3 text-rose-600 dark:text-rose-400" />
+                                            Hapus
+                                        </Button>
+                                    )}
+                            </div>
+                        </div>
+
+                        {/* Bottom Tier: Full-Width Document Title & Context Metadata */}
+                        <div className="space-y-1.5">
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-[26px] lg:leading-snug dark:text-white">
                                 {document.title}
                             </h1>
 
-                            <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 dark:text-zinc-400">
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-zinc-400">
                                 {document.matter ? (
                                     <>
-                                        <span>Perkara:</span>
-                                        <Link
-                                            href={matterRoutes.show.url(
-                                                document.matter.id,
-                                            )}
-                                            className="font-mono font-semibold text-blue-600 hover:underline dark:text-blue-400"
-                                        >
-                                            {document.matter.matter_number} -{' '}
-                                            {document.matter.title}
-                                        </Link>
+                                        <div className="flex items-center gap-1.5">
+                                            <span>Perkara:</span>
+                                            <Link
+                                                href={matterRoutes.show.url(
+                                                    document.matter.id,
+                                                )}
+                                                className="font-mono font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                            >
+                                                {document.matter.matter_number} -{' '}
+                                                {document.matter.title}
+                                            </Link>
+                                        </div>
                                     </>
                                 ) : document.client ? (
                                     <>
-                                        <span>Klien:</span>
-                                        <Link
-                                            href={clientRoutes.show.url(
-                                                document.client.id,
-                                            )}
-                                            className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
-                                        >
-                                            {document.client.display_name}
-                                        </Link>
+                                        <div className="flex items-center gap-1.5">
+                                            <span>Klien:</span>
+                                            <Link
+                                                href={clientRoutes.show.url(
+                                                    document.client.id,
+                                                )}
+                                                className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                            >
+                                                {document.client.display_name}
+                                            </Link>
+                                        </div>
                                     </>
                                 ) : (
                                     <span>Dokumen Umum Firma</span>
                                 )}
                                 <span>·</span>
-                                <span>
+                                <div>
                                     Dibuat oleh{' '}
                                     <strong className="font-semibold text-slate-900 dark:text-white">
                                         {document.creator.name}
                                     </strong>
-                                </span>
+                                </div>
                             </div>
                         </div>
                     </div>
