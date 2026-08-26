@@ -22,9 +22,11 @@ use App\Models\Document;
 use App\Models\Matter;
 use App\Models\MatterExport;
 use App\Services\AuditService;
+use App\Services\PdfRenderer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -223,6 +225,30 @@ class GovernanceController extends Controller
 
         return Inertia::render('governance/conflict-certificate', [
             'conflictCheck' => $conflictCheck,
+        ]);
+    }
+
+    public function downloadConflictCertificate(Request $request, ConflictCheck $conflictCheck, PdfRenderer $pdfRenderer, AuditService $audit): HttpResponse
+    {
+        abort_unless($request->user()->hasPermission('conflict.view') || $request->user()->hasPermission('governance.view') || $request->user()->hasPermission('matter.view'), 403);
+
+        if ($conflictCheck->matter !== null && $request->user()->cannot('view', $conflictCheck->matter)) {
+            abort(403);
+        }
+
+        $conflictCheck->loadMissing([
+            'matter:id,matter_number,title',
+            'client:id,client_number,display_name,tax_identifier',
+            'requester:id,name,email,position_title',
+            'reviewer:id,name,email,position_title',
+        ]);
+
+        $audit->record($conflictCheck, 'conflict_check.certificate_downloaded', [], $request->user(), $request);
+
+        return response($pdfRenderer->render('pdf.conflict-certificate', ['conflictCheck' => $conflictCheck]), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="conflict-certificate-'.$conflictCheck->id.'.pdf"',
+            'X-Content-Type-Options' => 'nosniff',
         ]);
     }
 

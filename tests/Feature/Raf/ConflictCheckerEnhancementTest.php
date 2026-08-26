@@ -108,3 +108,20 @@ it('renders the official conflict clearance certificate page', function () {
         ->where('conflictCheck.client.id', $client->id)
     );
 });
+
+it('downloads the official conflict clearance certificate as PDF', function () {
+    $partner = rafUser(['conflict.view', 'governance.view', 'matter.view']);
+    $check = ConflictCheck::factory()->create([
+        'status' => 'clear',
+        'decision' => 'cleared',
+        'searched_names' => ['PT Bumi Sejahtera', 'John Doe'],
+        'reviewed_by' => $partner->getKey(),
+        'reviewed_at' => now(),
+    ]);
+
+    $response = $this->actingAs($partner)->get(route('governance.conflict-checks.pdf', $check));
+
+    $response->assertSuccessful();
+    $response->assertHeader('Content-Type', 'application/pdf');
+    expect($response->getContent())->not->toBeEmpty();
+});

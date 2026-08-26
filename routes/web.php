@@ -124,6 +124,7 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::post('governance/conflict-checks/preview', [GovernanceController::class, 'previewConflictCheck'])->name('governance.conflict-checks.preview');
     Route::patch('governance/conflict-checks/{conflictCheck}', [GovernanceController::class, 'resolveConflictCheck'])->name('governance.conflict-checks.resolve');
     Route::get('governance/conflict-checks/{conflictCheck}/certificate', [GovernanceController::class, 'showCertificate'])->name('governance.conflict-checks.certificate');
+    Route::get('governance/conflict-checks/{conflictCheck}/pdf', [GovernanceController::class, 'downloadConflictCertificate'])->name('governance.conflict-checks.pdf');
     Route::post('governance/matters/{matter}/legal-hold', [GovernanceController::class, 'placeLegalHold'])->name('governance.matters.legal-hold.store');
     Route::delete('governance/matters/{matter}/legal-hold', [GovernanceController::class, 'releaseLegalHold'])->name('governance.matters.legal-hold.destroy');
     Route::post('governance/matters/{matter}/archive', [GovernanceController::class, 'archive'])->name('governance.matters.archive');

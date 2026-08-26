@@ -3,10 +3,10 @@ import {
     ArrowLeft,
     CheckCircle2,
     Clock,
+    Download,
     FileCheck,
     Gavel,
     Printer,
-    QrCode,
     Scale,
     ShieldAlert,
     ShieldCheck,
@@ -46,7 +46,7 @@ type ConflictCheck = {
         id: string;
         client_number: string;
         display_name: string;
-        tax_id?: string;
+        tax_identifier?: string;
     };
     requester?: {
         id: number;
@@ -81,111 +81,129 @@ export default function ConflictCertificate({
     };
 
     return (
-        <div className="min-h-screen bg-slate-100/70 py-8 text-slate-900 print:bg-white print:p-0 dark:bg-[#0f1115] dark:text-slate-100">
+        <div className="min-h-screen bg-slate-100/70 py-6 text-slate-900 print:bg-white print:p-0 dark:bg-[#0c0d10] dark:text-slate-100">
             <Head
-                title={`Sertifikat Bebas Konflik #${conflictCheck.id.slice(0, 10)} - RPK Law Office`}
+                title={`Sertifikat Pemeriksaan Benturan Kepentingan CC-${conflictCheck.id.slice(0, 10)} - RPK Law Firm`}
             />
 
-            {/* Non-printable Action Header */}
+            {/* Top Cockpit Action Bar (Hidden when printing) */}
             <div className="mx-auto mb-6 flex max-w-4xl items-center justify-between px-4 print:hidden sm:px-6">
                 <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 rounded-lg border-slate-300 bg-white text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                    className="h-8 rounded-lg border-slate-300 bg-white text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
                     asChild
                 >
                     <Link href={governanceRoutes.index.url()}>
-                        <ArrowLeft className="mr-1.5 size-3.5" />
+                        <ArrowLeft className="mr-1.5 size-3.5 text-slate-400" />
                         Kembali ke Tata Kelola
                     </Link>
                 </Button>
 
                 <div className="flex items-center gap-2">
                     <Button
+                        variant="outline"
                         size="sm"
                         onClick={handlePrint}
-                        className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-bold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                        className="h-8 rounded-lg border-slate-300 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
                     >
-                        <Printer className="mr-1.5 size-3.5" />
-                        Cetak Sertifikat (PDF)
+                        <Printer className="mr-1.5 size-3.5 text-slate-500" />
+                        Cetak Dokumen
+                    </Button>
+
+                    <Button
+                        size="sm"
+                        className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-bold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                        asChild
+                    >
+                        <a
+                            href={`/governance/conflict-checks/${conflictCheck.id}/pdf`}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            <Download className="mr-1.5 size-3.5" />
+                            Download PDF Resmi
+                        </a>
                     </Button>
                 </div>
             </div>
 
-            {/* Official Printable Certificate Board */}
-            <div className="mx-auto max-w-4xl rounded-2xl border border-slate-300/80 bg-white p-8 shadow-xl print:m-0 print:max-w-none print:rounded-none print:border-none print:p-8 print:shadow-none sm:p-12 dark:border-white/10 dark:bg-[#14161b]">
-                {/* 1. Letterhead / Kop Surat Firma */}
+            {/* Official Legal Certificate Board */}
+            <div className="mx-auto max-w-4xl rounded-2xl border border-slate-200/90 bg-white p-6 shadow-xl shadow-slate-200/60 print:m-0 print:max-w-none print:rounded-none print:border-none print:p-8 print:shadow-none sm:p-10 dark:border-white/10 dark:bg-[#14161b] dark:shadow-none">
+                
+                {/* 1. Official Letterhead / Kop Surat Firma */}
                 <div className="border-b-2 border-slate-900 pb-5 dark:border-white">
                     <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                         <div className="flex items-center gap-3.5">
-                            <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900">
-                                <Scale className="size-6" />
-                            </div>
-                            <div>
+                            <img
+                                src="/logo/logo.png"
+                                alt="RPK Law Firm"
+                                className="h-10 w-auto max-w-[170px] object-contain"
+                                onError={(e) => {
+                                    (e.target as HTMLElement).style.display = 'none';
+                                }}
+                            />
+                            <div className="border-l border-slate-200 pl-3.5 dark:border-white/10">
                                 <h1 className="font-serif text-lg font-black tracking-tight text-slate-900 uppercase sm:text-xl dark:text-white">
-                                    RONI, PUTRA &amp; KUSUMA
+                                    RONI, PUTRA &amp; KUSUMAH
                                 </h1>
-                                <p className="text-[11px] font-bold tracking-widest text-slate-500 uppercase dark:text-zinc-400">
+                                <p className="text-[10.5px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                     ADVOCATES &amp; LEGAL CONSULTANTS
                                 </p>
                             </div>
                         </div>
-                        <div className="text-left text-[10.5px] leading-relaxed text-slate-500 sm:text-right dark:text-zinc-400">
-                            <p className="font-semibold text-slate-700 dark:text-zinc-300">
-                                Divisi Kepatuhan Etika Profesi &amp; Manajemen
-                                Risiko
+                        <div className="text-left text-[11px] leading-relaxed text-slate-500 sm:text-right dark:text-zinc-400">
+                            <p className="font-semibold text-slate-800 dark:text-zinc-200">
+                                Divisi Kepatuhan Etika Profesi &amp; Manajemen Risiko
                             </p>
                             <p>
-                                Gedung Equity Tower Lt. 28, SCBD Kav. 52-53,
-                                Jakarta Selatan
+                                Menara Hukum RPK, Lantai 5, Jl. LLRE Martadinata No. 88, Bandung
                             </p>
-                            <p className="font-mono">
-                                No. Verifikasi: CC-RPK-{conflictCheck.id}
+                            <p className="font-mono text-[10px] text-slate-600 dark:text-zinc-400">
+                                No. Registrasi: CC-RPK-{conflictCheck.id.slice(0, 14)}
                             </p>
                         </div>
                     </div>
                 </div>
 
-                {/* 2. Certificate Title & Status Badge */}
-                <div className="my-8 text-center">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 font-mono text-[10px] font-bold text-slate-700 uppercase dark:bg-white/10 dark:text-zinc-300">
-                        <FileCheck className="size-3.5 text-blue-600 dark:text-blue-400" />
-                        FORMULIR KEPATUHAN ETIKA NOMOR: CC/
-                        {new Date(conflictCheck.created_at).getFullYear()}/
-                        {conflictCheck.id.slice(0, 8).toUpperCase()}
+                {/* 2. Certificate Title Header */}
+                <div className="my-7 text-center space-y-2">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1 font-mono text-[9.5px] font-bold text-white uppercase shadow-2xs dark:bg-white dark:text-slate-900">
+                        <FileCheck className="size-3 text-emerald-400 dark:text-emerald-600" />
+                        FORMULIR KEPATUHAN ETIKA NOMOR: CC/{new Date(conflictCheck.created_at).getFullYear()}/{conflictCheck.id.slice(0, 8).toUpperCase()}
                     </span>
 
-                    <h2 className="mt-3 font-serif text-xl font-bold tracking-tight text-slate-900 uppercase sm:text-2xl dark:text-white">
+                    <h2 className="font-serif text-xl font-black tracking-tight text-slate-900 uppercase sm:text-2xl dark:text-white">
                         SURAT KETERANGAN PEMERIKSAAN BENTURAN KEPENTINGAN
                     </h2>
-                    <p className="mt-1 font-sans text-xs tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                        CERTIFICATE OF CONFLICT OF INTEREST CLEARANCE
+                    <p className="font-sans text-xs tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                        CERTIFICATE OF CONFLICT OF INTEREST CLEARANCE &amp; ETHICAL REVIEW
                     </p>
 
-                    {/* Result Status Banner */}
-                    <div className="mt-5 inline-flex flex-col items-center justify-center">
+                    {/* Result Status Badge */}
+                    <div className="pt-2">
                         <div
-                            className={`inline-flex items-center gap-2 rounded-xl border px-5 py-2 font-mono text-sm font-bold uppercase shadow-2xs ${
+                            className={`inline-flex items-center gap-2 rounded-xl border px-5 py-2 font-mono text-xs font-bold uppercase shadow-2xs ${
                                 isClear
-                                    ? 'border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300'
+                                    ? 'border-emerald-300/80 bg-emerald-50 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200'
                                     : isWaived
-                                      ? 'border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-950/50 dark:text-amber-300'
-                                      : 'border-rose-300 bg-rose-50 text-rose-800 dark:border-rose-800 dark:bg-rose-950/50 dark:text-rose-300'
+                                      ? 'border-amber-300/80 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200'
+                                      : 'border-rose-300/80 bg-rose-50 text-rose-900 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-200'
                             }`}
                         >
                             {isClear ? (
-                                <CheckCircle2 className="size-4 text-emerald-600" />
+                                <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
                             ) : isWaived ? (
-                                <ShieldCheck className="size-4 text-amber-600" />
+                                <ShieldCheck className="size-4 text-amber-600 dark:text-amber-400" />
                             ) : (
-                                <ShieldAlert className="size-4 text-rose-600" />
+                                <ShieldAlert className="size-4 text-rose-600 dark:text-rose-400" />
                             )}
                             <span>
                                 {isClear
-                                    ? 'STATUS: BEBAS BENTURAN KEPENTINGAN (CLEAR)'
+                                    ? 'STATUS: BEBAS BENTURAN KEPENTINGAN (CLEAR & ETHICALLY APPROVED)'
                                     : isWaived
-                                      ? 'STATUS: WAIVER DISETUJUI PARTNER (WAIVED)'
-                                      : 'STATUS: DITOLAK KARENA BENTURAN (BLOCKED)'}
+                                      ? 'STATUS: WAIVER DISETUJUI PARTNER (ETHICAL BARRIER APPROVED)'
+                                      : 'STATUS: DITOLAK KARENA BENTURAN (BLOCKED - ADVERSE MATCH)'}
                             </span>
                         </div>
                     </div>
@@ -193,54 +211,46 @@ export default function ConflictCertificate({
 
                 {/* 3. Certificate Preamble & Summary Box */}
                 <div className="space-y-6 text-xs text-slate-700 leading-relaxed dark:text-zinc-300">
-                    <p>
-                        Berdasarkan ketentuan Kode Etik Advokat Indonesia (KEAI)
-                        serta Standar Kepatuhan Independensi Firma Hukum Roni,
-                        Putra &amp; Kusuma (RPK Law Office), telah dilakukan
-                        penelusuran menyeluruh (*Comprehensive Conflict of
-                        Interest Scan*) terhadap basis data klien aktif, klien
-                        terdahulu, pihak lawan (*adverse parties*), kuasa hukum
-                        lawan, saksi, dan afiliasi korporasi dengan rincian
-                        sebagai berikut:
+                    <p className="text-justify leading-relaxed">
+                        Berdasarkan ketentuan Kode Etik Advokat Indonesia (KEAI) serta Standar Kepatuhan Independensi Profesi Firma Hukum Roni, Putra &amp; Kusumah (RPK Law Firm), telah dilaksanakan penelusuran menyeluruh (<em>Comprehensive Conflict of Interest Scan</em>) terhadap basis data klien aktif, mantan klien, pihak lawan (<em>adverse parties</em>), kuasa hukum lawan, saksi, dan afiliasi perkara dengan rincian sebagai berikut:
                     </p>
 
                     {/* Metadata Table */}
-                    <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50/50 dark:border-white/10 dark:bg-[#121418]">
+                    <div className="overflow-hidden rounded-xl border border-slate-200/90 bg-slate-50/50 dark:border-white/10 dark:bg-[#121418]">
                         <div className="grid grid-cols-1 divide-y divide-slate-200 sm:grid-cols-2 sm:divide-x sm:divide-y-0 dark:divide-white/10">
                             {/* Column 1 */}
-                            <div className="space-y-2.5 p-4">
+                            <div className="space-y-3 p-4">
                                 <div>
-                                    <span className="block text-[10px] font-bold text-slate-400 uppercase dark:text-zinc-500">
+                                    <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider dark:text-zinc-500">
                                         SUBJEK / NAMA UTAMA DIPERIKSA
                                     </span>
-                                    <span className="font-semibold text-slate-900 dark:text-white">
+                                    <span className="text-sm font-bold text-slate-900 dark:text-white">
                                         {conflictCheck.subject_name}
                                     </span>
                                 </div>
                                 <div>
-                                    <span className="block text-[10px] font-bold text-slate-400 uppercase dark:text-zinc-500">
+                                    <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider dark:text-zinc-500">
                                         SELURUH PIHAK YANG DITELUSURI
                                     </span>
-                                    <span className="font-mono text-slate-800 dark:text-zinc-200">
-                                        {conflictCheck.searched_names.join(
-                                            ', ',
-                                        )}
+                                    <span className="font-mono text-xs font-medium text-slate-800 dark:text-zinc-200">
+                                        {conflictCheck.searched_names.join(', ')}
                                     </span>
                                 </div>
                                 <div>
-                                    <span className="block text-[10px] font-bold text-slate-400 uppercase dark:text-zinc-500">
-                                        PERKARA HUKUM TERKAIT
+                                    <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider dark:text-zinc-500">
+                                        PERKARA HUKUM / KLIEN TERKAIT
                                     </span>
-                                    <span className="text-slate-800 dark:text-zinc-200">
+                                    <span className="text-xs text-slate-800 dark:text-zinc-200">
                                         {conflictCheck.matter ? (
                                             <>
-                                                <strong className="font-mono">
-                                                    {
-                                                        conflictCheck.matter
-                                                            .matter_number
-                                                    }
+                                                <strong className="font-mono text-blue-600 dark:text-blue-400">
+                                                    {conflictCheck.matter.matter_number}
                                                 </strong>{' '}
                                                 — {conflictCheck.matter.title}
+                                            </>
+                                        ) : conflictCheck.client ? (
+                                            <>
+                                                <strong>{conflictCheck.client.display_name}</strong> (No. Klien: {conflictCheck.client.client_number})
                                             </>
                                         ) : (
                                             'Pemeriksaan Pra-Perkara / Calon Klien Baru'
@@ -250,37 +260,31 @@ export default function ConflictCertificate({
                             </div>
 
                             {/* Column 2 */}
-                            <div className="space-y-2.5 p-4">
+                            <div className="space-y-3 p-4">
                                 <div>
-                                    <span className="block text-[10px] font-bold text-slate-400 uppercase dark:text-zinc-500">
+                                    <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider dark:text-zinc-500">
                                         TANGGAL &amp; WAKTU PEMERIKSAAN
                                     </span>
-                                    <span className="font-mono font-semibold text-slate-900 dark:text-white">
-                                        {formatDate(
-                                            conflictCheck.created_at,
-                                            true,
-                                        )}
+                                    <span className="font-mono text-xs font-semibold text-slate-900 dark:text-white">
+                                        {formatDate(conflictCheck.created_at, true)}
                                     </span>
                                 </div>
                                 <div>
-                                    <span className="block text-[10px] font-bold text-slate-400 uppercase dark:text-zinc-500">
+                                    <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider dark:text-zinc-500">
                                         MASA BERLAKU SERTIFIKAT
                                     </span>
-                                    <span className="font-mono text-slate-800 dark:text-zinc-200">
+                                    <span className="font-mono text-xs text-slate-800 dark:text-zinc-200">
                                         {conflictCheck.expires_at
-                                            ? formatDate(
-                                                  conflictCheck.expires_at,
-                                              )
+                                            ? formatDate(conflictCheck.expires_at)
                                             : '30 Hari sejak penerbitan'}
                                     </span>
                                 </div>
                                 <div>
-                                    <span className="block text-[10px] font-bold text-slate-400 uppercase dark:text-zinc-500">
+                                    <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider dark:text-zinc-500">
                                         PEMOHON PEMERIKSAAN (REQUESTER)
                                     </span>
-                                    <span className="text-slate-800 dark:text-zinc-200">
-                                        {conflictCheck.requester?.name ??
-                                            'Advokat RPK'}{' '}
+                                    <span className="text-xs font-medium text-slate-800 dark:text-zinc-200">
+                                        {conflictCheck.requester?.name ?? 'Advokat RPK'}{' '}
                                         {conflictCheck.requester?.position_title
                                             ? `(${conflictCheck.requester.position_title})`
                                             : ''}
@@ -291,116 +295,86 @@ export default function ConflictCertificate({
                     </div>
 
                     {/* 4. Match Breakdown Table (if matches found) */}
-                    {conflictCheck.matches &&
-                    conflictCheck.matches.length > 0 ? (
-                        <div className="space-y-2">
-                            <h3 className="text-xs font-bold text-slate-900 uppercase dark:text-white">
-                                Hasil Temuan Penelusuran Database (
-                                {conflictCheck.matches.length} Temuan):
+                    {conflictCheck.matches && conflictCheck.matches.length > 0 ? (
+                        <div className="space-y-2.5">
+                            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wide dark:text-white">
+                                Hasil Temuan Penelusuran Database ({conflictCheck.matches.length} Temuan):
                             </h3>
-                            <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-white/10">
-                                <table className="w-full text-left text-[11px]">
-                                    <thead className="border-b border-slate-200 bg-slate-100/80 font-bold text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300">
+                            <div className="overflow-x-auto rounded-xl border border-slate-200/90 dark:border-white/10">
+                                <table className="w-full text-left text-xs">
+                                    <thead className="border-b border-slate-200 bg-slate-900 text-white font-bold text-[10.5px] uppercase tracking-wider dark:bg-white dark:text-slate-900">
                                         <tr>
-                                            <th className="p-2.5">
-                                                Nama Entitas / Pihak
-                                            </th>
-                                            <th className="p-2.5">
-                                                Peran &amp; Kategori Hubungan
-                                            </th>
-                                            <th className="p-2.5">
-                                                Tingkat Kemiripan
-                                            </th>
-                                            <th className="p-2.5">
-                                                Tingkat Risiko
-                                            </th>
+                                            <th className="p-3">Nama Entitas / Pihak</th>
+                                            <th className="p-3">Peran &amp; Hubungan</th>
+                                            <th className="p-3 text-center">Kemiripan</th>
+                                            <th className="p-3 text-center">Tingkat Risiko</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                                        {conflictCheck.matches.map(
-                                            (match, idx) => (
-                                                <tr
-                                                    key={idx}
-                                                    className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
-                                                >
-                                                    <td className="p-2.5 font-semibold text-slate-900 dark:text-white">
-                                                        {match.name}
-                                                        {match.details && (
-                                                            <p className="mt-0.5 text-[10px] font-normal text-slate-500 dark:text-zinc-400">
-                                                                {match.details}
-                                                            </p>
-                                                        )}
-                                                    </td>
-                                                    <td className="p-2.5">
-                                                        <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-white/10 dark:text-zinc-300">
-                                                            {match.role_label ??
-                                                                match.type}
-                                                        </span>
-                                                    </td>
-                                                    <td className="p-2.5 font-mono font-bold">
-                                                        {match.similarity}%
-                                                    </td>
-                                                    <td className="p-2.5">
-                                                        <span
-                                                            className={`rounded px-1.5 py-0.5 font-mono text-[9.5px] font-bold uppercase ${
-                                                                match.risk ===
-                                                                'blocked'
-                                                                    ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
-                                                                    : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-                                                            }`}
-                                                        >
-                                                            {match.risk ===
-                                                            'blocked'
-                                                                ? 'Benturan Langsung'
-                                                                : 'Potensi Benturan'}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            ),
-                                        )}
+                                    <tbody className="divide-y divide-slate-100 bg-white dark:divide-white/[0.04] dark:bg-transparent">
+                                        {conflictCheck.matches.map((match, idx) => (
+                                            <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02]">
+                                                <td className="p-3 font-semibold text-slate-900 dark:text-white">
+                                                    {match.name}
+                                                    {match.details && (
+                                                        <p className="mt-0.5 text-[10.5px] font-normal text-slate-500 dark:text-zinc-400">
+                                                            {match.details}
+                                                        </p>
+                                                    )}
+                                                </td>
+                                                <td className="p-3">
+                                                    <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10.5px] font-semibold text-slate-700 dark:bg-white/10 dark:text-zinc-300">
+                                                        {match.role_label ?? match.type}
+                                                    </span>
+                                                </td>
+                                                <td className="p-3 text-center font-mono font-bold">
+                                                    {match.similarity}%
+                                                </td>
+                                                <td className="p-3 text-center">
+                                                    <span
+                                                        className={`rounded-md px-2 py-0.5 font-mono text-[10px] font-bold uppercase ${
+                                                            match.risk === 'blocked'
+                                                                ? 'bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/50 dark:text-rose-300'
+                                                                : 'bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/50 dark:text-amber-300'
+                                                        }`}
+                                                    >
+                                                        {match.risk === 'blocked'
+                                                            ? 'Benturan Langsung'
+                                                            : 'Potensi Benturan'}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     ) : (
-                        <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-200">
-                            <div className="flex items-center gap-2 font-bold">
-                                <CheckCircle2 className="size-4 text-emerald-600" />
-                                <span>
-                                    Nihil Benturan Kepentingan (Zero Matches
-                                    Found)
-                                </span>
+                        <div className="rounded-xl border border-slate-200/90 bg-slate-50/70 p-4 text-slate-800 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200">
+                            <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-white">
+                                <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
+                                <span>Hasil Penelusuran Nihil (Zero Conflicts Found)</span>
                             </div>
-                            <p className="mt-1 text-[11px] opacity-90">
-                                Tidak ditemukan adanya irisan atau kesamaan nama
-                                pihak dengan klien aktif, mantan klien, maupun
-                                pihak lawan pada seluruh perkara yang sedang atau
-                                pernah ditangani oleh RPK Law Office.
+                            <p className="mt-1 text-xs text-slate-600 dark:text-zinc-400 leading-relaxed">
+                                Tidak ditemukan adanya irisan atau kesamaan nama pihak dengan klien aktif, mantan klien, maupun pihak lawan pada seluruh portofolio perkara yang sedang atau pernah ditangani oleh RPK Law Firm.
                             </p>
                         </div>
                     )}
 
                     {/* 5. Partner Decision & Ethical Justification Note */}
                     {conflictCheck.decision_note && (
-                        <div className="rounded-xl border border-amber-200/90 bg-amber-50/60 p-4 text-amber-950 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-200">
-                            <h4 className="font-bold uppercase tracking-wider text-[10px] text-amber-800 dark:text-amber-400">
-                                CATATAN &amp; JUSTIFIKASI ETIK MANAGING PARTNER:
+                        <div className="rounded-xl border border-slate-200/90 bg-slate-50/70 p-4 text-slate-800 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200">
+                            <h4 className="font-bold uppercase tracking-wider text-[10.5px] text-slate-900 dark:text-white">
+                                Catatan &amp; Justifikasi Etik Managing Partner:
                             </h4>
-                            <p className="mt-1 whitespace-pre-line text-xs leading-relaxed">
+                            <p className="mt-1.5 whitespace-pre-line text-xs leading-relaxed italic text-slate-700 dark:text-zinc-300">
                                 "{conflictCheck.decision_note}"
                             </p>
                             {conflictCheck.reviewer && (
-                                <p className="mt-2 text-[10.5px] font-semibold text-amber-900/80 dark:text-amber-300/80">
-                                    Disetujui oleh:{' '}
-                                    {conflictCheck.reviewer.name} (
-                                    {conflictCheck.reviewer.position_title ??
-                                        'Partner'}
-                                    ) pada{' '}
+                                <p className="mt-2 text-[11px] font-semibold text-slate-600 dark:text-zinc-400">
+                                    Disetujui oleh: <strong>{conflictCheck.reviewer.name}</strong> (
+                                    {conflictCheck.reviewer.position_title ?? 'Managing Partner'}) pada{' '}
                                     {conflictCheck.reviewed_at
-                                        ? formatDate(
-                                              conflictCheck.reviewed_at,
-                                              true,
-                                          )
+                                        ? formatDate(conflictCheck.reviewed_at, true)
                                         : '-'}
                                 </p>
                             )}
@@ -409,56 +383,55 @@ export default function ConflictCertificate({
                 </div>
 
                 {/* 6. Official Signatures & Verification Badge */}
-                <div className="mt-12 border-t border-slate-200 pt-6 dark:border-white/10">
-                    <div className="flex flex-col justify-between gap-8 sm:flex-row sm:items-end">
+                <div className="mt-10 border-t border-slate-200/90 pt-6 dark:border-white/10">
+                    <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
                         {/* Digital Verification Info */}
-                        <div className="space-y-1 text-[10.5px] text-slate-500 dark:text-zinc-400">
-                            <div className="flex items-center gap-2">
-                                <QrCode className="size-8 text-slate-800 dark:text-zinc-200" />
-                                <div>
-                                    <p className="font-bold text-slate-800 dark:text-white">
+                        <div className="space-y-1.5 text-xs text-slate-500 dark:text-zinc-400">
+                            <div className="flex items-center gap-3">
+                                <img
+                                    src={`/verify/correspondence/${conflictCheck.id}/qr.svg`}
+                                    alt="QR Code Verifikasi"
+                                    className="size-14 rounded-lg border border-slate-200 bg-white p-1 shadow-2xs dark:border-white/10 dark:bg-[#121418]"
+                                    onError={(e) => {
+                                        (e.target as HTMLElement).style.display = 'none';
+                                    }}
+                                />
+                                <div className="space-y-0.5">
+                                    <p className="font-bold text-slate-900 dark:text-white">
                                         Dokumen Sah Terverifikasi Elektronik
                                     </p>
-                                    <p className="font-mono text-[9.5px]">
-                                        SHA-256 ID: {conflictCheck.id}
+                                    <p className="font-mono text-[10px]">
+                                        ID: CC-RPK-{conflictCheck.id.slice(0, 14)}
+                                    </p>
+                                    <p className="text-[10px] text-slate-400">
+                                        Diterbitkan resmi oleh Sistem Tata Kelola RPK Law Firm.
                                     </p>
                                 </div>
                             </div>
-                            <p className="pt-2 text-[10px] text-slate-400">
-                                Diterbitkan secara resmi oleh RPK Law Office
-                                Management System.
-                            </p>
                         </div>
 
                         {/* Partner Sign-off Box */}
-                        <div className="min-w-[220px] text-center sm:text-right">
-                            <p className="text-[10px] font-bold text-slate-400 uppercase dark:text-zinc-500">
-                                Jakarta,{' '}
+                        <div className="min-w-[220px] text-center sm:text-right space-y-1">
+                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                Bandung,{' '}
                                 {formatDate(
-                                    conflictCheck.reviewed_at ??
-                                        conflictCheck.created_at,
+                                    conflictCheck.reviewed_at ?? conflictCheck.created_at,
                                 )}
                             </p>
-                            <p className="mt-0.5 text-xs font-bold text-slate-900 dark:text-white">
-                                RPK LAW OFFICE
+                            <p className="text-xs font-bold text-slate-900 dark:text-white">
+                                RONI, PUTRA &amp; KUSUMAH LAW FIRM
                             </p>
-                            <div className="my-3 flex justify-center sm:justify-end">
-                                <div className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1 font-mono text-[10px] font-bold text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                                    <UserCheck className="size-3.5" />
-                                    ETHICALLY APPROVED
-                                </div>
-                            </div>
-                            <p className="font-bold text-slate-900 underline dark:text-white">
-                                {conflictCheck.reviewer?.name ??
-                                    'Managing Partner'}
+                            <div className="my-4 hidden border-b border-slate-200 sm:block dark:border-white/10" />
+                            <p className="text-xs font-semibold text-slate-900 dark:text-white">
+                                {conflictCheck.reviewer?.name ?? 'Managing Partner'}
                             </p>
                             <p className="text-[10px] text-slate-500 dark:text-zinc-400">
-                                {conflictCheck.reviewer?.position_title ??
-                                    'Managing Partner & Legal Ethics Officer'}
+                                {conflictCheck.reviewer?.position_title ?? 'Managing Partner & Ethics Officer'}
                             </p>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     );

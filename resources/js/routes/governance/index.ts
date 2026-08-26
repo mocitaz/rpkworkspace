@@ -5,7 +5,7 @@ import matters from './matters'
 import exports from './exports'
 /**
 * @see \App\Http\Controllers\GovernanceController::index
-* @see app/Http/Controllers/GovernanceController.php:36
+* @see app/Http/Controllers/GovernanceController.php:38
 * @route '/governance'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -20,7 +20,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::index
-* @see app/Http/Controllers/GovernanceController.php:36
+* @see app/Http/Controllers/GovernanceController.php:38
 * @route '/governance'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -29,7 +29,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::index
-* @see app/Http/Controllers/GovernanceController.php:36
+* @see app/Http/Controllers/GovernanceController.php:38
 * @route '/governance'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -39,7 +39,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\GovernanceController::index
-* @see app/Http/Controllers/GovernanceController.php:36
+* @see app/Http/Controllers/GovernanceController.php:38
 * @route '/governance'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -49,7 +49,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\GovernanceController::index
-* @see app/Http/Controllers/GovernanceController.php:36
+* @see app/Http/Controllers/GovernanceController.php:38
 * @route '/governance'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -59,7 +59,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\GovernanceController::index
-* @see app/Http/Controllers/GovernanceController.php:36
+* @see app/Http/Controllers/GovernanceController.php:38
 * @route '/governance'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -69,7 +69,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\GovernanceController::index
-* @see app/Http/Controllers/GovernanceController.php:36
+* @see app/Http/Controllers/GovernanceController.php:38
 * @route '/governance'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
