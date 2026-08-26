@@ -1,4 +1,4 @@
-import { Link, usePage } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import {
     CalendarDays,
     ChevronLeft,
@@ -38,40 +38,66 @@ import * as governance from '@/routes/governance';
 import * as matters from '@/routes/matters';
 import * as profile from '@/routes/profile';
 import * as tasks from '@/routes/tasks';
+import { usePermission } from '@/hooks/use-permission';
 import type { NavItem } from '@/types';
 
-const workspaceItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    { title: 'Perkara', href: matters.index(), icon: FolderKanban },
-    { title: 'Klien', href: clients.index(), icon: UsersRound },
-    { title: 'Kontak', href: contacts.index(), icon: ContactRound },
-];
-
-const workItems: NavItem[] = [
-    { title: 'Tugas', href: tasks.index(), icon: ListTodo },
-    { title: 'Kalender', href: calendar.index(), icon: CalendarDays },
-];
-
-const knowledgeItems: NavItem[] = [
-    { title: 'Dokumen', href: documents.index(), icon: Files },
-];
-
-const administrationItems: NavItem[] = [
-    { title: 'Pengaturan', href: profile.edit(), icon: Settings },
-];
-
 export function AppSidebar() {
-    const { auth } = usePage().props;
+    const { can, canAny } = usePermission();
     const { isMobile, setOpenMobile } = useSidebar();
-    const adminItems = [...administrationItems];
-    const operationalItems = [...workItems];
-    const knowledgeNavigationItems = [...knowledgeItems];
 
-    if (auth.permissions?.includes('billing.view')) {
+    // 1. Menu Utama
+    const workspaceItems: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+    ];
+
+    if (canAny(['matter.view', 'matter.view.all'])) {
+        workspaceItems.push({
+            title: 'Perkara',
+            href: matters.index(),
+            icon: FolderKanban,
+        });
+    }
+
+    if (can('client.view')) {
+        workspaceItems.push({
+            title: 'Klien',
+            href: clients.index(),
+            icon: UsersRound,
+        });
+    }
+
+    if (can('contact.view')) {
+        workspaceItems.push({
+            title: 'Kontak',
+            href: contacts.index(),
+            icon: ContactRound,
+        });
+    }
+
+    // 2. Manajemen Perkara & Operasional
+    const operationalItems: NavItem[] = [];
+
+    if (can('task.view')) {
+        operationalItems.push({
+            title: 'Tugas',
+            href: tasks.index(),
+            icon: ListTodo,
+        });
+    }
+
+    if (canAny(['matter.view', 'matter.view.all', 'task.view'])) {
+        operationalItems.push({
+            title: 'Kalender',
+            href: calendar.index(),
+            icon: CalendarDays,
+        });
+    }
+
+    if (can('billing.view')) {
         operationalItems.push({
             title: 'Keuangan',
             href: finance.index(),
@@ -79,11 +105,7 @@ export function AppSidebar() {
         });
     }
 
-    if (
-        auth.permissions?.includes('correspondence.view') ||
-        auth.permissions?.includes('conflict.view') ||
-        auth.permissions?.includes('archive.view')
-    ) {
+    if (canAny(['correspondence.view', 'conflict.view', 'archive.view'])) {
         operationalItems.push({
             title: 'Tata Kelola',
             href: governance.index(),
@@ -91,7 +113,27 @@ export function AppSidebar() {
         });
     }
 
-    if (auth.permissions?.includes('admin.users.manage')) {
+    // 3. Pengetahuan & Berkas
+    const knowledgeNavigationItems: NavItem[] = [];
+
+    if (can('document.view')) {
+        knowledgeNavigationItems.push({
+            title: 'Dokumen',
+            href: documents.index(),
+            icon: Files,
+        });
+    }
+
+    // 4. Pengaturan & Administrasi
+    const adminItems: NavItem[] = [
+        {
+            title: 'Pengaturan',
+            href: profile.edit(),
+            icon: Settings,
+        },
+    ];
+
+    if (can('admin.users.manage')) {
         adminItems.push({
             title: 'Pengguna & Akses',
             href: adminUsers.index(),
@@ -99,7 +141,7 @@ export function AppSidebar() {
         });
     }
 
-    if (auth.permissions?.includes('audit.view')) {
+    if (can('audit.view')) {
         adminItems.push({
             title: 'Audit Log',
             href: adminAudit.index(),

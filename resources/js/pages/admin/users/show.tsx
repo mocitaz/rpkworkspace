@@ -1,4 +1,5 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
+import { Can } from '@/components/can';
 import {
     AlertTriangle,
     ArrowLeft,
@@ -349,15 +350,17 @@ export default function UserShow({
                                     </a>
                                 </Button>
 
-                                <Button
-                                    type="button"
-                                    size="sm"
-                                    onClick={() => openEditWithTab('account')}
-                                    className="h-9 cursor-pointer rounded-xl bg-slate-900 px-4 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
-                                >
-                                    <Pencil className="mr-1.5 size-3.5" />
-                                    Edit Profil
-                                </Button>
+                                <Can permission="admin.users.manage">
+                                    <Button
+                                        type="button"
+                                        size="sm"
+                                        onClick={() => openEditWithTab('account')}
+                                        className="h-9 cursor-pointer rounded-xl bg-slate-900 px-4 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                                    >
+                                        <Pencil className="mr-1.5 size-3.5" />
+                                        Edit Profil
+                                    </Button>
+                                </Can>
                             </div>
                         </div>
                     </div>

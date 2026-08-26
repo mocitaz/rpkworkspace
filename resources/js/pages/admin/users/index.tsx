@@ -1,4 +1,5 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
+import { Can } from '@/components/can';
 import {
     AlertTriangle,
     Award,
@@ -164,14 +165,16 @@ export default function UsersIndex({
 
                         {/* Right: Actions */}
                         <div className="flex shrink-0 items-center gap-2">
-                            <Button
-                                size="sm"
-                                onClick={() => setInviteOpen(true)}
-                                className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
-                            >
-                                <UserPlus className="mr-1.5 size-3.5" />
-                                Tambah Staf Baru
-                            </Button>
+                            <Can permission="admin.users.manage">
+                                <Button
+                                    size="sm"
+                                    onClick={() => setInviteOpen(true)}
+                                    className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
+                                >
+                                    <UserPlus className="mr-1.5 size-3.5" />
+                                    Tambah Staf Baru
+                                </Button>
+                            </Can>
                         </div>
                     </div>
 
@@ -586,32 +589,34 @@ export default function UsersIndex({
                                                                         Profil
                                                                     </Link>
                                                                 </Button>
-                                                                <Button
-                                                                    variant="outline"
-                                                                    size="sm"
-                                                                    onClick={() =>
-                                                                        setEditing(
-                                                                            user,
-                                                                        )
-                                                                    }
-                                                                    className="h-7 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
-                                                                >
-                                                                    <Pencil className="mr-1 size-3 text-slate-400" />
-                                                                    Kelola
-                                                                </Button>
-                                                                <Button
-                                                                    variant="outline"
-                                                                    size="sm"
-                                                                    onClick={() =>
-                                                                        setDeleting(
-                                                                            user,
-                                                                        )
-                                                                    }
-                                                                    className="h-7 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-rose-600 shadow-2xs hover:border-rose-200 hover:bg-rose-50 dark:border-white/10 dark:bg-zinc-800 dark:text-rose-400 dark:hover:bg-rose-950/30"
-                                                                    title="Hapus Pengguna"
-                                                                >
-                                                                    <Trash2 className="size-3" />
-                                                                </Button>
+                                                                <Can permission="admin.users.manage">
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        size="sm"
+                                                                        onClick={() =>
+                                                                            setEditing(
+                                                                                user,
+                                                                            )
+                                                                        }
+                                                                        className="h-7 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                                    >
+                                                                        <Pencil className="mr-1 size-3 text-slate-400" />
+                                                                        Kelola
+                                                                    </Button>
+                                                                    <Button
+                                                                        variant="outline"
+                                                                        size="sm"
+                                                                        onClick={() =>
+                                                                            setDeleting(
+                                                                                user,
+                                                                            )
+                                                                        }
+                                                                        className="h-7 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-rose-600 shadow-2xs hover:border-rose-200 hover:bg-rose-50 dark:border-white/10 dark:bg-zinc-800 dark:text-rose-400 dark:hover:bg-rose-950/30"
+                                                                        title="Hapus Pengguna"
+                                                                    >
+                                                                        <Trash2 className="size-3" />
+                                                                    </Button>
+                                                                </Can>
                                                             </div>
                                                         </td>
                                                     </tr>

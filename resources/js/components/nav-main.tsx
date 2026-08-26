@@ -20,6 +20,10 @@ export function NavMain({
     const { isCurrentUrl } = useCurrentUrl();
     const { isMobile, setOpenMobile } = useSidebar();
 
+    if (!items || items.length === 0) {
+        return null;
+    }
+
     return (
         <SidebarGroup className="px-2.5 py-1.5 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:py-1">
             <SidebarGroupLabel className="h-5 px-2 text-[9px] font-extrabold tracking-[0.14em] text-slate-400 uppercase group-data-[collapsible=icon]:hidden dark:text-zinc-500">
