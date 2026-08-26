@@ -400,9 +400,23 @@ export default function MatterShow({
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
                     {/* 1. Header Navigation & Matter Cockpit Bar */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 lg:flex-row lg:items-center dark:border-white/[0.06]">
-                        <div className="space-y-1.5">
+                    <div className="space-y-3 border-b border-slate-200/60 pb-5 dark:border-white/[0.06]">
+                        {/* Top Tier: Breadcrumbs / Matter Code + Action Buttons */}
+                        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                            {/* Left: Breadcrumbs & Status Badges */}
                             <div className="flex flex-wrap items-center gap-2">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="-ml-2 h-7 px-2 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                    asChild
+                                >
+                                    <Link href={matterRoutes.index.url()}>
+                                        <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
+                                        Portofolio Perkara
+                                    </Link>
+                                </Button>
+                                <span className="text-slate-300 dark:text-zinc-600">/</span>
                                 <span className="inline-block rounded-md bg-blue-600 px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs">
                                     {matter.matter_number}
                                 </span>
@@ -416,134 +430,141 @@ export default function MatterShow({
                                 )}
                             </div>
 
-                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                {matter.title}
-                            </h1>
+                            {/* Right: Actions */}
+                            <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                                    asChild
+                                >
+                                    <a
+                                        href={reportRoutes.pdf.url({
+                                            matter: matter.id,
+                                        })}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        <Printer className="mr-1 size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                        PDF Progres
+                                    </a>
+                                </Button>
 
-                            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-zinc-400">
-                                <span>Klien:</span>
-                                <Link
-                                    href={clientRoutes.show.url(
-                                        matter.client.id,
-                                    )}
-                                    className="inline-flex items-center gap-1.5 font-semibold text-blue-600 hover:underline dark:text-blue-400"
-                                >
-                                    {matter.client.type === 'individual' ||
-                                    matter.client.type === 'person' ? (
-                                        <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                    ) : (
-                                        <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
-                                    )}
-                                    <span>{matter.client.display_name}</span>
-                                </Link>
-                                <span
-                                    className={`py-0.2 rounded px-1.5 text-[9px] font-bold ${
-                                        matter.client.type === 'individual' ||
-                                        matter.client.type === 'person'
-                                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
-                                            : 'bg-slate-100 text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300'
-                                    }`}
-                                >
-                                    {matter.client.type === 'individual' ||
-                                    matter.client.type === 'person'
-                                        ? 'Individu'
-                                        : 'Badan Hukum'}
-                                </span>
-                                <span>·</span>
-                                <span>
-                                    Area Praktik:{' '}
-                                    <strong className="font-semibold text-slate-700 dark:text-zinc-300">
-                                        {matter.practice_area?.name ?? 'Umum'}
-                                    </strong>
-                                </span>
-                                {matter.jurisdiction && (
-                                    <>
-                                        <span>·</span>
-                                        <span>
-                                            Yurisdiksi: {matter.jurisdiction}
-                                        </span>
-                                    </>
+                                {can.update && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
+                                        asChild
+                                    >
+                                        <Link
+                                            href={
+                                                matterRoutes.edit?.url
+                                                    ? matterRoutes.edit.url(
+                                                          matter.id,
+                                                      )
+                                                    : `/matters/${matter.id}/edit`
+                                            }
+                                        >
+                                            <Pencil className="mr-1 size-3 text-slate-400" />
+                                            Edit Perkara
+                                        </Link>
+                                    </Button>
+                                )}
+
+                                {can.update && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setOperation('party')}
+                                        className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                                    >
+                                        <Plus className="mr-1 size-3.5 text-slate-400" />
+                                        Aktivitas
+                                    </Button>
+                                )}
+
+                                {can.uploadDocument && (
+                                    <Button
+                                        size="sm"
+                                        className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                                        asChild
+                                    >
+                                        <Link
+                                            href={documentRoutes.index.url({
+                                                query: {
+                                                    upload: 1,
+                                                    matter_id: matter.id,
+                                                },
+                                            })}
+                                        >
+                                            <FileUp className="mr-1 size-3.5" />
+                                            Unggah Dokumen
+                                        </Link>
+                                    </Button>
                                 )}
                             </div>
                         </div>
 
-                        {/* Cockpit Actions */}
-                        <div className="flex shrink-0 flex-wrap items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
-                                asChild
-                            >
-                                <Link href={matterRoutes.index.url()}>
-                                    <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
-                                    Kembali
-                                </Link>
-                            </Button>
+                        {/* Bottom Tier: Full-Width Title & Client Context */}
+                        <div className="space-y-1.5">
+                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-[26px] lg:leading-snug dark:text-white">
+                                {matter.title}
+                            </h1>
 
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
-                                asChild
-                            >
-                                <a
-                                    href={reportRoutes.pdf.url({
-                                        matter: matter.id,
-                                    })}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    <Printer className="mr-1 size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                    PDF Progres
-                                </a>
-                            </Button>
-
-                            {can.update && (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
-                                    asChild
-                                >
-                                    <Link href={matterRoutes.edit?.url ? matterRoutes.edit.url(matter.id) : `/matters/${matter.id}/edit`}>
-                                        <Pencil className="mr-1 size-3 text-slate-400" />
-                                        Edit Perkara
-                                    </Link>
-                                </Button>
-                            )}
-
-                            {can.update && (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => setOperation('party')}
-                                    className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
-                                >
-                                    <Plus className="mr-1 size-3.5 text-slate-400" />
-                                    Aktivitas
-                                </Button>
-                            )}
-
-                            {can.uploadDocument && (
-                                <Button
-                                    size="sm"
-                                    className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
-                                    asChild
-                                >
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-zinc-400">
+                                <div className="flex items-center gap-1.5">
+                                    <span>Klien:</span>
                                     <Link
-                                        href={documentRoutes.index.url({
-                                            query: {
-                                                upload: 1,
-                                                matter_id: matter.id,
-                                            },
-                                        })}
+                                        href={clientRoutes.show.url(
+                                            matter.client.id,
+                                        )}
+                                        className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                     >
-                                        <FileUp className="mr-1 size-3.5" />
-                                        Unggah Dokumen
+                                        {matter.client.type === 'individual' ||
+                                        matter.client.type === 'person' ? (
+                                            <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                        ) : (
+                                            <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
+                                        )}
+                                        <span>
+                                            {matter.client.display_name}
+                                        </span>
                                     </Link>
-                                </Button>
-                            )}
+                                    <span
+                                        className={`rounded px-1.5 py-0.5 text-[9.5px] font-bold ${
+                                            matter.client.type ===
+                                                'individual' ||
+                                            matter.client.type === 'person'
+                                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                                                : 'bg-slate-100 text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300'
+                                        }`}
+                                    >
+                                        {matter.client.type === 'individual' ||
+                                        matter.client.type === 'person'
+                                            ? 'Individu'
+                                            : 'Badan Hukum'}
+                                    </span>
+                                </div>
+                                <span>·</span>
+                                <div>
+                                    Area Praktik:{' '}
+                                    <strong className="font-semibold text-slate-700 dark:text-zinc-300">
+                                        {matter.practice_area?.name ?? 'Umum'}
+                                    </strong>
+                                </div>
+                                {matter.jurisdiction && (
+                                    <>
+                                        <span>·</span>
+                                        <div>
+                                            Yurisdiksi:{' '}
+                                            <span className="font-medium text-slate-700 dark:text-zinc-300">
+                                                {matter.jurisdiction}
+                                            </span>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
 
