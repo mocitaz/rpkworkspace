@@ -13,6 +13,8 @@ use App\Models\MatterEvent;
 use App\Models\MatterEvidence;
 use App\Models\MatterParty;
 use App\Models\Note;
+use App\Models\User;
+use App\Notifications\HearingOutcomeNotification;
 use App\Notifications\HearingScheduledNotification;
 use App\Services\AuditService;
 use Illuminate\Http\RedirectResponse;
@@ -208,5 +210,122 @@ class MatterOperationController extends Controller
         ], request()->user(), request());
 
         return back()->with('success', 'Catatan internal berhasil dihapus.');
+    }
+
+    /**
+     * Record outcome for a hearing / matter event and optionally schedule the next hearing.
+     */
+    public function recordOutcome(Request $request, Matter $matter, MatterEvent $event, EnsureMatterIsNotOnLegalHold $hold, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('update', $matter);
+        $hold->handle($matter);
+
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:completed,postponed,cancelled'],
+            'outcome' => ['required', 'string', 'max:5000'],
+            'judge_notes' => ['nullable', 'string', 'max:5000'],
+            'attended_by' => ['nullable', 'integer', 'exists:users,id'],
+            'schedule_next' => ['nullable', 'boolean'],
+            'next_title' => ['required_if:schedule_next,true', 'nullable', 'string', 'max:255'],
+            'next_starts_at' => ['required_if:schedule_next,true', 'nullable', 'date'],
+            'next_location' => ['nullable', 'string', 'max:255'],
+            'next_description' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $attendedUserId = ! empty($validated['attended_by']) ? (int) $validated['attended_by'] : $request->user()->getKey();
+        $attendedUser = User::query()->find($attendedUserId);
+
+        $nextEvent = null;
+        if (! empty($validated['schedule_next']) && ! empty($validated['next_title']) && ! empty($validated['next_starts_at'])) {
+            $nextEvent = $matter->events()->create([
+                'event_type' => $event->event_type ?? 'court_hearing',
+                'status' => 'scheduled',
+                'title' => $validated['next_title'],
+                'starts_at' => $validated['next_starts_at'],
+                'location' => $validated['next_location'] ?? $event->location,
+                'description' => $validated['next_description'] ?? null,
+                'owner_id' => $event->owner_id ?? $request->user()->getKey(),
+                'created_by' => $request->user()->getKey(),
+            ]);
+
+            $audit->record($nextEvent, 'matter.event_added', [
+                'matter_id' => $matter->getKey(),
+                'from_outcome_of' => $event->getKey(),
+            ], $request->user(), $request);
+
+            // Notify team of scheduled next hearing
+            $members = $matter->members()->where('users.id', '!=', $request->user()->getKey())->get();
+            foreach ($members as $member) {
+                $member->notify((new HearingScheduledNotification(
+                    hearingTitle: $nextEvent->title,
+                    hearingDate: $nextEvent->starts_at?->translatedFormat('l, d F Y') ?? now()->translatedFormat('l, d F Y'),
+                    hearingTime: $nextEvent->starts_at ? $nextEvent->starts_at->format('H:i').' WIB' : '09:00 WIB',
+                    courtName: $nextEvent->location ?? 'Pengadilan',
+                    matter: $matter,
+                    scheduledBy: $request->user()->name
+                ))->afterCommit());
+            }
+        }
+
+        $event->update([
+            'status' => $validated['status'],
+            'outcome' => $validated['outcome'],
+            'judge_notes' => $validated['judge_notes'] ?? null,
+            'attended_by' => $attendedUserId,
+            'next_event_id' => $nextEvent?->getKey(),
+        ]);
+
+        // Add discussion comment to matter thread
+        $statusLabel = match ($validated['status']) {
+            'completed' => 'Selesai Sesuai Agenda',
+            'postponed' => 'Ditunda / Sidang Lanjutan',
+            'cancelled' => 'Dibatalkan',
+            default => $validated['status'],
+        };
+
+        $commentBody = "⚖️ **[Hasil Sidang: {$event->title}]**\n\n".
+            "**Status Sidang:** {$statusLabel}\n".
+            '**Advokat Pendamping:** '.($attendedUser?->name ?? $request->user()->name)."\n\n".
+            "**Ringkasan Hasil:**\n".$validated['outcome'];
+
+        if (! empty($validated['judge_notes'])) {
+            $commentBody .= "\n\n**Catatan / Arahan Majelis Hakim:**\n".$validated['judge_notes'];
+        }
+
+        if ($nextEvent) {
+            $commentBody .= "\n\n**Jadwal Sidang Lanjutan:**\n".
+                '📅 '.($nextEvent->starts_at?->translatedFormat('l, d F Y - H:i') ?? '-')." WIB\n".
+                '📌 Agenda: '.$nextEvent->title."\n".
+                '📍 Lokasi: '.($nextEvent->location ?? '-');
+        }
+
+        $matter->comments()->create([
+            'user_id' => $request->user()->getKey(),
+            'body' => $commentBody,
+        ]);
+
+        $audit->record($event, 'matter.hearing_outcome_recorded', [
+            'matter_id' => $matter->getKey(),
+            'status' => $validated['status'],
+            'outcome' => $validated['outcome'],
+            'next_event_id' => $nextEvent?->getKey(),
+        ], $request->user(), $request);
+
+        // Notify supervising partner and matter members
+        $notificationRecipients = $matter->members()->where('users.id', '!=', $request->user()->getKey())->get();
+        foreach ($notificationRecipients as $recipient) {
+            $recipient->notify((new HearingOutcomeNotification(
+                hearingTitle: $event->title,
+                hearingDate: $event->starts_at?->translatedFormat('l, d F Y') ?? now()->translatedFormat('l, d F Y'),
+                outcomeSummary: $validated['outcome'],
+                courtName: $event->location ?? 'Pengadilan',
+                matter: $matter,
+                attendedBy: $attendedUser?->name ?? $request->user()->name,
+                nextHearingDate: $nextEvent ? $nextEvent->starts_at?->translatedFormat('l, d F Y - H:i').' WIB' : null,
+                nextHearingAgenda: $nextEvent?->title
+            ))->afterCommit());
+        }
+
+        return back()->with('success', 'Catatan hasil sidang berhasil disimpan'.($nextEvent ? ' dan agenda sidang lanjutan telah dijadwalkan.' : '.'));
     }
 }

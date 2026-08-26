@@ -21,6 +21,7 @@ import {
     List,
     ListTodo,
     Lock,
+    MapPin,
     Radio,
     RefreshCw,
     Scale,
@@ -51,8 +52,21 @@ type Item = {
     title: string;
     due_at?: string;
     starts_at?: string;
+    location?: string;
+    description?: string;
     is_critical?: boolean;
     status?: string;
+    outcome?: string;
+    judge_notes?: string;
+    attended_by?: number;
+    attendee?: { id: number; name: string };
+    next_event_id?: string;
+    next_event?: {
+        id: string;
+        title: string;
+        starts_at: string;
+        location?: string;
+    };
     matter?: { id: string; matter_number: string; title: string };
 };
 
@@ -495,7 +509,7 @@ export default function CalendarIndex({
                                                     selectedItem.matter.id,
                                                 )}
                                             >
-                                                Buka
+                                                Buka Perkara
                                                 <ArrowUpRight className="ml-0.5 size-3" />
                                             </Link>
                                         </Button>
@@ -504,6 +518,45 @@ export default function CalendarIndex({
                             ) : (
                                 <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 text-xs text-slate-500 dark:border-white/[0.04] dark:bg-[#121418]">
                                     Agenda operasional umum kantor firma RPK.
+                                </div>
+                            )}
+
+                            {/* Hearing Outcome Summary (if recorded) */}
+                            {selectedItem.outcome && (
+                                <div className="space-y-2 rounded-xl border border-emerald-200/80 bg-emerald-50/50 p-3 text-xs dark:border-emerald-900/40 dark:bg-emerald-950/20">
+                                    <div className="flex items-center justify-between border-b border-emerald-200/50 pb-1.5 dark:border-emerald-900/30">
+                                        <div className="flex items-center gap-1.5 font-bold text-emerald-900 dark:text-emerald-200">
+                                            <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                            <span>Hasil &amp; Resume Sidang</span>
+                                        </div>
+                                        {selectedItem.attendee && (
+                                            <span className="text-[10px] font-semibold text-slate-600 dark:text-zinc-300">
+                                                {selectedItem.attendee.name}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="whitespace-pre-line text-xs leading-relaxed text-slate-800 dark:text-zinc-200">
+                                        {selectedItem.outcome}
+                                    </p>
+                                    {selectedItem.judge_notes && (
+                                        <div className="mt-1.5 rounded-md border border-amber-200/70 bg-amber-50/60 p-2 text-[11px] text-amber-950 dark:border-amber-900/30 dark:bg-amber-950/30 dark:text-amber-200">
+                                            <strong className="block font-bold uppercase tracking-wider text-[9px] text-amber-800 dark:text-amber-400">
+                                                Arahan Majelis Hakim:
+                                            </strong>
+                                            <span>{selectedItem.judge_notes}</span>
+                                        </div>
+                                    )}
+                                    {selectedItem.next_event && (
+                                        <div className="mt-2 flex items-center justify-between rounded-md border border-blue-200/70 bg-blue-50/60 p-2 text-[11px] text-blue-950 dark:border-blue-900/30 dark:bg-blue-950/20 dark:text-blue-200">
+                                            <div className="flex items-center gap-1.5">
+                                                <CalendarClock className="size-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                                                <span className="font-semibold">{selectedItem.next_event.title}</span>
+                                            </div>
+                                            <span className="font-mono text-[10px] text-slate-600 dark:text-zinc-400">
+                                                {formatDate(selectedItem.next_event.starts_at, true)}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
@@ -518,6 +571,16 @@ export default function CalendarIndex({
                                         {timezone})
                                     </span>
                                 </div>
+                                {selectedItem.location && (
+                                    <div className="flex items-center justify-between gap-2 border-b border-slate-200/50 pb-1.5 dark:border-white/[0.04]">
+                                        <span className="text-slate-500 dark:text-zinc-400">
+                                            Lokasi / Pengadilan
+                                        </span>
+                                        <span className="font-semibold text-slate-800 dark:text-zinc-200">
+                                            {selectedItem.location}
+                                        </span>
+                                    </div>
+                                )}
                                 <div className="flex items-center justify-between gap-2">
                                     <span className="text-slate-500 dark:text-zinc-400">
                                         Kategori Kegiatan

@@ -113,7 +113,7 @@ class MatterController extends Controller
             'chronologies' => fn ($query) => $query->orderBy('event_date', 'asc'),
             'deadlines' => fn ($query) => $query->where('status', 'open')->orderBy('due_at')->limit(8),
             'tasks' => fn ($query) => $query->with('assignee:id,name,avatar_path')->whereNotIn('status', ['completed', 'cancelled'])->orderBy('due_at')->limit(8),
-            'events' => fn ($query) => $query->orderByDesc('starts_at')->limit(10),
+            'events' => fn ($query) => $query->with(['attendee:id,name,avatar_path', 'owner:id,name,avatar_path', 'nextEvent:id,title,starts_at,location'])->orderByDesc('starts_at')->limit(20),
             'documents' => fn ($query) => $query->with('currentVersion:id,document_id,version_number,file_size,mime_type')->latest('updated_at')->limit(8),
             'comments' => fn ($query) => $query->whereNull('parent_id')->with([
                 'user:id,name,position_title,avatar_path',

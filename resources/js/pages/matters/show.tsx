@@ -7,6 +7,7 @@ import {
     Building2,
     Calendar,
     CalendarClock,
+    Check,
     CheckCircle2,
     ChevronDown,
     ChevronRight,
@@ -43,6 +44,7 @@ import {
     type DiscussionStaff,
 } from '@/components/comments/discussion-box';
 import { ConfirmDialog } from '@/components/confirm-dialog';
+import InputError from '@/components/input-error';
 import {
     DocumentPreviewModal,
     type PreviewableDocument,
@@ -182,9 +184,23 @@ type Matter = {
         id: string;
         title: string;
         event_type: string;
+        status?: string;
+        outcome?: string;
+        judge_notes?: string;
         starts_at: string;
+        ends_at?: string;
         description?: string;
         location?: string;
+        attended_by?: number;
+        attendee?: Person;
+        owner?: Person;
+        next_event_id?: string;
+        next_event?: {
+            id: string;
+            title: string;
+            starts_at: string;
+            location?: string;
+        };
         checklist?: { text: string; checked: boolean }[];
     }[];
     chronologies?: MatterChronologyItem[];
@@ -343,6 +359,9 @@ export default function MatterShow({
         Matter['parties'][number] | null
     >(null);
     const [eventToDelete, setEventToDelete] = useState<
+        Matter['events'][number] | null
+    >(null);
+    const [recordingOutcomeEvent, setRecordingOutcomeEvent] = useState<
         Matter['events'][number] | null
     >(null);
     const [noteToDelete, setNoteToDelete] = useState<
@@ -1309,7 +1328,7 @@ export default function MatterShow({
                                                                         true,
                                                                     )}
                                                                 </span>
-                                                                <div className="flex items-center gap-1.5">
+                                                                <div className="flex flex-wrap items-center gap-1.5">
                                                                     <span
                                                                         className={`py-0.2 rounded px-1.5 text-[9px] font-bold capitalize ${meta.color}`}
                                                                     >
@@ -1317,6 +1336,59 @@ export default function MatterShow({
                                                                             meta.label
                                                                         }
                                                                     </span>
+
+                                                                    {/* Event Status Badges */}
+                                                                    {event.status === 'completed' && (
+                                                                        <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                                                                            ✓ Sidang Selesai
+                                                                        </span>
+                                                                    )}
+                                                                    {event.status === 'postponed' && (
+                                                                        <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
+                                                                            ↺ Ditunda / Lanjutan
+                                                                        </span>
+                                                                    )}
+                                                                    {event.status === 'cancelled' && (
+                                                                        <span className="rounded bg-rose-100 px-1.5 py-0.5 text-[9px] font-bold text-rose-800 dark:bg-rose-950/60 dark:text-rose-300">
+                                                                            ✕ Dibatalkan
+                                                                        </span>
+                                                                    )}
+                                                                    {(!event.status || event.status === 'scheduled') && (
+                                                                        <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[9px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                                            📅 Terjadwal
+                                                                        </span>
+                                                                    )}
+
+                                                                    {/* Action: Record Hearing Outcome Button */}
+                                                                    {can.update && (
+                                                                        <button
+                                                                            type="button"
+                                                                            disabled={Boolean(
+                                                                                matter.legal_hold_at,
+                                                                            )}
+                                                                            onClick={() =>
+                                                                                setRecordingOutcomeEvent(
+                                                                                    event,
+                                                                                )
+                                                                            }
+                                                                            className={`inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold shadow-2xs transition-all ${
+                                                                                event.outcome
+                                                                                    ? 'border border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
+                                                                                    : 'border border-blue-300 bg-blue-50 text-blue-800 hover:bg-blue-100 dark:border-blue-800 dark:bg-blue-950/40 dark:text-blue-300'
+                                                                            }`}
+                                                                            title={
+                                                                                event.outcome
+                                                                                    ? 'Ubah Ringkasan Hasil Sidang'
+                                                                                    : 'Catat Hasil Jalannya Persidangan'
+                                                                            }
+                                                                        >
+                                                                            <Scale className="size-3" />
+                                                                            {event.outcome
+                                                                                ? 'Ubah Hasil'
+                                                                                : 'Catat Hasil Sidang'}
+                                                                        </button>
+                                                                    )}
+
                                                                     {can.update && (
                                                                         <button
                                                                             type="button"
@@ -1349,6 +1421,13 @@ export default function MatterShow({
                                                                 {event.title}
                                                             </h4>
 
+                                                            {event.location && (
+                                                                <p className="mt-0.5 flex items-center gap-1 text-[11px] text-slate-500 dark:text-zinc-400">
+                                                                    <MapPin className="size-3 text-slate-400" />
+                                                                    {event.location}
+                                                                </p>
+                                                            )}
+
                                                             {event.description && (
                                                                 <p className="mt-1 text-[11px] text-slate-600 dark:text-zinc-400">
                                                                     {
@@ -1357,10 +1436,62 @@ export default function MatterShow({
                                                                 </p>
                                                             )}
 
+                                                            {/* Recorded Outcome & Judge Notes Display Box */}
+                                                            {event.outcome && (
+                                                                <div className="mt-3 space-y-2 rounded-xl border border-emerald-200/80 bg-emerald-50/40 p-3 text-xs shadow-2xs dark:border-emerald-900/40 dark:bg-emerald-950/20">
+                                                                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-200/60 pb-1.5 dark:border-emerald-900/30">
+                                                                        <div className="flex items-center gap-1.5 font-bold text-emerald-900 dark:text-emerald-200">
+                                                                            <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                                                            <span>Resume &amp; Berita Acara Sidang</span>
+                                                                        </div>
+                                                                        {event.attendee && (
+                                                                            <div className="flex items-center gap-1.5 text-[10.5px] text-slate-600 dark:text-zinc-300">
+                                                                                <span className="text-slate-400 dark:text-zinc-500">Advokat:</span>
+                                                                                <span className="font-semibold text-slate-900 dark:text-white">{event.attendee.name}</span>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+
+                                                                    <p className="whitespace-pre-line text-xs leading-relaxed text-slate-800 dark:text-zinc-200">
+                                                                        {event.outcome}
+                                                                    </p>
+
+                                                                    {event.judge_notes && (
+                                                                        <div className="mt-2 rounded-lg border border-amber-200/80 bg-amber-50/70 p-2 text-[11px] text-amber-950 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
+                                                                            <strong className="block font-bold uppercase tracking-wider text-[9.5px] text-amber-800 dark:text-amber-400">
+                                                                                Arahan / Perintah Majelis Hakim:
+                                                                            </strong>
+                                                                            <span className="whitespace-pre-line text-amber-900 dark:text-amber-200">{event.judge_notes}</span>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {event.next_event && (
+                                                                        <div className="mt-2.5 flex items-center justify-between rounded-lg border border-blue-200/80 bg-blue-50/70 p-2 text-xs text-blue-950 dark:border-blue-900/40 dark:bg-blue-950/30 dark:text-blue-200">
+                                                                            <div className="flex items-center gap-2">
+                                                                                <CalendarClock className="size-4 shrink-0 text-blue-600 dark:text-blue-400" />
+                                                                                <div>
+                                                                                    <span className="block font-bold text-slate-900 dark:text-white">
+                                                                                        Sidang Lanjutan: {event.next_event.title}
+                                                                                    </span>
+                                                                                    <span className="font-mono text-[10.5px] text-slate-600 dark:text-zinc-400">
+                                                                                        {formatDate(event.next_event.starts_at, true)} {event.next_event.location ? `• ${event.next_event.location}` : ''}
+                                                                                    </span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <span className="rounded bg-blue-200/70 px-2 py-0.5 text-[9px] font-bold text-blue-800 dark:bg-blue-900/60 dark:text-blue-300">
+                                                                                Terjadwal
+                                                                            </span>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            )}
+
                                                             {(event.event_type ===
                                                                 'court' ||
                                                                 event.event_type ===
-                                                                    'hearing') && (
+                                                                    'hearing' ||
+                                                                event.event_type ===
+                                                                    'court_hearing') && (
                                                                 <div className="mt-2.5 rounded-lg border border-slate-200/80 bg-white p-2.5 dark:border-white/[0.08] dark:bg-[#16181d]">
                                                                     <div className="mb-1.5 flex items-center justify-between text-[10px]">
                                                                         <span className="flex items-center gap-1 font-semibold text-slate-900 dark:text-white">
@@ -2597,6 +2728,16 @@ export default function MatterShow({
                     );
                 }}
             />
+
+            {/* Record Hearing Outcome Dialog */}
+            {recordingOutcomeEvent && (
+                <RecordHearingOutcomeModal
+                    matterId={matter.id}
+                    event={recordingOutcomeEvent}
+                    firmStaff={firmStaff}
+                    onClose={() => setRecordingOutcomeEvent(null)}
+                />
+            )}
         </>
     );
 }
@@ -3436,6 +3577,344 @@ function EmptyState({
                 </p>
             )}
         </div>
+    );
+}
+
+function RecordHearingOutcomeModal({
+    matterId,
+    event,
+    firmStaff,
+    onClose,
+}: {
+    matterId: string;
+    event: Matter['events'][number];
+    firmStaff: DiscussionStaff[];
+    onClose: () => void;
+}) {
+    const [status, setStatus] = useState<string>(
+        event.status === 'completed' ||
+            event.status === 'postponed' ||
+            event.status === 'cancelled'
+            ? event.status
+            : 'completed',
+    );
+    const [scheduleNext, setScheduleNext] = useState<boolean>(
+        event.status === 'postponed' || !event.outcome,
+    );
+
+    return (
+        <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-5 shadow-2xl sm:max-w-xl dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.04]">
+                    <div className="flex items-center gap-3">
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                            <Scale className="size-5" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                Catat Hasil Sidang / Persidangan
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                {event.title} • {formatDate(event.starts_at, true)}
+                            </DialogDescription>
+                        </div>
+                    </div>
+                </DialogHeader>
+
+                <Form
+                    action={eventRoutes.outcome.url({
+                        matter: matterId,
+                        event: event.id,
+                    })}
+                    method="post"
+                    className="space-y-4 pt-1"
+                    onSuccess={onClose}
+                >
+                    {({ processing, errors }) => (
+                        <>
+                            {/* 1. Status Hasil Sidang */}
+                            <div className="space-y-1.5">
+                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                    Status Hasil Sidang <span className="text-rose-500">*</span>
+                                </Label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {[
+                                        {
+                                            key: 'completed',
+                                            label: '✓ Selesai Sesuai Agenda',
+                                            desc: 'Sidang terlaksana tuntas',
+                                        },
+                                        {
+                                            key: 'postponed',
+                                            label: '↺ Ditunda / Lanjutan',
+                                            desc: 'Ada sidang berikutnya',
+                                        },
+                                        {
+                                            key: 'cancelled',
+                                            label: '✕ Dibatalkan / Gugur',
+                                            desc: 'Sidang tidak berjalan',
+                                        },
+                                    ].map((opt) => (
+                                        <label
+                                            key={opt.key}
+                                            className={`flex cursor-pointer flex-col justify-between rounded-xl border p-2.5 text-xs transition-all ${
+                                                status === opt.key
+                                                    ? 'border-emerald-500 bg-emerald-50/50 text-emerald-900 shadow-2xs dark:border-emerald-500/50 dark:bg-emerald-950/30 dark:text-emerald-300'
+                                                    : 'border-slate-200/80 bg-white text-slate-700 hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#16181d] dark:text-zinc-300'
+                                            }`}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <span className="font-bold text-[11px]">
+                                                    {opt.label}
+                                                </span>
+                                                <input
+                                                    type="radio"
+                                                    name="status"
+                                                    value={opt.key}
+                                                    checked={status === opt.key}
+                                                    onChange={(e) => {
+                                                        setStatus(e.target.value);
+                                                        if (e.target.value === 'postponed') {
+                                                            setScheduleNext(true);
+                                                        }
+                                                    }}
+                                                    className="size-3 text-emerald-600"
+                                                />
+                                            </div>
+                                            <span className="mt-1 text-[10px] text-slate-500 dark:text-zinc-400">
+                                                {opt.desc}
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
+                                <InputError message={errors.status} />
+                            </div>
+
+                            {/* 2. Advokat yang Menghadiri Sidang */}
+                            <div className="space-y-1">
+                                <Label
+                                    htmlFor="attended_by"
+                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                >
+                                    Advokat / Staf Pendamping Sidang
+                                </Label>
+                                <div className="relative">
+                                    <select
+                                        name="attended_by"
+                                        id="attended_by"
+                                        defaultValue={event.attended_by ?? ''}
+                                        className="h-9 w-full rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs text-slate-900 shadow-2xs dark:border-white/10 dark:bg-[#14161b] dark:text-white"
+                                    >
+                                        <option value="">
+                                            Pilih advokat yang menghadiri sidang...
+                                        </option>
+                                        {firmStaff.map((staff) => (
+                                            <option key={staff.id} value={staff.id}>
+                                                {staff.name}{' '}
+                                                {staff.position_title
+                                                    ? `(${staff.position_title})`
+                                                    : ''}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <InputError message={errors.attended_by} />
+                            </div>
+
+                            {/* 3. Resume / Ringkasan Jalannya Sidang */}
+                            <div className="space-y-1">
+                                <Label
+                                    htmlFor="outcome"
+                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                >
+                                    Ringkasan &amp; Resume Jalannya Persidangan{' '}
+                                    <span className="text-rose-500">*</span>
+                                </Label>
+                                <textarea
+                                    name="outcome"
+                                    id="outcome"
+                                    rows={4}
+                                    required
+                                    defaultValue={event.outcome ?? ''}
+                                    placeholder="Contoh: Pemeriksaan saksi fakta Penggugat (Saksi A & Saksi B). Tergugat mengajukan 2 bukti surat tandingan. Seluruh alat bukti P-1 s/d P-5 telah dicocokkan dengan aslinya di hadapan Majelis Hakim."
+                                    className="w-full rounded-lg border border-slate-200 bg-transparent px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 dark:border-white/10 dark:text-white dark:placeholder:text-zinc-500 dark:focus:ring-white"
+                                />
+                                <InputError message={errors.outcome} />
+                            </div>
+
+                            {/* 4. Catatan / Arahan Majelis Hakim */}
+                            <div className="space-y-1">
+                                <Label
+                                    htmlFor="judge_notes"
+                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                >
+                                    Catatan / Perintah Majelis Hakim (Opsional)
+                                </Label>
+                                <textarea
+                                    name="judge_notes"
+                                    id="judge_notes"
+                                    rows={2}
+                                    defaultValue={event.judge_notes ?? ''}
+                                    placeholder="Contoh: Hakim memerintahkan Kuasa Penggugat untuk menyiapkan Kesimpulan paling lambat 1 minggu sebelum sidang putusan."
+                                    className="w-full rounded-lg border border-slate-200 bg-transparent px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 dark:border-white/10 dark:text-white dark:placeholder:text-zinc-500 dark:focus:ring-white"
+                                />
+                                <InputError message={errors.judge_notes} />
+                            </div>
+
+                            {/* 5. Switch: Jadwalkan Sidang Lanjutan Berikutnya */}
+                            <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 dark:border-white/[0.06] dark:bg-[#121418]">
+                                <div className="flex items-center justify-between">
+                                    <div className="space-y-0.5">
+                                        <div className="flex items-center gap-1.5">
+                                            <CalendarClock className="size-4 text-blue-600 dark:text-blue-400" />
+                                            <span className="text-xs font-bold text-slate-900 dark:text-white">
+                                                Jadwalkan Sidang Lanjutan Berikutnya
+                                            </span>
+                                        </div>
+                                        <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                            Otomatis buat agenda baru di Kalender &amp; kirim notifikasi ke tim.
+                                        </p>
+                                    </div>
+                                    <label className="relative inline-flex cursor-pointer items-center">
+                                        <input
+                                            type="checkbox"
+                                            name="schedule_next"
+                                            value="1"
+                                            checked={scheduleNext}
+                                            onChange={(e) =>
+                                                setScheduleNext(e.target.checked)
+                                            }
+                                            className="sr-only"
+                                        />
+                                        <div
+                                            className={`h-5 w-9 rounded-full transition-colors ${
+                                                scheduleNext
+                                                    ? 'bg-blue-600'
+                                                    : 'bg-slate-300 dark:bg-zinc-700'
+                                            }`}
+                                        >
+                                            <div
+                                                className={`size-4 rounded-full bg-white transition-transform ${
+                                                    scheduleNext
+                                                        ? 'translate-x-4'
+                                                        : 'translate-x-0.5'
+                                                } mt-0.5`}
+                                            />
+                                        </div>
+                                    </label>
+                                </div>
+
+                                {scheduleNext && (
+                                    <div className="mt-3.5 space-y-3 border-t border-slate-200/60 pt-3 dark:border-white/[0.04]">
+                                        <div className="grid gap-3 sm:grid-cols-2">
+                                            <div className="space-y-1 sm:col-span-2">
+                                                <Label
+                                                    htmlFor="next_title"
+                                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                                >
+                                                    Agenda Sidang Lanjutan{' '}
+                                                    <span className="text-rose-500">
+                                                        *
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    id="next_title"
+                                                    name="next_title"
+                                                    required={scheduleNext}
+                                                    placeholder="Contoh: Sidang Pembuktian & Saksi Tergugat"
+                                                    className="h-8 text-xs"
+                                                />
+                                                <InputError
+                                                    message={errors.next_title}
+                                                />
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <Label
+                                                    htmlFor="next_starts_at"
+                                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                                >
+                                                    Tanggal &amp; Waktu Sidang{' '}
+                                                    <span className="text-rose-500">
+                                                        *
+                                                    </span>
+                                                </Label>
+                                                <Input
+                                                    id="next_starts_at"
+                                                    name="next_starts_at"
+                                                    type="datetime-local"
+                                                    required={scheduleNext}
+                                                    className="h-8 font-mono text-xs"
+                                                />
+                                                <InputError
+                                                    message={
+                                                        errors.next_starts_at
+                                                    }
+                                                />
+                                            </div>
+
+                                            <div className="space-y-1">
+                                                <Label
+                                                    htmlFor="next_location"
+                                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                                >
+                                                    Ruang / Lokasi Pengadilan
+                                                </Label>
+                                                <Input
+                                                    id="next_location"
+                                                    name="next_location"
+                                                    defaultValue={
+                                                        event.location ??
+                                                        'Pengadilan Negeri'
+                                                    }
+                                                    placeholder="Contoh: Ruang Sidang Utama (Prof. Oemar Seno Adji)"
+                                                    className="h-8 text-xs"
+                                                />
+                                                <InputError
+                                                    message={
+                                                        errors.next_location
+                                                    }
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.04]">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={onClose}
+                                    className="h-8 rounded-lg text-xs"
+                                >
+                                    Batal
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    size="sm"
+                                    disabled={processing}
+                                    className="h-8 rounded-lg bg-emerald-600 px-4 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700"
+                                >
+                                    {processing ? (
+                                        <>
+                                            <Spinner className="mr-1.5 size-3.5" />
+                                            Menyimpan...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Check className="mr-1.5 size-3.5" />
+                                            Simpan Hasil Sidang
+                                        </>
+                                    )}
+                                </Button>
+                            </div>
+                        </>
+                    )}
+                </Form>
+            </DialogContent>
+        </Dialog>
     );
 }
 

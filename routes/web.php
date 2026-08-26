@@ -59,6 +59,7 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::post('matters/{matter}/events', [MatterOperationController::class, 'storeEvent'])->name('matters.events.store');
     Route::delete('matters/{matter}/events/{event}', [MatterOperationController::class, 'destroyEvent'])->name('matters.events.destroy');
     Route::put('matters/{matter}/events/{event}/checklist', [MatterEventChecklistController::class, 'update'])->name('matters.events.checklist.update');
+    Route::post('matters/{matter}/events/{event}/outcome', [MatterOperationController::class, 'recordOutcome'])->name('matters.events.outcome');
     Route::post('matters/{matter}/notes', [MatterOperationController::class, 'storeNote'])->name('matters.notes.store');
     Route::delete('matters/{matter}/notes/{note}', [MatterOperationController::class, 'destroyNote'])->name('matters.notes.destroy');
     Route::post('matters/{matter}/evidences', [MatterOperationController::class, 'storeEvidence'])->name('matters.evidences.store');

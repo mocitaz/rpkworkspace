@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\MatterOperationController::store
-* @see app/Http/Controllers/MatterOperationController.php:76
+* @see app/Http/Controllers/MatterOperationController.php:78
 * @route '/matters/{matter}/evidences'
 */
 export const store = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::store
-* @see app/Http/Controllers/MatterOperationController.php:76
+* @see app/Http/Controllers/MatterOperationController.php:78
 * @route '/matters/{matter}/evidences'
 */
 store.url = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ store.url = (args: { matter: string | { id: string } } | [matter: string | { id:
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::store
-* @see app/Http/Controllers/MatterOperationController.php:76
+* @see app/Http/Controllers/MatterOperationController.php:78
 * @route '/matters/{matter}/evidences'
 */
 store.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ store.post = (args: { matter: string | { id: string } } | [matter: string | { id
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::store
-* @see app/Http/Controllers/MatterOperationController.php:76
+* @see app/Http/Controllers/MatterOperationController.php:78
 * @route '/matters/{matter}/evidences'
 */
 const storeForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ const storeForm = (args: { matter: string | { id: string } } | [matter: string |
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::store
-* @see app/Http/Controllers/MatterOperationController.php:76
+* @see app/Http/Controllers/MatterOperationController.php:78
 * @route '/matters/{matter}/evidences'
 */
 storeForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -81,7 +81,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::update
-* @see app/Http/Controllers/MatterOperationController.php:106
+* @see app/Http/Controllers/MatterOperationController.php:108
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 export const update = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -96,7 +96,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::update
-* @see app/Http/Controllers/MatterOperationController.php:106
+* @see app/Http/Controllers/MatterOperationController.php:108
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 update.url = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions) => {
@@ -126,7 +126,7 @@ update.url = (args: { matter: string | { id: string }, evidence: string | { id: 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::update
-* @see app/Http/Controllers/MatterOperationController.php:106
+* @see app/Http/Controllers/MatterOperationController.php:108
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 update.put = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -136,7 +136,7 @@ update.put = (args: { matter: string | { id: string }, evidence: string | { id: 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::update
-* @see app/Http/Controllers/MatterOperationController.php:106
+* @see app/Http/Controllers/MatterOperationController.php:108
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 const updateForm = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -151,7 +151,7 @@ const updateForm = (args: { matter: string | { id: string }, evidence: string | 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::update
-* @see app/Http/Controllers/MatterOperationController.php:106
+* @see app/Http/Controllers/MatterOperationController.php:108
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 updateForm.put = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -168,7 +168,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroy
-* @see app/Http/Controllers/MatterOperationController.php:133
+* @see app/Http/Controllers/MatterOperationController.php:135
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 export const destroy = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -183,7 +183,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroy
-* @see app/Http/Controllers/MatterOperationController.php:133
+* @see app/Http/Controllers/MatterOperationController.php:135
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 destroy.url = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions) => {
@@ -213,7 +213,7 @@ destroy.url = (args: { matter: string | { id: string }, evidence: string | { id:
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroy
-* @see app/Http/Controllers/MatterOperationController.php:133
+* @see app/Http/Controllers/MatterOperationController.php:135
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 destroy.delete = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -223,7 +223,7 @@ destroy.delete = (args: { matter: string | { id: string }, evidence: string | { 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroy
-* @see app/Http/Controllers/MatterOperationController.php:133
+* @see app/Http/Controllers/MatterOperationController.php:135
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 const destroyForm = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -238,7 +238,7 @@ const destroyForm = (args: { matter: string | { id: string }, evidence: string |
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroy
-* @see app/Http/Controllers/MatterOperationController.php:133
+* @see app/Http/Controllers/MatterOperationController.php:135
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 destroyForm.delete = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

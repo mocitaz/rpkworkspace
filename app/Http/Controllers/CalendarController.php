@@ -43,7 +43,7 @@ class CalendarController extends Controller
         return Inertia::render('calendar/index', [
             'deadlines' => Deadline::query()->with('matter:id,matter_number,title')->whereIn('matter_id', $matterIds)
                 ->whereBetween('due_at', [$from, $until])->orderBy('due_at')->get(),
-            'events' => MatterEvent::query()->with('matter:id,matter_number,title')->whereIn('matter_id', $matterIds)
+            'events' => MatterEvent::query()->with(['matter:id,matter_number,title', 'attendee:id,name,avatar_path', 'nextEvent:id,title,starts_at,location'])->whereIn('matter_id', $matterIds)
                 ->whereBetween('starts_at', [$from, $until])->orderBy('starts_at')->get(),
             'tasks' => Task::query()->with('matter:id,matter_number,title')
                 ->where(function ($q) use ($userId, $matterIds) {

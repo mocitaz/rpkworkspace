@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeParty
-* @see app/Http/Controllers/MatterOperationController.php:24
+* @see app/Http/Controllers/MatterOperationController.php:26
 * @route '/matters/{matter}/parties'
 */
 export const storeParty = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ storeParty.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeParty
-* @see app/Http/Controllers/MatterOperationController.php:24
+* @see app/Http/Controllers/MatterOperationController.php:26
 * @route '/matters/{matter}/parties'
 */
 storeParty.url = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ storeParty.url = (args: { matter: string | { id: string } } | [matter: string | 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeParty
-* @see app/Http/Controllers/MatterOperationController.php:24
+* @see app/Http/Controllers/MatterOperationController.php:26
 * @route '/matters/{matter}/parties'
 */
 storeParty.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ storeParty.post = (args: { matter: string | { id: string } } | [matter: string |
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeParty
-* @see app/Http/Controllers/MatterOperationController.php:24
+* @see app/Http/Controllers/MatterOperationController.php:26
 * @route '/matters/{matter}/parties'
 */
 const storePartyForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ const storePartyForm = (args: { matter: string | { id: string } } | [matter: str
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeParty
-* @see app/Http/Controllers/MatterOperationController.php:24
+* @see app/Http/Controllers/MatterOperationController.php:26
 * @route '/matters/{matter}/parties'
 */
 storePartyForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -81,7 +81,7 @@ storeParty.form = storePartyForm
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyParty
-* @see app/Http/Controllers/MatterOperationController.php:149
+* @see app/Http/Controllers/MatterOperationController.php:151
 * @route '/matters/{matter}/parties/{party}'
 */
 export const destroyParty = (args: { matter: string | { id: string }, party: string | { id: string } } | [matter: string | { id: string }, party: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -96,7 +96,7 @@ destroyParty.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyParty
-* @see app/Http/Controllers/MatterOperationController.php:149
+* @see app/Http/Controllers/MatterOperationController.php:151
 * @route '/matters/{matter}/parties/{party}'
 */
 destroyParty.url = (args: { matter: string | { id: string }, party: string | { id: string } } | [matter: string | { id: string }, party: string | { id: string } ], options?: RouteQueryOptions) => {
@@ -126,7 +126,7 @@ destroyParty.url = (args: { matter: string | { id: string }, party: string | { i
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyParty
-* @see app/Http/Controllers/MatterOperationController.php:149
+* @see app/Http/Controllers/MatterOperationController.php:151
 * @route '/matters/{matter}/parties/{party}'
 */
 destroyParty.delete = (args: { matter: string | { id: string }, party: string | { id: string } } | [matter: string | { id: string }, party: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -136,7 +136,7 @@ destroyParty.delete = (args: { matter: string | { id: string }, party: string | 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyParty
-* @see app/Http/Controllers/MatterOperationController.php:149
+* @see app/Http/Controllers/MatterOperationController.php:151
 * @route '/matters/{matter}/parties/{party}'
 */
 const destroyPartyForm = (args: { matter: string | { id: string }, party: string | { id: string } } | [matter: string | { id: string }, party: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -151,7 +151,7 @@ const destroyPartyForm = (args: { matter: string | { id: string }, party: string
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyParty
-* @see app/Http/Controllers/MatterOperationController.php:149
+* @see app/Http/Controllers/MatterOperationController.php:151
 * @route '/matters/{matter}/parties/{party}'
 */
 destroyPartyForm.delete = (args: { matter: string | { id: string }, party: string | { id: string } } | [matter: string | { id: string }, party: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -168,7 +168,7 @@ destroyParty.form = destroyPartyForm
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeDeadline
-* @see app/Http/Controllers/MatterOperationController.php:34
+* @see app/Http/Controllers/MatterOperationController.php:36
 * @route '/matters/{matter}/deadlines'
 */
 export const storeDeadline = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -183,7 +183,7 @@ storeDeadline.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeDeadline
-* @see app/Http/Controllers/MatterOperationController.php:34
+* @see app/Http/Controllers/MatterOperationController.php:36
 * @route '/matters/{matter}/deadlines'
 */
 storeDeadline.url = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -216,7 +216,7 @@ storeDeadline.url = (args: { matter: string | { id: string } } | [matter: string
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeDeadline
-* @see app/Http/Controllers/MatterOperationController.php:34
+* @see app/Http/Controllers/MatterOperationController.php:36
 * @route '/matters/{matter}/deadlines'
 */
 storeDeadline.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -226,7 +226,7 @@ storeDeadline.post = (args: { matter: string | { id: string } } | [matter: strin
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeDeadline
-* @see app/Http/Controllers/MatterOperationController.php:34
+* @see app/Http/Controllers/MatterOperationController.php:36
 * @route '/matters/{matter}/deadlines'
 */
 const storeDeadlineForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -236,7 +236,7 @@ const storeDeadlineForm = (args: { matter: string | { id: string } } | [matter: 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeDeadline
-* @see app/Http/Controllers/MatterOperationController.php:34
+* @see app/Http/Controllers/MatterOperationController.php:36
 * @route '/matters/{matter}/deadlines'
 */
 storeDeadlineForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -248,7 +248,7 @@ storeDeadline.form = storeDeadlineForm
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyDeadline
-* @see app/Http/Controllers/MatterOperationController.php:165
+* @see app/Http/Controllers/MatterOperationController.php:167
 * @route '/matters/{matter}/deadlines/{deadline}'
 */
 export const destroyDeadline = (args: { matter: string | { id: string }, deadline: string | { id: string } } | [matter: string | { id: string }, deadline: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -263,7 +263,7 @@ destroyDeadline.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyDeadline
-* @see app/Http/Controllers/MatterOperationController.php:165
+* @see app/Http/Controllers/MatterOperationController.php:167
 * @route '/matters/{matter}/deadlines/{deadline}'
 */
 destroyDeadline.url = (args: { matter: string | { id: string }, deadline: string | { id: string } } | [matter: string | { id: string }, deadline: string | { id: string } ], options?: RouteQueryOptions) => {
@@ -293,7 +293,7 @@ destroyDeadline.url = (args: { matter: string | { id: string }, deadline: string
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyDeadline
-* @see app/Http/Controllers/MatterOperationController.php:165
+* @see app/Http/Controllers/MatterOperationController.php:167
 * @route '/matters/{matter}/deadlines/{deadline}'
 */
 destroyDeadline.delete = (args: { matter: string | { id: string }, deadline: string | { id: string } } | [matter: string | { id: string }, deadline: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -303,7 +303,7 @@ destroyDeadline.delete = (args: { matter: string | { id: string }, deadline: str
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyDeadline
-* @see app/Http/Controllers/MatterOperationController.php:165
+* @see app/Http/Controllers/MatterOperationController.php:167
 * @route '/matters/{matter}/deadlines/{deadline}'
 */
 const destroyDeadlineForm = (args: { matter: string | { id: string }, deadline: string | { id: string } } | [matter: string | { id: string }, deadline: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -318,7 +318,7 @@ const destroyDeadlineForm = (args: { matter: string | { id: string }, deadline: 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyDeadline
-* @see app/Http/Controllers/MatterOperationController.php:165
+* @see app/Http/Controllers/MatterOperationController.php:167
 * @route '/matters/{matter}/deadlines/{deadline}'
 */
 destroyDeadlineForm.delete = (args: { matter: string | { id: string }, deadline: string | { id: string } } | [matter: string | { id: string }, deadline: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -335,7 +335,7 @@ destroyDeadline.form = destroyDeadlineForm
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeEvent
-* @see app/Http/Controllers/MatterOperationController.php:44
+* @see app/Http/Controllers/MatterOperationController.php:46
 * @route '/matters/{matter}/events'
 */
 export const storeEvent = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -350,7 +350,7 @@ storeEvent.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeEvent
-* @see app/Http/Controllers/MatterOperationController.php:44
+* @see app/Http/Controllers/MatterOperationController.php:46
 * @route '/matters/{matter}/events'
 */
 storeEvent.url = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -383,7 +383,7 @@ storeEvent.url = (args: { matter: string | { id: string } } | [matter: string | 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeEvent
-* @see app/Http/Controllers/MatterOperationController.php:44
+* @see app/Http/Controllers/MatterOperationController.php:46
 * @route '/matters/{matter}/events'
 */
 storeEvent.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -393,7 +393,7 @@ storeEvent.post = (args: { matter: string | { id: string } } | [matter: string |
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeEvent
-* @see app/Http/Controllers/MatterOperationController.php:44
+* @see app/Http/Controllers/MatterOperationController.php:46
 * @route '/matters/{matter}/events'
 */
 const storeEventForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -403,7 +403,7 @@ const storeEventForm = (args: { matter: string | { id: string } } | [matter: str
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeEvent
-* @see app/Http/Controllers/MatterOperationController.php:44
+* @see app/Http/Controllers/MatterOperationController.php:46
 * @route '/matters/{matter}/events'
 */
 storeEventForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -415,7 +415,7 @@ storeEvent.form = storeEventForm
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyEvent
-* @see app/Http/Controllers/MatterOperationController.php:181
+* @see app/Http/Controllers/MatterOperationController.php:183
 * @route '/matters/{matter}/events/{event}'
 */
 export const destroyEvent = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -430,7 +430,7 @@ destroyEvent.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyEvent
-* @see app/Http/Controllers/MatterOperationController.php:181
+* @see app/Http/Controllers/MatterOperationController.php:183
 * @route '/matters/{matter}/events/{event}'
 */
 destroyEvent.url = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions) => {
@@ -460,7 +460,7 @@ destroyEvent.url = (args: { matter: string | { id: string }, event: string | { i
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyEvent
-* @see app/Http/Controllers/MatterOperationController.php:181
+* @see app/Http/Controllers/MatterOperationController.php:183
 * @route '/matters/{matter}/events/{event}'
 */
 destroyEvent.delete = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -470,7 +470,7 @@ destroyEvent.delete = (args: { matter: string | { id: string }, event: string | 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyEvent
-* @see app/Http/Controllers/MatterOperationController.php:181
+* @see app/Http/Controllers/MatterOperationController.php:183
 * @route '/matters/{matter}/events/{event}'
 */
 const destroyEventForm = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -485,7 +485,7 @@ const destroyEventForm = (args: { matter: string | { id: string }, event: string
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyEvent
-* @see app/Http/Controllers/MatterOperationController.php:181
+* @see app/Http/Controllers/MatterOperationController.php:183
 * @route '/matters/{matter}/events/{event}'
 */
 destroyEventForm.delete = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -501,8 +501,85 @@ destroyEventForm.delete = (args: { matter: string | { id: string }, event: strin
 destroyEvent.form = destroyEventForm
 
 /**
+* @see \App\Http\Controllers\MatterOperationController::recordOutcome
+* @see app/Http/Controllers/MatterOperationController.php:218
+* @route '/matters/{matter}/events/{event}/outcome'
+*/
+export const recordOutcome = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: recordOutcome.url(args, options),
+    method: 'post',
+})
+
+recordOutcome.definition = {
+    methods: ["post"],
+    url: '/matters/{matter}/events/{event}/outcome',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::recordOutcome
+* @see app/Http/Controllers/MatterOperationController.php:218
+* @route '/matters/{matter}/events/{event}/outcome'
+*/
+recordOutcome.url = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions) => {
+    if (Array.isArray(args)) {
+        args = {
+            matter: args[0],
+            event: args[1],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        matter: typeof args.matter === 'object'
+        ? args.matter.id
+        : args.matter,
+        event: typeof args.event === 'object'
+        ? args.event.id
+        : args.event,
+    }
+
+    return recordOutcome.definition.url
+            .replace('{matter}', parsedArgs.matter.toString())
+            .replace('{event}', parsedArgs.event.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::recordOutcome
+* @see app/Http/Controllers/MatterOperationController.php:218
+* @route '/matters/{matter}/events/{event}/outcome'
+*/
+recordOutcome.post = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: recordOutcome.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::recordOutcome
+* @see app/Http/Controllers/MatterOperationController.php:218
+* @route '/matters/{matter}/events/{event}/outcome'
+*/
+const recordOutcomeForm = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: recordOutcome.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::recordOutcome
+* @see app/Http/Controllers/MatterOperationController.php:218
+* @route '/matters/{matter}/events/{event}/outcome'
+*/
+recordOutcomeForm.post = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: recordOutcome.url(args, options),
+    method: 'post',
+})
+
+recordOutcome.form = recordOutcomeForm
+
+/**
 * @see \App\Http\Controllers\MatterOperationController::storeNote
-* @see app/Http/Controllers/MatterOperationController.php:66
+* @see app/Http/Controllers/MatterOperationController.php:68
 * @route '/matters/{matter}/notes'
 */
 export const storeNote = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -517,7 +594,7 @@ storeNote.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeNote
-* @see app/Http/Controllers/MatterOperationController.php:66
+* @see app/Http/Controllers/MatterOperationController.php:68
 * @route '/matters/{matter}/notes'
 */
 storeNote.url = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -550,7 +627,7 @@ storeNote.url = (args: { matter: string | { id: string } } | [matter: string | {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeNote
-* @see app/Http/Controllers/MatterOperationController.php:66
+* @see app/Http/Controllers/MatterOperationController.php:68
 * @route '/matters/{matter}/notes'
 */
 storeNote.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -560,7 +637,7 @@ storeNote.post = (args: { matter: string | { id: string } } | [matter: string | 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeNote
-* @see app/Http/Controllers/MatterOperationController.php:66
+* @see app/Http/Controllers/MatterOperationController.php:68
 * @route '/matters/{matter}/notes'
 */
 const storeNoteForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -570,7 +647,7 @@ const storeNoteForm = (args: { matter: string | { id: string } } | [matter: stri
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeNote
-* @see app/Http/Controllers/MatterOperationController.php:66
+* @see app/Http/Controllers/MatterOperationController.php:68
 * @route '/matters/{matter}/notes'
 */
 storeNoteForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -582,7 +659,7 @@ storeNote.form = storeNoteForm
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyNote
-* @see app/Http/Controllers/MatterOperationController.php:197
+* @see app/Http/Controllers/MatterOperationController.php:199
 * @route '/matters/{matter}/notes/{note}'
 */
 export const destroyNote = (args: { matter: string | { id: string }, note: string | { id: string } } | [matter: string | { id: string }, note: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -597,7 +674,7 @@ destroyNote.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyNote
-* @see app/Http/Controllers/MatterOperationController.php:197
+* @see app/Http/Controllers/MatterOperationController.php:199
 * @route '/matters/{matter}/notes/{note}'
 */
 destroyNote.url = (args: { matter: string | { id: string }, note: string | { id: string } } | [matter: string | { id: string }, note: string | { id: string } ], options?: RouteQueryOptions) => {
@@ -627,7 +704,7 @@ destroyNote.url = (args: { matter: string | { id: string }, note: string | { id:
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyNote
-* @see app/Http/Controllers/MatterOperationController.php:197
+* @see app/Http/Controllers/MatterOperationController.php:199
 * @route '/matters/{matter}/notes/{note}'
 */
 destroyNote.delete = (args: { matter: string | { id: string }, note: string | { id: string } } | [matter: string | { id: string }, note: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -637,7 +714,7 @@ destroyNote.delete = (args: { matter: string | { id: string }, note: string | { 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyNote
-* @see app/Http/Controllers/MatterOperationController.php:197
+* @see app/Http/Controllers/MatterOperationController.php:199
 * @route '/matters/{matter}/notes/{note}'
 */
 const destroyNoteForm = (args: { matter: string | { id: string }, note: string | { id: string } } | [matter: string | { id: string }, note: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -652,7 +729,7 @@ const destroyNoteForm = (args: { matter: string | { id: string }, note: string |
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyNote
-* @see app/Http/Controllers/MatterOperationController.php:197
+* @see app/Http/Controllers/MatterOperationController.php:199
 * @route '/matters/{matter}/notes/{note}'
 */
 destroyNoteForm.delete = (args: { matter: string | { id: string }, note: string | { id: string } } | [matter: string | { id: string }, note: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -669,7 +746,7 @@ destroyNote.form = destroyNoteForm
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeEvidence
-* @see app/Http/Controllers/MatterOperationController.php:76
+* @see app/Http/Controllers/MatterOperationController.php:78
 * @route '/matters/{matter}/evidences'
 */
 export const storeEvidence = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -684,7 +761,7 @@ storeEvidence.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeEvidence
-* @see app/Http/Controllers/MatterOperationController.php:76
+* @see app/Http/Controllers/MatterOperationController.php:78
 * @route '/matters/{matter}/evidences'
 */
 storeEvidence.url = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -717,7 +794,7 @@ storeEvidence.url = (args: { matter: string | { id: string } } | [matter: string
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeEvidence
-* @see app/Http/Controllers/MatterOperationController.php:76
+* @see app/Http/Controllers/MatterOperationController.php:78
 * @route '/matters/{matter}/evidences'
 */
 storeEvidence.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -727,7 +804,7 @@ storeEvidence.post = (args: { matter: string | { id: string } } | [matter: strin
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeEvidence
-* @see app/Http/Controllers/MatterOperationController.php:76
+* @see app/Http/Controllers/MatterOperationController.php:78
 * @route '/matters/{matter}/evidences'
 */
 const storeEvidenceForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -737,7 +814,7 @@ const storeEvidenceForm = (args: { matter: string | { id: string } } | [matter: 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::storeEvidence
-* @see app/Http/Controllers/MatterOperationController.php:76
+* @see app/Http/Controllers/MatterOperationController.php:78
 * @route '/matters/{matter}/evidences'
 */
 storeEvidenceForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -749,7 +826,7 @@ storeEvidence.form = storeEvidenceForm
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::updateEvidence
-* @see app/Http/Controllers/MatterOperationController.php:106
+* @see app/Http/Controllers/MatterOperationController.php:108
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 export const updateEvidence = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -764,7 +841,7 @@ updateEvidence.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::updateEvidence
-* @see app/Http/Controllers/MatterOperationController.php:106
+* @see app/Http/Controllers/MatterOperationController.php:108
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 updateEvidence.url = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions) => {
@@ -794,7 +871,7 @@ updateEvidence.url = (args: { matter: string | { id: string }, evidence: string 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::updateEvidence
-* @see app/Http/Controllers/MatterOperationController.php:106
+* @see app/Http/Controllers/MatterOperationController.php:108
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 updateEvidence.put = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -804,7 +881,7 @@ updateEvidence.put = (args: { matter: string | { id: string }, evidence: string 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::updateEvidence
-* @see app/Http/Controllers/MatterOperationController.php:106
+* @see app/Http/Controllers/MatterOperationController.php:108
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 const updateEvidenceForm = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -819,7 +896,7 @@ const updateEvidenceForm = (args: { matter: string | { id: string }, evidence: s
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::updateEvidence
-* @see app/Http/Controllers/MatterOperationController.php:106
+* @see app/Http/Controllers/MatterOperationController.php:108
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 updateEvidenceForm.put = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -836,7 +913,7 @@ updateEvidence.form = updateEvidenceForm
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyEvidence
-* @see app/Http/Controllers/MatterOperationController.php:133
+* @see app/Http/Controllers/MatterOperationController.php:135
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 export const destroyEvidence = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -851,7 +928,7 @@ destroyEvidence.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyEvidence
-* @see app/Http/Controllers/MatterOperationController.php:133
+* @see app/Http/Controllers/MatterOperationController.php:135
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 destroyEvidence.url = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions) => {
@@ -881,7 +958,7 @@ destroyEvidence.url = (args: { matter: string | { id: string }, evidence: string
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyEvidence
-* @see app/Http/Controllers/MatterOperationController.php:133
+* @see app/Http/Controllers/MatterOperationController.php:135
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 destroyEvidence.delete = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -891,7 +968,7 @@ destroyEvidence.delete = (args: { matter: string | { id: string }, evidence: str
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyEvidence
-* @see app/Http/Controllers/MatterOperationController.php:133
+* @see app/Http/Controllers/MatterOperationController.php:135
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 const destroyEvidenceForm = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -906,7 +983,7 @@ const destroyEvidenceForm = (args: { matter: string | { id: string }, evidence: 
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroyEvidence
-* @see app/Http/Controllers/MatterOperationController.php:133
+* @see app/Http/Controllers/MatterOperationController.php:135
 * @route '/matters/{matter}/evidences/{evidence}'
 */
 destroyEvidenceForm.delete = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -921,6 +998,6 @@ destroyEvidenceForm.delete = (args: { matter: string | { id: string }, evidence:
 
 destroyEvidence.form = destroyEvidenceForm
 
-const MatterOperationController = { storeParty, destroyParty, storeDeadline, destroyDeadline, storeEvent, destroyEvent, storeNote, destroyNote, storeEvidence, updateEvidence, destroyEvidence }
+const MatterOperationController = { storeParty, destroyParty, storeDeadline, destroyDeadline, storeEvent, destroyEvent, recordOutcome, storeNote, destroyNote, storeEvidence, updateEvidence, destroyEvidence }
 
 export default MatterOperationController
