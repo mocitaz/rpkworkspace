@@ -398,7 +398,7 @@ export default function GovernanceIndex({
                         </button>
                     </div>
                     {/* 4. Main 2-Column Grid */}
-                    <div className="grid items-start gap-3 lg:grid-cols-2">
+                    <div className="grid items-stretch gap-4 lg:grid-cols-2">
                         {/* Section 1: Korespondensi Terbaru */}
                         {(activeTab === 'all' ||
                             activeTab === 'correspondence') && (
@@ -409,9 +409,15 @@ export default function GovernanceIndex({
                                         : ''
                                 }
                             >
-                                <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div
+                                    className={`flex flex-col rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b] ${
+                                        activeTab === 'all'
+                                            ? 'h-[560px]'
+                                            : 'min-h-[500px]'
+                                    }`}
+                                >
                                     {/* Header */}
-                                    <div className="flex flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
+                                    <div className="flex shrink-0 flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
                                         <div className="flex items-center gap-2">
                                             <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
                                                 <Mail className="size-3.5" />
@@ -538,9 +544,9 @@ export default function GovernanceIndex({
                                     </Form>
 
                                     {/* List Data / Empty State */}
-                                    <div className="mt-0.5">
+                                    <div className="flex-1 min-h-0 overflow-y-auto pr-1">
                                         {correspondences.length ? (
-                                            <div className="max-h-[500px] space-y-1.5 overflow-y-auto pr-1">
+                                            <div className="space-y-1.5">
                                                 {correspondences.map((item) => {
                                                     const isInbound =
                                                         item.direction ===
@@ -659,7 +665,7 @@ export default function GovernanceIndex({
                                                 })}
                                             </div>
                                         ) : (
-                                            <div className="flex flex-col items-center justify-center px-3 py-8 text-center">
+                                            <div className="flex h-full min-h-[220px] flex-col items-center justify-center px-3 py-6 text-center">
                                                 <div className="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
                                                     <Mail className="size-4.5" />
                                                 </div>
@@ -703,9 +709,15 @@ export default function GovernanceIndex({
                                         : ''
                                 }
                             >
-                                <div className="flex flex-col rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div
+                                    className={`flex flex-col rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b] ${
+                                        activeTab === 'all'
+                                            ? 'h-[560px]'
+                                            : 'min-h-[500px]'
+                                    }`}
+                                >
                                     {/* Header */}
-                                    <div className="flex flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
+                                    <div className="flex shrink-0 flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
                                         <div className="flex items-center gap-2">
                                             <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
                                                 <Scale className="size-3.5" />
@@ -742,7 +754,7 @@ export default function GovernanceIndex({
                                     </div>
 
                                     {/* Matching Filter Toolbar */}
-                                    <div className="my-2.5 space-y-1.5 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2 dark:border-white/[0.04] dark:bg-[#121418]">
+                                    <div className="my-2.5 shrink-0 space-y-1.5 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2 dark:border-white/[0.04] dark:bg-[#121418]">
                                         {/* Row 1: Search Input & Action/Reset Buttons */}
                                         <div className="flex gap-1.5">
                                             <div className="relative flex-1">
@@ -863,9 +875,9 @@ export default function GovernanceIndex({
                                     </div>
 
                                     {/* List Data / Empty State */}
-                                    <div className="mt-0.5">
+                                    <div className="flex-1 min-h-0 overflow-y-auto pr-1">
                                         {filteredConflictChecks.length ? (
-                                            <div className="max-h-[500px] space-y-1.5 overflow-y-auto pr-1">
+                                            <div className="space-y-1.5">
                                                 {filteredConflictChecks.map(
                                                     (item) => (
                                                         <ConflictCheckRow
@@ -879,7 +891,7 @@ export default function GovernanceIndex({
                                                 )}
                                             </div>
                                         ) : (
-                                            <div className="flex flex-col items-center justify-center px-3 py-8 text-center">
+                                            <div className="flex h-full min-h-[220px] flex-col items-center justify-center px-3 py-6 text-center">
                                                 <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
                                                     <Scale className="size-4.5" />
                                                 </div>
@@ -922,9 +934,9 @@ export default function GovernanceIndex({
 
                     {/* Section 3: Arsip, Legal Hold & Handover Perkara */}
                     {(activeTab === 'all' || activeTab === 'hold') && (
-                        <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                             {/* Header */}
-                            <div className="flex flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
+                            <div className="flex shrink-0 flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
                                 <div className="flex items-center gap-2">
                                     <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
                                         <ShieldCheck className="size-3.5" />
@@ -1010,7 +1022,7 @@ export default function GovernanceIndex({
                             {/* Matters List Cards */}
                             <div className="mt-0.5">
                                 {matters.length ? (
-                                    <div className="max-h-[500px] space-y-1.5 overflow-y-auto pr-1">
+                                    <div className="max-h-[440px] space-y-1.5 overflow-y-auto pr-1">
                                         {matters.map((matter) => (
                                             <div
                                                 key={matter.id}
