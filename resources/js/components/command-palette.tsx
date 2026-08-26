@@ -1,5 +1,6 @@
 import { router } from '@inertiajs/react';
 import {
+    BookOpen,
     BriefcaseBusiness,
     FileUp,
     ListPlus,
