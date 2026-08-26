@@ -31,7 +31,7 @@ class TaskController extends Controller
 
         $query = Task::query()->with([
             'matter:id,matter_number,title,client_id',
-            'matter.client:id,client_number,name,type',
+            'matter.client:id,client_number,display_name,legal_name,type',
             'assignee:id,name,position_title,avatar_path',
             'reviewer:id,name,position_title,avatar_path',
             'reporter:id,name,position_title,avatar_path',
@@ -95,7 +95,7 @@ class TaskController extends Controller
             'matters' => Matter::query()
                 ->visibleTo($request->user())
                 ->whereNotIn('status', ['closed', 'archived'])
-                ->with('client:id,client_number,name,type')
+                ->with('client:id,client_number,display_name,legal_name,type')
                 ->orderBy('matter_number')
                 ->get(['id', 'matter_number', 'title', 'client_id']),
             'users' => User::query()
@@ -156,7 +156,7 @@ class TaskController extends Controller
 
         $task->load([
             'matter:id,matter_number,title,client_id,practice_area_id,status',
-            'matter.client:id,client_number,name,type',
+            'matter.client:id,client_number,display_name,legal_name,type',
             'matter.practiceArea:id,name',
             'assignee:id,name,email,position_title,avatar_path,department',
             'reviewer:id,name,email,position_title,avatar_path,department',

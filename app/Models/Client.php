@@ -69,6 +69,16 @@ class Client extends Model
         );
     }
 
+    /**
+     * Fallback name attribute accessor.
+     */
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: fn (): string => (string) ($this->display_name ?: $this->legal_name),
+        );
+    }
+
     /** @return BelongsTo<User, $this> */
     public function kycAssessedBy(): BelongsTo
     {

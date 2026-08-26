@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\AuditLog;
+use App\Models\Client;
+use App\Models\Matter;
 use App\Models\Task;
 
 it('creates, assigns, and completes an authorized task with an audit trail', function () {
@@ -56,7 +58,13 @@ it('creates, assigns, and completes an authorized task with an audit trail', fun
 
 it('can render tasks.create and tasks.show pages', function () {
     $manager = rafUser(['task.view', 'task.create', 'task.manage', 'matter.view']);
-    $task = Task::factory()->create(['reporter_id' => $manager->getKey(), 'task_number' => 'TSK-2026-0001', 'matter_id' => null]);
+    $client = Client::factory()->create(['display_name' => 'PT Test Client']);
+    $matter = Matter::factory()->create(['client_id' => $client->getKey(), 'status' => 'open']);
+    $task = Task::factory()->create([
+        'reporter_id' => $manager->getKey(),
+        'task_number' => 'TSK-2026-0001',
+        'matter_id' => $matter->getKey(),
+    ]);
 
     $this->actingAs($manager)->get(route('tasks.create'))
         ->assertOk();
