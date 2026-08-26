@@ -244,5 +244,5 @@ export default function SearchIndex({
 }
 
 SearchIndex.layout = {
-    breadcrumbs: [{ title: 'Pencarian Global', href: search() }],
+    breadcrumbs: [{ title: 'Pencarian Global', href: search.url() }],
 };

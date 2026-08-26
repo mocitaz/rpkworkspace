@@ -533,5 +533,5 @@ export default function ChatIndex({
 }
 
 ChatIndex.layout = {
-    breadcrumbs: [{ title: 'Pesan Langsung', href: chatRoutes.index() }],
+    breadcrumbs: [{ title: 'Pesan Langsung', href: chatRoutes.index.url() }],
 };

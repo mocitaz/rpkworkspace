@@ -49,7 +49,7 @@ export function AppSidebar() {
     const workspaceItems: NavItem[] = [
         {
             title: 'Dashboard',
-            href: dashboard(),
+            href: dashboard.url(),
             icon: LayoutGrid,
         },
     ];
@@ -57,7 +57,7 @@ export function AppSidebar() {
     if (canAny(['matter.view', 'matter.view.all'])) {
         workspaceItems.push({
             title: 'Perkara',
-            href: matters.index(),
+            href: matters.index.url(),
             icon: FolderKanban,
         });
     }
@@ -65,7 +65,7 @@ export function AppSidebar() {
     if (can('client.view')) {
         workspaceItems.push({
             title: 'Klien',
-            href: clients.index(),
+            href: clients.index.url(),
             icon: UsersRound,
         });
     }
@@ -73,7 +73,7 @@ export function AppSidebar() {
     if (can('contact.view')) {
         workspaceItems.push({
             title: 'Kontak',
-            href: contacts.index(),
+            href: contacts.index.url(),
             icon: ContactRound,
         });
     }
@@ -84,7 +84,7 @@ export function AppSidebar() {
     if (can('task.view')) {
         operationalItems.push({
             title: 'Tugas',
-            href: tasks.index(),
+            href: tasks.index.url(),
             icon: ListTodo,
         });
     }
@@ -92,7 +92,7 @@ export function AppSidebar() {
     if (canAny(['matter.view', 'matter.view.all', 'task.view'])) {
         operationalItems.push({
             title: 'Kalender',
-            href: calendar.index(),
+            href: calendar.index.url(),
             icon: CalendarDays,
         });
     }
@@ -100,7 +100,7 @@ export function AppSidebar() {
     if (can('billing.view')) {
         operationalItems.push({
             title: 'Keuangan',
-            href: finance.index(),
+            href: finance.index.url(),
             icon: Landmark,
         });
     }
@@ -108,7 +108,7 @@ export function AppSidebar() {
     if (canAny(['correspondence.view', 'conflict.view', 'archive.view'])) {
         operationalItems.push({
             title: 'Tata Kelola',
-            href: governance.index(),
+            href: governance.index.url(),
             icon: ShieldCheck,
         });
     }
@@ -119,7 +119,7 @@ export function AppSidebar() {
     if (can('document.view')) {
         knowledgeNavigationItems.push({
             title: 'Dokumen',
-            href: documents.index(),
+            href: documents.index.url(),
             icon: Files,
         });
     }
@@ -128,7 +128,7 @@ export function AppSidebar() {
     const adminItems: NavItem[] = [
         {
             title: 'Pengaturan',
-            href: profile.edit(),
+            href: profile.edit.url(),
             icon: Settings,
         },
     ];
@@ -136,7 +136,7 @@ export function AppSidebar() {
     if (can('admin.users.manage')) {
         adminItems.push({
             title: 'Pengguna & Akses',
-            href: adminUsers.index(),
+            href: adminUsers.index.url(),
             icon: ShieldCheck,
         });
     }
@@ -144,7 +144,7 @@ export function AppSidebar() {
     if (can('audit.view')) {
         adminItems.push({
             title: 'Audit Log',
-            href: adminAudit.index(),
+            href: adminAudit.index.url(),
             icon: ScrollText,
         });
     }

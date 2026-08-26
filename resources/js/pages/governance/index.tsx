@@ -451,7 +451,7 @@ export default function GovernanceIndex({
                                                 filters.direction ||
                                                 filters.source) && (
                                                 <Link
-                                                    href={governanceRoutes.index()}
+                                                    href={governanceRoutes.index.url()}
                                                     className="flex h-7.5 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white px-2 text-xs font-medium text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
                                                     title="Reset Filter"
                                                 >
@@ -1774,5 +1774,5 @@ function Field({
 }
 
 GovernanceIndex.layout = {
-    breadcrumbs: [{ title: 'Tata Kelola', href: governanceRoutes.index() }],
+    breadcrumbs: [{ title: 'Tata Kelola', href: governanceRoutes.index.url() }],
 };

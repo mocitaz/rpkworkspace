@@ -395,7 +395,9 @@ export default function TaskShow({
                                                 <span className="text-slate-300 dark:text-zinc-700">•</span>
                                                 <Building2 className="size-3.5 text-slate-400" />
                                                 <Link
-                                                    href={clientRoutes.show({ client: task.matter.client.id })}
+                                                    href={clientRoutes.show.url(
+                                                        task.matter.client.id,
+                                                    )}
                                                     className="font-medium text-slate-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
                                                 >
                                                     {task.matter.client.name}

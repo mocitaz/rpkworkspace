@@ -2889,5 +2889,5 @@ function SelectField({
 }
 
 FinanceIndex.layout = {
-    breadcrumbs: [{ title: 'Keuangan', href: financeRoutes.index() }],
+    breadcrumbs: [{ title: 'Keuangan', href: financeRoutes.index.url() }],
 };

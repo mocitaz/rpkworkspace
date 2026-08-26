@@ -391,7 +391,7 @@ export default function DocumentsIndex({
                                                 </div>
                                                 <div className="min-w-0 flex-1">
                                                     <Link
-                                                        href={documentRoutes.show(
+                                                        href={documentRoutes.show.url(
                                                             document.id,
                                                         )}
                                                         className="line-clamp-2 text-xs font-bold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
@@ -400,7 +400,7 @@ export default function DocumentsIndex({
                                                     </Link>
                                                     {document.matter && (
                                                         <Link
-                                                            href={matterRoutes.show(
+                                                            href={matterRoutes.show.url(
                                                                 document.matter
                                                                     .id,
                                                             )}
@@ -508,7 +508,7 @@ export default function DocumentsIndex({
                                                             </div>
                                                             <div className="min-w-0 space-y-0.5">
                                                                 <Link
-                                                                    href={documentRoutes.show(
+                                                                    href={documentRoutes.show.url(
                                                                         document.id,
                                                                     )}
                                                                     className="font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
@@ -546,7 +546,7 @@ export default function DocumentsIndex({
                                                     <td className="px-3 py-2.5 whitespace-nowrap">
                                                         {document.matter ? (
                                                             <Link
-                                                                href={matterRoutes.show(
+                                                                href={matterRoutes.show.url(
                                                                     document
                                                                         .matter
                                                                         .id,
@@ -570,7 +570,7 @@ export default function DocumentsIndex({
                                                             </Link>
                                                         ) : document.client ? (
                                                             <Link
-                                                                href={clientRoutes.show(
+                                                                href={clientRoutes.show.url(
                                                                     document
                                                                         .client
                                                                         .id,
@@ -1051,5 +1051,5 @@ function Field({
 }
 
 DocumentsIndex.layout = {
-    breadcrumbs: [{ title: 'Dokumen', href: documentRoutes.index() }],
+    breadcrumbs: [{ title: 'Dokumen', href: documentRoutes.index.url() }],
 };

@@ -322,7 +322,7 @@ export function DocumentPreviewModal({
                         )}
 
                         <Link
-                            href={documentRoutes.show(document.id)}
+                            href={documentRoutes.show.url(document.id)}
                             className="inline-flex h-7 items-center rounded-lg border border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-300"
                         >
                             <ExternalLink className="mr-1 size-3 text-slate-400" />

@@ -136,7 +136,7 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                     <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-4 sm:flex-row sm:items-center dark:border-white/[0.06] print:hidden">
                         <div className="space-y-1">
                             <Link
-                                href={financeRoutes.index()}
+                                href={financeRoutes.index.url()}
                                 className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 transition-colors hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                             >
                                 <ArrowLeft className="size-3" />
@@ -429,7 +429,7 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                                 Perkara:
                                             </span>
                                             <Link
-                                                href={matterRoutes.show(
+                                                href={matterRoutes.show.url(
                                                     invoice.matter.id,
                                                 )}
                                                 className="inline-flex items-center gap-1 font-mono font-semibold text-blue-600 hover:underline dark:text-blue-400"
@@ -805,5 +805,5 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
 }
 
 InvoiceShow.layout = {
-    breadcrumbs: [{ title: 'Detail Invoice', href: financeRoutes.index() }],
+    breadcrumbs: [{ title: 'Detail Invoice', href: financeRoutes.index.url() }],
 };

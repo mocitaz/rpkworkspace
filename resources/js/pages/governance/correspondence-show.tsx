@@ -117,7 +117,7 @@ export default function CorrespondenceShow({
 
                             <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-zinc-400">
                                 <Link
-                                    href={matterRoutes.show(
+                                    href={matterRoutes.show.url(
                                         correspondence.matter.id,
                                     )}
                                     className="font-medium text-slate-700 hover:text-blue-600 dark:text-zinc-200 dark:hover:text-blue-400"
@@ -130,7 +130,7 @@ export default function CorrespondenceShow({
                                             •
                                         </span>
                                         <Link
-                                            href={clientRoutes.show(
+                                            href={clientRoutes.show.url(
                                                 correspondence.client.id,
                                             )}
                                             className="hover:text-blue-600 dark:hover:text-blue-400"
@@ -160,7 +160,7 @@ export default function CorrespondenceShow({
                                 className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                                 asChild
                             >
-                                <Link href={governanceRoutes.index()}>
+                                <Link href={governanceRoutes.index.url()}>
                                     <ArrowLeft className="mr-1 size-3 text-slate-400" />
                                     Kembali ke Tata Kelola
                                 </Link>
@@ -172,7 +172,7 @@ export default function CorrespondenceShow({
                                 asChild
                             >
                                 <Link
-                                    href={matterRoutes.show(
+                                    href={matterRoutes.show.url(
                                         correspondence.matter.id,
                                     )}
                                 >
@@ -378,7 +378,7 @@ export default function CorrespondenceShow({
                                                 (document) => (
                                                     <Link
                                                         key={document.id}
-                                                        href={documentRoutes.show(
+                                                        href={documentRoutes.show.url(
                                                             document.id,
                                                         )}
                                                         className="group flex items-center justify-between gap-2.5 rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 text-xs transition-colors hover:border-slate-300 hover:bg-white dark:border-white/[0.04] dark:bg-[#121418] dark:hover:bg-zinc-800"
@@ -468,7 +468,7 @@ export default function CorrespondenceShow({
                                 </span>
                                 <div className="mt-1.5 space-y-0.5">
                                     <Link
-                                        href={matterRoutes.show(
+                                        href={matterRoutes.show.url(
                                             correspondence.matter.id,
                                         )}
                                         className="group block"
@@ -492,7 +492,7 @@ export default function CorrespondenceShow({
                                         asChild
                                     >
                                         <Link
-                                            href={matterRoutes.show(
+                                            href={matterRoutes.show.url(
                                                 correspondence.matter.id,
                                             )}
                                         >
@@ -511,7 +511,7 @@ export default function CorrespondenceShow({
                                     </span>
                                     <div className="mt-1.5">
                                         <Link
-                                            href={clientRoutes.show(
+                                            href={clientRoutes.show.url(
                                                 correspondence.client.id,
                                             )}
                                             className="text-xs font-semibold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
@@ -536,7 +536,7 @@ export default function CorrespondenceShow({
                                             asChild
                                         >
                                             <Link
-                                                href={clientRoutes.show(
+                                                href={clientRoutes.show.url(
                                                     correspondence.client.id,
                                                 )}
                                             >
@@ -617,10 +617,10 @@ export default function CorrespondenceShow({
 
 CorrespondenceShow.layout = {
     breadcrumbs: [
-        { title: 'Tata Kelola', href: governanceRoutes.index() },
+        { title: 'Tata Kelola', href: governanceRoutes.index.url() },
         {
             title: 'Detail Korespondensi',
-            href: correspondenceRoutes.show(':correspondence'),
+            href: '#',
         },
     ],
 };

@@ -561,7 +561,7 @@ export default function MattersIndex({
                                                     <td className="px-3 py-2.5 font-medium whitespace-nowrap">
                                                         {matter.client.id ? (
                                                             <Link
-                                                                href={clientRoutes.show(
+                                                                href={clientRoutes.show.url(
                                                                     matter
                                                                         .client
                                                                         .id,

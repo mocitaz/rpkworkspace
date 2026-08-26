@@ -381,7 +381,7 @@ export default function Dashboard({
                                 className="h-8 rounded-lg border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 active:scale-[0.98] dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
                             >
                                 <Link
-                                    href={tasksRoutes.index({
+                                    href={tasksRoutes.index.url({
                                         query: { create: 1 },
                                     })}
                                 >
@@ -393,7 +393,7 @@ export default function Dashboard({
                                 asChild
                                 className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                             >
-                                <Link href={mattersRoutes.create()}>
+                                <Link href={mattersRoutes.create.url()}>
                                     <Plus className="mr-1 size-3.5" />
                                     Perkara Baru
                                 </Link>
@@ -425,7 +425,7 @@ export default function Dashboard({
                                     Portofolio Berjalan
                                 </span>
                                 <Link
-                                    href={mattersRoutes.index()}
+                                    href={mattersRoutes.index.url()}
                                     className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                 >
                                     Lihat →
@@ -452,7 +452,7 @@ export default function Dashboard({
                             <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
                                 <span className="truncate">Distribusi Tim</span>
                                 <Link
-                                    href={tasksRoutes.index()}
+                                    href={tasksRoutes.index.url()}
                                     className="font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
                                 >
                                     Kelola →
@@ -483,7 +483,7 @@ export default function Dashboard({
                                     Jadwal Sidang &amp; Deadline
                                 </span>
                                 <Link
-                                    href={calendarRoutes.index()}
+                                    href={calendarRoutes.index.url()}
                                     className="font-semibold text-amber-600 hover:underline dark:text-amber-400"
                                 >
                                     Kalender →
@@ -513,7 +513,7 @@ export default function Dashboard({
                                     {docFiledCount} Filed
                                 </span>
                                 <Link
-                                    href={documentsRoutes.index()}
+                                    href={documentsRoutes.index.url()}
                                     className="font-semibold text-purple-600 hover:underline dark:text-purple-400"
                                 >
                                     Arsip →
@@ -599,7 +599,7 @@ export default function Dashboard({
                                                 className="mt-2.5 h-7 rounded-lg text-[11px] font-bold text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
                                             >
                                                 <Link
-                                                    href={tasksRoutes.index({
+                                                    href={tasksRoutes.index.url({
                                                         query: { create: 1 },
                                                     })}
                                                 >
@@ -719,7 +719,7 @@ export default function Dashboard({
 
                             <div className="mt-auto shrink-0 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
                                 <Link
-                                    href={tasksRoutes.index()}
+                                    href={tasksRoutes.index.url()}
                                     className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                                 >
                                     Buka Seluruh Daftar Tugas →
@@ -734,7 +734,7 @@ export default function Dashboard({
                                     Jadwal Sidang &amp; Agenda
                                 </h2>
                                 <Link
-                                    href={calendarRoutes.index()}
+                                    href={calendarRoutes.index.url()}
                                     className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                                 >
                                     Buka Kalender →
@@ -824,7 +824,7 @@ export default function Dashboard({
 
                             <div className="mt-auto shrink-0 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
                                 <Link
-                                    href={calendarRoutes.index()}
+                                    href={calendarRoutes.index.url()}
                                     className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                                 >
                                     Buka Kalender &amp; Agenda →
@@ -845,7 +845,7 @@ export default function Dashboard({
                                     </span>
                                 </div>
                                 <Link
-                                    href={tasksRoutes.index({
+                                    href={tasksRoutes.index.url({
                                         query: { priority: 'high' },
                                     })}
                                     className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
@@ -960,7 +960,7 @@ export default function Dashboard({
 
                             <div className="mt-auto shrink-0 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
                                 <Link
-                                    href={tasksRoutes.index({
+                                    href={tasksRoutes.index.url({
                                         query: { priority: 'high' },
                                     })}
                                     className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
@@ -982,7 +982,7 @@ export default function Dashboard({
                                     </span>
                                 </div>
                                 <Link
-                                    href={auditRoutes.index()}
+                                    href={auditRoutes.index.url()}
                                     className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                                 >
                                     Semua Log →
@@ -1101,7 +1101,7 @@ export default function Dashboard({
 
                             <div className="mt-auto shrink-0 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
                                 <Link
-                                    href={auditRoutes.index()}
+                                    href={auditRoutes.index.url()}
                                     className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                                 >
                                     Buka Audit Trail Lengkap →

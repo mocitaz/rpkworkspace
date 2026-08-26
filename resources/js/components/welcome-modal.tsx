@@ -204,7 +204,7 @@ export function WelcomeModal({
                         className="h-8.5 rounded-xl border-slate-200/80 px-3.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-100/80 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
                     >
                         <Link
-                            href={calendarRoutes.index()}
+                            href={calendarRoutes.index.url()}
                             className="flex items-center gap-1.5"
                         >
                             <Calendar className="size-3.5 text-slate-500" />

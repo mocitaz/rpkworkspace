@@ -28,32 +28,32 @@ export function MobileBottomNav() {
     const navItems = [
         {
             title: 'Dashboard',
-            href: dashboard(),
+            href: dashboard.url(),
             icon: LayoutDashboard,
-            active: isCurrentUrl(dashboard()),
+            active: isCurrentUrl(dashboard.url()),
         },
         {
             title: 'Perkara',
-            href: matters.index(),
+            href: matters.index.url(),
             icon: BriefcaseBusiness,
             active: isCurrentUrl('/matters'),
         },
         {
             title: 'Dokumen',
-            href: documents.index(),
+            href: documents.index.url(),
             icon: Files,
             active: isCurrentUrl('/documents'),
         },
         auth.permissions?.includes('billing.view')
             ? {
                   title: 'Keuangan',
-                  href: finance.index(),
+                  href: finance.index.url(),
                   icon: Landmark,
                   active: isCurrentUrl('/finance'),
               }
             : {
                   title: 'Tugas',
-                  href: tasks.index(),
+                  href: tasks.index.url(),
                   icon: ListTodo,
                   active: isCurrentUrl('/tasks'),
               },

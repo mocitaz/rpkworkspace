@@ -403,7 +403,9 @@ export default function MatterShow({
                             <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-zinc-400">
                                 <span>Klien:</span>
                                 <Link
-                                    href={clientRoutes.show(matter.client.id)}
+                                    href={clientRoutes.show.url(
+                                        matter.client.id,
+                                    )}
                                     className="inline-flex items-center gap-1.5 font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                 >
                                     {matter.client.type === 'individual' ||
@@ -505,7 +507,7 @@ export default function MatterShow({
                                     asChild
                                 >
                                     <Link
-                                        href={documentRoutes.index({
+                                        href={documentRoutes.index.url({
                                             query: {
                                                 upload: 1,
                                                 matter_id: matter.id,
@@ -808,7 +810,7 @@ export default function MatterShow({
                                                     </span>
                                                 </div>
                                                 <Link
-                                                    href={matterRoutes.show(
+                                                    href={matterRoutes.show.url(
                                                         matter.parent_matter.id,
                                                     )}
                                                     className="mt-1 flex items-center justify-between text-xs hover:text-blue-600 dark:hover:text-blue-400"
@@ -849,7 +851,7 @@ export default function MatterShow({
                                                             <div className="min-w-0 pr-3">
                                                                 <div className="flex items-center gap-2">
                                                                     <Link
-                                                                        href={matterRoutes.show(
+                                                                        href={matterRoutes.show.url(
                                                                             child.id,
                                                                         )}
                                                                         className="font-mono font-bold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
@@ -872,7 +874,7 @@ export default function MatterShow({
                                                                     />
                                                                 </div>
                                                                 <Link
-                                                                    href={matterRoutes.show(
+                                                                    href={matterRoutes.show.url(
                                                                         child.id,
                                                                     )}
                                                                     className="mt-0.5 block truncate text-[11px] text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
@@ -883,7 +885,7 @@ export default function MatterShow({
                                                                 </Link>
                                                             </div>
                                                             <Link
-                                                                href={matterRoutes.show(
+                                                                href={matterRoutes.show.url(
                                                                     child.id,
                                                                 )}
                                                                 className="shrink-0 text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
@@ -1417,7 +1419,7 @@ export default function MatterShow({
                                                                                                             .checked,
                                                                                                 };
                                                                                             router.put(
-                                                                                                eventChecklistRoutes.update(
+                                                                                                eventChecklistRoutes.update.url(
                                                                                                     {
                                                                                                         matter: matter.id,
                                                                                                         event: event.id,
@@ -1964,7 +1966,7 @@ export default function MatterShow({
                                                 asChild
                                             >
                                                 <Link
-                                                    href={documentRoutes.index({
+                                                    href={documentRoutes.index.url({
                                                         query: {
                                                             upload: 1,
                                                             matter_id:
@@ -2081,7 +2083,7 @@ export default function MatterShow({
                                                                             asChild
                                                                         >
                                                                             <Link
-                                                                                href={documentRoutes.show(
+                                                                                href={documentRoutes.show.url(
                                                                                     doc.id,
                                                                                 )}
                                                                             >
@@ -2226,7 +2228,7 @@ export default function MatterShow({
                                         </span>
                                     </div>
                                     <Link
-                                        href={clientRoutes.show(
+                                        href={clientRoutes.show.url(
                                             matter.client.id,
                                         )}
                                         className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
@@ -2385,7 +2387,7 @@ export default function MatterShow({
                                             .map((doc) => (
                                                 <Link
                                                     key={doc.id}
-                                                    href={documentRoutes.show(
+                                                    href={documentRoutes.show.url(
                                                         doc.id,
                                                     )}
                                                     className="group flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50/70 p-2 transition-all hover:bg-white dark:border-white/[0.04] dark:bg-[#121418] dark:hover:bg-white/[0.04]"
@@ -2457,7 +2459,7 @@ export default function MatterShow({
                     if (!chronologyToDelete) return;
                     setIsDeleting(true);
                     router.delete(
-                        chronologyRoutes.destroy({
+                        chronologyRoutes.destroy.url({
                             matter: matter.id,
                             chronology: chronologyToDelete.id,
                         }),
@@ -2516,7 +2518,7 @@ export default function MatterShow({
                     if (!partyToDelete) return;
                     setIsDeleting(true);
                     router.delete(
-                        partyRoutes.destroy({
+                        partyRoutes.destroy.url({
                             matter: matter.id,
                             party: partyToDelete.id,
                         }),
@@ -2547,7 +2549,7 @@ export default function MatterShow({
                     if (!eventToDelete) return;
                     setIsDeleting(true);
                     router.delete(
-                        eventRoutes.destroy({
+                        eventRoutes.destroy.url({
                             matter: matter.id,
                             event: eventToDelete.id,
                         }),
@@ -2578,7 +2580,7 @@ export default function MatterShow({
                     if (!noteToDelete) return;
                     setIsDeleting(true);
                     router.delete(
-                        noteRoutes.destroy({
+                        noteRoutes.destroy.url({
                             matter: matter.id,
                             note: noteToDelete.id,
                         }),

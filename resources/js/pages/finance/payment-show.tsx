@@ -66,7 +66,7 @@ export default function PaymentShow({ payment }: { payment: Payment }) {
                     <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-4 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">
                             <Link
-                                href={financeRoutes.index()}
+                                href={financeRoutes.index.url()}
                                 className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500 transition-colors hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                             >
                                 <ArrowLeft className="size-3" />
@@ -316,5 +316,5 @@ export default function PaymentShow({ payment }: { payment: Payment }) {
 }
 
 PaymentShow.layout = {
-    breadcrumbs: [{ title: 'Detail Pembayaran', href: financeRoutes.index() }],
+    breadcrumbs: [{ title: 'Detail Pembayaran', href: financeRoutes.index.url() }],
 };

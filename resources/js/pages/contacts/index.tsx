@@ -103,7 +103,7 @@ export default function ContactsIndex({
             queryParams.delete('search');
         }
         router.get(
-            contactRoutes.index(),
+            contactRoutes.index.url(),
             Object.fromEntries(queryParams.entries()),
             {
                 preserveState: true,
@@ -120,7 +120,7 @@ export default function ContactsIndex({
             queryParams.delete('client_id');
         }
         router.get(
-            contactRoutes.index(),
+            contactRoutes.index.url(),
             Object.fromEntries(queryParams.entries()),
             {
                 preserveState: true,
@@ -132,7 +132,7 @@ export default function ContactsIndex({
     const handleResetFilters = () => {
         setSearchQuery('');
         router.get(
-            contactRoutes.index(),
+            contactRoutes.index.url(),
             {},
             { preserveState: true, preserveScroll: true },
         );
@@ -498,7 +498,7 @@ export default function ContactsIndex({
                                                 <td className="px-3 py-2.5 whitespace-nowrap">
                                                     {contact.client ? (
                                                         <Link
-                                                            href={clientRoutes.show(
+                                                            href={clientRoutes.show.url(
                                                                 contact.client
                                                                     .id,
                                                             )}
@@ -851,7 +851,7 @@ export default function ContactsIndex({
                                     </span>
                                     {selectedContact.client ? (
                                         <Link
-                                            href={clientRoutes.show(
+                                            href={clientRoutes.show.url(
                                                 selectedContact.client.id,
                                             )}
                                             className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:underline dark:text-blue-400"
@@ -1316,5 +1316,5 @@ function Field({
 }
 
 ContactsIndex.layout = {
-    breadcrumbs: [{ title: 'Kontak', href: contactRoutes.index() }],
+    breadcrumbs: [{ title: 'Kontak', href: contactRoutes.index.url() }],
 };

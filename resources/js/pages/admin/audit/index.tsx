@@ -1454,5 +1454,5 @@ function CleanAuditLogsDialog({
 }
 
 AuditIndex.layout = {
-    breadcrumbs: [{ title: 'Audit Log', href: auditRoutes.index() }],
+    breadcrumbs: [{ title: 'Audit Log', href: auditRoutes.index.url() }],
 };

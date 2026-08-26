@@ -1075,7 +1075,7 @@ export default function TasksIndex({
 
                                 {selectedTask.matter && (
                                     <Link
-                                        href={matterRoutes.show(
+                                        href={matterRoutes.show.url(
                                             selectedTask.matter.id,
                                         )}
                                         className="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap text-blue-700 transition-colors hover:bg-blue-100 hover:text-blue-800 dark:bg-blue-950/60 dark:text-blue-300"
@@ -1237,7 +1237,7 @@ export default function TasksIndex({
                                     <div className="min-w-0">
                                         {selectedTask.matter ? (
                                             <Link
-                                                href={matterRoutes.show(
+                                                href={matterRoutes.show.url(
                                                     selectedTask.matter.id,
                                                 )}
                                                 className="group block"

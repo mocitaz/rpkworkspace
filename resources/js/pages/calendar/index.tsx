@@ -161,7 +161,7 @@ export default function CalendarIndex({
                                     asChild
                                 >
                                     <Link
-                                        href={calendarRoutes.index({
+                                        href={calendarRoutes.index.url({
                                             query: {
                                                 month: shiftMonth(month, -1),
                                             },
@@ -177,7 +177,7 @@ export default function CalendarIndex({
                                     className="h-7 rounded px-2.5 text-xs font-semibold text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-white/[0.06]"
                                     asChild
                                 >
-                                    <Link href={calendarRoutes.index()}>
+                                    <Link href={calendarRoutes.index.url()}>
                                         Hari Ini
                                     </Link>
                                 </Button>
@@ -189,7 +189,7 @@ export default function CalendarIndex({
                                     asChild
                                 >
                                     <Link
-                                        href={calendarRoutes.index({
+                                        href={calendarRoutes.index.url({
                                             query: {
                                                 month: shiftMonth(month, 1),
                                             },
@@ -491,7 +491,7 @@ export default function CalendarIndex({
                                             asChild
                                         >
                                             <Link
-                                                href={matterRoutes.show(
+                                                href={matterRoutes.show.url(
                                                     selectedItem.matter.id,
                                                 )}
                                             >
@@ -1013,5 +1013,5 @@ function shiftMonth(month: string, amount: number): string {
 }
 
 CalendarIndex.layout = {
-    breadcrumbs: [{ title: 'Kalender', href: calendarRoutes.index() }],
+    breadcrumbs: [{ title: 'Kalender', href: calendarRoutes.index.url() }],
 };

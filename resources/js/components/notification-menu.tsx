@@ -117,7 +117,7 @@ export function NotificationMenu() {
                 ),
             );
             router.patch(
-                notificationRoutes.read(n.id),
+                notificationRoutes.read.url(n.id),
                 {},
                 { preserveScroll: true, preserveState: true },
             );
@@ -142,7 +142,7 @@ export function NotificationMenu() {
             ),
         );
         router.patch(
-            notificationRoutes.read(id),
+            notificationRoutes.read.url(id),
             {},
             { preserveScroll: true, preserveState: true },
         );

@@ -321,7 +321,7 @@ export default function ClientShow({
                                 className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
                                 asChild
                             >
-                                <Link href={matterRoutes.create()}>
+                                <Link href={matterRoutes.create.url()}>
                                     <Plus className="mr-1 size-3" />
                                     Buat Matter Baru
                                 </Link>
@@ -541,7 +541,7 @@ export default function ClientShow({
                                                 {activeMatters.map((matter) => (
                                                     <Link
                                                         key={matter.id}
-                                                        href={matterRoutes.show(
+                                                        href={matterRoutes.show.url(
                                                             matter.id,
                                                         )}
                                                         className="group flex items-center justify-between py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
@@ -675,7 +675,7 @@ export default function ClientShow({
                                             className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                             asChild
                                         >
-                                            <Link href={matterRoutes.create()}>
+                                            <Link href={matterRoutes.create.url()}>
                                                 <Plus className="mr-1 size-3" />
                                                 Buat Matter
                                             </Link>
@@ -714,7 +714,7 @@ export default function ClientShow({
                                                             >
                                                                 <td className="py-2.5 pr-3 pl-3">
                                                                     <Link
-                                                                        href={matterRoutes.show(
+                                                                        href={matterRoutes.show.url(
                                                                             matter.id,
                                                                         )}
                                                                         className="font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
@@ -800,7 +800,7 @@ export default function ClientShow({
                                                                 </td>
                                                                 <td className="py-2.5 pr-3 pl-1 text-right whitespace-nowrap">
                                                                     <Link
-                                                                        href={matterRoutes.show(
+                                                                        href={matterRoutes.show.url(
                                                                             matter.id,
                                                                         )}
                                                                         className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
@@ -1606,7 +1606,7 @@ export default function ClientShow({
                                                                     asChild
                                                                 >
                                                                     <Link
-                                                                        href={documentRoutes.show(
+                                                                        href={documentRoutes.show.url(
                                                                             doc.id,
                                                                         )}
                                                                     >
@@ -1817,7 +1817,7 @@ export default function ClientShow({
                                         {documents.slice(0, 3).map((doc) => (
                                             <Link
                                                 key={doc.id}
-                                                href={documentRoutes.show(
+                                                href={documentRoutes.show.url(
                                                     doc.id,
                                                 )}
                                                 className="group flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50/50 p-2.5 transition-all hover:border-slate-200 hover:bg-white dark:border-white/[0.04] dark:bg-[#121418] dark:hover:bg-[#16181d]"

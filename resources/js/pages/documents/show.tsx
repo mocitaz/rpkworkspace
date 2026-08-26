@@ -175,7 +175,7 @@ export default function DocumentShow({
                                 asChild
                                 className="h-8 shrink-0 rounded-lg border-slate-200/70 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
                             >
-                                <Link href={documentRoutes.index()}>
+                                <Link href={documentRoutes.index.url()}>
                                     <ArrowLeft className="mr-1.5 size-3.5 text-slate-500" />
                                     Kembali ke Repositori
                                 </Link>
@@ -276,7 +276,7 @@ export default function DocumentShow({
                                     <>
                                         <span>Perkara:</span>
                                         <Link
-                                            href={matterRoutes.show(
+                                            href={matterRoutes.show.url(
                                                 document.matter.id,
                                             )}
                                             className="font-mono font-semibold text-blue-600 hover:underline dark:text-blue-400"
@@ -289,7 +289,7 @@ export default function DocumentShow({
                                     <>
                                         <span>Klien:</span>
                                         <Link
-                                            href={clientRoutes.show(
+                                            href={clientRoutes.show.url(
                                                 document.client.id,
                                             )}
                                             className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
@@ -1696,7 +1696,7 @@ function isInlinePreview(mimeType: string): boolean {
 
 DocumentShow.layout = {
     breadcrumbs: [
-        { title: 'Dokumen', href: documentRoutes.index() },
+        { title: 'Dokumen', href: documentRoutes.index.url() },
         { title: 'Detail Dokumen', href: '#' },
     ],
 };
