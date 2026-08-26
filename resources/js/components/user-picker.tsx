@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/react';
 import { Check, ChevronDown, Search, User, UserX, X } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -48,6 +49,9 @@ export default function UserPicker({
     className = '',
     error = false,
 }: UserPickerProps) {
+    const page = usePage<{ auth?: { user?: { id: number | string; name?: string } } }>();
+    const currentUserId = page.props.auth?.user?.id;
+
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const containerRef = useRef<HTMLDivElement>(null);
@@ -168,6 +172,13 @@ export default function UserPicker({
                                 <span className="font-semibold text-slate-900 dark:text-white">
                                     {selectedUser.name}
                                 </span>
+                                {currentUserId &&
+                                    String(selectedUser.id) ===
+                                        String(currentUserId) && (
+                                        <span className="ml-1.5 rounded-sm bg-blue-50 px-1.5 py-0.5 font-mono text-[10px] font-bold text-blue-700 dark:bg-blue-950/80 dark:text-blue-300">
+                                            (Anda)
+                                        </span>
+                                    )}
                                 {selectedUser.position_title && (
                                     <span className="ml-1.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                         • {selectedUser.position_title}
@@ -302,15 +313,26 @@ export default function UserPicker({
                                             </Avatar>
 
                                             <div className="min-w-0 flex-1">
-                                                <p
-                                                    className={`truncate font-semibold ${
-                                                        isSelected
-                                                            ? 'text-blue-900 dark:text-blue-200'
-                                                            : 'text-slate-900 dark:text-white'
-                                                    }`}
-                                                >
-                                                    {user.name}
-                                                </p>
+                                                <div className="flex items-center gap-1.5">
+                                                    <p
+                                                        className={`truncate font-semibold ${
+                                                            isSelected
+                                                                ? 'text-blue-900 dark:text-blue-200'
+                                                                : 'text-slate-900 dark:text-white'
+                                                        }`}
+                                                    >
+                                                        {user.name}
+                                                    </p>
+                                                    {currentUserId &&
+                                                        String(user.id) ===
+                                                            String(
+                                                                currentUserId,
+                                                            ) && (
+                                                            <span className="shrink-0 rounded-sm bg-blue-100 px-1.5 py-0.2 font-mono text-[9.5px] font-bold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                                                (Anda)
+                                                            </span>
+                                                        )}
+                                                </div>
                                                 <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                                     {user.position_title && (
                                                         <span className="truncate">
