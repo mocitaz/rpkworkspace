@@ -74,10 +74,11 @@ export function WelcomeModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="max-w-[460px] overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-0 shadow-2xl sm:max-w-[460px] dark:border-white/10 dark:bg-[#14161b]">
-                {/* 1. Sleek Compact Header */}
-                <div className="border-b border-slate-100 bg-slate-50/50 px-5 py-4.5 sm:px-6 dark:border-white/[0.06] dark:bg-[#121418]">
-                    <div className="flex items-center gap-3.5">
+            <DialogContent className="max-w-[450px] overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-0 shadow-2xl sm:max-w-[450px] dark:border-white/10 dark:bg-[#14161b]">
+                {/* 1. Modal Body & Content with Tight Harmonious Rhythm */}
+                <div className="space-y-3 p-5 sm:p-6">
+                    {/* Header: Logo + Greeting */}
+                    <div className="flex items-center gap-3">
                         <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-white p-1 shadow-2xs dark:border-white/15 dark:bg-zinc-900">
                             <img
                                 src="/logo/logo.png"
@@ -91,15 +92,12 @@ export function WelcomeModal({
                                 {greeting}, {user?.name}
                             </DialogTitle>
                             <DialogDescription className="mt-0.5 truncate text-xs text-slate-500 dark:text-zinc-400">
-                                Selamat datang kembali di Law Workspace.
+                                Selamat datang kembali di LawApp.
                             </DialogDescription>
                         </div>
                     </div>
-                </div>
 
-                {/* 2. Modal Body with Tight Symmetrical Rhythm */}
-                <div className="space-y-3 p-5 sm:p-6">
-                    {/* Compact 3-Column Symmetrical Status Strip */}
+                    {/* Compact 3-Column Symmetrical Status Track */}
                     <div className="grid grid-cols-3 divide-x divide-slate-200/80 rounded-xl border border-slate-200/70 bg-slate-50/70 py-2 px-1 dark:divide-white/10 dark:border-white/[0.06] dark:bg-white/[0.02]">
                         <div className="flex items-center justify-center gap-1.5 px-2">
                             <Briefcase className="size-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
@@ -153,22 +151,22 @@ export function WelcomeModal({
                     {/* Unified Grouped Operational Guidance Box */}
                     <div className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-2xs divide-y divide-slate-100 dark:divide-white/[0.05] dark:border-white/10 dark:bg-[#16181d]">
                         <div className="flex items-center gap-3 p-3 transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
-                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
-                                <FileCheck2 className="size-4" />
+                            <div className="flex size-7.5 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                                <FileCheck2 className="size-3.5" />
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-xs font-bold text-slate-900 dark:text-white">
                                     Verifikasi Berkas &amp; Dokumen
                                 </p>
                                 <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                    Periksa draf advice hukum &amp; dokumen perkara menunggu review.
+                                    Periksa draf advice hukum &amp; berkas perkara menunggu review.
                                 </p>
                             </div>
                         </div>
 
                         <div className="flex items-center gap-3 p-3 transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
-                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
-                                <CalendarDays className="size-4" />
+                            <div className="flex size-7.5 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+                                <CalendarDays className="size-3.5" />
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-xs font-bold text-slate-900 dark:text-white">
@@ -181,8 +179,8 @@ export function WelcomeModal({
                         </div>
 
                         <div className="flex items-center gap-3 p-3 transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
-                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
-                                <ShieldCheck className="size-4" />
+                            <div className="flex size-7.5 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                                <ShieldCheck className="size-3.5" />
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="text-xs font-bold text-slate-900 dark:text-white">
@@ -196,8 +194,8 @@ export function WelcomeModal({
                     </div>
                 </div>
 
-                {/* 3. Modal Actions Footer */}
-                <DialogFooter className="flex-row items-center justify-between border-t border-slate-100 bg-slate-50/50 px-5 py-3.5 sm:px-6 dark:border-white/[0.06] dark:bg-[#121418]">
+                {/* 2. Modal Actions Footer */}
+                <DialogFooter className="flex-row items-center justify-between border-t border-slate-100 bg-slate-50/50 px-5 py-3 sm:px-6 dark:border-white/[0.06] dark:bg-[#121418]">
                     <Button
                         asChild
                         type="button"
