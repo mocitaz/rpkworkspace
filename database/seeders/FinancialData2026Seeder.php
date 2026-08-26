@@ -47,43 +47,97 @@ class FinancialData2026Seeder extends Seeder
                 $fajar->roles()->sync($partnerRoles->pluck('id'));
             }
 
-            // 2. Ensure Staff/Paralegal Users
-            $bianca = User::query()->firstOrCreate(
-                ['email' => 'bianca@rpklawoffice.com'],
+            // 2. Ensure Staff/Paralegal Users (Deduplicate & Merge if duplicates exist)
+            $internRole = Role::query()->where('name', 'like', '%Magang%')->orWhere('name', 'like', '%Associate%')->first();
+
+            $mergeUsers = function (array $emails, array $nameKeywords, array $attributes) use ($internRole): User {
+                $users = User::query()
+                    ->whereIn('email', $emails)
+                    ->orWhere(function ($q) use ($nameKeywords) {
+                        foreach ($nameKeywords as $kw) {
+                            $q->orWhere('name', 'like', "%{$kw}%");
+                        }
+                    })
+                    ->orderBy('id', 'asc')
+                    ->get();
+
+                if ($users->isEmpty()) {
+                    $master = User::query()->create($attributes);
+                } else {
+                    $master = $users->first();
+                    $duplicates = $users->filter(fn (User $u) => $u->id !== $master->id);
+
+                    foreach ($duplicates as $dup) {
+                        // Re-link all related data across tables to the master user
+                        DB::table('payrolls')->where('user_id', $dup->id)->update(['user_id' => $master->id]);
+                        DB::table('expenses')->where('created_by', $dup->id)->update(['created_by' => $master->id]);
+                        DB::table('expenses')->where('approved_by', $dup->id)->update(['approved_by' => $master->id]);
+                        DB::table('expenses')->where('partner_id', $dup->id)->update(['partner_id' => $master->id]);
+                        DB::table('payments')->where('recorded_by', $dup->id)->update(['recorded_by' => $master->id]);
+                        DB::table('invoices')->where('created_by', $dup->id)->update(['created_by' => $master->id]);
+                        DB::table('quotations')->where('created_by', $dup->id)->update(['created_by' => $master->id]);
+                        DB::table('client_trust_funds')->where('recorded_by', $dup->id)->update(['recorded_by' => $master->id]);
+                        DB::table('account_transfers')->where('transferred_by', $dup->id)->update(['transferred_by' => $master->id]);
+                        DB::table('partner_transactions')->where('partner_id', $dup->id)->update(['partner_id' => $master->id]);
+
+                        if (Schema::hasTable('tasks')) {
+                            DB::table('tasks')->where('assignee_id', $dup->id)->update(['assignee_id' => $master->id]);
+                            DB::table('tasks')->where('created_by', $dup->id)->update(['created_by' => $master->id]);
+                        }
+                        if (Schema::hasTable('documents')) {
+                            DB::table('documents')->where('created_by', $dup->id)->update(['created_by' => $master->id]);
+                        }
+                        if (Schema::hasTable('matter_user')) {
+                            DB::table('matter_user')->where('user_id', $dup->id)->delete();
+                        }
+                        if (Schema::hasTable('role_user')) {
+                            DB::table('role_user')->where('user_id', $dup->id)->delete();
+                        }
+
+                        $dup->delete();
+                    }
+                }
+
+                if ($internRole) {
+                    $master->roles()->syncWithoutDetaching([$internRole->id]);
+                }
+
+                return $master;
+            };
+
+            $bianca = $mergeUsers(
+                ['bianca.desfani@gmail.com', 'bianca@rpklawoffice.com'],
+                ['Bianca Lianda', 'Bianca'],
                 [
                     'name' => 'Bianca Lianda Desfani',
+                    'email' => 'bianca.desfani@gmail.com',
                     'email_verified_at' => now(),
                     'password' => Hash::make('password'),
-                    'position_title' => 'Paralegal',
-                    'department' => 'Corporate Legal',
+                    'position_title' => 'Advokat Magang',
+                    'department' => 'Litigasi dan Non Litigasi',
                     'employment_type' => 'Internship',
                     'employment_status' => 'Active',
                     'work_mode' => 'On-site',
                     'is_active' => true,
                 ]
             );
-            $internRole = Role::query()->where('name', 'like', '%Magang%')->orWhere('name', 'like', '%Associate%')->first();
-            if ($internRole) {
-                $bianca->roles()->syncWithoutDetaching([$internRole->id]);
-            }
 
-            $dafina = User::query()->firstOrCreate(
-                ['email' => 'dafina@rpklawoffice.com'],
+            $dafina = $mergeUsers(
+                ['davinapf25@gmail.com', 'dafina@rpklawoffice.com', 'davina@rpklawoffice.com'],
+                ['Dafina Putri', 'Davina Felisha', 'Dafina', 'Davina'],
                 [
                     'name' => 'Dafina Putri Felisha',
+                    'email' => 'davinapf25@gmail.com',
                     'email_verified_at' => now(),
                     'password' => Hash::make('password'),
-                    'position_title' => 'Paralegal',
-                    'department' => 'Corporate Legal',
+                    'position_title' => 'Advokat Magang',
+                    'department' => 'Litigasi dan Non Litigasi',
                     'employment_type' => 'Internship',
                     'employment_status' => 'Active',
                     'work_mode' => 'On-site',
                     'is_active' => true,
                 ]
             );
-            if ($internRole) {
-                $dafina->roles()->syncWithoutDetaching([$internRole->id]);
-            }
 
             // 3. Ensure Single Master Client PT KKG (Merge if duplicate exists)
             $existingClients = Client::query()
