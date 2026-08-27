@@ -22,6 +22,7 @@ import {
     ZoomOut,
 } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -235,7 +236,11 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                         className="flex flex-col flex-1"
                         onSuccess={() => {
                             setIsUploadingNew(false);
+                            toast.success('Berkas bukti transaksi berhasil diunggah!');
                             handleClose();
+                        }}
+                        onError={() => {
+                            toast.error('Gagal mengunggah berkas bukti.');
                         }}
                     >
                         {({ processing }) => (

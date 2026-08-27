@@ -281,6 +281,7 @@ export default function FinanceIndex({
             client: (q as any).client,
             description: q.description,
             items: (q as any).items || (q as any).line_items,
+            proof_document: q.proof_document || (q as any).proofDocument,
             rawItem: q,
         });
     };
