@@ -14,6 +14,7 @@ import {
     ChevronRight,
     ChevronUp,
     DollarSign,
+    Eye,
     FileDown,
     FilePlus2,
     FileSpreadsheet,
@@ -71,6 +72,7 @@ import { ClientTrustView, type ClientTrustSummary, type ClientTrustFundItem } fr
 import { PayrollView, type PayrollItem } from './components/payroll-view';
 import { ReportsView, type IncomeStatementData, type BalanceSheetData } from './components/reports-view';
 import { FinanceProofDialog, type FinanceEntityProofTarget, type ProofDocumentData } from './components/finance-proof-dialog';
+import { FinanceDetailModal, type FinanceDetailTarget } from './components/finance-detail-modal';
 import { FinancialAnalyticsView } from './components/financial-analytics-view';
 import { CreateAccountDialog } from './components/create-account-dialog';
 import { CreateTransferDialog } from './components/create-transfer-dialog';
@@ -208,6 +210,129 @@ export default function FinanceIndex({
     const [expenseToEdit, setExpenseToEdit] = useState<LedgerItem | null>(null);
     const [confirmExpenseToEdit, setConfirmExpenseToEdit] = useState<LedgerItem | null>(null);
     const [proofTarget, setProofTarget] = useState<FinanceEntityProofTarget | null>(null);
+    const [detailTarget, setDetailTarget] = useState<FinanceDetailTarget | null>(null);
+
+    const openDetailForExpense = (exp: LedgerItem) => {
+        setDetailTarget({
+            id: exp.id,
+            entity: 'expenses',
+            reference_number: exp.title || exp.category || 'EXPENSE',
+            title: exp.description || exp.title || 'Biaya Operasional',
+            subtitle: exp.matter?.title || 'Non-Perkara / Umum',
+            category: exp.category,
+            charge_to: exp.charge_to,
+            status: exp.status || 'paid',
+            amount: exp.amount ?? 0,
+            currency: exp.currency || currency,
+            date: exp.incurred_at,
+            matter: exp.matter,
+            account: exp.account,
+            partner: exp.partner,
+            vendor: (exp as any).vendor,
+            description: exp.description,
+            proof_document: exp.proof_document || exp.proofDocument,
+            rawItem: exp,
+        });
+    };
+
+    const openDetailForInvoice = (inv: LedgerItem) => {
+        setDetailTarget({
+            id: inv.id,
+            entity: 'invoices',
+            reference_number: inv.invoice_number,
+            title: inv.title || `Invoice ${inv.invoice_number}`,
+            subtitle: inv.matter?.title || 'Invoice Tagihan',
+            status: inv.status,
+            amount: inv.total_amount ?? inv.outstanding_amount ?? 0,
+            currency: inv.currency || currency,
+            date: inv.incurred_at,
+            due_date: inv.due_at,
+            matter: inv.matter,
+            client: (inv as any).client,
+            description: inv.description,
+            proof_document: inv.proof_document || inv.proofDocument,
+            rawItem: inv,
+        });
+    };
+
+    const openDetailForQuotation = (q: LedgerItem) => {
+        setDetailTarget({
+            id: q.id,
+            entity: 'quotations',
+            reference_number: q.quotation_number,
+            title: q.title || `Quotation ${q.quotation_number}`,
+            subtitle: q.matter?.title || 'Penawaran Honorarium',
+            status: q.status,
+            amount: q.total_amount ?? 0,
+            currency: q.currency || currency,
+            date: q.incurred_at,
+            due_date: q.due_at,
+            matter: q.matter,
+            client: (q as any).client,
+            description: q.description,
+            rawItem: q,
+        });
+    };
+
+    const openDetailForPayment = (pmt: LedgerItem) => {
+        setDetailTarget({
+            id: pmt.id,
+            entity: 'payments',
+            reference_number: (pmt as any).reference_number || 'RECEIPT',
+            title: `Penerimaan Kas: ${(pmt as any).reference_number || formatMoney(pmt.amount ?? 0, pmt.currency || currency)}`,
+            subtitle: (pmt as any).client?.display_name || pmt.matter?.title || 'Penerimaan Kas',
+            status: pmt.reversed_at ? 'reversed' : pmt.refunded_at ? 'refunded' : 'verified',
+            amount: pmt.amount ?? 0,
+            currency: pmt.currency || currency,
+            date: pmt.received_at,
+            matter: pmt.matter,
+            client: (pmt as any).client,
+            account: pmt.account,
+            method: (pmt as any).method,
+            allocations: pmt.allocations,
+            notes: (pmt as any).notes || (pmt as any).reversal_reason,
+            proof_document: pmt.proof_document || pmt.proofDocument,
+            rawItem: pmt,
+        });
+    };
+
+    const openDetailForPayroll = (p: PayrollItem) => {
+        setDetailTarget({
+            id: p.id,
+            entity: 'payrolls',
+            reference_number: p.payslip_number,
+            title: `Slip Gaji: ${p.user?.name || 'Pegawai'}`,
+            subtitle: `Periode ${p.period} • ${p.user?.position_title || 'Staf'}`,
+            status: p.status,
+            amount: p.net_salary,
+            currency: 'IDR',
+            date: p.paid_at || p.period,
+            notes: p.notes,
+            proof_document: p.proof_document || p.proofDocument,
+            rawItem: p,
+        });
+    };
+
+    const openDetailForPartnerTx = (tx: PartnerTransactionItem) => {
+        setDetailTarget({
+            id: tx.id,
+            entity: 'partner-transactions',
+            reference_number: tx.transaction_number,
+            title: `Transaksi Partner: ${tx.partner?.name || 'Partner'}`,
+            subtitle: tx.matter?.title || 'Non-Perkara',
+            category: tx.type,
+            status: 'approved',
+            amount: tx.amount,
+            currency: 'IDR',
+            date: tx.transaction_date,
+            matter: tx.matter,
+            account: tx.account,
+            partner: tx.partner,
+            notes: tx.notes,
+            proof_document: tx.proof_document || tx.proofDocument,
+            rawItem: tx,
+        });
+    };
 
     // 4 Primary Scopes: Client & Matters, Office Operations, Financial Reports, Analytics Insights
     const [scope, setScope] = useState<'client_matters' | 'office_operations' | 'financial_reports' | 'analytics_insights'>('client_matters');
@@ -880,6 +1005,7 @@ export default function FinanceIndex({
                                                         onCancel={setCancelInvoice}
                                                         onEditInvoice={can.invoice ? (inv) => setInvoiceToEdit(inv) : undefined}
                                                         onViewProof={setProofTarget}
+                                                        onViewDetail={openDetailForInvoice}
                                                     />
                                                 </div>
                                             )}
@@ -901,6 +1027,7 @@ export default function FinanceIndex({
                                                         emptyTitle="Belum Ada Quotation Terdaftar"
                                                         emptyDescription="Belum ada proposal penawaran tarif jasa hukum atau estimasi biaya perkara yang diajukan ke calon klien."
                                                         onEditQuotation={can.quotation ? (q) => setQuotationToEdit(q) : undefined}
+                                                        onViewDetail={openDetailForQuotation}
                                                     />
                                                 </div>
                                             )}
@@ -920,6 +1047,7 @@ export default function FinanceIndex({
                                                         onDeleteExpense={can.expense ? (exp) => setExpenseToDelete(exp) : undefined}
                                                         onEditExpense={can.expense ? (exp) => setConfirmExpenseToEdit(exp) : undefined}
                                                         onViewProof={setProofTarget}
+                                                        onViewDetail={openDetailForExpense}
                                                         actionLabel="Catat Biaya Perkara"
                                                         emptyTitle="Belum Ada Catatan Biaya Perkara"
                                                         emptyDescription="Belum ada pengeluaran operasional perkara seperti panjar pengadilan, materai, akomodasi, atau transportasi yang dicatat."
@@ -940,6 +1068,7 @@ export default function FinanceIndex({
                                                         onReverse={setReversePayment}
                                                         onRefund={setRefundPayment}
                                                         onViewProof={setProofTarget}
+                                                        onViewDetail={openDetailForPayment}
                                                     />
                                                 </div>
                                             )}
@@ -1075,6 +1204,7 @@ export default function FinanceIndex({
                                         onDeleteExpense={can.expense ? (exp) => setExpenseToDelete(exp) : undefined}
                                         onEditExpense={can.expense ? (exp) => setConfirmExpenseToEdit(exp) : undefined}
                                         onViewProof={setProofTarget}
+                                        onViewDetail={openDetailForExpense}
                                         actionLabel="Catat Biaya Kantor"
                                         emptyTitle="Belum Ada Biaya Operasional Kantor"
                                         emptyDescription="Belum ada pengeluaran rutin kantor seperti sewa gedung, listrik, internet, ATK, atau langganan software yang dicatat."
@@ -1087,6 +1217,7 @@ export default function FinanceIndex({
                                     payrolls={payrolls}
                                     accounts={accounts}
                                     onOpenPayrollModal={() => setModal('payroll')}
+                                    onViewDetail={openDetailForPayroll}
                                 />
                             )}
 
@@ -1098,6 +1229,7 @@ export default function FinanceIndex({
                                     matters={matters}
                                     accounts={accounts}
                                     onOpenPartnerModal={() => setModal('partner_transaction')}
+                                    onViewDetail={openDetailForPartnerTx}
                                 />
                             )}
                         </div>
@@ -1386,6 +1518,32 @@ export default function FinanceIndex({
                 }}
             />
 
+            {/* Modal Rincian Cepat & Pratinjau Terpadu (Finance Quick Detail Modal) */}
+            <FinanceDetailModal
+                target={detailTarget}
+                isOpen={Boolean(detailTarget)}
+                onClose={() => setDetailTarget(null)}
+                onEdit={(raw) => {
+                    if (!detailTarget) return;
+                    const ent = detailTarget.entity;
+                    setDetailTarget(null);
+                    if (ent === 'expenses') setConfirmExpenseToEdit(raw);
+                    else if (ent === 'invoices') setInvoiceToEdit(raw);
+                    else if (ent === 'quotations') setQuotationToEdit(raw);
+                }}
+                onDelete={(raw) => {
+                    if (!detailTarget) return;
+                    const ent = detailTarget.entity;
+                    setDetailTarget(null);
+                    if (ent === 'expenses') setExpenseToDelete(raw);
+                    else if (ent === 'invoices') setCancelInvoice(raw);
+                }}
+                onOpenProof={(proof) => {
+                    setDetailTarget(null);
+                    setProofTarget(proof);
+                }}
+            />
+
             {/* Modal Pratinjau & Upload Bukti Keuangan Terisolasi */}
             <FinanceProofDialog
                 target={proofTarget}
@@ -1417,6 +1575,7 @@ function Ledger({
     onEditInvoice,
     onEditQuotation,
     onViewProof,
+    onViewDetail,
 }: {
     title: string;
     items: LedgerItem[];
@@ -1438,6 +1597,7 @@ function Ledger({
     onEditInvoice?: (invoice: LedgerItem) => void;
     onEditQuotation?: (quotation: LedgerItem) => void;
     onViewProof?: (target: FinanceEntityProofTarget) => void;
+    onViewDetail?: (item: LedgerItem) => void;
 }) {
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -1594,6 +1754,19 @@ function Ledger({
                                     </span>
 
                                     <div className="flex items-center gap-1">
+                                        {onViewDetail && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => onViewDetail(i)}
+                                                className="size-6.5 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                                title="Lihat Detail Transaksi"
+                                            >
+                                                <Eye className="size-3.5" />
+                                            </Button>
+                                        )}
+
                                         {i.invoice_number && (
                                             <Button
                                                 variant="ghost"
@@ -1853,6 +2026,7 @@ function PaymentLedger({
     onReverse,
     onRefund,
     onViewProof,
+    onViewDetail,
 }: {
     items: LedgerItem[];
     currency: string;
@@ -1864,6 +2038,7 @@ function PaymentLedger({
     onReverse: (payment: LedgerItem) => void;
     onRefund: (payment: LedgerItem) => void;
     onViewProof?: (target: FinanceEntityProofTarget) => void;
+    onViewDetail?: (payment: LedgerItem) => void;
 }) {
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -2050,6 +2225,19 @@ function PaymentLedger({
                                     </span>
 
                                     <div className="flex items-center gap-1">
+                                        {onViewDetail && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => onViewDetail(payment)}
+                                                className="size-6.5 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30"
+                                                title="Lihat Rincian Penerimaan Kas"
+                                            >
+                                                <Eye className="size-3.5" />
+                                            </Button>
+                                        )}
+
                                         {onViewProof && (
                                             <Button
                                                 type="button"

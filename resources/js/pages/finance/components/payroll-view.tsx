@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
-import { AlertTriangle, Download, Paperclip, Pencil, Plus, UploadCloud } from 'lucide-react';
+import { AlertTriangle, Download, Eye, Paperclip, Pencil, Plus, UploadCloud } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -50,10 +50,12 @@ export function PayrollView({
     payrolls,
     onOpenPayrollModal,
     accounts = [],
+    onViewDetail,
 }: {
     payrolls: PayrollItem[];
     onOpenPayrollModal: () => void;
     accounts?: { id: string; name: string }[];
+    onViewDetail?: (payroll: PayrollItem) => void;
 }) {
     const [selectedPayrollForEdit, setSelectedPayrollForEdit] = useState<PayrollItem | null>(null);
     const [paidConfirmPayroll, setPaidConfirmPayroll] = useState<PayrollItem | null>(null);
@@ -199,6 +201,19 @@ export function PayrollView({
                                             </td>
                                             <td className="px-3 py-2.5 text-center">
                                                 <div className="flex items-center justify-center gap-1">
+                                                    {onViewDetail && (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            onClick={() => onViewDetail(p)}
+                                                            className="h-6 rounded px-1.5 text-[10px] font-semibold text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/10"
+                                                            title="Lihat Rincian Slip Gaji"
+                                                        >
+                                                            <Eye className="mr-0.5 size-2.5" />
+                                                            Detail
+                                                        </Button>
+                                                    )}
+
                                                     <Button
                                                         size="sm"
                                                         variant="outline"

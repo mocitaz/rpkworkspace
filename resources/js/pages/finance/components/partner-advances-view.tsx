@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertTriangle, HandCoins, Paperclip, Pencil, Plus, UploadCloud } from 'lucide-react';
+import { AlertTriangle, Eye, HandCoins, Paperclip, Pencil, Plus, UploadCloud } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -49,6 +49,7 @@ export function PartnerAdvancesView({
     partners = [],
     matters = [],
     accounts = [],
+    onViewDetail,
 }: {
     advancesSummary: PartnerAdvanceSummaryItem[];
     transactions: PartnerTransactionItem[];
@@ -56,6 +57,7 @@ export function PartnerAdvancesView({
     partners?: UserOption[];
     matters?: { id: string; matter_number: string; title: string }[];
     accounts?: { id: string; name: string }[];
+    onViewDetail?: (transaction: PartnerTransactionItem) => void;
 }) {
     const [selectedTransForEdit, setSelectedTransForEdit] = useState<PartnerTransactionItem | null>(null);
     const [confirmTransForEdit, setConfirmTransForEdit] = useState<PartnerTransactionItem | null>(null);
@@ -233,6 +235,18 @@ export function PartnerAdvancesView({
                                             </td>
                                             <td className="whitespace-nowrap px-3 py-2.5 text-center">
                                                 <div className="flex items-center justify-center gap-1.5">
+                                                    {onViewDetail && (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            onClick={() => onViewDetail(t)}
+                                                            className="h-7 rounded-lg px-2 text-xs font-semibold text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/10"
+                                                            title="Lihat Rincian Transaksi Partner"
+                                                        >
+                                                            <Eye className="mr-1 size-3" />
+                                                            Detail
+                                                        </Button>
+                                                    )}
                                                     {t.proof_document || t.proofDocument ? (
                                                         <Button
                                                             size="sm"
