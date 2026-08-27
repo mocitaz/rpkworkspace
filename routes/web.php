@@ -125,6 +125,7 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::post('finance/transfers', [FinanceController::class, 'storeTransfer'])->name('finance.transfers.store');
     Route::post('finance/partner-transactions', [FinanceController::class, 'storePartnerTransaction'])->name('finance.partner-transactions.store');
     Route::put('finance/partner-transactions/{partnerTransaction}', [FinanceController::class, 'updatePartnerTransaction'])->name('finance.partner-transactions.update');
+    Route::delete('finance/partner-transactions/{partnerTransaction}', [FinanceController::class, 'destroyPartnerTransaction'])->name('finance.partner-transactions.destroy');
     Route::post('finance/client-trust-funds', [FinanceController::class, 'storeClientTrustFund'])->name('finance.client-trust-funds.store');
     Route::post('finance/payrolls', [FinanceController::class, 'storePayroll'])->name('finance.payrolls.store');
     Route::put('finance/payrolls/{payroll}', [FinanceController::class, 'updatePayroll'])->name('finance.payrolls.update');

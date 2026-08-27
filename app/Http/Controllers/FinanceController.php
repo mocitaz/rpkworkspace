@@ -577,9 +577,32 @@ class FinanceController extends Controller
                 'type' => $newType,
                 'amount' => $newAmount,
             ], $request->user(), $request);
+            FinancialAccount::syncAllBalances();
         });
 
         return back()->with('success', 'Transaksi hak & talangan partner '.$partnerTransaction->transaction_number.' berhasil diperbarui.');
+    }
+
+    public function destroyPartnerTransaction(PartnerTransaction $partnerTransaction, AuditService $audit): RedirectResponse
+    {
+        abort_unless(request()->user()->hasPermission('billing.manage'), 403);
+
+        $transNumber = $partnerTransaction->transaction_number;
+        $amount = (int) $partnerTransaction->amount;
+        $type = $partnerTransaction->type;
+
+        DB::transaction(function () use ($partnerTransaction, $transNumber, $amount, $type, $audit) {
+            $partnerTransaction->delete();
+            FinancialAccount::syncAllBalances();
+
+            $audit->record($partnerTransaction, 'partner_transaction.deleted', [
+                'transaction_number' => $transNumber,
+                'amount' => $amount,
+                'type' => $type,
+            ], request()->user(), request());
+        });
+
+        return back()->with('success', 'Transaksi hak & talangan partner '.$transNumber.' berhasil dihapus.');
     }
 
     public function storeClientTrustFund(StoreClientTrustFundRequest $request, CreateFinanceProofDocument $createProof, AuditService $audit): RedirectResponse

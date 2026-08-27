@@ -9,6 +9,7 @@ import {
     DollarSign,
     FolderKanban,
     HandCoins,
+    Trash2,
     Upload,
     UserCheck,
 } from 'lucide-react';
@@ -99,10 +100,27 @@ export function EditPartnerTransactionDialog({
                 setProcessing(false);
                 onOpenChange(false);
             },
-            onError: () => {
+            onError: (err) => {
                 setProcessing(false);
+                setErrors(err);
             },
         });
+    };
+
+    const handleDelete = () => {
+        if (confirm(`Apakah Anda yakin ingin menghapus transaksi partner ${transaction.transaction_number} (${formatMoney(transaction.amount, 'IDR')})? Saldo kas dan utang partner akan disesuaikan otomatis.`)) {
+            setProcessing(true);
+            router.delete(`/finance/partner-transactions/${transaction.id}`, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setProcessing(false);
+                    onOpenChange(false);
+                },
+                onError: () => {
+                    setProcessing(false);
+                },
+            });
+        }
     };
 
     return (
@@ -323,23 +341,35 @@ export function EditPartnerTransactionDialog({
                         </div>
                     )}
 
-                    <DialogFooter className="border-t border-slate-100 pt-4 dark:border-white/[0.06]">
+                    <DialogFooter className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-2 border-t border-slate-100 pt-4 dark:border-white/[0.06]">
                         <Button
                             type="button"
-                            variant="outline"
-                            onClick={() => onOpenChange(false)}
+                            variant="ghost"
+                            onClick={handleDelete}
                             disabled={processing}
-                            className="h-9 rounded-xl border-slate-200 px-4 text-xs font-medium hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                            className="h-9 px-3 text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/30"
                         >
-                            Batal
+                            <Trash2 className="mr-1.5 size-3.5" />
+                            Hapus Transaksi
                         </Button>
-                        <Button
-                            type="submit"
-                            disabled={processing}
-                            className="h-9 rounded-xl bg-amber-600 px-5 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 active:scale-95 dark:bg-amber-600 dark:hover:bg-amber-500"
-                        >
-                            {processing ? 'Menyimpan...' : 'Simpan Perubahan Transaksi'}
-                        </Button>
+                        <div className="flex items-center justify-end gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => onOpenChange(false)}
+                                disabled={processing}
+                                className="h-9 rounded-xl border-slate-200 px-4 text-xs font-medium hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                            >
+                                Batal
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={processing}
+                                className="h-9 rounded-xl bg-amber-600 px-5 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 active:scale-95 dark:bg-amber-600 dark:hover:bg-amber-500"
+                            >
+                                {processing ? 'Menyimpan...' : 'Simpan Perubahan Transaksi'}
+                            </Button>
+                        </div>
                     </DialogFooter>
                 </form>
             </DialogContent>

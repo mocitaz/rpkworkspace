@@ -342,7 +342,7 @@ transition.form = transitionForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:776
+* @see app/Http/Controllers/FinanceController.php:799
 * @route '/finance/invoices/{invoice}/pdf'
 */
 export const pdf = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -357,7 +357,7 @@ pdf.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:776
+* @see app/Http/Controllers/FinanceController.php:799
 * @route '/finance/invoices/{invoice}/pdf'
 */
 pdf.url = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -390,7 +390,7 @@ pdf.url = (args: { invoice: string | { id: string } } | [invoice: string | { id:
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:776
+* @see app/Http/Controllers/FinanceController.php:799
 * @route '/finance/invoices/{invoice}/pdf'
 */
 pdf.get = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -400,7 +400,7 @@ pdf.get = (args: { invoice: string | { id: string } } | [invoice: string | { id:
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:776
+* @see app/Http/Controllers/FinanceController.php:799
 * @route '/finance/invoices/{invoice}/pdf'
 */
 pdf.head = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -410,7 +410,7 @@ pdf.head = (args: { invoice: string | { id: string } } | [invoice: string | { id
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:776
+* @see app/Http/Controllers/FinanceController.php:799
 * @route '/finance/invoices/{invoice}/pdf'
 */
 const pdfForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -420,7 +420,7 @@ const pdfForm = (args: { invoice: string | { id: string } } | [invoice: string |
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:776
+* @see app/Http/Controllers/FinanceController.php:799
 * @route '/finance/invoices/{invoice}/pdf'
 */
 pdfForm.get = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -430,7 +430,7 @@ pdfForm.get = (args: { invoice: string | { id: string } } | [invoice: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:776
+* @see app/Http/Controllers/FinanceController.php:799
 * @route '/finance/invoices/{invoice}/pdf'
 */
 pdfForm.head = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
