@@ -147,20 +147,15 @@ class SyncFinanceFromExcel2026 extends Command
             $this->info("✓ Akun Kas Utama: {$primaryAccount->name} (ID: {$primaryAccount->id})");
             $this->info("✓ Perkara Klien: {$matter->title} ({$matter->matter_number})");
 
-            // 4. Bersihkan data lama terkait Perkara PT KKG untuk reset yang bersih
-            $this->info('Membersihkan data transaksi PT KKG sebelumnya...');
-            $payrollNumbers = ['PAY-202607-001', 'PAY-202607-002', 'PAY-202608-003', 'PAY-202608-004'];
-            $ptrNumbers = ['PTR-20260729-001', 'PTR-20260729-002', 'PTR-20260729-003', 'PTR-20260827-004', 'PTR-20260827-005', 'PTR-20260827-006', 'PTR-20260827-007', 'PTR-20260729-TALANGAN', 'PTR-20260827-2951', 'PTR-20260827-E8B8', 'PTR-20260827-6A46', 'PTR-20260729-004'];
-            $incNumbers = ['INC-20260729-001', 'INC-20260827-002', 'PAY-REC-20260729-001'];
-            $invNumbers = ['RPK-INV-2026-001', 'RPK-INV-2026-002'];
-
-            PaymentAllocation::query()->whereHas('payment', fn ($q) => $q->whereIn('reference_number', $incNumbers)->orWhere('matter_id', $matter->id))->delete();
-            Payment::query()->whereIn('reference_number', $incNumbers)->orWhere('matter_id', $matter->id)->delete();
-            Expense::query()->where('matter_id', $matter->id)->delete();
-            Payroll::query()->whereIn('payslip_number', $payrollNumbers)->orWhereIn('user_id', [$bianca->id, $dafina->id])->delete();
-            PartnerTransaction::query()->whereIn('transaction_number', $ptrNumbers)->orWhere('matter_id', $matter->id)->delete();
-            InvoiceLineItem::query()->whereHas('invoice', fn ($q) => $q->whereIn('invoice_number', $invNumbers)->orWhere('matter_id', $matter->id))->delete();
-            Invoice::query()->whereIn('invoice_number', $invNumbers)->orWhere('matter_id', $matter->id)->delete();
+            // 4. Bersihkan seluruh data transaksi keuangan lama untuk rekonsiliasi total yang bersih
+            $this->info('Membersihkan seluruh data transaksi lama (termasuk unlinked/duplicate)...');
+            PaymentAllocation::query()->delete();
+            Payment::query()->delete();
+            Expense::query()->delete();
+            Payroll::query()->delete();
+            PartnerTransaction::query()->delete();
+            InvoiceLineItem::query()->delete();
+            Invoice::query()->delete();
 
             // 5. Invoices & Payments dari Excel
             // Inflow 1: RPK-INV-2026-001 (Rp 16.000.000)
