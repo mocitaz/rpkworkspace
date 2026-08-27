@@ -346,11 +346,12 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                     Advocates &amp; Legal Consultants
                                 </p>
                                 <p className="max-w-sm text-xs leading-relaxed text-slate-500 dark:text-zinc-400">
-                                    Menara Hukum RPK, Lt. 5, Jl. LLRE
-                                    Martadinata (Riau) No. 88, Bandung 40115
+                                    Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi
                                     <br />
-                                    Tel: +62 22 420 8899 · Email:
-                                    billing@rpklaw.co.id
+                                    Kabupaten Bandung Barat, Jawa Barat
+                                    <br />
+                                    Telp: 0852 9560 1417 · Email:
+                                    contact@gmail.com
                                 </p>
                             </div>
 
@@ -721,7 +722,7 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                             Bukti transfer dapat dikirimkan ke
                                             email{' '}
                                             <span className="font-semibold text-slate-900 dark:text-white">
-                                                billing@rpklaw.co.id
+                                                contact@gmail.com
                                             </span>
                                             .
                                         </li>

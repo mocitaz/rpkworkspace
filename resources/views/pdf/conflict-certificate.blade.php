@@ -112,8 +112,8 @@
                     <td class="office-cell">
                         <strong>RONI, PUTRA &amp; KUSUMAH LAW FIRM</strong><br>
                         Divisi Kepatuhan Etika Profesi &amp; Manajemen Risiko Perkara<br>
-                        Menara Hukum RPK, Lantai 5, Jl. LLRE Martadinata No. 88, Bandung<br>
-                        Tel: +62 22 420 8899 &nbsp;·&nbsp; Email: compliance@rpklaw.co.id
+                        Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi, Kabupaten Bandung Barat, Jawa Barat<br>
+                        Telp: 0852 9560 1417 &nbsp;·&nbsp; Email: contact@gmail.com
                     </td>
                 </tr>
             </table>

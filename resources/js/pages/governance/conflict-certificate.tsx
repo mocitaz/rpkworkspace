@@ -156,10 +156,10 @@ export default function ConflictCertificate({
                                 Divisi Kepatuhan Etika Profesi &amp; Manajemen Risiko
                             </p>
                             <p>
-                                Menara Hukum RPK, Lantai 5, Jl. LLRE Martadinata No. 88, Bandung
+                                Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi, Kabupaten Bandung Barat, Jawa Barat
                             </p>
                             <p className="font-mono text-[10px] text-slate-600 dark:text-zinc-400">
-                                No. Registrasi: CC-RPK-{conflictCheck.id.slice(0, 14)}
+                                Telp: 0852 9560 1417 · Email: contact@gmail.com
                             </p>
                         </div>
                     </div>

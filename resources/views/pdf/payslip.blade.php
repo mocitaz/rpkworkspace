@@ -84,7 +84,7 @@
                 <td class="office-cell">
                     Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi<br>
                     Kabupaten Bandung Barat, Jawa Barat<br>
-                    Telp: 0852 9560 1417 &bull; law.rpk@gmail.com
+                    Telp: 0852 9560 1417 &bull; contact@gmail.com
                 </td>
             </tr>
         </table>

@@ -105,7 +105,8 @@
                                             RPK LAW FIRM
                                         </p>
                                         <p style="margin: 2px 0 0 0; font-size: 10.5px; color: #64748b;">
-                                            Menara Batavia Lt. 18, Jl. K.H. Mas Mansyur Kav. 126, Jakarta Pusat
+                                            Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi, Kabupaten Bandung Barat, Jawa Barat<br>
+                                            Telp: 0852 9560 1417 &bull; contact@gmail.com
                                         </p>
                                     </td>
                                 </tr>

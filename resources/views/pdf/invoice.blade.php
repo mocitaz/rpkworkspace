@@ -148,8 +148,9 @@
             </td>
             <td class="office-cell">
                 <strong>RONI, PUTRA &amp; KUSUMAH LAW FIRM</strong><br>
-                Menara Hukum RPK, Lantai 5, Jl. LLRE Martadinata No. 88, Bandung 40115<br>
-                Tel: +62 22 420 8899 &nbsp;·&nbsp; Email: billing@rpklaw.co.id &nbsp;·&nbsp; www.rpklaw.co.id
+                Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi<br>
+                Kabupaten Bandung Barat, Jawa Barat<br>
+                Telp: 0852 9560 1417 &nbsp;·&nbsp; Email: contact@gmail.com
             </td>
         </tr>
     </table>
@@ -245,18 +246,18 @@
         </tbody>
     </table>
 
-    <!-- Settlement & Multi-Bank Remittance Details -->
+    <!-- Summary & Bank Details Section -->
     <table class="summary-layout">
         <tr>
             <td class="bank-cell">
                 <div class="bank-box">
-                    <div class="bank-title">Instruksi Pembayaran &amp; Rekening Resmi Multi-Bank</div>
+                    <div class="bank-title">INFORMASI PEMBAYARAN &amp; REKENING RESMI</div>
                     
                     <!-- Rekening 1: BCA -->
                     <div class="bank-item">
-                        <div class="bank-item-title">Bank Central Asia (BCA) — KCU Sudirman</div>
-                        <div class="bank-item-acc mono">872-009-8811</div>
-                        <div class="bank-item-name">a.n. <strong>RPK LAW FIRM &amp; PARTNERS</strong></div>
+                        <div class="bank-item-title">Bank Central Asia (BCA) — KCU Dago Bandung</div>
+                        <div class="bank-item-acc mono">777-088-9921</div>
+                        <div class="bank-item-name">a.n. <strong>RONI PUTRA KUSUMAH LAW FIRM</strong></div>
                     </div>
 
                     <!-- Rekening 2: Bank Mandiri -->
@@ -267,7 +268,7 @@
                     </div>
 
                     <div style="margin-top: 4px; font-size: 6.5px; color: #64748b; font-style: italic;">
-                        *Cantumkan Nomor Faktur <strong>{{ $invoice->invoice_number }}</strong> pada berita transfer dan kirim bukti pembayaran ke <strong>billing@rpklaw.co.id</strong>.
+                        *Cantumkan Nomor Faktur <strong>{{ $invoice->invoice_number }}</strong> pada berita transfer dan kirim bukti pembayaran ke <strong>contact@gmail.com</strong>.
                     </div>
                 </div>
             </td>
