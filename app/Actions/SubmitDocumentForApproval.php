@@ -17,9 +17,6 @@ class SubmitDocumentForApproval
     {
         $document->loadMissing('matter');
         $this->legalHold->handle($document->matter);
-        if (! in_array($document->status, ['draft', 'revision_requested'], true)) {
-            throw new \DomainException('Hanya dokumen draft atau revisi yang dapat dikirim untuk review.');
-        }
 
         $approval = DB::transaction(function () use ($document, $requester, $reviewer, $note) {
             $lockedDocument = Document::query()->lockForUpdate()->whereKey($document)->firstOrFail();
