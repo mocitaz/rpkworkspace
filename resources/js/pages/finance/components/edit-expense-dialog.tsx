@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { router } from '@inertiajs/react';
 import {
+    AlertCircle,
     AlertTriangle,
     Building2,
     Calendar,
@@ -89,6 +90,7 @@ export function EditExpenseDialog({
         partner_id: '',
         proof: null as File | null,
     });
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [processing, setProcessing] = useState(false);
 
     useEffect(() => {
@@ -100,9 +102,7 @@ export function EditExpenseDialog({
                 charge_to: expense.charge_to || (expense.matter_id ? 'client' : 'office'),
                 description: expense.description || '',
                 vendor: expense.vendor || '',
-                incurred_at: expense.incurred_at
-                    ? expense.incurred_at.substring(0, 10)
-                    : new Date().toISOString().split('T')[0],
+                incurred_at: expense.incurred_at ? expense.incurred_at.slice(0, 10) : '',
                 amount: expense.amount || 0,
                 currency: expense.currency || 'IDR',
                 paid_by: hasPartner ? 'partner' : 'account',
@@ -113,6 +113,7 @@ export function EditExpenseDialog({
                     '',
                 proof: null,
             });
+            setErrors({});
         }
     }, [expense, open]);
 
@@ -121,6 +122,7 @@ export function EditExpenseDialog({
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         setProcessing(true);
+        setErrors({});
 
         const formData = new FormData();
         formData.append('_method', 'PUT');
@@ -149,7 +151,8 @@ export function EditExpenseDialog({
                 setProcessing(false);
                 onOpenChange(false);
             },
-            onError: () => {
+            onError: (errs) => {
+                setErrors(errs);
                 setProcessing(false);
             },
         });
@@ -437,6 +440,20 @@ export function EditExpenseDialog({
                             </div>
                         </div>
                     </div>
+
+                    {Object.keys(errors).length > 0 && (
+                        <div className="rounded-xl border border-rose-200/80 bg-rose-50/70 p-3 text-xs text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
+                            <div className="flex items-center gap-1.5 font-semibold text-rose-700 dark:text-rose-400">
+                                <AlertCircle className="size-4 shrink-0" />
+                                <span>Terdapat kesalahan pengisian data:</span>
+                            </div>
+                            <ul className="mt-1.5 list-inside list-disc space-y-0.5 pl-1 text-[11.5px]">
+                                {Object.values(errors).map((err, i) => (
+                                    <li key={i}>{err}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
 
                     <DialogFooter className="border-t border-slate-100 pt-4 dark:border-white/[0.06]">
                         <Button

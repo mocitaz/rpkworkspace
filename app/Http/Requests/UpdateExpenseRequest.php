@@ -36,4 +36,38 @@ class UpdateExpenseRequest extends FormRequest
             'proof' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:10240'],
         ];
     }
+
+    protected function prepareForValidation(): void
+    {
+        $cleanInt = function ($value): ?int {
+            if ($value === null || $value === '') {
+                return null;
+            }
+            if (is_int($value)) {
+                return $value;
+            }
+            $cleaned = preg_replace('/[^\d-]/', '', (string) $value);
+
+            return $cleaned === '' ? null : (int) $cleaned;
+        };
+
+        $this->merge([
+            'amount' => $cleanInt($this->input('amount')) ?? 0,
+            'currency' => $this->input('currency') ?: 'IDR',
+        ]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'category.required' => 'Kategori pengeluaran wajib diisi.',
+            'description.required' => 'Deskripsi / keterangan pengeluaran wajib diisi.',
+            'incurred_at.required' => 'Tanggal pengeluaran wajib diisi.',
+            'amount.required' => 'Nominal pengeluaran wajib diisi.',
+            'amount.min' => 'Nominal pengeluaran tidak boleh negatif.',
+        ];
+    }
 }

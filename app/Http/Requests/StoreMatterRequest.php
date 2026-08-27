@@ -45,4 +45,23 @@ class StoreMatterRequest extends FormRequest
             'conflict_check_id' => ['required', 'exists:conflict_checks,id'],
         ];
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Judul perkara (Matter Title) wajib diisi.',
+            'client_id.required' => 'Klien pemilik perkara wajib dipilih.',
+            'client_id.exists' => 'Klien yang dipilih tidak valid.',
+            'status.required' => 'Status perkara wajib dipilih.',
+            'priority.required' => 'Prioritas perkara wajib dipilih.',
+            'confidentiality_level.required' => 'Tingkat kerahasiaan wajib dipilih.',
+            'responsible_partner_id.required' => 'Partner penanggung jawab wajib dipilih.',
+            'responsible_partner_id.exists' => 'Partner penanggung jawab yang dipilih tidak ditemukan.',
+            'conflict_check_id.required' => 'Uji konflik kepentingan (Conflict Check) wajib dipilih sebelum membuka perkara.',
+            'conflict_check_id.exists' => 'Uji konflik kepentingan tidak valid.',
+        ];
+    }
 }

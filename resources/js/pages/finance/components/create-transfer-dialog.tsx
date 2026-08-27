@@ -1,5 +1,5 @@
 import { useForm } from '@inertiajs/react';
-import { ArrowRightLeft, ChevronDown } from 'lucide-react';
+import { AlertCircle, ArrowRightLeft, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -169,6 +169,20 @@ export function CreateTransferDialog({
                             onFileSelect={(file) => form.setData('proof', file)}
                         />
                     </div>
+
+                    {Object.keys(form.errors).length > 0 && (
+                        <div className="rounded-xl border border-rose-200/80 bg-rose-50/70 p-3 text-xs text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
+                            <div className="flex items-center gap-1.5 font-semibold text-rose-700 dark:text-rose-400">
+                                <AlertCircle className="size-4 shrink-0" />
+                                <span>Terdapat kesalahan pengisian data:</span>
+                            </div>
+                            <ul className="mt-1.5 list-inside list-disc space-y-0.5 pl-1 text-[11.5px]">
+                                {Object.values(form.errors).map((err, i) => (
+                                    <li key={i}>{err}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
 
                     <div className="flex justify-end gap-2 pt-2">
                         <Button

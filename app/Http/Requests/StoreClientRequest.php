@@ -40,4 +40,18 @@ class StoreClientRequest extends FormRequest
             'relationship_partner_id' => ['nullable', 'exists:users,id'],
         ];
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'type.required' => 'Jenis entitas klien (Badan Hukum / Perorangan) wajib dipilih.',
+            'legal_name.required' => 'Nama resmi klien (Legal Name) wajib diisi.',
+            'display_name.required' => 'Nama tampilan klien (Display Name) wajib diisi.',
+            'email.email' => 'Format alamat email tidak valid.',
+            'website.url' => 'Format alamat situs web tidak valid (sertakan https://).',
+        ];
+    }
 }
