@@ -530,7 +530,7 @@ export default function ContactsIndex({
                                                 value={searchQuery}
                                                 onChange={(e) => setSearchQuery(e.target.value)}
                                                 onKeyDown={(e) => e.key === 'Enter' && handleFilterSubmit(e)}
-                                                placeholder="Search Contacts..."
+                                                placeholder="Cari Kontak..."
                                                 className="h-9 w-full rounded-xl border-slate-200 bg-slate-50/60 pl-9 pr-3 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-zinc-800/80 dark:text-white"
                                             />
                                         </div>
@@ -682,7 +682,7 @@ export default function ContactsIndex({
                                                         <ArrowLeft className="size-4" />
                                                     </button>
                                                     <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-                                                        Contact Details
+                                                        Rincian Informasi Kontak
                                                     </h2>
                                                 </div>
 
@@ -792,7 +792,7 @@ export default function ContactsIndex({
                                                     {/* Phone Number */}
                                                     <div className="space-y-0.5">
                                                         <span className="text-[11px] font-medium text-slate-400 dark:text-zinc-500">
-                                                            Phone Number
+                                                            Nomor Telepon / HP
                                                         </span>
                                                         <div>
                                                             {selectedContact.mobile || selectedContact.phone ? (
@@ -813,7 +813,7 @@ export default function ContactsIndex({
                                                     {/* Email Address */}
                                                     <div className="space-y-0.5">
                                                         <span className="text-[11px] font-medium text-slate-400 dark:text-zinc-500">
-                                                            Email address
+                                                            Alamat Email
                                                         </span>
                                                         <div>
                                                             {selectedContact.email ? (
@@ -834,7 +834,7 @@ export default function ContactsIndex({
                                                     {/* Address */}
                                                     <div className="space-y-0.5">
                                                         <span className="text-[11px] font-medium text-slate-400 dark:text-zinc-500">
-                                                            Address
+                                                            Alamat Domisili
                                                         </span>
                                                         <p className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                                                             {selectedContact.client?.address || 'Kantor Pusat / Sesuai Domisili Klien'}
@@ -844,7 +844,7 @@ export default function ContactsIndex({
                                                     {/* Department */}
                                                     <div className="space-y-0.5">
                                                         <span className="text-[11px] font-medium text-slate-400 dark:text-zinc-500">
-                                                            Department
+                                                            Departemen / Posisi
                                                         </span>
                                                         <p className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                                                             {selectedContact.job_title || 'General Legal / Manajemen'}
@@ -854,7 +854,7 @@ export default function ContactsIndex({
                                                     {/* Company */}
                                                     <div className="space-y-0.5 sm:col-span-2">
                                                         <span className="text-[11px] font-medium text-slate-400 dark:text-zinc-500">
-                                                            Company
+                                                            Perusahaan / Entitas Klien
                                                         </span>
                                                         <p className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                                                             {selectedContact.client?.display_name ||
@@ -866,7 +866,7 @@ export default function ContactsIndex({
                                                     {/* Notes */}
                                                     <div className="space-y-1 sm:col-span-2 pt-1">
                                                         <span className="text-[11px] font-medium text-slate-400 dark:text-zinc-500">
-                                                            Notes
+                                                            Catatan Khusus
                                                         </span>
                                                         <div className="rounded-lg border border-slate-100 bg-slate-50/60 p-3 text-xs leading-relaxed text-slate-700 dark:border-white/[0.04] dark:bg-[#121418] dark:text-zinc-300">
                                                             {selectedContact.notes ||
