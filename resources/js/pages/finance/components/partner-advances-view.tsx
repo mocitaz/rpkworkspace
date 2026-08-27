@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertTriangle, Eye, HandCoins, Paperclip, Pencil, Plus, UploadCloud } from 'lucide-react';
+import { AlertTriangle, FileText, HandCoins, Pencil, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -12,7 +12,7 @@ import {
 import { formatDate, formatMoney } from '@/lib/format';
 import type { UserOption } from '@/components/user-picker';
 import { EditPartnerTransactionDialog } from './edit-partner-transaction-dialog';
-import { FinanceProofDialog, type FinanceEntityProofTarget, type ProofDocumentData } from './finance-proof-dialog';
+import { type ProofDocumentData } from './finance-proof-dialog';
 
 export type PartnerAdvanceSummaryItem = {
     account_id: string;
@@ -61,7 +61,6 @@ export function PartnerAdvancesView({
 }) {
     const [selectedTransForEdit, setSelectedTransForEdit] = useState<PartnerTransactionItem | null>(null);
     const [confirmTransForEdit, setConfirmTransForEdit] = useState<PartnerTransactionItem | null>(null);
-    const [proofTarget, setProofTarget] = useState<FinanceEntityProofTarget | null>(null);
 
     const totalDueToPartners = advancesSummary.reduce((acc, p) => acc + p.net_due_to_partner, 0);
 
@@ -240,46 +239,11 @@ export function PartnerAdvancesView({
                                                             size="sm"
                                                             variant="ghost"
                                                             onClick={() => onViewDetail(t)}
-                                                            className="h-7 rounded-lg px-2 text-xs font-semibold text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/10"
+                                                            className="h-7 rounded-lg px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/10"
                                                             title="Lihat Rincian Transaksi Partner"
                                                         >
-                                                            <Eye className="mr-1 size-3" />
+                                                            <FileText className="mr-1 size-3" />
                                                             Detail
-                                                        </Button>
-                                                    )}
-                                                    {t.proof_document || t.proofDocument ? (
-                                                        <Button
-                                                            size="sm"
-                                                            variant="outline"
-                                                            onClick={() => setProofTarget({
-                                                                id: t.id,
-                                                                entity: 'partner-transactions',
-                                                                title: `Bukti Transaksi: ${t.transaction_number}`,
-                                                                subtitle: `${t.partner?.name || 'Partner'} • ${typeLabels[t.type]?.label || t.type}`,
-                                                                proof_document: t.proof_document || t.proofDocument,
-                                                            })}
-                                                            className="h-7 rounded-lg border-emerald-200 bg-emerald-50/70 px-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 dark:border-emerald-500/20 dark:bg-emerald-950/30 dark:text-emerald-300"
-                                                            title="Lihat Bukti Transaksi Partner"
-                                                        >
-                                                            <Paperclip className="mr-1 size-3" />
-                                                            Bukti
-                                                        </Button>
-                                                    ) : (
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            onClick={() => setProofTarget({
-                                                                id: t.id,
-                                                                entity: 'partner-transactions',
-                                                                title: `Unggah Bukti: ${t.transaction_number}`,
-                                                                subtitle: `${t.partner?.name || 'Partner'} • ${typeLabels[t.type]?.label || t.type}`,
-                                                                proof_document: null,
-                                                            })}
-                                                            className="h-7 rounded-lg border border-dashed border-slate-200 px-2 text-xs text-slate-500 hover:text-slate-900 hover:border-slate-400 dark:border-white/10 dark:text-zinc-400"
-                                                            title="Unggah Bukti Transaksi Partner"
-                                                        >
-                                                            <UploadCloud className="mr-1 size-3" />
-                                                            +Bukti
                                                         </Button>
                                                     )}
                                                     <Button
@@ -302,30 +266,30 @@ export function PartnerAdvancesView({
                 )}
             </div>
 
-            {/* Modal Konfirmasi Edit Transaksi Partner */}
-            <Dialog open={!!confirmTransForEdit} onOpenChange={(open) => !open && setConfirmTransForEdit(null)}>
-                <DialogContent className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+            {/* Modal Konfirmasi Edit Transaksi Disetujui */}
+            <Dialog open={Boolean(confirmTransForEdit)} onOpenChange={(open) => !open && setConfirmTransForEdit(null)}>
+                <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
                     <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                         <div className="flex items-center gap-2.5">
-                            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+                            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
                                 <AlertTriangle className="size-4.5" />
                             </div>
                             <div>
                                 <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                    Konfirmasi Edit Transaksi Partner
+                                    Edit Transaksi Rekonsiliasi
                                 </DialogTitle>
                                 <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Peringatan mutasi kas dan utang partner.
+                                    Transaksi ini memengaruhi saldo pembukuan firma.
                                 </DialogDescription>
                             </div>
                         </div>
                     </DialogHeader>
 
                     {confirmTransForEdit && (
-                        <div className="space-y-2.5 py-1 text-xs">
-                            <div className="rounded-xl border border-amber-200/80 bg-amber-50/70 p-3 text-amber-900 dark:border-amber-500/20 dark:bg-amber-950/20 dark:text-amber-200">
-                                <p className="text-xs font-semibold leading-relaxed">
-                                    Transaksi <strong>{confirmTransForEdit.transaction_number}</strong> ({typeLabels[confirmTransForEdit.type]?.label || confirmTransForEdit.type}) sebesar <strong>{formatMoney(confirmTransForEdit.amount, 'IDR')}</strong> telah tercatat pada pembukuan.
+                        <div className="space-y-3 pt-2 text-xs">
+                            <div className="rounded-xl border border-amber-200/80 bg-amber-50/50 p-3 dark:border-amber-900/40 dark:bg-amber-950/20">
+                                <p className="font-semibold text-amber-900 dark:text-amber-200">
+                                    Perhatian Penyesuaian Saldo:
                                 </p>
                                 <p className="mt-1 text-[11px] text-amber-800/90 dark:text-amber-300/80">
                                     Apakah Anda yakin ingin mengedit transaksi ini? Perubahan nominal atau jenis transaksi akan otomatis menyesuaikan saldo kas dan saldo utang partner.
@@ -368,14 +332,6 @@ export function PartnerAdvancesView({
                 matters={matters}
                 accounts={accounts}
             />
-
-            {/* Modal Pratinjau & Upload Bukti Transaksi Partner */}
-            <FinanceProofDialog
-                target={proofTarget}
-                isOpen={Boolean(proofTarget)}
-                onClose={() => setProofTarget(null)}
-            />
         </div>
     );
 }
-

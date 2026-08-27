@@ -355,6 +355,45 @@ export default function FinanceIndex({
         });
     };
 
+    const openDetailForClientTrust = (tf: ClientTrustFundItem) => {
+        setDetailTarget({
+            id: tf.id,
+            entity: 'client-trust-funds',
+            reference_number: tf.transaction_number || `TRUST-${tf.id?.slice(0, 8).toUpperCase()}`,
+            title: `Dana Titipan: ${tf.transaction_number || 'Titipan Klien'}`,
+            subtitle: `${tf.client?.display_name || 'Klien'} • ${tf.purpose || 'Dana Titipan Perkara'}`,
+            category: tf.type === 'deposit_in' || tf.type === 'deposit' ? 'Penerimaan Titipan (+)' : 'Penyaluran Titipan (-)',
+            status: 'verified',
+            amount: tf.amount,
+            currency: 'IDR',
+            date: tf.transaction_date,
+            matter: tf.matter,
+            client: tf.client,
+            account: tf.account || tf.bank_account,
+            notes: tf.purpose,
+            proof_document: tf.proof_document || tf.proofDocument,
+            rawItem: tf,
+        });
+    };
+
+    const openDetailForTransfer = (trf: AccountTransferItem) => {
+        setDetailTarget({
+            id: trf.id,
+            entity: 'transfers',
+            reference_number: trf.transfer_number || `TRF-${trf.id?.slice(0, 8).toUpperCase()}`,
+            title: `Mutasi Antar Rekening: ${trf.transfer_number}`,
+            subtitle: `${trf.from_account?.name || 'Kas'} → ${trf.to_account?.name || 'Bank'}`,
+            status: 'completed',
+            amount: trf.amount,
+            currency: 'IDR',
+            date: trf.transferred_at || trf.transfer_date,
+            account: trf.to_account,
+            notes: trf.notes,
+            proof_document: trf.proof_document || trf.proofDocument,
+            rawItem: trf,
+        });
+    };
+
     // 4 Primary Scopes: Client & Matters, Office Operations, Financial Reports, Analytics Insights
     const [scope, setScope] = useState<'client_matters' | 'office_operations' | 'financial_reports' | 'analytics_insights'>('client_matters');
     const [matterTab, setMatterTab] = useState<'all' | 'profitability' | 'invoices' | 'quotations' | 'trust_funds' | 'disbursements' | 'payments'>('all');
@@ -997,7 +1036,8 @@ export default function FinanceIndex({
                                                 }
                                             }
                                             trustFunds={clientTrustFunds}
-                                            onOpenTrustModal={() => setModal('client_trust')}
+                                            onOpenCreateModal={() => setModal('client_trust')}
+                                            onViewDetail={openDetailForClientTrust}
                                         />
                                     )}
 
@@ -1207,6 +1247,7 @@ export default function FinanceIndex({
                                     transfers={transfers}
                                     onOpenAccountModal={() => setModal('account')}
                                     onOpenTransferModal={() => setModal('transfer')}
+                                    onViewDetail={openDetailForTransfer}
                                 />
                             )}
 
@@ -1784,7 +1825,7 @@ function Ledger({
                                                 className="size-6.5 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
                                                 title="Lihat Detail Transaksi"
                                             >
-                                                <Eye className="size-3.5" />
+                                                <FileText className="size-3.5" />
                                             </Button>
                                         )}
 
@@ -1805,29 +1846,6 @@ function Ledger({
                                                 >
                                                     <FileDown className="size-3.5 text-blue-600 dark:text-blue-400" />
                                                 </a>
-                                            </Button>
-                                        )}
-
-                                        {i.invoice_number && onViewProof && (
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => onViewProof({
-                                                    id: i.id,
-                                                    entity: 'invoices',
-                                                    title: `Bukti Dokumen Invoice: ${i.invoice_number}`,
-                                                    subtitle: i.title || i.matter?.title || 'Invoice Tagihan',
-                                                    proof_document: i.proof_document || i.proofDocument,
-                                                })}
-                                                className={`size-6.5 rounded-lg ${
-                                                    i.proof_document || i.proofDocument
-                                                        ? 'text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30'
-                                                        : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-zinc-500 dark:hover:bg-white/[0.06] dark:hover:text-zinc-200'
-                                                }`}
-                                                title={i.proof_document || i.proofDocument ? "Lihat Bukti Dokumen Invoice" : "Unggah Bukti Dokumen Invoice"}
-                                            >
-                                                <Paperclip className="size-3.5" />
                                             </Button>
                                         )}
 
@@ -1937,31 +1955,6 @@ function Ledger({
                                                         Setujui
                                                     </Button>
                                                 </Form>
-                                            )}
-
-                                        {onViewProof &&
-                                            !i.invoice_number &&
-                                            !i.quotation_number && (
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => onViewProof({
-                                                        id: i.id,
-                                                        entity: 'expenses',
-                                                        title: `Bukti Pengeluaran: ${i.description || i.category || 'Biaya'}`,
-                                                        subtitle: `${i.vendor ? i.vendor + ' • ' : ''}${formatMoney(i.amount ?? 0, 'IDR')}`,
-                                                        proof_document: i.proof_document || i.proofDocument,
-                                                    })}
-                                                    className={`size-6.5 rounded-lg ${
-                                                        i.proof_document || i.proofDocument
-                                                            ? 'text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30'
-                                                            : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-zinc-500 dark:hover:bg-white/[0.06] dark:hover:text-zinc-200'
-                                                    }`}
-                                                    title={i.proof_document || i.proofDocument ? "Lihat Bukti Kuitansi" : "Unggah Bukti Kuitansi"}
-                                                >
-                                                    <Paperclip className="size-3.5" />
-                                                </Button>
                                             )}
 
                                         {onEditExpense &&
@@ -2255,30 +2248,7 @@ function PaymentLedger({
                                                 className="size-6.5 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30"
                                                 title="Lihat Rincian Penerimaan Kas"
                                             >
-                                                <Eye className="size-3.5" />
-                                            </Button>
-                                        )}
-
-                                        {onViewProof && (
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => onViewProof({
-                                                    id: payment.id,
-                                                    entity: 'payments',
-                                                    title: `Bukti Penerimaan Kas: ${formatMoney(payment.amount ?? 0, payment.currency || currency)}`,
-                                                    subtitle: `${payment.matter?.title || 'Pembayaran Klien'}${payment.received_at ? ' • ' + formatDate(payment.received_at) : ''}`,
-                                                    proof_document: payment.proof_document || payment.proofDocument,
-                                                })}
-                                                className={`size-6.5 rounded-lg ${
-                                                    payment.proof_document || payment.proofDocument
-                                                        ? 'text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30'
-                                                        : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-zinc-500 dark:hover:bg-white/[0.06] dark:hover:text-zinc-200'
-                                                }`}
-                                                title={payment.proof_document || payment.proofDocument ? "Lihat Bukti Transfer Bank" : "Unggah Bukti Transfer"}
-                                            >
-                                                <Paperclip className="size-3.5" />
+                                                <FileText className="size-3.5" />
                                             </Button>
                                         )}
 

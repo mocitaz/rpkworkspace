@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ArrowRightLeft, Building, DollarSign, Paperclip, Plus, UploadCloud, User, Wallet } from 'lucide-react';
+import { ArrowRightLeft, Building, DollarSign, FileText, Plus, User, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDate, formatMoney } from '@/lib/format';
-import { FinanceProofDialog, type FinanceEntityProofTarget, type ProofDocumentData } from './finance-proof-dialog';
+import { type ProofDocumentData } from './finance-proof-dialog';
 
 export type FinancialAccountItem = {
     id: string;
@@ -23,6 +23,7 @@ export type AccountTransferItem = {
     from_account?: { id: string; name: string };
     to_account?: { id: string; name: string };
     amount: number;
+    transfer_date?: string;
     transferred_at: string;
     reference_number?: string;
     notes?: string;
@@ -37,137 +38,161 @@ export function AccountsView({
     transfers,
     onOpenTransferModal,
     onOpenAccountModal,
+    onViewDetail,
 }: {
     accounts: FinancialAccountItem[];
     transfers: AccountTransferItem[];
-    onOpenTransferModal: () => void;
-    onOpenAccountModal: () => void;
+    onOpenTransferModal?: () => void;
+    onOpenAccountModal?: () => void;
+    onViewDetail?: (item: AccountTransferItem) => void;
 }) {
-    const [proofTarget, setProofTarget] = useState<FinanceEntityProofTarget | null>(null);
-    const totalCashBank = accounts
-        .filter((a) => a.type === 'cash' || a.type === 'bank')
-        .reduce((acc, a) => acc + a.current_balance, 0);
+    const totalCash = accounts
+        .filter((a) => a.type === 'cash')
+        .reduce((sum, a) => sum + a.current_balance, 0);
 
-    const totalPartnerAdvances = accounts
-        .filter((a) => a.type === 'partner_advance')
-        .reduce((acc, a) => acc + a.current_balance, 0);
+    const totalBank = accounts
+        .filter((a) => a.type === 'bank')
+        .reduce((sum, a) => sum + a.current_balance, 0);
 
-    const totalTrustFunds = accounts
+    const totalTrust = accounts
         .filter((a) => a.type === 'client_trust')
-        .reduce((acc, a) => acc + a.current_balance, 0);
+        .reduce((sum, a) => sum + a.current_balance, 0);
+
+    const totalPartner = accounts
+        .filter((a) => a.type === 'partner_advance')
+        .reduce((sum, a) => sum + a.current_balance, 0);
+
+    const typeIcons: Record<string, typeof Wallet> = {
+        cash: Wallet,
+        bank: Building,
+        client_trust: DollarSign,
+        partner_advance: User,
+    };
+
+    const typeColors: Record<string, string> = {
+        cash: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+        bank: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+        client_trust: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
+        partner_advance: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+    };
 
     return (
         <div className="space-y-4">
-            {/* Header & Quick Action Buttons */}
-            <div className="flex flex-col justify-between gap-2.5 sm:flex-row sm:items-center">
+            {/* Header with KPI & Quick Actions */}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h2 className="text-sm font-bold text-slate-900 uppercase dark:text-white">Multi-Akun Kas &amp; Rekening Bank</h2>
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">Pengelolaan saldo kas kantor, rekening operasional, dana talangan partner, dan transfer internal.</p>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                        Daftar Rekening &amp; Saldo Kas Kantor
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400">
+                        Manajemen rekening operasional, giro perbankan, dan pemindahan dana internal.
+                    </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={onOpenAccountModal}
-                        className="h-7.5 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
-                    >
-                        <Plus className="mr-1 size-3.5" />
-                        Tambah Akun
-                    </Button>
-                    <Button
-                        size="sm"
-                        onClick={onOpenTransferModal}
-                        className="h-7.5 rounded-lg bg-purple-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-purple-700 dark:bg-purple-600 dark:text-white dark:hover:bg-purple-500"
-                    >
-                        <ArrowRightLeft className="mr-1 size-3.5" />
-                        Transfer Kas / Bank
-                    </Button>
+                    {onOpenTransferModal && (
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={onOpenTransferModal}
+                            className="h-8 gap-1.5 rounded-lg border-slate-200 bg-white text-xs font-semibold shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181f] dark:hover:bg-white/10"
+                        >
+                            <ArrowRightLeft className="size-3.5" />
+                            Transfer Antar Rekening
+                        </Button>
+                    )}
+                    {onOpenAccountModal && (
+                        <Button
+                            size="sm"
+                            onClick={onOpenAccountModal}
+                            className="h-8 gap-1.5 rounded-lg bg-blue-600 text-xs font-semibold text-white shadow-2xs hover:bg-blue-500"
+                        >
+                            <Plus className="size-3.5" />
+                            Tambah Rekening
+                        </Button>
+                    )}
                 </div>
             </div>
 
-            {/* Account Balance Summary Cards */}
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <div className="rounded-xl border border-blue-200/60 bg-blue-50/40 p-4 dark:border-blue-500/20 dark:bg-blue-500/5">
-                    <div className="flex items-center justify-between">
-                        <span className="text-[10.5px] font-bold text-blue-600 uppercase tracking-wider dark:text-blue-400">Kas &amp; Bank Operasional</span>
-                        <Building className="size-4 text-blue-500" />
-                    </div>
-                    <p className="mt-1 font-mono text-lg font-bold text-slate-900 dark:text-white">{formatMoney(totalCashBank, 'IDR')}</p>
-                    <p className="text-[10px] text-slate-500 dark:text-zinc-400">Total likuiditas kantor siap pakai</p>
+            {/* Quick KPI Overview */}
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs dark:border-white/10 dark:bg-[#14161b]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Kas Tunai</span>
+                    <p className="mt-1 font-mono text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                        {formatMoney(totalCash, 'IDR')}
+                    </p>
                 </div>
-
-                <div className="rounded-xl border border-amber-200/60 bg-amber-50/40 p-4 dark:border-amber-500/20 dark:bg-amber-500/5">
-                    <div className="flex items-center justify-between">
-                        <span className="text-[10.5px] font-bold text-amber-600 uppercase tracking-wider dark:text-amber-400">Talangan Partner Bersih</span>
-                        <User className="size-4 text-amber-500" />
-                    </div>
-                    <p className="mt-1 font-mono text-lg font-bold text-slate-900 dark:text-white">{formatMoney(totalPartnerAdvances, 'IDR')}</p>
-                    <p className="text-[10px] text-slate-500 dark:text-zinc-400">Utang kantor kepada partner atas dana talangan</p>
+                <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs dark:border-white/10 dark:bg-[#14161b]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Giro &amp; Tabungan Bank</span>
+                    <p className="mt-1 font-mono text-sm font-bold text-blue-600 dark:text-blue-400">
+                        {formatMoney(totalBank, 'IDR')}
+                    </p>
                 </div>
-
-                <div className="rounded-xl border border-purple-200/60 bg-purple-50/40 p-4 dark:border-purple-500/20 dark:bg-purple-500/5">
-                    <div className="flex items-center justify-between">
-                        <span className="text-[10.5px] font-bold text-purple-600 uppercase tracking-wider dark:text-purple-400">Dana Titipan Klien (Escrow)</span>
-                        <Wallet className="size-4 text-purple-500" />
-                    </div>
-                    <p className="mt-1 font-mono text-lg font-bold text-slate-900 dark:text-white">{formatMoney(totalTrustFunds, 'IDR')}</p>
-                    <p className="text-[10px] text-slate-500 dark:text-zinc-400">Rekening terpisah biaya perkara pengadilan</p>
+                <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs dark:border-white/10 dark:bg-[#14161b]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Rekening Titipan Klien</span>
+                    <p className="mt-1 font-mono text-sm font-bold text-purple-600 dark:text-purple-400">
+                        {formatMoney(totalTrust, 'IDR')}
+                    </p>
+                </div>
+                <div className="rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs dark:border-white/10 dark:bg-[#14161b]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Saldo Talangan Partner</span>
+                    <p className="mt-1 font-mono text-sm font-bold text-amber-600 dark:text-amber-400">
+                        {formatMoney(totalPartner, 'IDR')}
+                    </p>
                 </div>
             </div>
 
-            {/* Account List Grid */}
-            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+            {/* Accounts Bento Grid */}
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {accounts.map((acc) => {
-                    const badgeColor =
-                        acc.type === 'bank'
-                            ? 'bg-blue-100 text-blue-800 dark:bg-blue-500/20 dark:text-blue-300'
-                            : acc.type === 'partner_advance'
-                              ? 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300'
-                              : acc.type === 'client_trust'
-                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-300'
-                                : 'bg-slate-100 text-slate-800 dark:bg-white/10 dark:text-zinc-300';
-
-                    const typeLabel =
-                        acc.type === 'bank'
-                            ? 'Bank Operasional'
-                            : acc.type === 'partner_advance'
-                              ? 'Talangan Partner'
-                              : acc.type === 'client_trust'
-                                ? 'Dana Titipan Klien'
-                                : 'Kas Kantor Tunai';
+                    const Icon = typeIcons[acc.type] || Wallet;
+                    const colorBadge = typeColors[acc.type] || 'bg-slate-500/10 text-slate-600 border-slate-500/20';
 
                     return (
                         <div
                             key={acc.id}
-                            className="flex flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]"
+                            className="flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/10 dark:bg-[#14161b] dark:hover:border-white/20"
                         >
                             <div>
-                                <div className="flex items-center justify-between gap-1.5">
-                                    <span className="text-xs font-bold text-slate-900 dark:text-white">{acc.name}</span>
-                                    <span className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase ${badgeColor}`}>
-                                        {typeLabel}
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className="flex items-center gap-2">
+                                        <div className={`flex size-8 shrink-0 items-center justify-center rounded-lg border ${colorBadge}`}>
+                                            <Icon className="size-4" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                                                {acc.name}
+                                            </h4>
+                                            <p className="text-[10px] text-slate-400">
+                                                {acc.bank_name || (acc.type === 'cash' ? 'Brankas Kantor' : 'Rekening')}
+                                                {acc.account_number ? ` • ${acc.account_number}` : ''}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span
+                                        className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase ${
+                                            acc.is_active
+                                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
+                                                : 'bg-slate-100 text-slate-500 dark:bg-white/5 dark:text-zinc-400'
+                                        }`}
+                                    >
+                                        {acc.is_active ? 'Aktif' : 'Non-Aktif'}
                                     </span>
                                 </div>
-                                {acc.bank_name && (
-                                    <p className="mt-0.5 text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                        {acc.bank_name} &bull; <span className="font-mono">{acc.account_number || '-'}</span>
-                                    </p>
-                                )}
-                                {acc.partner && (
-                                    <p className="mt-0.5 text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                        Partner: <span className="font-semibold text-slate-700 dark:text-zinc-300">{acc.partner.name}</span>
-                                    </p>
-                                )}
+
                                 {acc.description && (
-                                    <p className="mt-1 text-[10px] text-slate-400 dark:text-zinc-500">{acc.description}</p>
+                                    <p className="mt-2 text-[11px] text-slate-500 dark:text-zinc-400 line-clamp-2">
+                                        {acc.description}
+                                    </p>
                                 )}
                             </div>
 
-                            <div className="mt-3.5 border-t border-slate-100 pt-2 dark:border-white/[0.04]">
-                                <span className="text-[9.5px] font-semibold text-slate-400 uppercase">Saldo Berjalan:</span>
-                                <p className="font-mono text-sm font-bold text-slate-900 dark:text-white">
-                                    {formatMoney(acc.current_balance, 'IDR')}
-                                </p>
+                            <div className="mt-3.5 border-t border-slate-100 pt-2.5 dark:border-white/5">
+                                <div className="flex items-baseline justify-between">
+                                    <span className="text-[10px] font-semibold text-slate-400">Saldo Saat Ini:</span>
+                                    <span className="font-mono text-sm font-extrabold text-slate-900 dark:text-white">
+                                        {formatMoney(acc.current_balance, 'IDR')}
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     );
@@ -175,57 +200,53 @@ export function AccountsView({
             </div>
 
             {/* Transfer History Table */}
-            <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                <div className="border-b border-slate-200/60 px-4 py-2.5 dark:border-white/[0.06]">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h3 className="text-xs font-bold text-slate-900 uppercase dark:text-white">Register Transfer Antar Kas / Bank</h3>
-                            <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">Riwayat mutasi pemindahan dana antar rekening internal firma.</p>
-                        </div>
-                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-white/10 dark:text-zinc-300">
-                            {transfers.length} Mutasi
-                        </span>
+            <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs dark:border-white/10 dark:bg-[#14161b]">
+                <div className="mb-3 flex items-center justify-between">
+                    <div>
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                            Riwayat Pemindahan Dana (Transfer Mutasi)
+                        </h4>
+                        <p className="text-[11px] text-slate-400">
+                            Log pemindahan saldo antar rekening kas dan bank.
+                        </p>
                     </div>
                 </div>
 
                 {transfers.length === 0 ? (
-                    <div className="p-8 text-center text-xs text-slate-400 dark:text-zinc-500">
-                        Belum ada mutasi transfer antar kas/bank.
+                    <div className="py-8 text-center text-xs text-slate-400">
+                        Belum ada riwayat mutasi transfer antar rekening.
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-xs">
-                            <thead className="border-b border-slate-200/70 bg-slate-50/70 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:border-white/[0.06] dark:bg-[#121418] dark:text-zinc-400">
+                            <thead className="border-b border-slate-100 bg-slate-50/50 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:border-white/5 dark:bg-white/[0.02]">
                                 <tr>
-                                    <th className="px-3.5 py-2.5">No Transfer &amp; Tanggal</th>
-                                    <th className="px-3.5 py-2.5">Akun Asal</th>
-                                    <th className="px-3.5 py-2.5">Akun Tujuan</th>
-                                    <th className="px-3.5 py-2.5 text-right">Nominal Transfer</th>
-                                    <th className="px-3.5 py-2.5">Catatan</th>
-                                    <th className="px-3.5 py-2.5 text-center">Status</th>
-                                    <th className="px-3.5 py-2.5 text-center">Bukti</th>
+                                    <th className="px-3.5 py-2">No. Transfer</th>
+                                    <th className="px-3.5 py-2">Tanggal</th>
+                                    <th className="px-3.5 py-2">Dari Rekening</th>
+                                    <th className="px-3.5 py-2">Ke Rekening</th>
+                                    <th className="px-3.5 py-2 text-right">Nominal</th>
+                                    <th className="px-3.5 py-2">Catatan</th>
+                                    <th className="px-3.5 py-2 text-center">Status</th>
+                                    <th className="px-3.5 py-2 text-center">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-200/60 font-medium text-slate-700 dark:divide-white/[0.04] dark:text-zinc-300">
+                            <tbody className="divide-y divide-slate-100 dark:divide-white/5">
                                 {transfers.map((trf) => (
-                                    <tr key={trf.id} className="transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
-                                        <td className="px-3.5 py-2.5">
-                                            <div className="font-mono text-[10.5px] font-bold text-blue-600 dark:text-blue-400">
-                                                {trf.transfer_number}
-                                            </div>
-                                            <div className="text-[10px] text-slate-400">{formatDate(trf.transferred_at)}</div>
+                                    <tr key={trf.id} className="hover:bg-slate-50/50 dark:hover:bg-white/[0.02]">
+                                        <td className="px-3.5 py-2.5 font-mono text-[11px] font-semibold text-slate-900 dark:text-white">
+                                            {trf.transfer_number}
                                         </td>
-                                        <td className="px-3 py-2.5">
-                                            <span className="font-semibold text-rose-600 dark:text-rose-400">
-                                                {trf.from_account?.name || '-'}
-                                            </span>
+                                        <td className="px-3.5 py-2.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                            {formatDate(trf.transferred_at || trf.transfer_date || '')}
                                         </td>
-                                        <td className="px-3 py-2.5">
-                                            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                                                {trf.to_account?.name || '-'}
-                                            </span>
+                                        <td className="px-3.5 py-2.5 font-medium text-slate-700 dark:text-zinc-200">
+                                            {trf.from_account?.name || '-'}
                                         </td>
-                                        <td className="px-3 py-2.5 text-right font-mono font-bold text-slate-900 dark:text-white">
+                                        <td className="px-3.5 py-2.5 font-medium text-slate-700 dark:text-zinc-200">
+                                            {trf.to_account?.name || '-'}
+                                        </td>
+                                        <td className="px-3.5 py-2.5 text-right font-mono font-bold text-slate-900 dark:text-white">
                                             {formatMoney(trf.amount, 'IDR')}
                                         </td>
                                         <td className="px-3 py-2.5 text-[11px] text-slate-500 dark:text-zinc-400">
@@ -237,39 +258,16 @@ export function AccountsView({
                                             </span>
                                         </td>
                                         <td className="px-3.5 py-2.5 text-center">
-                                            {trf.proof_document || trf.proofDocument ? (
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    onClick={() => setProofTarget({
-                                                        id: trf.id,
-                                                        entity: 'transfers',
-                                                        title: `Bukti Transfer: ${trf.transfer_number}`,
-                                                        subtitle: `${trf.from_account?.name || 'Kas'} → ${trf.to_account?.name || 'Bank'} • ${formatMoney(trf.amount, 'IDR')}`,
-                                                        proof_document: trf.proof_document || trf.proofDocument,
-                                                    })}
-                                                    className="h-6 rounded border-emerald-200 bg-emerald-50/70 px-1.5 text-[10px] font-semibold text-emerald-700 hover:bg-emerald-100 dark:border-emerald-500/20 dark:bg-emerald-950/30 dark:text-emerald-300"
-                                                    title="Lihat Bukti Mutasi"
-                                                >
-                                                    <Paperclip className="mr-0.5 size-2.5" />
-                                                    Bukti
-                                                </Button>
-                                            ) : (
+                                            {onViewDetail && (
                                                 <Button
                                                     size="sm"
                                                     variant="ghost"
-                                                    onClick={() => setProofTarget({
-                                                        id: trf.id,
-                                                        entity: 'transfers',
-                                                        title: `Unggah Bukti Transfer: ${trf.transfer_number}`,
-                                                        subtitle: `${trf.from_account?.name || 'Kas'} → ${trf.to_account?.name || 'Bank'} • ${formatMoney(trf.amount, 'IDR')}`,
-                                                        proof_document: null,
-                                                    })}
-                                                    className="h-6 rounded border border-dashed border-slate-200 px-1.5 text-[10px] text-slate-500 hover:text-slate-900 hover:border-slate-400 dark:border-white/10 dark:text-zinc-400"
-                                                    title="Unggah Bukti Mutasi"
+                                                    onClick={() => onViewDetail(trf)}
+                                                    className="h-6 rounded px-1.5 text-[10px] font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/10"
+                                                    title="Lihat Detail Mutasi Transfer"
                                                 >
-                                                    <UploadCloud className="mr-0.5 size-2.5" />
-                                                    +Bukti
+                                                    <FileText className="mr-0.5 size-2.5" />
+                                                    Detail
                                                 </Button>
                                             )}
                                         </td>
@@ -280,13 +278,6 @@ export function AccountsView({
                     </div>
                 )}
             </div>
-
-            {/* Modal Pratinjau & Upload Bukti Mutasi Transfer */}
-            <FinanceProofDialog
-                target={proofTarget}
-                isOpen={Boolean(proofTarget)}
-                onClose={() => setProofTarget(null)}
-            />
         </div>
     );
 }
