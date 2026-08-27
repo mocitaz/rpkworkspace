@@ -49,7 +49,7 @@ test('public invoice verification page returns 200 with accurate metadata', func
     $response->assertSee('INV-2026-9901');
     $response->assertSee('PT Surya Perkasa');
     $response->assertSee('MAT-2026-088');
-    $response->assertSee('LUNAS (PAID)');
+    $response->assertSee('Lunas (Paid)');
     $response->assertSee('Jasa Penyusunan Legal Opinion Sengketa Arbitrase');
 });
 
@@ -96,7 +96,7 @@ test('public correspondence verification page returns 200 with accurate metadata
     $response->assertSee('Surat Somasi I - Pemenuhan Kewajiban Kontraktual');
     $response->assertSee('MAT-2026-099');
     $response->assertSee('CV Maju Jaya Abadi');
-    $response->assertSee('SURAT KELUAR RESMI (OUTBOUND)');
+    $response->assertSee('Surat Keluar (Outbound)');
     $response->assertSee('legal@rpklaw.co.id');
     $response->assertSee('direksi@kontraktor.com');
 });

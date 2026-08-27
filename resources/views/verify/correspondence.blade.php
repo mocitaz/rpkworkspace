@@ -1,9 +1,12 @@
+@php
+    $isInbound = $correspondence->direction === 'inbound';
+@endphp
 <!doctype html>
 <html lang="id" class="h-full bg-slate-100 antialiased">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Verifikasi Keabsahan Surat Resmi | RPK Law Firm</title>
+    <title>Verifikasi Keabsahan Korespondensi {{ $correspondence->subject }} | RPK Law Firm</title>
     <link rel="icon" type="image/png" href="/images/rpkapp.png">
     <link rel="apple-touch-icon" href="/images/rpkapp.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +23,7 @@
     </style>
 </head>
 <body class="min-h-full bg-slate-100 text-slate-900 flex flex-col justify-between py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto w-full max-w-[820px] space-y-5">
+    <div class="mx-auto w-full max-w-[820px] space-y-4">
         
         <!-- Corporate Letterhead Header -->
         <header class="flex items-center justify-between rounded-2xl border border-slate-200/90 bg-white p-4 sm:px-6 shadow-xs">
@@ -38,16 +41,23 @@
                         RPK LAW FIRM
                     </h2>
                     <p class="text-[10px] font-semibold text-slate-500">
-                        Advocates &amp; Legal Consultants • Graha RPK Sudirman
+                        Case Correspondence &amp; Registry • Bandung
                     </p>
                 </div>
             </div>
 
-            <div class="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/90 border border-emerald-500/30 px-3.5 py-1 text-xs font-bold text-emerald-300 shadow-xs">
-                <svg class="size-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Surat Resmi Terverifikasi Sah</span>
+            <div>
+                <div class="flex items-center gap-2 rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 py-1.5 shadow-2xs">
+                    <svg class="size-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <div class="text-left">
+                        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Status Arsip</div>
+                        <div class="text-[11.5px] font-extrabold text-slate-900 leading-tight">
+                            {{ $isInbound ? 'Surat Masuk Sah' : 'Surat Keluar Sah' }}
+                        </div>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -55,92 +65,125 @@
         <main class="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-xl shadow-slate-200/50 divide-y divide-slate-100">
             
             <!-- Hero Top Header -->
-            <div class="p-6 sm:p-8 space-y-5 bg-gradient-to-b from-slate-50/80 via-white to-white">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                    <span class="rounded-md bg-slate-900 px-2.5 py-1 font-mono text-[9px] font-extrabold tracking-wider text-white uppercase">
-                        SISTEM VERIFIKASI KORESPONDENSI ELEKTRONIK
-                    </span>
-
-                    <span class="inline-flex items-center gap-1.5 rounded-full {{ $correspondence->direction === 'inbound' ? 'bg-blue-50 border border-blue-200 text-blue-800' : 'bg-emerald-50 border border-emerald-200 text-emerald-800' }} px-3 py-1 text-xs font-extrabold">
-                        {{ $correspondence->direction === 'inbound' ? 'SURAT MASUK RESMI (INBOUND)' : 'SURAT KELUAR RESMI (OUTBOUND)' }}
+            <div class="p-6 sm:p-8 space-y-4 bg-gradient-to-b from-slate-50/80 via-white to-white">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">
+                        <span class="font-bold text-slate-900">RPK Law Firm</span>
+                        <span>•</span>
+                        <span>Divisi Registrasi &amp; Korespondensi Perkara</span>
+                    </div>
+                    <span class="text-[11px] text-slate-400">
+                        Diverifikasi: <span class="font-medium text-slate-600">{{ now()->timezone(config('raf.timezone'))->translatedFormat('d F Y, H:i') }} WIB</span>
                     </span>
                 </div>
 
-                <div class="space-y-1.5">
-                    <h1 class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 leading-tight">
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                         {{ $correspondence->subject }}
                     </h1>
-                    <p class="text-xs text-slate-500 font-medium">
-                        Tercatat secara resmi pada buku registrasi korespondensi perkara RPK Law Firm.
+                    <p class="mt-1 text-xs sm:text-sm text-slate-600">
+                        Tercatat secara resmi pada buku registrasi korespondensi perkara hukum RPK Law Firm.
                     </p>
                 </div>
 
-                <!-- Bento Info Grid -->
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 pt-2">
-                    <div class="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 space-y-1">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Perkara Hukum Terkait</span>
-                        <p class="font-mono font-bold text-blue-600 text-xs">{{ $correspondence->matter->matter_number }}</p>
-                        <p class="text-[11px] font-medium text-slate-700 truncate">{{ $correspondence->matter->title }}</p>
+                <!-- Unified 3-Column Data Bar -->
+                <div class="overflow-hidden rounded-2xl border border-slate-200/90 bg-slate-50/60 shadow-2xs grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-200/80">
+                    <div class="p-3.5 sm:px-4 sm:py-3 flex flex-col justify-center">
+                        <span class="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Jenis Korespondensi</span>
+                        <span class="mt-0.5 text-xs sm:text-sm font-bold text-slate-900 truncate">
+                            {{ $isInbound ? 'Surat Masuk (Inbound)' : 'Surat Keluar (Outbound)' }}
+                        </span>
                     </div>
 
-                    <div class="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 space-y-1">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Klien Terdaftar</span>
-                        <p class="font-bold text-slate-900 text-xs truncate">
-                            {{ $correspondence->client->display_name ?? '-' }}
-                        </p>
-                        <p class="text-[10px] text-slate-500">Kanal: {{ strtoupper($correspondence->source) }}</p>
+                    <div class="p-3.5 sm:px-4 sm:py-3 flex flex-col justify-center">
+                        <span class="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Tanggal &amp; Waktu</span>
+                        <span class="mt-0.5 text-xs sm:text-sm font-bold text-slate-900">
+                            {{ $correspondence->occurred_at ? \Illuminate\Support\Carbon::parse($correspondence->occurred_at)->translatedFormat('d F Y, H:i') . ' WIB' : '-' }}
+                        </span>
                     </div>
 
-                    <div class="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 space-y-1 sm:col-span-2 lg:col-span-1">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tanggal &amp; Waktu Pengiriman</span>
-                        <p class="font-bold text-slate-900 text-xs">
-                            {{ $correspondence->occurred_at ? \Illuminate\Support\Carbon::parse($correspondence->occurred_at)->translatedFormat('d F Y • H:i') . ' WIB' : '-' }}
-                        </p>
-                        <p class="text-[10px] text-slate-500">
-                            Staf / Advokat: <strong class="text-slate-800">{{ $correspondence->creator->name ?? 'Staf Firma' }}</strong>
-                        </p>
+                    <div class="p-3.5 sm:px-4 sm:py-3 flex flex-col justify-center bg-emerald-50/60">
+                        <span class="text-[9.5px] font-bold uppercase tracking-wider text-emerald-700">
+                            Status Registrasi
+                        </span>
+                        <div class="mt-0.5 flex items-center gap-1.5 font-extrabold text-xs sm:text-[13px] text-emerald-950">
+                            <svg class="size-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            <span>Tercatat Resmi</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Addresses & Communication Breakdown -->
-            <div class="p-6 sm:p-8 space-y-5">
-                <h3 class="text-xs font-black tracking-wider text-slate-900 uppercase">
-                    Rincian Komunikasi &amp; Pihak Terkait
-                </h3>
+            <!-- Matter, Client & Communication Details -->
+            <div class="p-6 sm:p-8 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Left: Perkara & Klien -->
+                    <div class="rounded-2xl border border-slate-200/90 bg-slate-50/40 p-4 space-y-3">
+                        <div>
+                            <span class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">
+                                Perkara Hukum Terkait
+                            </span>
+                            <h2 class="mt-0.5 text-sm sm:text-base font-extrabold text-slate-900 leading-snug">
+                                {{ $correspondence->matter ? $correspondence->matter->title : 'Korespondensi Umum' }}
+                            </h2>
+                        </div>
 
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div class="rounded-xl border border-slate-200/80 bg-white p-4 space-y-2 text-xs">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pihak Pengirim (From)</span>
-                        <div class="space-y-1 text-slate-800">
-                            @foreach ($correspondence->from_addresses ?? [] as $from)
-                                <div class="font-medium">• {{ $from }}</div>
-                            @endforeach
+                        <div class="space-y-1.5 border-t border-slate-200/70 pt-2.5 text-xs text-slate-600">
+                            @if ($correspondence->matter)
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="text-slate-400">Nomor Perkara:</span>
+                                    <span class="font-mono font-bold text-blue-600">{{ $correspondence->matter->matter_number }}</span>
+                                </div>
+                            @endif
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-slate-400">Klien:</span>
+                                <span class="font-semibold text-slate-800">{{ $correspondence->client->display_name ?? 'Klien Terdaftar' }}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-slate-400">Kanal Transmisi:</span>
+                                <span class="font-semibold text-slate-700 uppercase">{{ $correspondence->source }}</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="rounded-xl border border-slate-200/80 bg-white p-4 space-y-2 text-xs">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pihak Penerima (To / CC)</span>
-                        <div class="space-y-1 text-slate-800">
-                            @foreach ($correspondence->to_addresses ?? [] as $to)
-                                <div class="font-medium">• {{ $to }}</div>
-                            @endforeach
-                            @foreach ($correspondence->cc_addresses ?? [] as $cc)
-                                <div class="text-[11px] text-slate-500">• CC: {{ $cc }}</div>
-                            @endforeach
+                    <!-- Right: Pihak Pengirim & Penerima -->
+                    <div class="rounded-2xl border border-slate-200/90 bg-slate-50/40 p-4 space-y-3">
+                        <div>
+                            <span class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">
+                                Pihak Terlibat
+                            </span>
+                            <div class="mt-0.5 text-xs font-semibold text-slate-800 space-y-1">
+                                <div><span class="text-slate-400">Pengirim (From):</span> {{ implode(', ', $correspondence->from_addresses ?? ['RPK Law Firm']) }}</div>
+                                <div><span class="text-slate-400">Penerima (To):</span> {{ implode(', ', $correspondence->to_addresses ?? ['-']) }}</div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5 border-t border-slate-200/70 pt-2.5 text-xs text-slate-600">
+                            @if (!empty($correspondence->cc_addresses))
+                                <div class="flex items-start justify-between gap-2">
+                                    <span class="text-slate-400 shrink-0">Tembusan (CC):</span>
+                                    <span class="text-slate-700 text-right truncate max-w-[200px]">{{ implode(', ', $correspondence->cc_addresses) }}</span>
+                                </div>
+                            @endif
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-slate-400">Petugas Pencatat:</span>
+                                <span class="font-semibold text-slate-800">{{ $correspondence->creator->name ?? 'Staf Legal Firma' }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 @if ($correspondence->documents->count() > 0)
-                    <div class="space-y-2 pt-2">
-                        <h4 class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                    <div class="rounded-2xl border border-slate-200/90 overflow-hidden text-xs">
+                        <div class="bg-slate-50/80 px-4 py-2.5 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                             Lampiran Dokumen Sah Terkait ({{ $correspondence->documents->count() }})
-                        </h4>
-                        <div class="divide-y divide-slate-100 rounded-xl border border-slate-200/80 bg-white">
+                        </div>
+                        <div class="divide-y divide-slate-100 bg-white">
                             @foreach ($correspondence->documents as $doc)
-                                <div class="flex items-center justify-between p-3 text-xs">
-                                    <div class="flex items-center gap-2">
+                                <div class="flex items-center justify-between p-3">
+                                    <div class="flex items-center gap-2.5">
                                         <svg class="size-4 text-blue-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
@@ -153,51 +196,84 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <span class="rounded bg-emerald-50 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-700">
-                                        ✓ TERDAFTAR
+                                    <span class="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-700">
+                                        TERDAFTAR RESMI
                                     </span>
                                 </div>
                             @endforeach
                         </div>
                     </div>
                 @endif
-            </div>
 
-            <!-- Verification Security Footer -->
-            <div class="p-6 sm:p-8 bg-slate-50/70 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <img 
-                        src="{{ route('verify.correspondence.qr', $correspondence) }}" 
-                        alt="QR Code Verifikasi" 
-                        class="size-16 rounded-lg border border-slate-200 bg-white p-1 shadow-2xs"
-                    />
-                    <div class="space-y-0.5 text-left">
-                        <p class="text-xs font-extrabold text-slate-900">QR Code Validasi Korespondensi</p>
-                        <p class="text-[10px] text-slate-500 max-w-[280px]">
-                            Pindai kapan saja untuk memastikan bahwa surat ini resmi dikeluarkan atau diterima oleh kantor hukum RPK.
-                        </p>
+                <!-- QR Code & Verification Security Box -->
+                <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3.5">
+                        <div class="shrink-0 rounded-xl bg-white p-1.5 border border-slate-200 shadow-2xs">
+                            <img 
+                                src="{{ route('verify.correspondence.qr', $correspondence) }}" 
+                                alt="QR Code Verifikasi Korespondensi" 
+                                class="size-16 sm:size-18 object-contain"
+                            />
+                        </div>
+                        <div class="space-y-0.5 text-xs">
+                            <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                                <svg class="size-3.5 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>Dokumen Terdaftar Resmi</span>
+                            </div>
+                            <p class="text-slate-500 text-[11px] leading-tight">
+                                Surat dinas / korespondensi perkara ini tercatat resmi dalam sistem registrasi berkas perkara RPK Law Firm.
+                            </p>
+                            <div class="font-mono text-[10px] text-slate-400 truncate max-w-[320px] pt-0.5">
+                                ID: {{ $correspondence->id }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 w-full sm:w-auto no-print">
+                        <button 
+                            type="button" 
+                            onclick="window.print()" 
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 active:scale-95 transition-all cursor-pointer"
+                        >
+                            <svg class="size-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>
+                            <span>Cetak</span>
+                        </button>
+                        <button 
+                            type="button" 
+                            onclick="copyLink()" 
+                            id="copyBtn"
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 transition-all cursor-pointer"
+                        >
+                            <svg class="size-3.5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <span id="copyBtnText">Salin Tautan</span>
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <div class="flex items-center gap-2 no-print">
-                    <button 
-                        type="button" 
-                        onclick="window.print()" 
-                        class="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-2xs hover:bg-slate-50 active:scale-95"
-                    >
-                        <svg class="size-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                        </svg>
-                        Cetak Bukti Verifikasi
-                    </button>
-                </div>
+            <!-- System Disclaimer Footer -->
+            <div class="p-4 sm:px-8 bg-slate-50 flex items-center justify-between text-xs text-slate-500">
+                <span>© {{ date('Y') }} Roni, Putra &amp; Kusumah Law Firm</span>
+                <span>RPK App - Integrated Legal Practice System</span>
             </div>
         </main>
-
-        <!-- Footer Note -->
-        <footer class="text-center text-[11px] text-slate-400 py-2">
-            &copy; {{ date('Y') }} RPK Law Firm (Roni, Putra &amp; Kusumah Advocates). Hak Cipta Dilindungi Undang-Undang.
-        </footer>
     </div>
+
+    <script>
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const btn = document.getElementById('copyBtnText');
+                const prev = btn.innerText;
+                btn.innerText = 'Tersalin!';
+                setTimeout(() => { btn.innerText = prev; }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>

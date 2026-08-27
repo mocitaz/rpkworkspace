@@ -1,3 +1,7 @@
+@php
+    $isClosed = in_array($matter->status, ['closed', 'completed']);
+    $statusLabel = strtoupper((string) ($matter->status ?? 'AKTIF'));
+@endphp
 <!doctype html>
 <html lang="id" class="h-full bg-slate-100 antialiased">
 <head>
@@ -20,7 +24,7 @@
     </style>
 </head>
 <body class="min-h-full bg-slate-100 text-slate-900 flex flex-col justify-between py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto w-full max-w-[820px] space-y-5">
+    <div class="mx-auto w-full max-w-[820px] space-y-4">
         
         <!-- Corporate Letterhead Header -->
         <header class="flex items-center justify-between rounded-2xl border border-slate-200/90 bg-white p-4 sm:px-6 shadow-xs">
@@ -38,16 +42,21 @@
                         RPK LAW FIRM
                     </h2>
                     <p class="text-[10px] font-semibold text-slate-500">
-                        Advocates &amp; Legal Consultants • Bandung
+                        Matter Portfolio &amp; Case Governance • Bandung
                     </p>
                 </div>
             </div>
 
-            <div class="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/90 border border-emerald-500/30 px-3.5 py-1 text-xs font-bold text-emerald-300 shadow-xs">
-                <svg class="size-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Laporan Perkara Sah &amp; Otentik</span>
+            <div>
+                <div class="flex items-center gap-2 rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 py-1.5 shadow-2xs">
+                    <svg class="size-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <div class="text-left">
+                        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Status Perkara</div>
+                        <div class="text-[11.5px] font-extrabold text-slate-900 leading-tight">{{ $statusLabel }}</div>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -55,13 +64,15 @@
         <main class="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-xl shadow-slate-200/50 divide-y divide-slate-100">
             
             <!-- Hero Top Header -->
-            <div class="p-6 sm:p-8 space-y-5 bg-gradient-to-b from-slate-50/80 via-white to-white">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                    <span class="rounded-md bg-slate-900 px-2.5 py-1 font-mono text-[9px] font-extrabold tracking-wider text-white uppercase">
-                        RPK APP MATTER REPORT VERIFIED
-                    </span>
-                    <span class="text-xs font-medium text-slate-500">
-                        Diverifikasi pada {{ now()->timezone(config('raf.timezone'))->translatedFormat('d F Y, H:i') }} WIB
+            <div class="p-6 sm:p-8 space-y-4 bg-gradient-to-b from-slate-50/80 via-white to-white">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">
+                        <span class="font-bold text-slate-900">RPK Law Firm</span>
+                        <span>•</span>
+                        <span>Divisi Manajemen Berkas Perkara</span>
+                    </div>
+                    <span class="text-[11px] text-slate-400">
+                        Diverifikasi: <span class="font-medium text-slate-600">{{ now()->timezone(config('raf.timezone'))->translatedFormat('d F Y, H:i') }} WIB</span>
                     </span>
                 </div>
 
@@ -70,59 +81,155 @@
                         Verifikasi Laporan Perkembangan Perkara
                     </h1>
                     <p class="mt-1 text-xs sm:text-sm text-slate-600">
-                        Official Matter Status &amp; Progress Report yang diterbitkan secara resmi melalui RPK App.
+                        Official Matter Status &amp; Progress Report yang diterbitkan secara resmi melalui sistem RPK App.
                     </p>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Nomor Perkara</div>
-                        <div class="mt-1 font-mono text-sm sm:text-base font-black text-slate-900">{{ $matter->matter_number }}</div>
+                <!-- Unified 3-Column Data Bar -->
+                <div class="overflow-hidden rounded-2xl border border-slate-200/90 bg-slate-50/60 shadow-2xs grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-200/80">
+                    <div class="p-3.5 sm:px-4 sm:py-3 flex flex-col justify-center">
+                        <span class="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Nomor Perkara</span>
+                        <span class="mt-0.5 font-mono text-xs sm:text-sm font-black text-slate-900 truncate">
+                            {{ $matter->matter_number }}
+                        </span>
                     </div>
-                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Bidang Hukum</div>
-                        <div class="mt-1 text-sm sm:text-base font-black text-slate-800">
+
+                    <div class="p-3.5 sm:px-4 sm:py-3 flex flex-col justify-center">
+                        <span class="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Bidang Praktik Hukum</span>
+                        <span class="mt-0.5 text-xs sm:text-sm font-bold text-slate-900 truncate">
                             {{ $matter->practiceArea->name ?? 'Litigasi / Korporasi' }}
-                        </div>
+                        </span>
                     </div>
-                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Status Perkara</div>
-                        <div class="mt-1">
-                            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800 uppercase">
-                                {{ strtoupper((string) ($matter->status ?? 'AKTIF')) }}
-                            </span>
+
+                    <div class="p-3.5 sm:px-4 sm:py-3 flex flex-col justify-center {{ $isClosed ? 'bg-slate-50/60' : 'bg-emerald-50/60' }}">
+                        <span class="text-[9.5px] font-bold uppercase tracking-wider {{ $isClosed ? 'text-slate-500' : 'text-emerald-700' }}">
+                            Status Penanganan
+                        </span>
+                        <div class="mt-0.5 flex items-center gap-1.5 font-extrabold text-xs sm:text-[13px] {{ $isClosed ? 'text-slate-900' : 'text-emerald-950' }}">
+                            <svg class="size-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                            <span>{{ $statusLabel }}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Matter Details -->
-            <div class="p-6 sm:p-8 space-y-6">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div class="space-y-3">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Identitas Perkara &amp; Klien</h3>
-                        <div class="rounded-2xl border border-slate-200 p-4 space-y-2 bg-slate-50/50">
-                            <div class="text-base font-black text-slate-900">{{ $matter->title }}</div>
-                            <div class="text-xs text-slate-600">
-                                <div><span class="text-slate-400">Klien:</span> <strong class="text-slate-900">{{ $matter->client->display_name ?? '-' }}</strong></div>
-                                <div><span class="text-slate-400">Tahap Penanganan:</span> {{ strtoupper((string) ($matter->stage ?? 'Aktif')) }}</div>
+            <!-- Matter & Legal Team Details -->
+            <div class="p-6 sm:p-8 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Left: Identitas Perkara & Klien -->
+                    <div class="rounded-2xl border border-slate-200/90 bg-slate-50/40 p-4 space-y-3">
+                        <div>
+                            <span class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">
+                                Identitas Perkara &amp; Klien
+                            </span>
+                            <h2 class="mt-0.5 text-sm sm:text-base font-extrabold text-slate-900 leading-snug">
+                                {{ $matter->title }}
+                            </h2>
+                        </div>
+
+                        <div class="space-y-1.5 border-t border-slate-200/70 pt-2.5 text-xs text-slate-600">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-slate-400">Klien Terdaftar:</span>
+                                <span class="font-bold text-slate-900">{{ $matter->client->display_name ?? '-' }}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-slate-400">Tahap Penanganan:</span>
+                                <span class="font-semibold text-slate-800 uppercase">{{ $matter->stage ?? 'Pemberkasan' }}</span>
+                            </div>
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-slate-400">Tanggal Registrasi:</span>
+                                <span class="font-semibold text-slate-800">
+                                    {{ $matter->opened_at ? \Illuminate\Support\Carbon::parse($matter->opened_at)->translatedFormat('d F Y') : ($matter->created_at?->translatedFormat('d F Y') ?? '-') }}
+                                </span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="space-y-3">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Tim Kuasa Hukum Penanggung Jawab</h3>
-                        <div class="rounded-2xl border border-indigo-200/80 p-4 bg-indigo-50/40 space-y-2">
-                            <div class="text-[10px] font-bold text-indigo-800 uppercase tracking-wider">Responsible Partner</div>
-                            <div class="text-base font-black text-slate-900">
-                                {{ $matter->responsiblePartner->name ?? 'Managing Partner' }}
+                    <!-- Right: Tim Kuasa Hukum Penanggung Jawab -->
+                    <div class="rounded-2xl border border-slate-200/90 bg-slate-50/40 p-4 space-y-3">
+                        <div>
+                            <span class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">
+                                Tim Kuasa Hukum Penanggung Jawab
+                            </span>
+                            <h2 class="mt-0.5 text-sm sm:text-base font-extrabold text-slate-900 leading-snug">
+                                {{ $matter->responsiblePartner->name ?? 'Managing Partner RPK' }}
+                            </h2>
+                        </div>
+
+                        <div class="space-y-1.5 border-t border-slate-200/70 pt-2.5 text-xs text-slate-600">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-slate-400">Peran:</span>
+                                <span class="font-semibold text-slate-800">Responsible Partner</span>
                             </div>
                             @if ($matter->supervisingLawyer)
-                                <div class="text-xs text-slate-600">
-                                    Advokat Pelaksana: <span class="font-semibold text-slate-800">{{ $matter->supervisingLawyer->name }}</span>
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="text-slate-400">Advokat Pelaksana:</span>
+                                    <span class="font-semibold text-slate-800">{{ $matter->supervisingLawyer->name }}</span>
                                 </div>
                             @endif
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-slate-400">Otoritas Firma:</span>
+                                <span class="font-semibold text-emerald-700 flex items-center gap-1">
+                                    <svg class="size-3 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <span>Surat Kuasa Sah Terdaftar</span>
+                                </span>
+                            </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- QR Code & Verification Security Box -->
+                <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3.5">
+                        <div class="shrink-0 rounded-xl bg-white p-1.5 border border-slate-200 shadow-2xs">
+                            <img 
+                                src="{{ route('verify.matter-status.qr', $matter) }}" 
+                                alt="QR Code Verifikasi Perkara" 
+                                class="size-16 sm:size-18 object-contain"
+                            />
+                        </div>
+                        <div class="space-y-0.5 text-xs">
+                            <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                                <svg class="size-3.5 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span>Dokumen Terdaftar Resmi</span>
+                            </div>
+                            <p class="text-slate-500 text-[11px] leading-tight">
+                                Laporan status perkara ini diterbitkan resmi melalui basis data perkara RPK Law Firm.
+                            </p>
+                            <div class="font-mono text-[10px] text-slate-400 truncate max-w-[320px] pt-0.5">
+                                ID: {{ $matter->id }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 w-full sm:w-auto no-print">
+                        <button 
+                            type="button" 
+                            onclick="window.print()" 
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 active:scale-95 transition-all cursor-pointer"
+                        >
+                            <svg class="size-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>
+                            <span>Cetak</span>
+                        </button>
+                        <button 
+                            type="button" 
+                            onclick="copyLink()" 
+                            id="copyBtn"
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 transition-all cursor-pointer"
+                        >
+                            <svg class="size-3.5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <span id="copyBtnText">Salin Tautan</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -134,5 +241,16 @@
             </div>
         </main>
     </div>
+
+    <script>
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const btn = document.getElementById('copyBtnText');
+                const prev = btn.innerText;
+                btn.innerText = 'Tersalin!';
+                setTimeout(() => { btn.innerText = prev; }, 2000);
+            });
+        }
+    </script>
 </body>
 </html>

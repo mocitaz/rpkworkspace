@@ -103,7 +103,7 @@
 
                 <div>
                     <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                        Surat Keterangan Bebas Benturan Kepentingan
+                        Verifikasi Surat Keterangan Bebas Benturan Kepentingan
                     </h1>
                     <p class="mt-1 text-xs sm:text-sm text-slate-600">
                         Pemeriksaan Independen Kepatuhan Kode Etik Advokat Indonesia (Conflict of Interest Clearance).
