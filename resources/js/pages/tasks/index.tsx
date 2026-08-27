@@ -1,6 +1,7 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
 import {
     AlertCircle,
+    ArrowLeft,
     ArrowUpRight,
     Briefcase,
     Calendar,
@@ -11,6 +12,8 @@ import {
     ChevronDown,
     ChevronRight,
     Clock,
+    Columns2,
+    Copy,
     ExternalLink,
     FileText,
     Filter,
@@ -129,13 +132,71 @@ export default function TasksIndex({
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
     const [isDeletingTask, setIsDeletingTask] = useState(false);
-    const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
+    const [viewMode, setViewMode] = useState<'split' | 'table' | 'cards'>('split');
     const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
+
+    // Split View dedicated state
+    const [splitSearch, setSplitSearch] = useState('');
+    const [splitTab, setSplitTab] = useState<'all' | 'overdue'>('all');
+    const [splitSelectedId, setSplitSelectedId] = useState<string | null>(
+        tasks.data[0]?.id ?? null,
+    );
+    const [splitMobileOpen, setSplitMobileOpen] = useState(false);
+    const [copiedTaskId, setCopiedTaskId] = useState<string | null>(null);
+
+    const isTaskOverdue = (task: Task) =>
+        task.due_at &&
+        new Date(task.due_at) < new Date() &&
+        !['completed', 'cancelled'].includes(task.status);
+
+    const activeSplitTask = useMemo(() => {
+        if (!tasks.data.length) return null;
+        if (splitSelectedId) {
+            const found = tasks.data.find((t) => t.id === splitSelectedId);
+            if (found) return found;
+        }
+        return tasks.data[0] ?? null;
+    }, [tasks.data, splitSelectedId]);
+
+    const filteredSplitTasks = useMemo(() => {
+        return tasks.data.filter((task) => {
+            if (splitTab === 'overdue' && !isTaskOverdue(task)) {
+                return false;
+            }
+            if (splitSearch.trim() !== '') {
+                const q = splitSearch.toLowerCase();
+                const titleMatch = task.title?.toLowerCase().includes(q);
+                const matterMatch =
+                    task.matter?.title?.toLowerCase().includes(q) ||
+                    task.matter?.matter_number?.toLowerCase().includes(q);
+                const assigneeMatch = task.assignee?.name
+                    ?.toLowerCase()
+                    .includes(q);
+                if (!titleMatch && !matterMatch && !assigneeMatch) return false;
+            }
+            return true;
+        });
+    }, [tasks.data, splitTab, splitSearch]);
+
+    const handleCopyTask = (task: Task) => {
+        const text = `[${task.task_number || task.id}] ${task.title}\nPerkara: ${
+            task.matter
+                ? `${task.matter.matter_number} - ${task.matter.title}`
+                : 'Umum'
+        }\nStatus: ${task.status} | Prioritas: ${task.priority}\nAssignee: ${
+            task.assignee?.name || 'Unassigned'
+        }\nTenggat: ${task.due_at ? formatDate(task.due_at) : '-'}`;
+        navigator.clipboard.writeText(text);
+        setCopiedTaskId(task.id);
+        setTimeout(() => setCopiedTaskId(null), 2000);
+    };
 
     const changeStatus = (task: Task, status: string) => {
         setUpdatingTaskId(task.id);
         router.patch(
-            taskRoutes.update?.url ? taskRoutes.update.url(task.id) : `/tasks/${task.id}`,
+            taskRoutes.update?.url
+                ? taskRoutes.update.url(task.id)
+                : `/tasks/${task.id}`,
             {
                 title: task.title,
                 description: task.description ?? '',
@@ -163,11 +224,6 @@ export default function TasksIndex({
         { id: 'created', label: 'Dibuat Saya' },
         { id: 'overdue', label: 'Lewat Tenggat' },
     ];
-
-    const isTaskOverdue = (task: Task) =>
-        task.due_at &&
-        new Date(task.due_at) < new Date() &&
-        !['completed', 'cancelled'].includes(task.status);
 
     return (
         <>
@@ -434,31 +490,46 @@ export default function TasksIndex({
                                 )}
                             </div>
 
-                            {/* View Switcher Pills */}
-                            <div className="flex items-center gap-1 border-t border-slate-100 pt-2 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-2.5 dark:border-white/[0.04]">
+                            {/* View Switcher: Split Pane (Default), Table & Cards */}
+                            <div className="flex items-center gap-0.5 rounded-lg border border-slate-200/70 bg-white p-0.5 dark:border-white/10 dark:bg-zinc-800">
+                                <button
+                                    type="button"
+                                    onClick={() => setViewMode('split')}
+                                    className={`flex h-7.5 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition-all ${
+                                        viewMode === 'split'
+                                            ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400'
+                                    }`}
+                                    title="Tampilan Split Master-Detail"
+                                >
+                                    <Columns2 className="size-3.5" />
+                                    <span>Split View</span>
+                                </button>
                                 <button
                                     type="button"
                                     onClick={() => setViewMode('table')}
-                                    className={`flex size-7 items-center justify-center rounded-lg transition-all ${
+                                    className={`flex h-7.5 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition-all ${
                                         viewMode === 'table'
                                             ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                             : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400'
                                     }`}
-                                    title="Tampilan Tabel"
+                                    title="Tampilan Tabel Data"
                                 >
                                     <LayoutList className="size-3.5" />
+                                    <span>Tabel</span>
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setViewMode('cards')}
-                                    className={`flex size-7 items-center justify-center rounded-lg transition-all ${
+                                    className={`flex h-7.5 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition-all ${
                                         viewMode === 'cards'
                                             ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                             : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400'
                                     }`}
-                                    title="Tampilan Grid"
+                                    title="Tampilan Grid Kartu"
                                 >
                                     <Grid className="size-3.5" />
+                                    <span>Kartu</span>
                                 </button>
                             </div>
                         </div>
@@ -514,6 +585,506 @@ export default function TasksIndex({
                                     </div>
                                 }
                             />
+                        </div>
+                    ) : viewMode === 'split' ? (
+                        /* ========================================================================= */
+                        /* MASTER-DETAIL SPLIT PANE VIEW FOR TASKS                                   */
+                        /* ========================================================================= */
+                        <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xs dark:border-white/10 dark:bg-[#14161b]">
+                            <div className="flex flex-col lg:flex-row min-h-[640px] lg:h-[calc(100vh-270px)]">
+                                
+                                {/* LEFT MASTER LIST PANE */}
+                                <div
+                                    className={`w-full lg:w-[380px] xl:w-[420px] shrink-0 border-r border-slate-200/70 dark:border-white/[0.08] flex flex-col bg-slate-50/40 dark:bg-[#111317] ${
+                                        activeSplitTask && splitMobileOpen ? 'hidden lg:flex' : 'flex'
+                                    }`}
+                                >
+                                    {/* Left Pane Search & Quick Filter Pills */}
+                                    <div className="border-b border-slate-200/70 p-3 bg-white dark:border-white/[0.08] dark:bg-[#14161b] space-y-2">
+                                        <div className="relative">
+                                            <Search className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-slate-400" />
+                                            <Input
+                                                value={splitSearch}
+                                                onChange={(e) => setSplitSearch(e.target.value)}
+                                                placeholder="Cari tugas, perkara, atau assignee..."
+                                                className="h-8.5 w-full rounded-xl border-slate-200 bg-slate-50/60 pl-9 pr-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-zinc-800/80 dark:text-white"
+                                            />
+                                            {splitSearch && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setSplitSearch('')}
+                                                    className="absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                                >
+                                                    <RotateCcw className="size-3" />
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {/* Filter Tabs */}
+                                        <div className="flex items-center gap-1">
+                                            <button
+                                                type="button"
+                                                onClick={() => setSplitTab('all')}
+                                                className={`flex-1 rounded-lg py-1 text-center text-[11px] font-semibold transition-all ${
+                                                    splitTab === 'all'
+                                                        ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-zinc-800'
+                                                }`}
+                                            >
+                                                Semua ({tasks.data.length})
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setSplitTab('overdue')}
+                                                className={`flex-1 flex items-center justify-center gap-1 rounded-lg py-1 text-center text-[11px] font-semibold transition-all ${
+                                                    splitTab === 'overdue'
+                                                        ? 'bg-rose-600 text-white shadow-2xs'
+                                                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-zinc-800'
+                                                }`}
+                                            >
+                                                <AlertCircle className="size-3 text-rose-500 group-hover:text-white" />
+                                                Mendesak ({tasks.data.filter((t) => isTaskOverdue(t)).length})
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Left Pane Tasks List */}
+                                    <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                        {filteredSplitTasks.length === 0 ? (
+                                            <div className="p-8 text-center text-xs text-slate-400 dark:text-zinc-500">
+                                                {splitTab === 'overdue'
+                                                    ? 'Tidak ada tugas yang lewat tenggat.'
+                                                    : 'Tidak ada tugas yang sesuai filter.'}
+                                            </div>
+                                        ) : (
+                                            filteredSplitTasks.map((task) => {
+                                                const isSelected = activeSplitTask?.id === task.id;
+                                                const overdue = isTaskOverdue(task);
+
+                                                return (
+                                                    <div
+                                                        key={task.id}
+                                                        onClick={() => {
+                                                            setSplitSelectedId(task.id);
+                                                            setSplitMobileOpen(true);
+                                                        }}
+                                                        className={`group relative flex cursor-pointer flex-col gap-2 p-3 transition-all ${
+                                                            isSelected
+                                                                ? 'bg-blue-50/80 dark:bg-blue-950/40 border-l-4 border-blue-600 dark:border-blue-500 pl-2.5'
+                                                                : 'hover:bg-white dark:hover:bg-zinc-800/60'
+                                                        }`}
+                                                    >
+                                                        <div className="flex items-start justify-between gap-2">
+                                                            <h4
+                                                                className={`text-xs font-bold leading-snug line-clamp-2 ${
+                                                                    task.status === 'completed'
+                                                                        ? 'line-through opacity-60'
+                                                                        : isSelected
+                                                                        ? 'text-blue-900 dark:text-blue-200'
+                                                                        : 'text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400'
+                                                                }`}
+                                                            >
+                                                                {task.title}
+                                                            </h4>
+                                                            <StatusBadge value={task.priority} />
+                                                        </div>
+
+                                                        {task.matter ? (
+                                                            <p className="truncate font-mono text-[10px] font-semibold text-blue-600 dark:text-blue-400">
+                                                                {task.matter.matter_number} · {task.matter.title}
+                                                            </p>
+                                                        ) : (
+                                                            <p className="text-[10px] text-slate-400">Umum / Internal Kantor</p>
+                                                        )}
+
+                                                        <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-100/70 dark:border-white/[0.04]">
+                                                            {/* Assignee */}
+                                                            <div className="flex items-center gap-1.5 min-w-0 pr-2">
+                                                                {task.assignee ? (
+                                                                    <>
+                                                                        <Avatar className="size-4.5 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
+                                                                            <AvatarImage src={task.assignee.avatar_url ?? undefined} />
+                                                                            <AvatarFallback className="text-[7px] font-bold">
+                                                                                {getInitials(task.assignee.name)}
+                                                                            </AvatarFallback>
+                                                                        </Avatar>
+                                                                        <span className="truncate text-[10px] font-medium text-slate-700 dark:text-zinc-300">
+                                                                            {task.assignee.name}
+                                                                        </span>
+                                                                    </>
+                                                                ) : (
+                                                                    <span className="text-[10px] text-slate-400">Unassigned</span>
+                                                                )}
+                                                            </div>
+
+                                                            {/* Status and Due Date */}
+                                                            <div className="flex items-center gap-1.5 shrink-0">
+                                                                <StatusBadge value={task.status} />
+                                                                {task.due_at && (
+                                                                    <span
+                                                                        className={`font-mono text-[10px] ${
+                                                                            overdue
+                                                                                ? 'font-bold text-rose-600 dark:text-rose-400'
+                                                                                : 'text-slate-400'
+                                                                        }`}
+                                                                    >
+                                                                        {formatDate(task.due_at)}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })
+                                        )}
+                                    </div>
+
+                                    {/* Left Pane Pagination */}
+                                    <div className="border-t border-slate-200/70 p-2.5 bg-white dark:border-white/[0.08] dark:bg-[#14161b]">
+                                        <Pagination links={tasks.links} />
+                                    </div>
+                                </div>
+
+                                {/* RIGHT DETAILS PANE */}
+                                <div
+                                    className={`flex-1 flex flex-col bg-white dark:bg-[#14161b] overflow-y-auto ${
+                                        activeSplitTask && splitMobileOpen ? 'flex' : 'hidden lg:flex'
+                                    }`}
+                                >
+                                    {activeSplitTask ? (
+                                        <div className="flex flex-col h-full">
+                                            {/* Header Bar */}
+                                            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-3.5 dark:border-white/[0.06]">
+                                                <div className="flex items-center gap-2 min-w-0 pr-3">
+                                                    {/* Mobile Back Button */}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setSplitMobileOpen(false)}
+                                                        className="lg:hidden flex size-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 dark:border-white/10 dark:text-zinc-300"
+                                                    >
+                                                        <ArrowLeft className="size-4" />
+                                                    </button>
+                                                    <div className="min-w-0">
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            <StatusBadge value={activeSplitTask.priority} />
+                                                            <StatusBadge value={activeSplitTask.status} />
+                                                            {activeSplitTask.due_at && isTaskOverdue(activeSplitTask) && (
+                                                                <span className="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-700 uppercase dark:bg-rose-950/60 dark:text-rose-300">
+                                                                    <AlertCircle className="size-3" />
+                                                                    Lewat Tenggat
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Top Right Action Icons */}
+                                                <div className="flex items-center gap-1 shrink-0">
+                                                    {can.update && (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            asChild
+                                                            className="h-8 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
+                                                        >
+                                                            <Link href={taskRoutes.edit.url(activeSplitTask.id)}>
+                                                                <Pencil className="mr-1.5 size-3.5 text-slate-400" />
+                                                                Edit
+                                                            </Link>
+                                                        </Button>
+                                                    )}
+
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        asChild
+                                                        className="h-8 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-blue-600 hover:bg-blue-50 dark:border-white/10 dark:bg-[#16181d] dark:text-blue-400"
+                                                    >
+                                                        <Link href={taskRoutes.show?.url ? taskRoutes.show.url(activeSplitTask.id) : `/tasks/${activeSplitTask.id}`}>
+                                                            <ExternalLink className="mr-1.5 size-3.5" />
+                                                            Halaman Penuh
+                                                        </Link>
+                                                    </Button>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleCopyTask(activeSplitTask)}
+                                                        className="flex size-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-zinc-800 dark:hover:text-white transition-all"
+                                                        title="Salin Rincian Tugas"
+                                                    >
+                                                        {copiedTaskId === activeSplitTask.id ? (
+                                                            <Check className="size-3.5 text-emerald-600" />
+                                                        ) : (
+                                                            <Copy className="size-3.5" />
+                                                        )}
+                                                    </button>
+
+                                                    {can.delete && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setTaskToDelete(activeSplitTask)}
+                                                            className="flex size-8 items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400 transition-all"
+                                                            title="Hapus Tugas"
+                                                        >
+                                                            <Trash2 className="size-3.5" />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Title Row */}
+                                            <div className="px-6 pt-4 pb-2">
+                                                <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug">
+                                                    {activeSplitTask.title}
+                                                </h2>
+                                                {activeSplitTask.matter ? (
+                                                    <Link
+                                                        href={matterRoutes.show?.url ? matterRoutes.show.url(activeSplitTask.matter.id) : `/matters/${activeSplitTask.matter.id}`}
+                                                        className="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:underline pt-1 dark:text-blue-400"
+                                                    >
+                                                        <Briefcase className="size-3" />
+                                                        <span>{activeSplitTask.matter.matter_number} · {activeSplitTask.matter.title}</span>
+                                                        <ArrowUpRight className="size-3" />
+                                                    </Link>
+                                                ) : (
+                                                    <p className="text-xs text-slate-400 pt-1 italic">Tugas internal / Non-Perkara</p>
+                                                )}
+                                            </div>
+
+                                            {/* Instant Interactive Workflow Stepper Pipeline */}
+                                            <div className="border-y border-slate-100 bg-slate-50/80 px-6 py-2.5 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                                                <div className="grid w-full grid-cols-4 gap-2">
+                                                    {[
+                                                        { key: 'pending', num: '1', label: 'To Do', activeBg: 'bg-slate-900 text-white font-bold shadow-xs dark:bg-white dark:text-slate-900' },
+                                                        { key: 'in_progress', num: '2', label: 'Dikerjakan', activeBg: 'bg-blue-600 text-white font-bold shadow-xs' },
+                                                        { key: 'review', num: '3', label: 'Review', activeBg: 'bg-amber-600 text-white font-bold shadow-xs' },
+                                                        { key: 'completed', num: '4', label: 'Selesai', activeBg: 'bg-emerald-600 text-white font-bold shadow-xs' },
+                                                    ].map((step) => {
+                                                        const isActive = activeSplitTask.status === step.key;
+                                                        return (
+                                                            <button
+                                                                key={step.key}
+                                                                type="button"
+                                                                onClick={() => changeStatus(activeSplitTask, step.key)}
+                                                                className={`flex cursor-pointer items-center justify-center gap-1.5 rounded-lg py-1.5 text-center text-xs transition-all ${
+                                                                    isActive
+                                                                        ? step.activeBg
+                                                                        : 'border border-slate-200/60 bg-white font-medium text-slate-600 hover:bg-slate-200/70 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300 dark:hover:bg-white/[0.08]'
+                                                                }`}
+                                                            >
+                                                                {step.key === 'completed' && isActive ? (
+                                                                    <Check className="size-3 shrink-0 stroke-[3]" />
+                                                                ) : (
+                                                                    <span
+                                                                        className={`flex size-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                                                                            isActive
+                                                                                ? 'bg-white/20 text-current'
+                                                                                : 'bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-zinc-300'
+                                                                        }`}
+                                                                    >
+                                                                        {step.num}
+                                                                    </span>
+                                                                )}
+                                                                <span className="truncate">{step.label}</span>
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+
+                                            {/* Scrollable Content Body */}
+                                            <div className="flex-1 px-6 py-5 space-y-5 overflow-y-auto">
+                                                {/* Symmetric 4-Card Metadata Grid */}
+                                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                                    {/* 1. Perkara Terkait */}
+                                                    <div className="flex flex-col justify-between space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                                                        <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400">
+                                                            <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                                                                <Briefcase className="size-3.5" />
+                                                            </div>
+                                                            <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                                Perkara Terkait
+                                                            </span>
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            {activeSplitTask.matter ? (
+                                                                <Link
+                                                                    href={matterRoutes.show?.url ? matterRoutes.show.url(activeSplitTask.matter.id) : `/matters/${activeSplitTask.matter.id}`}
+                                                                    className="group block"
+                                                                >
+                                                                    <p className="flex items-center gap-1 font-mono text-xs font-bold text-blue-600 group-hover:underline dark:text-blue-400">
+                                                                        {activeSplitTask.matter.matter_number}
+                                                                        <ArrowUpRight className="inline size-3 text-slate-400" />
+                                                                    </p>
+                                                                    <p className="truncate pt-0.5 text-xs font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white">
+                                                                        {activeSplitTask.matter.title}
+                                                                    </p>
+                                                                </Link>
+                                                            ) : (
+                                                                <p className="text-xs text-slate-400 italic">
+                                                                    Tugas independen (tanpa perkara)
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* 2. Batas Waktu */}
+                                                    <div className="flex flex-col justify-between space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                                                        <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400">
+                                                            <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                                                                <Calendar className="size-3.5" />
+                                                            </div>
+                                                            <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                                Batas Waktu (Tenggat)
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            {activeSplitTask.due_at ? (
+                                                                <div className="space-y-0.5">
+                                                                    <p className="font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                                        {formatDate(activeSplitTask.due_at)}
+                                                                    </p>
+                                                                    <p className={`text-[10px] font-semibold ${
+                                                                        isTaskOverdue(activeSplitTask)
+                                                                            ? 'text-rose-600 dark:text-rose-400'
+                                                                            : 'text-slate-500 dark:text-zinc-400'
+                                                                    }`}>
+                                                                        {isTaskOverdue(activeSplitTask) ? 'Lewat Tenggat Waktu' : 'Sesuai Jadwal'}
+                                                                    </p>
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-xs text-slate-400 italic">Tidak ditentukan</p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* 3. Advokat Pelaksana */}
+                                                    <div className="flex flex-col justify-between space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                                                        <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400">
+                                                            <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                                                                <User className="size-3.5" />
+                                                            </div>
+                                                            <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                                Advokat Pelaksana
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            {activeSplitTask.assignee ? (
+                                                                <div className="flex items-center gap-2.5">
+                                                                    <Avatar className="size-8 shrink-0 overflow-hidden rounded-full border border-slate-200 dark:border-white/10">
+                                                                        <AvatarImage src={activeSplitTask.assignee.avatar_url ?? undefined} />
+                                                                        <AvatarFallback className="bg-blue-50 text-xs font-bold text-blue-700">
+                                                                            {getInitials(activeSplitTask.assignee.name)}
+                                                                        </AvatarFallback>
+                                                                    </Avatar>
+                                                                    <div className="min-w-0">
+                                                                        <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                                                            {activeSplitTask.assignee.name}
+                                                                        </p>
+                                                                        <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
+                                                                            {activeSplitTask.assignee.position_title || 'Staf Hukum'}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-xs text-slate-400 italic">Belum ditugaskan</p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* 4. Partner Peninjau */}
+                                                    <div className="flex flex-col justify-between space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                                                        <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400">
+                                                            <div className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                                                                <Users className="size-3.5" />
+                                                            </div>
+                                                            <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
+                                                                Partner Peninjau
+                                                            </span>
+                                                        </div>
+                                                        <div>
+                                                            {activeSplitTask.reviewer ? (
+                                                                <div className="flex items-center gap-2.5">
+                                                                    <Avatar className="size-8 shrink-0 overflow-hidden rounded-full border border-slate-200 dark:border-white/10">
+                                                                        <AvatarImage src={activeSplitTask.reviewer.avatar_url ?? undefined} />
+                                                                        <AvatarFallback className="bg-amber-50 text-xs font-bold text-amber-700">
+                                                                            {getInitials(activeSplitTask.reviewer.name)}
+                                                                        </AvatarFallback>
+                                                                    </Avatar>
+                                                                    <div className="min-w-0">
+                                                                        <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                                                            {activeSplitTask.reviewer.name}
+                                                                        </p>
+                                                                        <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
+                                                                            {activeSplitTask.reviewer.position_title || 'Partner'}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-xs text-slate-400 italic">Tanpa reviewer khusus</p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Deskripsi & Instruksi Kerja */}
+                                                <div className="space-y-1.5">
+                                                    <span className="text-[11px] font-bold text-slate-700 dark:text-zinc-300">
+                                                        Deskripsi &amp; Instruksi Kerja:
+                                                    </span>
+                                                    <div className="rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 text-xs leading-relaxed text-slate-800 whitespace-pre-wrap dark:border-white/[0.04] dark:bg-[#121418] dark:text-zinc-300">
+                                                        {activeSplitTask.description || 'Tidak ada deskripsi detail tambahan untuk tugas ini.'}
+                                                    </div>
+                                                </div>
+
+                                                {/* Checklist Sub-Tugas (jika ada) */}
+                                                {activeSplitTask.checklists && activeSplitTask.checklists.length > 0 && (
+                                                    <div className="space-y-2">
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-[11px] font-bold text-slate-700 dark:text-zinc-300">
+                                                                Checklist Sub-Tugas (
+                                                                {activeSplitTask.checklists.filter((c) => c.is_completed).length} / {activeSplitTask.checklists.length} selesai)
+                                                            </span>
+                                                        </div>
+                                                        <div className="space-y-1.5 rounded-xl border border-slate-100 bg-slate-50/50 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
+                                                            {activeSplitTask.checklists.map((chk) => (
+                                                                <div key={chk.id} className="flex items-center gap-2 text-xs">
+                                                                    <input
+                                                                        type="checkbox"
+                                                                        checked={chk.is_completed}
+                                                                        readOnly
+                                                                        className="size-3.5 rounded text-blue-600"
+                                                                    />
+                                                                    <span className={chk.is_completed ? 'line-through text-slate-400' : 'text-slate-700 dark:text-zinc-200'}>
+                                                                        {chk.title}
+                                                                    </span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Live Discussion & Komentar */}
+                                                <div className="pt-2 border-t border-slate-100 dark:border-white/[0.06]">
+                                                    <DiscussionBox
+                                                        commentableType="task"
+                                                        commentableId={activeSplitTask.id}
+                                                        comments={activeSplitTask.comments || []}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-1 items-center justify-center p-8 text-center">
+                                            <EmptyState
+                                                icon={ListTodo}
+                                                title="Pilih Tugas"
+                                                description="Pilih salah satu instruksi kerja dari daftar di sebelah kiri untuk melihat rincian alur tugas."
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     ) : viewMode === 'table' ? (
                         /* Precision Data Table View */
