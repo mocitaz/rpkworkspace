@@ -286,35 +286,35 @@ export function PayrollView({
 
             {/* Modal Konfirmasi Slip Gaji yang Sudah Dibayarkan */}
             <Dialog open={!!paidConfirmPayroll} onOpenChange={(open) => !open && setPaidConfirmPayroll(null)}>
-                <DialogContent className="max-w-md">
-                    <DialogHeader>
-                        <div className="flex items-center gap-2">
-                            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400">
-                                <AlertTriangle className="size-5" />
+                <DialogContent className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                    <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+                                <AlertTriangle className="size-4.5" />
                             </div>
                             <div>
-                                <DialogTitle className="text-sm font-bold text-slate-900 uppercase dark:text-white">
+                                <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
                                     Konfirmasi Edit Slip Gaji Lunas
                                 </DialogTitle>
                                 <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Peringatan status pembayaran &amp; penyesuaian keuangan.
+                                    Peringatan status pembayaran &amp; penyesuaian kas.
                                 </DialogDescription>
                             </div>
                         </div>
                     </DialogHeader>
 
                     {paidConfirmPayroll && (
-                        <div className="space-y-3 py-2 text-xs">
+                        <div className="space-y-2.5 py-1 text-xs">
                             <div className="rounded-xl border border-amber-200/80 bg-amber-50/70 p-3 text-amber-900 dark:border-amber-500/20 dark:bg-amber-950/20 dark:text-amber-200">
-                                <p className="text-[11.5px] font-semibold leading-relaxed">
-                                    Slip gaji untuk <strong>{paidConfirmPayroll.user?.name}</strong> (Periode: <strong>{paidConfirmPayroll.period}</strong>) sudah berstatus <span className="font-bold underline decoration-amber-500">DIBAYARKAN (LUNAS)</span>.
+                                <p className="text-xs font-semibold leading-relaxed">
+                                    Slip gaji untuk <strong>{paidConfirmPayroll.user?.name}</strong> (Periode: <strong>{paidConfirmPayroll.period}</strong>) sudah berstatus <span className="font-bold text-amber-700 dark:text-amber-300">DIBAYARKAN (LUNAS)</span>.
                                 </p>
-                                <p className="mt-1.5 text-[10.5px] text-amber-800/90 dark:text-amber-300/80">
-                                    Apakah Anda yakin ingin tetap mengedit komponen gaji ini? Perubahan nominal take home pay atau rekening kas dapat mempengaruhi mutasi dan pembukuan keuangan.
+                                <p className="mt-1 text-[11px] text-amber-800/90 dark:text-amber-300/80">
+                                    Apakah Anda yakin ingin tetap mengedit komponen gaji ini? Perubahan nominal take home pay dapat mempengaruhi mutasi pembukuan.
                                 </p>
                             </div>
 
-                            <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 font-mono text-[11px] text-slate-600 dark:border-white/10 dark:bg-white/[0.02] dark:text-zinc-400">
+                            <div className="rounded-lg border border-slate-200/80 bg-slate-50/70 p-2.5 font-mono text-[11px] text-slate-600 dark:border-white/10 dark:bg-white/[0.02] dark:text-zinc-400">
                                 <div className="flex justify-between">
                                     <span>No. Slip:</span>
                                     <span className="font-bold text-slate-900 dark:text-white">{paidConfirmPayroll.payslip_number}</span>
@@ -327,12 +327,12 @@ export function PayrollView({
                         </div>
                     )}
 
-                    <DialogFooter className="gap-3 sm:gap-3 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                    <DialogFooter className="gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
                         <Button
                             variant="outline"
                             size="sm"
                             onClick={() => setPaidConfirmPayroll(null)}
-                            className="h-9 px-4 rounded-xl border-slate-200 text-xs font-semibold hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                            className="h-8.5 rounded-lg border-slate-200 px-3.5 text-xs font-semibold hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
                         >
                             Batal
                         </Button>
@@ -344,7 +344,7 @@ export function PayrollView({
                                     setPaidConfirmPayroll(null);
                                 }
                             }}
-                            className="h-9 px-4 rounded-xl bg-amber-600 text-xs font-semibold text-white shadow-2xs hover:bg-amber-500 active:scale-95 dark:bg-amber-600"
+                            className="h-8.5 rounded-lg bg-amber-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 dark:bg-amber-600 dark:hover:bg-amber-700"
                         >
                             Ya, Tetap Edit
                         </Button>

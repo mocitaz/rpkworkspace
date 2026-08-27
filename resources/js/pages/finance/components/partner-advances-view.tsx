@@ -290,14 +290,14 @@ export function PartnerAdvancesView({
 
             {/* Modal Konfirmasi Edit Transaksi Partner */}
             <Dialog open={!!confirmTransForEdit} onOpenChange={(open) => !open && setConfirmTransForEdit(null)}>
-                <DialogContent className="max-w-md">
-                    <DialogHeader>
-                        <div className="flex items-center gap-2">
-                            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400">
-                                <AlertTriangle className="size-5" />
+                <DialogContent className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                    <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+                                <AlertTriangle className="size-4.5" />
                             </div>
                             <div>
-                                <DialogTitle className="text-sm font-bold text-slate-900 uppercase dark:text-white">
+                                <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
                                     Konfirmasi Edit Transaksi Partner
                                 </DialogTitle>
                                 <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
@@ -308,24 +308,24 @@ export function PartnerAdvancesView({
                     </DialogHeader>
 
                     {confirmTransForEdit && (
-                        <div className="space-y-3 py-2 text-xs">
+                        <div className="space-y-2.5 py-1 text-xs">
                             <div className="rounded-xl border border-amber-200/80 bg-amber-50/70 p-3 text-amber-900 dark:border-amber-500/20 dark:bg-amber-950/20 dark:text-amber-200">
-                                <p className="text-[11.5px] font-semibold leading-relaxed">
+                                <p className="text-xs font-semibold leading-relaxed">
                                     Transaksi <strong>{confirmTransForEdit.transaction_number}</strong> ({typeLabels[confirmTransForEdit.type]?.label || confirmTransForEdit.type}) sebesar <strong>{formatMoney(confirmTransForEdit.amount, 'IDR')}</strong> telah tercatat pada pembukuan.
                                 </p>
-                                <p className="mt-1.5 text-[10.5px] text-amber-800/90 dark:text-amber-300/80">
-                                    Apakah Anda yakin ingin mengedit transaksi ini? Perubahan nominal atau jenis transaksi akan otomatis menyesuaikan saldo rekening kas dan saldo utang partner.
+                                <p className="mt-1 text-[11px] text-amber-800/90 dark:text-amber-300/80">
+                                    Apakah Anda yakin ingin mengedit transaksi ini? Perubahan nominal atau jenis transaksi akan otomatis menyesuaikan saldo kas dan saldo utang partner.
                                 </p>
                             </div>
                         </div>
                     )}
 
-                    <DialogFooter className="gap-3 sm:gap-3 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                    <DialogFooter className="gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
                         <Button
                             variant="outline"
                             size="sm"
                             onClick={() => setConfirmTransForEdit(null)}
-                            className="h-9 px-4 rounded-xl border-slate-200 text-xs font-semibold hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                            className="h-8.5 rounded-lg border-slate-200 px-3.5 text-xs font-semibold hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
                         >
                             Batal
                         </Button>
@@ -337,7 +337,7 @@ export function PartnerAdvancesView({
                                     setConfirmTransForEdit(null);
                                 }
                             }}
-                            className="h-9 px-4 rounded-xl bg-amber-600 text-xs font-semibold text-white shadow-2xs hover:bg-amber-500 active:scale-95 dark:bg-amber-600"
+                            className="h-8.5 rounded-lg bg-amber-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 dark:bg-amber-600 dark:hover:bg-amber-700"
                         >
                             Ya, Tetap Edit
                         </Button>

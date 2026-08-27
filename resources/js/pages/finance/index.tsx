@@ -1278,15 +1278,15 @@ export default function FinanceIndex({
 
             {/* Modal Konfirmasi Edit Biaya Operasional / Perkara */}
             <Dialog open={!!confirmExpenseToEdit} onOpenChange={(open) => !open && setConfirmExpenseToEdit(null)}>
-                <DialogContent className="max-w-md">
-                    <DialogHeader>
-                        <div className="flex items-center gap-2">
-                            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400">
-                                <AlertTriangle className="size-5" />
+                <DialogContent className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                    <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+                                <AlertTriangle className="size-4.5" />
                             </div>
                             <div>
-                                <DialogTitle className="text-sm font-bold text-slate-900 uppercase dark:text-white">
-                                    Konfirmasi Edit Beban Operasional
+                                <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                    Konfirmasi Edit Pengeluaran
                                 </DialogTitle>
                                 <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
                                     Peringatan mutasi kas dan pencatatan biaya.
@@ -1296,24 +1296,24 @@ export default function FinanceIndex({
                     </DialogHeader>
 
                     {confirmExpenseToEdit && (
-                        <div className="space-y-3 py-2 text-xs">
+                        <div className="space-y-2.5 py-1 text-xs">
                             <div className="rounded-xl border border-amber-200/80 bg-amber-50/70 p-3 text-amber-900 dark:border-amber-500/20 dark:bg-amber-950/20 dark:text-amber-200">
-                                <p className="text-[11.5px] font-semibold leading-relaxed">
+                                <p className="text-xs font-semibold leading-relaxed">
                                     Catatan biaya <strong>"{confirmExpenseToEdit.description || confirmExpenseToEdit.title || 'Biaya Operasional'}"</strong> sebesar <strong>{formatMoney(confirmExpenseToEdit.amount ?? 0, confirmExpenseToEdit.currency || currency)}</strong> telah tercatat pada pembukuan kas/bank.
                                 </p>
-                                <p className="mt-1.5 text-[10.5px] text-amber-800/90 dark:text-amber-300/80">
-                                    Apakah Anda yakin ingin mengedit data biaya ini? Perubahan nominal atau rekening pembayaran akan otomatis menyesuaikan saldo kas dan laporan laba rugi.
+                                <p className="mt-1 text-[11px] text-amber-800/90 dark:text-amber-300/80">
+                                    Apakah Anda yakin ingin mengedit data biaya ini? Perubahan nominal atau rekening pembayaran akan otomatis menyesuaikan saldo kas dan laporan keuangan.
                                 </p>
                             </div>
                         </div>
                     )}
 
-                    <DialogFooter className="gap-3 sm:gap-3 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                    <DialogFooter className="gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
                         <Button
                             variant="outline"
                             size="sm"
                             onClick={() => setConfirmExpenseToEdit(null)}
-                            className="h-9 px-4 rounded-xl border-slate-200 text-xs font-semibold hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                            className="h-8.5 rounded-lg border-slate-200 px-3.5 text-xs font-semibold hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
                         >
                             Batal
                         </Button>
@@ -1325,7 +1325,7 @@ export default function FinanceIndex({
                                     setConfirmExpenseToEdit(null);
                                 }
                             }}
-                            className="h-9 px-4 rounded-xl bg-amber-600 text-xs font-semibold text-white shadow-2xs hover:bg-amber-500 active:scale-95 dark:bg-amber-600"
+                            className="h-8.5 rounded-lg bg-amber-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 dark:bg-amber-600 dark:hover:bg-amber-700"
                         >
                             Ya, Tetap Edit
                         </Button>
@@ -2146,39 +2146,40 @@ function ReversePaymentDialog({
 }) {
     return (
         <Dialog open={!!payment} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
-                        <div className="flex size-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/40">
-                            <Undo2 className="size-4" />
+                        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
+                            <Undo2 className="size-4.5" />
                         </div>
-                        <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                            Koreksi &amp; Batalkan Pembayaran
-                        </DialogTitle>
+                        <div>
+                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                Koreksi &amp; Batalkan Pembayaran
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                Alokasi invoice akan dibuka kembali dan dicatat dalam audit.
+                            </DialogDescription>
+                        </div>
                     </div>
                 </DialogHeader>
                 {payment && (
                     <Form
                         action={paymentRoutes.reverse.url(payment.id)}
                         method="post"
-                        className="space-y-3 pt-1"
+                        className="space-y-3 pt-1 text-xs"
                         onSuccess={onClose}
                     >
                         {({ processing, errors }) => (
                             <>
-                                <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Alokasi invoice akan dibuka kembali dan
-                                    transaksi dicatat dalam log audit.
-                                </p>
                                 <div className="grid gap-1">
                                     <Label
                                         htmlFor="reason"
                                         className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
                                     >
-                                        Alasan Pembatalan
+                                        Alasan Pembatalan <span className="text-rose-500">*</span>
                                     </Label>
                                     <textarea
-                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs text-slate-900 outline-hidden transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                        className="w-full rounded-lg border border-slate-200 bg-white p-2 text-xs text-slate-900 shadow-2xs outline-hidden transition-colors focus:border-rose-500 focus:ring-1 focus:ring-rose-500 dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                         id="reason"
                                         name="reason"
                                         rows={3}
@@ -2192,13 +2193,12 @@ function ReversePaymentDialog({
                                         </p>
                                     )}
                                 </div>
-                                <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                                <DialogFooter className="border-t border-slate-100 pt-3 dark:border-white/[0.06]">
                                     <Button
                                         type="button"
-                                        variant="outline"
-                                        size="sm"
+                                        variant="ghost"
                                         onClick={onClose}
-                                        className="h-8 rounded-lg border-slate-200 px-3 text-xs text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                        className="h-8.5 rounded-lg text-xs font-semibold"
                                     >
                                         Batal
                                     </Button>
@@ -2206,11 +2206,11 @@ function ReversePaymentDialog({
                                         size="sm"
                                         variant="destructive"
                                         disabled={processing}
-                                        className="h-8 rounded-lg px-3.5 text-xs font-semibold"
+                                        className="h-8.5 rounded-lg px-3.5 text-xs font-semibold"
                                     >
                                         Batalkan Pembayaran
                                     </Button>
-                                </div>
+                                </DialogFooter>
                             </>
                         )}
                     </Form>
@@ -2229,40 +2229,40 @@ function RefundPaymentDialog({
 }) {
     return (
         <Dialog open={!!payment} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
-                        <div className="flex size-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/40">
-                            <Undo2 className="size-4" />
+                        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+                            <Undo2 className="size-4.5" />
                         </div>
-                        <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                            Refund Dana ke Klien
-                        </DialogTitle>
+                        <div>
+                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                Refund Dana ke Klien
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                Gunakan jika dana telah ditransfer balik ke rekening klien.
+                            </DialogDescription>
+                        </div>
                     </div>
                 </DialogHeader>
                 {payment && (
                     <Form
                         action={paymentRoutes.refund.url(payment.id)}
                         method="post"
-                        className="space-y-3 pt-1"
+                        className="space-y-3 pt-1 text-xs"
                         onSuccess={onClose}
                     >
                         {({ processing, errors }) => (
                             <>
-                                <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Gunakan jika dana telah ditransfer balik ke
-                                    rekening klien. Saldo invoice akan
-                                    disesuaikan.
-                                </p>
                                 <div className="grid gap-1">
                                     <Label
                                         htmlFor="refund-reason"
                                         className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
                                     >
-                                        Alasan Pengembalian (Refund)
+                                        Alasan Pengembalian (Refund) <span className="text-rose-500">*</span>
                                     </Label>
                                     <textarea
-                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs text-slate-900 outline-hidden transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                        className="w-full rounded-lg border border-slate-200 bg-white p-2 text-xs text-slate-900 shadow-2xs outline-hidden transition-colors focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                         id="refund-reason"
                                         name="reason"
                                         rows={3}
@@ -2276,25 +2276,23 @@ function RefundPaymentDialog({
                                         </p>
                                     )}
                                 </div>
-                                <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                                <DialogFooter className="border-t border-slate-100 pt-3 dark:border-white/[0.06]">
                                     <Button
                                         type="button"
-                                        variant="outline"
-                                        size="sm"
+                                        variant="ghost"
                                         onClick={onClose}
-                                        className="h-8 rounded-lg border-slate-200 px-3 text-xs text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                        className="h-8.5 rounded-lg text-xs font-semibold"
                                     >
                                         Batal
                                     </Button>
                                     <Button
                                         size="sm"
-                                        variant="destructive"
                                         disabled={processing}
-                                        className="h-8 rounded-lg px-3.5 text-xs font-semibold"
+                                        className="h-8.5 rounded-lg bg-amber-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 dark:bg-amber-600"
                                     >
                                         Catat Refund Dana
                                     </Button>
-                                </div>
+                                </DialogFooter>
                             </>
                         )}
                     </Form>
@@ -2313,22 +2311,27 @@ function CancelInvoiceDialog({
 }) {
     return (
         <Dialog open={!!invoice} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
-                        <div className="flex size-8 items-center justify-center rounded-lg bg-rose-50 text-rose-600 dark:bg-rose-950/40">
-                            <Trash2 className="size-4" />
+                        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
+                            <Trash2 className="size-4.5" />
                         </div>
-                        <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                            Batalkan Invoice
-                        </DialogTitle>
+                        <div>
+                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                Batalkan Invoice
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                Invoice {invoice?.invoice_number} akan dibatalkan secara permanen.
+                            </DialogDescription>
+                        </div>
                     </div>
                 </DialogHeader>
                 {invoice && (
                     <Form
                         action={invoiceRoutes.transition.url(invoice.id)}
                         method="patch"
-                        className="space-y-3 pt-1"
+                        className="space-y-3 pt-1 text-xs"
                         onSuccess={onClose}
                     >
                         {({ processing, errors }) => (
@@ -2338,19 +2341,15 @@ function CancelInvoiceDialog({
                                     name="status"
                                     value="cancelled"
                                 />
-                                <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Invoice {invoice.invoice_number} akan
-                                    dibatalkan secara permanen.
-                                </p>
                                 <div className="grid gap-1">
                                     <Label
                                         htmlFor="cancellation-reason"
                                         className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
                                     >
-                                        Alasan Pembatalan
+                                        Alasan Pembatalan <span className="text-rose-500">*</span>
                                     </Label>
                                     <textarea
-                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs text-slate-900 outline-hidden transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                        className="w-full rounded-lg border border-slate-200 bg-white p-2 text-xs text-slate-900 shadow-2xs outline-hidden transition-colors focus:border-rose-500 focus:ring-1 focus:ring-rose-500 dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                         id="cancellation-reason"
                                         name="reason"
                                         rows={3}
@@ -2364,13 +2363,12 @@ function CancelInvoiceDialog({
                                         </p>
                                     )}
                                 </div>
-                                <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                                <DialogFooter className="border-t border-slate-100 pt-3 dark:border-white/[0.06]">
                                     <Button
                                         type="button"
-                                        variant="outline"
-                                        size="sm"
+                                        variant="ghost"
                                         onClick={onClose}
-                                        className="h-8 rounded-lg border-slate-200 px-3 text-xs text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                        className="h-8.5 rounded-lg text-xs font-semibold"
                                     >
                                         Batal
                                     </Button>
@@ -2378,11 +2376,11 @@ function CancelInvoiceDialog({
                                         size="sm"
                                         variant="destructive"
                                         disabled={processing}
-                                        className="h-8 rounded-lg px-3.5 text-xs font-semibold"
+                                        className="h-8.5 rounded-lg px-3.5 text-xs font-semibold"
                                     >
                                         Batalkan Invoice
                                     </Button>
-                                </div>
+                                </DialogFooter>
                             </>
                         )}
                     </Form>
@@ -2508,21 +2506,19 @@ function FinanceDialog({
 
     return (
         <Dialog open onOpenChange={onClose}>
-            <DialogContent className={`max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#121418] ${isWide ? 'sm:max-w-3xl' : 'sm:max-w-2xl'}`}>
-                <DialogHeader className="border-b border-slate-100 pb-4 dark:border-white/[0.06]">
-                    <div className="flex items-start justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                            <div className={`flex size-10 shrink-0 items-center justify-center rounded-xl ring-1 ${colorClass}`}>
-                                <DialogIcon className="size-5" />
-                            </div>
-                            <div>
-                                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
-                                    {(dialogTitles as any)[type] || 'Transaksi Keuangan'}
-                                </DialogTitle>
-                                <DialogDescription className="mt-0.5 text-xs text-slate-500 dark:text-zinc-400">
-                                    {(dialogDescriptions as any)[type] || 'Lengkapi formulir transaksi keuangan berikut.'}
-                                </DialogDescription>
-                            </div>
+            <DialogContent className={`max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-[#14161b] ${isWide ? 'sm:max-w-3xl' : 'sm:max-w-xl'}`}>
+                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-2.5">
+                        <div className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${colorClass}`}>
+                            <DialogIcon className="size-4.5" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                                {(dialogTitles as any)[type] || 'Transaksi Keuangan'}
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                {(dialogDescriptions as any)[type] || 'Lengkapi formulir transaksi keuangan berikut.'}
+                            </DialogDescription>
                         </div>
                     </div>
                 </DialogHeader>
@@ -3295,20 +3291,20 @@ function FinanceDialog({
                                 <input type="hidden" name="status" value="draft" />
                             )}
 
-                            <DialogFooter className="border-t border-slate-100 pt-4 dark:border-white/[0.06]">
+                            <DialogFooter className="gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
                                 <Button
                                     type="button"
-                                    variant="outline"
+                                    variant="ghost"
                                     onClick={onClose}
                                     disabled={processing}
-                                    className="h-9 rounded-xl border-slate-200 px-4 text-xs font-medium hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                    className="h-8.5 rounded-lg text-xs font-semibold"
                                 >
                                     Batal
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={processing || (isPayment && isAllocationExceeded)}
-                                    className={`h-9 rounded-xl px-5 text-xs font-semibold text-white shadow-2xs active:scale-95 ${
+                                    className={`h-8.5 rounded-lg px-4 text-xs font-semibold text-white shadow-2xs ${
                                         type === 'invoice'
                                             ? 'bg-blue-600 hover:bg-blue-700'
                                             : type === 'quotation'
@@ -3417,7 +3413,7 @@ function SelectField({
                     id={name}
                     name={name}
                     required={required}
-                    className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs text-slate-900 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                 >
                     <option value="">{placeholder || `Pilih ${label.toLowerCase()}`}</option>
                     {data.map((item) => (
@@ -3428,7 +3424,7 @@ function SelectField({
                         </option>
                     ))}
                 </select>
-                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-400" />
+                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
             </div>
         </div>
     );

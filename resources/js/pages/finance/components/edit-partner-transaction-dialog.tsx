@@ -2,16 +2,12 @@ import { useEffect, useState } from 'react';
 import { router } from '@inertiajs/react';
 import {
     AlertCircle,
-    Building2,
-    Calendar,
     ChevronDown,
-    CreditCard,
-    DollarSign,
-    FolderKanban,
     HandCoins,
+    Loader2,
+    Save,
+    ShieldCheck,
     Trash2,
-    Upload,
-    UserCheck,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -56,6 +52,7 @@ export function EditPartnerTransactionDialog({
         proof: null as File | null,
     });
     const [processing, setProcessing] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
         if (transaction) {
@@ -74,6 +71,7 @@ export function EditPartnerTransactionDialog({
                 notes: transaction.notes || '',
                 proof: null,
             });
+            setErrors({});
         }
     }, [transaction, open]);
 
@@ -125,41 +123,36 @@ export function EditPartnerTransactionDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-6 shadow-2xl sm:max-w-2xl dark:border-white/10 dark:bg-[#121418]">
+            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
                 {/* Header */}
-                <DialogHeader className="border-b border-slate-100 pb-4 dark:border-white/[0.06]">
-                    <div className="flex items-start justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600 ring-1 ring-amber-500/20 dark:bg-amber-950/50 dark:text-amber-400">
-                                <HandCoins className="size-5" />
+                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+                            <HandCoins className="size-4.5" />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <DialogTitle className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                                    Edit Transaksi &amp; Talangan Partner
+                                </DialogTitle>
+                                <span className="rounded-md border border-slate-200 bg-slate-100 px-1.5 py-0.5 font-mono text-[10.5px] font-semibold text-slate-700 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
+                                    {transaction.transaction_number}
+                                </span>
                             </div>
-                            <div>
-                                <div className="flex items-center gap-2">
-                                    <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
-                                        Edit Transaksi &amp; Talangan Partner
-                                    </DialogTitle>
-                                    <span className="rounded-md border border-slate-200 bg-slate-100 px-2 py-0.5 font-mono text-xs font-semibold text-slate-700 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
-                                        {transaction.transaction_number}
-                                    </span>
-                                </div>
-                                <DialogDescription className="mt-0.5 text-xs text-slate-500 dark:text-zinc-400">
-                                    Perbarui rincian talangan dana pribadi partner, pengembalian, atau pembagian hasil kantor.
-                                </DialogDescription>
-                            </div>
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                Perbarui rincian nominal talangan, rekening kas, atau perkaranya.
+                            </DialogDescription>
                         </div>
                     </div>
                 </DialogHeader>
 
-                <form onSubmit={submit} className="space-y-4 pt-2">
-                    {/* Section 1: Partner & Transaction Type */}
-                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
-                        <div className="mb-2.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
-                            Pihak Partner &amp; Jenis Transaksi
-                        </div>
-                        <div className="grid gap-3.5 sm:grid-cols-2">
+                <form onSubmit={submit} className="space-y-3.5 pt-1 text-xs">
+                    {/* Partner & Type Card */}
+                    <div className="space-y-2.5 rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 dark:border-white/[0.06] dark:bg-[#16181f]">
+                        <div className="grid gap-2.5 sm:grid-cols-2">
                             <div>
                                 <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                    Partner Terkait <span className="text-red-500">*</span>
+                                    Partner Terkait <span className="text-rose-500">*</span>
                                 </Label>
                                 <div className="mt-1">
                                     <UserPicker
@@ -167,173 +160,145 @@ export function EditPartnerTransactionDialog({
                                         value={data.partner_id}
                                         onChange={(val) => setData({ ...data, partner_id: val })}
                                         users={partners}
-                                        placeholder="Pilih Partner Terkait..."
+                                        placeholder="Pilih Partner..."
                                     />
                                 </div>
                             </div>
 
                             <div>
                                 <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                    Jenis Transaksi <span className="text-red-500">*</span>
+                                    Jenis Transaksi <span className="text-rose-500">*</span>
                                 </Label>
                                 <div className="relative mt-1">
                                     <select
                                         value={data.type}
-                                        onChange={(e) =>
-                                            setData({ ...data, type: e.target.value })
-                                        }
+                                        onChange={(e) => setData({ ...data, type: e.target.value })}
                                         required
-                                        className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                        className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs text-slate-900 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                     >
-                                        <option value="advance_incurred">Talangan Pribadi (+ Utang Kantor ke Partner)</option>
-                                        <option value="advance_reimbursed">Pengembalian Talangan (- Utang Kantor ke Partner)</option>
-                                        <option value="profit_distribution">Pembagian Keuntungan / Deviden (+ Hak Partner)</option>
-                                        <option value="capital_injection">Tambahan Modal / Setoran Partner (+ Ekuitas Firma)</option>
-                                        <option value="draw_prive">Penarikan Prive / Modal (- Saldo Partner)</option>
+                                        <option value="advance_incurred">Talangan Pribadi (+ Utang)</option>
+                                        <option value="advance_reimbursed">Pengembalian Talangan (- Utang)</option>
+                                        <option value="profit_distribution">Pembagian Keuntungan / Deviden</option>
+                                        <option value="capital_injection">Setoran Modal Partner</option>
+                                        <option value="draw_prive">Penarikan Prive / Modal</option>
                                     </select>
-                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-400" />
+                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Section 2: Financial Amount & Date */}
-                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
-                        <div className="mb-2.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
-                            Nominal &amp; Periode Transaksi
+                    {/* Nominal & Date */}
+                    <div className="grid gap-2.5 sm:grid-cols-2">
+                        <div>
+                            <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Nominal Transaksi (IDR) <span className="text-rose-500">*</span>
+                            </Label>
+                            <MoneyInput
+                                required
+                                value={data.amount}
+                                onValueChange={(val) => setData({ ...data, amount: val })}
+                                placeholder="0"
+                                className="mt-1 h-8.5 rounded-lg border-slate-200 bg-white font-mono text-xs font-semibold text-slate-900 dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                            />
                         </div>
-                        <div className="grid gap-3.5 sm:grid-cols-2">
-                            <div>
-                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                    Nominal Transaksi (IDR) <span className="text-red-500">*</span>
-                                </Label>
-                                <MoneyInput
-                                    required
-                                    value={data.amount}
-                                    onValueChange={(val) =>
-                                        setData({
-                                            ...data,
-                                            amount: val,
-                                        })
-                                    }
-                                    placeholder="0"
-                                    className="mt-1 h-9 rounded-lg border-slate-200 bg-white font-mono text-xs font-bold text-slate-900 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
-                                />
-                            </div>
 
-                            <div>
-                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                    Tanggal Transaksi <span className="text-red-500">*</span>
-                                </Label>
-                                <Input
-                                    type="date"
-                                    required
-                                    value={data.transaction_date}
-                                    onChange={(e) =>
-                                        setData({ ...data, transaction_date: e.target.value })
-                                    }
-                                    className="mt-1 h-9 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-zinc-800"
-                                />
-                            </div>
+                        <div>
+                            <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Tanggal Transaksi <span className="text-rose-500">*</span>
+                            </Label>
+                            <Input
+                                type="date"
+                                required
+                                value={data.transaction_date}
+                                onChange={(e) => setData({ ...data, transaction_date: e.target.value })}
+                                className="mt-1 h-8.5 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-[#121418]"
+                            />
                         </div>
                     </div>
 
-                    {/* Section 3: Allocations & Accounts */}
-                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
-                        <div className="mb-2.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
-                            Alokasi Perkara &amp; Rekening Kas
+                    {/* Allocations & Accounts */}
+                    <div className="space-y-2.5 rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 dark:border-white/[0.06] dark:bg-[#16181f]">
+                        <div className="grid gap-2.5 sm:grid-cols-2">
+                            <div>
+                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                    Terkait Perkara (Matter)
+                                </Label>
+                                <div className="relative mt-1">
+                                    <select
+                                        value={data.matter_id}
+                                        onChange={(e) => setData({ ...data, matter_id: e.target.value })}
+                                        className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs text-slate-900 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                    >
+                                        <option value="">-- Non-Perkara / Umum --</option>
+                                        {matters.map((m) => (
+                                            <option key={m.id} value={m.id}>
+                                                {m.matter_number} — {m.title}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                    Rekening Kas Terlibat
+                                </Label>
+                                <div className="relative mt-1">
+                                    <select
+                                        value={data.account_id}
+                                        onChange={(e) => setData({ ...data, account_id: e.target.value })}
+                                        className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs text-slate-900 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                    >
+                                        <option value="">-- Langsung Tunai/Pribadi --</option>
+                                        {accounts.map((a) => (
+                                            <option key={a.id} value={a.id}>
+                                                {a.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                </div>
+                            </div>
                         </div>
-                        <div className="space-y-3">
-                            <div className="grid gap-3.5 sm:grid-cols-2">
-                                <div>
-                                    <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                        Terkait Perkara (Matter)
-                                    </Label>
-                                    <div className="relative mt-1">
-                                        <select
-                                            value={data.matter_id}
-                                            onChange={(e) =>
-                                                setData({ ...data, matter_id: e.target.value })
-                                            }
-                                            className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
-                                        >
-                                            <option value="">-- Tanpa Perkara (Operasional Umum Kantor) --</option>
-                                            {matters.map((m) => (
-                                                <option key={m.id} value={m.id}>
-                                                    {m.matter_number} — {m.title}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-400" />
-                                    </div>
-                                </div>
 
-                                <div>
-                                    <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                        Rekening Kas / Bank Kantor Terlibat
-                                    </Label>
-                                    <div className="relative mt-1">
-                                        <select
-                                            value={data.account_id}
-                                            onChange={(e) =>
-                                                setData({ ...data, account_id: e.target.value })
-                                            }
-                                            className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
-                                        >
-                                            <option value="">-- Tanpa Rekening Kantor (Langsung Tunai/Pribadi) --</option>
-                                            {accounts.map((a) => (
-                                                <option key={a.id} value={a.id}>
-                                                    {a.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-400" />
-                                    </div>
-                                </div>
-                            </div>
+                        <div>
+                            <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Keterangan Transaksi
+                            </Label>
+                            <Input
+                                type="text"
+                                value={data.notes}
+                                onChange={(e) => setData({ ...data, notes: e.target.value })}
+                                placeholder="cth: Talangan biaya operasional sidang..."
+                                className="mt-1 h-8.5 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-[#121418]"
+                            />
+                        </div>
+                    </div>
 
-                            <div>
-                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                    Catatan / Keterangan Transaksi
-                                </Label>
-                                <Input
-                                    type="text"
-                                    value={data.notes}
-                                    onChange={(e) =>
-                                        setData({ ...data, notes: e.target.value })
-                                    }
-                                    placeholder="cth: Pengembalian talangan biaya operasional sidang..."
-                                    className="mt-1 h-9 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-zinc-800"
-                                />
-                            </div>
-
-                            <div>
-                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                    Unggah Bukti Baru (Opsional)
-                                </Label>
-                                <div className="mt-1">
-                                    <FileInput
-                                        name="proof"
-                                        accept="application/pdf,image/png,image/jpeg,image/webp"
-                                        buttonText="Pilih Berkas"
-                                        placeholder="Pilih file bukti transfer..."
-                                        onChange={(e) => {
-                                            const file = e.target.files?.[0] || null;
-                                            setData({ ...data, proof: file });
-                                        }}
-                                    />
-                                </div>
-                            </div>
+                    <div>
+                        <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            Ganti / Unggah Bukti Baru (Opsional)
+                        </Label>
+                        <div className="mt-1">
+                            <FileInput
+                                name="proof"
+                                accept="application/pdf,image/png,image/jpeg,image/webp"
+                                buttonText="Pilih Berkas"
+                                placeholder="Unggah berkas bukti baru..."
+                                onFileSelect={(file) => setData({ ...data, proof: file })}
+                            />
                         </div>
                     </div>
 
                     {Object.keys(errors).length > 0 && (
-                        <div className="rounded-xl border border-rose-200/80 bg-rose-50/70 p-3 text-xs text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
+                        <div className="rounded-xl border border-rose-200/80 bg-rose-50/70 p-2.5 text-xs text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
                             <div className="flex items-center gap-1.5 font-semibold text-rose-700 dark:text-rose-400">
-                                <AlertCircle className="size-4 shrink-0" />
-                                <span>Terdapat kesalahan pengisian data:</span>
+                                <AlertCircle className="size-3.5 shrink-0" />
+                                <span>Terdapat kesalahan validasi:</span>
                             </div>
-                            <ul className="mt-1.5 list-inside list-disc space-y-0.5 pl-1 text-[11.5px]">
+                            <ul className="mt-1 list-inside list-disc space-y-0.5 pl-1 text-[11px]">
                                 {Object.values(errors).map((err, i) => (
                                     <li key={i}>{err}</li>
                                 ))}
@@ -341,33 +306,44 @@ export function EditPartnerTransactionDialog({
                         </div>
                     )}
 
-                    <DialogFooter className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-2 border-t border-slate-100 pt-4 dark:border-white/[0.06]">
+                    <DialogFooter className="border-t border-slate-100 pt-3 dark:border-white/[0.06] flex items-center justify-between sm:justify-between">
                         <Button
                             type="button"
                             variant="ghost"
+                            size="sm"
                             onClick={handleDelete}
                             disabled={processing}
-                            className="h-9 px-3 text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/30"
+                            className="h-8.5 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/30 gap-1"
                         >
-                            <Trash2 className="mr-1.5 size-3.5" />
-                            Hapus Transaksi
+                            <Trash2 className="size-3.5" /> Hapus
                         </Button>
-                        <div className="flex items-center justify-end gap-2">
+
+                        <div className="flex items-center gap-2">
                             <Button
                                 type="button"
-                                variant="outline"
+                                variant="ghost"
                                 onClick={() => onOpenChange(false)}
                                 disabled={processing}
-                                className="h-9 rounded-xl border-slate-200 px-4 text-xs font-medium hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                className="h-8.5 rounded-lg text-xs font-semibold"
                             >
                                 Batal
                             </Button>
                             <Button
                                 type="submit"
                                 disabled={processing}
-                                className="h-9 rounded-xl bg-amber-600 px-5 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 active:scale-95 dark:bg-amber-600 dark:hover:bg-amber-500"
+                                className="h-8.5 rounded-lg bg-amber-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 dark:bg-amber-600 dark:hover:bg-amber-700 gap-1.5"
                             >
-                                {processing ? 'Menyimpan...' : 'Simpan Perubahan Transaksi'}
+                                {processing ? (
+                                    <>
+                                        <Loader2 className="size-3.5 animate-spin" />
+                                        Menyimpan...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save className="size-3.5" />
+                                        Simpan Perubahan
+                                    </>
+                                )}
                             </Button>
                         </div>
                     </DialogFooter>
