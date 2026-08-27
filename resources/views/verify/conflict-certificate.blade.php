@@ -10,7 +10,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Verifikasi Sertifikat Bebas Konflik {{ $certNumber }} | RPK Law Firm</title>
+    <title>Surat Keterangan Bebas Benturan Kepentingan {{ $certNumber }} | RPK Law Firm</title>
     <link rel="icon" type="image/png" href="/images/rpkapp.png">
     <link rel="apple-touch-icon" href="/images/rpkapp.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,7 +27,7 @@
     </style>
 </head>
 <body class="min-h-full bg-slate-100 text-slate-900 flex flex-col justify-between py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto w-full max-w-[820px] space-y-5">
+    <div class="mx-auto w-full max-w-[820px] space-y-4">
         
         <!-- Corporate Letterhead Header -->
         <header class="flex items-center justify-between rounded-2xl border border-slate-200/90 bg-white p-4 sm:px-6 shadow-xs">
@@ -50,11 +50,23 @@
                 </div>
             </div>
 
-            <div class="inline-flex items-center gap-1.5 rounded-full bg-emerald-950/90 border border-emerald-500/30 px-3.5 py-1 text-xs font-bold text-emerald-300 shadow-xs">
-                <svg class="size-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                </svg>
-                <span>Sertifikat Etika Sah &amp; Otentik</span>
+            <div>
+                @if ($isClear)
+                    <div class="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
+                        <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                        <span>Terverifikasi Resmi</span>
+                    </div>
+                @elseif ($isWaived)
+                    <div class="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">
+                        <span class="size-1.5 rounded-full bg-amber-500"></span>
+                        <span>Dispensasi Disetujui</span>
+                    </div>
+                @else
+                    <div class="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-800">
+                        <span class="size-1.5 rounded-full bg-rose-500"></span>
+                        <span>Benturan Terdeteksi</span>
+                    </div>
+                @endif
             </div>
         </header>
 
@@ -62,42 +74,44 @@
         <main class="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-xl shadow-slate-200/50 divide-y divide-slate-100">
             
             <!-- Hero Top Header -->
-            <div class="p-6 sm:p-8 space-y-5 bg-gradient-to-b from-slate-50/80 via-white to-white">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                    <span class="rounded-md bg-slate-900 px-2.5 py-1 font-mono text-[9px] font-extrabold tracking-wider text-white uppercase">
-                        RPK APP ETHICAL CLEARANCE VERIFIED
-                    </span>
-                    <span class="text-xs font-medium text-slate-500">
-                        Diverifikasi pada {{ now()->timezone(config('raf.timezone'))->translatedFormat('d F Y, H:i') }} WIB
+            <div class="p-6 sm:p-8 space-y-4 bg-gradient-to-b from-slate-50/80 via-white to-white">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">
+                        <span class="font-bold text-slate-900">RPK Law Firm</span>
+                        <span>•</span>
+                        <span>Divisi Kepatuhan Etika Profesi</span>
+                    </div>
+                    <span class="text-[11px] text-slate-400">
+                        Diverifikasi: <span class="font-medium text-slate-600">{{ now()->timezone(config('raf.timezone'))->translatedFormat('d F Y, H:i') }} WIB</span>
                     </span>
                 </div>
 
                 <div>
                     <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                        Verifikasi Surat Bebas Benturan Kepentingan
+                        Surat Keterangan Bebas Benturan Kepentingan
                     </h1>
                     <p class="mt-1 text-xs sm:text-sm text-slate-600">
-                        Dokumen otorisasi kepatuhan etika dan uji benturan kepentingan resmi RPK Law Firm.
+                        Pemeriksaan Independen Kepatuhan Kode Etik Advokat Indonesia (Conflict of Interest Clearance).
                     </p>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Nomor Sertifikat</div>
-                        <div class="mt-1 font-mono text-sm sm:text-base font-black text-slate-900">{{ $certNumber }}</div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1">
+                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Nomor Registrasi</div>
+                        <div class="mt-1 font-mono text-xs sm:text-sm font-black text-slate-900 truncate">{{ $certNumber }}</div>
                     </div>
-                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tanggal Pemeriksaan</div>
-                        <div class="mt-1 text-sm sm:text-base font-black text-emerald-700">
+                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Tanggal Pemeriksaan</div>
+                        <div class="mt-1 text-xs sm:text-sm font-bold text-slate-900">
                             {{ $conflictCheck->created_at?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}
                         </div>
                     </div>
-                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-4">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-500">Keputusan Etika</div>
+                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Status Hasil Uji</div>
                         <div class="mt-1">
                             @if ($isClear)
                                 <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800">
-                                    MEMENUHI SYARAT (CLEAR)
+                                    BEBAS BENTURAN (CLEAR)
                                 </span>
                             @elseif ($isWaived)
                                 <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-800">
@@ -105,7 +119,7 @@
                                 </span>
                             @else
                                 <span class="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-bold text-rose-800">
-                                    BENTURAN (BLOCKED)
+                                    TERDAPAT BENTURAN (BLOCKED)
                                 </span>
                             @endif
                         </div>
@@ -114,10 +128,10 @@
             </div>
 
             <!-- Subject & Parties Details -->
-            <div class="p-6 sm:p-8 space-y-6">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div class="space-y-3">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Subjek &amp; Pihak yang Diperiksa</h3>
+            <div class="p-6 sm:p-8 space-y-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div class="space-y-2.5">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Subjek yang Diperiksa</h3>
                         <div class="rounded-2xl border border-slate-200 p-4 space-y-2 bg-slate-50/50">
                             <div class="text-base font-black text-slate-900">{{ $conflictCheck->subject_name }}</div>
                             <div class="text-xs text-slate-600 space-y-1">
@@ -134,10 +148,10 @@
                         </div>
                     </div>
 
-                    <div class="space-y-3">
+                    <div class="space-y-2.5">
                         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Otorisasi &amp; Peninjauan Etika</h3>
-                        <div class="rounded-2xl border border-emerald-200/80 p-4 bg-emerald-50/40 space-y-2">
-                            <div class="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Pejabat Kepatuhan Etika</div>
+                        <div class="rounded-2xl border border-slate-200 p-4 bg-slate-50/50 space-y-2">
+                            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Pejabat Kepatuhan Etika</div>
                             <div class="text-base font-black text-slate-900">
                                 {{ $conflictCheck->reviewer->name ?? 'Managing Partner RPK' }}
                             </div>
@@ -152,11 +166,11 @@
                 </div>
 
                 @if (is_array($conflictCheck->searched_names) && count($conflictCheck->searched_names) > 0)
-                    <div class="space-y-3 pt-1">
+                    <div class="space-y-2 pt-1">
                         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Entitas &amp; Nama yang Disisir Database</h3>
-                        <div class="flex flex-wrap gap-2">
+                        <div class="flex flex-wrap gap-1.5">
                             @foreach ($conflictCheck->searched_names as $name)
-                                <span class="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700">
+                                <span class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700">
                                     {{ $name }}
                                 </span>
                             @endforeach
@@ -165,7 +179,7 @@
                 @endif
 
                 @if ($conflictCheck->decision_note)
-                    <div class="space-y-3 pt-1">
+                    <div class="space-y-2 pt-1">
                         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Catatan &amp; Pertimbangan Legal</h3>
                         <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-xs text-slate-700 leading-relaxed">
                             {{ $conflictCheck->decision_note }}
@@ -180,18 +194,16 @@
                             <img 
                                 src="{{ route('verify.conflict-certificate.qr', $conflictCheck) }}" 
                                 alt="QR Code Verifikasi" 
-                                class="size-16 sm:size-20 object-contain"
+                                class="size-16 sm:size-18 object-contain"
                             />
                         </div>
                         <div class="space-y-1 text-xs">
                             <div class="font-bold text-slate-900 flex items-center gap-1.5">
-                                <svg class="size-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                </svg>
-                                <span>Terverifikasi Sah Secara Digital</span>
+                                <span class="size-2 rounded-full bg-emerald-500"></span>
+                                <span>Dokumen Terdaftar Resmi</span>
                             </div>
                             <p class="text-slate-500 text-[11px]">
-                                Sertifikat ini dijamin keasliannya dan tercatat dalam repositori sistem RPK Law Firm.
+                                Dokumen ini diterbitkan melalui sistem terkomputerisasi RPK Law Firm dan sah tanpa tanda tangan basah.
                             </p>
                             <div class="font-mono text-[10px] text-slate-400 truncate max-w-[340px]">
                                 ID: {{ $conflictCheck->id }}
