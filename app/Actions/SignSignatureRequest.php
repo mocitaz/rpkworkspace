@@ -59,6 +59,13 @@ class SignSignatureRequest
                 'stamp_layout' => (string) $request->input('stamp_layout', 'sig_left'),
                 'name_position' => (string) $request->input('name_position', 'bottom'),
                 'signer_title' => $request->filled('signer_title') ? (string) $request->input('signer_title') : null,
+                'stamp_width' => $request->filled('stamp_width') ? (float) $request->input('stamp_width') : 50.0,
+                'stamp_height' => $request->filled('stamp_height') ? (float) $request->input('stamp_height') : 30.0,
+                'show_qr' => $request->has('show_qr') ? $request->boolean('show_qr') : true,
+                'show_name' => $request->has('show_name') ? $request->boolean('show_name') : true,
+                'show_title' => $request->has('show_title') ? $request->boolean('show_title') : true,
+                'show_border' => $request->has('show_border') ? $request->boolean('show_border') : true,
+                'signature_type' => (string) $request->input('signature_type', 'draw'),
             ]);
 
             if (! $signatureRequest->signers()->where('status', 'pending')->exists()) {

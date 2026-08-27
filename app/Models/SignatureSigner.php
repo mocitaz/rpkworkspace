@@ -30,6 +30,13 @@ class SignatureSigner extends Model
         'stamp_layout',
         'name_position',
         'signer_title',
+        'stamp_width',
+        'stamp_height',
+        'show_qr',
+        'show_name',
+        'show_title',
+        'show_border',
+        'signature_type',
     ];
 
     protected $hidden = ['signed_ip_address', 'signed_user_agent', 'signature_data'];
@@ -46,6 +53,12 @@ class SignatureSigner extends Model
             'page_number' => 'integer',
             'position_x' => 'float',
             'position_y' => 'float',
+            'stamp_width' => 'float',
+            'stamp_height' => 'float',
+            'show_qr' => 'boolean',
+            'show_name' => 'boolean',
+            'show_title' => 'boolean',
+            'show_border' => 'boolean',
         ];
     }
 

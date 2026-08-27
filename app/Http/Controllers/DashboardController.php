@@ -6,6 +6,7 @@ use App\Models\AuditLog;
 use App\Models\Deadline;
 use App\Models\Document;
 use App\Models\Matter;
+use App\Models\MatterChronology;
 use App\Models\MatterEvent;
 use App\Models\Task;
 use Illuminate\Http\Request;
@@ -371,6 +372,55 @@ class DashboardController extends Controller
             $completedTodayCount = Task::query()->where('status', 'completed')->count();
         }
 
+        // 8. Recent Case Milestones (Perkembangan & Kronologi Perkara Terkini)
+        $caseMilestones = MatterChronology::query()
+            ->with([
+                'matter:id,matter_number,title,client_id',
+                'matter.client:id,display_name',
+                'creator:id,name,avatar_path',
+            ])
+            ->whereIn('matter_id', $visibleMatterIds)
+            ->orderByDesc('event_date')
+            ->orderByDesc('created_at')
+            ->limit(5)
+            ->get()
+            ->map(function ($c) {
+                $level = strtolower($c->importance_level ?? 'normal');
+                $badgeColor = match ($level) {
+                    'critical' => 'rose',
+                    'high' => 'amber',
+                    'low' => 'slate',
+                    default => 'blue',
+                };
+                $badgeLabel = match ($level) {
+                    'critical' => 'Krusial',
+                    'high' => 'Signifikan',
+                    'low' => 'Catatan',
+                    default => 'Milestone',
+                };
+
+                return [
+                    'id' => $c->id,
+                    'title' => $c->title,
+                    'description' => $c->description,
+                    'event_date' => $c->event_date ? $c->event_date->translatedFormat('d M Y') : null,
+                    'date_raw' => $c->event_date?->format('Y-m-d'),
+                    'relative_time' => $c->event_date ? $c->event_date->diffForHumans() : null,
+                    'importance_level' => $level,
+                    'badge_label' => $badgeLabel,
+                    'badge_color' => $badgeColor,
+                    'evidence_reference' => $c->evidence_reference,
+                    'witness_name' => $c->witness_name,
+                    'matter_id' => $c->matter_id,
+                    'matter_number' => $c->matter?->matter_number,
+                    'matter_title' => $c->matter?->title,
+                    'client_name' => $c->matter?->client?->display_name,
+                    'creator_name' => $c->creator?->name ?? 'Advokat Tim',
+                    'creator_avatar' => $c->creator?->avatar_url ?? $c->creator?->avatar_path,
+                    'url' => route('matters.show', $c->matter_id),
+                ];
+            });
+
         $docApprovedCount = Document::query()->visibleTo($user)->where('status', 'approved')->count();
         $docFiledCount = Document::query()->visibleTo($user)->whereIn('status', ['archived', 'final', 'filed'])->count();
 
@@ -400,6 +450,7 @@ class DashboardController extends Controller
                 'completed' => $completedTasks,
             ],
             'matter_health' => $matterHealth,
+            'case_milestones' => $caseMilestones,
             'activities' => $activities,
             'tasks' => Task::query()->with(['matter:id,matter_number,title', 'assignee:id,name'])->where('assignee_id', $userId)
                 ->whereNotIn('status', ['completed', 'cancelled'])->orderByRaw('due_at is null, due_at asc')->limit(6)->get(),

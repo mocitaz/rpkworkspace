@@ -49,6 +49,27 @@ import * as financeRoutes from '@/routes/finance';
 import * as mattersRoutes from '@/routes/matters';
 import * as tasksRoutes from '@/routes/tasks';
 
+type CaseMilestoneItem = {
+    id: string | number;
+    title: string;
+    description?: string | null;
+    event_date: string | null;
+    date_raw?: string | null;
+    relative_time?: string | null;
+    importance_level?: string;
+    badge_label: string;
+    badge_color: 'rose' | 'amber' | 'blue' | 'slate' | 'emerald';
+    evidence_reference?: string | null;
+    witness_name?: string | null;
+    matter_id: string | number;
+    matter_number?: string;
+    matter_title?: string;
+    client_name?: string;
+    creator_name: string;
+    creator_avatar?: string | null;
+    url?: string | null;
+};
+
 type MetricData = {
     active_matters: number;
     corporate_matters: number;
@@ -217,6 +238,7 @@ export default function Dashboard({
     upcoming_events = [],
     work_queue,
     matter_health = [],
+    case_milestones = [],
     activities = [],
     tasks = [],
     deadlines = [],
@@ -236,6 +258,7 @@ export default function Dashboard({
         completed?: Task[];
     };
     matter_health?: MatterHealthItem[];
+    case_milestones?: CaseMilestoneItem[];
     activities?: ActivityItem[];
     tasks?: Task[];
     deadlines?: Deadline[];
@@ -950,65 +973,48 @@ export default function Dashboard({
                             </div>
                         </div>
 
-                        {/* [Row 2, Col 2] Widget 4: Recent Audit Activity */}
+                        {/* [Row 2, Col 2] Widget 4: Recent Case Milestones (Perkembangan Perkara Terkini) */}
                         <div className="flex h-[390px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
                                 <div className="flex items-center gap-2">
                                     <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                        Aktivitas &amp; Log Terkini
+                                        Milestone &amp; Perkembangan Perkara
                                     </h2>
-                                    <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[9px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-400">
-                                        Audit Trail
-                                    </span>
                                 </div>
                                 <Link
-                                    href={auditRoutes.index.url()}
+                                    href={mattersRoutes.index.url()}
                                     className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                                 >
-                                    Semua Log →
+                                    Semua Perkara →
                                 </Link>
                             </div>
 
                             <div className="flex flex-1 flex-col overflow-hidden py-1">
-                                {!activities || activities.length === 0 ? (
+                                {!case_milestones || case_milestones.length === 0 ? (
                                     <div className="flex flex-1 flex-col items-center justify-center px-4 py-4 text-center">
-                                        <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
-                                            <Clock className="size-4.5" />
+                                        <div className="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
+                                            <Scale className="size-4.5" />
                                         </div>
                                         <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
-                                            Log Siap Merekam
+                                            Belum Ada Milestone Baru
                                         </p>
                                         <p className="mt-0.5 max-w-xs text-[11px] text-slate-400 dark:text-zinc-500">
-                                            Setiap aktivitas tim pada perkara,
-                                            berkas, dan penagihan akan otomatis
-                                            tercatat di sini.
+                                            Setiap peristiwa penting, mediasi, replik/duplik, atau putusan perkara akan otomatis tercatat di sini.
                                         </p>
                                     </div>
                                 ) : (
                                     <div className="flex-1 [scrollbar-width:thin] divide-y divide-slate-100 overflow-y-auto pr-1 dark:divide-white/[0.04]">
-                                        {activities.map((act, idx) => {
+                                        {case_milestones.map((ms, idx) => {
                                             const badgeColorClass =
-                                                act.badge_color === 'blue'
-                                                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
-                                                    : act.badge_color ===
-                                                        'purple'
-                                                      ? 'bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300'
-                                                      : act.badge_color ===
-                                                          'emerald'
-                                                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
-                                                        : act.badge_color ===
-                                                            'amber'
-                                                          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
-                                                          : act.badge_color ===
-                                                              'indigo'
-                                                            ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300'
-                                                            : act.badge_color ===
-                                                                'cyan'
-                                                              ? 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/60 dark:text-cyan-300'
-                                                              : act.badge_color ===
-                                                                  'teal'
-                                                                ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300'
-                                                                : 'bg-slate-100 text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300';
+                                                ms.badge_color === 'rose'
+                                                    ? 'bg-rose-50 text-rose-700 border border-rose-200/60 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-900/40'
+                                                    : ms.badge_color === 'amber'
+                                                      ? 'bg-amber-50 text-amber-700 border border-amber-200/60 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-900/40'
+                                                      : ms.badge_color === 'emerald'
+                                                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-900/40'
+                                                        : ms.badge_color === 'slate'
+                                                          ? 'bg-slate-100 text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300'
+                                                          : 'bg-blue-50 text-blue-700 border border-blue-200/60 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-900/40';
 
                                             const content = (
                                                 <div className="min-w-0 flex-1 space-y-1">
@@ -1017,58 +1023,62 @@ export default function Dashboard({
                                                             <span
                                                                 className={`shrink-0 rounded-md px-1.5 py-0.5 text-[9px] font-bold ${badgeColorClass}`}
                                                             >
-                                                                {act.badge ||
-                                                                    'Aktivitas'}
+                                                                {ms.badge_label || 'Milestone'}
                                                             </span>
                                                             <span className="truncate text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
-                                                                {act.title}
+                                                                {ms.title}
                                                             </span>
                                                         </div>
                                                         <span className="shrink-0 font-mono text-[10px] whitespace-nowrap text-slate-400">
-                                                            {act.time}
+                                                            {ms.event_date || ms.relative_time}
                                                         </span>
                                                     </div>
+
                                                     <p
                                                         className="truncate text-[11px] text-slate-500 dark:text-zinc-400"
-                                                        title={
-                                                            act.detail ||
-                                                            act.subject
-                                                        }
+                                                        title={ms.description || `${ms.matter_number} · ${ms.matter_title}`}
                                                     >
-                                                        {act.detail ||
-                                                            act.subject}
+                                                        {ms.matter_number ? (
+                                                            <span className="font-mono font-semibold text-slate-700 dark:text-zinc-300">
+                                                                {ms.matter_number} ·{' '}
+                                                            </span>
+                                                        ) : null}
+                                                        <span>{ms.description || ms.matter_title}</span>
                                                     </p>
-                                                    <div className="flex items-center gap-1.5 pt-0.5">
-                                                        <Avatar className="size-4 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                            <AvatarImage
-                                                                src={
-                                                                    act.actor_avatar
-                                                                }
-                                                            />
-                                                            <AvatarFallback className="text-[6.5px] font-bold">
-                                                                {getInitials(
-                                                                    act.actor,
-                                                                )}
-                                                            </AvatarFallback>
-                                                        </Avatar>
-                                                        <span className="truncate text-[10px] font-medium text-slate-600 dark:text-zinc-400">
-                                                            {act.actor}
-                                                        </span>
+
+                                                    <div className="flex items-center justify-between gap-2 pt-0.5 text-[10px]">
+                                                        <div className="flex items-center gap-1.5 min-w-0">
+                                                            <Avatar className="size-4 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                <AvatarImage src={ms.creator_avatar || undefined} />
+                                                                <AvatarFallback className="text-[6.5px] font-bold">
+                                                                    {getInitials(ms.creator_name)}
+                                                                </AvatarFallback>
+                                                            </Avatar>
+                                                            <span className="truncate font-medium text-slate-600 dark:text-zinc-400">
+                                                                {ms.creator_name}
+                                                            </span>
+                                                        </div>
+
+                                                        {ms.client_name && (
+                                                            <span className="shrink-0 font-medium text-slate-400 truncate max-w-[130px]">
+                                                                {ms.client_name}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </div>
                                             );
 
-                                            return act.url ? (
+                                            return ms.url ? (
                                                 <Link
-                                                    key={act.id || idx}
-                                                    href={act.url}
-                                                    className="group -mx-1.5 flex items-start gap-2.5 rounded-lg px-1.5 py-2.5 transition-colors hover:bg-slate-50/70 dark:hover:bg-white/[0.02]"
+                                                    key={ms.id || idx}
+                                                    href={ms.url}
+                                                    className="group -mx-1.5 flex items-start gap-2.5 rounded-lg px-1.5 py-2.5 transition-colors hover:bg-slate-50/80 dark:hover:bg-white/[0.03]"
                                                 >
                                                     {content}
                                                 </Link>
                                             ) : (
                                                 <div
-                                                    key={act.id || idx}
+                                                    key={ms.id || idx}
                                                     className="group -mx-1.5 flex items-start gap-2.5 px-1.5 py-2.5"
                                                 >
                                                     {content}
@@ -1081,10 +1091,10 @@ export default function Dashboard({
 
                             <div className="mt-auto shrink-0 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
                                 <Link
-                                    href={auditRoutes.index.url()}
+                                    href={mattersRoutes.index.url()}
                                     className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                                 >
-                                    Buka Audit Trail Lengkap →
+                                    Buka Seluruh Perkara →
                                 </Link>
                             </div>
                         </div>

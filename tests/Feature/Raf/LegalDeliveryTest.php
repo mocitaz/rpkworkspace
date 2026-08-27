@@ -160,3 +160,60 @@ it('allows choosing a specific document version for e-signature request', functi
     expect($signatureRequest->document_version_id)->toBe($version1->getKey())
         ->and($signatureRequest->document_checksum)->toBe($version1->checksum);
 });
+
+it('renders the executive signing page with Privy-grade stamp customization and accepts customized stamp parameters', function () {
+    $actor = rafUser();
+    $document = Document::factory()->recycle($actor)->create(['status' => 'approved']);
+    $version = DocumentVersion::factory()->recycle($document)->recycle($actor)->create(['document_id' => $document->getKey(), 'uploaded_by' => $actor->getKey()]);
+    $document->update(['current_version_id' => $version->getKey()]);
+
+    $signatureRequest = app(CreateSignatureRequest::class)->handle($document, $actor, [
+        ['name' => 'Muhamad Fajar Roni, S.H.', 'email' => 'fajar@rpklawoffice.local'],
+    ]);
+
+    $signer = $signatureRequest->signers()->sole();
+
+    // 1. View signing page
+    $this->get(route('signature.sign.show', $signer->signing_token))
+        ->assertSuccessful()
+        ->assertSee('RPK LAW FIRM')
+        ->assertSee('Digital Signing Workspace')
+        ->assertSee('UU ITE & SHA-256 Valid')
+        ->assertSee('Bubuhkan Tanda Tangan')
+        ->assertSee('Pengaturan Stempel & Ukuran Presisi')
+        ->assertSee('Sertakan QR Code');
+
+    // 2. Submit signature with customized stamp dimensions and toggles
+    $response = $this->post(route('signature.sign.store', $signer->signing_token), [
+        'accepted_name' => 'Muhamad Fajar Roni, S.H.',
+        'signer_title' => 'Managing Partner & Advocate',
+        'accept_terms' => '1',
+        'signature_data' => 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        'page_number' => 1,
+        'position_x' => 65.5,
+        'position_y' => 80.0,
+        'stamp_width' => 48.0,
+        'stamp_height' => 28.0,
+        'show_qr' => '0',
+        'show_name' => '1',
+        'show_title' => '1',
+        'show_border' => '1',
+        'stamp_layout' => 'sig_left',
+        'name_position' => 'bottom',
+        'signature_type' => 'type',
+    ]);
+
+    $response->assertRedirect(route('signature.verify', $signatureRequest->verification_code));
+
+    $signer->refresh();
+    expect($signer->status)->toBe('signed')
+        ->and($signer->accepted_name)->toBe('Muhamad Fajar Roni, S.H.')
+        ->and($signer->signer_title)->toBe('Managing Partner & Advocate')
+        ->and((float) $signer->stamp_width)->toBe(48.0)
+        ->and((float) $signer->stamp_height)->toBe(28.0)
+        ->and($signer->show_qr)->toBeFalse()
+        ->and($signer->show_name)->toBeTrue()
+        ->and($signer->show_title)->toBeTrue()
+        ->and($signer->show_border)->toBeTrue()
+        ->and($signer->signature_type)->toBe('type');
+});

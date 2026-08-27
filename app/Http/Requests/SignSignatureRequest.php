@@ -29,9 +29,16 @@ class SignSignatureRequest extends FormRequest
             'page_number' => ['nullable', 'integer', 'min:1'],
             'position_x' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'position_y' => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'stamp_layout' => ['nullable', 'string', 'in:sig_left,qr_left,stacked'],
-            'name_position' => ['nullable', 'string', 'in:bottom,top'],
+            'stamp_layout' => ['nullable', 'string', 'in:sig_left,qr_left,stacked,sig_only,qr_only'],
+            'name_position' => ['nullable', 'string', 'in:bottom,top,none'],
             'signer_title' => ['nullable', 'string', 'max:255'],
+            'stamp_width' => ['nullable', 'numeric', 'min:20', 'max:150'],
+            'stamp_height' => ['nullable', 'numeric', 'min:12', 'max:100'],
+            'show_qr' => ['nullable', 'boolean'],
+            'show_name' => ['nullable', 'boolean'],
+            'show_title' => ['nullable', 'boolean'],
+            'show_border' => ['nullable', 'boolean'],
+            'signature_type' => ['nullable', 'string', 'in:draw,type,upload'],
         ];
     }
 }

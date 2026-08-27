@@ -157,6 +157,12 @@ class GenerateSignedFinalPdf
                 'layout' => $signer->stamp_layout ?: 'sig_left',
                 'name_pos' => $signer->name_position ?: 'bottom',
                 'title' => $signer->signer_title,
+                'stamp_width' => $signer->stamp_width ?: 50.0,
+                'stamp_height' => $signer->stamp_height ?: 30.0,
+                'show_qr' => $signer->show_qr ?? true,
+                'show_name' => $signer->show_name ?? true,
+                'show_title' => $signer->show_title ?? true,
+                'show_border' => $signer->show_border ?? true,
                 'sig_path' => $sigPath,
             ];
         }
@@ -187,122 +193,164 @@ class GenerateSignedFinalPdf
             });
 
             foreach ($pageSigners as $signerItem) {
-                // Determine placement coordinates & size
-                $stampW = 66; // mm
-                $stampH = 26; // mm
+                // Determine placement coordinates & dynamic size
+                $stampW = (float) ($signerItem['stamp_width'] ?? 50.0);
+                $stampH = (float) ($signerItem['stamp_height'] ?? 30.0);
+                $showQr = (bool) ($signerItem['show_qr'] ?? true);
+                $showName = (bool) ($signerItem['show_name'] ?? true);
+                $showTitle = (bool) ($signerItem['show_title'] ?? true);
+                $showBorder = (bool) ($signerItem['show_border'] ?? true);
+                $layout = (string) ($signerItem['layout'] ?? 'sig_left');
+                $namePos = (string) ($signerItem['name_pos'] ?? 'bottom');
 
                 if ($signerItem['pos_x'] !== null && $signerItem['pos_y'] !== null) {
                     $x = ($size['width'] * ((float) $signerItem['pos_x'])) / 100;
                     $y = ($size['height'] * ((float) $signerItem['pos_y'])) / 100;
-                    $x = max(5, min($size['width'] - $stampW - 5, $x));
-                    $y = max(5, min($size['height'] - $stampH - 5, $y));
+                    $x = max(3, min($size['width'] - $stampW - 3, $x));
+                    $y = max(3, min($size['height'] - $stampH - 3, $y));
                 } else {
-                    $x = $size['width'] - $stampW - 12;
-                    $y = $size['height'] - $stampH - 12;
+                    $x = $size['width'] - $stampW - 10;
+                    $y = $size['height'] - $stampH - 10;
                 }
 
-                // Draw clean white background card with refined border
-                $pdf->SetFillColor(255, 255, 255);
-                $pdf->SetDrawColor(218, 225, 233); // soft slate border
-                $pdf->SetLineWidth(0.3);
-                $pdf->Rect($x, $y, $stampW, $stampH, 'DF');
+                // Draw clean white background card with refined border if enabled
+                if ($showBorder) {
+                    $pdf->SetFillColor(255, 255, 255);
+                    $pdf->SetDrawColor(218, 225, 233); // soft slate border
+                    $pdf->SetLineWidth(0.25);
+                    $pdf->Rect($x, $y, $stampW, $stampH, 'DF');
+                }
 
-                $isQrLeft = $signerItem['layout'] === 'qr_left';
-                $isNameTop = $signerItem['name_pos'] === 'top';
+                $isQrLeft = $layout === 'qr_left';
+                $isNameTop = $namePos === 'top';
 
-                $qrSize = 20; // mm
-                $qrX = $isQrLeft ? $x + 3 : $x + $stampW - $qrSize - 3;
-                $qrY = $y + ($stampH - $qrSize) / 2;
+                if ($showQr && $layout !== 'sig_only') {
+                    $qrSize = min(18.0, min($stampW * 0.36, $stampH * 0.78));
+                    $qrMargin = 2.0;
+                    $qrX = $isQrLeft ? $x + $qrMargin : $x + $stampW - $qrSize - $qrMargin;
+                    $qrY = $y + ($stampH - $qrSize) / 2;
 
-                $contentX = $isQrLeft ? $x + $qrSize + 5.5 : $x + 3.5;
-                $contentW = $stampW - $qrSize - 8;
+                    $contentX = $isQrLeft ? $x + $qrSize + 3.5 : $x + 2.5;
+                    $contentW = $stampW - $qrSize - 6.0;
 
-                // QR Code Container Frame
-                $pdf->SetFillColor(248, 250, 252);
-                $pdf->SetDrawColor(226, 232, 240);
-                $pdf->SetLineWidth(0.2);
-                $pdf->Rect($qrX, $qrY, $qrSize, $qrSize, 'DF');
+                    // QR Code Container Frame
+                    $pdf->SetFillColor(248, 250, 252);
+                    $pdf->SetDrawColor(226, 232, 240);
+                    $pdf->SetLineWidth(0.15);
+                    $pdf->Rect($qrX, $qrY, $qrSize, $qrSize, 'DF');
 
-                // Draw QR Code inside framed container
-                $pdf->Image($qrPath, $qrX + 1, $qrY + 1, $qrSize - 2, $qrSize - 2, 'PNG');
+                    // Draw QR Code inside framed container
+                    $pdf->Image($qrPath, $qrX + 0.8, $qrY + 0.8, $qrSize - 1.6, $qrSize - 1.6, 'PNG');
+                } else {
+                    // Full width signature block without QR
+                    $contentX = $x + 2.5;
+                    $contentW = $stampW - 5.0;
+                }
 
-                if ($isNameTop) {
-                    // Name on Top
-                    $pdf->SetTextColor(15, 23, 42);
-                    $pdf->SetFont('Helvetica', 'B', 7.5);
-                    $pdf->SetXY($contentX, $y + 2.5);
-                    $pdf->Cell($contentW, 3.5, substr($signerItem['name'], 0, 28), 0, 0, 'L');
+                // Render Name & Title vs Signature
+                if ($showName && $namePos !== 'none') {
+                    $nameHeight = ($showTitle && $signerItem['title']) ? 7.0 : 4.5;
+                    $sigAvailableH = max(8.0, $stampH - $nameHeight - 3.5);
 
-                    if ($signerItem['title']) {
-                        $pdf->SetFont('Helvetica', '', 5.5);
-                        $pdf->SetTextColor(100, 116, 139);
-                        $pdf->SetXY($contentX, $y + 6);
-                        $pdf->Cell($contentW, 2.5, substr($signerItem['title'], 0, 32), 0, 0, 'L');
-                    }
+                    if ($isNameTop) {
+                        // Name on Top
+                        $pdf->SetTextColor(15, 23, 42);
+                        $pdf->SetFont('Helvetica', 'B', 7.0);
+                        $pdf->SetXY($contentX, $y + 1.8);
+                        $pdf->Cell($contentW, 3.2, substr($signerItem['name'], 0, 30), 0, 0, 'L');
 
-                    // Divider line under name
-                    $pdf->SetDrawColor(241, 245, 249);
-                    $pdf->SetLineWidth(0.2);
-                    $pdf->Line($contentX, $y + 9, $contentX + $contentW, $y + 9);
+                        if ($showTitle && $signerItem['title']) {
+                            $pdf->SetFont('Helvetica', '', 5.2);
+                            $pdf->SetTextColor(100, 116, 139);
+                            $pdf->SetXY($contentX, $y + 5.0);
+                            $pdf->Cell($contentW, 2.2, substr($signerItem['title'], 0, 34), 0, 0, 'L');
+                        }
 
-                    // Signature Image with STRICT aspect ratio preservation (No Distortion)
-                    if ($signerItem['sig_path'] && is_file($signerItem['sig_path'])) {
-                        $imgInfo = @getimagesize($signerItem['sig_path']);
-                        if ($imgInfo && $imgInfo[0] > 0 && $imgInfo[1] > 0) {
-                            $imgW = (float) $imgInfo[0];
-                            $imgH = (float) $imgInfo[1];
-                            $maxW = $contentW;
-                            $maxH = 14.5;
+                        // Divider line under name
+                        $pdf->SetDrawColor(241, 245, 249);
+                        $pdf->SetLineWidth(0.15);
+                        $lineY = $y + $nameHeight + 1.5;
+                        $pdf->Line($contentX, $lineY, $contentX + $contentW, $lineY);
 
-                            $scale = min($maxW / $imgW, $maxH / $imgH);
-                            $targetW = max(4, $imgW * $scale);
-                            $targetH = max(3, $imgH * $scale);
+                        // Signature Image below name
+                        if ($signerItem['sig_path'] && is_file($signerItem['sig_path'])) {
+                            $imgInfo = @getimagesize($signerItem['sig_path']);
+                            if ($imgInfo && $imgInfo[0] > 0 && $imgInfo[1] > 0) {
+                                $imgW = (float) $imgInfo[0];
+                                $imgH = (float) $imgInfo[1];
+                                $maxW = $contentW;
+                                $maxH = $sigAvailableH;
 
-                            // Center signature in slot
-                            $sigX = $contentX + ($maxW - $targetW) / 2;
-                            $sigY = $y + 10 + ($maxH - $targetH) / 2;
+                                $scale = min($maxW / $imgW, $maxH / $imgH);
+                                $targetW = max(3, $imgW * $scale);
+                                $targetH = max(3, $imgH * $scale);
 
-                            $pdf->Image($signerItem['sig_path'], $sigX, $sigY, $targetW, $targetH, 'PNG');
+                                $sigX = $contentX + ($maxW - $targetW) / 2;
+                                $sigY = $lineY + 1.0 + ($maxH - $targetH) / 2;
+
+                                $pdf->Image($signerItem['sig_path'], $sigX, $sigY, $targetW, $targetH, 'PNG');
+                            }
+                        }
+                    } else {
+                        // Signature on Top, Name on Bottom
+                        $lineY = $y + $stampH - $nameHeight - 1.5;
+
+                        if ($signerItem['sig_path'] && is_file($signerItem['sig_path'])) {
+                            $imgInfo = @getimagesize($signerItem['sig_path']);
+                            if ($imgInfo && $imgInfo[0] > 0 && $imgInfo[1] > 0) {
+                                $imgW = (float) $imgInfo[0];
+                                $imgH = (float) $imgInfo[1];
+                                $maxW = $contentW;
+                                $maxH = $sigAvailableH;
+
+                                $scale = min($maxW / $imgW, $maxH / $imgH);
+                                $targetW = max(3, $imgW * $scale);
+                                $targetH = max(3, $imgH * $scale);
+
+                                $sigX = $contentX + ($maxW - $targetW) / 2;
+                                $sigY = $y + 1.5 + ($maxH - $targetH) / 2;
+
+                                $pdf->Image($signerItem['sig_path'], $sigX, $sigY, $targetW, $targetH, 'PNG');
+                            }
+                        }
+
+                        // Divider line above name
+                        $pdf->SetDrawColor(241, 245, 249);
+                        $pdf->SetLineWidth(0.15);
+                        $pdf->Line($contentX, $lineY, $contentX + $contentW, $lineY);
+
+                        // Name on Bottom
+                        $pdf->SetTextColor(15, 23, 42);
+                        $pdf->SetFont('Helvetica', 'B', 7.0);
+                        $pdf->SetXY($contentX, $lineY + 1.0);
+                        $pdf->Cell($contentW, 3.2, substr($signerItem['name'], 0, 30), 0, 0, 'L');
+
+                        if ($showTitle && $signerItem['title']) {
+                            $pdf->SetFont('Helvetica', '', 5.2);
+                            $pdf->SetTextColor(100, 116, 139);
+                            $pdf->SetXY($contentX, $lineY + 4.2);
+                            $pdf->Cell($contentW, 2.2, substr($signerItem['title'], 0, 34), 0, 0, 'L');
                         }
                     }
                 } else {
-                    // Signature Image on Top with STRICT aspect ratio preservation (No Distortion)
+                    // Signature only (No name text) -> Takes full height
                     if ($signerItem['sig_path'] && is_file($signerItem['sig_path'])) {
                         $imgInfo = @getimagesize($signerItem['sig_path']);
                         if ($imgInfo && $imgInfo[0] > 0 && $imgInfo[1] > 0) {
                             $imgW = (float) $imgInfo[0];
                             $imgH = (float) $imgInfo[1];
                             $maxW = $contentW;
-                            $maxH = 14;
+                            $maxH = $stampH - 3.0;
 
                             $scale = min($maxW / $imgW, $maxH / $imgH);
-                            $targetW = max(4, $imgW * $scale);
+                            $targetW = max(3, $imgW * $scale);
                             $targetH = max(3, $imgH * $scale);
 
-                            // Center signature in slot
                             $sigX = $contentX + ($maxW - $targetW) / 2;
-                            $sigY = $y + 2 + ($maxH - $targetH) / 2;
+                            $sigY = $y + ($stampH - $targetH) / 2;
 
                             $pdf->Image($signerItem['sig_path'], $sigX, $sigY, $targetW, $targetH, 'PNG');
                         }
-                    }
-
-                    // Divider line above name
-                    $pdf->SetDrawColor(241, 245, 249);
-                    $pdf->SetLineWidth(0.2);
-                    $pdf->Line($contentX, $y + 17, $contentX + $contentW, $y + 17);
-
-                    // Name on Bottom
-                    $pdf->SetTextColor(15, 23, 42);
-                    $pdf->SetFont('Helvetica', 'B', 7.5);
-                    $pdf->SetXY($contentX, $y + 18);
-                    $pdf->Cell($contentW, 3.5, substr($signerItem['name'], 0, 28), 0, 0, 'L');
-
-                    if ($signerItem['title']) {
-                        $pdf->SetFont('Helvetica', '', 5.5);
-                        $pdf->SetTextColor(100, 116, 139);
-                        $pdf->SetXY($contentX, $y + 21.5);
-                        $pdf->Cell($contentW, 2.5, substr($signerItem['title'], 0, 32), 0, 0, 'L');
                     }
                 }
             }
