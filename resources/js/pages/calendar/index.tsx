@@ -796,7 +796,8 @@ function LiveCalendarSyncModal({
                             </span>
                         </div>
                         <Form
-                            {...calendarFeedRoutes.rotate.form()}
+                            action={calendarFeedRoutes.rotate.url()}
+                            method="post"
                             onSuccess={() => {}}
                         >
                             {({ processing }) => (

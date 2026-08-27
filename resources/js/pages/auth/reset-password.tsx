@@ -34,7 +34,8 @@ export default function ResetPassword({ token, email, passwordRules }: Props) {
             <Head title="Reset Password - RPK App" />
 
             <Form
-                {...update.form()}
+                action={update.url()}
+                method="post"
                 transform={(data) => ({ ...data, token, email })}
                 resetOnSuccess={['password', 'password_confirmation']}
                 className="space-y-4"

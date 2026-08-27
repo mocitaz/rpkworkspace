@@ -281,7 +281,8 @@ export default function MatterCreate({
                             </div>
                         ) : canRunConflictCheck ? (
                             <Form
-                                {...conflictRoutes.store.form()}
+                                action={conflictRoutes.store.url()}
+                                method="post"
                                 className="mt-3 space-y-3.5"
                             >
                                 {({ processing, errors }) => (
@@ -526,7 +527,8 @@ export default function MatterCreate({
                         )}
 
                         <Form
-                            {...matterRoutes.store.form()}
+                            action={matterRoutes.store.url()}
+                            method="post"
                             className="mt-4 space-y-4"
                             resetOnSuccess
                         >

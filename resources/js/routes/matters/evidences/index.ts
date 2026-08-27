@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\MatterOperationController::store
 * @see app/Http/Controllers/MatterOperationController.php:102
@@ -58,6 +58,28 @@ store.post = (args: { matter: string | { id: string } } | [matter: string | { id
 })
 
 /**
+* @see \App\Http\Controllers\MatterOperationController::store
+* @see app/Http/Controllers/MatterOperationController.php:102
+* @route '/matters/{matter}/evidences'
+*/
+const storeForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::store
+* @see app/Http/Controllers/MatterOperationController.php:102
+* @route '/matters/{matter}/evidences'
+*/
+storeForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(args, options),
+    method: 'post',
+})
+
+store.form = storeForm
+
+/**
 * @see \App\Http\Controllers\MatterOperationController::update
 * @see app/Http/Controllers/MatterOperationController.php:132
 * @route '/matters/{matter}/evidences/{evidence}'
@@ -113,6 +135,38 @@ update.put = (args: { matter: string | { id: string }, evidence: string | { id: 
 })
 
 /**
+* @see \App\Http\Controllers\MatterOperationController::update
+* @see app/Http/Controllers/MatterOperationController.php:132
+* @route '/matters/{matter}/evidences/{evidence}'
+*/
+const updateForm = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::update
+* @see app/Http/Controllers/MatterOperationController.php:132
+* @route '/matters/{matter}/evidences/{evidence}'
+*/
+updateForm.put = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\MatterOperationController::destroy
 * @see app/Http/Controllers/MatterOperationController.php:159
 * @route '/matters/{matter}/evidences/{evidence}'
@@ -166,6 +220,38 @@ destroy.delete = (args: { matter: string | { id: string }, evidence: string | { 
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::destroy
+* @see app/Http/Controllers/MatterOperationController.php:159
+* @route '/matters/{matter}/evidences/{evidence}'
+*/
+const destroyForm = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::destroy
+* @see app/Http/Controllers/MatterOperationController.php:159
+* @route '/matters/{matter}/evidences/{evidence}'
+*/
+destroyForm.delete = (args: { matter: string | { id: string }, evidence: string | { id: string } } | [matter: string | { id: string }, evidence: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 const evidences = {
     store: Object.assign(store, store),

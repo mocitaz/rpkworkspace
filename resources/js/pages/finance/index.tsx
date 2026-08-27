@@ -1643,9 +1643,10 @@ function Ledger({
                                             i.invoice_number &&
                                             i.status === 'draft' && (
                                                 <Form
-                                                    {...invoiceRoutes.transition.form(
+                                                    action={invoiceRoutes.transition.url(
                                                         i.id,
                                                     )}
+                                                    method="patch"
                                                 >
                                                     <input
                                                         type="hidden"
@@ -1688,9 +1689,10 @@ function Ledger({
                                                 'pending_approval',
                                             ].includes(i.status) && (
                                                 <Form
-                                                    {...quotationRoutes.approve.form(
+                                                    action={quotationRoutes.approve.url(
                                                         i.id,
                                                     )}
+                                                    method="post"
                                                 >
                                                     <Button
                                                         size="sm"
@@ -2063,7 +2065,8 @@ function ReversePaymentDialog({
                 </DialogHeader>
                 {payment && (
                     <Form
-                        {...paymentRoutes.reverse.form(payment.id)}
+                        action={paymentRoutes.reverse.url(payment.id)}
+                        method="post"
                         className="space-y-3 pt-1"
                         onSuccess={onClose}
                     >
@@ -2145,7 +2148,8 @@ function RefundPaymentDialog({
                 </DialogHeader>
                 {payment && (
                     <Form
-                        {...paymentRoutes.refund.form(payment.id)}
+                        action={paymentRoutes.refund.url(payment.id)}
+                        method="post"
                         className="space-y-3 pt-1"
                         onSuccess={onClose}
                     >
@@ -2228,7 +2232,8 @@ function CancelInvoiceDialog({
                 </DialogHeader>
                 {invoice && (
                     <Form
-                        {...invoiceRoutes.transition.form(invoice.id)}
+                        action={invoiceRoutes.transition.url(invoice.id)}
+                        method="patch"
                         className="space-y-3 pt-1"
                         onSuccess={onClose}
                     >
@@ -2429,7 +2434,8 @@ function FinanceDialog({
                 </DialogHeader>
 
                 <Form
-                    {...route.form()}
+                    action={route.url()}
+                    method="post"
                     encType="multipart/form-data"
                     className="space-y-4 pt-2"
                     onSuccess={onClose}

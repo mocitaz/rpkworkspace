@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
 * @see app/Http/Controllers/PublicVerificationController.php:80
@@ -66,6 +66,43 @@ qr.head = (args: { correspondence: string | { id: string } } | [correspondence: 
     url: qr.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::qr
+* @see app/Http/Controllers/PublicVerificationController.php:80
+* @route '/verify/correspondence/{correspondence}/qr.svg'
+*/
+const qrForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: qr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::qr
+* @see app/Http/Controllers/PublicVerificationController.php:80
+* @route '/verify/correspondence/{correspondence}/qr.svg'
+*/
+qrForm.get = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: qr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::qr
+* @see app/Http/Controllers/PublicVerificationController.php:80
+* @route '/verify/correspondence/{correspondence}/qr.svg'
+*/
+qrForm.head = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: qr.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+qr.form = qrForm
 
 const correspondence = {
     qr: Object.assign(qr, qr),

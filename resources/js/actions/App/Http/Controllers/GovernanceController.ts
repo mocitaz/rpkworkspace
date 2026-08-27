@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\GovernanceController::index
 * @see app/Http/Controllers/GovernanceController.php:38
@@ -44,6 +44,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\GovernanceController::index
+* @see app/Http/Controllers/GovernanceController.php:38
+* @route '/governance'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::index
+* @see app/Http/Controllers/GovernanceController.php:38
+* @route '/governance'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::index
+* @see app/Http/Controllers/GovernanceController.php:38
+* @route '/governance'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
+
+/**
 * @see \App\Http\Controllers\GovernanceController::storeCorrespondence
 * @see app/Http/Controllers/GovernanceController.php:96
 * @route '/governance/correspondences'
@@ -76,6 +113,28 @@ storeCorrespondence.post = (options?: RouteQueryOptions): RouteDefinition<'post'
     url: storeCorrespondence.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\GovernanceController::storeCorrespondence
+* @see app/Http/Controllers/GovernanceController.php:96
+* @route '/governance/correspondences'
+*/
+const storeCorrespondenceForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeCorrespondence.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::storeCorrespondence
+* @see app/Http/Controllers/GovernanceController.php:96
+* @route '/governance/correspondences'
+*/
+storeCorrespondenceForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeCorrespondence.url(options),
+    method: 'post',
+})
+
+storeCorrespondence.form = storeCorrespondenceForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::showCorrespondence
@@ -146,6 +205,43 @@ showCorrespondence.head = (args: { correspondence: string | { id: string } } | [
 })
 
 /**
+* @see \App\Http\Controllers\GovernanceController::showCorrespondence
+* @see app/Http/Controllers/GovernanceController.php:108
+* @route '/governance/correspondences/{correspondence}'
+*/
+const showCorrespondenceForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showCorrespondence.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::showCorrespondence
+* @see app/Http/Controllers/GovernanceController.php:108
+* @route '/governance/correspondences/{correspondence}'
+*/
+showCorrespondenceForm.get = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showCorrespondence.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::showCorrespondence
+* @see app/Http/Controllers/GovernanceController.php:108
+* @route '/governance/correspondences/{correspondence}'
+*/
+showCorrespondenceForm.head = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showCorrespondence.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+showCorrespondence.form = showCorrespondenceForm
+
+/**
 * @see \App\Http\Controllers\GovernanceController::destroyCorrespondence
 * @see app/Http/Controllers/GovernanceController.php:143
 * @route '/governance/correspondences/{correspondence}'
@@ -202,6 +298,38 @@ destroyCorrespondence.delete = (args: { correspondence: string | { id: string } 
     url: destroyCorrespondence.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\GovernanceController::destroyCorrespondence
+* @see app/Http/Controllers/GovernanceController.php:143
+* @route '/governance/correspondences/{correspondence}'
+*/
+const destroyCorrespondenceForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroyCorrespondence.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::destroyCorrespondence
+* @see app/Http/Controllers/GovernanceController.php:143
+* @route '/governance/correspondences/{correspondence}'
+*/
+destroyCorrespondenceForm.delete = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroyCorrespondence.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroyCorrespondence.form = destroyCorrespondenceForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::storeCorrespondenceAttachment
@@ -262,6 +390,28 @@ storeCorrespondenceAttachment.post = (args: { correspondence: string | { id: str
 })
 
 /**
+* @see \App\Http\Controllers\GovernanceController::storeCorrespondenceAttachment
+* @see app/Http/Controllers/GovernanceController.php:123
+* @route '/governance/correspondences/{correspondence}/attachments'
+*/
+const storeCorrespondenceAttachmentForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeCorrespondenceAttachment.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::storeCorrespondenceAttachment
+* @see app/Http/Controllers/GovernanceController.php:123
+* @route '/governance/correspondences/{correspondence}/attachments'
+*/
+storeCorrespondenceAttachmentForm.post = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeCorrespondenceAttachment.url(args, options),
+    method: 'post',
+})
+
+storeCorrespondenceAttachment.form = storeCorrespondenceAttachmentForm
+
+/**
 * @see \App\Http\Controllers\GovernanceController::storeConflictCheck
 * @see app/Http/Controllers/GovernanceController.php:160
 * @route '/governance/conflict-checks'
@@ -296,6 +446,28 @@ storeConflictCheck.post = (options?: RouteQueryOptions): RouteDefinition<'post'>
 })
 
 /**
+* @see \App\Http\Controllers\GovernanceController::storeConflictCheck
+* @see app/Http/Controllers/GovernanceController.php:160
+* @route '/governance/conflict-checks'
+*/
+const storeConflictCheckForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeConflictCheck.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::storeConflictCheck
+* @see app/Http/Controllers/GovernanceController.php:160
+* @route '/governance/conflict-checks'
+*/
+storeConflictCheckForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: storeConflictCheck.url(options),
+    method: 'post',
+})
+
+storeConflictCheck.form = storeConflictCheckForm
+
+/**
 * @see \App\Http\Controllers\GovernanceController::previewConflictCheck
 * @see app/Http/Controllers/GovernanceController.php:186
 * @route '/governance/conflict-checks/preview'
@@ -328,6 +500,28 @@ previewConflictCheck.post = (options?: RouteQueryOptions): RouteDefinition<'post
     url: previewConflictCheck.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\GovernanceController::previewConflictCheck
+* @see app/Http/Controllers/GovernanceController.php:186
+* @route '/governance/conflict-checks/preview'
+*/
+const previewConflictCheckForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: previewConflictCheck.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::previewConflictCheck
+* @see app/Http/Controllers/GovernanceController.php:186
+* @route '/governance/conflict-checks/preview'
+*/
+previewConflictCheckForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: previewConflictCheck.url(options),
+    method: 'post',
+})
+
+previewConflictCheck.form = previewConflictCheckForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::resolveConflictCheck
@@ -386,6 +580,38 @@ resolveConflictCheck.patch = (args: { conflictCheck: string | { id: string } } |
     url: resolveConflictCheck.url(args, options),
     method: 'patch',
 })
+
+/**
+* @see \App\Http\Controllers\GovernanceController::resolveConflictCheck
+* @see app/Http/Controllers/GovernanceController.php:176
+* @route '/governance/conflict-checks/{conflictCheck}'
+*/
+const resolveConflictCheckForm = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: resolveConflictCheck.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::resolveConflictCheck
+* @see app/Http/Controllers/GovernanceController.php:176
+* @route '/governance/conflict-checks/{conflictCheck}'
+*/
+resolveConflictCheckForm.patch = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: resolveConflictCheck.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+resolveConflictCheck.form = resolveConflictCheckForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::showCertificate
@@ -456,6 +682,43 @@ showCertificate.head = (args: { conflictCheck: string | { id: string } } | [conf
 })
 
 /**
+* @see \App\Http\Controllers\GovernanceController::showCertificate
+* @see app/Http/Controllers/GovernanceController.php:211
+* @route '/governance/conflict-checks/{conflictCheck}/certificate'
+*/
+const showCertificateForm = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showCertificate.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::showCertificate
+* @see app/Http/Controllers/GovernanceController.php:211
+* @route '/governance/conflict-checks/{conflictCheck}/certificate'
+*/
+showCertificateForm.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showCertificate.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::showCertificate
+* @see app/Http/Controllers/GovernanceController.php:211
+* @route '/governance/conflict-checks/{conflictCheck}/certificate'
+*/
+showCertificateForm.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: showCertificate.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+showCertificate.form = showCertificateForm
+
+/**
 * @see \App\Http\Controllers\GovernanceController::downloadConflictCertificate
 * @see app/Http/Controllers/GovernanceController.php:231
 * @route '/governance/conflict-checks/{conflictCheck}/pdf'
@@ -524,6 +787,43 @@ downloadConflictCertificate.head = (args: { conflictCheck: string | { id: string
 })
 
 /**
+* @see \App\Http\Controllers\GovernanceController::downloadConflictCertificate
+* @see app/Http/Controllers/GovernanceController.php:231
+* @route '/governance/conflict-checks/{conflictCheck}/pdf'
+*/
+const downloadConflictCertificateForm = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadConflictCertificate.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::downloadConflictCertificate
+* @see app/Http/Controllers/GovernanceController.php:231
+* @route '/governance/conflict-checks/{conflictCheck}/pdf'
+*/
+downloadConflictCertificateForm.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadConflictCertificate.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::downloadConflictCertificate
+* @see app/Http/Controllers/GovernanceController.php:231
+* @route '/governance/conflict-checks/{conflictCheck}/pdf'
+*/
+downloadConflictCertificateForm.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadConflictCertificate.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+downloadConflictCertificate.form = downloadConflictCertificateForm
+
+/**
 * @see \App\Http\Controllers\GovernanceController::placeLegalHold
 * @see app/Http/Controllers/GovernanceController.php:255
 * @route '/governance/matters/{matter}/legal-hold'
@@ -580,6 +880,28 @@ placeLegalHold.post = (args: { matter: string | { id: string } } | [matter: stri
     url: placeLegalHold.url(args, options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\GovernanceController::placeLegalHold
+* @see app/Http/Controllers/GovernanceController.php:255
+* @route '/governance/matters/{matter}/legal-hold'
+*/
+const placeLegalHoldForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: placeLegalHold.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::placeLegalHold
+* @see app/Http/Controllers/GovernanceController.php:255
+* @route '/governance/matters/{matter}/legal-hold'
+*/
+placeLegalHoldForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: placeLegalHold.url(args, options),
+    method: 'post',
+})
+
+placeLegalHold.form = placeLegalHoldForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::releaseLegalHold
@@ -640,6 +962,38 @@ releaseLegalHold.delete = (args: { matter: string | { id: string } } | [matter: 
 })
 
 /**
+* @see \App\Http\Controllers\GovernanceController::releaseLegalHold
+* @see app/Http/Controllers/GovernanceController.php:264
+* @route '/governance/matters/{matter}/legal-hold'
+*/
+const releaseLegalHoldForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: releaseLegalHold.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::releaseLegalHold
+* @see app/Http/Controllers/GovernanceController.php:264
+* @route '/governance/matters/{matter}/legal-hold'
+*/
+releaseLegalHoldForm.delete = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: releaseLegalHold.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+releaseLegalHold.form = releaseLegalHoldForm
+
+/**
 * @see \App\Http\Controllers\GovernanceController::archive
 * @see app/Http/Controllers/GovernanceController.php:273
 * @route '/governance/matters/{matter}/archive'
@@ -698,6 +1052,28 @@ archive.post = (args: { matter: string | { id: string } } | [matter: string | { 
 })
 
 /**
+* @see \App\Http\Controllers\GovernanceController::archive
+* @see app/Http/Controllers/GovernanceController.php:273
+* @route '/governance/matters/{matter}/archive'
+*/
+const archiveForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: archive.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::archive
+* @see app/Http/Controllers/GovernanceController.php:273
+* @route '/governance/matters/{matter}/archive'
+*/
+archiveForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: archive.url(args, options),
+    method: 'post',
+})
+
+archive.form = archiveForm
+
+/**
 * @see \App\Http\Controllers\GovernanceController::requestExport
 * @see app/Http/Controllers/GovernanceController.php:281
 * @route '/governance/matters/{matter}/exports'
@@ -754,6 +1130,28 @@ requestExport.post = (args: { matter: string | { id: string } } | [matter: strin
     url: requestExport.url(args, options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\GovernanceController::requestExport
+* @see app/Http/Controllers/GovernanceController.php:281
+* @route '/governance/matters/{matter}/exports'
+*/
+const requestExportForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: requestExport.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::requestExport
+* @see app/Http/Controllers/GovernanceController.php:281
+* @route '/governance/matters/{matter}/exports'
+*/
+requestExportForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: requestExport.url(args, options),
+    method: 'post',
+})
+
+requestExport.form = requestExportForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::downloadExport
@@ -822,6 +1220,43 @@ downloadExport.head = (args: { matterExport: string | { id: string } } | [matter
     url: downloadExport.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\GovernanceController::downloadExport
+* @see app/Http/Controllers/GovernanceController.php:290
+* @route '/governance/exports/{matterExport}/download'
+*/
+const downloadExportForm = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadExport.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::downloadExport
+* @see app/Http/Controllers/GovernanceController.php:290
+* @route '/governance/exports/{matterExport}/download'
+*/
+downloadExportForm.get = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadExport.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::downloadExport
+* @see app/Http/Controllers/GovernanceController.php:290
+* @route '/governance/exports/{matterExport}/download'
+*/
+downloadExportForm.head = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadExport.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+downloadExport.form = downloadExportForm
 
 const GovernanceController = { index, storeCorrespondence, showCorrespondence, destroyCorrespondence, storeCorrespondenceAttachment, storeConflictCheck, previewConflictCheck, resolveConflictCheck, showCertificate, downloadConflictCertificate, placeLegalHold, releaseLegalHold, archive, requestExport, downloadExport }
 

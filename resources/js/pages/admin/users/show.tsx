@@ -1543,7 +1543,8 @@ function EditUserDialog({
 
                 {/* 3. Form Body */}
                 <Form
-                    {...(userRoutes.update?.form ? userRoutes.update.form(user.id) : { action: `/admin/users/${user.id}`, method: 'put' as const })}
+                    action={userRoutes.update.url(user.id)}
+                    method="put"
                     className="flex min-h-0 flex-1 flex-col"
                     onSuccess={() => onOpenChange(false)}
                 >
@@ -1954,7 +1955,8 @@ function DeleteUserDialog({
                     </p>
 
                     <Form
-                        {...(userRoutes.destroy?.form ? userRoutes.destroy.form(user.id) : { action: `/admin/users/${user.id}`, method: 'delete' as const })}
+                        action={userRoutes.destroy.url(user.id)}
+                        method="delete"
                         onSuccess={() => {
                             onOpenChange(false);
                             onDeleted?.();

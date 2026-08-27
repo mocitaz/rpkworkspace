@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\TaskController::toggle
 * @see app/Http/Controllers/TaskController.php:298
@@ -51,6 +51,38 @@ toggle.patch = (args: { task: string | { id: string }, checklistId: string | num
     url: toggle.url(args, options),
     method: 'patch',
 })
+
+/**
+* @see \App\Http\Controllers\TaskController::toggle
+* @see app/Http/Controllers/TaskController.php:298
+* @route '/tasks/{task}/checklists/{checklistId}/toggle'
+*/
+const toggleForm = (args: { task: string | { id: string }, checklistId: string | number } | [task: string | { id: string }, checklistId: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: toggle.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::toggle
+* @see app/Http/Controllers/TaskController.php:298
+* @route '/tasks/{task}/checklists/{checklistId}/toggle'
+*/
+toggleForm.patch = (args: { task: string | { id: string }, checklistId: string | number } | [task: string | { id: string }, checklistId: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: toggle.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+toggle.form = toggleForm
 
 const checklists = {
     toggle: Object.assign(toggle, toggle),

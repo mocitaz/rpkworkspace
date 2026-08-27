@@ -146,7 +146,8 @@ export default function MatterEdit({
 
                     {/* Main Edit Form */}
                     <Form
-                        {...matterRoutes.update.form(matter.id)}
+                        action={matterRoutes.update.url(matter.id)}
+                        method="put"
                         className="space-y-5"
                     >
                         {({ errors, processing }) => (

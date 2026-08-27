@@ -117,7 +117,8 @@ export function MatterEditDialog({
                 </DialogHeader>
 
                 <Form
-                    {...matterRoutes.update.form(matter.id)}
+                    action={matterRoutes.update.url(matter.id)}
+                    method="put"
                     className="space-y-4 pt-1"
                     onSuccess={() => setOpen(false)}
                 >

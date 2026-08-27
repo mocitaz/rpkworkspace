@@ -1080,7 +1080,8 @@ function EditUserDialog({
 
                 {/* 3. Form Body */}
                 <Form
-                    {...(userRoutes.update?.form ? userRoutes.update.form(user.id) : { action: `/admin/users/${user.id}`, method: 'put' as const })}
+                    action={userRoutes.update.url(user.id)}
+                    method="put"
                     className="flex min-h-0 flex-1 flex-col"
                     onSuccess={() => onOpenChange(false)}
                 >
@@ -1488,7 +1489,8 @@ function DeleteUserDialog({
                     </p>
 
                     <Form
-                        {...(userRoutes.destroy?.form ? userRoutes.destroy.form(user.id) : { action: `/admin/users/${user.id}`, method: 'delete' as const })}
+                        action={userRoutes.destroy.url(user.id)}
+                        method="delete"
                         onSuccess={() => onOpenChange(false)}
                         className="flex items-center justify-end gap-2 pt-2"
                     >
@@ -1803,7 +1805,8 @@ function RolePermissions({
                 </div>
 
                 <Form
-                    {...roleRoutes.update.form(selectedRole.id)}
+                    action={roleRoutes.update.url(selectedRole.id)}
+                    method="put"
                     className="space-y-4 p-4"
                 >
                     {({ processing }) => (
@@ -1981,7 +1984,8 @@ function InviteUserDialog({
                 </DialogHeader>
 
                 <Form
-                    {...(userRoutes.store?.form ? userRoutes.store.form() : { action: '/admin/users', method: 'post' as const })}
+                    action={userRoutes.store.url()}
+                    method="post"
                     className="space-y-3 pt-1"
                     onSuccess={() => {
                         onCreated({

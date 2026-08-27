@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\MatterOperationController::store
 * @see app/Http/Controllers/MatterOperationController.php:26
@@ -58,6 +58,28 @@ store.post = (args: { matter: string | { id: string } } | [matter: string | { id
 })
 
 /**
+* @see \App\Http\Controllers\MatterOperationController::store
+* @see app/Http/Controllers/MatterOperationController.php:26
+* @route '/matters/{matter}/parties'
+*/
+const storeForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::store
+* @see app/Http/Controllers/MatterOperationController.php:26
+* @route '/matters/{matter}/parties'
+*/
+storeForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(args, options),
+    method: 'post',
+})
+
+store.form = storeForm
+
+/**
 * @see \App\Http\Controllers\MatterOperationController::destroy
 * @see app/Http/Controllers/MatterOperationController.php:175
 * @route '/matters/{matter}/parties/{party}'
@@ -111,6 +133,38 @@ destroy.delete = (args: { matter: string | { id: string }, party: string | { id:
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::destroy
+* @see app/Http/Controllers/MatterOperationController.php:175
+* @route '/matters/{matter}/parties/{party}'
+*/
+const destroyForm = (args: { matter: string | { id: string }, party: string | { id: string } } | [matter: string | { id: string }, party: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::destroy
+* @see app/Http/Controllers/MatterOperationController.php:175
+* @route '/matters/{matter}/parties/{party}'
+*/
+destroyForm.delete = (args: { matter: string | { id: string }, party: string | { id: string } } | [matter: string | { id: string }, party: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 const parties = {
     store: Object.assign(store, store),

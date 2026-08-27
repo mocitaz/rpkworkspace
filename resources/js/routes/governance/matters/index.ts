@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 import legalHold from './legal-hold'
 import exports from './exports'
 /**
@@ -58,6 +58,28 @@ archive.post = (args: { matter: string | { id: string } } | [matter: string | { 
     url: archive.url(args, options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\GovernanceController::archive
+* @see app/Http/Controllers/GovernanceController.php:273
+* @route '/governance/matters/{matter}/archive'
+*/
+const archiveForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: archive.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::archive
+* @see app/Http/Controllers/GovernanceController.php:273
+* @route '/governance/matters/{matter}/archive'
+*/
+archiveForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: archive.url(args, options),
+    method: 'post',
+})
+
+archive.form = archiveForm
 
 const matters = {
     legalHold: Object.assign(legalHold, legalHold),

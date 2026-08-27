@@ -258,7 +258,8 @@ export function NotificationMenu() {
 
                         {unreadLocalCount > 0 && (
                             <Form
-                                {...notificationRoutes.readAll.form()}
+                                action={notificationRoutes.readAll.url()}
+                                method="post"
                                 onSuccess={handleMarkAllRead}
                             >
                                 <Button

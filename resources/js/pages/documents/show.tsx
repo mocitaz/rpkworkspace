@@ -614,9 +614,10 @@ export default function DocumentShow({
                                                 can.approve && (
                                                     <div className="flex items-center gap-2 pt-0.5">
                                                         <Form
-                                                            {...approvalRoutes.resolve.form(
+                                                            action={approvalRoutes.resolve.url(
                                                                 approval.id,
                                                             )}
+                                                            method="patch"
                                                         >
                                                             <input
                                                                 type="hidden"
@@ -631,9 +632,10 @@ export default function DocumentShow({
                                                             </Button>
                                                         </Form>
                                                         <Form
-                                                            {...approvalRoutes.resolve.form(
+                                                            action={approvalRoutes.resolve.url(
                                                                 approval.id,
                                                             )}
+                                                            method="patch"
                                                         >
                                                             <input
                                                                 type="hidden"
@@ -1004,7 +1006,8 @@ export default function DocumentShow({
                     </DialogHeader>
 
                     <Form
-                        {...approvalRoutes.store.form(document.id)}
+                        action={approvalRoutes.store.url(document.id)}
+                        method="post"
                         className="space-y-3.5 pt-1"
                         onSuccess={() => setWorkflowOpen(null)}
                     >
@@ -1113,7 +1116,8 @@ export default function DocumentShow({
                     </DialogHeader>
 
                     <Form
-                        {...signatureRoutes.store.form(document.id)}
+                        action={signatureRoutes.store.url(document.id)}
+                        method="post"
                         className="space-y-4 pt-1"
                         onSuccess={() => {
                             setWorkflowOpen(null);

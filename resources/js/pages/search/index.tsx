@@ -92,7 +92,8 @@ export default function SearchIndex({
 
                     {/* 2. Search Bar Card */}
                     <Form
-                        {...search.form()}
+                        action={search.url()}
+                        method="get"
                         className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]"
                     >
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">

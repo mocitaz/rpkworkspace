@@ -1096,7 +1096,8 @@ export default function ContactsIndex({
                     </DialogHeader>
 
                     <Form
-                        {...contactRoutes.store.form()}
+                        action={contactRoutes.store.url()}
+                        method="post"
                         className="space-y-4 pt-1"
                         resetOnSuccess
                         onSuccess={() => setOpenCreate(false)}
@@ -1251,7 +1252,8 @@ export default function ContactsIndex({
                         </DialogHeader>
 
                         <Form
-                            {...contactRoutes.update.form(editingContact.id)}
+                            action={contactRoutes.update.url(editingContact.id)}
+                            method="put"
                             className="space-y-4 pt-1"
                             onSuccess={() => setEditingContact(null)}
                         >

@@ -67,7 +67,11 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
                     </div>
 
                     {/* Form Section */}
-                    <Form {...clientRoutes.store.form()} className="space-y-4">
+                    <Form
+                        action={clientRoutes.store.url()}
+                        method="post"
+                        className="space-y-4"
+                    >
                         {({ errors, processing }) => (
                             <>
                                 {/* Tahap 1: Identitas & Klasifikasi Entitas */}

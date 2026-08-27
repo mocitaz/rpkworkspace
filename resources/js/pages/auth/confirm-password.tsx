@@ -26,7 +26,11 @@ export default function ConfirmPassword() {
                 separator="atau konfirmasi dengan kata sandi"
             />
 
-            <Form {...store.form()} resetOnSuccess={['password']}>
+            <Form
+                action={store.url()}
+                method="post"
+                resetOnSuccess={['password']}
+            >
                 {({ processing, errors }) => (
                     <div className="space-y-4">
                         <div className="space-y-1.5">

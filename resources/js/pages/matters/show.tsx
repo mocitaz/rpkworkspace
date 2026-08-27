@@ -2942,7 +2942,20 @@ function MatterOperationDialog({
 
                 {operation && (
                     <Form
-                        {...route.form(matterId)}
+                        action={
+                            operation === 'party'
+                                ? partyRoutes.store.url(matterId)
+                                : operation === 'deadline'
+                                  ? deadlineRoutes.store.url(matterId)
+                                  : operation === 'event'
+                                    ? eventRoutes.store.url(matterId)
+                                    : operation === 'chronology'
+                                      ? chronologyRoutes.store.url(matterId)
+                                      : operation === 'evidence'
+                                        ? `/matters/${matterId}/evidences`
+                                        : noteRoutes.store.url(matterId)
+                        }
+                        method="post"
                         className="space-y-3 pt-1"
                         onSuccess={onClose}
                     >

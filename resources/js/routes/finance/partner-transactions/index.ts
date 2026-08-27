@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FinanceController::store
 * @see app/Http/Controllers/FinanceController.php:440
@@ -32,6 +32,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\FinanceController::store
+* @see app/Http/Controllers/FinanceController.php:440
+* @route '/finance/partner-transactions'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::store
+* @see app/Http/Controllers/FinanceController.php:440
+* @route '/finance/partner-transactions'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
@@ -92,6 +114,38 @@ update.put = (args: { partnerTransaction: string | { id: string } } | [partnerTr
 })
 
 /**
+* @see \App\Http\Controllers\FinanceController::update
+* @see app/Http/Controllers/FinanceController.php:503
+* @route '/finance/partner-transactions/{partnerTransaction}'
+*/
+const updateForm = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::update
+* @see app/Http/Controllers/FinanceController.php:503
+* @route '/finance/partner-transactions/{partnerTransaction}'
+*/
+updateForm.put = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\FinanceController::destroy
 * @see app/Http/Controllers/FinanceController.php:586
 * @route '/finance/partner-transactions/{partnerTransaction}'
@@ -148,6 +202,38 @@ destroy.delete = (args: { partnerTransaction: string | { id: string } } | [partn
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\FinanceController::destroy
+* @see app/Http/Controllers/FinanceController.php:586
+* @route '/finance/partner-transactions/{partnerTransaction}'
+*/
+const destroyForm = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::destroy
+* @see app/Http/Controllers/FinanceController.php:586
+* @route '/finance/partner-transactions/{partnerTransaction}'
+*/
+destroyForm.delete = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 const partnerTransactions = {
     store: Object.assign(store, store),

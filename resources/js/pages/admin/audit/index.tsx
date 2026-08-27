@@ -1322,7 +1322,8 @@ function CleanAuditLogsDialog({
                 </div>
 
                 <Form
-                    {...auditRoutes.prune.form()}
+                    action={auditRoutes.prune.url()}
+                    method="post"
                     onSuccess={() => {
                         onOpenChange(false);
                         setConfirmed(false);

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\GovernanceController::store
 * @see app/Http/Controllers/GovernanceController.php:281
@@ -56,6 +56,28 @@ store.post = (args: { matter: string | { id: string } } | [matter: string | { id
     url: store.url(args, options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\GovernanceController::store
+* @see app/Http/Controllers/GovernanceController.php:281
+* @route '/governance/matters/{matter}/exports'
+*/
+const storeForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::store
+* @see app/Http/Controllers/GovernanceController.php:281
+* @route '/governance/matters/{matter}/exports'
+*/
+storeForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(args, options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 const exports = {
     store: Object.assign(store, store),

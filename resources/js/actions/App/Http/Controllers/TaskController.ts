@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\TaskController::index
 * @see app/Http/Controllers/TaskController.php:29
@@ -42,6 +42,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\TaskController::index
+* @see app/Http/Controllers/TaskController.php:29
+* @route '/tasks'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::index
+* @see app/Http/Controllers/TaskController.php:29
+* @route '/tasks'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::index
+* @see app/Http/Controllers/TaskController.php:29
+* @route '/tasks'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\TaskController::create
@@ -88,6 +125,43 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\TaskController::create
+* @see app/Http/Controllers/TaskController.php:81
+* @route '/tasks/create'
+*/
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::create
+* @see app/Http/Controllers/TaskController.php:81
+* @route '/tasks/create'
+*/
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::create
+* @see app/Http/Controllers/TaskController.php:81
+* @route '/tasks/create'
+*/
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
+
+/**
 * @see \App\Http\Controllers\TaskController::store
 * @see app/Http/Controllers/TaskController.php:117
 * @route '/tasks'
@@ -120,6 +194,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\TaskController::store
+* @see app/Http/Controllers/TaskController.php:117
+* @route '/tasks'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::store
+* @see app/Http/Controllers/TaskController.php:117
+* @route '/tasks'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\TaskController::show
@@ -190,6 +286,43 @@ show.head = (args: { task: string | { id: string } } | [task: string | { id: str
 })
 
 /**
+* @see \App\Http\Controllers\TaskController::show
+* @see app/Http/Controllers/TaskController.php:156
+* @route '/tasks/{task}'
+*/
+const showForm = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::show
+* @see app/Http/Controllers/TaskController.php:156
+* @route '/tasks/{task}'
+*/
+showForm.get = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::show
+* @see app/Http/Controllers/TaskController.php:156
+* @route '/tasks/{task}'
+*/
+showForm.head = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\TaskController::edit
 * @see app/Http/Controllers/TaskController.php:217
 * @route '/tasks/{task}/edit'
@@ -256,6 +389,43 @@ edit.head = (args: { task: string | { id: string } } | [task: string | { id: str
     url: edit.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\TaskController::edit
+* @see app/Http/Controllers/TaskController.php:217
+* @route '/tasks/{task}/edit'
+*/
+const editForm = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::edit
+* @see app/Http/Controllers/TaskController.php:217
+* @route '/tasks/{task}/edit'
+*/
+editForm.get = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::edit
+* @see app/Http/Controllers/TaskController.php:217
+* @route '/tasks/{task}/edit'
+*/
+editForm.head = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\TaskController::update
@@ -326,6 +496,53 @@ update.patch = (args: { task: string | { id: string } } | [task: string | { id: 
 })
 
 /**
+* @see \App\Http\Controllers\TaskController::update
+* @see app/Http/Controllers/TaskController.php:248
+* @route '/tasks/{task}'
+*/
+const updateForm = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::update
+* @see app/Http/Controllers/TaskController.php:248
+* @route '/tasks/{task}'
+*/
+updateForm.put = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::update
+* @see app/Http/Controllers/TaskController.php:248
+* @route '/tasks/{task}'
+*/
+updateForm.patch = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\TaskController::destroy
 * @see app/Http/Controllers/TaskController.php:330
 * @route '/tasks/{task}'
@@ -384,6 +601,38 @@ destroy.delete = (args: { task: string | { id: string } } | [task: string | { id
 })
 
 /**
+* @see \App\Http\Controllers\TaskController::destroy
+* @see app/Http/Controllers/TaskController.php:330
+* @route '/tasks/{task}'
+*/
+const destroyForm = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::destroy
+* @see app/Http/Controllers/TaskController.php:330
+* @route '/tasks/{task}'
+*/
+destroyForm.delete = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
+
+/**
 * @see \App\Http\Controllers\TaskController::toggleChecklist
 * @see app/Http/Controllers/TaskController.php:298
 * @route '/tasks/{task}/checklists/{checklistId}/toggle'
@@ -435,6 +684,38 @@ toggleChecklist.patch = (args: { task: string | { id: string }, checklistId: str
     url: toggleChecklist.url(args, options),
     method: 'patch',
 })
+
+/**
+* @see \App\Http\Controllers\TaskController::toggleChecklist
+* @see app/Http/Controllers/TaskController.php:298
+* @route '/tasks/{task}/checklists/{checklistId}/toggle'
+*/
+const toggleChecklistForm = (args: { task: string | { id: string }, checklistId: string | number } | [task: string | { id: string }, checklistId: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: toggleChecklist.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::toggleChecklist
+* @see app/Http/Controllers/TaskController.php:298
+* @route '/tasks/{task}/checklists/{checklistId}/toggle'
+*/
+toggleChecklistForm.patch = (args: { task: string | { id: string }, checklistId: string | number } | [task: string | { id: string }, checklistId: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: toggleChecklist.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+toggleChecklist.form = toggleChecklistForm
 
 /**
 * @see \App\Http\Controllers\TaskController::submitReview
@@ -495,6 +776,28 @@ submitReview.post = (args: { task: string | { id: string } } | [task: string | {
 })
 
 /**
+* @see \App\Http\Controllers\TaskController::submitReview
+* @see app/Http/Controllers/TaskController.php:345
+* @route '/tasks/{task}/submit-review'
+*/
+const submitReviewForm = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: submitReview.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::submitReview
+* @see app/Http/Controllers/TaskController.php:345
+* @route '/tasks/{task}/submit-review'
+*/
+submitReviewForm.post = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: submitReview.url(args, options),
+    method: 'post',
+})
+
+submitReview.form = submitReviewForm
+
+/**
 * @see \App\Http\Controllers\TaskController::approve
 * @see app/Http/Controllers/TaskController.php:386
 * @route '/tasks/{task}/approve'
@@ -553,6 +856,28 @@ approve.post = (args: { task: string | { id: string } } | [task: string | { id: 
 })
 
 /**
+* @see \App\Http\Controllers\TaskController::approve
+* @see app/Http/Controllers/TaskController.php:386
+* @route '/tasks/{task}/approve'
+*/
+const approveForm = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: approve.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::approve
+* @see app/Http/Controllers/TaskController.php:386
+* @route '/tasks/{task}/approve'
+*/
+approveForm.post = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: approve.url(args, options),
+    method: 'post',
+})
+
+approve.form = approveForm
+
+/**
 * @see \App\Http\Controllers\TaskController::requestRevision
 * @see app/Http/Controllers/TaskController.php:433
 * @route '/tasks/{task}/request-revision'
@@ -609,6 +934,28 @@ requestRevision.post = (args: { task: string | { id: string } } | [task: string 
     url: requestRevision.url(args, options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\TaskController::requestRevision
+* @see app/Http/Controllers/TaskController.php:433
+* @route '/tasks/{task}/request-revision'
+*/
+const requestRevisionForm = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: requestRevision.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\TaskController::requestRevision
+* @see app/Http/Controllers/TaskController.php:433
+* @route '/tasks/{task}/request-revision'
+*/
+requestRevisionForm.post = (args: { task: string | { id: string } } | [task: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: requestRevision.url(args, options),
+    method: 'post',
+})
+
+requestRevision.form = requestRevisionForm
 
 const TaskController = { index, create, store, show, edit, update, destroy, toggleChecklist, submitReview, approve, requestRevision }
 

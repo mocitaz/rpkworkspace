@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\DocumentPreviewController::show
 * @see app/Http/Controllers/DocumentPreviewController.php:17
@@ -65,6 +65,43 @@ show.head = (args: { document: string | { id: string }, version: string | { id: 
 })
 
 /**
+* @see \App\Http\Controllers\DocumentPreviewController::show
+* @see app/Http/Controllers/DocumentPreviewController.php:17
+* @route '/documents/{document}/versions/{version}/preview'
+*/
+const showForm = (args: { document: string | { id: string }, version: string | { id: string } } | [document: string | { id: string }, version: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DocumentPreviewController::show
+* @see app/Http/Controllers/DocumentPreviewController.php:17
+* @route '/documents/{document}/versions/{version}/preview'
+*/
+showForm.get = (args: { document: string | { id: string }, version: string | { id: string } } | [document: string | { id: string }, version: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DocumentPreviewController::show
+* @see app/Http/Controllers/DocumentPreviewController.php:17
+* @route '/documents/{document}/versions/{version}/preview'
+*/
+showForm.head = (args: { document: string | { id: string }, version: string | { id: string } } | [document: string | { id: string }, version: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\DocumentPreviewController::process
 * @see app/Http/Controllers/DocumentPreviewController.php:43
 * @route '/documents/{document}/versions/{version}/process'
@@ -118,6 +155,28 @@ process.post = (args: { document: string | { id: string }, version: string | { i
     url: process.url(args, options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\DocumentPreviewController::process
+* @see app/Http/Controllers/DocumentPreviewController.php:43
+* @route '/documents/{document}/versions/{version}/process'
+*/
+const processForm = (args: { document: string | { id: string }, version: string | { id: string } } | [document: string | { id: string }, version: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: process.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\DocumentPreviewController::process
+* @see app/Http/Controllers/DocumentPreviewController.php:43
+* @route '/documents/{document}/versions/{version}/process'
+*/
+processForm.post = (args: { document: string | { id: string }, version: string | { id: string } } | [document: string | { id: string }, version: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: process.url(args, options),
+    method: 'post',
+})
+
+process.form = processForm
 
 const DocumentPreviewController = { show, process }
 

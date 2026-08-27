@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\SignatureSigningController::show
 * @see app/Http/Controllers/SignatureSigningController.php:15
@@ -60,6 +60,43 @@ show.head = (args: { token: string | number } | [token: string | number ] | stri
     url: show.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\SignatureSigningController::show
+* @see app/Http/Controllers/SignatureSigningController.php:15
+* @route '/sign/{token}'
+*/
+const showForm = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\SignatureSigningController::show
+* @see app/Http/Controllers/SignatureSigningController.php:15
+* @route '/sign/{token}'
+*/
+showForm.get = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\SignatureSigningController::show
+* @see app/Http/Controllers/SignatureSigningController.php:15
+* @route '/sign/{token}'
+*/
+showForm.head = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
 
 /**
 * @see \App\Http\Controllers\SignatureSigningController::pdf
@@ -124,6 +161,43 @@ pdf.head = (args: { token: string | number } | [token: string | number ] | strin
 })
 
 /**
+* @see \App\Http\Controllers\SignatureSigningController::pdf
+* @see app/Http/Controllers/SignatureSigningController.php:22
+* @route '/sign/{token}/preview-pdf'
+*/
+const pdfForm = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: pdf.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\SignatureSigningController::pdf
+* @see app/Http/Controllers/SignatureSigningController.php:22
+* @route '/sign/{token}/preview-pdf'
+*/
+pdfForm.get = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: pdf.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\SignatureSigningController::pdf
+* @see app/Http/Controllers/SignatureSigningController.php:22
+* @route '/sign/{token}/preview-pdf'
+*/
+pdfForm.head = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: pdf.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+pdf.form = pdfForm
+
+/**
 * @see \App\Http\Controllers\SignatureSigningController::store
 * @see app/Http/Controllers/SignatureSigningController.php:34
 * @route '/sign/{token}'
@@ -174,6 +248,28 @@ store.post = (args: { token: string | number } | [token: string | number ] | str
     url: store.url(args, options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\SignatureSigningController::store
+* @see app/Http/Controllers/SignatureSigningController.php:34
+* @route '/sign/{token}'
+*/
+const storeForm = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\SignatureSigningController::store
+* @see app/Http/Controllers/SignatureSigningController.php:34
+* @route '/sign/{token}'
+*/
+storeForm.post = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(args, options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 const sign = {
     show: Object.assign(show, show),

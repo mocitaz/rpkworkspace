@@ -52,7 +52,8 @@ export default function Login({ status, canResetPassword }: Props) {
             <Head title="Login to account - RPK App" />
 
             <Form
-                {...store.form()}
+                action={store.url()}
+                method="post"
                 resetOnSuccess={['password']}
                 onSubmit={() => {
                     try {

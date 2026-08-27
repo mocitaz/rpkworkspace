@@ -136,7 +136,8 @@ export default function ClientEdit({
 
                     {/* Form Section */}
                     <Form
-                        {...clientRoutes.update.form(client.id)}
+                        action={clientRoutes.update.url(client.id)}
+                        method="put"
                         className="space-y-4"
                     >
                         {({ errors, processing }) => (

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\PublicVerificationController::verifyInvoice
 * @see app/Http/Controllers/PublicVerificationController.php:22
@@ -60,6 +60,43 @@ verifyInvoice.head = (args: { invoiceNumber: string | number } | [invoiceNumber:
     url: verifyInvoice.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyInvoice
+* @see app/Http/Controllers/PublicVerificationController.php:22
+* @route '/verify/invoice/{invoiceNumber}'
+*/
+const verifyInvoiceForm = (args: { invoiceNumber: string | number } | [invoiceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyInvoice.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyInvoice
+* @see app/Http/Controllers/PublicVerificationController.php:22
+* @route '/verify/invoice/{invoiceNumber}'
+*/
+verifyInvoiceForm.get = (args: { invoiceNumber: string | number } | [invoiceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyInvoice.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyInvoice
+* @see app/Http/Controllers/PublicVerificationController.php:22
+* @route '/verify/invoice/{invoiceNumber}'
+*/
+verifyInvoiceForm.head = (args: { invoiceNumber: string | number } | [invoiceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyInvoice.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+verifyInvoice.form = verifyInvoiceForm
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::invoiceQr
@@ -124,6 +161,43 @@ invoiceQr.head = (args: { invoiceNumber: string | number } | [invoiceNumber: str
 })
 
 /**
+* @see \App\Http\Controllers\PublicVerificationController::invoiceQr
+* @see app/Http/Controllers/PublicVerificationController.php:41
+* @route '/verify/invoice/{invoiceNumber}/qr.svg'
+*/
+const invoiceQrForm = (args: { invoiceNumber: string | number } | [invoiceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: invoiceQr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::invoiceQr
+* @see app/Http/Controllers/PublicVerificationController.php:41
+* @route '/verify/invoice/{invoiceNumber}/qr.svg'
+*/
+invoiceQrForm.get = (args: { invoiceNumber: string | number } | [invoiceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: invoiceQr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::invoiceQr
+* @see app/Http/Controllers/PublicVerificationController.php:41
+* @route '/verify/invoice/{invoiceNumber}/qr.svg'
+*/
+invoiceQrForm.head = (args: { invoiceNumber: string | number } | [invoiceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: invoiceQr.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+invoiceQr.form = invoiceQrForm
+
+/**
 * @see \App\Http\Controllers\PublicVerificationController::verifyQuotation
 * @see app/Http/Controllers/PublicVerificationController.php:137
 * @route '/verify/quotation/{quotationNumber}'
@@ -184,6 +258,43 @@ verifyQuotation.head = (args: { quotationNumber: string | number } | [quotationN
     url: verifyQuotation.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyQuotation
+* @see app/Http/Controllers/PublicVerificationController.php:137
+* @route '/verify/quotation/{quotationNumber}'
+*/
+const verifyQuotationForm = (args: { quotationNumber: string | number } | [quotationNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyQuotation.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyQuotation
+* @see app/Http/Controllers/PublicVerificationController.php:137
+* @route '/verify/quotation/{quotationNumber}'
+*/
+verifyQuotationForm.get = (args: { quotationNumber: string | number } | [quotationNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyQuotation.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyQuotation
+* @see app/Http/Controllers/PublicVerificationController.php:137
+* @route '/verify/quotation/{quotationNumber}'
+*/
+verifyQuotationForm.head = (args: { quotationNumber: string | number } | [quotationNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyQuotation.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+verifyQuotation.form = verifyQuotationForm
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::quotationQr
@@ -248,6 +359,43 @@ quotationQr.head = (args: { quotationNumber: string | number } | [quotationNumbe
 })
 
 /**
+* @see \App\Http\Controllers\PublicVerificationController::quotationQr
+* @see app/Http/Controllers/PublicVerificationController.php:157
+* @route '/verify/quotation/{quotationNumber}/qr.svg'
+*/
+const quotationQrForm = (args: { quotationNumber: string | number } | [quotationNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: quotationQr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::quotationQr
+* @see app/Http/Controllers/PublicVerificationController.php:157
+* @route '/verify/quotation/{quotationNumber}/qr.svg'
+*/
+quotationQrForm.get = (args: { quotationNumber: string | number } | [quotationNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: quotationQr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::quotationQr
+* @see app/Http/Controllers/PublicVerificationController.php:157
+* @route '/verify/quotation/{quotationNumber}/qr.svg'
+*/
+quotationQrForm.head = (args: { quotationNumber: string | number } | [quotationNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: quotationQr.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+quotationQr.form = quotationQrForm
+
+/**
 * @see \App\Http\Controllers\PublicVerificationController::verifyPaymentReceipt
 * @see app/Http/Controllers/PublicVerificationController.php:181
 * @route '/verify/payment-receipt/{referenceNumber}'
@@ -308,6 +456,43 @@ verifyPaymentReceipt.head = (args: { referenceNumber: string | number } | [refer
     url: verifyPaymentReceipt.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyPaymentReceipt
+* @see app/Http/Controllers/PublicVerificationController.php:181
+* @route '/verify/payment-receipt/{referenceNumber}'
+*/
+const verifyPaymentReceiptForm = (args: { referenceNumber: string | number } | [referenceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyPaymentReceipt.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyPaymentReceipt
+* @see app/Http/Controllers/PublicVerificationController.php:181
+* @route '/verify/payment-receipt/{referenceNumber}'
+*/
+verifyPaymentReceiptForm.get = (args: { referenceNumber: string | number } | [referenceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyPaymentReceipt.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyPaymentReceipt
+* @see app/Http/Controllers/PublicVerificationController.php:181
+* @route '/verify/payment-receipt/{referenceNumber}'
+*/
+verifyPaymentReceiptForm.head = (args: { referenceNumber: string | number } | [referenceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyPaymentReceipt.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+verifyPaymentReceipt.form = verifyPaymentReceiptForm
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::paymentReceiptQr
@@ -372,6 +557,43 @@ paymentReceiptQr.head = (args: { referenceNumber: string | number } | [reference
 })
 
 /**
+* @see \App\Http\Controllers\PublicVerificationController::paymentReceiptQr
+* @see app/Http/Controllers/PublicVerificationController.php:201
+* @route '/verify/payment-receipt/{referenceNumber}/qr.svg'
+*/
+const paymentReceiptQrForm = (args: { referenceNumber: string | number } | [referenceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: paymentReceiptQr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::paymentReceiptQr
+* @see app/Http/Controllers/PublicVerificationController.php:201
+* @route '/verify/payment-receipt/{referenceNumber}/qr.svg'
+*/
+paymentReceiptQrForm.get = (args: { referenceNumber: string | number } | [referenceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: paymentReceiptQr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::paymentReceiptQr
+* @see app/Http/Controllers/PublicVerificationController.php:201
+* @route '/verify/payment-receipt/{referenceNumber}/qr.svg'
+*/
+paymentReceiptQrForm.head = (args: { referenceNumber: string | number } | [referenceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: paymentReceiptQr.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+paymentReceiptQr.form = paymentReceiptQrForm
+
+/**
 * @see \App\Http\Controllers\PublicVerificationController::verifyPayslip
 * @see app/Http/Controllers/PublicVerificationController.php:99
 * @route '/verify/payslip/{payslipNumber}'
@@ -434,6 +656,43 @@ verifyPayslip.head = (args: { payslipNumber: string | number } | [payslipNumber:
 })
 
 /**
+* @see \App\Http\Controllers\PublicVerificationController::verifyPayslip
+* @see app/Http/Controllers/PublicVerificationController.php:99
+* @route '/verify/payslip/{payslipNumber}'
+*/
+const verifyPayslipForm = (args: { payslipNumber: string | number } | [payslipNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyPayslip.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyPayslip
+* @see app/Http/Controllers/PublicVerificationController.php:99
+* @route '/verify/payslip/{payslipNumber}'
+*/
+verifyPayslipForm.get = (args: { payslipNumber: string | number } | [payslipNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyPayslip.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyPayslip
+* @see app/Http/Controllers/PublicVerificationController.php:99
+* @route '/verify/payslip/{payslipNumber}'
+*/
+verifyPayslipForm.head = (args: { payslipNumber: string | number } | [payslipNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyPayslip.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+verifyPayslip.form = verifyPayslipForm
+
+/**
 * @see \App\Http\Controllers\PublicVerificationController::payslipQr
 * @see app/Http/Controllers/PublicVerificationController.php:113
 * @route '/verify/payslip/{payslipNumber}/qr.svg'
@@ -494,6 +753,43 @@ payslipQr.head = (args: { payslipNumber: string | number } | [payslipNumber: str
     url: payslipQr.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::payslipQr
+* @see app/Http/Controllers/PublicVerificationController.php:113
+* @route '/verify/payslip/{payslipNumber}/qr.svg'
+*/
+const payslipQrForm = (args: { payslipNumber: string | number } | [payslipNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: payslipQr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::payslipQr
+* @see app/Http/Controllers/PublicVerificationController.php:113
+* @route '/verify/payslip/{payslipNumber}/qr.svg'
+*/
+payslipQrForm.get = (args: { payslipNumber: string | number } | [payslipNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: payslipQr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::payslipQr
+* @see app/Http/Controllers/PublicVerificationController.php:113
+* @route '/verify/payslip/{payslipNumber}/qr.svg'
+*/
+payslipQrForm.head = (args: { payslipNumber: string | number } | [payslipNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: payslipQr.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+payslipQr.form = payslipQrForm
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::verifyCorrespondence
@@ -564,6 +860,43 @@ verifyCorrespondence.head = (args: { correspondence: string | { id: string } } |
 })
 
 /**
+* @see \App\Http\Controllers\PublicVerificationController::verifyCorrespondence
+* @see app/Http/Controllers/PublicVerificationController.php:65
+* @route '/verify/correspondence/{correspondence}'
+*/
+const verifyCorrespondenceForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyCorrespondence.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyCorrespondence
+* @see app/Http/Controllers/PublicVerificationController.php:65
+* @route '/verify/correspondence/{correspondence}'
+*/
+verifyCorrespondenceForm.get = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyCorrespondence.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyCorrespondence
+* @see app/Http/Controllers/PublicVerificationController.php:65
+* @route '/verify/correspondence/{correspondence}'
+*/
+verifyCorrespondenceForm.head = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyCorrespondence.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+verifyCorrespondence.form = verifyCorrespondenceForm
+
+/**
 * @see \App\Http\Controllers\PublicVerificationController::correspondenceQr
 * @see app/Http/Controllers/PublicVerificationController.php:80
 * @route '/verify/correspondence/{correspondence}/qr.svg'
@@ -630,6 +963,43 @@ correspondenceQr.head = (args: { correspondence: string | { id: string } } | [co
     url: correspondenceQr.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::correspondenceQr
+* @see app/Http/Controllers/PublicVerificationController.php:80
+* @route '/verify/correspondence/{correspondence}/qr.svg'
+*/
+const correspondenceQrForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: correspondenceQr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::correspondenceQr
+* @see app/Http/Controllers/PublicVerificationController.php:80
+* @route '/verify/correspondence/{correspondence}/qr.svg'
+*/
+correspondenceQrForm.get = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: correspondenceQr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::correspondenceQr
+* @see app/Http/Controllers/PublicVerificationController.php:80
+* @route '/verify/correspondence/{correspondence}/qr.svg'
+*/
+correspondenceQrForm.head = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: correspondenceQr.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+correspondenceQr.form = correspondenceQrForm
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::verifyConflictCertificate
@@ -700,6 +1070,43 @@ verifyConflictCertificate.head = (args: { conflictCheck: string | { id: string }
 })
 
 /**
+* @see \App\Http\Controllers\PublicVerificationController::verifyConflictCertificate
+* @see app/Http/Controllers/PublicVerificationController.php:225
+* @route '/verify/conflict/{conflictCheck}'
+*/
+const verifyConflictCertificateForm = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyConflictCertificate.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyConflictCertificate
+* @see app/Http/Controllers/PublicVerificationController.php:225
+* @route '/verify/conflict/{conflictCheck}'
+*/
+verifyConflictCertificateForm.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyConflictCertificate.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyConflictCertificate
+* @see app/Http/Controllers/PublicVerificationController.php:225
+* @route '/verify/conflict/{conflictCheck}'
+*/
+verifyConflictCertificateForm.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyConflictCertificate.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+verifyConflictCertificate.form = verifyConflictCertificateForm
+
+/**
 * @see \App\Http\Controllers\PublicVerificationController::conflictCertificateQr
 * @see app/Http/Controllers/PublicVerificationController.php:240
 * @route '/verify/conflict/{conflictCheck}/qr.svg'
@@ -766,6 +1173,43 @@ conflictCertificateQr.head = (args: { conflictCheck: string | { id: string } } |
     url: conflictCertificateQr.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::conflictCertificateQr
+* @see app/Http/Controllers/PublicVerificationController.php:240
+* @route '/verify/conflict/{conflictCheck}/qr.svg'
+*/
+const conflictCertificateQrForm = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: conflictCertificateQr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::conflictCertificateQr
+* @see app/Http/Controllers/PublicVerificationController.php:240
+* @route '/verify/conflict/{conflictCheck}/qr.svg'
+*/
+conflictCertificateQrForm.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: conflictCertificateQr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::conflictCertificateQr
+* @see app/Http/Controllers/PublicVerificationController.php:240
+* @route '/verify/conflict/{conflictCheck}/qr.svg'
+*/
+conflictCertificateQrForm.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: conflictCertificateQr.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+conflictCertificateQr.form = conflictCertificateQrForm
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::verifyMatterStatus
@@ -836,6 +1280,43 @@ verifyMatterStatus.head = (args: { matter: string | { id: string } } | [matter: 
 })
 
 /**
+* @see \App\Http\Controllers\PublicVerificationController::verifyMatterStatus
+* @see app/Http/Controllers/PublicVerificationController.php:259
+* @route '/verify/matter-status/{matter}'
+*/
+const verifyMatterStatusForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyMatterStatus.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyMatterStatus
+* @see app/Http/Controllers/PublicVerificationController.php:259
+* @route '/verify/matter-status/{matter}'
+*/
+verifyMatterStatusForm.get = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyMatterStatus.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::verifyMatterStatus
+* @see app/Http/Controllers/PublicVerificationController.php:259
+* @route '/verify/matter-status/{matter}'
+*/
+verifyMatterStatusForm.head = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: verifyMatterStatus.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+verifyMatterStatus.form = verifyMatterStatusForm
+
+/**
 * @see \App\Http\Controllers\PublicVerificationController::matterStatusQr
 * @see app/Http/Controllers/PublicVerificationController.php:276
 * @route '/verify/matter-status/{matter}/qr.svg'
@@ -902,6 +1383,43 @@ matterStatusQr.head = (args: { matter: string | { id: string } } | [matter: stri
     url: matterStatusQr.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::matterStatusQr
+* @see app/Http/Controllers/PublicVerificationController.php:276
+* @route '/verify/matter-status/{matter}/qr.svg'
+*/
+const matterStatusQrForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: matterStatusQr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::matterStatusQr
+* @see app/Http/Controllers/PublicVerificationController.php:276
+* @route '/verify/matter-status/{matter}/qr.svg'
+*/
+matterStatusQrForm.get = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: matterStatusQr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::matterStatusQr
+* @see app/Http/Controllers/PublicVerificationController.php:276
+* @route '/verify/matter-status/{matter}/qr.svg'
+*/
+matterStatusQrForm.head = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: matterStatusQr.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+matterStatusQr.form = matterStatusQrForm
 
 const PublicVerificationController = { verifyInvoice, invoiceQr, verifyQuotation, quotationQr, verifyPaymentReceipt, paymentReceiptQr, verifyPayslip, payslipQr, verifyCorrespondence, correspondenceQr, verifyConflictCertificate, conflictCertificateQr, verifyMatterStatus, matterStatusQr }
 

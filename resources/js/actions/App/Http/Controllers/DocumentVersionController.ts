@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\DocumentVersionController::store
 * @see app/Http/Controllers/DocumentVersionController.php:18
@@ -56,6 +56,28 @@ store.post = (args: { document: string | { id: string } } | [document: string | 
     url: store.url(args, options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\DocumentVersionController::store
+* @see app/Http/Controllers/DocumentVersionController.php:18
+* @route '/documents/{document}/versions'
+*/
+const storeForm = (args: { document: string | { id: string } } | [document: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\DocumentVersionController::store
+* @see app/Http/Controllers/DocumentVersionController.php:18
+* @route '/documents/{document}/versions'
+*/
+storeForm.post = (args: { document: string | { id: string } } | [document: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(args, options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\DocumentVersionController::download
@@ -121,6 +143,43 @@ download.head = (args: { document: string | { id: string }, version: string | { 
     url: download.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\DocumentVersionController::download
+* @see app/Http/Controllers/DocumentVersionController.php:30
+* @route '/documents/{document}/versions/{version}/download'
+*/
+const downloadForm = (args: { document: string | { id: string }, version: string | { id: string } } | [document: string | { id: string }, version: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: download.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DocumentVersionController::download
+* @see app/Http/Controllers/DocumentVersionController.php:30
+* @route '/documents/{document}/versions/{version}/download'
+*/
+downloadForm.get = (args: { document: string | { id: string }, version: string | { id: string } } | [document: string | { id: string }, version: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: download.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DocumentVersionController::download
+* @see app/Http/Controllers/DocumentVersionController.php:30
+* @route '/documents/{document}/versions/{version}/download'
+*/
+downloadForm.head = (args: { document: string | { id: string }, version: string | { id: string } } | [document: string | { id: string }, version: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: download.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+download.form = downloadForm
 
 const DocumentVersionController = { store, download }
 

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 import attachments from './attachments'
 /**
 * @see \App\Http\Controllers\GovernanceController::store
@@ -33,6 +33,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\GovernanceController::store
+* @see app/Http/Controllers/GovernanceController.php:96
+* @route '/governance/correspondences'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::store
+* @see app/Http/Controllers/GovernanceController.php:96
+* @route '/governance/correspondences'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::show
@@ -103,6 +125,43 @@ show.head = (args: { correspondence: string | { id: string } } | [correspondence
 })
 
 /**
+* @see \App\Http\Controllers\GovernanceController::show
+* @see app/Http/Controllers/GovernanceController.php:108
+* @route '/governance/correspondences/{correspondence}'
+*/
+const showForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::show
+* @see app/Http/Controllers/GovernanceController.php:108
+* @route '/governance/correspondences/{correspondence}'
+*/
+showForm.get = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::show
+* @see app/Http/Controllers/GovernanceController.php:108
+* @route '/governance/correspondences/{correspondence}'
+*/
+showForm.head = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\GovernanceController::destroy
 * @see app/Http/Controllers/GovernanceController.php:143
 * @route '/governance/correspondences/{correspondence}'
@@ -159,6 +218,38 @@ destroy.delete = (args: { correspondence: string | { id: string } } | [correspon
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\GovernanceController::destroy
+* @see app/Http/Controllers/GovernanceController.php:143
+* @route '/governance/correspondences/{correspondence}'
+*/
+const destroyForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\GovernanceController::destroy
+* @see app/Http/Controllers/GovernanceController.php:143
+* @route '/governance/correspondences/{correspondence}'
+*/
+destroyForm.delete = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 const correspondences = {
     store: Object.assign(store, store),

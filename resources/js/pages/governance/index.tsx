@@ -1099,13 +1099,20 @@ export default function GovernanceIndex({
                                                 <div className="flex shrink-0 flex-wrap items-center gap-1 pl-9.5 sm:pl-0">
                                                     {can.legalHold && (
                                                         <Form
-                                                            {...(matter.legal_hold_at
-                                                                ? legalHoldRoutes.destroy.form(
-                                                                      matter.id,
-                                                                  )
-                                                                : legalHoldRoutes.store.form(
-                                                                      matter.id,
-                                                                  ))}
+                                                            action={
+                                                                matter.legal_hold_at
+                                                                    ? legalHoldRoutes.destroy.url(
+                                                                          matter.id,
+                                                                      )
+                                                                    : legalHoldRoutes.store.url(
+                                                                          matter.id,
+                                                                      )
+                                                            }
+                                                            method={
+                                                                matter.legal_hold_at
+                                                                    ? 'delete'
+                                                                    : 'post'
+                                                            }
                                                         >
                                                             <Button
                                                                 size="sm"
@@ -1128,9 +1135,10 @@ export default function GovernanceIndex({
                                                         matter.status ===
                                                             'closed' && (
                                                             <Form
-                                                                {...matterGovernanceRoutes.archive.form(
+                                                                action={matterGovernanceRoutes.archive.url(
                                                                     matter.id,
                                                                 )}
+                                                                method="post"
                                                             >
                                                                 <Button
                                                                     size="sm"
@@ -1145,9 +1153,10 @@ export default function GovernanceIndex({
 
                                                     {can.archive && (
                                                         <Form
-                                                            {...matterExportRoutes.store.form(
+                                                            action={matterExportRoutes.store.url(
                                                                 matter.id,
                                                             )}
+                                                            method="post"
                                                         >
                                                             <Button
                                                                 size="sm"
@@ -1220,7 +1229,8 @@ export default function GovernanceIndex({
                     </DialogHeader>
 
                     <Form
-                        {...correspondenceRoutes.store.form()}
+                        action={correspondenceRoutes.store.url()}
+                        method="post"
                         className="space-y-4 pt-1"
                         onSuccess={() => setCorrespondenceModal(false)}
                     >
@@ -1560,7 +1570,8 @@ function ConflictCheckModal({
                 </DialogHeader>
 
                 <Form
-                    {...conflictRoutes.store.form()}
+                    action={conflictRoutes.store.url()}
+                    method="post"
                     className="space-y-4 pt-1"
                     onSuccess={() => {
                         onOpenChange(false);
@@ -2042,7 +2053,8 @@ function ConflictCheckRow({
                     </DialogHeader>
 
                     <Form
-                        {...conflictRoutes.resolve.form(item.id)}
+                        action={conflictRoutes.resolve.url(item.id)}
+                        method="patch"
                         className="space-y-3.5 pt-1"
                         onSuccess={() => setOpenDecisionModal(false)}
                     >

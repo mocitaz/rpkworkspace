@@ -1446,7 +1446,8 @@ export default function TasksIndex({
                     </DialogHeader>
 
                     <Form
-                        {...(taskRoutes.store?.form ? taskRoutes.store.form() : { action: '/tasks', method: 'post' as const })}
+                        action={taskRoutes.store.url()}
+                        method="post"
                         className="space-y-4 pt-1"
                         resetOnSuccess
                         onSuccess={() => setOpenCreate(false)}
@@ -1708,7 +1709,8 @@ export default function TasksIndex({
                         </DialogHeader>
 
                         <Form
-                            {...(taskRoutes.update?.form ? taskRoutes.update.form(editingTask.id) : { action: `/tasks/${editingTask.id}`, method: 'put' as const })}
+                            action={taskRoutes.update.url(editingTask.id)}
+                            method="put"
                             className="space-y-4 pt-1"
                             onSuccess={() => setEditingTask(null)}
                         >

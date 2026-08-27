@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FinanceController::store
 * @see app/Http/Controllers/FinanceController.php:654
@@ -32,6 +32,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\FinanceController::store
+* @see app/Http/Controllers/FinanceController.php:654
+* @route '/finance/payrolls'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::store
+* @see app/Http/Controllers/FinanceController.php:654
+* @route '/finance/payrolls'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
@@ -92,6 +114,38 @@ update.put = (args: { payroll: string | { id: string } } | [payroll: string | { 
 })
 
 /**
+* @see \App\Http\Controllers\FinanceController::update
+* @see app/Http/Controllers/FinanceController.php:698
+* @route '/finance/payrolls/{payroll}'
+*/
+const updateForm = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::update
+* @see app/Http/Controllers/FinanceController.php:698
+* @route '/finance/payrolls/{payroll}'
+*/
+updateForm.put = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\FinanceController::status
 * @see app/Http/Controllers/FinanceController.php:762
 * @route '/finance/payrolls/{payroll}/status'
@@ -148,6 +202,38 @@ status.patch = (args: { payroll: string | { id: string } } | [payroll: string | 
     url: status.url(args, options),
     method: 'patch',
 })
+
+/**
+* @see \App\Http\Controllers\FinanceController::status
+* @see app/Http/Controllers/FinanceController.php:762
+* @route '/finance/payrolls/{payroll}/status'
+*/
+const statusForm = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: status.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::status
+* @see app/Http/Controllers/FinanceController.php:762
+* @route '/finance/payrolls/{payroll}/status'
+*/
+statusForm.patch = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: status.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+status.form = statusForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::slip
@@ -216,6 +302,43 @@ slip.head = (args: { payroll: string | { id: string } } | [payroll: string | { i
     url: slip.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\FinanceController::slip
+* @see app/Http/Controllers/FinanceController.php:784
+* @route '/finance/payrolls/{payroll}/slip'
+*/
+const slipForm = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: slip.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::slip
+* @see app/Http/Controllers/FinanceController.php:784
+* @route '/finance/payrolls/{payroll}/slip'
+*/
+slipForm.get = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: slip.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::slip
+* @see app/Http/Controllers/FinanceController.php:784
+* @route '/finance/payrolls/{payroll}/slip'
+*/
+slipForm.head = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: slip.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+slip.form = slipForm
 
 const payrolls = {
     store: Object.assign(store, store),

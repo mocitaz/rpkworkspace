@@ -40,7 +40,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
             )}
 
             <div className="space-y-4">
-                <Form {...emailRoute.form()}>
+                <Form action={emailRoute.url()} method="post">
                     {({ processing, errors }) => {
                         const emailErrorMessage =
                             errors.email || emailFormatError;

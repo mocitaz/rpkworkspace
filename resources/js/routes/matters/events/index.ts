@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 import checklist from './checklist'
 /**
 * @see \App\Http\Controllers\MatterOperationController::store
@@ -59,6 +59,28 @@ store.post = (args: { matter: string | { id: string } } | [matter: string | { id
 })
 
 /**
+* @see \App\Http\Controllers\MatterOperationController::store
+* @see app/Http/Controllers/MatterOperationController.php:46
+* @route '/matters/{matter}/events'
+*/
+const storeForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::store
+* @see app/Http/Controllers/MatterOperationController.php:46
+* @route '/matters/{matter}/events'
+*/
+storeForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(args, options),
+    method: 'post',
+})
+
+store.form = storeForm
+
+/**
 * @see \App\Http\Controllers\MatterOperationController::update
 * @see app/Http/Controllers/MatterOperationController.php:68
 * @route '/matters/{matter}/events/{event}'
@@ -112,6 +134,38 @@ update.put = (args: { matter: string | { id: string }, event: string | { id: str
     url: update.url(args, options),
     method: 'put',
 })
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::update
+* @see app/Http/Controllers/MatterOperationController.php:68
+* @route '/matters/{matter}/events/{event}'
+*/
+const updateForm = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::update
+* @see app/Http/Controllers/MatterOperationController.php:68
+* @route '/matters/{matter}/events/{event}'
+*/
+updateForm.put = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroy
@@ -169,6 +223,38 @@ destroy.delete = (args: { matter: string | { id: string }, event: string | { id:
 })
 
 /**
+* @see \App\Http\Controllers\MatterOperationController::destroy
+* @see app/Http/Controllers/MatterOperationController.php:207
+* @route '/matters/{matter}/events/{event}'
+*/
+const destroyForm = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::destroy
+* @see app/Http/Controllers/MatterOperationController.php:207
+* @route '/matters/{matter}/events/{event}'
+*/
+destroyForm.delete = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
+
+/**
 * @see \App\Http\Controllers\MatterOperationController::outcome
 * @see app/Http/Controllers/MatterOperationController.php:242
 * @route '/matters/{matter}/events/{event}/outcome'
@@ -222,6 +308,28 @@ outcome.post = (args: { matter: string | { id: string }, event: string | { id: s
     url: outcome.url(args, options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::outcome
+* @see app/Http/Controllers/MatterOperationController.php:242
+* @route '/matters/{matter}/events/{event}/outcome'
+*/
+const outcomeForm = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: outcome.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\MatterOperationController::outcome
+* @see app/Http/Controllers/MatterOperationController.php:242
+* @route '/matters/{matter}/events/{event}/outcome'
+*/
+outcomeForm.post = (args: { matter: string | { id: string }, event: string | { id: string } } | [matter: string | { id: string }, event: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: outcome.url(args, options),
+    method: 'post',
+})
+
+outcome.form = outcomeForm
 
 const events = {
     store: Object.assign(store, store),

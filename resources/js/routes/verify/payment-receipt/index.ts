@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
 * @see app/Http/Controllers/PublicVerificationController.php:201
@@ -60,6 +60,43 @@ qr.head = (args: { referenceNumber: string | number } | [referenceNumber: string
     url: qr.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::qr
+* @see app/Http/Controllers/PublicVerificationController.php:201
+* @route '/verify/payment-receipt/{referenceNumber}/qr.svg'
+*/
+const qrForm = (args: { referenceNumber: string | number } | [referenceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: qr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::qr
+* @see app/Http/Controllers/PublicVerificationController.php:201
+* @route '/verify/payment-receipt/{referenceNumber}/qr.svg'
+*/
+qrForm.get = (args: { referenceNumber: string | number } | [referenceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: qr.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\PublicVerificationController::qr
+* @see app/Http/Controllers/PublicVerificationController.php:201
+* @route '/verify/payment-receipt/{referenceNumber}/qr.svg'
+*/
+qrForm.head = (args: { referenceNumber: string | number } | [referenceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: qr.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+qr.form = qrForm
 
 const paymentReceipt = {
     qr: Object.assign(qr, qr),

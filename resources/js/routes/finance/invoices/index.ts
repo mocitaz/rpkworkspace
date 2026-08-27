@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FinanceDetailController::show
 * @see app/Http/Controllers/FinanceDetailController.php:19
@@ -68,6 +68,43 @@ show.head = (args: { invoice: string | { id: string } } | [invoice: string | { i
 })
 
 /**
+* @see \App\Http\Controllers\FinanceDetailController::show
+* @see app/Http/Controllers/FinanceDetailController.php:19
+* @route '/finance/invoices/{invoice}'
+*/
+const showForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceDetailController::show
+* @see app/Http/Controllers/FinanceDetailController.php:19
+* @route '/finance/invoices/{invoice}'
+*/
+showForm.get = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceDetailController::show
+* @see app/Http/Controllers/FinanceDetailController.php:19
+* @route '/finance/invoices/{invoice}'
+*/
+showForm.head = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\FinanceController::store
 * @see app/Http/Controllers/FinanceController.php:159
 * @route '/finance/invoices'
@@ -100,6 +137,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\FinanceController::store
+* @see app/Http/Controllers/FinanceController.php:159
+* @route '/finance/invoices'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::store
+* @see app/Http/Controllers/FinanceController.php:159
+* @route '/finance/invoices'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
@@ -160,6 +219,38 @@ update.put = (args: { invoice: string | { id: string } } | [invoice: string | { 
 })
 
 /**
+* @see \App\Http\Controllers\FinanceController::update
+* @see app/Http/Controllers/FinanceController.php:168
+* @route '/finance/invoices/{invoice}'
+*/
+const updateForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::update
+* @see app/Http/Controllers/FinanceController.php:168
+* @route '/finance/invoices/{invoice}'
+*/
+updateForm.put = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\FinanceController::transition
 * @see app/Http/Controllers/FinanceController.php:195
 * @route '/finance/invoices/{invoice}/status'
@@ -216,6 +307,38 @@ transition.patch = (args: { invoice: string | { id: string } } | [invoice: strin
     url: transition.url(args, options),
     method: 'patch',
 })
+
+/**
+* @see \App\Http\Controllers\FinanceController::transition
+* @see app/Http/Controllers/FinanceController.php:195
+* @route '/finance/invoices/{invoice}/status'
+*/
+const transitionForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: transition.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::transition
+* @see app/Http/Controllers/FinanceController.php:195
+* @route '/finance/invoices/{invoice}/status'
+*/
+transitionForm.patch = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: transition.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+transition.form = transitionForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
@@ -284,6 +407,43 @@ pdf.head = (args: { invoice: string | { id: string } } | [invoice: string | { id
     url: pdf.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\FinanceController::pdf
+* @see app/Http/Controllers/FinanceController.php:799
+* @route '/finance/invoices/{invoice}/pdf'
+*/
+const pdfForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: pdf.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::pdf
+* @see app/Http/Controllers/FinanceController.php:799
+* @route '/finance/invoices/{invoice}/pdf'
+*/
+pdfForm.get = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: pdf.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\FinanceController::pdf
+* @see app/Http/Controllers/FinanceController.php:799
+* @route '/finance/invoices/{invoice}/pdf'
+*/
+pdfForm.head = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: pdf.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+pdf.form = pdfForm
 
 const invoices = {
     show: Object.assign(show, show),
