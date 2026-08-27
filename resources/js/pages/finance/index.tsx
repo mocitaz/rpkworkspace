@@ -251,12 +251,15 @@ export default function FinanceIndex({
             subtitle: inv.matter?.title || 'Invoice Tagihan Klien',
             status: inv.status,
             amount: inv.total_amount ?? inv.outstanding_amount ?? 0,
+            outstanding_amount: inv.outstanding_amount,
+            paid_amount: (inv as any).paid_amount,
             currency: inv.currency || currency,
             date: inv.incurred_at,
             due_date: inv.due_at,
             matter: inv.matter,
             client: (inv as any).client,
             description: inv.description,
+            items: (inv as any).items || (inv as any).line_items,
             proof_document: inv.proof_document || inv.proofDocument,
             rawItem: inv,
         });
@@ -277,6 +280,7 @@ export default function FinanceIndex({
             matter: q.matter,
             client: (q as any).client,
             description: q.description,
+            items: (q as any).items || (q as any).line_items,
             rawItem: q,
         });
     };
@@ -316,6 +320,15 @@ export default function FinanceIndex({
             currency: 'IDR',
             date: p.paid_at || p.period,
             notes: p.notes,
+            payroll_details: {
+                basic_salary: p.basic_salary,
+                fixed_allowance: p.fixed_allowance,
+                transport_meal_allowance: p.transport_meal_allowance,
+                overtime_amount: p.overtime_amount,
+                bonus_amount: p.bonus_amount,
+                deductions_amount: p.deductions_amount,
+                tax_deduction_amount: p.tax_deduction_amount,
+            },
             proof_document: p.proof_document || p.proofDocument,
             rawItem: p,
         });
