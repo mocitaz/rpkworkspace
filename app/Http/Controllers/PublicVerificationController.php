@@ -225,10 +225,10 @@ class PublicVerificationController extends Controller
     public function verifyConflictCertificate(ConflictCheck $conflictCheck): View
     {
         $conflictCheck->loadMissing([
-            'matter:id,matter_number,title',
+            'matter:id,matter_number,title,status,opened_at',
             'client:id,client_number,display_name,legal_name,tax_identifier',
-            'requester:id,name,email,position_title',
-            'reviewer:id,name,email,position_title',
+            'requester:id,name,email,position_title,avatar_path',
+            'reviewer:id,name,email,position_title,avatar_path',
         ]);
 
         return view('verify.conflict-certificate', compact('conflictCheck'));
