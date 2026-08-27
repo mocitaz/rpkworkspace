@@ -29,6 +29,7 @@ class Payroll extends Model
         'approved_by',
         'approved_at',
         'notes',
+        'proof_document_id',
         'created_by',
     ];
 
@@ -63,6 +64,12 @@ class Payroll extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /** @return BelongsTo<Document, $this> */
+    public function proofDocument(): BelongsTo
+    {
+        return $this->belongsTo(Document::class, 'proof_document_id');
     }
 
     /** @return BelongsTo<FinancialAccount, $this> */

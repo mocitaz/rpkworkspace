@@ -37,6 +37,7 @@ class UpdateInvoiceRequest extends FormRequest
             'items.*.description' => ['required', 'string', 'max:255'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.unit_amount' => ['required', 'integer', 'min:0'],
+            'proof' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:20480'],
         ];
     }
 

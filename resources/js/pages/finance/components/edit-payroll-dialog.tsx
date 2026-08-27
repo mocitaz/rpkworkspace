@@ -28,6 +28,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { FileInput } from '@/components/ui/file-input';
 import { MoneyInput } from '@/components/ui/money-input';
 import { Label } from '@/components/ui/label';
 import { formatMoney, terbilang } from '@/lib/format';
@@ -54,7 +55,19 @@ export function EditPayrollDialog({
     payroll: PayrollItem | null;
     accounts: { id: string; name: string }[];
 }) {
-    const [data, setData] = useState({
+    const [data, setData] = useState<{
+        basic_salary: number;
+        fixed_allowance: number;
+        transport_meal_allowance: number;
+        overtime_amount: number;
+        bonus_amount: number;
+        tax_deduction_amount: number;
+        deductions_amount: number;
+        status: 'draft' | 'approved' | 'paid';
+        payment_account_id: string;
+        notes: string;
+        proof: File | null;
+    }>({
         basic_salary: 0,
         fixed_allowance: 0,
         transport_meal_allowance: 0,
@@ -62,9 +75,10 @@ export function EditPayrollDialog({
         bonus_amount: 0,
         tax_deduction_amount: 0,
         deductions_amount: 0,
-        status: 'draft' as 'draft' | 'approved' | 'paid',
+        status: 'draft',
         payment_account_id: '',
         notes: '',
+        proof: null,
     });
     const [processing, setProcessing] = useState(false);
 
@@ -81,6 +95,7 @@ export function EditPayrollDialog({
                 status: payroll.status || 'draft',
                 payment_account_id: payroll.payment_account?.id || '',
                 notes: payroll.notes || '',
+                proof: null,
             });
         }
     }, [payroll, open]);
@@ -105,7 +120,11 @@ export function EditPayrollDialog({
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         setProcessing(true);
-        router.put(`/finance/payrolls/${payroll.id}`, data, {
+        router.post(`/finance/payrolls/${payroll.id}`, {
+            _method: 'put',
+            ...data,
+        }, {
+            forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
                 setProcessing(false);
@@ -524,6 +543,23 @@ export function EditPayrollDialog({
                                                 }
                                                 placeholder="cth: Penyesuaian potongan pinjaman..."
                                                 className="h-9 w-full rounded-lg border-slate-200 bg-white text-xs shadow-2xs transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* 6. Upload Ganti Bukti Gaji */}
+                                    <div>
+                                        <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                            Ganti / Unggah Bukti Transfer / Slip Tertandatangan
+                                        </Label>
+                                        <div className="mt-1.5">
+                                            <FileInput
+                                                name="proof"
+                                                accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0] || null;
+                                                    setData({ ...data, proof: file });
+                                                }}
                                             />
                                         </div>
                                     </div>

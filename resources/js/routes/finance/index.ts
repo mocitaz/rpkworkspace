@@ -9,9 +9,10 @@ import transfers from './transfers'
 import partnerTransactions from './partner-transactions'
 import clientTrustFunds from './client-trust-funds'
 import payrolls from './payrolls'
+import proof from './proof'
 /**
 * @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:64
+* @see app/Http/Controllers/FinanceController.php:66
 * @route '/finance'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -26,7 +27,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:64
+* @see app/Http/Controllers/FinanceController.php:66
 * @route '/finance'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -35,7 +36,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:64
+* @see app/Http/Controllers/FinanceController.php:66
 * @route '/finance'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -45,7 +46,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:64
+* @see app/Http/Controllers/FinanceController.php:66
 * @route '/finance'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -55,7 +56,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:64
+* @see app/Http/Controllers/FinanceController.php:66
 * @route '/finance'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +66,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:64
+* @see app/Http/Controllers/FinanceController.php:66
 * @route '/finance'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -75,7 +76,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:64
+* @see app/Http/Controllers/FinanceController.php:66
 * @route '/finance'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -102,6 +103,7 @@ const finance = {
     partnerTransactions: Object.assign(partnerTransactions, partnerTransactions),
     clientTrustFunds: Object.assign(clientTrustFunds, clientTrustFunds),
     payrolls: Object.assign(payrolls, payrolls),
+    proof: Object.assign(proof, proof),
 }
 
 export default finance

@@ -1,6 +1,8 @@
-import { ArrowRightLeft, Building, DollarSign, Plus, User, Wallet } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRightLeft, Building, DollarSign, Paperclip, Plus, UploadCloud, User, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDate, formatMoney } from '@/lib/format';
+import { FinanceProofDialog, type FinanceEntityProofTarget, type ProofDocumentData } from './finance-proof-dialog';
 
 export type FinancialAccountItem = {
     id: string;
@@ -26,6 +28,8 @@ export type AccountTransferItem = {
     notes?: string;
     status: string;
     creator?: { id: number; name: string };
+    proof_document?: ProofDocumentData | null;
+    proofDocument?: ProofDocumentData | null;
 };
 
 export function AccountsView({
@@ -39,6 +43,7 @@ export function AccountsView({
     onOpenTransferModal: () => void;
     onOpenAccountModal: () => void;
 }) {
+    const [proofTarget, setProofTarget] = useState<FinanceEntityProofTarget | null>(null);
     const totalCashBank = accounts
         .filter((a) => a.type === 'cash' || a.type === 'bank')
         .reduce((acc, a) => acc + a.current_balance, 0);
@@ -193,11 +198,12 @@ export function AccountsView({
                             <thead className="border-b border-slate-200/70 bg-slate-50/70 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:border-white/[0.06] dark:bg-[#121418] dark:text-zinc-400">
                                 <tr>
                                     <th className="px-3.5 py-2.5">No Transfer &amp; Tanggal</th>
-                                    <th className="px-3 py-2.5">Akun Asal</th>
-                                    <th className="px-3 py-2.5">Akun Tujuan</th>
-                                    <th className="px-3 py-2.5 text-right">Nominal Transfer</th>
-                                    <th className="px-3 py-2.5">Catatan</th>
-                                    <th className="px-3 py-2.5 text-center">Status</th>
+                                    <th className="px-3.5 py-2.5">Akun Asal</th>
+                                    <th className="px-3.5 py-2.5">Akun Tujuan</th>
+                                    <th className="px-3.5 py-2.5 text-right">Nominal Transfer</th>
+                                    <th className="px-3.5 py-2.5">Catatan</th>
+                                    <th className="px-3.5 py-2.5 text-center">Status</th>
+                                    <th className="px-3.5 py-2.5 text-center">Bukti</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-200/60 font-medium text-slate-700 dark:divide-white/[0.04] dark:text-zinc-300">
@@ -225,10 +231,47 @@ export function AccountsView({
                                         <td className="px-3 py-2.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                             {trf.notes || '-'}
                                         </td>
-                                        <td className="px-3 py-2.5 text-center">
+                                        <td className="px-3.5 py-2.5 text-center">
                                             <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[9.5px] font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
                                                 Berhasil
                                             </span>
+                                        </td>
+                                        <td className="px-3.5 py-2.5 text-center">
+                                            {trf.proof_document || trf.proofDocument ? (
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={() => setProofTarget({
+                                                        id: trf.id,
+                                                        entity: 'transfers',
+                                                        title: `Bukti Transfer: ${trf.transfer_number}`,
+                                                        subtitle: `${trf.from_account?.name || 'Kas'} → ${trf.to_account?.name || 'Bank'} • ${formatMoney(trf.amount, 'IDR')}`,
+                                                        proof_document: trf.proof_document || trf.proofDocument,
+                                                    })}
+                                                    className="h-6 rounded border-emerald-200 bg-emerald-50/70 px-1.5 text-[10px] font-semibold text-emerald-700 hover:bg-emerald-100 dark:border-emerald-500/20 dark:bg-emerald-950/30 dark:text-emerald-300"
+                                                    title="Lihat Bukti Mutasi"
+                                                >
+                                                    <Paperclip className="mr-0.5 size-2.5" />
+                                                    Bukti
+                                                </Button>
+                                            ) : (
+                                                <Button
+                                                    size="sm"
+                                                    variant="ghost"
+                                                    onClick={() => setProofTarget({
+                                                        id: trf.id,
+                                                        entity: 'transfers',
+                                                        title: `Unggah Bukti Transfer: ${trf.transfer_number}`,
+                                                        subtitle: `${trf.from_account?.name || 'Kas'} → ${trf.to_account?.name || 'Bank'} • ${formatMoney(trf.amount, 'IDR')}`,
+                                                        proof_document: null,
+                                                    })}
+                                                    className="h-6 rounded border border-dashed border-slate-200 px-1.5 text-[10px] text-slate-500 hover:text-slate-900 hover:border-slate-400 dark:border-white/10 dark:text-zinc-400"
+                                                    title="Unggah Bukti Mutasi"
+                                                >
+                                                    <UploadCloud className="mr-0.5 size-2.5" />
+                                                    +Bukti
+                                                </Button>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}
@@ -237,6 +280,13 @@ export function AccountsView({
                     </div>
                 )}
             </div>
+
+            {/* Modal Pratinjau & Upload Bukti Mutasi Transfer */}
+            <FinanceProofDialog
+                target={proofTarget}
+                isOpen={Boolean(proofTarget)}
+                onClose={() => setProofTarget(null)}
+            />
         </div>
     );
 }

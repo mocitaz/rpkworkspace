@@ -29,7 +29,7 @@ class CreateInvoice
             $total = $taxableAmount + $taxAmount;
 
             $invoice = Invoice::query()->create([
-                ...Arr::except($attributes, ['items', 'discount_amount', 'tax_rate']),
+                ...Arr::except($attributes, ['items', 'discount_amount', 'tax_rate', 'proof']),
                 'invoice_number' => $numbers->handle(DocumentNumberType::Invoice),
                 'currency' => $attributes['currency'] ?? config('raf.finance.currency', 'IDR'),
                 'subtotal_amount' => $subtotal,

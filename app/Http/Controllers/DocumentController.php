@@ -31,7 +31,7 @@ class DocumentController extends Controller
         $matterId = $request->string('matter_id')->toString();
         $documentType = $request->string('document_type')->toString();
 
-        $baseQuery = Document::query()->visibleTo($request->user());
+        $baseQuery = Document::query()->visibleTo($request->user())->where('document_type', '!=', 'financial_proof');
 
         $metrics = [
             'total' => (clone $baseQuery)->count(),

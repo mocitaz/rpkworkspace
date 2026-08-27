@@ -21,6 +21,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { FileInput } from '@/components/ui/file-input';
 import { Input } from '@/components/ui/input';
 import { MoneyInput } from '@/components/ui/money-input';
 import { Label } from '@/components/ui/label';
@@ -188,29 +189,34 @@ export function EditInvoiceDialog({
         );
     };
 
+    const [proof, setProof] = useState<File | null>(null);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setProcessing(true);
         setErrors({});
 
-        const payload = {
-            client_id: clientId,
-            matter_id: matterId || null,
-            title,
-            status,
-            currency,
-            issued_at: issuedAt || null,
-            due_at: dueAt || null,
-            discount_amount: Math.round(discount),
-            tax_rate: parsedTaxRate,
-            items: lineItems.map((item) => ({
-                description: item.description.trim(),
-                quantity: Math.max(1, Number(item.quantity) || 1),
-                unit_amount: Math.max(0, Math.round(Number(item.unit_amount) || 0)),
-            })),
-        };
+        const formData = new FormData();
+        formData.append('_method', 'PUT');
+        formData.append('client_id', clientId);
+        if (matterId) formData.append('matter_id', matterId);
+        formData.append('title', title);
+        formData.append('status', status);
+        formData.append('currency', currency);
+        if (issuedAt) formData.append('issued_at', issuedAt);
+        if (dueAt) formData.append('due_at', dueAt);
+        formData.append('discount_amount', Math.round(discount).toString());
+        formData.append('tax_rate', parsedTaxRate.toString());
+        lineItems.forEach((item, index) => {
+            formData.append(`items[${index}][description]`, item.description.trim());
+            formData.append(`items[${index}][quantity]`, Math.max(1, Number(item.quantity) || 1).toString());
+            formData.append(`items[${index}][unit_amount]`, Math.max(0, Math.round(Number(item.unit_amount) || 0)).toString());
+        });
+        if (proof) {
+            formData.append('proof', proof);
+        }
 
-        router.put(`/finance/invoices/${invoice.id}`, payload, {
+        router.post(`/finance/invoices/${invoice.id}`, formData, {
             preserveScroll: true,
             onSuccess: () => {
                 setProcessing(false);
@@ -599,6 +605,23 @@ export function EditInvoiceDialog({
                                     </div>
                                 )}
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Section: Lampiran Bukti Invoice */}
+                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                        <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                            Ganti / Unggah Dokumen Invoice Tertandatangan / Bukti (Opsional)
+                        </Label>
+                        <div className="mt-1.5">
+                            <FileInput
+                                name="proof"
+                                accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0] || null;
+                                    setProof(file);
+                                }}
+                            />
                         </div>
                     </div>
 

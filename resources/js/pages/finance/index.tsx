@@ -22,6 +22,7 @@ import {
     HandCoins,
     Layers,
     Lock,
+    Paperclip,
     Pencil,
     Plus,
     Receipt,
@@ -32,6 +33,7 @@ import {
     Trash2,
     TrendingUp,
     Undo2,
+    UploadCloud,
     User,
     Users,
     Wallet,
@@ -68,6 +70,7 @@ import { PartnerAdvancesView, type PartnerAdvanceSummaryItem, type PartnerTransa
 import { ClientTrustView, type ClientTrustSummary, type ClientTrustFundItem } from './components/client-trust-view';
 import { PayrollView, type PayrollItem } from './components/payroll-view';
 import { ReportsView, type IncomeStatementData, type BalanceSheetData } from './components/reports-view';
+import { FinanceProofDialog, type FinanceEntityProofTarget, type ProofDocumentData } from './components/finance-proof-dialog';
 import { FinancialAnalyticsView } from './components/financial-analytics-view';
 import { CreateAccountDialog } from './components/create-account-dialog';
 import { CreateTransferDialog } from './components/create-transfer-dialog';
@@ -122,6 +125,8 @@ type LedgerItem = {
             currency: string;
         };
     }[];
+    proof_document?: ProofDocumentData | null;
+    proofDocument?: ProofDocumentData | null;
 };
 
 type Overview = {
@@ -202,6 +207,7 @@ export default function FinanceIndex({
     const [isDeletingExpense, setIsDeletingExpense] = useState(false);
     const [expenseToEdit, setExpenseToEdit] = useState<LedgerItem | null>(null);
     const [confirmExpenseToEdit, setConfirmExpenseToEdit] = useState<LedgerItem | null>(null);
+    const [proofTarget, setProofTarget] = useState<FinanceEntityProofTarget | null>(null);
 
     // 4 Primary Scopes: Client & Matters, Office Operations, Financial Reports, Analytics Insights
     const [scope, setScope] = useState<'client_matters' | 'office_operations' | 'financial_reports' | 'analytics_insights'>('client_matters');
@@ -849,11 +855,11 @@ export default function FinanceIndex({
                                         />
                                     )}
 
-                                    {(matterTab === 'invoices' ||
+                                    {(matterTab === 'all' ||
+                                        matterTab === 'invoices' ||
                                         matterTab === 'quotations' ||
                                         matterTab === 'disbursements' ||
-                                        matterTab === 'payments' ||
-                                        matterTab === 'all') && (
+                                        matterTab === 'payments') && (
                                         <div className="grid gap-3 lg:grid-cols-2">
                                             {(matterTab === 'all' || matterTab === 'invoices') && (
                                                 <div className={matterTab === 'invoices' ? 'lg:col-span-2' : ''}>
@@ -873,6 +879,7 @@ export default function FinanceIndex({
                                                         emptyDescription="Belum ada tagihan yang diterbitkan untuk perkara atau klien terpilih. Terbitkan invoice baru untuk mencatat honorarium dan termin pembayaran."
                                                         onCancel={setCancelInvoice}
                                                         onEditInvoice={can.invoice ? (inv) => setInvoiceToEdit(inv) : undefined}
+                                                        onViewProof={setProofTarget}
                                                     />
                                                 </div>
                                             )}
@@ -912,6 +919,7 @@ export default function FinanceIndex({
                                                         onCreate={() => setModal('expense')}
                                                         onDeleteExpense={can.expense ? (exp) => setExpenseToDelete(exp) : undefined}
                                                         onEditExpense={can.expense ? (exp) => setConfirmExpenseToEdit(exp) : undefined}
+                                                        onViewProof={setProofTarget}
                                                         actionLabel="Catat Biaya Perkara"
                                                         emptyTitle="Belum Ada Catatan Biaya Perkara"
                                                         emptyDescription="Belum ada pengeluaran operasional perkara seperti panjar pengadilan, materai, akomodasi, atau transportasi yang dicatat."
@@ -931,6 +939,7 @@ export default function FinanceIndex({
                                                         emptyDescription="Belum ada riwayat transaksi pembayaran invoice, penerimaan retainer fee, atau transfer kas dari klien yang dicatat."
                                                         onReverse={setReversePayment}
                                                         onRefund={setRefundPayment}
+                                                        onViewProof={setProofTarget}
                                                     />
                                                 </div>
                                             )}
@@ -1065,6 +1074,7 @@ export default function FinanceIndex({
                                         onCreate={() => setModal('expense')}
                                         onDeleteExpense={can.expense ? (exp) => setExpenseToDelete(exp) : undefined}
                                         onEditExpense={can.expense ? (exp) => setConfirmExpenseToEdit(exp) : undefined}
+                                        onViewProof={setProofTarget}
                                         actionLabel="Catat Biaya Kantor"
                                         emptyTitle="Belum Ada Biaya Operasional Kantor"
                                         emptyDescription="Belum ada pengeluaran rutin kantor seperti sewa gedung, listrik, internet, ATK, atau langganan software yang dicatat."
@@ -1375,6 +1385,13 @@ export default function FinanceIndex({
                     });
                 }}
             />
+
+            {/* Modal Pratinjau & Upload Bukti Keuangan Terisolasi */}
+            <FinanceProofDialog
+                target={proofTarget}
+                isOpen={Boolean(proofTarget)}
+                onClose={() => setProofTarget(null)}
+            />
         </>
     );
 }
@@ -1399,6 +1416,7 @@ function Ledger({
     onEditExpense,
     onEditInvoice,
     onEditQuotation,
+    onViewProof,
 }: {
     title: string;
     items: LedgerItem[];
@@ -1419,6 +1437,7 @@ function Ledger({
     onEditExpense?: (expense: LedgerItem) => void;
     onEditInvoice?: (invoice: LedgerItem) => void;
     onEditQuotation?: (quotation: LedgerItem) => void;
+    onViewProof?: (target: FinanceEntityProofTarget) => void;
 }) {
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -1595,6 +1614,29 @@ function Ledger({
                                             </Button>
                                         )}
 
+                                        {i.invoice_number && onViewProof && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => onViewProof({
+                                                    id: i.id,
+                                                    entity: 'invoices',
+                                                    title: `Bukti Dokumen Invoice: ${i.invoice_number}`,
+                                                    subtitle: i.title || i.matter?.title || 'Invoice Tagihan',
+                                                    proof_document: i.proof_document || i.proofDocument,
+                                                })}
+                                                className={`size-6.5 rounded-lg ${
+                                                    i.proof_document || i.proofDocument
+                                                        ? 'text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30'
+                                                        : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-zinc-500 dark:hover:bg-white/[0.06] dark:hover:text-zinc-200'
+                                                }`}
+                                                title={i.proof_document || i.proofDocument ? "Lihat Bukti Dokumen Invoice" : "Unggah Bukti Dokumen Invoice"}
+                                            >
+                                                <Paperclip className="size-3.5" />
+                                            </Button>
+                                        )}
+
                                         {i.invoice_number && onEditInvoice && (
                                             <Button
                                                 variant="ghost"
@@ -1703,6 +1745,31 @@ function Ledger({
                                                 </Form>
                                             )}
 
+                                        {onViewProof &&
+                                            !i.invoice_number &&
+                                            !i.quotation_number && (
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => onViewProof({
+                                                        id: i.id,
+                                                        entity: 'expenses',
+                                                        title: `Bukti Pengeluaran: ${i.description || i.category || 'Biaya'}`,
+                                                        subtitle: `${i.vendor ? i.vendor + ' • ' : ''}${formatMoney(i.amount ?? 0, 'IDR')}`,
+                                                        proof_document: i.proof_document || i.proofDocument,
+                                                    })}
+                                                    className={`size-6.5 rounded-lg ${
+                                                        i.proof_document || i.proofDocument
+                                                            ? 'text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30'
+                                                            : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-zinc-500 dark:hover:bg-white/[0.06] dark:hover:text-zinc-200'
+                                                    }`}
+                                                    title={i.proof_document || i.proofDocument ? "Lihat Bukti Kuitansi" : "Unggah Bukti Kuitansi"}
+                                                >
+                                                    <Paperclip className="size-3.5" />
+                                                </Button>
+                                            )}
+
                                         {onEditExpense &&
                                             !i.invoice_number &&
                                             !i.quotation_number && (
@@ -1785,6 +1852,7 @@ function PaymentLedger({
     emptyDescription = 'Belum ada riwayat transaksi pembayaran invoice, penerimaan retainer fee, atau transfer kas dari klien yang dicatat.',
     onReverse,
     onRefund,
+    onViewProof,
 }: {
     items: LedgerItem[];
     currency: string;
@@ -1795,6 +1863,7 @@ function PaymentLedger({
     emptyDescription?: string;
     onReverse: (payment: LedgerItem) => void;
     onRefund: (payment: LedgerItem) => void;
+    onViewProof?: (target: FinanceEntityProofTarget) => void;
 }) {
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -1980,32 +2049,57 @@ function PaymentLedger({
                                         )}
                                     </span>
 
-                                    {canManage &&
-                                        !payment.reversed_at &&
-                                        !payment.refunded_at && (
-                                            <div className="flex items-center gap-1">
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    onClick={() =>
-                                                        onReverse(payment)
-                                                    }
-                                                    className="h-6.5 rounded-lg border-slate-200 px-2 text-[10px] font-semibold hover:bg-slate-50 dark:border-white/10"
-                                                >
-                                                    Koreksi
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant="ghost"
-                                                    onClick={() =>
-                                                        onRefund(payment)
-                                                    }
-                                                    className="h-6.5 rounded-lg px-2 text-[10px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
-                                                >
-                                                    Refund
-                                                </Button>
-                                            </div>
+                                    <div className="flex items-center gap-1">
+                                        {onViewProof && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => onViewProof({
+                                                    id: payment.id,
+                                                    entity: 'payments',
+                                                    title: `Bukti Penerimaan Kas: ${formatMoney(payment.amount ?? 0, payment.currency || currency)}`,
+                                                    subtitle: `${payment.matter?.title || 'Pembayaran Klien'}${payment.received_at ? ' • ' + formatDate(payment.received_at) : ''}`,
+                                                    proof_document: payment.proof_document || payment.proofDocument,
+                                                })}
+                                                className={`size-6.5 rounded-lg ${
+                                                    payment.proof_document || payment.proofDocument
+                                                        ? 'text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30'
+                                                        : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-zinc-500 dark:hover:bg-white/[0.06] dark:hover:text-zinc-200'
+                                                }`}
+                                                title={payment.proof_document || payment.proofDocument ? "Lihat Bukti Transfer Bank" : "Unggah Bukti Transfer"}
+                                            >
+                                                <Paperclip className="size-3.5" />
+                                            </Button>
                                         )}
+
+                                        {canManage &&
+                                            !payment.reversed_at &&
+                                            !payment.refunded_at && (
+                                                <>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={() =>
+                                                            onReverse(payment)
+                                                        }
+                                                        className="h-6.5 rounded-lg border-slate-200 px-2 text-[10px] font-semibold hover:bg-slate-50 dark:border-white/10"
+                                                    >
+                                                        Koreksi
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        onClick={() =>
+                                                            onRefund(payment)
+                                                        }
+                                                        className="h-6.5 rounded-lg px-2 text-[10px] font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30"
+                                                    >
+                                                        Refund
+                                                    </Button>
+                                                </>
+                                            )}
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -2735,6 +2829,23 @@ function FinanceDialog({
                                             </div>
                                         </div>
                                     </div>
+
+                                    {type === 'invoice' && (
+                                        <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                                            <Label htmlFor="invoice-proof" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                Unggah Dokumen Invoice Tertandatangan / Bukti Tagihan (Opsional)
+                                            </Label>
+                                            <div className="mt-1.5">
+                                                <FileInput
+                                                    id="invoice-proof"
+                                                    name="proof"
+                                                    accept="application/pdf,image/png,image/jpeg,image/webp"
+                                                    buttonText="Unggah Dokumen"
+                                                    placeholder="Pilih berkas invoice / surat tagihan..."
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                 </>
                             )}
 

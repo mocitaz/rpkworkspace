@@ -39,7 +39,8 @@ export function CreateClientTrustDialog({
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        form.post('/finance/client-trust', {
+        form.post('/finance/client-trust-funds', {
+            forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
                 form.reset();

@@ -1,6 +1,8 @@
-import { ArrowDownLeft, ArrowUpRight, Lock, Plus, Shield, Wallet } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowDownLeft, ArrowUpRight, Lock, Paperclip, Plus, Shield, UploadCloud, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatDate, formatMoney } from '@/lib/format';
+import { FinanceProofDialog, type FinanceEntityProofTarget, type ProofDocumentData } from './finance-proof-dialog';
 
 export type ClientTrustSummary = {
     total_deposit_in: number;
@@ -30,6 +32,8 @@ export type ClientTrustFundItem = {
     recipient_party?: string;
     notes?: string;
     status: string;
+    proof_document?: ProofDocumentData | null;
+    proofDocument?: ProofDocumentData | null;
 };
 
 export function ClientTrustView({
@@ -41,6 +45,7 @@ export function ClientTrustView({
     trustFunds: ClientTrustFundItem[];
     onOpenTrustModal: () => void;
 }) {
+    const [proofTarget, setProofTarget] = useState<FinanceEntityProofTarget | null>(null);
     return (
         <div className="space-y-4">
             {/* Header & Action */}
@@ -161,11 +166,12 @@ export function ClientTrustView({
                             <thead className="border-b border-slate-200/70 bg-slate-50/70 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:border-white/[0.06] dark:bg-[#121418] dark:text-zinc-400">
                                 <tr>
                                     <th className="px-3.5 py-2.5">No Mutasi &amp; Tanggal</th>
-                                    <th className="px-3 py-2.5">Klien &amp; Perkara</th>
-                                    <th className="px-3 py-2.5">Jenis &amp; Rekening</th>
-                                    <th className="px-3 py-2.5">Keperluan / Penerima</th>
-                                    <th className="px-3 py-2.5 text-right">Nominal</th>
-                                    <th className="px-3 py-2.5 text-center">Status</th>
+                                    <th className="px-3.5 py-2.5">Klien &amp; Perkara</th>
+                                    <th className="px-3.5 py-2.5">Jenis &amp; Rekening</th>
+                                    <th className="px-3.5 py-2.5">Keperluan / Penerima</th>
+                                    <th className="px-3.5 py-2.5 text-right">Nominal</th>
+                                    <th className="px-3.5 py-2.5 text-center">Status</th>
+                                    <th className="px-3.5 py-2.5 text-center">Bukti</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-200/60 font-medium text-slate-700 dark:divide-white/[0.04] dark:text-zinc-300">
@@ -198,10 +204,47 @@ export function ClientTrustView({
                                                     {formatMoney(tf.amount, 'IDR')}
                                                 </span>
                                             </td>
-                                            <td className="px-3 py-2.5 text-center">
+                                            <td className="px-3.5 py-2.5 text-center">
                                                 <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[9.5px] font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
                                                     Disetujui
                                                 </span>
+                                            </td>
+                                            <td className="px-3.5 py-2.5 text-center">
+                                                {tf.proof_document || tf.proofDocument ? (
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={() => setProofTarget({
+                                                            id: tf.id,
+                                                            entity: 'client-trust-funds',
+                                                            title: `Bukti Dana Titipan: ${tf.transaction_number}`,
+                                                            subtitle: `${tf.client?.display_name || 'Klien'} • ${tf.purpose}`,
+                                                            proof_document: tf.proof_document || tf.proofDocument,
+                                                        })}
+                                                        className="h-6 rounded border-emerald-200 bg-emerald-50/70 px-1.5 text-[10px] font-semibold text-emerald-700 hover:bg-emerald-100 dark:border-emerald-500/20 dark:bg-emerald-950/30 dark:text-emerald-300"
+                                                        title="Lihat Bukti Setor / Kuitansi"
+                                                    >
+                                                        <Paperclip className="mr-0.5 size-2.5" />
+                                                        Bukti
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        onClick={() => setProofTarget({
+                                                            id: tf.id,
+                                                            entity: 'client-trust-funds',
+                                                            title: `Unggah Bukti: ${tf.transaction_number}`,
+                                                            subtitle: `${tf.client?.display_name || 'Klien'} • ${tf.purpose}`,
+                                                            proof_document: null,
+                                                        })}
+                                                        className="h-6 rounded border border-dashed border-slate-200 px-1.5 text-[10px] text-slate-500 hover:text-slate-900 hover:border-slate-400 dark:border-white/10 dark:text-zinc-400"
+                                                        title="Unggah Bukti Setor / Kuitansi"
+                                                    >
+                                                        <UploadCloud className="mr-0.5 size-2.5" />
+                                                        +Bukti
+                                                    </Button>
+                                                )}
                                             </td>
                                         </tr>
                                     );
@@ -211,6 +254,13 @@ export function ClientTrustView({
                     </div>
                 )}
             </div>
+
+            {/* Modal Pratinjau & Upload Bukti Dana Titipan */}
+            <FinanceProofDialog
+                target={proofTarget}
+                isOpen={Boolean(proofTarget)}
+                onClose={() => setProofTarget(null)}
+            />
         </div>
     );
 }

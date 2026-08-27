@@ -35,6 +35,7 @@ use App\Http\Requests\UpdateQuotationRequest;
 use App\Models\AccountTransfer;
 use App\Models\Client;
 use App\Models\ClientTrustFund;
+use App\Models\Document;
 use App\Models\Expense;
 use App\Models\FinancialAccount;
 use App\Models\Invoice;
@@ -51,6 +52,7 @@ use App\Services\FirmFinancialStatementService;
 use App\Services\MatterFinancialOverview;
 use App\Services\PdfRenderer;
 use App\WorkflowStatus;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -114,27 +116,28 @@ class FinanceController extends Controller
             'clients' => Client::query()->where('status', 'active')->orderBy('display_name')->get(['id', 'display_name']),
             'overview' => $financialOverview,
             'selectedMatterId' => $selectedMatter?->getKey() ?? '',
-            'invoices' => $invoiceQuery->with(['matter:id,matter_number,title', 'lineItems'])->latest()->limit(50)->get(),
+            'invoices' => $invoiceQuery->with(['matter:id,matter_number,title', 'lineItems', 'proofDocument.currentVersion'])->latest()->limit(50)->get(),
             'quotations' => $quotationQuery->with(['matter:id,matter_number,title', 'lineItems'])->latest()->limit(50)->get(),
-            'expenses' => $expenseQuery->with(['matter:id,matter_number,title', 'account:id,name', 'partner:id,name'])->latest('incurred_at')->limit(50)->get(),
-            'payments' => $paymentQuery->with(['matter:id,matter_number,title', 'account:id,name', 'allocations.invoice:id,invoice_number,outstanding_amount,currency'])->latest('received_at')->limit(50)->get(),
+            'expenses' => $expenseQuery->with(['matter:id,matter_number,title', 'account:id,name', 'partner:id,name', 'proofDocument.currentVersion'])->latest('incurred_at')->limit(50)->get(),
+            'payments' => $paymentQuery->with(['matter:id,matter_number,title', 'account:id,name', 'allocations.invoice:id,invoice_number,outstanding_amount,currency', 'proofDocument.currentVersion'])->latest('received_at')->limit(50)->get(),
 
             // Multi-Kas & Accounts
             'accounts' => FinancialAccount::query()->with('partner:id,name,email,avatar_path,position_title,department')->orderBy('type')->get(),
-            'transfers' => AccountTransfer::query()->with(['fromAccount:id,name', 'toAccount:id,name', 'creator:id,name'])->latest('transferred_at')->limit(50)->get(),
+            'transfers' => AccountTransfer::query()->with(['fromAccount:id,name', 'toAccount:id,name', 'creator:id,name', 'proofDocument.currentVersion'])->latest('transferred_at')->limit(50)->get(),
 
             // Partner Advances & Transactions
-            'partnerTransactions' => PartnerTransaction::query()->with(['partner:id,name,email,avatar_path,position_title,department', 'matter:id,matter_number,title', 'account:id,name'])->latest('transaction_date')->limit(50)->get(),
+            'partnerTransactions' => PartnerTransaction::query()->with(['partner:id,name,email,avatar_path,position_title,department', 'matter:id,matter_number,title', 'account:id,name', 'proofDocument.currentVersion'])->latest('transaction_date')->limit(50)->get(),
             'partnerAdvances' => $statementService->getPartnerAdvances(),
 
             // Client Trust Funds (Escrow)
-            'clientTrustFunds' => $clientTrustQuery->with(['client:id,display_name', 'matter:id,matter_number,title', 'account:id,name'])->latest('transaction_date')->limit(50)->get(),
+            'clientTrustFunds' => $clientTrustQuery->with(['client:id,display_name', 'matter:id,matter_number,title', 'account:id,name', 'proofDocument.currentVersion'])->latest('transaction_date')->limit(50)->get(),
             'clientTrustSummary' => $statementService->getClientTrustSummary($selectedMatter?->getKey()),
 
             // Payrolls
             'payrolls' => Payroll::query()->with([
                 'user:id,name,email,avatar_path,position_title,department,employee_code,bank_name,bank_account_number,bank_account_holder',
                 'paymentAccount:id,name',
+                'proofDocument.currentVersion',
             ])->latest('period')->limit(50)->get(),
 
             // Reports & Profitability
@@ -156,19 +159,33 @@ class FinanceController extends Controller
         ]);
     }
 
-    public function storeInvoice(StoreInvoiceRequest $request, CreateInvoice $create, GenerateDocumentNumber $numbers, AuditService $audit): RedirectResponse
+    public function storeInvoice(StoreInvoiceRequest $request, CreateInvoice $create, CreateFinanceProofDocument $createProof, GenerateDocumentNumber $numbers, AuditService $audit): RedirectResponse
     {
         $this->authorizeMatter($request, $request->validated('matter_id'));
-        $invoice = $create->handle($request->validated(), $request->user(), $numbers);
+        $data = $request->safe()->except('proof');
+        $invoice = $create->handle($data, $request->user(), $numbers);
+
+        if ($request->hasFile('proof')) {
+            $proof = $createProof->handle($request->file('proof'), $request->user(), 'Faktur/Invoice '.$invoice->invoice_number, $invoice->matter, $invoice->client);
+            $invoice->update(['proof_document_id' => $proof->getKey()]);
+        }
+
         $audit->record($invoice, 'invoice.created', [], $request->user(), $request);
 
         return back()->with('success', 'Invoice '.$invoice->invoice_number.' berhasil dibuat.');
     }
 
-    public function updateInvoice(UpdateInvoiceRequest $request, Invoice $invoice, UpdateInvoice $update, AuditService $audit): RedirectResponse
+    public function updateInvoice(UpdateInvoiceRequest $request, Invoice $invoice, UpdateInvoice $update, CreateFinanceProofDocument $createProof, AuditService $audit): RedirectResponse
     {
         $this->authorizeFinanceAccess($request, $invoice->matter);
-        $updatedInvoice = $update->handle($invoice, $request->validated(), $request->user());
+        $data = $request->safe()->except('proof');
+        $updatedInvoice = $update->handle($invoice, $data, $request->user());
+
+        if ($request->hasFile('proof')) {
+            $proof = $createProof->handle($request->file('proof'), $request->user(), 'Faktur/Invoice '.$updatedInvoice->invoice_number, $updatedInvoice->matter, $updatedInvoice->client);
+            $updatedInvoice->update(['proof_document_id' => $proof->getKey()]);
+        }
+
         $audit->record($updatedInvoice, 'invoice.updated', [], $request->user(), $request);
 
         return back()->with('success', 'Invoice '.$updatedInvoice->invoice_number.' berhasil diperbarui.');
@@ -651,9 +668,9 @@ class FinanceController extends Controller
         return back()->with('success', 'Mutasi dana titipan klien berhasil dicatat.');
     }
 
-    public function storePayroll(StorePayrollRequest $request, AuditService $audit): RedirectResponse
+    public function storePayroll(StorePayrollRequest $request, CreateFinanceProofDocument $createProof, AuditService $audit): RedirectResponse
     {
-        $data = $request->validated();
+        $data = $request->safe()->except('proof');
         $user = User::query()->whereKey($data['user_id'])->sole();
         $payslipNumber = 'PAY-'.str_replace('-', '', $data['period']).'-'.str_pad((string) $user->getKey(), 3, '0', STR_PAD_LEFT);
 
@@ -663,6 +680,12 @@ class FinanceController extends Controller
 
         $totalDeductions = (int) ($data['deductions_amount'] ?? 0) + (int) ($data['tax_deduction_amount'] ?? 0);
         $netSalary = max(0, $totalEarnings - $totalDeductions);
+
+        $proofId = null;
+        if ($request->hasFile('proof')) {
+            $proof = $createProof->handle($request->file('proof'), $request->user(), 'Bukti Gaji '.$payslipNumber.' ('.$user->name.')');
+            $proofId = $proof->getKey();
+        }
 
         $payroll = Payroll::query()->updateOrCreate(
             ['user_id' => $user->getKey(), 'period' => $data['period']],
@@ -678,6 +701,7 @@ class FinanceController extends Controller
                 'net_salary' => $netSalary,
                 'status' => $data['status'],
                 'payment_account_id' => $data['payment_account_id'] ?? null,
+                'proof_document_id' => $proofId,
                 'paid_at' => $data['status'] === 'paid' ? now() : null,
                 'approved_by' => in_array($data['status'], ['approved', 'paid']) ? $request->user()->getKey() : null,
                 'approved_at' => in_array($data['status'], ['approved', 'paid']) ? now() : null,
@@ -695,10 +719,10 @@ class FinanceController extends Controller
         return back()->with('success', 'Gaji '.$user->name.' untuk periode '.$data['period'].' berhasil disimpan.');
     }
 
-    public function updatePayroll(UpdatePayrollRequest $request, Payroll $payroll, AuditService $audit): RedirectResponse
+    public function updatePayroll(UpdatePayrollRequest $request, Payroll $payroll, CreateFinanceProofDocument $createProof, AuditService $audit): RedirectResponse
     {
         abort_unless($request->user()->hasPermission('billing.manage'), 403);
-        $data = $request->validated();
+        $data = $request->safe()->except('proof');
 
         $totalEarnings = (int) $data['basic_salary'] + (int) ($data['fixed_allowance'] ?? 0)
             + (int) ($data['transport_meal_allowance'] ?? 0) + (int) ($data['overtime_amount'] ?? 0)
@@ -713,7 +737,7 @@ class FinanceController extends Controller
         $newAccount = $data['payment_account_id'] ?? null;
         $newStatus = $data['status'];
 
-        $payroll->update([
+        $updateData = [
             'basic_salary' => (int) $data['basic_salary'],
             'fixed_allowance' => (int) ($data['fixed_allowance'] ?? 0),
             'transport_meal_allowance' => (int) ($data['transport_meal_allowance'] ?? 0),
@@ -728,7 +752,14 @@ class FinanceController extends Controller
             'paid_at' => $newStatus === 'paid' ? ($payroll->paid_at ?? now()) : null,
             'approved_by' => in_array($newStatus, ['approved', 'paid']) ? ($payroll->approved_by ?? $request->user()->getKey()) : null,
             'approved_at' => in_array($newStatus, ['approved', 'paid']) ? ($payroll->approved_at ?? now()) : null,
-        ]);
+        ];
+
+        if ($request->hasFile('proof')) {
+            $proof = $createProof->handle($request->file('proof'), $request->user(), 'Bukti Gaji '.$payroll->payslip_number.' ('.$payroll->user?->name.')');
+            $updateData['proof_document_id'] = $proof->getKey();
+        }
+
+        $payroll->update($updateData);
 
         // Adjust financial account balance if status is/was paid
         if ($oldStatus === 'paid' && $newStatus === 'paid') {
@@ -841,6 +872,86 @@ class FinanceController extends Controller
             'Content-Disposition' => 'attachment; filename="'.$filename.'"',
             'X-Content-Type-Options' => 'nosniff',
         ])->deleteFileAfterSend(true);
+    }
+
+    public function uploadProof(
+        Request $request,
+        string $entity,
+        string $id,
+        CreateFinanceProofDocument $createProof,
+        AuditService $audit
+    ): RedirectResponse {
+        $this->authorizeFinanceAccess($request, null);
+        $request->validate([
+            'proof' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:20480'],
+        ]);
+
+        $model = $this->resolveFinanceModel($entity, $id);
+        $title = $this->resolveProofTitle($entity, $model);
+        $matter = method_exists($model, 'matter') ? $model->matter : null;
+        $client = method_exists($model, 'client') ? $model->client : null;
+
+        $proof = $createProof->handle($request->file('proof'), $request->user(), $title, $matter, $client);
+        $model->update(['proof_document_id' => $proof->getKey()]);
+
+        $audit->record($model, "finance.{$entity}.proof_uploaded", [
+            'document_id' => $proof->getKey(),
+        ], $request->user(), $request);
+
+        return back()->with('success', 'Bukti dokumen berhasil diunggah.');
+    }
+
+    public function destroyProof(
+        Request $request,
+        string $entity,
+        string $id,
+        AuditService $audit
+    ): RedirectResponse {
+        $this->authorizeFinanceAccess($request, null);
+        $model = $this->resolveFinanceModel($entity, $id);
+        $oldProofId = $model->proof_document_id;
+
+        if ($oldProofId) {
+            $model->update(['proof_document_id' => null]);
+            $doc = Document::query()->find($oldProofId);
+            if ($doc && $doc->document_type === 'financial_proof') {
+                $doc->delete();
+            }
+        }
+
+        $audit->record($model, "finance.{$entity}.proof_removed", [
+            'old_document_id' => $oldProofId,
+        ], $request->user(), $request);
+
+        return back()->with('success', 'Bukti dokumen berhasil dihapus.');
+    }
+
+    private function resolveFinanceModel(string $entity, string $id): Model
+    {
+        return match ($entity) {
+            'expenses', 'expense' => Expense::query()->findOrFail($id),
+            'payments', 'payment' => Payment::query()->findOrFail($id),
+            'invoices', 'invoice' => Invoice::query()->findOrFail($id),
+            'payrolls', 'payroll' => Payroll::query()->findOrFail($id),
+            'partner-transactions', 'partner_transaction' => PartnerTransaction::query()->findOrFail($id),
+            'transfers', 'transfer' => AccountTransfer::query()->findOrFail($id),
+            'client-trust-funds', 'client_trust' => ClientTrustFund::query()->findOrFail($id),
+            default => abort(404, 'Entitas keuangan tidak ditemukan.'),
+        };
+    }
+
+    private function resolveProofTitle(string $entity, Model $model): string
+    {
+        return match ($entity) {
+            'expenses', 'expense' => 'Bukti Pengeluaran: '.($model->description ?? $model->id),
+            'payments', 'payment' => 'Bukti Pembayaran: '.($model->payment_number ?? $model->id),
+            'invoices', 'invoice' => 'Faktur/Invoice: '.($model->invoice_number ?? $model->id),
+            'payrolls', 'payroll' => 'Bukti Gaji/Slip: '.($model->payslip_number ?? $model->id),
+            'partner-transactions', 'partner_transaction' => 'Bukti Transaksi Partner: '.($model->transaction_number ?? $model->id),
+            'transfers', 'transfer' => 'Bukti Transfer Mutasi: '.($model->transfer_number ?? $model->id),
+            'client-trust-funds', 'client_trust' => 'Bukti Dana Titipan: '.($model->transaction_number ?? $model->id),
+            default => 'Bukti Transaksi Keuangan',
+        };
     }
 
     private function authorizeMatter(Request $request, ?string $matterId): void

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertTriangle, HandCoins, Pencil, Plus } from 'lucide-react';
+import { AlertTriangle, HandCoins, Paperclip, Pencil, Plus, UploadCloud } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -12,6 +12,7 @@ import {
 import { formatDate, formatMoney } from '@/lib/format';
 import type { UserOption } from '@/components/user-picker';
 import { EditPartnerTransactionDialog } from './edit-partner-transaction-dialog';
+import { FinanceProofDialog, type FinanceEntityProofTarget, type ProofDocumentData } from './finance-proof-dialog';
 
 export type PartnerAdvanceSummaryItem = {
     account_id: string;
@@ -37,6 +38,8 @@ export type PartnerTransactionItem = {
     account?: { id: string; name: string };
     notes?: string;
     status: string;
+    proof_document?: ProofDocumentData | null;
+    proofDocument?: ProofDocumentData | null;
 };
 
 export function PartnerAdvancesView({
@@ -56,6 +59,7 @@ export function PartnerAdvancesView({
 }) {
     const [selectedTransForEdit, setSelectedTransForEdit] = useState<PartnerTransactionItem | null>(null);
     const [confirmTransForEdit, setConfirmTransForEdit] = useState<PartnerTransactionItem | null>(null);
+    const [proofTarget, setProofTarget] = useState<FinanceEntityProofTarget | null>(null);
 
     const totalDueToPartners = advancesSummary.reduce((acc, p) => acc + p.net_due_to_partner, 0);
 
@@ -228,15 +232,52 @@ export function PartnerAdvancesView({
                                                 </span>
                                             </td>
                                             <td className="whitespace-nowrap px-3 py-2.5 text-center">
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    onClick={() => setConfirmTransForEdit(t)}
-                                                    className="h-7 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
-                                                >
-                                                    <Pencil className="mr-1 size-3 text-slate-400" />
-                                                    Edit
-                                                </Button>
+                                                <div className="flex items-center justify-center gap-1.5">
+                                                    {t.proof_document || t.proofDocument ? (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            onClick={() => setProofTarget({
+                                                                id: t.id,
+                                                                entity: 'partner-transactions',
+                                                                title: `Bukti Transaksi: ${t.transaction_number}`,
+                                                                subtitle: `${t.partner?.name || 'Partner'} • ${typeLabels[t.type]?.label || t.type}`,
+                                                                proof_document: t.proof_document || t.proofDocument,
+                                                            })}
+                                                            className="h-7 rounded-lg border-emerald-200 bg-emerald-50/70 px-2 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 dark:border-emerald-500/20 dark:bg-emerald-950/30 dark:text-emerald-300"
+                                                            title="Lihat Bukti Transaksi Partner"
+                                                        >
+                                                            <Paperclip className="mr-1 size-3" />
+                                                            Bukti
+                                                        </Button>
+                                                    ) : (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            onClick={() => setProofTarget({
+                                                                id: t.id,
+                                                                entity: 'partner-transactions',
+                                                                title: `Unggah Bukti: ${t.transaction_number}`,
+                                                                subtitle: `${t.partner?.name || 'Partner'} • ${typeLabels[t.type]?.label || t.type}`,
+                                                                proof_document: null,
+                                                            })}
+                                                            className="h-7 rounded-lg border border-dashed border-slate-200 px-2 text-xs text-slate-500 hover:text-slate-900 hover:border-slate-400 dark:border-white/10 dark:text-zinc-400"
+                                                            title="Unggah Bukti Transaksi Partner"
+                                                        >
+                                                            <UploadCloud className="mr-1 size-3" />
+                                                            +Bukti
+                                                        </Button>
+                                                    )}
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={() => setConfirmTransForEdit(t)}
+                                                        className="h-7 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                    >
+                                                        <Pencil className="mr-1 size-3 text-slate-400" />
+                                                        Edit
+                                                    </Button>
+                                                </div>
                                             </td>
                                         </tr>
                                     );
@@ -312,6 +353,13 @@ export function PartnerAdvancesView({
                 partners={partners}
                 matters={matters}
                 accounts={accounts}
+            />
+
+            {/* Modal Pratinjau & Upload Bukti Transaksi Partner */}
+            <FinanceProofDialog
+                target={proofTarget}
+                isOpen={Boolean(proofTarget)}
+                onClose={() => setProofTarget(null)}
             />
         </div>
     );

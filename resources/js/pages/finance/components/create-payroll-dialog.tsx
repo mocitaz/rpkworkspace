@@ -26,6 +26,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { FileInput } from '@/components/ui/file-input';
 import { MoneyInput } from '@/components/ui/money-input';
 import { Label } from '@/components/ui/label';
 import UserPicker, { type UserOption } from '@/components/user-picker';
@@ -50,7 +51,21 @@ export function CreatePayrollDialog({
 }) {
     const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
 
-    const form = useForm({
+    const form = useForm<{
+        user_id: string;
+        period: string;
+        basic_salary: number;
+        fixed_allowance: number;
+        transport_meal_allowance: number;
+        overtime_amount: number;
+        bonus_amount: number;
+        tax_deduction_amount: number;
+        deductions_amount: number;
+        status: string;
+        payment_account_id: string;
+        notes: string;
+        proof: File | null;
+    }>({
         user_id: '',
         period: currentMonth,
         basic_salary: 0,
@@ -63,6 +78,7 @@ export function CreatePayrollDialog({
         status: 'draft',
         payment_account_id: accounts[0]?.id || '',
         notes: '',
+        proof: null,
     });
 
     useEffect(() => {
@@ -81,6 +97,7 @@ export function CreatePayrollDialog({
                 status: 'draft',
                 payment_account_id: accounts[0]?.id || '',
                 notes: '',
+                proof: null,
             }));
             form.clearErrors();
         }
@@ -106,6 +123,7 @@ export function CreatePayrollDialog({
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         form.post('/finance/payrolls', {
+            forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
                 form.reset();
@@ -526,6 +544,23 @@ export function CreatePayrollDialog({
                                                 }
                                                 placeholder="cth: Termasuk bonus sukses perkara..."
                                                 className="h-9 w-full rounded-lg border-slate-200 bg-white text-xs shadow-2xs transition-all focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* 6. Upload Bukti Transfer Gaji / Slip Tertandatangan */}
+                                    <div>
+                                        <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                            Lampiran Bukti Transfer / Slip Tertandatangan (Opsional)
+                                        </Label>
+                                        <div className="mt-1.5">
+                                            <FileInput
+                                                name="proof"
+                                                accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0] || null;
+                                                    form.setData('proof', file);
+                                                }}
                                             />
                                         </div>
                                     </div>

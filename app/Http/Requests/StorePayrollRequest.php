@@ -29,6 +29,7 @@ class StorePayrollRequest extends FormRequest
             'tax_deduction_amount' => ['nullable', 'integer', 'min:0'],
             'status' => ['required', 'string', 'in:draft,approved,paid'],
             'payment_account_id' => ['nullable', 'exists:financial_accounts,id'],
+            'proof' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:20480'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ];
     }

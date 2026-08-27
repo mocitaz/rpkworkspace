@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { router } from '@inertiajs/react';
-import { AlertTriangle, Download, Pencil, Plus } from 'lucide-react';
+import { AlertTriangle, Download, Paperclip, Pencil, Plus, UploadCloud } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { formatMoney } from '@/lib/format';
 import { EditPayrollDialog } from './edit-payroll-dialog';
+import { FinanceProofDialog, type FinanceEntityProofTarget, type ProofDocumentData } from './finance-proof-dialog';
 
 export type PayrollItem = {
     id: string;
@@ -41,6 +42,8 @@ export type PayrollItem = {
     payment_account?: { id: string; name: string };
     paid_at?: string;
     notes?: string;
+    proof_document?: ProofDocumentData | null;
+    proofDocument?: ProofDocumentData | null;
 };
 
 export function PayrollView({
@@ -54,6 +57,7 @@ export function PayrollView({
 }) {
     const [selectedPayrollForEdit, setSelectedPayrollForEdit] = useState<PayrollItem | null>(null);
     const [paidConfirmPayroll, setPaidConfirmPayroll] = useState<PayrollItem | null>(null);
+    const [proofTarget, setProofTarget] = useState<FinanceEntityProofTarget | null>(null);
 
     const totalNet = payrolls.reduce((acc, p) => acc + p.net_salary, 0);
     const totalBasic = payrolls.reduce((acc, p) => acc + p.basic_salary, 0);
@@ -233,6 +237,42 @@ export function PayrollView({
                                                         <Download className="size-2.5" />
                                                         Slip Gaji
                                                     </a>
+
+                                                    {p.proof_document || p.proofDocument ? (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            onClick={() => setProofTarget({
+                                                                id: p.id,
+                                                                entity: 'payrolls',
+                                                                title: `Bukti Gaji: ${p.user?.name || p.payslip_number}`,
+                                                                subtitle: `Slip Gaji ${p.payslip_number} • Periode ${p.period}`,
+                                                                proof_document: p.proof_document || p.proofDocument,
+                                                            })}
+                                                            className="h-6 rounded border-emerald-200 bg-emerald-50/70 px-1.5 text-[10px] font-semibold text-emerald-700 hover:bg-emerald-100 dark:border-emerald-500/20 dark:bg-emerald-950/30 dark:text-emerald-300"
+                                                            title="Lihat Bukti Dokumen Gaji"
+                                                        >
+                                                            <Paperclip className="mr-0.5 size-2.5" />
+                                                            Bukti
+                                                        </Button>
+                                                    ) : (
+                                                        <Button
+                                                            size="sm"
+                                                            variant="ghost"
+                                                            onClick={() => setProofTarget({
+                                                                id: p.id,
+                                                                entity: 'payrolls',
+                                                                title: `Unggah Bukti Gaji: ${p.user?.name || p.payslip_number}`,
+                                                                subtitle: `Slip Gaji ${p.payslip_number} • Periode ${p.period}`,
+                                                                proof_document: null,
+                                                            })}
+                                                            className="h-6 rounded border border-dashed border-slate-200 px-1.5 text-[10px] text-slate-500 hover:text-slate-900 hover:border-slate-400 dark:border-white/10 dark:text-zinc-400"
+                                                            title="Unggah Bukti Dokumen Gaji"
+                                                        >
+                                                            <UploadCloud className="mr-0.5 size-2.5" />
+                                                            +Bukti
+                                                        </Button>
+                                                    )}
                                                 </div>
                                             </td>
                                         </tr>
@@ -318,6 +358,13 @@ export function PayrollView({
                 onOpenChange={(open) => !open && setSelectedPayrollForEdit(null)}
                 payroll={selectedPayrollForEdit}
                 accounts={accounts}
+            />
+
+            {/* Modal Pratinjau & Upload Bukti Gaji */}
+            <FinanceProofDialog
+                target={proofTarget}
+                isOpen={Boolean(proofTarget)}
+                onClose={() => setProofTarget(null)}
             />
         </div>
     );

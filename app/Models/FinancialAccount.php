@@ -101,7 +101,7 @@ class FinancialAccount extends Model
      */
     public function recalculateBalance(): int
     {
-        if ($this->type === 'partner_advance') {
+        if ($this->type === 'partner_advance' || $this->type === 'partner_equity') {
             $partnerId = $this->partner_id;
             if (! $partnerId) {
                 $this->updateQuietly(['current_balance' => (int) $this->opening_balance]);

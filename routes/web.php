@@ -132,6 +132,8 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::put('finance/payrolls/{payroll}', [FinanceController::class, 'updatePayroll'])->name('finance.payrolls.update');
     Route::patch('finance/payrolls/{payroll}/status', [FinanceController::class, 'updatePayrollStatus'])->name('finance.payrolls.status');
     Route::get('finance/payrolls/{payroll}/slip', [FinanceController::class, 'downloadPayslip'])->name('finance.payrolls.slip');
+    Route::post('finance/{entity}/{id}/proof', [FinanceController::class, 'uploadProof'])->name('finance.proof.upload');
+    Route::delete('finance/{entity}/{id}/proof', [FinanceController::class, 'destroyProof'])->name('finance.proof.destroy');
     Route::get('governance', [GovernanceController::class, 'index'])->name('governance.index');
     Route::post('governance/correspondences', [GovernanceController::class, 'storeCorrespondence'])->name('governance.correspondences.store');
     Route::get('governance/correspondences/{correspondence}', [GovernanceController::class, 'showCorrespondence'])->name('governance.correspondences.show');

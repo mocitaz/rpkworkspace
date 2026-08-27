@@ -17,7 +17,7 @@ class Invoice extends Model
     protected $fillable = [
         'invoice_number', 'client_id', 'matter_id', 'quotation_id', 'title', 'status', 'currency',
         'subtotal_amount', 'discount_amount', 'tax_rate', 'tax_amount', 'total_amount', 'paid_amount',
-        'outstanding_amount', 'issued_at', 'due_at', 'sent_at', 'paid_at', 'cancelled_at', 'cancelled_by', 'cancellation_reason', 'created_by',
+        'outstanding_amount', 'issued_at', 'due_at', 'sent_at', 'paid_at', 'cancelled_at', 'cancelled_by', 'cancellation_reason', 'proof_document_id', 'created_by',
     ];
 
     protected $attributes = [
@@ -34,6 +34,12 @@ class Invoice extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    /** @return BelongsTo<Document, $this> */
+    public function proofDocument(): BelongsTo
+    {
+        return $this->belongsTo(Document::class, 'proof_document_id');
     }
 
     /** @return BelongsTo<Matter, $this> */
