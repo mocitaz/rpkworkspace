@@ -1,6 +1,17 @@
-import { DollarSign, HandCoins, Plus, ShieldCheck, UserCheck } from 'lucide-react';
+import { useState } from 'react';
+import { AlertTriangle, HandCoins, Pencil, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { formatDate, formatMoney } from '@/lib/format';
+import type { UserOption } from '@/components/user-picker';
+import { EditPartnerTransactionDialog } from './edit-partner-transaction-dialog';
 
 export type PartnerAdvanceSummaryItem = {
     account_id: string;
@@ -32,12 +43,29 @@ export function PartnerAdvancesView({
     advancesSummary,
     transactions,
     onOpenPartnerModal,
+    partners = [],
+    matters = [],
+    accounts = [],
 }: {
     advancesSummary: PartnerAdvanceSummaryItem[];
     transactions: PartnerTransactionItem[];
     onOpenPartnerModal: () => void;
+    partners?: UserOption[];
+    matters?: { id: string; matter_number: string; title: string }[];
+    accounts?: { id: string; name: string }[];
 }) {
+    const [selectedTransForEdit, setSelectedTransForEdit] = useState<PartnerTransactionItem | null>(null);
+    const [confirmTransForEdit, setConfirmTransForEdit] = useState<PartnerTransactionItem | null>(null);
+
     const totalDueToPartners = advancesSummary.reduce((acc, p) => acc + p.net_due_to_partner, 0);
+
+    const typeLabels: Record<string, { label: string; color: string }> = {
+        advance_incurred: { label: 'Talangan Partner (+)', color: 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400' },
+        advance_reimbursed: { label: 'Pengembalian Talangan (-)', color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' },
+        profit_distribution: { label: 'Pembagian Bagi Hasil', color: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400' },
+        capital_injection: { label: 'Setoran Modal (+)', color: 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400' },
+        draw_prive: { label: 'Penarikan Prive (-)', color: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' },
+    };
 
     return (
         <div className="space-y-4">
@@ -76,38 +104,44 @@ export function PartnerAdvancesView({
                     <table className="w-full text-left text-xs">
                         <thead className="border-b border-slate-200/70 bg-slate-50/70 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:border-white/[0.06] dark:bg-[#121418] dark:text-zinc-400">
                             <tr>
-                                <th className="px-3.5 py-2.5">Nama Partner</th>
-                                <th className="px-3 py-2.5 text-right">Saldo Awal</th>
-                                <th className="px-3 py-2.5 text-right">Talangan Berjalan (+)</th>
-                                <th className="px-3 py-2.5 text-right">Pengembalian (-)</th>
-                                <th className="px-3 py-2.5 text-right">Utang Partner Bersih</th>
-                                <th className="px-3 py-2.5 text-right">Bagi Hasil</th>
-                                <th className="px-3 py-2.5 text-right">Prive</th>
+                                <th className="whitespace-nowrap px-3.5 py-2.5">Nama Partner</th>
+                                <th className="whitespace-nowrap px-3 py-2.5 text-right">Saldo Awal</th>
+                                <th className="whitespace-nowrap px-3 py-2.5 text-right">Talangan Berjalan (+)</th>
+                                <th className="whitespace-nowrap px-3 py-2.5 text-right">Pengembalian (-)</th>
+                                <th className="whitespace-nowrap px-3 py-2.5 text-right">Utang Partner Bersih</th>
+                                <th className="whitespace-nowrap px-3 py-2.5 text-right">Bagi Hasil</th>
+                                <th className="whitespace-nowrap px-3 py-2.5 text-right">Prive</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-200/60 font-medium text-slate-700 dark:divide-white/[0.04] dark:text-zinc-300">
                             {advancesSummary.map((partner) => (
                                 <tr key={partner.partner_id || partner.account_id} className="transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
-                                    <td className="px-3.5 py-2.5">
-                                        <div className="font-bold text-slate-900 dark:text-white">{partner.partner_name}</div>
-                                        <div className="font-mono text-[10px] text-slate-400">{partner.account_name}</div>
+                                    <td className="whitespace-nowrap px-3.5 py-2.5">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-bold text-slate-900 dark:text-white">{partner.partner_name}</span>
+                                            {partner.account_name && (
+                                                <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-500 dark:bg-white/5 dark:text-zinc-400">
+                                                    {partner.account_name}
+                                                </span>
+                                            )}
+                                        </div>
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono text-slate-600 dark:text-zinc-400">
+                                    <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono text-slate-600 dark:text-zinc-400">
                                         {formatMoney(partner.opening_balance, 'IDR')}
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono font-semibold text-rose-600 dark:text-rose-400">
+                                    <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono font-semibold text-rose-600 dark:text-rose-400">
                                         {formatMoney(partner.advances_incurred, 'IDR')}
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono font-semibold text-emerald-600 dark:text-emerald-400">
+                                    <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono font-semibold text-emerald-600 dark:text-emerald-400">
                                         {formatMoney(partner.advances_reimbursed, 'IDR')}
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono font-bold text-amber-600 dark:text-amber-400">
+                                    <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono font-bold text-amber-600 dark:text-amber-400">
                                         {formatMoney(partner.net_due_to_partner, 'IDR')}
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono text-blue-600 dark:text-blue-400">
+                                    <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono text-blue-600 dark:text-blue-400">
                                         {formatMoney(partner.profit_distributed, 'IDR')}
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono text-purple-600 dark:text-purple-400">
+                                    <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono text-purple-600 dark:text-purple-400">
                                         {formatMoney(partner.prive_drawn, 'IDR')}
                                     </td>
                                 </tr>
@@ -140,62 +174,69 @@ export function PartnerAdvancesView({
                         <table className="w-full text-left text-xs">
                             <thead className="border-b border-slate-200/70 bg-slate-50/70 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:border-white/[0.06] dark:bg-[#121418] dark:text-zinc-400">
                                 <tr>
-                                    <th className="px-3.5 py-2.5">No Transaksi &amp; Tanggal</th>
-                                    <th className="px-3 py-2.5">Partner</th>
-                                    <th className="px-3 py-2.5">Jenis Transaksi</th>
-                                    <th className="px-3 py-2.5">Perkara / Rekening</th>
-                                    <th className="px-3 py-2.5 text-right">Nominal</th>
+                                    <th className="whitespace-nowrap px-3.5 py-2.5">No Transaksi &amp; Tanggal</th>
+                                    <th className="whitespace-nowrap px-3 py-2.5">Partner</th>
+                                    <th className="whitespace-nowrap px-3 py-2.5">Jenis Transaksi</th>
+                                    <th className="whitespace-nowrap px-3 py-2.5">Perkara / Rekening</th>
+                                    <th className="whitespace-nowrap px-3 py-2.5 text-right">Nominal</th>
                                     <th className="px-3 py-2.5">Keterangan</th>
-                                    <th className="px-3 py-2.5 text-center">Status</th>
+                                    <th className="whitespace-nowrap px-3 py-2.5 text-center">Status</th>
+                                    <th className="whitespace-nowrap px-3 py-2.5 text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-200/60 font-medium text-slate-700 dark:divide-white/[0.04] dark:text-zinc-300">
                                 {transactions.map((t) => {
-                                    const typeLabels: Record<string, { label: string; color: string }> = {
-                                        advance_incurred: { label: 'Talangan Partner (+)', color: 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400' },
-                                        advance_reimbursed: { label: 'Pengembalian Talangan (-)', color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' },
-                                        profit_distribution: { label: 'Pembagian Bagi Hasil', color: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400' },
-                                        capital_injection: { label: 'Setoran Modal (+)', color: 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400' },
-                                        draw_prive: { label: 'Penarikan Prive (-)', color: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400' },
-                                    };
-
                                     const typeInfo = typeLabels[t.type] || { label: t.type, color: 'bg-slate-100 text-slate-700' };
 
                                     return (
                                         <tr key={t.id} className="transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
-                                            <td className="px-3.5 py-2.5">
-                                                <div className="font-mono text-[10.5px] font-bold text-blue-600 dark:text-blue-400">{t.transaction_number}</div>
-                                                <div className="text-[10px] text-slate-400">{formatDate(t.transaction_date)}</div>
+                                            <td className="whitespace-nowrap px-3.5 py-2.5">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">{t.transaction_number}</span>
+                                                    <span className="text-[11px] text-slate-400 dark:text-zinc-500">• {formatDate(t.transaction_date)}</span>
+                                                </div>
                                             </td>
-                                            <td className="px-3 py-2.5 font-bold text-slate-900 dark:text-white">
+                                            <td className="whitespace-nowrap px-3 py-2.5 font-bold text-slate-900 dark:text-white">
                                                 {t.partner?.name || '-'}
                                             </td>
-                                            <td className="px-3 py-2.5">
-                                                <span className={`rounded-full px-2 py-0.5 text-[9.5px] font-bold ${typeInfo.color}`}>
+                                            <td className="whitespace-nowrap px-3 py-2.5">
+                                                <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-[10px] font-bold ${typeInfo.color}`}>
                                                     {typeInfo.label}
                                                 </span>
                                             </td>
-                                            <td className="px-3 py-2.5">
+                                            <td className="whitespace-nowrap px-3 py-2.5">
                                                 {t.matter ? (
-                                                    <span className="font-mono text-[10px] font-semibold text-blue-600 dark:text-blue-400">
+                                                    <span className="font-mono text-xs font-semibold text-blue-600 dark:text-blue-400">
                                                         {t.matter.matter_number}
                                                     </span>
                                                 ) : t.account ? (
-                                                    <span className="text-[10.5px] text-slate-600 dark:text-zinc-400">{t.account.name}</span>
+                                                    <span className="text-xs text-slate-600 dark:text-zinc-300">{t.account.name}</span>
                                                 ) : (
-                                                    <span className="text-[10px] text-slate-400">-</span>
+                                                    <span className="text-xs text-slate-400">-</span>
                                                 )}
                                             </td>
-                                            <td className="px-3 py-2.5 text-right font-mono font-bold text-slate-900 dark:text-white">
+                                            <td className="whitespace-nowrap px-3 py-2.5 text-right font-mono font-bold text-slate-900 dark:text-white">
                                                 {formatMoney(t.amount, 'IDR')}
                                             </td>
-                                            <td className="px-3 py-2.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                            <td className="max-w-[320px] truncate px-3 py-2.5 text-xs text-slate-500 dark:text-zinc-400" title={t.notes || ''}>
                                                 {t.notes || '-'}
                                             </td>
-                                            <td className="px-3 py-2.5 text-center">
-                                                <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[9.5px] font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
+                                            <td className="whitespace-nowrap px-3 py-2.5 text-center">
+                                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
+                                                    <span className="size-1.5 rounded-full bg-emerald-500"></span>
                                                     Disetujui
                                                 </span>
+                                            </td>
+                                            <td className="whitespace-nowrap px-3 py-2.5 text-center">
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={() => setConfirmTransForEdit(t)}
+                                                    className="h-7 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                >
+                                                    <Pencil className="mr-1 size-3 text-slate-400" />
+                                                    Edit
+                                                </Button>
                                             </td>
                                         </tr>
                                     );
@@ -205,6 +246,74 @@ export function PartnerAdvancesView({
                     </div>
                 )}
             </div>
+
+            {/* Modal Konfirmasi Edit Transaksi Partner */}
+            <Dialog open={!!confirmTransForEdit} onOpenChange={(open) => !open && setConfirmTransForEdit(null)}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <div className="flex items-center gap-2">
+                            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400">
+                                <AlertTriangle className="size-5" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-sm font-bold text-slate-900 uppercase dark:text-white">
+                                    Konfirmasi Edit Transaksi Partner
+                                </DialogTitle>
+                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                    Peringatan mutasi kas dan utang partner.
+                                </DialogDescription>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    {confirmTransForEdit && (
+                        <div className="space-y-3 py-2 text-xs">
+                            <div className="rounded-xl border border-amber-200/80 bg-amber-50/70 p-3 text-amber-900 dark:border-amber-500/20 dark:bg-amber-950/20 dark:text-amber-200">
+                                <p className="text-[11.5px] font-semibold leading-relaxed">
+                                    Transaksi <strong>{confirmTransForEdit.transaction_number}</strong> ({typeLabels[confirmTransForEdit.type]?.label || confirmTransForEdit.type}) sebesar <strong>{formatMoney(confirmTransForEdit.amount, 'IDR')}</strong> telah tercatat pada pembukuan.
+                                </p>
+                                <p className="mt-1.5 text-[10.5px] text-amber-800/90 dark:text-amber-300/80">
+                                    Apakah Anda yakin ingin mengedit transaksi ini? Perubahan nominal atau jenis transaksi akan otomatis menyesuaikan saldo rekening kas dan saldo utang partner.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    <DialogFooter className="gap-3 sm:gap-3 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setConfirmTransForEdit(null)}
+                            className="h-9 px-4 rounded-xl border-slate-200 text-xs font-semibold hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                        >
+                            Batal
+                        </Button>
+                        <Button
+                            size="sm"
+                            onClick={() => {
+                                if (confirmTransForEdit) {
+                                    setSelectedTransForEdit(confirmTransForEdit);
+                                    setConfirmTransForEdit(null);
+                                }
+                            }}
+                            className="h-9 px-4 rounded-xl bg-amber-600 text-xs font-semibold text-white shadow-2xs hover:bg-amber-500 active:scale-95 dark:bg-amber-600"
+                        >
+                            Ya, Tetap Edit
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Modal Form Edit Transaksi Partner */}
+            <EditPartnerTransactionDialog
+                open={!!selectedTransForEdit}
+                onOpenChange={(open) => !open && setSelectedTransForEdit(null)}
+                transaction={selectedTransForEdit}
+                partners={partners}
+                matters={matters}
+                accounts={accounts}
+            />
         </div>
     );
 }
+

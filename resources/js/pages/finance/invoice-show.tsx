@@ -14,6 +14,7 @@ import {
     FileText,
     FolderKanban,
     Mail,
+    Pencil,
     Phone,
     Printer,
     Receipt,
@@ -31,6 +32,7 @@ import * as clientRoutes from '@/routes/clients';
 import * as financeRoutes from '@/routes/finance';
 import * as invoiceRoutes from '@/routes/finance/invoices';
 import * as matterRoutes from '@/routes/matters';
+import { EditInvoiceDialog } from './components/edit-invoice-dialog';
 
 type Invoice = {
     id: string;
@@ -91,9 +93,23 @@ type Invoice = {
     }[];
 };
 
-export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
+export default function InvoiceShow({
+    invoice,
+    clients = [],
+    matters = [],
+}: {
+    invoice: Invoice;
+    clients?: { id: string; display_name: string; legal_name?: string }[];
+    matters?: {
+        id: string;
+        matter_number: string;
+        title: string;
+        client_id?: string;
+    }[];
+}) {
     const [copiedAccount, setCopiedAccount] = useState(false);
     const [copiedInvoiceNumber, setCopiedInvoiceNumber] = useState(false);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
     const isOverdue =
         invoice.due_at &&
@@ -176,6 +192,15 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                             <Button
                                 variant="outline"
                                 size="sm"
+                                onClick={() => setIsEditDialogOpen(true)}
+                                className="h-8 rounded-lg border-blue-200 bg-blue-50/50 px-3 text-xs font-semibold text-blue-700 shadow-2xs hover:bg-blue-100 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-300 dark:hover:bg-blue-900/60"
+                            >
+                                <Pencil className="mr-1 size-3 text-blue-600 dark:text-blue-400" />
+                                Edit Invoice
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
                                 className="h-8 rounded-lg border-slate-200/70 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
                                 asChild
                             >
@@ -214,6 +239,14 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                             </Button>
                         </div>
                     </div>
+
+                    <EditInvoiceDialog
+                        open={isEditDialogOpen}
+                        onOpenChange={setIsEditDialogOpen}
+                        invoice={invoice as any}
+                        clients={clients}
+                        matters={matters}
+                    />
 
                     {/* 2. Top 4 KPI Metrics Bento Cards */}
                     <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 print:hidden">
@@ -351,7 +384,7 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                     Kabupaten Bandung Barat, Jawa Barat
                                     <br />
                                     Telp: 0852 9560 1417 · Email:
-                                    contact@gmail.com
+                                    contact@rpklawoffice.com
                                 </p>
                             </div>
 
@@ -722,7 +755,7 @@ export default function InvoiceShow({ invoice }: { invoice: Invoice }) {
                                             Bukti transfer dapat dikirimkan ke
                                             email{' '}
                                             <span className="font-semibold text-slate-900 dark:text-white">
-                                                contact@gmail.com
+                                                contact@rpklawoffice.com
                                             </span>
                                             .
                                         </li>

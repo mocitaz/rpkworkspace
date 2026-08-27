@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use App\Models\Invoice;
+use App\Models\Matter;
 use App\Models\Payment;
 use App\Services\AuditService;
 use App\Services\PdfRenderer;
@@ -29,6 +31,8 @@ class FinanceDetailController extends Controller
                 'lineItems',
                 'paymentAllocations.payment:id,amount,received_at,reference_number,reversed_at,refunded_at',
             ]),
+            'clients' => Client::query()->orderBy('display_name')->get(['id', 'display_name', 'legal_name']),
+            'matters' => Matter::query()->orderBy('matter_number')->get(['id', 'matter_number', 'title', 'client_id']),
         ]);
     }
 
@@ -51,7 +55,7 @@ class FinanceDetailController extends Controller
             Gate::authorize('view', $payment->matter);
         }
 
-        $payment->loadMissing(['client', 'matter', 'allocations.invoice']);
+        $payment->loadMissing(['client', 'matter', 'account', 'allocations.invoice', 'recorder']);
 
         $pdf = $renderer->render('pdf.payment-receipt', [
             'payment' => $payment,

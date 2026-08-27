@@ -170,14 +170,14 @@ export function ConfirmDialog({
 
                     {isControlled && children && <div className="p-5">{children}</div>}
 
-                    <div className="flex items-center justify-end gap-2 border-t border-slate-100 bg-slate-50/50 p-4 dark:border-white/5 dark:bg-zinc-900/30">
+                    <div className="flex items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/50 p-4 dark:border-white/5 dark:bg-zinc-900/30">
                         <Button
                             type="button"
                             variant="outline"
                             size="sm"
                             disabled={processing}
                             onClick={() => setEffectiveOpen(false)}
-                            className="h-8.5 rounded-lg border-slate-200 bg-white px-3.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                            className="h-9 rounded-xl border-slate-200 bg-white px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
                         >
                             {finalCancelLabel}
                         </Button>
@@ -186,7 +186,7 @@ export function ConfirmDialog({
                             size="sm"
                             disabled={processing}
                             onClick={handleConfirm}
-                            className={`h-8.5 rounded-lg px-4 text-xs font-bold transition-all ${config.confirmButtonClass}`}
+                            className={`h-9 rounded-xl px-4 text-xs font-bold transition-all shadow-2xs ${config.confirmButtonClass}`}
                         >
                             {processing ? (
                                 <>

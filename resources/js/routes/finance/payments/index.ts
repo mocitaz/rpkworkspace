@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:35
+* @see app/Http/Controllers/FinanceDetailController.php:39
 * @route '/finance/payments/{payment}'
 */
 export const show = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:35
+* @see app/Http/Controllers/FinanceDetailController.php:39
 * @route '/finance/payments/{payment}'
 */
 show.url = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ show.url = (args: { payment: string | { id: string } } | [payment: string | { id
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:35
+* @see app/Http/Controllers/FinanceDetailController.php:39
 * @route '/finance/payments/{payment}'
 */
 show.get = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -59,7 +59,7 @@ show.get = (args: { payment: string | { id: string } } | [payment: string | { id
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:35
+* @see app/Http/Controllers/FinanceDetailController.php:39
 * @route '/finance/payments/{payment}'
 */
 show.head = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -69,7 +69,7 @@ show.head = (args: { payment: string | { id: string } } | [payment: string | { i
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:35
+* @see app/Http/Controllers/FinanceDetailController.php:39
 * @route '/finance/payments/{payment}'
 */
 const showForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ const showForm = (args: { payment: string | { id: string } } | [payment: string 
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:35
+* @see app/Http/Controllers/FinanceDetailController.php:39
 * @route '/finance/payments/{payment}'
 */
 showForm.get = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -89,7 +89,7 @@ showForm.get = (args: { payment: string | { id: string } } | [payment: string | 
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:35
+* @see app/Http/Controllers/FinanceDetailController.php:39
 * @route '/finance/payments/{payment}'
 */
 showForm.head = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -106,7 +106,7 @@ show.form = showForm
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::receipt
-* @see app/Http/Controllers/FinanceDetailController.php:47
+* @see app/Http/Controllers/FinanceDetailController.php:51
 * @route '/finance/payments/{payment}/receipt'
 */
 export const receipt = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -121,7 +121,7 @@ receipt.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::receipt
-* @see app/Http/Controllers/FinanceDetailController.php:47
+* @see app/Http/Controllers/FinanceDetailController.php:51
 * @route '/finance/payments/{payment}/receipt'
 */
 receipt.url = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -154,7 +154,7 @@ receipt.url = (args: { payment: string | { id: string } } | [payment: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::receipt
-* @see app/Http/Controllers/FinanceDetailController.php:47
+* @see app/Http/Controllers/FinanceDetailController.php:51
 * @route '/finance/payments/{payment}/receipt'
 */
 receipt.get = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -164,7 +164,7 @@ receipt.get = (args: { payment: string | { id: string } } | [payment: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::receipt
-* @see app/Http/Controllers/FinanceDetailController.php:47
+* @see app/Http/Controllers/FinanceDetailController.php:51
 * @route '/finance/payments/{payment}/receipt'
 */
 receipt.head = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -174,7 +174,7 @@ receipt.head = (args: { payment: string | { id: string } } | [payment: string | 
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::receipt
-* @see app/Http/Controllers/FinanceDetailController.php:47
+* @see app/Http/Controllers/FinanceDetailController.php:51
 * @route '/finance/payments/{payment}/receipt'
 */
 const receiptForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -184,7 +184,7 @@ const receiptForm = (args: { payment: string | { id: string } } | [payment: stri
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::receipt
-* @see app/Http/Controllers/FinanceDetailController.php:47
+* @see app/Http/Controllers/FinanceDetailController.php:51
 * @route '/finance/payments/{payment}/receipt'
 */
 receiptForm.get = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -194,7 +194,7 @@ receiptForm.get = (args: { payment: string | { id: string } } | [payment: string
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::receipt
-* @see app/Http/Controllers/FinanceDetailController.php:47
+* @see app/Http/Controllers/FinanceDetailController.php:51
 * @route '/finance/payments/{payment}/receipt'
 */
 receiptForm.head = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -211,7 +211,7 @@ receipt.form = receiptForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:241
+* @see app/Http/Controllers/FinanceController.php:323
 * @route '/finance/payments'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -226,7 +226,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:241
+* @see app/Http/Controllers/FinanceController.php:323
 * @route '/finance/payments'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -235,7 +235,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:241
+* @see app/Http/Controllers/FinanceController.php:323
 * @route '/finance/payments'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -245,7 +245,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:241
+* @see app/Http/Controllers/FinanceController.php:323
 * @route '/finance/payments'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -255,7 +255,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:241
+* @see app/Http/Controllers/FinanceController.php:323
 * @route '/finance/payments'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -267,7 +267,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::reverse
-* @see app/Http/Controllers/FinanceController.php:277
+* @see app/Http/Controllers/FinanceController.php:359
 * @route '/finance/payments/{payment}/reverse'
 */
 export const reverse = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -282,7 +282,7 @@ reverse.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::reverse
-* @see app/Http/Controllers/FinanceController.php:277
+* @see app/Http/Controllers/FinanceController.php:359
 * @route '/finance/payments/{payment}/reverse'
 */
 reverse.url = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -315,7 +315,7 @@ reverse.url = (args: { payment: string | { id: string } } | [payment: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceController::reverse
-* @see app/Http/Controllers/FinanceController.php:277
+* @see app/Http/Controllers/FinanceController.php:359
 * @route '/finance/payments/{payment}/reverse'
 */
 reverse.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -325,7 +325,7 @@ reverse.post = (args: { payment: string | { id: string } } | [payment: string | 
 
 /**
 * @see \App\Http\Controllers\FinanceController::reverse
-* @see app/Http/Controllers/FinanceController.php:277
+* @see app/Http/Controllers/FinanceController.php:359
 * @route '/finance/payments/{payment}/reverse'
 */
 const reverseForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -335,7 +335,7 @@ const reverseForm = (args: { payment: string | { id: string } } | [payment: stri
 
 /**
 * @see \App\Http\Controllers\FinanceController::reverse
-* @see app/Http/Controllers/FinanceController.php:277
+* @see app/Http/Controllers/FinanceController.php:359
 * @route '/finance/payments/{payment}/reverse'
 */
 reverseForm.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -347,7 +347,7 @@ reverse.form = reverseForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::refund
-* @see app/Http/Controllers/FinanceController.php:289
+* @see app/Http/Controllers/FinanceController.php:371
 * @route '/finance/payments/{payment}/refund'
 */
 export const refund = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -362,7 +362,7 @@ refund.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::refund
-* @see app/Http/Controllers/FinanceController.php:289
+* @see app/Http/Controllers/FinanceController.php:371
 * @route '/finance/payments/{payment}/refund'
 */
 refund.url = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -395,7 +395,7 @@ refund.url = (args: { payment: string | { id: string } } | [payment: string | { 
 
 /**
 * @see \App\Http\Controllers\FinanceController::refund
-* @see app/Http/Controllers/FinanceController.php:289
+* @see app/Http/Controllers/FinanceController.php:371
 * @route '/finance/payments/{payment}/refund'
 */
 refund.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -405,7 +405,7 @@ refund.post = (args: { payment: string | { id: string } } | [payment: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceController::refund
-* @see app/Http/Controllers/FinanceController.php:289
+* @see app/Http/Controllers/FinanceController.php:371
 * @route '/finance/payments/{payment}/refund'
 */
 const refundForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -415,7 +415,7 @@ const refundForm = (args: { payment: string | { id: string } } | [payment: strin
 
 /**
 * @see \App\Http\Controllers\FinanceController::refund
-* @see app/Http/Controllers/FinanceController.php:289
+* @see app/Http/Controllers/FinanceController.php:371
 * @route '/finance/payments/{payment}/refund'
 */
 refundForm.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

@@ -12,6 +12,8 @@ use App\Actions\RecordPayment;
 use App\Actions\RefundPayment;
 use App\Actions\ReversePayment;
 use App\Actions\TransitionInvoice;
+use App\Actions\UpdateInvoice;
+use App\Actions\UpdateQuotation;
 use App\Http\Requests\ApproveQuotationRequest;
 use App\Http\Requests\RefundPaymentRequest;
 use App\Http\Requests\ReversePaymentRequest;
@@ -25,6 +27,11 @@ use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\StorePayrollRequest;
 use App\Http\Requests\StoreQuotationRequest;
 use App\Http\Requests\TransitionInvoiceRequest;
+use App\Http\Requests\UpdateExpenseRequest;
+use App\Http\Requests\UpdateInvoiceRequest;
+use App\Http\Requests\UpdatePartnerTransactionRequest;
+use App\Http\Requests\UpdatePayrollRequest;
+use App\Http\Requests\UpdateQuotationRequest;
 use App\Models\AccountTransfer;
 use App\Models\Client;
 use App\Models\ClientTrustFund;
@@ -104,17 +111,17 @@ class FinanceController extends Controller
             'clients' => Client::query()->where('status', 'active')->orderBy('display_name')->get(['id', 'display_name']),
             'overview' => $financialOverview,
             'selectedMatterId' => $selectedMatter?->getKey() ?? '',
-            'invoices' => $invoiceQuery->with('matter:id,matter_number,title')->latest()->limit(50)->get(),
-            'quotations' => $quotationQuery->with('matter:id,matter_number,title')->latest()->limit(50)->get(),
+            'invoices' => $invoiceQuery->with(['matter:id,matter_number,title', 'lineItems'])->latest()->limit(50)->get(),
+            'quotations' => $quotationQuery->with(['matter:id,matter_number,title', 'lineItems'])->latest()->limit(50)->get(),
             'expenses' => $expenseQuery->with(['matter:id,matter_number,title', 'account:id,name', 'partner:id,name'])->latest('incurred_at')->limit(50)->get(),
             'payments' => $paymentQuery->with(['matter:id,matter_number,title', 'account:id,name', 'allocations.invoice:id,invoice_number,outstanding_amount,currency'])->latest('received_at')->limit(50)->get(),
 
             // Multi-Kas & Accounts
-            'accounts' => FinancialAccount::query()->with('partner:id,name,email')->orderBy('type')->get(),
+            'accounts' => FinancialAccount::query()->with('partner:id,name,email,avatar_path,position_title,department')->orderBy('type')->get(),
             'transfers' => AccountTransfer::query()->with(['fromAccount:id,name', 'toAccount:id,name', 'creator:id,name'])->latest('transferred_at')->limit(50)->get(),
 
             // Partner Advances & Transactions
-            'partnerTransactions' => PartnerTransaction::query()->with(['partner:id,name', 'matter:id,matter_number,title', 'account:id,name'])->latest('transaction_date')->limit(50)->get(),
+            'partnerTransactions' => PartnerTransaction::query()->with(['partner:id,name,email,avatar_path,position_title,department', 'matter:id,matter_number,title', 'account:id,name'])->latest('transaction_date')->limit(50)->get(),
             'partnerAdvances' => $statementService->getPartnerAdvances(),
 
             // Client Trust Funds (Escrow)
@@ -122,13 +129,18 @@ class FinanceController extends Controller
             'clientTrustSummary' => $statementService->getClientTrustSummary($selectedMatter?->getKey()),
 
             // Payrolls
-            'payrolls' => Payroll::query()->with(['user:id,name,position_title,department,employee_code', 'paymentAccount:id,name'])->latest('period')->limit(50)->get(),
+            'payrolls' => Payroll::query()->with([
+                'user:id,name,email,avatar_path,position_title,department,employee_code,bank_name,bank_account_number,bank_account_holder',
+                'paymentAccount:id,name',
+            ])->latest('period')->limit(50)->get(),
 
             // Reports & Profitability
             'profitability' => $statementService->getProfitability($targetMatters),
             'incomeStatement' => $statementService->getIncomeStatement($year),
             'balanceSheet' => $statementService->getBalanceSheet(),
-            'staffUsers' => User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'position_title', 'department', 'employee_code', 'bank_name', 'bank_account_number']),
+            'staffUsers' => User::query()->where('is_active', true)->orderBy('name')->get([
+                'id', 'name', 'email', 'avatar_path', 'position_title', 'department', 'employee_code', 'bank_name', 'bank_account_number', 'bank_account_holder',
+            ]),
 
             'can' => [
                 'invoice' => $request->user()->hasPermission('billing.manage'),
@@ -150,6 +162,15 @@ class FinanceController extends Controller
         return back()->with('success', 'Invoice '.$invoice->invoice_number.' berhasil dibuat.');
     }
 
+    public function updateInvoice(UpdateInvoiceRequest $request, Invoice $invoice, UpdateInvoice $update, AuditService $audit): RedirectResponse
+    {
+        $this->authorizeFinanceAccess($request, $invoice->matter);
+        $updatedInvoice = $update->handle($invoice, $request->validated(), $request->user());
+        $audit->record($updatedInvoice, 'invoice.updated', [], $request->user(), $request);
+
+        return back()->with('success', 'Invoice '.$updatedInvoice->invoice_number.' berhasil diperbarui.');
+    }
+
     public function storeQuotation(StoreQuotationRequest $request, CreateQuotation $create, GenerateDocumentNumber $numbers, AuditService $audit): RedirectResponse
     {
         $this->authorizeMatter($request, $request->validated('matter_id'));
@@ -157,6 +178,15 @@ class FinanceController extends Controller
         $audit->record($quotation, 'quotation.created', [], $request->user(), $request);
 
         return back()->with('success', 'Quotation '.$quotation->quotation_number.' berhasil dibuat.');
+    }
+
+    public function updateQuotation(UpdateQuotationRequest $request, Quotation $quotation, UpdateQuotation $update, AuditService $audit): RedirectResponse
+    {
+        $this->authorizeFinanceAccess($request, $quotation->matter);
+        $updatedQuotation = $update->handle($quotation, $request->validated(), $request->user());
+        $audit->record($updatedQuotation, 'quotation.updated', [], $request->user(), $request);
+
+        return back()->with('success', 'Quotation '.$updatedQuotation->quotation_number.' berhasil diperbarui.');
     }
 
     public function transitionInvoice(TransitionInvoiceRequest $request, Invoice $invoice, TransitionInvoice $transition): RedirectResponse
@@ -236,6 +266,58 @@ class FinanceController extends Controller
         ], request()->user(), request());
 
         return back()->with('success', 'Biaya pengeluaran operasional berhasil dihapus.');
+    }
+
+    public function updateExpense(UpdateExpenseRequest $request, Expense $expense, CreateFinanceProofDocument $createProof, AuditService $audit): RedirectResponse
+    {
+        $this->authorizeFinanceAccess($request, $expense->matter);
+        abort_unless($request->user()->hasPermission('expense.manage'), 403);
+
+        $matterId = $request->validated('matter_id');
+        $matter = null;
+        if (! empty($matterId)) {
+            $this->authorizeMatter($request, $matterId);
+            $matter = Matter::query()->whereKey($matterId)->first();
+        }
+
+        $attributes = $request->safe()->except('proof');
+        if ($request->hasFile('proof')) {
+            $proof = $createProof->handle($request->file('proof'), $request->user(), 'Bukti biaya: '.$attributes['description'], $matter);
+            $attributes['proof_document_id'] = $proof->getKey();
+        }
+
+        DB::transaction(function () use ($expense, $attributes, $request, $audit) {
+            $oldAmount = (int) $expense->amount;
+            $oldAccountId = $expense->account_id;
+            $oldPartnerId = $expense->partner_id;
+
+            $newAmount = (int) $attributes['amount'];
+            $newAccountId = $attributes['account_id'] ?? null;
+            $newPartnerId = $attributes['partner_id'] ?? null;
+
+            // Revert previous balance impact
+            if ($oldAccountId) {
+                FinancialAccount::query()->where('id', $oldAccountId)->increment('current_balance', $oldAmount);
+            } elseif ($oldPartnerId) {
+                FinancialAccount::query()->where('partner_id', $oldPartnerId)->decrement('current_balance', $oldAmount);
+            }
+
+            // Apply new balance impact
+            if ($newAccountId) {
+                FinancialAccount::query()->where('id', $newAccountId)->decrement('current_balance', $newAmount);
+            } elseif ($newPartnerId) {
+                FinancialAccount::query()->where('partner_id', $newPartnerId)->increment('current_balance', $newAmount);
+            }
+
+            $expense->update($attributes);
+
+            $audit->record($expense, 'expense.updated', [
+                'amount' => $newAmount,
+                'description' => $expense->description,
+            ], $request->user(), $request);
+        });
+
+        return back()->with('success', 'Biaya pengeluaran berhasil diperbarui.');
     }
 
     public function storePayment(StorePaymentRequest $request, RecordPayment $record, CreateFinanceProofDocument $createProof, AuditService $audit): RedirectResponse
@@ -415,6 +497,88 @@ class FinanceController extends Controller
         return back()->with('success', 'Transaksi hak & talangan partner berhasil dicatat.');
     }
 
+    public function updatePartnerTransaction(UpdatePartnerTransactionRequest $request, PartnerTransaction $partnerTransaction, CreateFinanceProofDocument $createProof, AuditService $audit): RedirectResponse
+    {
+        abort_unless($request->user()->hasPermission('billing.manage'), 403);
+        $data = $request->validated();
+
+        $proofId = $partnerTransaction->proof_document_id;
+        if ($request->hasFile('proof')) {
+            $proof = $createProof->handle($request->file('proof'), $request->user(), 'Bukti transaksi partner: '.$partnerTransaction->transaction_number);
+            $proofId = $proof->getKey();
+        }
+
+        DB::transaction(function () use ($data, $partnerTransaction, $proofId, $request, $audit) {
+            $oldAmount = (int) $partnerTransaction->amount;
+            $oldPartnerId = $partnerTransaction->partner_id;
+            $oldType = $partnerTransaction->type;
+            $oldAccountId = $partnerTransaction->account_id;
+
+            $newAmount = (int) $data['amount'];
+            $newPartnerId = $data['partner_id'];
+            $newType = $data['type'];
+            $newAccountId = $data['account_id'] ?? null;
+
+            // Revert old effect:
+            if ($oldType === 'advance_incurred') {
+                $partnerAcc = FinancialAccount::query()->where('partner_id', $oldPartnerId)->first();
+                if ($partnerAcc) {
+                    $partnerAcc->decrement('current_balance', $oldAmount);
+                }
+            } elseif ($oldType === 'advance_reimbursed') {
+                if ($oldAccountId) {
+                    FinancialAccount::query()->whereKey($oldAccountId)->increment('current_balance', $oldAmount);
+                }
+                $partnerAcc = FinancialAccount::query()->where('partner_id', $oldPartnerId)->first();
+                if ($partnerAcc) {
+                    $partnerAcc->increment('current_balance', $oldAmount);
+                }
+            } elseif (in_array($oldType, ['profit_distribution', 'draw_prive']) && $oldAccountId) {
+                FinancialAccount::query()->whereKey($oldAccountId)->increment('current_balance', $oldAmount);
+            } elseif ($oldType === 'capital_injection' && $oldAccountId) {
+                FinancialAccount::query()->whereKey($oldAccountId)->decrement('current_balance', $oldAmount);
+            }
+
+            // Apply new effect:
+            if ($newType === 'advance_incurred') {
+                $partnerAcc = FinancialAccount::query()->where('partner_id', $newPartnerId)->first();
+                if ($partnerAcc) {
+                    $partnerAcc->increment('current_balance', $newAmount);
+                }
+            } elseif ($newType === 'advance_reimbursed') {
+                if ($newAccountId) {
+                    FinancialAccount::query()->whereKey($newAccountId)->decrement('current_balance', $newAmount);
+                }
+                $partnerAcc = FinancialAccount::query()->where('partner_id', $newPartnerId)->first();
+                if ($partnerAcc) {
+                    $partnerAcc->decrement('current_balance', $newAmount);
+                }
+            } elseif (in_array($newType, ['profit_distribution', 'draw_prive']) && $newAccountId) {
+                FinancialAccount::query()->whereKey($newAccountId)->decrement('current_balance', $newAmount);
+            } elseif ($newType === 'capital_injection' && $newAccountId) {
+                FinancialAccount::query()->whereKey($newAccountId)->increment('current_balance', $newAmount);
+            }
+
+            $partnerTransaction->update([
+                'partner_id' => $newPartnerId,
+                'matter_id' => $data['matter_id'] ?? null,
+                'type' => $newType,
+                'amount' => $newAmount,
+                'transaction_date' => $data['transaction_date'],
+                'account_id' => $newAccountId,
+                'proof_document_id' => $proofId,
+                'notes' => $data['notes'] ?? null,
+            ]);
+
+            $audit->record($partnerTransaction, 'partner_transaction.updated', [
+                'type' => $newType,
+                'amount' => $newAmount,
+            ], $request->user(), $request);
+        });
+
+        return back()->with('success', 'Transaksi hak & talangan partner '.$partnerTransaction->transaction_number.' berhasil diperbarui.');
+    }
+
     public function storeClientTrustFund(StoreClientTrustFundRequest $request, CreateFinanceProofDocument $createProof, AuditService $audit): RedirectResponse
     {
         $data = $request->validated();
@@ -505,6 +669,70 @@ class FinanceController extends Controller
         return back()->with('success', 'Gaji '.$user->name.' untuk periode '.$data['period'].' berhasil disimpan.');
     }
 
+    public function updatePayroll(UpdatePayrollRequest $request, Payroll $payroll, AuditService $audit): RedirectResponse
+    {
+        abort_unless($request->user()->hasPermission('billing.manage'), 403);
+        $data = $request->validated();
+
+        $totalEarnings = (int) $data['basic_salary'] + (int) ($data['fixed_allowance'] ?? 0)
+            + (int) ($data['transport_meal_allowance'] ?? 0) + (int) ($data['overtime_amount'] ?? 0)
+            + (int) ($data['bonus_amount'] ?? 0);
+
+        $totalDeductions = (int) ($data['deductions_amount'] ?? 0) + (int) ($data['tax_deduction_amount'] ?? 0);
+        $netSalary = max(0, $totalEarnings - $totalDeductions);
+
+        $oldStatus = $payroll->status;
+        $oldNet = (int) $payroll->net_salary;
+        $oldAccount = $payroll->payment_account_id;
+        $newAccount = $data['payment_account_id'] ?? null;
+        $newStatus = $data['status'];
+
+        $payroll->update([
+            'basic_salary' => (int) $data['basic_salary'],
+            'fixed_allowance' => (int) ($data['fixed_allowance'] ?? 0),
+            'transport_meal_allowance' => (int) ($data['transport_meal_allowance'] ?? 0),
+            'overtime_amount' => (int) ($data['overtime_amount'] ?? 0),
+            'bonus_amount' => (int) ($data['bonus_amount'] ?? 0),
+            'deductions_amount' => (int) ($data['deductions_amount'] ?? 0),
+            'tax_deduction_amount' => (int) ($data['tax_deduction_amount'] ?? 0),
+            'net_salary' => $netSalary,
+            'status' => $newStatus,
+            'payment_account_id' => $newAccount,
+            'notes' => $data['notes'] ?? null,
+            'paid_at' => $newStatus === 'paid' ? ($payroll->paid_at ?? now()) : null,
+            'approved_by' => in_array($newStatus, ['approved', 'paid']) ? ($payroll->approved_by ?? $request->user()->getKey()) : null,
+            'approved_at' => in_array($newStatus, ['approved', 'paid']) ? ($payroll->approved_at ?? now()) : null,
+        ]);
+
+        // Adjust financial account balance if status is/was paid
+        if ($oldStatus === 'paid' && $newStatus === 'paid') {
+            if ($oldAccount && $oldAccount === $newAccount) {
+                $diff = $netSalary - $oldNet;
+                if ($diff !== 0) {
+                    FinancialAccount::query()->where('id', $oldAccount)->decrement('current_balance', $diff);
+                }
+            } elseif ($oldAccount !== $newAccount) {
+                if ($oldAccount) {
+                    FinancialAccount::query()->where('id', $oldAccount)->increment('current_balance', $oldNet);
+                }
+                if ($newAccount) {
+                    FinancialAccount::query()->where('id', $newAccount)->decrement('current_balance', $netSalary);
+                }
+            }
+        } elseif ($oldStatus !== 'paid' && $newStatus === 'paid' && $newAccount) {
+            FinancialAccount::query()->where('id', $newAccount)->decrement('current_balance', $netSalary);
+        } elseif ($oldStatus === 'paid' && $newStatus !== 'paid' && $oldAccount) {
+            FinancialAccount::query()->where('id', $oldAccount)->increment('current_balance', $oldNet);
+        }
+
+        $audit->record($payroll, 'payroll.updated', [
+            'net_salary' => $netSalary,
+            'status' => $newStatus,
+        ], $request->user(), $request);
+
+        return back()->with('success', 'Slip gaji '.$payroll->payslip_number.' berhasil diperbarui.');
+    }
+
     public function updatePayrollStatus(Request $request, Payroll $payroll, AuditService $audit): RedirectResponse
     {
         abort_unless($request->user()->hasPermission('billing.manage'), 403);
@@ -550,20 +778,20 @@ class FinanceController extends Controller
 
         return response($pdfRenderer->render('pdf.invoice', ['invoice' => $invoice]), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="'.$invoice->invoice_number.'.pdf"',
+            'Content-Disposition' => 'inline; filename="'.$invoice->invoice_number.'.pdf"',
             'X-Content-Type-Options' => 'nosniff',
         ]);
     }
 
     public function downloadQuotation(Request $request, Quotation $quotation, PdfRenderer $pdfRenderer, AuditService $audit): HttpResponse
     {
-        $quotation->loadMissing(['client', 'matter', 'lineItems']);
+        $quotation->loadMissing(['client', 'matter', 'lineItems', 'creator', 'approver']);
         $this->authorizeFinanceAccess($request, $quotation->matter);
         $audit->record($quotation, 'quotation.pdf_downloaded', [], $request->user(), $request);
 
         return response($pdfRenderer->render('pdf.quotation', ['quotation' => $quotation]), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="'.$quotation->quotation_number.'.pdf"',
+            'Content-Disposition' => 'inline; filename="'.$quotation->quotation_number.'.pdf"',
             'X-Content-Type-Options' => 'nosniff',
         ]);
     }

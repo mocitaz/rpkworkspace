@@ -1,248 +1,562 @@
+@php
+    $verificationUrl = route('verify.matter-status', $matter);
+    $qrDataUri = (new \Endroid\QrCode\Writer\PngWriter())->write(
+        new \Endroid\QrCode\QrCode(data: $verificationUrl, size: 160, margin: 0)
+    )->getDataUri();
+
+    $statusColor = match($matter->status) {
+        'active', 'open' => '#059669',
+        'closed', 'won' => '#0284c7',
+        'lost' => '#e11d48',
+        'settled' => '#8b5cf6',
+        default => '#059669'
+    };
+    $statusLabel = strtoupper((string) ($matter->status ?: 'AKTIF'));
+@endphp
 <!doctype html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <title>Laporan Perkembangan Perkara {{ $matter->matter_number }} — RPK Law Firm</title>
+    <title>Laporan Perkara {{ $matter->matter_number }} — RPK Law Firm</title>
     <style>
-        @page { margin: 32px 40px 42px; size: A4 portrait; }
-        * { box-sizing: border-box; }
-        body { margin: 0; color: #1e293b; font-family: "DejaVu Sans", Helvetica, Arial, sans-serif; font-size: 8px; line-height: 1.48; }
-        table { width: 100%; border-collapse: collapse; }
-        .mono { font-family: "DejaVu Sans Mono", monospace; }
-        .navy { color: #0a1b33; }
-        .gold { color: #8f6a22; }
-        .muted { color: #64748b; }
-        .right { text-align: right; }
-        .center { text-align: center; }
+        @page {
+            margin: 26px 36px 42px;
+            size: A4 portrait;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            color: #1e293b;
+            font-family: "DejaVu Sans", Helvetica, Arial, sans-serif;
+            font-size: 8.2px;
+            line-height: 1.45;
+            position: relative;
+            background-color: #ffffff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .mono {
+            font-family: "DejaVu Sans Mono", monospace;
+        }
+        .navy {
+            color: #0a1b33;
+        }
+        .gold {
+            color: #8f6a22;
+        }
+        .muted {
+            color: #64748b;
+        }
+        .right {
+            text-align: right;
+        }
+        .center {
+            text-align: center;
+        }
+        .uppercase {
+            text-transform: uppercase;
+        }
 
-        /* Letterhead Header */
-        .letterhead { margin-bottom: 14px; }
-        .letterhead td { vertical-align: middle; }
-        .logo-cell { width: 55%; }
-        .logo-crop { width: 195px; height: 62px; overflow: hidden; }
-        .logo-crop img { width: 195px; height: auto; margin-top: -24px; }
-        .office-cell { width: 45%; color: #475569; font-size: 7.2px; line-height: 1.55; text-align: right; }
-        .gold-rule { height: 2px; border-top: 1.5px solid #8f6a22; border-bottom: 1px solid #e2d2aa; margin-bottom: 18px; }
+        /* 1. Letterhead */
+        .letterhead {
+            margin-bottom: 10px;
+        }
+        .letterhead td {
+            vertical-align: middle;
+        }
+        .logo-cell {
+            width: 52%;
+        }
+        .logo-crop {
+            width: 190px;
+            height: 58px;
+            overflow: hidden;
+        }
+        .logo-crop img {
+            width: 190px;
+            height: auto;
+            margin-top: -24px;
+        }
+        .office-cell {
+            width: 48%;
+            color: #334155;
+            font-size: 7px;
+            line-height: 1.5;
+            text-align: right;
+        }
+        .gold-rule {
+            height: 2px;
+            border-top: 1.5px solid #8f6a22;
+            border-bottom: 1px solid #d4af37;
+            margin-bottom: 14px;
+        }
 
-        /* Title Box */
-        .title-box { margin-bottom: 16px; }
-        .title-badge { display: inline-block; background: #0a1b33; color: #ffffff; padding: 2.5px 8px; font-size: 6.8px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; border-radius: 3px; }
-        .doc-title { margin-top: 5px; font-size: 18px; font-weight: bold; color: #0a1b33; }
-        .doc-subtitle { margin-top: 2px; font-size: 7.5px; color: #64748b; }
+        /* 2. Document Header & Perfectly Aligned Meta */
+        .doc-header-table {
+            margin-bottom: 14px;
+        }
+        .doc-header-table td {
+            vertical-align: middle;
+        }
+        .doc-kicker {
+            font-size: 6.8px;
+            font-weight: bold;
+            color: #8f6a22;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .doc-title {
+            margin-top: 3px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #0a1b33;
+            letter-spacing: .3px;
+        }
+        .doc-subtitle {
+            margin-top: 2px;
+            font-size: 7.2px;
+            color: #64748b;
+        }
 
-        /* Meta Card */
-        .meta-card { background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px 14px; margin-bottom: 14px; border-radius: 5px; }
-        .meta-table td { padding: 2.5px 0; font-size: 7.8px; vertical-align: top; }
-        .meta-label { width: 28%; color: #64748b; font-weight: bold; }
-        .meta-value { width: 72%; color: #0f172a; font-weight: bold; }
+        .meta-table {
+            width: auto;
+            margin-left: auto;
+            border-collapse: separate;
+            border-spacing: 0 2px;
+        }
+        .meta-table td {
+            padding: 1px 0;
+            font-size: 7.5px;
+            vertical-align: middle;
+        }
+        .meta-label {
+            width: 95px;
+            color: #64748b;
+            font-weight: bold;
+            text-align: left;
+        }
+        .meta-sep {
+            width: 12px;
+            color: #94a3b8;
+            font-weight: bold;
+            text-align: center;
+        }
+        .meta-val {
+            font-weight: bold;
+            color: #0f172a;
+            text-align: left;
+            padding-left: 4px;
+        }
 
-        .section-header { font-size: 8.5px; font-weight: bold; color: #0a1b33; text-transform: uppercase; letter-spacing: .8px; margin-top: 14px; margin-bottom: 6px; padding-bottom: 3px; border-bottom: 1.5px solid #0a1b33; }
+        /* 3. Information Grid */
+        .info-card {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            table-layout: fixed;
+        }
+        .info-card > tbody > tr > td {
+            width: 50%;
+            padding: 8px 12px;
+            vertical-align: top;
+        }
+        .info-card > tbody > tr > td:first-child {
+            border-right: 1px solid #cbd5e1;
+        }
+        .section-label {
+            font-size: 6.5px;
+            font-weight: bold;
+            color: #8f6a22;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            padding-bottom: 2px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .person-name {
+            font-size: 10px;
+            font-weight: bold;
+            color: #0a1b33;
+            margin-bottom: 3px;
+        }
+        .detail-row td {
+            padding: 1.2px 0;
+            font-size: 7.2px;
+            vertical-align: top;
+        }
+        .detail-label {
+            width: 32%;
+            color: #64748b;
+            font-weight: 500;
+        }
+        .detail-sep {
+            width: 4%;
+            color: #94a3b8;
+            font-weight: bold;
+            text-align: center;
+        }
+        .detail-val {
+            width: 64%;
+            color: #0f172a;
+            font-weight: bold;
+            padding-left: 2px;
+        }
 
-        .custom-table th { background: #0a1b33; color: #ffffff; font-size: 7px; font-weight: bold; padding: 6px 8px; text-align: left; text-transform: uppercase; letter-spacing: .5px; }
-        .custom-table td { padding: 7px 8px; border-bottom: 1px solid #e2e8f0; font-size: 7.5px; vertical-align: top; }
+        /* Section Headings */
+        .section-title {
+            font-size: 7.5px;
+            font-weight: bold;
+            color: #0a1b33;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            margin-bottom: 4px;
+            padding-bottom: 2px;
+            border-bottom: 1.5px solid #0a1b33;
+        }
 
-        .tag-status { display: inline-block; background: #ecfdf5; color: #047857; padding: 2px 6px; font-size: 6.8px; font-weight: bold; border-radius: 3px; }
+        /* Box Summary */
+        .summary-box {
+            background-color: #fbfaf7;
+            border: 1px solid #e2d2aa;
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 7.3px;
+            line-height: 1.45;
+            color: #334155;
+            margin-bottom: 10px;
+        }
 
-        /* Signature Block */
-        .signature-block { margin-top: 26px; page-break-inside: avoid; }
-        .signature-block td { vertical-align: top; }
-        .sig-col { width: 45%; }
-        .sig-space { height: 42px; }
-        .sig-line { width: 170px; border-top: 1px solid #0a1b33; margin-top: 3px; margin-bottom: 3px; }
+        /* 4. Financial / Data Card Tables */
+        .financial-card {
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+        .financial-card thead th {
+            background-color: #0a1b33;
+            color: #ffffff;
+            font-size: 6.8px;
+            font-weight: bold;
+            padding: 5px 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border: none;
+        }
+        .financial-card tbody td {
+            padding: 5.5px 8px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 7.5px;
+            vertical-align: middle;
+        }
+        .financial-card tbody tr:last-child td {
+            border-bottom: none;
+        }
 
-        .watermark { position: fixed; top: 38%; left: 0; width: 100%; text-align: center; transform: rotate(-25deg); opacity: 0.04; font-size: 26px; font-weight: bold; color: #0a1b33; z-index: -1000; }
-        .footer { margin-top: 22px; padding-top: 8px; border-top: 1px solid #cbd5e1; font-size: 6.8px; color: #64748b; }
+        /* 5. Closing & Signatures */
+        .closing-layout {
+            margin-top: 14px;
+        }
+        .closing-layout td {
+            vertical-align: top;
+        }
+        .legal-clause {
+            font-size: 6.5px;
+            color: #64748b;
+            line-height: 1.45;
+            text-align: justify;
+        }
+        .sig-box {
+            text-align: center;
+        }
+        .sig-role {
+            font-size: 6.5px;
+            color: #64748b;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .sig-firm {
+            font-size: 7.5px;
+            font-weight: bold;
+            color: #0a1b33;
+            margin-top: 1px;
+        }
+        .sig-space {
+            height: 38px;
+        }
+        .sig-line {
+            width: 140px;
+            border-top: 1px solid #0a1b33;
+            margin: 0 auto 3px;
+        }
+        .sig-name {
+            font-size: 7.2px;
+            font-weight: bold;
+            color: #0a1b33;
+        }
+
+        /* 6. QR Code Corner */
+        .qr-bottom-right-corner {
+            position: fixed;
+            bottom: 28px;
+            right: 0px;
+            width: 72px;
+            text-align: center;
+            z-index: 100;
+        }
+        .qr-bottom-right-corner img {
+            width: 62px;
+            height: 62px;
+            display: block;
+            margin: 0 auto;
+            border: 1px solid #e2e8f0;
+            padding: 2px;
+            background: #ffffff;
+            border-radius: 4px;
+        }
+        .qr-bottom-right-corner .qr-label {
+            font-size: 5.2px;
+            font-weight: bold;
+            color: #0a1b33;
+            margin-top: 2px;
+            line-height: 1.15;
+            letter-spacing: 0.2px;
+            text-transform: uppercase;
+        }
+
+        /* 7. Footer */
+        .footer {
+            position: fixed;
+            right: 75px;
+            bottom: -22px;
+            left: 0;
+            padding-top: 4px;
+            border-top: 1px solid #cbd5e1;
+            color: #64748b;
+            font-size: 6.5px;
+            line-height: 1.3;
+        }
+        .footer td:last-child {
+            text-align: right;
+        }
     </style>
 </head>
 <body>
 
-    <div class="watermark">
-        DIUNDUH OLEH {{ strtoupper(auth()->user()->name ?? 'RPK USER') }}<br>
-        {{ now()->format('Y-m-d H:i') }} WIB · LAPORAN PERKARA RESMI RPK LAW FIRM
+    <!-- Fixed Footer -->
+    <table class="footer">
+        <tr>
+            <td>RONI, PUTRA &amp; KUSUMAH LAW FIRM &nbsp;|&nbsp; LAPORAN PERKEMBANGAN PERKARA &nbsp;|&nbsp; RAHASIA</td>
+            <td class="mono">{{ $matter->matter_number }} &nbsp;|&nbsp; {{ now()->timezone(config('raf.timezone'))->format('d/m/Y H:i') }} WIB</td>
+        </tr>
+    </table>
+
+    <!-- QR Code Fixed in Bottom-Right Corner -->
+    <div class="qr-bottom-right-corner">
+        <img src="{{ $qrDataUri }}" alt="QR Verifikasi" />
+        <div class="qr-label">
+            SCAN VERIFIKASI<br><span style="font-weight: normal; color: #64748b;">Keaslian Laporan</span>
+        </div>
     </div>
 
-    <!-- Letterhead Header -->
+    <!-- 1. Letterhead -->
     <table class="letterhead">
         <tr>
             <td class="logo-cell">
                 <div class="logo-crop">
-                    <img src="{{ public_path('logo/logo.png') }}" alt="RPK Law Firm">
+                    <img src="{{ public_path('logo/logo.png') }}" alt="Roni, Putra & Kusumah Law Firm">
                 </div>
             </td>
             <td class="office-cell">
                 <strong>RONI, PUTRA &amp; KUSUMAH LAW FIRM</strong><br>
-                Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi<br>
-                Kabupaten Bandung Barat, Jawa Barat<br>
-                Telp: 0852 9560 1417 &nbsp;·&nbsp; Email: contact@gmail.com
+                Divisi Penanganan Perkara &amp; Konsultasi Hukum Klien<br>
+                Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi, Bandung Barat, Jawa Barat<br>
+                Telp: 0852 9560 1417 &nbsp;·&nbsp; Email: contact@rpklawoffice.com
             </td>
         </tr>
     </table>
     <div class="gold-rule"></div>
 
-    <!-- Title Box -->
-    <div class="title-box">
-        <span class="title-badge">LAPORAN EKSEKUTIF PERKEMBANGAN PERKARA</span>
-        <div class="doc-title">MATTER STATUS &amp; PROGRESS REPORT</div>
-        <div class="doc-subtitle">Ringkasan penanganan perkara, tahapan hukum yang telah ditempuh, dan rencana langkah strategis lanjutan.</div>
-    </div>
+    <!-- 2. Document Header & Perfectly Aligned Metadata -->
+    <table class="doc-header-table">
+        <tr>
+            <td style="width: 50%;">
+                <div class="doc-kicker">LAPORAN EKSEKUTIF PERKEMBANGAN PERKARA</div>
+                <div class="doc-title">MATTER STATUS &amp; PROGRESS REPORT</div>
+                <div class="doc-subtitle">Ringkasan penanganan perkara, tahapan hukum yang telah ditempuh, dan rencana tindakan lanjutan.</div>
+            </td>
+            <td style="width: 50%; text-align: right;">
+                <table class="meta-table">
+                    <tr>
+                        <td class="meta-label">Nomor Perkara</td>
+                        <td class="meta-sep">:</td>
+                        <td class="meta-val mono" style="color: #0369a1;">{{ $matter->matter_number }}</td>
+                    </tr>
+                    <tr>
+                        <td class="meta-label">Tanggal Laporan</td>
+                        <td class="meta-sep">:</td>
+                        <td class="meta-val" style="color: #059669;">{{ now()->translatedFormat('d F Y') }}</td>
+                    </tr>
+                    <tr>
+                        <td class="meta-label">Status Penanganan</td>
+                        <td class="meta-sep">:</td>
+                        <td class="meta-val" style="color: {{ $statusColor }};">{{ $statusLabel }}</td>
+                    </tr>
+                    <tr>
+                        <td class="meta-label">Tahap Berjalan</td>
+                        <td class="meta-sep">:</td>
+                        <td class="meta-val uppercase">{{ strtoupper((string) ($matter->stage ?? 'Aktif')) }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
-    <!-- Matter Identity -->
-    <div class="meta-card">
-        <table class="meta-table">
-            <tr>
-                <td class="meta-label">NOMOR PERKARA:</td>
-                <td class="meta-value mono" style="color: #0369a1; font-size: 8.5px;">{{ $matter->matter_number }}</td>
-            </tr>
-            <tr>
-                <td class="meta-label">JUDUL PERKARA:</td>
-                <td class="meta-value" style="font-size: 8.5px;">{{ $matter->title }}</td>
-            </tr>
-            <tr>
-                <td class="meta-label">KLIEN:</td>
-                <td class="meta-value">{{ $matter->client->display_name ?? 'Klien Korporasi' }}</td>
-            </tr>
-            <tr>
-                <td class="meta-label">BIDANG HUKUM &amp; STATUS:</td>
-                <td class="meta-value">{{ $matter->practiceArea->name ?? '-' }} &nbsp;·&nbsp; <strong style="color: #047857;">{{ strtoupper((string) ($matter->status ?? 'Aktif')) }} (Tahap: {{ strtoupper((string) ($matter->stage ?? 'Aktif')) }})</strong></td>
-            </tr>
-            <tr>
-                <td class="meta-label">TIM KUASA HUKUM:</td>
-                <td class="meta-value">
-                    Partner Penanggung Jawab: <strong>{{ $matter->responsiblePartner->name ?? 'Managing Partner' }}</strong>
-                    @if ($matter->assignedLawyer)
-                        &nbsp;·&nbsp; Advokat Pelaksana: <strong>{{ $matter->assignedLawyer->name }}</strong>
+    <!-- 3. Information Grid -->
+    <table class="info-card">
+        <tr>
+            <!-- Matter & Client Details -->
+            <td>
+                <div class="section-label">IDENTITAS PERKARA &amp; KLIEN UTAMA</div>
+                <div class="person-name">{{ $matter->title }}</div>
+                <table style="width: 100%;">
+                    <tr class="detail-row">
+                        <td class="detail-label">Klien Prinsipal</td>
+                        <td class="detail-sep">:</td>
+                        <td class="detail-val">{{ $matter->client->display_name ?? 'Klien Korporasi' }}</td>
+                    </tr>
+                    <tr class="detail-row">
+                        <td class="detail-label">Bidang Praktik</td>
+                        <td class="detail-sep">:</td>
+                        <td class="detail-val">{{ $matter->practiceArea->name ?? 'Litigasi / Korporasi' }}</td>
+                    </tr>
+                    <tr class="detail-row">
+                        <td class="detail-label">Tanggal Dibuka</td>
+                        <td class="detail-sep">:</td>
+                        <td class="detail-val mono">{{ $matter->opened_at?->translatedFormat('d F Y') ?? '-' }}</td>
+                    </tr>
+                </table>
+            </td>
+
+            <!-- Legal Team Counsel -->
+            <td>
+                <div class="section-label">TIM KUASA HUKUM &amp; PENANGGUNG JAWAB</div>
+                <div class="person-name mono" style="color: #0369a1;">
+                    {{ $matter->responsiblePartner->name ?? 'Managing Partner' }}
+                </div>
+                <table style="width: 100%;">
+                    <tr class="detail-row">
+                        <td class="detail-label">Peran Partner</td>
+                        <td class="detail-sep">:</td>
+                        <td class="detail-val">Responsible Partner (Penanggung Jawab)</td>
+                    </tr>
+                    @if ($matter->supervisingLawyer)
+                        <tr class="detail-row">
+                            <td class="detail-label">Advokat Pelaksana</td>
+                            <td class="detail-sep">:</td>
+                            <td class="detail-val">{{ $matter->supervisingLawyer->name }}</td>
+                        </tr>
                     @endif
-                </td>
-            </tr>
-            <tr>
-                <td class="meta-label">TANGGAL LAPORAN:</td>
-                <td class="meta-value mono">{{ now()->translatedFormat('d F Y') }}</td>
-            </tr>
-        </table>
-    </div>
+                    <tr class="detail-row">
+                        <td class="detail-label">Klasifikasi</td>
+                        <td class="detail-sep">:</td>
+                        <td class="detail-val uppercase">{{ strtoupper((string) ($matter->case_category ?? 'Perdata / Bisnis')) }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
+    <!-- 4. Ringkasan Posisi Hukum -->
     @if ($matter->summary)
-        <div class="section-header">1. RINGKASAN POSISI HUKUM &amp; POKOK SENGKETA</div>
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; padding: 8px 12px; font-size: 7.6px; line-height: 1.5; color: #334155; margin-bottom: 12px;">
+        <div class="section-title">1. RINGKASAN POSISI HUKUM &amp; DOKUMEN POKOK PERKARA</div>
+        <div class="summary-box">
             {!! nl2br(e($matter->summary)) !!}
         </div>
     @endif
 
-    <!-- Parties Involved -->
-    <div class="section-header">2. PARA PIHAK TERKAIT SENGKETA (PARTIES ROSTER)</div>
-    <table class="custom-table" style="margin-bottom: 12px;">
-        <thead>
-            <tr>
-                <th style="width: 25%;">Peran / Kedudukan</th>
-                <th style="width: 45%;">Nama Entitas / Pihak</th>
-                <th style="width: 30%;">Kuasa Hukum / Legal Counsel</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($matter->parties as $party)
+    <!-- 5. Parties Involved Roster -->
+    <div class="section-title">2. DAFTAR PARA PIHAK TERKAIT (PARTIES ROSTER)</div>
+    <div class="financial-card">
+        <table>
+            <thead>
                 <tr>
-                    <td style="font-weight: bold; color: #0a1b33;">{{ strtoupper((string) $party->role) }}</td>
-                    <td style="font-weight: bold;">{{ $party->name }}</td>
-                    <td>{{ $party->counsel ?? '-' }}</td>
+                    <th class="center" style="width: 6%;">NO</th>
+                    <th style="width: 24%; text-align: left;">KEDUDUKAN / PERAN</th>
+                    <th style="width: 40%; text-align: left;">NAMA ENTITAS / PIHAK</th>
+                    <th style="width: 30%; text-align: left;">KUASA HUKUM / COUNSEL</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="3" class="center muted" style="padding: 10px;">Belum ada pihak terdaftar khusus.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @forelse ($matter->parties as $index => $party)
+                    <tr>
+                        <td class="center mono muted">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</td>
+                        <td style="font-weight: bold; color: #0a1b33;">{{ strtoupper((string) $party->role) }}</td>
+                        <td style="font-weight: bold;">{{ $party->name }}</td>
+                        <td class="muted">{{ $party->counsel ?: '-' }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="center muted" style="padding: 10px; font-style: italic;">Tidak ada pihak lawan/pihak ketiga yang terdaftar khusus.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
-    <!-- Hearings Schedule -->
-    <div class="section-header">3. JADWAL PERSIDANGAN &amp; AGENDA HUKUM</div>
-    <table class="custom-table" style="margin-bottom: 12px;">
-        <thead>
-            <tr>
-                <th style="width: 25%;">Tanggal &amp; Waktu</th>
-                <th style="width: 45%;">Agenda Persidangan / Pertemuan</th>
-                <th style="width: 30%;">Lokasi / Pengadilan</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($matter->events as $event)
+    <!-- 6. Hearings & Key Milestones -->
+    <div class="section-title">3. JADWAL PERSIDANGAN &amp; AGENDA HUKUM TERKINI</div>
+    <div class="financial-card">
+        <table>
+            <thead>
                 <tr>
-                    <td class="mono" style="font-weight: bold; color: #0369a1;">{{ \Carbon\Carbon::parse($event->starts_at)->translatedFormat('d M Y, H:i') }} WIB</td>
-                    <td>
-                        <strong style="color: #0a1b33;">{{ $event->title }}</strong>
-                        @if ($event->description)
-                            <div style="font-size: 6.8px; color: #64748b; margin-top: 1px;">{{ $event->description }}</div>
-                        @endif
-                    </td>
-                    <td>{{ $event->location ?? 'Pengadilan / Kantor' }}</td>
+                    <th class="center" style="width: 6%;">NO</th>
+                    <th style="width: 24%; text-align: left;">TANGGAL &amp; WAKTU</th>
+                    <th style="width: 45%; text-align: left;">AGENDA / TAHAPAN HUKUM</th>
+                    <th class="right" style="width: 25%;">LOKASI / FORUM</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="3" class="center muted" style="padding: 10px;">Belum ada agenda sidang mendatang.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @forelse ($matter->events->take(6) as $index => $event)
+                    <tr>
+                        <td class="center mono muted">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</td>
+                        <td class="mono font-bold">{{ $event->starts_at?->translatedFormat('d M Y, H:i') ?? '-' }}</td>
+                        <td style="font-weight: bold; color: #0f172a;">{{ $event->title }}</td>
+                        <td class="right muted">{{ $event->location ?: 'Pengadilan / Kantor RPK' }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" class="center muted" style="padding: 10px; font-style: italic;">Belum ada agenda sidang atau tahapan lanjutan yang terjadwal.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
-    <!-- Evidences Checklist -->
-    <div class="section-header">4. DAFTAR ALAT BUKTI &amp; SURAT PENDUKUNG</div>
-    <table class="custom-table" style="margin-bottom: 14px;">
-        <thead>
-            <tr>
-                <th style="width: 15%;">Kode Bukti</th>
-                <th style="width: 55%;">Nama / Deskripsi Bukti Surat</th>
-                <th style="width: 30%;">Status &amp; Kesiapan</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($matter->evidences as $evidence)
-                <tr>
-                    <td class="mono" style="font-weight: bold; color: #b45309;">{{ $evidence->code ?: '-' }}</td>
-                    <td>
-                        <strong style="color: #0a1b33;">{{ $evidence->title }}</strong>
-                        @if ($evidence->description)
-                            <div style="font-size: 6.8px; color: #64748b;">{{ $evidence->description }}</div>
-                        @endif
-                    </td>
-                    <td>
-                        <span class="tag-status">{{ strtoupper((string) ($evidence->status ?? 'Tersedia')) }}</span>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="3" class="center muted" style="padding: 10px;">Belum ada alat bukti terdaftar.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-
-    <!-- Strategic Signatures -->
-    <table class="signature-block">
+    <!-- 7. Closing Signatures -->
+    <table class="closing-layout">
         <tr>
-            <td class="sig-col">
-                <div style="font-size: 7.2px; color: #64748b;">Disusun Oleh:</div>
-                <div style="font-size: 8.5px; font-weight: bold; color: #0a1b33; margin-top: 2px;">TIM LITIGASI PERKARA</div>
-                <div class="sig-space"></div>
-                <div class="sig-line"></div>
-                <div style="font-size: 7.5px; font-weight: bold; color: #0a1b33;">{{ $matter->assignedLawyer->name ?? 'Advokat Litigasi' }}</div>
-                <div style="font-size: 6.8px; color: #64748b;">Advokat Pelaksana Perkara</div>
+            <td class="legal-clause" style="width: 60%; padding-right: 20px;">
+                <strong>DISCLAIMER &amp; KERAHASIAAN DOKUMEN:</strong><br>
+                Laporan ini disusun secara profesional oleh tim kuasa hukum RPK Law Firm untuk kepentingan eksklusif Klien. Informasi yang tercantum dilindungi oleh asas kerahasiaan hubungan advokat-klien (*attorney-client privilege*) dan tidak boleh disebarluaskan kepada pihak ketiga tanpa persetujuan tertulis.
             </td>
-            <td style="width: 10%;"></td>
-            <td class="sig-col">
-                <div style="font-size: 7.2px; color: #64748b;">Mengetahui &amp; Menyetujui:</div>
-                <div style="font-size: 8.5px; font-weight: bold; color: #0a1b33; margin-top: 2px;">RONI, PUTRA &amp; KUSUMAH LAW FIRM</div>
+            <td class="sig-box" style="width: 40%;">
+                <div class="sig-role">PENANGGUNG JAWAB PERKARA</div>
+                <div class="sig-firm">RONI, PUTRA &amp; KUSUMAH LAW FIRM</div>
                 <div class="sig-space"></div>
                 <div class="sig-line"></div>
-                <div style="font-size: 7.5px; font-weight: bold; color: #0a1b33;">{{ $matter->responsiblePartner->name ?? 'Managing Partner' }}</div>
-                <div style="font-size: 6.8px; color: #64748b;">Partner Penanggung Jawab Perkara</div>
+                <div class="sig-name">{{ $matter->responsiblePartner->name ?? 'Managing Partner' }}</div>
             </td>
         </tr>
     </table>
 
-    <table class="footer">
-        <tr>
-            <td>RONI, PUTRA &amp; KUSUMAH LAW FIRM &nbsp;|&nbsp; LAPORAN STATUS PERKARA HUKUM &nbsp;|&nbsp; RAHASIA KLIEN</td>
-            <td class="right mono">{{ $matter->matter_number }} &nbsp;|&nbsp; {{ now()->timezone(config('raf.timezone'))->format('d/m/Y H:i') }} WIB</td>
-        </tr>
-    </table>
 </body>
 </html>

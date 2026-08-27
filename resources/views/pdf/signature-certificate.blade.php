@@ -1,252 +1,563 @@
 @php
     $verificationUrl = route('signature.verify', $signatureRequest->verification_code);
     $qrDataUri = (new \Endroid\QrCode\Writer\PngWriter())->write(
-        new \Endroid\QrCode\QrCode(data: $verificationUrl, size: 240, margin: 0)
+        new \Endroid\QrCode\QrCode(data: $verificationUrl, size: 160, margin: 0)
     )->getDataUri();
+
+    $isCompleted = $signatureRequest->status === 'completed';
+    $statusColor = $isCompleted ? '#059669' : '#0284c7';
+    $statusLabel = $isCompleted ? 'LENGKAP & SAH (COMPLETED)' : 'PROSES TANDA TANGAN (' . strtoupper($signatureRequest->status) . ')';
+    $certCode = $signatureRequest->verification_code;
+    $checksum = $signatureRequest->documentVersion->checksum ?? $signatureRequest->document_checksum ?? hash('sha256', $signatureRequest->verification_code);
 @endphp
 <!doctype html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <title>Sertifikat Pengesahan Digital {{ $signatureRequest->verification_code }} — RPK Law Firm</title>
+    <title>Sertifikat Pengesahan Digital {{ $certCode }} — RPK Law Firm</title>
     <style>
-        @page { margin: 20px 24px; size: A4 portrait; }
-        * { box-sizing: border-box; }
-        body { margin: 0; color: #0f172a; font-family: "DejaVu Sans", Helvetica, Arial, sans-serif; font-size: 8px; line-height: 1.45; background: #ffffff; }
-        table { width: 100%; border-collapse: collapse; }
-        .mono { font-family: "DejaVu Sans Mono", monospace; }
-        .navy { color: #0a1b33; }
-        .gold { color: #8f6a22; }
-        .muted { color: #64748b; }
-        .right { text-align: right; }
-        .center { text-align: center; }
-        .uppercase { text-transform: uppercase; }
-
-        /* Guilloche Security Frame */
-        .guilloche-outer {
-            border: 3px double #0a1b33;
-            padding: 4px;
-            background: #ffffff;
+        @page {
+            margin: 26px 36px 42px;
+            size: A4 portrait;
         }
-        .guilloche-mid {
-            border: 1px solid #c5a059;
-            padding: 3px;
+        * {
+            box-sizing: border-box;
         }
-        .guilloche-inner {
-            border: 1px dashed #0a1b33;
-            padding: 16px 20px;
-            background: #ffffff;
+        body {
+            margin: 0;
+            color: #1e293b;
+            font-family: "DejaVu Sans", Helvetica, Arial, sans-serif;
+            font-size: 8.2px;
+            line-height: 1.45;
             position: relative;
+            background-color: #ffffff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .mono {
+            font-family: "DejaVu Sans Mono", monospace;
+        }
+        .navy {
+            color: #0a1b33;
+        }
+        .gold {
+            color: #8f6a22;
+        }
+        .muted {
+            color: #64748b;
+        }
+        .right {
+            text-align: right;
+        }
+        .center {
+            text-align: center;
+        }
+        .uppercase {
+            text-transform: uppercase;
         }
 
-        /* Letterhead */
-        .letterhead { margin-bottom: 12px; }
-        .letterhead td { vertical-align: middle; }
-        .logo-cell { width: 52%; }
-        .logo-crop { width: 185px; height: 56px; overflow: hidden; }
-        .logo-crop img { width: 185px; height: auto; margin-top: -22px; }
-        .office-cell { width: 48%; color: #334155; font-size: 6.8px; line-height: 1.5; text-align: right; }
-        .gold-divider { height: 2px; border-top: 1.5px solid #8f6a22; border-bottom: 1px solid #d4af37; margin-bottom: 14px; }
+        /* 1. Letterhead */
+        .letterhead {
+            margin-bottom: 10px;
+        }
+        .letterhead td {
+            vertical-align: middle;
+        }
+        .logo-cell {
+            width: 52%;
+        }
+        .logo-crop {
+            width: 190px;
+            height: 58px;
+            overflow: hidden;
+        }
+        .logo-crop img {
+            width: 190px;
+            height: auto;
+            margin-top: -24px;
+        }
+        .office-cell {
+            width: 48%;
+            color: #334155;
+            font-size: 7px;
+            line-height: 1.5;
+            text-align: right;
+        }
+        .gold-rule {
+            height: 2px;
+            border-top: 1.5px solid #8f6a22;
+            border-bottom: 1px solid #d4af37;
+            margin-bottom: 14px;
+        }
 
-        /* Certificate Title Header */
-        .cert-header { text-align: center; margin-bottom: 14px; }
-        .cert-badge { display: inline-block; background: #0a1b33; color: #d4af37; border: 1px solid #8f6a22; padding: 2px 12px; font-size: 6.8px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 2px; }
-        .cert-title { margin-top: 6px; font-size: 15px; font-weight: bold; color: #0a1b33; letter-spacing: .8px; text-transform: uppercase; }
-        .cert-subtitle { margin-top: 2px; font-size: 7.2px; color: #64748b; font-style: italic; }
+        /* 2. Document Header & Perfectly Aligned Meta */
+        .doc-header-table {
+            margin-bottom: 14px;
+        }
+        .doc-header-table td {
+            vertical-align: middle;
+        }
+        .doc-kicker {
+            font-size: 6.8px;
+            font-weight: bold;
+            color: #8f6a22;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .doc-title {
+            margin-top: 3px;
+            font-size: 14.5px;
+            font-weight: bold;
+            color: #0a1b33;
+            letter-spacing: .3px;
+        }
+        .doc-subtitle {
+            margin-top: 2px;
+            font-size: 7.2px;
+            color: #64748b;
+        }
 
-        /* Summary Meta Box */
-        .summary-card {
+        .meta-table {
+            width: auto;
+            margin-left: auto;
+            border-collapse: separate;
+            border-spacing: 0 2px;
+        }
+        .meta-table td {
+            padding: 1px 0;
+            font-size: 7.5px;
+            vertical-align: middle;
+        }
+        .meta-label {
+            width: 95px;
+            color: #64748b;
+            font-weight: bold;
+            text-align: left;
+        }
+        .meta-sep {
+            width: 12px;
+            color: #94a3b8;
+            font-weight: bold;
+            text-align: center;
+        }
+        .meta-val {
+            font-weight: bold;
+            color: #0f172a;
+            text-align: left;
+            padding-left: 4px;
+        }
+
+        /* Status Highlight Card */
+        .status-hero {
             background: #f8fafc;
             border: 1px solid #cbd5e1;
-            border-top: 2.5px solid #0a1b33;
-            border-radius: 3px;
-            padding: 9px 12px;
+            border-left: 4px solid {{ $statusColor }};
+            border-radius: 6px;
+            padding: 8px 12px;
             margin-bottom: 12px;
         }
-        .summary-table td { padding: 2.2px 0; vertical-align: top; font-size: 7.4px; }
-        .summary-label { width: 30%; color: #475569; font-weight: bold; }
-        .summary-value { width: 70%; color: #0a1b33; font-weight: bold; }
+        .status-hero-tag {
+            font-size: 6.8px;
+            font-weight: bold;
+            color: #64748b;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+        .status-hero-title {
+            font-size: 11px;
+            font-weight: bold;
+            color: {{ $statusColor }};
+            margin-top: 2px;
+        }
+        .status-hero-desc {
+            font-size: 7.2px;
+            color: #475569;
+            margin-top: 2px;
+            line-height: 1.4;
+        }
 
-        .hash-box {
+        /* 3. Information Grid */
+        .info-card {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            table-layout: fixed;
+        }
+        .info-card > tbody > tr > td {
+            width: 50%;
+            padding: 8px 12px;
+            vertical-align: top;
+        }
+        .info-card > tbody > tr > td:first-child {
+            border-right: 1px solid #cbd5e1;
+        }
+        .section-label {
+            font-size: 6.5px;
+            font-weight: bold;
+            color: #8f6a22;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            padding-bottom: 2px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .person-name {
+            font-size: 9.5px;
+            font-weight: bold;
+            color: #0a1b33;
+            margin-bottom: 3px;
+        }
+        .detail-row td {
+            padding: 1.2px 0;
+            font-size: 7.2px;
+            vertical-align: top;
+        }
+        .detail-label {
+            width: 30%;
+            color: #64748b;
+            font-weight: 500;
+        }
+        .detail-sep {
+            width: 4%;
+            color: #94a3b8;
+            font-weight: bold;
+            text-align: center;
+        }
+        .detail-val {
+            width: 66%;
+            color: #0f172a;
+            font-weight: bold;
+            padding-left: 2px;
+        }
+
+        .hash-card {
             background: #ffffff;
             border: 1px solid #cbd5e1;
             border-left: 3px solid #0369a1;
-            border-radius: 2px;
-            padding: 4px 8px;
+            border-radius: 4px;
+            padding: 4px 6px;
             margin-top: 4px;
             font-size: 6.8px;
             color: #0f172a;
+            word-break: break-all;
         }
 
-        /* Section Headings */
-        .section-header {
-            font-size: 7.8px;
+        /* 4. Financial / Data Card Tables */
+        .financial-card {
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+        .financial-card thead th {
+            background-color: #0a1b33;
+            color: #ffffff;
+            font-size: 6.8px;
+            font-weight: bold;
+            padding: 5px 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            border: none;
+        }
+        .financial-card tbody td {
+            padding: 5.5px 8px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 7.5px;
+            vertical-align: middle;
+        }
+        .financial-card tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* 5. Closing & Signatures */
+        .closing-layout {
+            margin-top: 14px;
+        }
+        .closing-layout td {
+            vertical-align: top;
+        }
+        .legal-clause {
+            font-size: 6.5px;
+            color: #64748b;
+            line-height: 1.45;
+            text-align: justify;
+        }
+        .sig-box {
+            text-align: center;
+        }
+        .sig-role {
+            font-size: 6.5px;
+            color: #64748b;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+        .sig-firm {
+            font-size: 7.5px;
             font-weight: bold;
             color: #0a1b33;
+            margin-top: 1px;
+        }
+        .sig-space {
+            height: 38px;
+        }
+        .sig-line {
+            width: 140px;
+            border-top: 1px solid #0a1b33;
+            margin: 0 auto 3px;
+        }
+        .sig-name {
+            font-size: 7.2px;
+            font-weight: bold;
+            color: #0a1b33;
+        }
+
+        /* 6. QR Code Corner */
+        .qr-bottom-right-corner {
+            position: fixed;
+            bottom: 28px;
+            right: 0px;
+            width: 72px;
+            text-align: center;
+            z-index: 100;
+        }
+        .qr-bottom-right-corner img {
+            width: 62px;
+            height: 62px;
+            display: block;
+            margin: 0 auto;
+            border: 1px solid #e2e8f0;
+            padding: 2px;
+            background: #ffffff;
+            border-radius: 4px;
+        }
+        .qr-bottom-right-corner .qr-label {
+            font-size: 5.2px;
+            font-weight: bold;
+            color: #0a1b33;
+            margin-top: 2px;
+            line-height: 1.15;
+            letter-spacing: 0.2px;
             text-transform: uppercase;
-            letter-spacing: .8px;
-            margin-bottom: 6px;
-            padding-bottom: 2.5px;
-            border-bottom: 1.5px solid #0a1b33;
         }
 
-        /* Signers Audit Table */
-        .signers-table { margin-bottom: 12px; }
-        .signers-table th { background: #0a1b33; color: #ffffff; font-size: 6.8px; font-weight: bold; padding: 5.5px 7px; text-align: left; text-transform: uppercase; letter-spacing: .4px; }
-        .signers-table td { padding: 6px 7px; border-bottom: 1px solid #e2e8f0; font-size: 7.2px; vertical-align: middle; }
-        .status-badge-valid { display: inline-block; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-weight: bold; padding: 1.5px 5px; font-size: 6.2px; border-radius: 2px; }
-
-        /* Security Seal & QR */
-        .seal-card {
-            background: #fafaf9;
-            border: 1px solid #e7e5e4;
-            border-radius: 3px;
-            padding: 8px 10px;
-            margin-top: 10px;
+        /* 7. Footer */
+        .footer {
+            position: fixed;
+            right: 75px;
+            bottom: -22px;
+            left: 0;
+            padding-top: 4px;
+            border-top: 1px solid #cbd5e1;
+            color: #64748b;
+            font-size: 6.5px;
+            line-height: 1.3;
         }
-        .seal-card td { vertical-align: middle; }
-        .qr-cell { width: 22%; text-align: center; }
-        .seal-info { width: 78%; padding-left: 12px; color: #334155; font-size: 6.8px; line-height: 1.48; }
-        .seal-title { font-size: 7.8px; font-weight: bold; color: #0a1b33; margin-bottom: 2px; }
-
-        /* Legal Footer */
-        .legal-notice { margin-top: 10px; padding-top: 6px; border-top: 1px dashed #cbd5e1; text-align: center; font-size: 5.8px; color: #64748b; line-height: 1.35; }
+        .footer td:last-child {
+            text-align: right;
+        }
     </style>
 </head>
 <body>
 
-<div class="guilloche-outer">
-    <div class="guilloche-mid">
-        <div class="guilloche-inner">
-            
-            <!-- Letterhead Header -->
-            <table class="letterhead">
-                <tr>
-                    <td class="logo-cell">
-                        <div class="logo-crop">
-                            <img src="{{ public_path('logo/logo.png') }}" alt="RPK Law Firm">
-                        </div>
-                    </td>
-                    <td class="office-cell">
-                        <strong>RONI, PUTRA &amp; KUSUMAH LAW FIRM</strong><br>
-                        Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi<br>
-                        Kabupaten Bandung Barat, Jawa Barat<br>
-                        Telp: 0852 9560 1417 &nbsp;·&nbsp; Email: contact@gmail.com
-                    </td>
-                </tr>
-            </table>
-            <div class="gold-divider"></div>
+    <!-- Fixed Footer -->
+    <table class="footer">
+        <tr>
+            <td>RONI, PUTRA &amp; KUSUMAH LAW FIRM &nbsp;|&nbsp; SERTIFIKAT KEABSAHAN TANDA TANGAN ELEKTRONIK &nbsp;|&nbsp; DOKUMEN SAH</td>
+            <td class="mono">{{ $certCode }} &nbsp;|&nbsp; {{ now()->timezone(config('raf.timezone'))->format('d/m/Y H:i') }} WIB</td>
+        </tr>
+    </table>
 
-            <!-- Title Banner -->
-            <div class="cert-header">
-                <span class="cert-badge">SERTIFIKAT INTEGRITAS DIGITAL &amp; VALIDITAS HUKUM</span>
-                <div class="cert-title">SERTIFIKAT PENGESAHAN TANDA TANGAN ELEKTRONIK</div>
-                <div class="cert-subtitle">Certificate of Digital Authenticity, Signatures Verification &amp; Immutable Audit Trail</div>
-            </div>
-
-            <!-- Document & Verification Meta -->
-            <div class="summary-card">
-                <table class="summary-table">
-                    <tr>
-                        <td class="summary-label">KODE VERIFIKASI RESMI:</td>
-                        <td class="summary-value mono" style="color: #0369a1; font-size: 8.5px;">{{ $signatureRequest->verification_code }}</td>
-                    </tr>
-                    <tr>
-                        <td class="summary-label">JUDUL DOKUMEN:</td>
-                        <td class="summary-value" style="font-size: 8px;">{{ $signatureRequest->document->title ?? 'Dokumen Perkara Resmi' }}</td>
-                    </tr>
-                    <tr>
-                        <td class="summary-label">NOMOR &amp; JUDUL PERKARA:</td>
-                        <td class="summary-value">
-                            @if ($signatureRequest->document && $signatureRequest->document->matter)
-                                <span class="mono" style="color: #0369a1;">{{ $signatureRequest->document->matter->matter_number }}</span> — {{ $signatureRequest->document->matter->title }}
-                            @else
-                                <span class="muted">Dokumen Hukum Korporasi &amp; Non-Litigasi</span>
-                            @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="summary-label">KLIEN TERKAIT:</td>
-                        <td class="summary-value">
-                            {{ $signatureRequest->document->client->display_name ?? 'Klien Terdaftar' }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="summary-label">WAKTU PENYELESAIAN LENGKAP:</td>
-                        <td class="summary-value mono">{{ $signatureRequest->completed_at ? \Carbon\Carbon::parse($signatureRequest->completed_at)->translatedFormat('d F Y, H:i:s') . ' WIB' : now()->translatedFormat('d F Y, H:i:s') . ' WIB' }}</td>
-                    </tr>
-                    <tr>
-                        <td class="summary-label">INTEGRITAS HASH KRIPTOGRAFI:</td>
-                        <td class="summary-value">
-                            <div class="hash-box mono"><strong>SHA-256 Sumber:</strong> {{ $signatureRequest->document_checksum }}</div>
-                            @if ($signatureRequest->signed_final_checksum)
-                                <div class="hash-box mono" style="border-left-color: #047857; margin-top: 3px;"><strong>SHA-256 PDF Final:</strong> {{ $signatureRequest->signed_final_checksum }}</div>
-                            @endif
-                        </td>
-                    </tr>
-                </table>
-            </div>
-
-            <!-- Signers Audit Log Table -->
-            <div class="section-header">DAFTAR PENANDATANGAN RESMI &amp; LOG AUDIT PENANDATANGANAN</div>
-            <table class="signers-table">
-                <thead>
-                    <tr>
-                        <th style="width: 28%;">Pihak Penandatangan</th>
-                        <th style="width: 26%;">Identitas / Email</th>
-                        <th style="width: 24%;">Waktu Pengesahan</th>
-                        <th style="width: 22%;">IP &amp; Status Hukum</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($signatureRequest->signers ?? [] as $signer)
-                        <tr>
-                            <td>
-                                <strong style="color: #0a1b33; font-size: 7.6px;">{{ $signer->accepted_name ?: $signer->name }}</strong>
-                                @if ($signer->signing_order)
-                                    <div style="font-size: 6.2px; color: #64748b;">Urutan Penandatanganan: #{{ $signer->signing_order }}</div>
-                                @endif
-                            </td>
-                            <td>
-                                <span class="mono" style="font-size: 7px;">{{ $signer->email }}</span>
-                            </td>
-                            <td class="mono" style="font-size: 7px;">
-                                {{ $signer->signed_at ? \Carbon\Carbon::parse($signer->signed_at)->translatedFormat('d M Y, H:i:s') . ' WIB' : '-' }}
-                            </td>
-                            <td>
-                                <span class="mono" style="font-size: 6.8px;">IP: {{ $signer->signed_ip_address ?? '127.0.0.1' }}</span><br>
-                                <span class="status-badge-valid">&#10003; TERVERIFIKASI (SIGNED)</span>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="center muted" style="padding: 8px;">Belum ada data penandatangan resmi.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-
-            <!-- Security Seal & QR Code Validation -->
-            <table class="seal-card">
-                <tr>
-                    <td class="qr-cell">
-                        <img src="{{ $qrDataUri }}" alt="QR Code Verifikasi" style="width: 76px; height: 76px; border: 1px solid #cbd5e1; padding: 2px; background: #ffffff;">
-                    </td>
-                    <td class="seal-info">
-                        <div class="seal-title">PENGESAHAN ELEKTRONIK RESMI (DIGITAL AUTHENTICITY SEAL)</div>
-                        <div>Dokumen ini telah ditandatangani dan diverifikasi secara elektronik melalui sistem terenkripsi RPK Law Firm Workspace sesuai ketentuan <strong>Pasal 11 Undang-Undang No. 11 Tahun 2008 tentang Informasi dan Transaksi Elektronik (UU ITE)</strong> beserta perubahannya dan Peraturan Pemerintah No. 71 Tahun 2019 tentang Penyelenggaraan Sistem dan Transaksi Elektronik.</div>
-                        <div style="margin-top: 3px;" class="mono">Verifikasi Online: <strong style="color: #0369a1;">{{ $verificationUrl }}</strong></div>
-                    </td>
-                </tr>
-            </table>
-
-            <div class="legal-notice">
-                Sertifikat ini diterbitkan secara otomatis oleh sistem RPK Workspace dan mengikat sebagai alat bukti elektronik yang sah menurut hukum Republik Indonesia. Dilarang menduplikasi atau merekayasa kode kriptografi pada sertifikat ini.
-            </div>
-
+    <!-- QR Code Fixed in Bottom-Right Corner -->
+    <div class="qr-bottom-right-corner">
+        <img src="{{ $qrDataUri }}" alt="QR Verifikasi" />
+        <div class="qr-label">
+            SCAN VERIFIKASI<br><span style="font-weight: normal; color: #64748b;">Keaslian Tanda Tangan</span>
         </div>
     </div>
-</div>
+
+    <!-- 1. Letterhead -->
+    <table class="letterhead">
+        <tr>
+            <td class="logo-cell">
+                <div class="logo-crop">
+                    <img src="{{ public_path('logo/logo.png') }}" alt="Roni, Putra & Kusumah Law Firm">
+                </div>
+            </td>
+            <td class="office-cell">
+                <strong>RONI, PUTRA &amp; KUSUMAH LAW FIRM</strong><br>
+                Divisi Otoritas Tanda Tangan Elektronik &amp; Kepatuhan Siber<br>
+                Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi, Bandung Barat, Jawa Barat<br>
+                Telp: 0852 9560 1417 &nbsp;·&nbsp; Email: contact@rpklawoffice.com
+            </td>
+        </tr>
+    </table>
+    <div class="gold-rule"></div>
+
+    <!-- 2. Document Header & Perfectly Aligned Metadata -->
+    <table class="doc-header-table">
+        <tr>
+            <td style="width: 50%;">
+                <div class="doc-kicker">E-SIGNATURE INTEGRITY &amp; AUDIT TRAIL CERTIFICATE</div>
+                <div class="doc-title">SERTIFIKAT PENGESAHAN TANDA TANGAN ELEKTRONIK</div>
+                <div class="doc-subtitle">Certificate of Digital Authenticity, Signatures Verification &amp; Immutable Audit Trail.</div>
+            </td>
+            <td style="width: 50%; text-align: right;">
+                <table class="meta-table">
+                    <tr>
+                        <td class="meta-label">Kode Verifikasi</td>
+                        <td class="meta-sep">:</td>
+                        <td class="meta-val mono" style="color: #0369a1;">{{ $certCode }}</td>
+                    </tr>
+                    <tr>
+                        <td class="meta-label">Waktu Penyelesaian</td>
+                        <td class="meta-sep">:</td>
+                        <td class="meta-val" style="color: #059669;">{{ $signatureRequest->completed_at?->translatedFormat('d F Y, H:i') . ' WIB' ?? now()->translatedFormat('d F Y, H:i') . ' WIB' }}</td>
+                    </tr>
+                    <tr>
+                        <td class="meta-label">Status Pengesahan</td>
+                        <td class="meta-sep">:</td>
+                        <td class="meta-val" style="color: {{ $statusColor }};">{{ $statusLabel }}</td>
+                    </tr>
+                    <tr>
+                        <td class="meta-label">Metode Kriptografi</td>
+                        <td class="meta-sep">:</td>
+                        <td class="meta-val mono">SHA-256 / RSA Standard</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- 3. Status Hero Banner -->
+    <div class="status-hero">
+        <div class="status-hero-tag">INTEGRITAS DOKUMEN DIGITAL &amp; VALIDITAS HUKUM RESMI</div>
+        <div class="status-hero-title">
+            {{ $isCompleted ? 'PENGESAHAN LENGKAP & MEMILIKI KEKUATAN HUKUM MENGIKAT' : 'DOKUMEN DALAM PROSES PENANDATANGANAN' }}
+        </div>
+        <div class="status-hero-desc">
+            Dokumen elektronik ini telah melalui prosedur verifikasi identitas para penandatangan dengan rekam jejak audit (*immutable audit trail*) dan penyegelan kriptografi SHA-256 yang menjamin integritas isi berkas dari segala bentuk manipulasi atau pengubahan pasca-penandatanganan.
+        </div>
+    </div>
+
+    <!-- 4. Information Grid -->
+    <table class="info-card">
+        <tr>
+            <!-- Document Details & Cryptography -->
+            <td>
+                <div class="section-label">DOKUMEN SUMBER &amp; INTEGRITAS KRIPTOGRAFI</div>
+                <div class="person-name">{{ $signatureRequest->document->title ?? 'Dokumen Perkara Resmi' }}</div>
+                <table style="width: 100%;">
+                    <tr class="detail-row">
+                        <td class="detail-label">Berkas Asli</td>
+                        <td class="detail-sep">:</td>
+                        <td class="detail-val">Versi {{ $signatureRequest->documentVersion->version_number ?? 1 }}.0 ({{ $signatureRequest->documentVersion->original_filename ?? 'document.pdf' }})</td>
+                    </tr>
+                    <tr class="detail-row">
+                        <td class="detail-label">Ukuran Berkas</td>
+                        <td class="detail-sep">:</td>
+                        <td class="detail-val mono">{{ number_format(($signatureRequest->documentVersion->file_size ?? 102400) / 1024, 1) }} KB</td>
+                    </tr>
+                </table>
+                <div class="detail-label" style="margin-top: 4px; font-weight: bold;">HASH SIDIK JARI DOKUMEN (SHA-256):</div>
+                <div class="hash-card mono">{{ $checksum }}</div>
+            </td>
+
+            <!-- Matter & Client Context -->
+            <td>
+                <div class="section-label">PERKARA HUKUM &amp; KLIEN TERKAIT</div>
+                <div class="person-name mono" style="color: #0369a1;">
+                    {{ $signatureRequest->document->matter->matter_number ?? 'DOKUMEN KORPORASI UMUM' }}
+                </div>
+                <table style="width: 100%;">
+                    <tr class="detail-row">
+                        <td class="detail-label">Judul Perkara</td>
+                        <td class="detail-sep">:</td>
+                        <td class="detail-val">{{ $signatureRequest->document->matter->title ?? 'Dokumen Hukum & Korporasi RPK' }}</td>
+                    </tr>
+                    <tr class="detail-row">
+                        <td class="detail-label">Klien Prinsipal</td>
+                        <td class="detail-sep">:</td>
+                        <td class="detail-val">{{ $signatureRequest->document->client->display_name ?? 'Klien Terdaftar' }}</td>
+                    </tr>
+                    <tr class="detail-row">
+                        <td class="detail-label">Dibuat Oleh</td>
+                        <td class="detail-sep">:</td>
+                        <td class="detail-val">{{ $signatureRequest->creator->name ?? 'Advokat RPK Law Firm' }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- 5. Signers Audit Table -->
+    <div class="financial-card">
+        <table>
+            <thead>
+                <tr>
+                    <th class="center" style="width: 6%;">NO</th>
+                    <th style="width: 32%; text-align: left;">NAMA PENANDATANGAN</th>
+                    <th style="width: 32%; text-align: left;">ALAMAT EMAIL &amp; IDENTIFIKASI</th>
+                    <th style="width: 18%; text-align: left;">WAKTU TANDA TANGAN</th>
+                    <th class="right" style="width: 12%;">STATUS</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($signatureRequest->signers ?? [] as $index => $signer)
+                    <tr>
+                        <td class="center mono muted">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</td>
+                        <td>
+                            <strong style="color: #0a1b33;">{{ $signer->accepted_name ?: $signer->name }}</strong>
+                            @if ($signer->signer_title)
+                                <div style="font-size: 6.5px; color: #64748b;">{{ $signer->signer_title }}</div>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="mono" style="font-size: 7.2px;">{{ $signer->email }}</div>
+                            @if ($signer->signed_ip_address)
+                                <div class="mono muted" style="font-size: 6.2px;">IP: {{ $signer->signed_ip_address }}</div>
+                            @endif
+                        </td>
+                        <td class="mono font-bold" style="color: #0f172a;">
+                            {{ $signer->signed_at ? \Carbon\Carbon::parse($signer->signed_at)->translatedFormat('d M Y, H:i') . ' WIB' : '-' }}
+                        </td>
+                        <td class="right">
+                            @if ($signer->status === 'signed' || $signer->signed_at)
+                                <span style="font-weight: bold; color: #059669;">SAH &amp; VALID</span>
+                            @else
+                                <span style="font-weight: bold; color: #d97706;">MENUNGGU</span>
+                            @endif
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="center muted" style="padding: 10px; font-style: italic;">Tidak ada data penandatangan tercatat.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 6. Closing Signatures -->
+    <table class="closing-layout">
+        <tr>
+            <td class="legal-clause" style="width: 60%; padding-right: 20px;">
+                <strong>DASAR HUKUM &amp; KEKUATAN PEMBUKTIAN ELEKTRONIK:</strong><br>
+                Sertifikat ini diterbitkan secara otomatis berdasarkan ketentuan Pasal 11 Undang-Undang No. 11 Tahun 2008 jo. UU No. 1 Tahun 2024 tentang Informasi dan Transaksi Elektronik (ITE) serta PP No. 71 Tahun 2019 tentang PSTE. Tanda tangan elektronik yang tercantum dalam sertifikat ini sah, mengikat, dan diakui secara hukum di hadapan pengadilan Republik Indonesia.
+            </td>
+            <td class="sig-box" style="width: 40%;">
+                <div class="sig-role">OTORITAS SERTIFIKASI DIGITAL FIRMA</div>
+                <div class="sig-firm">RONI, PUTRA &amp; KUSUMAH LAW FIRM</div>
+                <div class="sig-space"></div>
+                <div class="sig-line"></div>
+                <div class="sig-name">Muhamad Fajar Roni, S.H. (Managing Partner)</div>
+            </td>
+        </tr>
+    </table>
 
 </body>
 </html>

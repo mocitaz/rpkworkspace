@@ -1,16 +1,30 @@
 import { useForm } from '@inertiajs/react';
-import { ChevronDown, HandCoins } from 'lucide-react';
+import {
+    AlertCircle,
+    Building2,
+    Calendar,
+    ChevronDown,
+    CreditCard,
+    DollarSign,
+    FolderKanban,
+    HandCoins,
+    Upload,
+    UserCheck,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
 import { FileInput } from '@/components/ui/file-input';
 import { Input } from '@/components/ui/input';
+import { MoneyInput } from '@/components/ui/money-input';
 import { Label } from '@/components/ui/label';
+import UserPicker, { type UserOption } from '@/components/user-picker';
 
 export function CreatePartnerTransactionDialog({
     open,
@@ -21,7 +35,7 @@ export function CreatePartnerTransactionDialog({
 }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    partners: { id: number; name: string }[];
+    partners: UserOption[];
     matters: { id: string; matter_number: string; title: string }[];
     accounts: { id: string; name: string }[];
 }) {
@@ -49,182 +63,209 @@ export function CreatePartnerTransactionDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-md">
-                <DialogHeader>
-                    <div className="flex items-center gap-2">
-                        <div className="flex size-7 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
-                            <HandCoins className="size-4" />
+            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-6 shadow-2xl sm:max-w-2xl dark:border-white/10 dark:bg-[#121418]">
+                {/* Header */}
+                <DialogHeader className="border-b border-slate-100 pb-4 dark:border-white/[0.06]">
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600 ring-1 ring-amber-500/20 dark:bg-amber-950/50 dark:text-amber-400">
+                                <HandCoins className="size-5" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                    Catat Transaksi &amp; Talangan Partner
+                                </DialogTitle>
+                                <DialogDescription className="mt-0.5 text-xs text-slate-500 dark:text-zinc-400">
+                                    Catat talangan dana pribadi partner, pengembalian talangan, pembagian hasil, atau prive.
+                                </DialogDescription>
+                            </div>
                         </div>
-                        <DialogTitle className="text-sm font-bold uppercase">Catat Transaksi &amp; Talangan Partner</DialogTitle>
                     </div>
-                    <DialogDescription className="text-xs">
-                        Catat talangan dana pribadi partner, pengembalian talangan dari kantor, pembagian hasil, atau prive.
-                    </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={submit} className="space-y-3.5 text-xs">
-                    <div className="grid grid-cols-2 gap-2.5">
-                        <div>
-                            <Label htmlFor="ptr_partner" className="font-semibold text-slate-700 dark:text-zinc-200">
-                                Partner *
-                            </Label>
-                            <div className="relative mt-1">
-                                <select
-                                    id="ptr_partner"
+                <form onSubmit={submit} className="space-y-4 pt-2">
+                    {/* Section 1: Partner & Transaction Type */}
+                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                        <div className="mb-2.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                            Pihak Partner &amp; Jenis Transaksi
+                        </div>
+                        <div className="grid gap-3.5 sm:grid-cols-2">
+                            <div>
+                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                    Partner Terkait <span className="text-red-500">*</span>
+                                </Label>
+                                <div className="mt-1">
+                                    <UserPicker
+                                        id="partner_id"
+                                        value={form.data.partner_id}
+                                        onChange={(val) => form.setData('partner_id', val)}
+                                        users={partners}
+                                        placeholder="Pilih Partner Terkait..."
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                    Jenis Transaksi <span className="text-red-500">*</span>
+                                </Label>
+                                <div className="relative mt-1">
+                                    <select
+                                        value={form.data.type}
+                                        onChange={(e) => form.setData('type', e.target.value)}
+                                        required
+                                        className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                    >
+                                        <option value="advance_incurred">Talangan Pribadi (+ Utang Kantor ke Partner)</option>
+                                        <option value="advance_repaid">Pengembalian Talangan (- Utang Kantor ke Partner)</option>
+                                        <option value="profit_distribution">Pembagian Keuntungan / Deviden (+ Hak Partner)</option>
+                                        <option value="draw">Penarikan Prive / Modal (- Saldo Partner)</option>
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-400" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Section 2: Financial Amount & Date */}
+                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                        <div className="mb-2.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                            Nominal &amp; Periode Transaksi
+                        </div>
+                        <div className="grid gap-3.5 sm:grid-cols-2">
+                            <div>
+                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                    Nominal Transaksi (IDR) <span className="text-red-500">*</span>
+                                </Label>
+                                <MoneyInput
                                     required
-                                    value={form.data.partner_id}
-                                    onChange={(e) => form.setData('partner_id', e.target.value)}
-                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
-                                >
-                                    <option value="">Pilih Partner</option>
-                                    {partners.map((p) => (
-                                        <option key={p.id} value={p.id}>
-                                            {p.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                    value={form.data.amount}
+                                    onValueChange={(val) =>
+                                        form.setData('amount', val)
+                                    }
+                                    placeholder="0"
+                                    className="mt-1 h-9 rounded-lg border-slate-200 bg-white font-mono text-xs font-bold text-slate-900 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
+                                />
                             </div>
-                        </div>
-                        <div>
-                            <Label htmlFor="ptr_type" className="font-semibold text-slate-700 dark:text-zinc-200">
-                                Jenis Transaksi *
-                            </Label>
-                            <div className="relative mt-1">
-                                <select
-                                    id="ptr_type"
-                                    value={form.data.type}
-                                    onChange={(e) => form.setData('type', e.target.value)}
-                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
-                                >
-                                    <option value="advance_incurred">Talangan Pribadi (+ Utang)</option>
-                                    <option value="advance_reimbursed">Pengembalian Talangan (- Utang)</option>
-                                    <option value="profit_distribution">Bagi Hasil / Profit Share</option>
-                                    <option value="draw_prive">Penarikan Prive Partner</option>
-                                    <option value="capital_injection">Setoran Modal Partner</option>
-                                </select>
-                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+
+                            <div>
+                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                    Tanggal Transaksi <span className="text-red-500">*</span>
+                                </Label>
+                                <Input
+                                    type="date"
+                                    required
+                                    value={form.data.transaction_date}
+                                    onChange={(e) =>
+                                        form.setData('transaction_date', e.target.value)
+                                    }
+                                    className="mt-1 h-9 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-zinc-800"
+                                />
                             </div>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2.5">
-                        <div>
-                            <Label htmlFor="ptr_amount" className="font-semibold text-slate-700 dark:text-zinc-200">
-                                Nominal (Rp) *
-                            </Label>
-                            <Input
-                                id="ptr_amount"
-                                type="number"
-                                required
-                                min="1"
-                                value={form.data.amount}
-                                onChange={(e) => form.setData('amount', parseInt(e.target.value) || 0)}
-                                className="mt-1 h-8.5 text-xs font-mono font-bold"
-                            />
+                    {/* Section 3: Allocations & Accounts */}
+                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                        <div className="mb-2.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                            Alokasi Perkara &amp; Rekening Kas
                         </div>
-                        <div>
-                            <Label htmlFor="ptr_date" className="font-semibold text-slate-700 dark:text-zinc-200">
-                                Tanggal Transaksi *
-                            </Label>
-                            <Input
-                                id="ptr_date"
-                                type="date"
-                                required
-                                value={form.data.transaction_date}
-                                onChange={(e) => form.setData('transaction_date', e.target.value)}
-                                className="mt-1 h-8.5 text-xs"
-                            />
-                        </div>
-                    </div>
+                        <div className="space-y-3">
+                            <div className="grid gap-3.5 sm:grid-cols-2">
+                                <div>
+                                    <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                        Terkait Perkara (Matter)
+                                    </Label>
+                                    <div className="relative mt-1">
+                                        <select
+                                            value={form.data.matter_id}
+                                            onChange={(e) => form.setData('matter_id', e.target.value)}
+                                            className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                        >
+                                            <option value="">-- Tanpa Perkara (Operasional Umum Kantor) --</option>
+                                            {matters.map((m) => (
+                                                <option key={m.id} value={m.id}>
+                                                    {m.matter_number} — {m.title}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-400" />
+                                    </div>
+                                </div>
 
-                    <div className="grid grid-cols-2 gap-2.5">
-                        <div>
-                            <Label htmlFor="ptr_matter" className="font-semibold text-slate-700 dark:text-zinc-200">
-                                Perkara Terkait (Opsional)
-                            </Label>
-                            <div className="relative mt-1">
-                                <select
-                                    id="ptr_matter"
-                                    value={form.data.matter_id}
-                                    onChange={(e) => form.setData('matter_id', e.target.value)}
-                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
-                                >
-                                    <option value="">Non-Perkara / Umum</option>
-                                    {matters.map((m) => (
-                                        <option key={m.id} value={m.id}>
-                                            {m.matter_number} - {m.title}
-                                        </option>
-                                    ))}
-                                </select>
-                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                <div>
+                                    <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                        Rekening Kas / Bank Kantor Terlibat
+                                    </Label>
+                                    <div className="relative mt-1">
+                                        <select
+                                            value={form.data.account_id}
+                                            onChange={(e) => form.setData('account_id', e.target.value)}
+                                            className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                        >
+                                            <option value="">-- Tanpa Rekening Kantor (Langsung Tunai/Pribadi) --</option>
+                                            {accounts.map((a) => (
+                                                <option key={a.id} value={a.id}>
+                                                    {a.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-400" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                    Catatan / Keterangan Transaksi
+                                </Label>
+                                <Input
+                                    type="text"
+                                    value={form.data.notes}
+                                    onChange={(e) => form.setData('notes', e.target.value)}
+                                    placeholder="cth: Talangan biaya operasional sidang mendesak di PN Bandung..."
+                                    className="mt-1 h-9 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-zinc-800"
+                                />
+                            </div>
+
+                            <div>
+                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                    Unggah Bukti Transfer / Nota (Opsional)
+                                </Label>
+                                <div className="mt-1">
+                                    <FileInput
+                                        name="proof"
+                                        accept="application/pdf,image/png,image/jpeg,image/webp"
+                                        buttonText="Pilih Berkas"
+                                        placeholder="Pilih file bukti transfer..."
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0] || null;
+                                            form.setData('proof', file);
+                                        }}
+                                    />
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <Label htmlFor="ptr_acc" className="font-semibold text-slate-700 dark:text-zinc-200">
-                                Akun Kas/Bank Pembayar
-                            </Label>
-                            <div className="relative mt-1">
-                                <select
-                                    id="ptr_acc"
-                                    value={form.data.account_id}
-                                    onChange={(e) => form.setData('account_id', e.target.value)}
-                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
-                                >
-                                    <option value="">Pilih Rekening Kas/Bank</option>
-                                    {accounts.map((a) => (
-                                        <option key={a.id} value={a.id}>
-                                            {a.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
-                            </div>
-                        </div>
                     </div>
 
-                    <div>
-                        <Label htmlFor="ptr_notes" className="font-semibold text-slate-700 dark:text-zinc-200">
-                            Keterangan Transaksi
-                        </Label>
-                        <Input
-                            id="ptr_notes"
-                            placeholder="cth: Talangan biaya akomodasi sidang luar kota"
-                            value={form.data.notes}
-                            onChange={(e) => form.setData('notes', e.target.value)}
-                            className="mt-1 h-8.5 text-xs"
-                        />
-                    </div>
-
-                    <div>
-                        <Label className="font-semibold text-slate-700 dark:text-zinc-200">
-                            Unggah Bukti / Kuitansi
-                        </Label>
-                        <FileInput
-                            className="mt-1"
-                            onFileSelect={(file) => form.setData('proof', file)}
-                        />
-                    </div>
-
-                    <div className="flex justify-end gap-2 pt-2">
+                    <DialogFooter className="border-t border-slate-100 pt-4 dark:border-white/[0.06]">
                         <Button
                             type="button"
                             variant="outline"
-                            size="sm"
                             onClick={() => onOpenChange(false)}
-                            className="h-8.5 text-xs font-semibold"
+                            disabled={form.processing}
+                            className="h-9 rounded-xl border-slate-200 px-4 text-xs font-medium hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
                         >
                             Batal
                         </Button>
                         <Button
                             type="submit"
-                            size="sm"
                             disabled={form.processing}
-                            className="h-8.5 bg-slate-900 px-4 text-xs font-semibold text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                            className="h-9 rounded-xl bg-amber-600 px-5 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 active:scale-95 dark:bg-amber-600 dark:hover:bg-amber-500"
                         >
-                            Simpan Transaksi
+                            {form.processing ? 'Menyimpan...' : 'Simpan Transaksi Partner'}
                         </Button>
-                    </div>
+                    </DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>

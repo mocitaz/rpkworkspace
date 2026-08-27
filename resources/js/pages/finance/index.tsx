@@ -1,6 +1,7 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
 import {
     AlertCircle,
+    AlertTriangle,
     ArrowRightLeft,
     ArrowUpRight,
     Banknote,
@@ -21,6 +22,7 @@ import {
     HandCoins,
     Layers,
     Lock,
+    Pencil,
     Plus,
     Receipt,
     ReceiptText,
@@ -44,13 +46,16 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
 import { FileInput } from '@/components/ui/file-input';
 import { Input } from '@/components/ui/input';
+import { MoneyInput } from '@/components/ui/money-input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import UserPicker, { type UserOption } from '@/components/user-picker';
 import { formatDate, formatMoney } from '@/lib/format';
 import * as financeRoutes from '@/routes/finance';
 import * as expenseRoutes from '@/routes/finance/expenses';
@@ -63,11 +68,15 @@ import { PartnerAdvancesView, type PartnerAdvanceSummaryItem, type PartnerTransa
 import { ClientTrustView, type ClientTrustSummary, type ClientTrustFundItem } from './components/client-trust-view';
 import { PayrollView, type PayrollItem } from './components/payroll-view';
 import { ReportsView, type IncomeStatementData, type BalanceSheetData } from './components/reports-view';
+import { FinancialAnalyticsView } from './components/financial-analytics-view';
 import { CreateAccountDialog } from './components/create-account-dialog';
 import { CreateTransferDialog } from './components/create-transfer-dialog';
 import { CreatePartnerTransactionDialog } from './components/create-partner-transaction-dialog';
 import { CreateClientTrustDialog } from './components/create-client-trust-dialog';
 import { CreatePayrollDialog } from './components/create-payroll-dialog';
+import { EditExpenseDialog } from './components/edit-expense-dialog';
+import { EditInvoiceDialog } from './components/edit-invoice-dialog';
+import { EditQuotationDialog } from './components/edit-quotation-dialog';
 
 type Matter = {
     id: string;
@@ -170,7 +179,7 @@ export default function FinanceIndex({
     profitability?: ProfitabilityItem[];
     incomeStatement?: IncomeStatementData;
     balanceSheet?: BalanceSheetData;
-    staffUsers?: { id: number; name: string; position_title?: string; department?: string; employee_code?: string; bank_name?: string; bank_account_number?: string }[];
+    staffUsers?: (UserOption & { employee_code?: string; bank_name?: string; bank_account_number?: string; bank_account_holder?: string })[];
     can: {
         invoice: boolean;
         quotation: boolean;
@@ -186,11 +195,15 @@ export default function FinanceIndex({
     const [reversePayment, setReversePayment] = useState<LedgerItem | null>(null);
     const [refundPayment, setRefundPayment] = useState<LedgerItem | null>(null);
     const [cancelInvoice, setCancelInvoice] = useState<LedgerItem | null>(null);
+    const [invoiceToEdit, setInvoiceToEdit] = useState<LedgerItem | null>(null);
+    const [quotationToEdit, setQuotationToEdit] = useState<LedgerItem | null>(null);
     const [expenseToDelete, setExpenseToDelete] = useState<LedgerItem | null>(null);
     const [isDeletingExpense, setIsDeletingExpense] = useState(false);
+    const [expenseToEdit, setExpenseToEdit] = useState<LedgerItem | null>(null);
+    const [confirmExpenseToEdit, setConfirmExpenseToEdit] = useState<LedgerItem | null>(null);
 
-    // 3 Primary Scopes: Client & Matters, Office Operations, Financial Reports
-    const [scope, setScope] = useState<'client_matters' | 'office_operations' | 'financial_reports'>('client_matters');
+    // 4 Primary Scopes: Client & Matters, Office Operations, Financial Reports, Analytics Insights
+    const [scope, setScope] = useState<'client_matters' | 'office_operations' | 'financial_reports' | 'analytics_insights'>('client_matters');
     const [matterTab, setMatterTab] = useState<'all' | 'profitability' | 'invoices' | 'quotations' | 'trust_funds' | 'disbursements' | 'payments'>('all');
     const [officeTab, setOfficeTab] = useState<'accounts' | 'office_expenses' | 'payroll' | 'partner_advances'>('accounts');
     const [showDetailedAnalytics, setShowDetailedAnalytics] = useState(false);
@@ -348,7 +361,7 @@ export default function FinanceIndex({
                                 </>
                             )}
 
-                            {scope === 'financial_reports' && (
+                            {(scope === 'financial_reports' || scope === 'analytics_insights') && (
                                 <a
                                     href="/finance/export/excel"
                                     className="inline-flex h-7.5 shrink-0 items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3 text-xs font-bold whitespace-nowrap text-emerald-800 shadow-2xs transition-colors hover:bg-emerald-100 active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
@@ -361,8 +374,8 @@ export default function FinanceIndex({
                         </div>
                     </div>
 
-                    {/* 2. Top-Level 3-Scope Segmented Switcher */}
-                    <div className="grid grid-cols-1 gap-2 rounded-2xl border border-slate-200/80 bg-slate-100/60 p-1.5 sm:grid-cols-3 dark:border-white/[0.08] dark:bg-[#121418]/80">
+                    {/* 2. Top-Level 4-Scope Segmented Switcher */}
+                    <div className="grid grid-cols-1 gap-2 rounded-2xl border border-slate-200/80 bg-slate-100/60 p-1.5 sm:grid-cols-2 lg:grid-cols-4 dark:border-white/[0.08] dark:bg-[#121418]/80">
                         {/* Scope 1: Keuangan Perkara & Klien */}
                         <button
                             type="button"
@@ -504,6 +517,54 @@ export default function FinanceIndex({
                             </div>
                             {scope === 'financial_reports' && (
                                 <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+                            )}
+                        </button>
+
+                        {/* Scope 4: Analisis & Grafik Keuangan */}
+                        <button
+                            type="button"
+                            onClick={() => setScope('analytics_insights')}
+                            className={`group relative flex cursor-pointer items-start gap-3 rounded-xl p-3 text-left transition-all duration-200 ${
+                                scope === 'analytics_insights'
+                                    ? 'bg-white shadow-xs ring-1 ring-slate-900/5 dark:bg-[#181a20] dark:ring-1 dark:ring-white/10'
+                                    : 'hover:bg-white/60 dark:hover:bg-white/[0.04]'
+                            }`}
+                        >
+                            <div
+                                className={`flex size-9 shrink-0 items-center justify-center rounded-xl transition-colors ${
+                                    scope === 'analytics_insights'
+                                        ? 'bg-purple-600 text-white shadow-sm shadow-purple-500/25'
+                                        : 'bg-purple-50 text-purple-600 group-hover:bg-purple-100/80 dark:bg-purple-950/40 dark:text-purple-400 dark:group-hover:bg-purple-950/60'
+                                }`}
+                            >
+                                <BarChart3 className="size-4.5" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                                <div className="flex items-center justify-between gap-1">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="font-mono text-[10px] font-bold text-purple-600 dark:text-purple-400">
+                                            04
+                                        </span>
+                                        <h3
+                                            className={`text-xs font-bold tracking-tight transition-colors ${
+                                                scope === 'analytics_insights'
+                                                    ? 'text-slate-900 dark:text-white'
+                                                    : 'text-slate-700 dark:text-zinc-300'
+                                            }`}
+                                        >
+                                            Analisis &amp; Visualisasi Keuangan
+                                        </h3>
+                                    </div>
+                                    {scope === 'analytics_insights' && (
+                                        <span className="size-1.5 rounded-full bg-purple-600 dark:bg-purple-400" />
+                                    )}
+                                </div>
+                                <p className="mt-0.5 text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    Tren Cashflow, Profitabilitas &amp; Neraca
+                                </p>
+                            </div>
+                            {scope === 'analytics_insights' && (
+                                <div className="absolute inset-x-4 bottom-0 h-0.5 rounded-full bg-purple-600 dark:bg-purple-400" />
                             )}
                         </button>
                     </div>
@@ -809,6 +870,7 @@ export default function FinanceIndex({
                                                         emptyTitle="Belum Ada Invoice Tagihan"
                                                         emptyDescription="Belum ada tagihan yang diterbitkan untuk perkara atau klien terpilih. Terbitkan invoice baru untuk mencatat honorarium dan termin pembayaran."
                                                         onCancel={setCancelInvoice}
+                                                        onEditInvoice={can.invoice ? (inv) => setInvoiceToEdit(inv) : undefined}
                                                     />
                                                 </div>
                                             )}
@@ -829,6 +891,7 @@ export default function FinanceIndex({
                                                         actionLabel="Buat Quotation Baru"
                                                         emptyTitle="Belum Ada Quotation Terdaftar"
                                                         emptyDescription="Belum ada proposal penawaran tarif jasa hukum atau estimasi biaya perkara yang diajukan ke calon klien."
+                                                        onEditQuotation={can.quotation ? (q) => setQuotationToEdit(q) : undefined}
                                                     />
                                                 </div>
                                             )}
@@ -846,6 +909,7 @@ export default function FinanceIndex({
                                                         canCreate={can.expense}
                                                         onCreate={() => setModal('expense')}
                                                         onDeleteExpense={can.expense ? (exp) => setExpenseToDelete(exp) : undefined}
+                                                        onEditExpense={can.expense ? (exp) => setConfirmExpenseToEdit(exp) : undefined}
                                                         actionLabel="Catat Biaya Perkara"
                                                         emptyTitle="Belum Ada Catatan Biaya Perkara"
                                                         emptyDescription="Belum ada pengeluaran operasional perkara seperti panjar pengadilan, materai, akomodasi, atau transportasi yang dicatat."
@@ -998,6 +1062,7 @@ export default function FinanceIndex({
                                         canCreate={can.expense}
                                         onCreate={() => setModal('expense')}
                                         onDeleteExpense={can.expense ? (exp) => setExpenseToDelete(exp) : undefined}
+                                        onEditExpense={can.expense ? (exp) => setConfirmExpenseToEdit(exp) : undefined}
                                         actionLabel="Catat Biaya Kantor"
                                         emptyTitle="Belum Ada Biaya Operasional Kantor"
                                         emptyDescription="Belum ada pengeluaran rutin kantor seperti sewa gedung, listrik, internet, ATK, atau langganan software yang dicatat."
@@ -1008,6 +1073,7 @@ export default function FinanceIndex({
                             {officeTab === 'payroll' && (
                                 <PayrollView
                                     payrolls={payrolls}
+                                    accounts={accounts}
                                     onOpenPayrollModal={() => setModal('payroll')}
                                 />
                             )}
@@ -1016,6 +1082,9 @@ export default function FinanceIndex({
                                 <PartnerAdvancesView
                                     advancesSummary={partnerAdvances}
                                     transactions={partnerTransactions}
+                                    partners={partnersList}
+                                    matters={matters}
+                                    accounts={accounts}
                                     onOpenPartnerModal={() => setModal('partner_transaction')}
                                 />
                             )}
@@ -1063,6 +1132,63 @@ export default function FinanceIndex({
                                         is_balanced: true,
                                     }
                                 }
+                            />
+                        </div>
+                    )}
+
+                    {/* ========================================================================= */}
+                    {/* SCOPE 4: ANALISIS & GRAFIK KEUANGAN */}
+                    {/* ========================================================================= */}
+                    {scope === 'analytics_insights' && (
+                        <div className="space-y-3.5">
+                            <FinancialAnalyticsView
+                                currency={currency}
+                                incomeStatement={
+                                    incomeStatement || {
+                                        year: new Date().getFullYear(),
+                                        months: [],
+                                        summary: {
+                                            total_revenue: 0,
+                                            total_operational_expense: 0,
+                                            total_payroll_expense: 0,
+                                            total_expenses: 0,
+                                            net_profit: 0,
+                                        },
+                                    }
+                                }
+                                balanceSheet={
+                                    balanceSheet || {
+                                        assets: {
+                                            operational_cash_bank: 0,
+                                            client_trust_bank: 0,
+                                            tax_credit_pph23: 0,
+                                            total_assets: 0,
+                                        },
+                                        liabilities: {
+                                            partner_advances_due: 0,
+                                            unpaid_payroll: 0,
+                                            client_trust_liability: 0,
+                                            total_liabilities: 0,
+                                        },
+                                        equity: {
+                                            retained_earnings: 0,
+                                            total_equity: 0,
+                                            total_liabilities_and_equity: 0,
+                                        },
+                                        is_balanced: true,
+                                    }
+                                }
+                                profitability={profitability || []}
+                                clientTrustSummary={
+                                    clientTrustSummary || {
+                                        total_deposit_in: 0,
+                                        total_disbursement_out: 0,
+                                        net_trust_balance: 0,
+                                        by_matter: [],
+                                    }
+                                }
+                                partnerAdvances={partnerAdvances || []}
+                                expenses={expenses || []}
                             />
                         </div>
                     )}
@@ -1138,6 +1264,91 @@ export default function FinanceIndex({
                 onClose={() => setCancelInvoice(null)}
             />
 
+            {/* Modal Konfirmasi Edit Biaya Operasional / Perkara */}
+            <Dialog open={!!confirmExpenseToEdit} onOpenChange={(open) => !open && setConfirmExpenseToEdit(null)}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <div className="flex items-center gap-2">
+                            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400">
+                                <AlertTriangle className="size-5" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-sm font-bold text-slate-900 uppercase dark:text-white">
+                                    Konfirmasi Edit Beban Operasional
+                                </DialogTitle>
+                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                    Peringatan mutasi kas dan pencatatan biaya.
+                                </DialogDescription>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    {confirmExpenseToEdit && (
+                        <div className="space-y-3 py-2 text-xs">
+                            <div className="rounded-xl border border-amber-200/80 bg-amber-50/70 p-3 text-amber-900 dark:border-amber-500/20 dark:bg-amber-950/20 dark:text-amber-200">
+                                <p className="text-[11.5px] font-semibold leading-relaxed">
+                                    Catatan biaya <strong>"{confirmExpenseToEdit.description || confirmExpenseToEdit.title || 'Biaya Operasional'}"</strong> sebesar <strong>{formatMoney(confirmExpenseToEdit.amount ?? 0, confirmExpenseToEdit.currency || currency)}</strong> telah tercatat pada pembukuan kas/bank.
+                                </p>
+                                <p className="mt-1.5 text-[10.5px] text-amber-800/90 dark:text-amber-300/80">
+                                    Apakah Anda yakin ingin mengedit data biaya ini? Perubahan nominal atau rekening pembayaran akan otomatis menyesuaikan saldo kas dan laporan laba rugi.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    <DialogFooter className="gap-3 sm:gap-3 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setConfirmExpenseToEdit(null)}
+                            className="h-9 px-4 rounded-xl border-slate-200 text-xs font-semibold hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                        >
+                            Batal
+                        </Button>
+                        <Button
+                            size="sm"
+                            onClick={() => {
+                                if (confirmExpenseToEdit) {
+                                    setExpenseToEdit(confirmExpenseToEdit);
+                                    setConfirmExpenseToEdit(null);
+                                }
+                            }}
+                            className="h-9 px-4 rounded-xl bg-amber-600 text-xs font-semibold text-white shadow-2xs hover:bg-amber-500 active:scale-95 dark:bg-amber-600"
+                        >
+                            Ya, Tetap Edit
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Modal Form Edit Biaya */}
+            <EditExpenseDialog
+                open={!!expenseToEdit}
+                onOpenChange={(open) => !open && setExpenseToEdit(null)}
+                expense={expenseToEdit as any}
+                matters={matters}
+                accounts={accounts}
+                partners={partnersList}
+            />
+
+            {/* Modal Form Edit Invoice */}
+            <EditInvoiceDialog
+                open={!!invoiceToEdit}
+                onOpenChange={(open) => !open && setInvoiceToEdit(null)}
+                invoice={invoiceToEdit as any}
+                clients={clients}
+                matters={matters}
+            />
+
+            {/* Modal Form Edit Quotation */}
+            <EditQuotationDialog
+                open={!!quotationToEdit}
+                onOpenChange={(open) => !open && setQuotationToEdit(null)}
+                quotation={quotationToEdit as any}
+                clients={clients}
+                matters={matters}
+            />
+
             {/* Modal Konfirmasi Hapus Biaya Perkara */}
             <ConfirmDialog
                 open={!!expenseToDelete}
@@ -1183,6 +1394,9 @@ function Ledger({
     emptyDescription = 'Belum ada data pada bagian ini.',
     onCancel,
     onDeleteExpense,
+    onEditExpense,
+    onEditInvoice,
+    onEditQuotation,
 }: {
     title: string;
     items: LedgerItem[];
@@ -1200,6 +1414,9 @@ function Ledger({
     emptyDescription?: string;
     onCancel?: (invoice: LedgerItem) => void;
     onDeleteExpense?: (expense: LedgerItem) => void;
+    onEditExpense?: (expense: LedgerItem) => void;
+    onEditInvoice?: (invoice: LedgerItem) => void;
+    onEditQuotation?: (quotation: LedgerItem) => void;
 }) {
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -1376,6 +1593,18 @@ function Ledger({
                                             </Button>
                                         )}
 
+                                        {i.invoice_number && onEditInvoice && (
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => onEditInvoice(i)}
+                                                className="size-6.5 rounded-lg text-slate-500 hover:bg-blue-50 hover:text-blue-600 dark:text-zinc-400 dark:hover:bg-blue-950/30 dark:hover:text-blue-400"
+                                                title="Edit Data Invoice"
+                                            >
+                                                <Pencil className="size-3.5" />
+                                            </Button>
+                                        )}
+
                                         {i.quotation_number && (
                                             <Button
                                                 variant="ghost"
@@ -1393,6 +1622,18 @@ function Ledger({
                                                 >
                                                     <FileDown className="size-3.5 text-slate-700 dark:text-zinc-300" />
                                                 </a>
+                                            </Button>
+                                        )}
+
+                                        {i.quotation_number && onEditQuotation && (
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                onClick={() => onEditQuotation(i)}
+                                                className="size-6.5 rounded-lg text-slate-500 hover:bg-amber-50 hover:text-amber-600 dark:text-zinc-400 dark:hover:bg-amber-950/30 dark:hover:text-amber-400"
+                                                title="Edit Data Quotation"
+                                            >
+                                                <Pencil className="size-3.5" />
                                             </Button>
                                         )}
 
@@ -1456,6 +1697,23 @@ function Ledger({
                                                         Setujui
                                                     </Button>
                                                 </Form>
+                                            )}
+
+                                        {onEditExpense &&
+                                            !i.invoice_number &&
+                                            !i.quotation_number && (
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() =>
+                                                        onEditExpense(i)
+                                                    }
+                                                    className="size-6.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/[0.06] dark:hover:text-zinc-200"
+                                                    title="Edit Catatan Biaya"
+                                                >
+                                                    <Pencil className="size-3 text-slate-600 dark:text-zinc-300" />
+                                                </Button>
                                             )}
 
                                         {onDeleteExpense &&
@@ -2058,13 +2316,14 @@ function FinanceDialog({
     clients: { id: string; display_name: string }[];
     invoices: LedgerItem[];
     accounts?: FinancialAccountItem[];
-    staffUsers?: { id: number; name: string }[];
+    staffUsers?: UserOption[];
 }) {
     const [lineItems, setLineItems] = useState([
         { description: '', quantity: '1', unitAmount: '' },
     ]);
     const [discountAmount, setDiscountAmount] = useState<string>('0');
     const [taxRate, setTaxRate] = useState<string>('11');
+    const [expensePartnerId, setExpensePartnerId] = useState<string>('');
 
     const subtotal = lineItems.reduce((acc, item) => {
         const qty = Number(item.quantity) || 0;
@@ -2096,7 +2355,14 @@ function FinanceDialog({
         invoice: 'Buat Invoice Tagihan Baru',
         quotation: 'Buat Penawaran Tarif (Quotation)',
         expense: 'Catat Pengeluaran & Biaya Perkara',
-        payment: 'Catat Penerimaan Pembayaran',
+        payment: 'Catat Penerimaan Pembayaran Klien',
+    };
+
+    const dialogDescriptions = {
+        invoice: 'Terbitkan tagihan honorarium, biaya operasional perkara, atau tagihan retainer kepada klien.',
+        quotation: 'Buat proposal estimasi tarif jasa hukum, ruang lingkup perkara, dan penawaran biaya untuk calon klien.',
+        expense: 'Catat pengeluaran biaya perkara (disbursement), operasional kantor, atau talangan dana pribadi partner.',
+        payment: 'Catat penerimaan pembayaran dari klien ke rekening kantor dan alokasikan ke invoice tagihan terkait.',
     };
 
     const dialogIcons = {
@@ -2106,23 +2372,34 @@ function FinanceDialog({
         payment: Banknote,
     };
 
+    const dialogColors = {
+        invoice: 'bg-blue-50 text-blue-600 ring-blue-500/20 dark:bg-blue-950/50 dark:text-blue-400',
+        quotation: 'bg-amber-50 text-amber-600 ring-amber-500/20 dark:bg-amber-950/50 dark:text-amber-400',
+        expense: 'bg-rose-50 text-rose-600 ring-rose-500/20 dark:bg-rose-950/50 dark:text-rose-400',
+        payment: 'bg-emerald-50 text-emerald-600 ring-emerald-500/20 dark:bg-emerald-950/50 dark:text-emerald-400',
+    };
+
     const DialogIcon = (dialogIcons as any)[type] || ReceiptText;
+    const colorClass = (dialogColors as any)[type] || 'bg-blue-50 text-blue-600 ring-blue-500/20';
+    const isWide = type === 'invoice' || type === 'quotation';
 
     return (
         <Dialog open onOpenChange={onClose}>
-            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
-                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                    <div className="flex items-center gap-2.5">
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                            <DialogIcon className="size-4" />
-                        </div>
-                        <div>
-                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                {(dialogTitles as any)[type] || 'Transaksi Keuangan'}
-                            </DialogTitle>
-                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Lengkapi formulir transaksi keuangan berikut.
-                            </DialogDescription>
+            <DialogContent className={`max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#121418] ${isWide ? 'sm:max-w-3xl' : 'sm:max-w-2xl'}`}>
+                <DialogHeader className="border-b border-slate-100 pb-4 dark:border-white/[0.06]">
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <div className={`flex size-10 shrink-0 items-center justify-center rounded-xl ring-1 ${colorClass}`}>
+                                <DialogIcon className="size-5" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                    {(dialogTitles as any)[type] || 'Transaksi Keuangan'}
+                                </DialogTitle>
+                                <DialogDescription className="mt-0.5 text-xs text-slate-500 dark:text-zinc-400">
+                                    {(dialogDescriptions as any)[type] || 'Lengkapi formulir transaksi keuangan berikut.'}
+                                </DialogDescription>
+                            </div>
                         </div>
                     </div>
                 </DialogHeader>
@@ -2130,237 +2407,206 @@ function FinanceDialog({
                 <Form
                     {...route.form()}
                     encType="multipart/form-data"
-                    className="space-y-3 pt-1"
+                    className="space-y-4 pt-2"
                     onSuccess={onClose}
                 >
                     {({ processing, errors }) => (
                         <>
-                            <SelectField
-                                name="matter_id"
-                                label="Terkait Perkara (Matter)"
-                                matters={matters}
-                                required={false}
-                                placeholder={
-                                    isExpense
-                                        ? 'Tanpa Perkara (Beban Operasional Kantor / Non-Perkara)'
-                                        : 'Pilih Perkara (Opsional)'
-                                }
-                            />
-
-                            {!isExpense && !isPayment && (
-                                <SelectField
-                                    name="client_id"
-                                    label="Klien (Client)"
-                                    clients={clients}
-                                    required={!isExpense}
-                                />
-                            )}
-
+                            {/* Invoice & Quotation Form */}
                             {!isExpense && !isPayment && (
                                 <>
-                                    <Field
-                                        name="title"
-                                        label="Judul Tagihan / Quotation"
-                                        placeholder="cth: Tagihan Honorarium Retainer Bulan Juni"
-                                        required
-                                    />
-                                    <div className="grid gap-2.5 sm:grid-cols-2">
-                                        <Field
-                                            name="currency"
-                                            label="Mata Uang"
-                                            defaultValue="IDR"
-                                            required
-                                        />
-                                        <Field
-                                            name={
-                                                type === 'invoice'
-                                                    ? 'due_at'
-                                                    : 'valid_until'
-                                            }
-                                            label={
-                                                type === 'invoice'
-                                                    ? 'Jatuh Tempo'
-                                                    : 'Berlaku Hingga'
-                                            }
-                                            type="date"
-                                            required
-                                        />
+                                    {/* Section 1: Client & Matter */}
+                                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                                        <div className="mb-2.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                            Informasi Klien &amp; Perkara Terkait
+                                        </div>
+                                        <div className="grid gap-3.5 sm:grid-cols-2">
+                                            <SelectField
+                                                name="client_id"
+                                                label="Klien (Client) *"
+                                                clients={clients}
+                                                required={true}
+                                            />
+                                            <SelectField
+                                                name="matter_id"
+                                                label="Terkait Perkara (Matter)"
+                                                matters={matters}
+                                                required={false}
+                                                placeholder="-- Pilih Perkara (Opsional) --"
+                                            />
+                                        </div>
                                     </div>
 
-                                    {/* Line Items Dynamic Builder */}
-                                    <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
-                                        <div className="flex items-center justify-between">
-                                            <Label className="text-xs font-semibold text-slate-900 dark:text-white">
-                                                Rincian Item (Line Items)
-                                            </Label>
+                                    {/* Section 2: Title & Dates */}
+                                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                                        <div className="mb-2.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                            Rincian &amp; Periode
+                                        </div>
+                                        <div className="space-y-3">
+                                            <Field
+                                                name="title"
+                                                label={type === 'invoice' ? 'Perihal / Judul Invoice *' : 'Perihal / Judul Proposal Penawaran *'}
+                                                placeholder={type === 'invoice' ? 'cth: Tagihan Honorarium Retainer Bulan Juni' : 'cth: Proposal Pendampingan Hukum PT Sentosa'}
+                                                required
+                                            />
+
+                                            {type === 'quotation' && (
+                                                <div>
+                                                    <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                        Ruang Lingkup &amp; Ketentuan (Scope of Work)
+                                                    </Label>
+                                                    <textarea
+                                                        name="scope"
+                                                        rows={2}
+                                                        placeholder="Rincian lingkup kerja, batasan bantuan hukum..."
+                                                        className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-800 shadow-2xs focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                    />
+                                                </div>
+                                            )}
+
+                                            <div className="grid gap-3.5 sm:grid-cols-2">
+                                                <Field
+                                                    name="currency"
+                                                    label="Mata Uang *"
+                                                    defaultValue="IDR"
+                                                    required
+                                                />
+                                                <Field
+                                                    name={type === 'invoice' ? 'due_at' : 'valid_until'}
+                                                    label={type === 'invoice' ? 'Jatuh Tempo *' : 'Berlaku Hingga'}
+                                                    type="date"
+                                                    required={type === 'invoice'}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Section 3: Line Items Dynamic Builder */}
+                                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                                        <div className="flex items-center justify-between pb-2.5">
+                                            <div>
+                                                <div className="text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                                    Rincian Item &amp; Komponen Biaya (Line Items)
+                                                </div>
+                                                <p className="text-xs text-slate-500 dark:text-zinc-400">
+                                                    Daftar rincian layanan jasa advokat, biaya operasional, atau termin pembayaran.
+                                                </p>
+                                            </div>
                                             <Button
                                                 type="button"
                                                 size="sm"
                                                 variant="outline"
-                                                className="h-6 rounded-md px-2 text-[10.5px]"
                                                 onClick={() =>
                                                     setLineItems((items) => [
                                                         ...items,
-                                                        {
-                                                            description: '',
-                                                            quantity: '1',
-                                                            unitAmount: '',
-                                                        },
+                                                        { description: '', quantity: '1', unitAmount: '' },
                                                     ])
                                                 }
+                                                className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                             >
-                                                <Plus className="mr-0.5 size-2.5" />{' '}
+                                                <Plus className="mr-1.5 size-3.5 text-blue-600 dark:text-blue-400" />
                                                 Tambah Baris
                                             </Button>
                                         </div>
 
-                                        <div className="space-y-1.5 pt-1">
+                                        {/* Table Header */}
+                                        <div className="hidden grid-cols-[1fr_5rem_8.5rem_7.5rem_2.5rem] gap-2 px-3 py-1.5 text-[11px] font-bold text-slate-500 uppercase dark:text-zinc-400 sm:grid">
+                                            <span>Deskripsi Layanan / Item</span>
+                                            <span className="text-center">Kuantitas</span>
+                                            <span className="text-right">Tarif Satuan</span>
+                                            <span className="text-right">Subtotal</span>
+                                            <span className="text-center">Aksi</span>
+                                        </div>
+
+                                        <div className="space-y-2">
                                             {lineItems.map((item, index) => {
                                                 const rowTotal =
-                                                    (Number(item.quantity) ||
-                                                        0) *
-                                                    (Number(item.unitAmount) ||
-                                                        0);
+                                                    (Number(item.quantity) || 0) *
+                                                    (Number(item.unitAmount) || 0);
 
                                                 return (
                                                     <div
                                                         key={index}
-                                                        className="space-y-1 rounded-lg border border-slate-200/60 bg-white p-2 dark:border-white/[0.04] dark:bg-zinc-800/60"
+                                                        className="flex flex-col gap-2 rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/[0.04] dark:bg-[#121418] sm:grid sm:grid-cols-[1fr_5rem_8.5rem_7.5rem_2.5rem] sm:items-center sm:gap-2"
                                                     >
-                                                        <div className="grid gap-1.5 sm:grid-cols-[1fr_4rem_7rem_auto] sm:items-center">
+                                                        <div>
                                                             <Input
                                                                 name={`items[${index}][description]`}
-                                                                placeholder="Deskripsi item..."
-                                                                className="h-7.5 rounded-lg border-slate-200 bg-slate-50/50 text-xs dark:border-white/10 dark:bg-zinc-800"
+                                                                placeholder="Deskripsi layanan / termin tagihan..."
+                                                                className="h-8 rounded-lg border-slate-200 bg-slate-50/50 text-xs dark:border-white/10 dark:bg-zinc-800"
                                                                 required
-                                                                value={
-                                                                    item.description
-                                                                }
+                                                                value={item.description}
                                                                 onChange={(e) =>
-                                                                    setLineItems(
-                                                                        (
-                                                                            items,
-                                                                        ) =>
-                                                                            items.map(
-                                                                                (
-                                                                                    cur,
-                                                                                    idx,
-                                                                                ) =>
-                                                                                    idx ===
-                                                                                    index
-                                                                                        ? {
-                                                                                              ...cur,
-                                                                                              description:
-                                                                                                  e
-                                                                                                      .target
-                                                                                                      .value,
-                                                                                          }
-                                                                                        : cur,
-                                                                            ),
+                                                                    setLineItems((items) =>
+                                                                        items.map((cur, idx) =>
+                                                                            idx === index
+                                                                                ? { ...cur, description: e.target.value }
+                                                                                : cur,
+                                                                        ),
                                                                     )
                                                                 }
                                                             />
+                                                        </div>
+
+                                                        <div>
                                                             <Input
                                                                 name={`items[${index}][quantity]`}
                                                                 type="number"
                                                                 min="1"
                                                                 placeholder="Qty"
-                                                                className="h-7.5 rounded-lg border-slate-200 bg-slate-50/50 text-xs dark:border-white/10 dark:bg-zinc-800"
+                                                                className="h-8 rounded-lg border-slate-200 bg-slate-50/50 text-center text-xs dark:border-white/10 dark:bg-zinc-800"
                                                                 required
-                                                                value={
-                                                                    item.quantity
-                                                                }
+                                                                value={item.quantity}
                                                                 onChange={(e) =>
-                                                                    setLineItems(
-                                                                        (
-                                                                            items,
-                                                                        ) =>
-                                                                            items.map(
-                                                                                (
-                                                                                    cur,
-                                                                                    idx,
-                                                                                ) =>
-                                                                                    idx ===
-                                                                                    index
-                                                                                        ? {
-                                                                                              ...cur,
-                                                                                              quantity:
-                                                                                                  e
-                                                                                                      .target
-                                                                                                      .value,
-                                                                                          }
-                                                                                        : cur,
-                                                                            ),
+                                                                    setLineItems((items) =>
+                                                                        items.map((cur, idx) =>
+                                                                            idx === index
+                                                                                ? { ...cur, quantity: e.target.value }
+                                                                                : cur,
+                                                                        ),
                                                                     )
                                                                 }
                                                             />
-                                                            <Input
-                                                                name={`items[${index}][unit_amount]`}
-                                                                type="number"
-                                                                min="0"
-                                                                placeholder="Nominal (IDR)"
-                                                                className="h-7.5 rounded-lg border-slate-200 bg-slate-50/50 text-xs dark:border-white/10 dark:bg-zinc-800"
-                                                                required
-                                                                value={
-                                                                    item.unitAmount
-                                                                }
-                                                                onChange={(e) =>
-                                                                    setLineItems(
-                                                                        (
-                                                                            items,
-                                                                        ) =>
-                                                                            items.map(
-                                                                                (
-                                                                                    cur,
-                                                                                    idx,
-                                                                                ) =>
-                                                                                    idx ===
-                                                                                    index
-                                                                                        ? {
-                                                                                              ...cur,
-                                                                                              unitAmount:
-                                                                                                  e
-                                                                                                      .target
-                                                                                                      .value,
-                                                                                          }
-                                                                                        : cur,
-                                                                            ),
-                                                                    )
-                                                                }
-                                                            />
-                                                            {lineItems.length >
-                                                                1 && (
-                                                                <Button
-                                                                    type="button"
-                                                                    size="icon"
-                                                                    variant="ghost"
-                                                                    className="size-7 shrink-0 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30"
-                                                                    onClick={() =>
-                                                                        setLineItems(
-                                                                            (
-                                                                                items,
-                                                                            ) =>
-                                                                                items.filter(
-                                                                                    (
-                                                                                        _,
-                                                                                        i,
-                                                                                    ) =>
-                                                                                        i !==
-                                                                                        index,
-                                                                                ),
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    <Trash2 className="size-3.5" />
-                                                                </Button>
-                                                            )}
                                                         </div>
-                                                        <div className="flex justify-end text-[10px] font-mono text-slate-500 dark:text-zinc-400">
-                                                            Subtotal:{' '}
-                                                            {formatMoney(
-                                                                rowTotal,
-                                                                'IDR',
-                                                            )}
+
+                                                        <div>
+                                                            <MoneyInput
+                                                                name={`items[${index}][unit_amount]`}
+                                                                placeholder="Tarif (IDR)"
+                                                                className="h-8 rounded-lg border-slate-200 bg-slate-50/50 text-right font-mono text-xs dark:border-white/10 dark:bg-zinc-800"
+                                                                required
+                                                                value={item.unitAmount}
+                                                                onValueChange={(val) =>
+                                                                    setLineItems((items) =>
+                                                                        items.map((cur, idx) =>
+                                                                            idx === index
+                                                                                ? { ...cur, unitAmount: String(val) }
+                                                                                : cur,
+                                                                        ),
+                                                                    )
+                                                                }
+                                                            />
+                                                        </div>
+
+                                                        <div className="text-right font-mono text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                                            IDR {formatMoney(rowTotal)}
+                                                        </div>
+
+                                                        <div className="flex justify-center">
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                onClick={() =>
+                                                                    setLineItems((items) =>
+                                                                        items.filter((_, i) => i !== index),
+                                                                    )
+                                                                }
+                                                                disabled={lineItems.length <= 1}
+                                                                className="size-8 rounded-lg p-0 text-slate-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-20 dark:hover:bg-red-950/30 dark:hover:text-red-400"
+                                                            >
+                                                                <Trash2 className="size-3.5" />
+                                                            </Button>
                                                         </div>
                                                     </div>
                                                 );
@@ -2368,384 +2614,404 @@ function FinanceDialog({
                                         </div>
                                     </div>
 
-                                    {/* Discount & Tax Row */}
-                                    <div className="grid gap-2.5 sm:grid-cols-2">
-                                        <div className="grid gap-1">
-                                            <Label
-                                                htmlFor="discount_amount"
-                                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
-                                            >
-                                                Diskon (IDR)
-                                            </Label>
-                                            <Input
-                                                id="discount_amount"
-                                                name="discount_amount"
-                                                type="number"
-                                                min="0"
-                                                placeholder="0"
-                                                value={discountAmount}
-                                                onChange={(e) =>
-                                                    setDiscountAmount(
-                                                        e.target.value,
-                                                    )
-                                                }
-                                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs font-mono dark:border-white/10 dark:bg-[#121418]"
-                                            />
-                                        </div>
-                                        <div className="grid gap-1">
-                                            <Label
-                                                htmlFor="tax_rate"
-                                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
-                                            >
-                                                Tarif PPN (%)
-                                            </Label>
-                                            <Input
-                                                id="tax_rate"
-                                                name="tax_rate"
-                                                type="number"
-                                                min="0"
-                                                max="100"
-                                                placeholder="11"
-                                                value={taxRate}
-                                                onChange={(e) =>
-                                                    setTaxRate(e.target.value)
-                                                }
-                                                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs font-mono dark:border-white/10 dark:bg-[#121418]"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* Realtime Grand Total Summary Card */}
-                                    <div className="space-y-1 rounded-lg border border-blue-100 bg-blue-50/50 p-2.5 dark:border-blue-900/30 dark:bg-blue-950/20">
-                                        <div className="flex items-center justify-between text-xs text-slate-600 dark:text-zinc-300">
-                                            <span>Subtotal:</span>
-                                            <span className="font-mono font-medium">
-                                                {formatMoney(subtotal, 'IDR')}
-                                            </span>
-                                        </div>
-                                        {discount > 0 && (
-                                            <div className="flex items-center justify-between text-xs text-emerald-600 dark:text-emerald-400">
-                                                <span>Diskon:</span>
-                                                <span className="font-mono font-medium">
-                                                    -
-                                                    {formatMoney(
-                                                        discount,
-                                                        'IDR',
-                                                    )}
-                                                </span>
+                                    {/* Section 4: Discount & Tax + Realtime Live Summary Card */}
+                                    <div className="grid gap-3.5 sm:grid-cols-2">
+                                        <div className="space-y-3 rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                                            <div className="text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                                Penyesuaian Diskon &amp; Pajak
                                             </div>
-                                        )}
-                                        <div className="flex items-center justify-between text-xs text-slate-600 dark:text-zinc-300">
-                                            <span>PPN ({taxRate || 0}%):</span>
-                                            <span className="font-mono font-medium">
-                                                {formatMoney(tax, 'IDR')}
-                                            </span>
+                                            <div className="grid gap-3 sm:grid-cols-2">
+                                                <div>
+                                                    <Label htmlFor="discount_amount" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                        Potongan Diskon (IDR)
+                                                    </Label>
+                                                    <MoneyInput
+                                                        id="discount_amount"
+                                                        name="discount_amount"
+                                                        placeholder="0"
+                                                        value={discountAmount}
+                                                        onValueChange={(val) => setDiscountAmount(String(val))}
+                                                        className="mt-1 h-9 rounded-lg border-slate-200 bg-white font-mono text-xs dark:border-white/10 dark:bg-zinc-800"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <Label htmlFor="tax_rate" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                        Tarif PPN (%)
+                                                    </Label>
+                                                    <Input
+                                                        id="tax_rate"
+                                                        name="tax_rate"
+                                                        type="number"
+                                                        min="0"
+                                                        max="100"
+                                                        placeholder="11"
+                                                        value={taxRate}
+                                                        onChange={(e) => setTaxRate(e.target.value)}
+                                                        className="mt-1 h-9 rounded-lg border-slate-200 bg-white font-mono text-xs dark:border-white/10 dark:bg-zinc-800"
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="flex items-center justify-between border-t border-blue-200/80 pt-1.5 text-xs font-bold text-blue-700 dark:border-blue-900/60 dark:text-blue-400">
-                                            <span>
-                                                Total Tagihan (Grand Total):
-                                            </span>
-                                            <span className="font-mono text-sm">
-                                                {formatMoney(grandTotal, 'IDR')}
-                                            </span>
+
+                                        {/* Live Breakdown Card */}
+                                        <div className={`flex flex-col justify-between rounded-xl border p-4 ${
+                                            type === 'quotation'
+                                                ? 'border-amber-200/80 bg-amber-50/40 dark:border-amber-900/40 dark:bg-amber-950/20'
+                                                : 'border-blue-100 bg-blue-50/40 dark:border-blue-900/40 dark:bg-blue-950/20'
+                                        }`}>
+                                            <div className="space-y-2 text-xs">
+                                                <div className="flex justify-between text-slate-600 dark:text-zinc-300">
+                                                    <span>Subtotal:</span>
+                                                    <span className="font-mono font-semibold text-slate-900 dark:text-white">
+                                                        IDR {formatMoney(subtotal)}
+                                                    </span>
+                                                </div>
+                                                {discount > 0 && (
+                                                    <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
+                                                        <span>Potongan Diskon:</span>
+                                                        <span className="font-mono font-semibold">
+                                                            - IDR {formatMoney(discount)}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                {tax > 0 && (
+                                                    <div className="flex justify-between text-slate-600 dark:text-zinc-300">
+                                                        <span>PPN ({taxRate || 0}%):</span>
+                                                        <span className="font-mono font-semibold text-slate-900 dark:text-white">
+                                                            + IDR {formatMoney(tax)}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className={`mt-3 border-t pt-2.5 ${
+                                                type === 'quotation'
+                                                    ? 'border-amber-200/80 dark:border-amber-900/60'
+                                                    : 'border-blue-200/80 dark:border-blue-900/60'
+                                            }`}>
+                                                <div className="flex items-baseline justify-between">
+                                                    <span className="text-xs font-bold tracking-tight text-slate-900 uppercase dark:text-white">
+                                                        {type === 'quotation' ? 'TOTAL PENAWARAN:' : 'TOTAL TAGIHAN:'}
+                                                    </span>
+                                                    <span className={`font-mono text-base font-extrabold ${
+                                                        type === 'quotation'
+                                                            ? 'text-amber-600 dark:text-amber-400'
+                                                            : 'text-blue-600 dark:text-blue-400'
+                                                    }`}>
+                                                        IDR {formatMoney(grandTotal)}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </>
                             )}
 
+                            {/* Expense Form */}
                             {isExpense && (
                                 <>
-                                    <div className="grid gap-2.5 sm:grid-cols-2">
-                                        <div className="grid gap-1">
-                                            <Label htmlFor="charge_to" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                                Beban Biaya (Charge To) *
-                                            </Label>
-                                            <div className="relative mt-0.5">
-                                                <select
-                                                    id="charge_to"
-                                                    name="charge_to"
-                                                    defaultValue="office"
-                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
-                                                >
-                                                    <option value="office">Beban Operasional Kantor</option>
-                                                    <option value="client">Reimbursement Klien</option>
-                                                </select>
-                                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
-                                            </div>
+                                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                                        <div className="mb-2.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                            Klasifikasi Pembebanan Biaya
                                         </div>
-                                        <Field
-                                            name="category"
-                                            label="Kategori Biaya"
-                                            defaultValue="Court fee"
-                                            placeholder="Biaya PNBP, Saksi, Notaris..."
-                                            required
-                                        />
-                                    </div>
-                                    <div className="grid gap-2.5 sm:grid-cols-2">
-                                        <Field
-                                            name="incurred_at"
-                                            label="Tanggal Biaya"
-                                            type="date"
-                                            required
-                                        />
-                                        <Field
-                                            name="amount"
-                                            label="Nominal Pengeluaran (IDR)"
-                                            type="number"
-                                            placeholder="0"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="grid gap-2.5 sm:grid-cols-2">
-                                        <div className="grid gap-1">
-                                            <Label htmlFor="account_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                                Sumber Kas / Rekening (Opsional)
-                                            </Label>
-                                            <div className="relative mt-0.5">
-                                                <select
-                                                    id="account_id"
-                                                    name="account_id"
-                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
-                                                >
-                                                    <option value="">Pilih Rekening Kas/Bank</option>
-                                                    {accounts.map((a) => (
-                                                        <option key={a.id} value={a.id}>{a.name}</option>
-                                                    ))}
-                                                </select>
-                                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                        <div className="grid gap-3.5 sm:grid-cols-2">
+                                            <div>
+                                                <Label htmlFor="charge_to" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                    Beban Biaya (Charge To) <span className="text-red-500">*</span>
+                                                </Label>
+                                                <div className="relative mt-1">
+                                                    <select
+                                                        id="charge_to"
+                                                        name="charge_to"
+                                                        defaultValue="office"
+                                                        className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                    >
+                                                        <option value="office">Beban Operasional Kantor</option>
+                                                        <option value="client">Reimbursement Klien (Perkara)</option>
+                                                    </select>
+                                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-400" />
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div className="grid gap-1">
-                                            <Label htmlFor="partner_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                                Ditalangi Partner (Opsional)
-                                            </Label>
-                                            <div className="relative mt-0.5">
-                                                <select
-                                                    id="partner_id"
-                                                    name="partner_id"
-                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
-                                                >
-                                                    <option value="">Bukan Talangan Partner</option>
-                                                    {staffUsers.map((u) => (
-                                                        <option key={u.id} value={u.id}>{u.name}</option>
-                                                    ))}
-                                                </select>
-                                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
-                                            </div>
+
+                                            <SelectField
+                                                name="matter_id"
+                                                label="Terkait Perkara (Matter)"
+                                                matters={matters}
+                                                required={false}
+                                                placeholder="-- Tanpa Perkara (Beban Operasional Kantor) --"
+                                            />
                                         </div>
                                     </div>
-                                    <Field
-                                        name="description"
-                                        label="Deskripsi Pengeluaran"
-                                        placeholder="Rincian pembayaran biaya pendaftaran..."
-                                        required
-                                    />
-                                    <div className="grid gap-1">
-                                        <Label
-                                            htmlFor="expense-proof"
-                                            className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
-                                        >
-                                            Unggah Bukti / Kuitansi
-                                        </Label>
-                                        <FileInput
-                                            id="expense-proof"
-                                            name="proof"
-                                            accept="application/pdf,image/png,image/jpeg,image/webp"
-                                            buttonText="Unggah Berkas"
-                                            placeholder="Pilih berkas kuitansi / nota..."
-                                        />
+
+                                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                                        <div className="mb-2.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                            Rincian Pengeluaran
+                                        </div>
+                                        <div className="space-y-3">
+                                            <div className="grid gap-3.5 sm:grid-cols-2">
+                                                <Field
+                                                    name="category"
+                                                    label="Kategori Biaya *"
+                                                    defaultValue="Court fee"
+                                                    placeholder="Biaya PNBP, Saksi, Notaris..."
+                                                    required
+                                                />
+                                                <Field
+                                                    name="vendor"
+                                                    label="Penyedia / Vendor"
+                                                    placeholder="cth: Pengadilan Negeri, PT Telkom..."
+                                                />
+                                            </div>
+
+                                            <Field
+                                                name="description"
+                                                label="Deskripsi / Keperluan Pengeluaran *"
+                                                placeholder="Rincian pembayaran biaya pendaftaran gugatan..."
+                                                required
+                                            />
+
+                                            <div className="grid gap-3.5 sm:grid-cols-2">
+                                                <Field
+                                                    name="incurred_at"
+                                                    label="Tanggal Transaksi *"
+                                                    type="date"
+                                                    required
+                                                />
+                                                <Field
+                                                    name="amount"
+                                                    label="Nominal Pengeluaran (IDR) *"
+                                                    isMoney
+                                                    placeholder="0"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
-                                    <input
-                                        type="hidden"
-                                        name="status"
-                                        value="draft"
-                                    />
+
+                                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                                        <div className="mb-2.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                            Sumber Kas &amp; Bukti Pembayaran
+                                        </div>
+                                        <div className="space-y-3">
+                                            <div className="grid gap-3.5 sm:grid-cols-2">
+                                                <div>
+                                                    <Label htmlFor="account_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                        Rekening Kas / Bank Kantor
+                                                    </Label>
+                                                    <div className="relative mt-1">
+                                                        <select
+                                                            id="account_id"
+                                                            name="account_id"
+                                                            className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                        >
+                                                            <option value="">-- Pilih Rekening Kas/Bank --</option>
+                                                            {accounts.map((a) => (
+                                                                <option key={a.id} value={a.id}>{a.name}</option>
+                                                            ))}
+                                                        </select>
+                                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-400" />
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <Label htmlFor="partner_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                        Ditalangi Partner (Opsional)
+                                                    </Label>
+                                                    <div className="mt-1">
+                                                        <UserPicker
+                                                            id="partner_id"
+                                                            value={expensePartnerId}
+                                                            onChange={setExpensePartnerId}
+                                                            users={staffUsers}
+                                                            placeholder="Pilih Partner yang Menalangi (Opsional)..."
+                                                            emptyOptionLabel="-- Bukan Talangan Partner --"
+                                                            allowClear
+                                                        />
+                                                        <input type="hidden" name="partner_id" value={expensePartnerId} />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <Label htmlFor="expense-proof" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                    Unggah Bukti Kuitansi / Nota
+                                                </Label>
+                                                <div className="mt-1">
+                                                    <FileInput
+                                                        id="expense-proof"
+                                                        name="proof"
+                                                        accept="application/pdf,image/png,image/jpeg,image/webp"
+                                                        buttonText="Unggah Berkas"
+                                                        placeholder="Pilih berkas kuitansi / nota..."
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="status" value="approved" />
                                 </>
                             )}
 
+                            {/* Payment Form (Catat Penerimaan Pembayaran) */}
                             {isPayment && (
                                 <>
-                                    <div className="grid gap-2.5 sm:grid-cols-2">
-                                        <Field
-                                            name="amount"
-                                            label="Nominal Pembayaran Bersih (IDR)"
-                                            type="number"
-                                            placeholder="0"
-                                            required
-                                        />
-                                        <Field
-                                            name="tax_withheld"
-                                            label="Potongan Pajak PPh 23 (2%)"
-                                            type="number"
-                                            placeholder="0"
-                                        />
-                                    </div>
-                                    <div className="grid gap-2.5 sm:grid-cols-2">
-                                        <Field
-                                            name="method"
-                                            label="Metode Pembayaran"
-                                            defaultValue="Transfer bank"
-                                            required
-                                        />
-                                        <div className="grid gap-1">
-                                            <Label htmlFor="pay_account_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                                Rekening Kas/Bank Penerima
-                                            </Label>
-                                            <div className="relative mt-0.5">
-                                                <select
-                                                    id="pay_account_id"
-                                                    name="account_id"
-                                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
-                                                >
-                                                    <option value="">Pilih Rekening Penerimaan</option>
-                                                    {accounts.map((a) => (
-                                                        <option key={a.id} value={a.id}>{a.name}</option>
-                                                    ))}
-                                                </select>
-                                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                                        <div className="mb-2.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                            Terkait Perkara &amp; Nominal Pembayaran
+                                        </div>
+                                        <div className="space-y-3">
+                                            <SelectField
+                                                name="matter_id"
+                                                label="Terkait Perkara (Matter)"
+                                                matters={matters}
+                                                required={false}
+                                                placeholder="-- Pilih Perkara (Opsional) --"
+                                            />
+
+                                            <div className="grid gap-3.5 sm:grid-cols-2">
+                                                <Field
+                                                    name="amount"
+                                                    label="Nominal Pembayaran Bersih (IDR) *"
+                                                    isMoney
+                                                    placeholder="0"
+                                                    required
+                                                />
+                                                <Field
+                                                    name="tax_withheld"
+                                                    label="Potongan Pajak PPh 23 (2%)"
+                                                    isMoney
+                                                    placeholder="0"
+                                                />
                                             </div>
                                         </div>
                                     </div>
-                                    <Field
-                                        name="received_at"
-                                        label="Tanggal & Waktu Diterima"
-                                        type="datetime-local"
-                                        required
-                                    />
-                                    <div className="grid gap-1">
-                                        <Label
-                                            htmlFor="payment-proof"
-                                            className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
-                                        >
-                                            Unggah Bukti Transfer
-                                        </Label>
-                                        <FileInput
-                                            id="payment-proof"
-                                            name="proof"
-                                            accept="application/pdf,image/png,image/jpeg,image/webp"
-                                            buttonText="Unggah Bukti"
-                                            placeholder="Pilih slip / screenshot transfer..."
-                                        />
+
+                                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                                        <div className="mb-2.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                            Rekening Penerimaan &amp; Waktu
+                                        </div>
+                                        <div className="space-y-3">
+                                            <div className="grid gap-3.5 sm:grid-cols-2">
+                                                <Field
+                                                    name="method"
+                                                    label="Metode Pembayaran *"
+                                                    defaultValue="Transfer bank"
+                                                    required
+                                                />
+                                                <div>
+                                                    <Label htmlFor="pay_account_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                        Rekening Kas / Bank Penerima <span className="text-red-500">*</span>
+                                                    </Label>
+                                                    <div className="relative mt-1">
+                                                        <select
+                                                            id="pay_account_id"
+                                                            name="account_id"
+                                                            required
+                                                            className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                        >
+                                                            <option value="" disabled>Pilih Rekening Penerimaan</option>
+                                                            {accounts.map((a) => (
+                                                                <option key={a.id} value={a.id}>{a.name}</option>
+                                                            ))}
+                                                        </select>
+                                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-400" />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <Field
+                                                name="received_at"
+                                                label="Tanggal &amp; Waktu Diterima *"
+                                                type="datetime-local"
+                                                required
+                                            />
+
+                                            <div>
+                                                <Label htmlFor="payment-proof" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                    Unggah Bukti Transfer / Slip Bank
+                                                </Label>
+                                                <div className="mt-1">
+                                                    <FileInput
+                                                        id="payment-proof"
+                                                        name="proof"
+                                                        accept="application/pdf,image/png,image/jpeg,image/webp"
+                                                        buttonText="Unggah Bukti"
+                                                        placeholder="Pilih slip / screenshot transfer..."
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     {/* Invoice Allocation Builder */}
                                     {(() => {
-                                        const eligibleInvoices =
-                                            invoices.filter(
-                                                (inv) =>
-                                                    [
-                                                        'sent',
-                                                        'overdue',
-                                                        'partially_paid',
-                                                    ].includes(inv.status) &&
-                                                    (inv.outstanding_amount ??
-                                                        0) > 0,
-                                            );
+                                        const eligibleInvoices = invoices.filter(
+                                            (inv) =>
+                                                ['sent', 'overdue', 'partially_paid'].includes(inv.status) &&
+                                                (inv.outstanding_amount ?? 0) > 0,
+                                        );
                                         const draftInvoices = invoices.filter(
                                             (inv) =>
-                                                [
-                                                    'draft',
-                                                    'pending_approval',
-                                                ].includes(inv.status) &&
-                                                (inv.outstanding_amount ?? 0) >
-                                                    0,
+                                                ['draft', 'pending_approval'].includes(inv.status) &&
+                                                (inv.outstanding_amount ?? 0) > 0,
                                         );
 
                                         return (
-                                            <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 dark:border-white/[0.04] dark:bg-[#121418]">
-                                                <Label className="text-xs font-semibold text-slate-900 dark:text-white">
-                                                    Alokasi ke Invoice
-                                                </Label>
+                                            <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
+                                                <div className="text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                                    Alokasi Pelunasan Invoice Tagihan
+                                                </div>
 
                                                 {eligibleInvoices.length > 0 ? (
                                                     <>
-                                                        <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                                            Alokasikan nominal
-                                                            pembayaran ke
-                                                            invoice resmi yang
-                                                            terkirim / overdue:
+                                                        <p className="mt-0.5 text-xs text-slate-500 dark:text-zinc-400">
+                                                            Alokasikan nominal pembayaran ke invoice resmi yang terkirim / overdue:
                                                         </p>
-                                                        <div className="space-y-1.5 pt-1">
-                                                            {eligibleInvoices.map(
-                                                                (
-                                                                    inv,
-                                                                    index,
-                                                                ) => (
-                                                                    <div
-                                                                        className="grid grid-cols-[1fr_7.5rem] items-center gap-2"
-                                                                        key={
-                                                                            inv.id
-                                                                        }
-                                                                    >
-                                                                        <div className="min-w-0">
-                                                                            <div className="flex items-center gap-1.5">
-                                                                                <p className="truncate font-mono text-xs font-semibold text-slate-900 dark:text-white">
-                                                                                    {
-                                                                                        inv.invoice_number
-                                                                                    }
-                                                                                </p>
-                                                                                <span className="rounded bg-blue-50 px-1 py-0.5 text-[9px] font-semibold text-blue-600 uppercase dark:bg-blue-950/40 dark:text-blue-400">
-                                                                                    {
-                                                                                        inv.status
-                                                                                    }
-                                                                                </span>
-                                                                            </div>
-                                                                            <p className="text-[10px] text-slate-500">
-                                                                                Sisa{' '}
-                                                                                {formatMoney(
-                                                                                    inv.outstanding_amount ??
-                                                                                        0,
-                                                                                    inv.currency,
-                                                                                )}
+                                                        <div className="mt-2.5 space-y-2">
+                                                            {eligibleInvoices.map((inv, index) => (
+                                                                <div
+                                                                    className="flex items-center justify-between gap-3 rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/[0.04] dark:bg-[#121418]"
+                                                                    key={inv.id}
+                                                                >
+                                                                    <div className="min-w-0">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <p className="truncate font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                                                {inv.invoice_number}
                                                                             </p>
+                                                                            <span className="rounded-md bg-blue-50 px-1.5 py-0.5 text-[9.5px] font-semibold text-blue-600 uppercase dark:bg-blue-950/40 dark:text-blue-400">
+                                                                                {inv.status}
+                                                                            </span>
                                                                         </div>
-                                                                        <input
-                                                                            type="hidden"
-                                                                            name={`allocations[${index}][invoice_id]`}
-                                                                            value={
-                                                                                inv.id
-                                                                            }
-                                                                        />
-                                                                        <Input
+                                                                        <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                                            Sisa Piutang: <strong className="font-mono text-slate-700 dark:text-zinc-300">{formatMoney(inv.outstanding_amount ?? 0, inv.currency)}</strong>
+                                                                        </p>
+                                                                    </div>
+                                                                    <input
+                                                                        type="hidden"
+                                                                        name={`allocations[${index}][invoice_id]`}
+                                                                        value={inv.id}
+                                                                    />
+                                                                    <div className="w-36">
+                                                                        <MoneyInput
                                                                             name={`allocations[${index}][amount]`}
-                                                                            type="number"
-                                                                            min="1"
-                                                                            placeholder="0"
-                                                                            className="h-7.5 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-zinc-800"
+                                                                            placeholder="Alokasi (IDR)"
+                                                                            className="h-8 rounded-lg border-slate-200 bg-slate-50/50 text-right font-mono text-xs dark:border-white/10 dark:bg-zinc-800"
                                                                         />
                                                                     </div>
-                                                                ),
-                                                            )}
+                                                                </div>
+                                                            ))}
                                                         </div>
                                                     </>
                                                 ) : (
-                                                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                        Tidak ada invoice aktif
-                                                        (Sent/Overdue) dengan
-                                                        sisa tagihan. Pembayaran
-                                                        ini akan dicatat sebagai{' '}
-                                                        <strong>
-                                                            uang muka / dana
-                                                            titipan (Unallocated
-                                                            Retainer)
-                                                        </strong>
-                                                        .
+                                                    <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">
+                                                        Tidak ada invoice aktif (Sent/Overdue) dengan sisa tagihan. Pembayaran ini akan dicatat sebagai <strong>dana titipan / uang muka (Unallocated Retainer)</strong>.
                                                     </p>
                                                 )}
 
                                                 {draftInvoices.length > 0 && (
-                                                    <div className="mt-2 rounded-md border border-amber-200/80 bg-amber-50/70 p-2 text-[10.5px] text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300">
-                                                        <span className="font-semibold">
-                                                            Perhatian:
-                                                        </span>{' '}
-                                                        Terdapat{' '}
-                                                        {draftInvoices.length}{' '}
-                                                        invoice berstatus{' '}
-                                                        <em>Draft</em>. Invoice
-                                                        Draft harus dikirim
-                                                        (Sent) terlebih dahulu
-                                                        sebelum dapat
-                                                        dialokasikan pembayaran.
+                                                    <div className="mt-2.5 rounded-lg border border-amber-200/80 bg-amber-50/70 p-2.5 text-xs text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300">
+                                                        <span className="font-semibold">Catatan:</span> Terdapat {draftInvoices.length} invoice berstatus <em>Draft</em>. Invoice Draft harus dikirim (Sent) terlebih dahulu sebelum dapat dialokasikan pembayaran.
                                                     </div>
                                                 )}
                                             </div>
@@ -2755,39 +3021,36 @@ function FinanceDialog({
                             )}
 
                             <input type="hidden" name="currency" value="IDR" />
-                            {!isPayment && (
-                                <input
-                                    type="hidden"
-                                    name="status"
-                                    value={isExpense ? 'approved' : 'draft'}
-                                />
+                            {!isPayment && !isExpense && (
+                                <input type="hidden" name="status" value="draft" />
                             )}
 
-                            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                            <DialogFooter className="border-t border-slate-100 pt-4 dark:border-white/[0.06]">
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    size="sm"
                                     onClick={onClose}
-                                    className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                    disabled={processing}
+                                    className="h-9 rounded-xl border-slate-200 px-4 text-xs font-medium hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
                                 >
                                     Batal
                                 </Button>
                                 <Button
-                                    size="sm"
+                                    type="submit"
                                     disabled={processing}
-                                    className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 disabled:opacity-50 dark:bg-white dark:text-slate-900"
+                                    className={`h-9 rounded-xl px-5 text-xs font-semibold text-white shadow-2xs active:scale-95 ${
+                                        type === 'invoice'
+                                            ? 'bg-blue-600 hover:bg-blue-700'
+                                            : type === 'quotation'
+                                              ? 'bg-amber-600 hover:bg-amber-700'
+                                              : type === 'expense'
+                                                ? 'bg-rose-600 hover:bg-rose-700'
+                                                : 'bg-emerald-600 hover:bg-emerald-700'
+                                    }`}
                                 >
-                                    {processing ? (
-                                        <>
-                                            <Spinner className="mr-1.5 size-3" />
-                                            Menyimpan...
-                                        </>
-                                    ) : (
-                                        'Simpan Data'
-                                    )}
+                                    {processing ? 'Menyimpan...' : 'Simpan Transaksi'}
                                 </Button>
-                            </div>
+                            </DialogFooter>
 
                             {Object.values(errors).map((e) => (
                                 <p
@@ -2812,13 +3075,15 @@ function Field({
     defaultValue,
     placeholder,
     required,
+    isMoney,
 }: {
     name: string;
     label: string;
     type?: string;
-    defaultValue?: string;
+    defaultValue?: string | number;
     placeholder?: string;
     required?: boolean;
+    isMoney?: boolean;
 }) {
     return (
         <div className="grid gap-1">
@@ -2828,15 +3093,26 @@ function Field({
             >
                 {label} {required && <span className="text-rose-500">*</span>}
             </Label>
-            <Input
-                id={name}
-                name={name}
-                type={type}
-                defaultValue={defaultValue}
-                placeholder={placeholder}
-                required={required}
-                className="h-8 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
-            />
+            {isMoney || type === 'money' ? (
+                <MoneyInput
+                    id={name}
+                    name={name}
+                    defaultValue={defaultValue}
+                    placeholder={placeholder}
+                    required={required}
+                    className="h-8.5 rounded-lg border-slate-200 bg-white font-mono text-xs text-slate-900 transition-colors focus:border-blue-600 dark:border-white/10 dark:bg-zinc-800 dark:text-white"
+                />
+            ) : (
+                <Input
+                    id={name}
+                    name={name}
+                    type={type}
+                    defaultValue={defaultValue}
+                    placeholder={placeholder}
+                    required={required}
+                    className="h-8.5 rounded-lg border-slate-200 bg-slate-50/70 text-xs text-slate-900 transition-colors focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                />
+            )}
         </div>
     );
 }
@@ -2866,12 +3142,12 @@ function SelectField({
             >
                 {label} {required && <span className="text-rose-500">*</span>}
             </Label>
-            <div className="relative mt-0.5">
+            <div className="relative mt-1">
                 <select
                     id={name}
                     name={name}
                     required={required}
-                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                    className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                 >
                     <option value="">{placeholder || `Pilih ${label.toLowerCase()}`}</option>
                     {data.map((item) => (
@@ -2882,7 +3158,7 @@ function SelectField({
                         </option>
                     ))}
                 </select>
-                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-400" />
             </div>
         </div>
     );

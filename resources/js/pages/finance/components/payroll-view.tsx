@@ -1,12 +1,33 @@
+import { useState } from 'react';
 import { router } from '@inertiajs/react';
-import { CheckCircle2, Download, FileText, Plus, Users, Wallet } from 'lucide-react';
+import { AlertTriangle, Download, Pencil, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { formatMoney } from '@/lib/format';
+import { EditPayrollDialog } from './edit-payroll-dialog';
 
 export type PayrollItem = {
     id: string;
     payslip_number: string;
-    user?: { id: number; name: string; position_title?: string; department?: string; employee_code?: string };
+    user?: {
+        id: number;
+        name: string;
+        email?: string;
+        avatar_path?: string | null;
+        position_title?: string;
+        department?: string;
+        employee_code?: string;
+        bank_name?: string;
+        bank_account_number?: string;
+        bank_account_holder?: string;
+    };
     period: string;
     basic_salary: number;
     fixed_allowance: number;
@@ -25,10 +46,15 @@ export type PayrollItem = {
 export function PayrollView({
     payrolls,
     onOpenPayrollModal,
+    accounts = [],
 }: {
     payrolls: PayrollItem[];
     onOpenPayrollModal: () => void;
+    accounts?: { id: string; name: string }[];
 }) {
+    const [selectedPayrollForEdit, setSelectedPayrollForEdit] = useState<PayrollItem | null>(null);
+    const [paidConfirmPayroll, setPaidConfirmPayroll] = useState<PayrollItem | null>(null);
+
     const totalNet = payrolls.reduce((acc, p) => acc + p.net_salary, 0);
     const totalBasic = payrolls.reduce((acc, p) => acc + p.basic_salary, 0);
     const totalAllowances = payrolls.reduce((acc, p) => acc + p.fixed_allowance + p.transport_meal_allowance + p.overtime_amount + p.bonus_amount, 0);
@@ -38,6 +64,14 @@ export function PayrollView({
         router.patch(`/finance/payrolls/${payrollId}/status`, { status }, {
             preserveScroll: true,
         });
+    };
+
+    const handleEditClick = (p: PayrollItem) => {
+        if (p.status === 'paid') {
+            setPaidConfirmPayroll(p);
+        } else {
+            setSelectedPayrollForEdit(p);
+        }
     };
 
     return (
@@ -131,7 +165,7 @@ export function PayrollView({
 
                                     return (
                                         <tr key={p.id} className="transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
-                                            <td className="px-3.5 py-2.5">
+                                             <td className="px-3.5 py-2.5">
                                                 <div className="font-bold text-slate-900 dark:text-white">{p.user?.name || 'Pegawai'}</div>
                                                 <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
                                                     <span className="font-mono text-blue-600 dark:text-blue-400">{p.period}</span>
@@ -161,6 +195,16 @@ export function PayrollView({
                                             </td>
                                             <td className="px-3 py-2.5 text-center">
                                                 <div className="flex items-center justify-center gap-1">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={() => handleEditClick(p)}
+                                                        className="h-6 rounded border-slate-200 bg-white px-1.5 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                    >
+                                                        <Pencil className="mr-0.5 size-2.5" />
+                                                        Edit
+                                                    </Button>
+
                                                     {p.status === 'draft' && (
                                                         <Button
                                                             size="sm"
@@ -199,6 +243,83 @@ export function PayrollView({
                     </div>
                 )}
             </div>
+
+            {/* Modal Konfirmasi Slip Gaji yang Sudah Dibayarkan */}
+            <Dialog open={!!paidConfirmPayroll} onOpenChange={(open) => !open && setPaidConfirmPayroll(null)}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <div className="flex items-center gap-2">
+                            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400">
+                                <AlertTriangle className="size-5" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-sm font-bold text-slate-900 uppercase dark:text-white">
+                                    Konfirmasi Edit Slip Gaji Lunas
+                                </DialogTitle>
+                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                    Peringatan status pembayaran &amp; penyesuaian keuangan.
+                                </DialogDescription>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    {paidConfirmPayroll && (
+                        <div className="space-y-3 py-2 text-xs">
+                            <div className="rounded-xl border border-amber-200/80 bg-amber-50/70 p-3 text-amber-900 dark:border-amber-500/20 dark:bg-amber-950/20 dark:text-amber-200">
+                                <p className="text-[11.5px] font-semibold leading-relaxed">
+                                    Slip gaji untuk <strong>{paidConfirmPayroll.user?.name}</strong> (Periode: <strong>{paidConfirmPayroll.period}</strong>) sudah berstatus <span className="font-bold underline decoration-amber-500">DIBAYARKAN (LUNAS)</span>.
+                                </p>
+                                <p className="mt-1.5 text-[10.5px] text-amber-800/90 dark:text-amber-300/80">
+                                    Apakah Anda yakin ingin tetap mengedit komponen gaji ini? Perubahan nominal take home pay atau rekening kas dapat mempengaruhi mutasi dan pembukuan keuangan.
+                                </p>
+                            </div>
+
+                            <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 font-mono text-[11px] text-slate-600 dark:border-white/10 dark:bg-white/[0.02] dark:text-zinc-400">
+                                <div className="flex justify-between">
+                                    <span>No. Slip:</span>
+                                    <span className="font-bold text-slate-900 dark:text-white">{paidConfirmPayroll.payslip_number}</span>
+                                </div>
+                                <div className="mt-1 flex justify-between">
+                                    <span>Take Home Pay:</span>
+                                    <span className="font-bold text-emerald-600 dark:text-emerald-400">{formatMoney(paidConfirmPayroll.net_salary, 'IDR')}</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <DialogFooter className="gap-3 sm:gap-3 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPaidConfirmPayroll(null)}
+                            className="h-9 px-4 rounded-xl border-slate-200 text-xs font-semibold hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                        >
+                            Batal
+                        </Button>
+                        <Button
+                            size="sm"
+                            onClick={() => {
+                                if (paidConfirmPayroll) {
+                                    setSelectedPayrollForEdit(paidConfirmPayroll);
+                                    setPaidConfirmPayroll(null);
+                                }
+                            }}
+                            className="h-9 px-4 rounded-xl bg-amber-600 text-xs font-semibold text-white shadow-2xs hover:bg-amber-500 active:scale-95 dark:bg-amber-600"
+                        >
+                            Ya, Tetap Edit
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Modal Form Edit Payroll */}
+            <EditPayrollDialog
+                open={!!selectedPayrollForEdit}
+                onOpenChange={(open) => !open && setSelectedPayrollForEdit(null)}
+                payroll={selectedPayrollForEdit}
+                accounts={accounts}
+            />
         </div>
     );
 }
+

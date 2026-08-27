@@ -9,6 +9,8 @@ use App\Actions\RecordPayment;
 use App\Actions\RefundPayment;
 use App\Actions\ReversePayment;
 use App\Actions\TransitionInvoice;
+use App\Actions\UpdateInvoice;
+use App\Actions\UpdateQuotation;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Matter;
@@ -275,4 +277,110 @@ it('places receivables in exact aging boundaries', function () {
     ]);
 
     Carbon::setTestNow();
+});
+
+it('updates invoice and recalculates totals and line items', function () {
+    $actor = rafUser();
+    $client = Client::factory()->recycle($actor)->create();
+    $matter = Matter::factory()->recycle($actor)->create(['client_id' => $client->getKey()]);
+    $numbers = app(GenerateDocumentNumber::class);
+
+    $invoice = app(CreateInvoice::class)->handle([
+        'client_id' => $client->getKey(),
+        'matter_id' => $matter->getKey(),
+        'title' => 'Initial Invoice Title',
+        'status' => 'draft',
+        'currency' => 'IDR',
+        'discount_amount' => 0,
+        'tax_rate' => 0,
+        'items' => [
+            ['description' => 'Original Item 1', 'quantity' => 1, 'unit_amount' => 1_000_000],
+        ],
+    ], $actor, $numbers);
+
+    expect($invoice->subtotal_amount)->toBe(1_000_000)
+        ->and($invoice->total_amount)->toBe(1_000_000)
+        ->and($invoice->lineItems)->toHaveCount(1);
+
+    $updated = app(UpdateInvoice::class)->handle($invoice, [
+        'client_id' => $client->getKey(),
+        'matter_id' => $matter->getKey(),
+        'title' => 'Updated Invoice Title',
+        'status' => 'sent',
+        'currency' => 'IDR',
+        'discount_amount' => 200_000,
+        'tax_rate' => 11,
+        'items' => [
+            ['description' => 'New Item A', 'quantity' => 2, 'unit_amount' => 1_500_000],
+            ['description' => 'New Item B', 'quantity' => 1, 'unit_amount' => 500_000],
+        ],
+    ], $actor);
+
+    // subtotal = 3,000,000 + 500,000 = 3,500,000
+    // taxable = 3,500,000 - 200,000 = 3,300,000
+    // tax = 3,300,000 * 11% = 363,000
+    // total = 3,300,000 + 363,000 = 3,663,000
+    expect($updated->title)->toBe('Updated Invoice Title')
+        ->and($updated->status)->toBe('sent')
+        ->and($updated->subtotal_amount)->toBe(3_500_000)
+        ->and($updated->discount_amount)->toBe(200_000)
+        ->and($updated->tax_amount)->toBe(363_000)
+        ->and($updated->total_amount)->toBe(3_663_000)
+        ->and($updated->outstanding_amount)->toBe(3_663_000)
+        ->and($updated->lineItems)->toHaveCount(2)
+        ->and($updated->lineItems->first()->description)->toBe('New Item A');
+});
+
+it('updates quotation and recalculates totals and line items', function () {
+    $actor = rafUser();
+    $client = Client::factory()->recycle($actor)->create();
+    $matter = Matter::factory()->recycle($actor)->create(['client_id' => $client->getKey()]);
+    $numbers = app(GenerateDocumentNumber::class);
+
+    $quotation = app(CreateQuotation::class)->handle([
+        'client_id' => $client->getKey(),
+        'matter_id' => $matter->getKey(),
+        'title' => 'Proposal Asli',
+        'scope' => 'Ruang lingkup awal',
+        'status' => 'draft',
+        'currency' => 'IDR',
+        'discount_amount' => 0,
+        'tax_rate' => 0,
+        'items' => [
+            ['description' => 'Konsultasi', 'quantity' => 1, 'unit_amount' => 5_000_000],
+        ],
+    ], $actor, $numbers);
+
+    expect($quotation->subtotal_amount)->toBe(5_000_000)
+        ->and($quotation->total_amount)->toBe(5_000_000)
+        ->and($quotation->lineItems)->toHaveCount(1);
+
+    $updated = app(UpdateQuotation::class)->handle($quotation, [
+        'client_id' => $client->getKey(),
+        'matter_id' => $matter->getKey(),
+        'title' => 'Proposal Revisi Pendampingan',
+        'scope' => 'Ruang lingkup diperluas hingga pengadilan tinggi',
+        'status' => 'pending_approval',
+        'currency' => 'IDR',
+        'discount_amount' => 500_000,
+        'tax_rate' => 11,
+        'items' => [
+            ['description' => 'Pendampingan Sidang', 'quantity' => 3, 'unit_amount' => 2_000_000],
+            ['description' => 'Penyusunan Eksepsi', 'quantity' => 1, 'unit_amount' => 1_500_000],
+        ],
+    ], $actor);
+
+    // subtotal = 6,000,000 + 1,500,000 = 7,500,000
+    // taxable = 7,500,000 - 500,000 = 7,000,000
+    // tax = 7,000,000 * 11% = 770,000
+    // total = 7,000,000 + 770,000 = 7,770,000
+    expect($updated->title)->toBe('Proposal Revisi Pendampingan')
+        ->and($updated->scope)->toBe('Ruang lingkup diperluas hingga pengadilan tinggi')
+        ->and($updated->status)->toBe('pending_approval')
+        ->and($updated->subtotal_amount)->toBe(7_500_000)
+        ->and($updated->discount_amount)->toBe(500_000)
+        ->and($updated->tax_amount)->toBe(770_000)
+        ->and($updated->total_amount)->toBe(7_770_000)
+        ->and($updated->lineItems)->toHaveCount(2)
+        ->and($updated->lineItems->first()->description)->toBe('Pendampingan Sidang');
 });

@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { FileInput } from '@/components/ui/file-input';
 import { Input } from '@/components/ui/input';
+import { MoneyInput } from '@/components/ui/money-input';
 import { Label } from '@/components/ui/label';
 
 export function CreateClientTrustDialog({
@@ -23,25 +24,23 @@ export function CreateClientTrustDialog({
     onOpenChange: (open: boolean) => void;
     clients: { id: string; display_name: string }[];
     matters: { id: string; matter_number: string; title: string }[];
-    trustAccounts: { id: string; name: string }[];
+    trustAccounts: { id: string; name: string; current_balance: number }[];
 }) {
     const form = useForm({
-        client_id: clients[0]?.id || '',
+        client_id: '',
         matter_id: '',
         account_id: trustAccounts[0]?.id || '',
         type: 'deposit_in',
         amount: 0,
-        transaction_date: new Date().toISOString().split('T')[0],
-        purpose: '',
-        recipient_party: '',
+        transaction_date: new Date().toISOString().slice(0, 10),
         notes: '',
         proof: null as File | null,
     });
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
-        form.post('/finance/client-trust-funds', {
-            forceFormData: true,
+        form.post('/finance/client-trust', {
+            preserveScroll: true,
             onSuccess: () => {
                 form.reset();
                 onOpenChange(false);
@@ -51,16 +50,16 @@ export function CreateClientTrustDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-md">
-                <DialogHeader>
-                    <div className="flex items-center gap-2">
-                        <div className="flex size-7 items-center justify-center rounded-lg bg-cyan-50 text-cyan-600 dark:bg-cyan-950/50 dark:text-cyan-400">
-                            <Lock className="size-4" />
-                        </div>
-                        <DialogTitle className="text-sm font-bold uppercase">Catat Mutasi Dana Titipan Klien</DialogTitle>
+            <DialogContent className="max-w-lg rounded-2xl bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-[#121418]">
+                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-400">
+                        <Lock className="size-4.5" />
+                        <DialogTitle className="text-sm font-bold">
+                            Catat Mutasi Dana Titipan Klien (Trust Fund)
+                        </DialogTitle>
                     </div>
                     <DialogDescription className="text-xs">
-                        Catat penerimaan panjar perkara dari klien atau pengeluaran resmi ke instansi pengadilan/pihak ketiga.
+                        Catat panjar biaya resmi, pengeluaran titipan pihak ketiga, atau escrow perkara.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -158,13 +157,11 @@ export function CreateClientTrustDialog({
                             <Label htmlFor="ctf_amount" className="font-semibold text-slate-700 dark:text-zinc-200">
                                 Nominal Dana (Rp) *
                             </Label>
-                            <Input
+                            <MoneyInput
                                 id="ctf_amount"
-                                type="number"
                                 required
-                                min="1"
                                 value={form.data.amount}
-                                onChange={(e) => form.setData('amount', parseInt(e.target.value) || 0)}
+                                onValueChange={(val) => form.setData('amount', val)}
                                 className="mt-1 h-8.5 text-xs font-mono font-bold"
                             />
                         </div>

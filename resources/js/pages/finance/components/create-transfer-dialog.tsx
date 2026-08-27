@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { FileInput } from '@/components/ui/file-input';
 import { Input } from '@/components/ui/input';
+import { MoneyInput } from '@/components/ui/money-input';
 import { Label } from '@/components/ui/label';
 
 export function CreateTransferDialog({
@@ -110,13 +111,11 @@ export function CreateTransferDialog({
                             <Label htmlFor="trf_amount" className="font-semibold text-slate-700 dark:text-zinc-200">
                                 Nominal Transfer (Rp) *
                             </Label>
-                            <Input
+                            <MoneyInput
                                 id="trf_amount"
-                                type="number"
                                 required
-                                min="1"
                                 value={form.data.amount}
-                                onChange={(e) => form.setData('amount', parseInt(e.target.value) || 0)}
+                                onValueChange={(val) => form.setData('amount', val)}
                                 className="mt-1 h-8.5 text-xs font-mono font-bold"
                             />
                         </div>

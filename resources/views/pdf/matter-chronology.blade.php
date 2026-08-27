@@ -72,7 +72,7 @@
                 <strong>RONI, PUTRA &amp; KUSUMAH LAW FIRM</strong><br>
                 Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi<br>
                 Kabupaten Bandung Barat, Jawa Barat<br>
-                Telp: 0852 9560 1417 &nbsp;·&nbsp; Email: contact@gmail.com
+                Telp: 0852 9560 1417 &nbsp;·&nbsp; Email: contact@rpklawoffice.com
             </td>
         </tr>
     </table>

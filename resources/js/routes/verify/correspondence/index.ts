@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:75
+* @see app/Http/Controllers/PublicVerificationController.php:80
 * @route '/verify/correspondence/{correspondence}/qr.svg'
 */
 export const qr = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ qr.definition = {
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:75
+* @see app/Http/Controllers/PublicVerificationController.php:80
 * @route '/verify/correspondence/{correspondence}/qr.svg'
 */
 qr.url = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ qr.url = (args: { correspondence: string | { id: string } } | [correspondence: s
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:75
+* @see app/Http/Controllers/PublicVerificationController.php:80
 * @route '/verify/correspondence/{correspondence}/qr.svg'
 */
 qr.get = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -59,7 +59,7 @@ qr.get = (args: { correspondence: string | { id: string } } | [correspondence: s
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:75
+* @see app/Http/Controllers/PublicVerificationController.php:80
 * @route '/verify/correspondence/{correspondence}/qr.svg'
 */
 qr.head = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -69,7 +69,7 @@ qr.head = (args: { correspondence: string | { id: string } } | [correspondence: 
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:75
+* @see app/Http/Controllers/PublicVerificationController.php:80
 * @route '/verify/correspondence/{correspondence}/qr.svg'
 */
 const qrForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -79,7 +79,7 @@ const qrForm = (args: { correspondence: string | { id: string } } | [corresponde
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:75
+* @see app/Http/Controllers/PublicVerificationController.php:80
 * @route '/verify/correspondence/{correspondence}/qr.svg'
 */
 qrForm.get = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -89,7 +89,7 @@ qrForm.get = (args: { correspondence: string | { id: string } } | [correspondenc
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:75
+* @see app/Http/Controllers/PublicVerificationController.php:80
 * @route '/verify/correspondence/{correspondence}/qr.svg'
 */
 qrForm.head = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

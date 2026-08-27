@@ -203,3 +203,26 @@ export const terbilang = (n: number): string => {
         return `${terbilang(Math.floor(n / 1000000000))} Miliar ${terbilang(n % 1000000000)}`.trim();
     return `${terbilang(Math.floor(n / 1000000000000))} Triliun ${terbilang(n % 1000000000000)}`.trim();
 };
+
+/**
+ * Format raw string or number into Indonesian thousand-separated string (e.g. 200000 -> "200.000")
+ */
+export const formatRupiahInput = (value?: number | string | null): string => {
+    if (value === null || value === undefined || value === '') return '';
+    const str = String(value).trim();
+    if (str === '0') return '0';
+    const digits = str.replace(/\D/g, '');
+    if (!digits) return '';
+    const cleanDigits = digits.replace(/^0+(?=\d)/, '');
+    return cleanDigits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+};
+
+/**
+ * Parse Indonesian thousand-separated string into integer (e.g. "200.000" -> 200000)
+ */
+export const parseRupiahInput = (value?: number | string | null): number => {
+    if (value === null || value === undefined || value === '') return 0;
+    const digits = String(value).replace(/\D/g, '');
+    return digits ? parseInt(digits, 10) : 0;
+};
+

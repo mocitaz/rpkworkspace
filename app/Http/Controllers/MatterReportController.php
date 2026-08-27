@@ -17,6 +17,9 @@ class MatterReportController extends Controller
         $matter->loadMissing([
             'client',
             'practiceArea',
+            'responsiblePartner',
+            'supervisingLawyer',
+            'parties',
             'members',
             'events' => fn ($q) => $q->orderBy('starts_at', 'desc'),
             'documents.versions',

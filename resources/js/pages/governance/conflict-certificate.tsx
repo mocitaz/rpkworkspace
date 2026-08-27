@@ -159,7 +159,7 @@ export default function ConflictCertificate({
                                 Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi, Kabupaten Bandung Barat, Jawa Barat
                             </p>
                             <p className="font-mono text-[10px] text-slate-600 dark:text-zinc-400">
-                                Telp: 0852 9560 1417 · Email: contact@gmail.com
+                                Telp: 0852 9560 1417 · Email: contact@rpklawoffice.com
                             </p>
                         </div>
                     </div>

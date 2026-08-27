@@ -9,7 +9,9 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { MoneyInput } from '@/components/ui/money-input';
 import { Label } from '@/components/ui/label';
+import UserPicker, { type UserOption } from '@/components/user-picker';
 
 export function CreateAccountDialog({
     open,
@@ -18,7 +20,7 @@ export function CreateAccountDialog({
 }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    partners: { id: number; name: string }[];
+    partners: UserOption[];
 }) {
     const form = useForm({
         name: '',
@@ -94,13 +96,11 @@ export function CreateAccountDialog({
                             <Label htmlFor="acc_balance" className="font-semibold text-slate-700 dark:text-zinc-200">
                                 Saldo Awal (Rp) *
                             </Label>
-                            <Input
+                            <MoneyInput
                                 id="acc_balance"
-                                type="number"
                                 required
-                                min="0"
                                 value={form.data.opening_balance}
-                                onChange={(e) => form.setData('opening_balance', parseInt(e.target.value) || 0)}
+                                onValueChange={(val) => form.setData('opening_balance', val)}
                                 className="mt-1 h-8.5 text-xs font-mono"
                             />
                         </div>
@@ -137,25 +137,19 @@ export function CreateAccountDialog({
 
                     {form.data.type === 'partner_advance' && (
                         <div>
-                            <Label htmlFor="partner_id" className="font-semibold text-slate-700 dark:text-zinc-200">
+                            <Label htmlFor="account_partner_id" className="font-semibold text-slate-700 dark:text-zinc-200">
                                 Partner Pemilik Akun *
                             </Label>
-                            <div className="relative mt-1">
-                                <select
-                                    id="partner_id"
-                                    required
+                            <div className="mt-1">
+                                <UserPicker
+                                    id="account_partner_id"
                                     value={form.data.partner_id}
-                                    onChange={(e) => form.setData('partner_id', e.target.value)}
-                                    className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
-                                >
-                                    <option value="">Pilih Partner</option>
-                                    {partners.map((p) => (
-                                        <option key={p.id} value={p.id}>
-                                            {p.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                    onChange={(val) => form.setData('partner_id', val)}
+                                    users={partners}
+                                    placeholder="Pilih Partner Pemilik..."
+                                    emptyOptionLabel="-- Pilih Partner Pemilik --"
+                                    allowClear
+                                />
                             </div>
                         </div>
                     )}

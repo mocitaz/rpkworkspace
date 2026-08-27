@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:36
+* @see app/Http/Controllers/PublicVerificationController.php:41
 * @route '/verify/invoice/{invoiceNumber}/qr.svg'
 */
 export const qr = (args: { invoiceNumber: string | number } | [invoiceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ qr.definition = {
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:36
+* @see app/Http/Controllers/PublicVerificationController.php:41
 * @route '/verify/invoice/{invoiceNumber}/qr.svg'
 */
 qr.url = (args: { invoiceNumber: string | number } | [invoiceNumber: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -43,7 +43,7 @@ qr.url = (args: { invoiceNumber: string | number } | [invoiceNumber: string | nu
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:36
+* @see app/Http/Controllers/PublicVerificationController.php:41
 * @route '/verify/invoice/{invoiceNumber}/qr.svg'
 */
 qr.get = (args: { invoiceNumber: string | number } | [invoiceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -53,7 +53,7 @@ qr.get = (args: { invoiceNumber: string | number } | [invoiceNumber: string | nu
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:36
+* @see app/Http/Controllers/PublicVerificationController.php:41
 * @route '/verify/invoice/{invoiceNumber}/qr.svg'
 */
 qr.head = (args: { invoiceNumber: string | number } | [invoiceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -63,7 +63,7 @@ qr.head = (args: { invoiceNumber: string | number } | [invoiceNumber: string | n
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:36
+* @see app/Http/Controllers/PublicVerificationController.php:41
 * @route '/verify/invoice/{invoiceNumber}/qr.svg'
 */
 const qrForm = (args: { invoiceNumber: string | number } | [invoiceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -73,7 +73,7 @@ const qrForm = (args: { invoiceNumber: string | number } | [invoiceNumber: strin
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:36
+* @see app/Http/Controllers/PublicVerificationController.php:41
 * @route '/verify/invoice/{invoiceNumber}/qr.svg'
 */
 qrForm.get = (args: { invoiceNumber: string | number } | [invoiceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -83,7 +83,7 @@ qrForm.get = (args: { invoiceNumber: string | number } | [invoiceNumber: string 
 
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:36
+* @see app/Http/Controllers/PublicVerificationController.php:41
 * @route '/verify/invoice/{invoiceNumber}/qr.svg'
 */
 qrForm.head = (args: { invoiceNumber: string | number } | [invoiceNumber: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

@@ -320,4 +320,4 @@ Modul Audit (`/audit`) menjamin seluruh akuntabilitas hukum dan rekam jejak digi
 
 *Buku Panduan Pengguna ini diterbitkan dan disahkan oleh:*  
 **MANAJEMEN FIRMA HUKUM RONI, PUTRA & KUSUMAH (RPK LAW FIRM)**  
-*Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi, Kabupaten Bandung Barat, Jawa Barat • Telp: 0852 9560 1417 • contact@gmail.com*
+*Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi, Kabupaten Bandung Barat, Jawa Barat • Telp: 0852 9560 1417 • contact@rpklawoffice.com*

@@ -74,14 +74,15 @@ export default function PasskeyItem({ passkey, onDelete }: Props) {
                         passkey? You will no longer be able to use it to sign
                         in.
                     </DialogDescription>
-                    <DialogFooter className="gap-2">
+                    <DialogFooter className="gap-3 sm:gap-3">
                         <DialogClose asChild>
-                            <Button variant="secondary">Cancel</Button>
+                            <Button variant="secondary" className="rounded-xl">Cancel</Button>
                         </DialogClose>
                         <Button
                             variant="destructive"
                             onClick={handleDelete}
                             disabled={isDeleting}
+                            className="rounded-xl shadow-2xs"
                         >
                             {isDeleting ? 'Removing...' : 'Remove passkey'}
                         </Button>
