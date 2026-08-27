@@ -220,6 +220,10 @@ export default function FinanceIndex({
             ? exp.description.replace(/\(EXP-[^)]+\)/, '').trim()
             : humanizeCategory(exp.category);
 
+        const matchedPartner = exp.partner
+            ? staffUsers?.find((u) => u.id === exp.partner?.id || (exp.partner?.name && u.name?.toLowerCase() === exp.partner.name.toLowerCase()))
+            : undefined;
+
         setDetailTarget({
             id: exp.id,
             entity: 'expenses',
@@ -234,7 +238,11 @@ export default function FinanceIndex({
             date: exp.incurred_at,
             matter: exp.matter,
             account: exp.account,
-            partner: exp.partner,
+            partner: exp.partner ? {
+                ...exp.partner,
+                avatar_path: (exp.partner as any).avatar_path || matchedPartner?.avatar_path,
+            } : undefined,
+            user: matchedPartner,
             vendor: (exp as any).vendor,
             description: exp.description,
             proof_document: exp.proof_document || exp.proofDocument,
@@ -310,6 +318,10 @@ export default function FinanceIndex({
     };
 
     const openDetailForPayroll = (p: PayrollItem) => {
+        const matchedStaff = p.user
+            ? staffUsers?.find((u) => u.id === p.user?.id || (p.user?.name && u.name?.toLowerCase() === p.user.name.toLowerCase()))
+            : undefined;
+
         setDetailTarget({
             id: p.id,
             entity: 'payrolls',
@@ -320,6 +332,10 @@ export default function FinanceIndex({
             amount: p.net_salary,
             currency: 'IDR',
             date: p.paid_at || p.period,
+            user: p.user ? {
+                ...p.user,
+                avatar_path: p.user.avatar_path || matchedStaff?.avatar_path,
+            } : matchedStaff,
             notes: p.notes,
             payroll_details: {
                 basic_salary: p.basic_salary,
@@ -336,6 +352,10 @@ export default function FinanceIndex({
     };
 
     const openDetailForPartnerTx = (tx: PartnerTransactionItem) => {
+        const matchedStaff = tx.partner
+            ? staffUsers?.find((u) => u.id === tx.partner?.id || (tx.partner?.name && u.name?.toLowerCase() === tx.partner.name.toLowerCase()))
+            : undefined;
+
         setDetailTarget({
             id: tx.id,
             entity: 'partner-transactions',
@@ -349,7 +369,11 @@ export default function FinanceIndex({
             date: tx.transaction_date,
             matter: tx.matter,
             account: tx.account,
-            partner: tx.partner,
+            partner: tx.partner ? {
+                ...tx.partner,
+                avatar_path: (tx.partner as any).avatar_path || matchedStaff?.avatar_path,
+            } : undefined,
+            user: matchedStaff,
             notes: tx.notes,
             proof_document: tx.proof_document || tx.proofDocument,
             rawItem: tx,

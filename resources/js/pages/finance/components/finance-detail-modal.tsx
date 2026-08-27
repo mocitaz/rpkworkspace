@@ -37,6 +37,7 @@ import {
 import { useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { StatusBadge } from '@/components/status-badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -66,9 +67,22 @@ export type FinanceDetailTarget = {
     date?: string;
     due_date?: string;
     matter?: { id: string; matter_number: string; title: string };
-    client?: { id?: string; display_name: string };
+    client?: { id?: string; display_name: string; avatar_path?: string | null };
     account?: { id: string; name: string };
-    partner?: { id: number; name: string };
+    partner?: { id: number; name: string; avatar_path?: string | null; avatar_url?: string | null };
+    user?: {
+        id?: number | string;
+        name: string;
+        email?: string;
+        avatar_path?: string | null;
+        avatar_url?: string | null;
+        position_title?: string;
+        department?: string;
+        employee_code?: string;
+        bank_name?: string;
+        bank_account_number?: string;
+        bank_account_holder?: string;
+    };
     vendor?: string;
     description?: string;
     notes?: string;
@@ -118,29 +132,57 @@ type Props = {
     onOpenProof?: (proofTarget: FinanceEntityProofTarget) => void;
 };
 
-export function humanizeCategory(cat?: string): string {
-    if (!cat) return 'Operasional Umum';
-    const dict: Record<string, string> = {
-        court_fee: 'Panjar Pengadilan (Court Fee)',
-        travel: 'Transportasi & Akomodasi',
-        office_supplies: 'Perlengkapan Kantor & ATK',
-        legal_research: 'Riset Hukum & Berkas Resmi',
-        expert_fee: 'Honorarium Saksi Ahli',
-        notary_fee: 'Notaris & Legalisasi',
-        meals: 'Konsumsi & Akomodasi',
-        licensing: 'Perizinan & Registrasi',
-        marketing: 'Pemasaran & Kemitraan',
-        utilities: 'Listrik, Air & Internet',
-        rent: 'Sewa Gedung / Kantor',
-        salary: 'Gaji & Upah Tenaga Kerja',
-        other: 'Biaya Operasional Lainnya',
-        advance_incurred: 'Talangan Partner (+)',
-        advance_reimbursed: 'Pengembalian Talangan (-)',
-        profit_distribution: 'Bagi Hasil / Dividen',
-        capital_injection: 'Setoran Modal (+)',
-        draw_prive: 'Penarikan Prive (-)',
-    };
-    return dict[cat] || cat.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+export const CATEGORY_LABELS: Record<string, string> = {
+    court_fee: 'Panjar Biaya Pengadilan (Court Fee)',
+    expert_witness: 'Honorarium Saksi Ahli',
+    travel: 'Transportasi & Perjalanan Dinas Perkara',
+    courier: 'Jasa Kurir & Pengiriman Dokumen',
+    printing: 'Pencetakan & Penggandaan Berkas Perkara',
+    notary_fee: 'Biaya Notaris / Legalisasi',
+    police_investigation: 'Biaya Pendampingan Kepolisian',
+    tax_consultant: 'Konsultan Pajak & Audit',
+    translator: 'Penerjemah Tersumpah (Sworn Translator)',
+    office_supplies: 'Perlengkapan Alat Tulis Kantor (ATK)',
+    utilities: 'Tagihan Utilitas (Listrik, Air & Internet)',
+    rent: 'Sewa Gedung / Ruang Kantor',
+    salary: 'Beban Gaji Karyawan',
+    marketing: 'Pemasaran & Hubungan Masyarakat',
+    software_subscription: 'Langganan Software & Lisensi Cloud',
+    meals_entertainment: 'Konsumsi & Jamuan Klien',
+    advance_incurred: 'Talangan Biaya oleh Partner (+)',
+    advance_reimbursed: 'Pengembalian Talangan Partner (-)',
+    profit_distribution: 'Bagi Hasil / Dividen Partner',
+    capital_injection: 'Setoran Modal Partner (+)',
+    draw_prive: 'Penarikan Dana Prive Partner (-)',
+    deposit_in: 'Penerimaan Dana Titipan Escrow (+)',
+    deposit_out: 'Penyaluran / Pengembalian Titipan (-)',
+    bank_transfer: 'Transfer Antar Rekening Bank',
+    other: 'Biaya Operasional Lainnya',
+};
+
+export function humanizeCategory(category?: string): string {
+    if (!category) return 'Transaksi Umum';
+    if (CATEGORY_LABELS[category]) return CATEGORY_LABELS[category];
+    return category
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+}
+
+function getAvatarUrl(avatarPath?: string | null): string {
+    if (!avatarPath || avatarPath.trim() === '') return '';
+    if (avatarPath.startsWith('http') || avatarPath.startsWith('/')) return avatarPath;
+    return `/storage/${avatarPath}`;
+}
+
+function getInitials(name?: string): string {
+    if (!name) return 'U';
+    return name
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((n) => n[0].toUpperCase())
+        .join('');
 }
 
 export function FinanceDetailModal({
@@ -149,77 +191,62 @@ export function FinanceDetailModal({
     onClose,
     onEdit,
     onDelete,
+    onOpenProof,
 }: Props) {
+    const fileInputRef = useRef<HTMLInputElement>(null);
     const [copied, setCopied] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [selectedFilePreview, setSelectedFilePreview] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isReplacingProof, setIsReplacingProof] = useState(false);
     const [showPreviewModal, setShowPreviewModal] = useState(false);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [selectedFilePreview, setSelectedFilePreview] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     if (!target) return null;
 
-    const proofDoc = target.proof_document || target.proofDocument;
-    const version = proofDoc?.current_version || proofDoc?.currentVersion;
-    const hasProof = Boolean(proofDoc && version);
-    const mimeType = version?.mime_type || '';
-    const isImage = mimeType.startsWith('image/');
-    const isPdf = mimeType === 'application/pdf' || mimeType.includes('pdf');
-    const previewUrl = hasProof && version
-        ? `/documents/${proofDoc!.id}/versions/${version.id}/preview`
-        : '';
-    const downloadUrl = hasProof && version
-        ? `/documents/${proofDoc!.id}/versions/${version.id}/download`
-        : '';
+    const proof = target.proof_document || target.proofDocument;
+    const version = proof?.current_version;
+    const hasProof = Boolean(proof && version?.file_path);
+    const isImage = Boolean(version?.mime_type?.startsWith('image/'));
+    const isPdf = Boolean(version?.mime_type?.includes('pdf') || version?.file_path?.endsWith('.pdf'));
+    const previewUrl = version?.file_path ? `/storage/${version.file_path}` : '';
+    const downloadUrl = (proof && target.id) ? `/finance/${target.entity}/${target.id}/proof/download` : previewUrl;
 
     const handleCopyRef = () => {
-        const textToCopy = target.reference_number || target.id;
-        navigator.clipboard.writeText(textToCopy);
+        if (!target.reference_number) return;
+        navigator.clipboard.writeText(target.reference_number);
         setCopied(true);
-        toast.success(`Nomor referensi ${textToCopy} disalin.`);
+        toast.success(`Nomor referensi ${target.reference_number} disalin ke clipboard`);
         setTimeout(() => setCopied(false), 2000);
     };
 
     const handleFileSelect = (file: File | null) => {
-        if (!file) {
-            setSelectedFile(null);
-            if (selectedFilePreview) {
-                URL.revokeObjectURL(selectedFilePreview);
-                setSelectedFilePreview(null);
-            }
-            return;
-        }
-        if (file.size > 20 * 1024 * 1024) {
-            toast.error('Ukuran berkas melebihi batas maksimal 20 MB.');
-            return;
-        }
         setSelectedFile(file);
-        if (file.type.startsWith('image/')) {
-            setSelectedFilePreview(URL.createObjectURL(file));
-        } else {
+        if (selectedFilePreview) {
+            URL.revokeObjectURL(selectedFilePreview);
             setSelectedFilePreview(null);
+        }
+        if (file && file.type.startsWith('image/')) {
+            setSelectedFilePreview(URL.createObjectURL(file));
         }
     };
 
-    const handleUploadProof = (e?: React.FormEvent) => {
-        if (e) e.preventDefault();
-        if (!selectedFile) {
-            toast.error('Silakan pilih berkas bukti terlebih dahulu.');
-            return;
-        }
+    const handleUploadProof = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedFile) return;
+
+        setIsUploading(true);
         const formData = new FormData();
         formData.append('proof', selectedFile);
 
-        setIsUploading(true);
         router.post(`/finance/${target.entity}/${target.id}/proof`, formData, {
+            forceFormData: true,
             preserveScroll: true,
             onSuccess: () => {
                 setIsUploading(false);
-                setIsReplacingProof(false);
                 setSelectedFile(null);
+                setIsReplacingProof(false);
                 if (selectedFilePreview) {
                     URL.revokeObjectURL(selectedFilePreview);
                     setSelectedFilePreview(null);
@@ -228,24 +255,26 @@ export function FinanceDetailModal({
             },
             onError: (errors) => {
                 setIsUploading(false);
-                const firstErr = Object.values(errors)[0] as string;
-                toast.error(firstErr || 'Gagal mengunggah berkas bukti.');
+                const errMsg = Object.values(errors)[0] as string || 'Gagal mengunggah berkas bukti.';
+                toast.error(errMsg);
             },
         });
     };
 
     const handleDeleteProof = () => {
-        if (!confirm('Apakah Anda yakin ingin menghapus lampiran berkas bukti ini?')) return;
+        if (!confirm('Apakah Anda yakin ingin menghapus berkas bukti transaksi ini?')) return;
+
         setIsDeleting(true);
         router.delete(`/finance/${target.entity}/${target.id}/proof`, {
             preserveScroll: true,
             onSuccess: () => {
                 setIsDeleting(false);
+                setIsReplacingProof(false);
                 toast.success('Berkas bukti transaksi berhasil dihapus.');
             },
             onError: () => {
                 setIsDeleting(false);
-                toast.error('Gagal menghapus berkas bukti.');
+                toast.error('Gagal menghapus berkas bukti transaksi.');
             },
         });
     };
@@ -255,63 +284,63 @@ export function FinanceDetailModal({
         icon: typeof Receipt;
         iconBg: string;
         natureLabel: string;
-        accentBorder: string;
+        chipBg: string;
     }> = {
         invoices: {
             badge: 'Invoice Tagihan',
             icon: ReceiptText,
             iconBg: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20',
             natureLabel: 'TOTAL TAGIHAN INVOICE',
-            accentBorder: 'border-blue-500/30',
+            chipBg: 'bg-blue-50 text-blue-700 border-blue-200/80 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/40',
         },
         quotations: {
             badge: 'Quotation Penawaran',
             icon: FilePlus2,
             iconBg: 'bg-slate-500/10 text-slate-700 dark:text-zinc-300 border border-slate-500/20',
             natureLabel: 'ESTIMASI NILAI PENAWARAN',
-            accentBorder: 'border-slate-500/30',
+            chipBg: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700',
         },
         expenses: {
             badge: target.matter ? 'Disbursement Perkara' : 'Beban Operasional',
             icon: WalletCards,
             iconBg: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20',
             natureLabel: 'PENGELUARAN KAS (DEBIT)',
-            accentBorder: 'border-rose-500/30',
+            chipBg: 'bg-rose-50 text-rose-700 border-rose-200/80 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/40',
         },
         payments: {
             badge: 'Penerimaan Kas',
             icon: Banknote,
             iconBg: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20',
             natureLabel: 'PENERIMAAN KAS (KREDIT)',
-            accentBorder: 'border-emerald-500/30',
+            chipBg: 'bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40',
         },
         payrolls: {
             badge: 'Slip Gaji Karyawan',
             icon: Receipt,
             iconBg: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20',
             natureLabel: 'TOTAL TAKE HOME PAY (THP)',
-            accentBorder: 'border-indigo-500/30',
+            chipBg: 'bg-indigo-50 text-indigo-700 border-indigo-200/80 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-800/40',
         },
         'partner-transactions': {
             badge: 'Mutasi Hak Partner',
             icon: HandCoins,
             iconBg: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
             natureLabel: 'NOMINAL TRANSAKSI PARTNER',
-            accentBorder: 'border-amber-500/30',
+            chipBg: 'bg-amber-50 text-amber-800 border-amber-200/80 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/40',
         },
         transfers: {
             badge: 'Transfer Antar Rekening',
             icon: ArrowLeftRight,
             iconBg: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20',
             natureLabel: 'PEMINDAHAN DANA BANK',
-            accentBorder: 'border-purple-500/30',
+            chipBg: 'bg-purple-50 text-purple-700 border-purple-200/80 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800/40',
         },
         'client-trust-funds': {
             badge: 'Titipan Escrow Klien',
             icon: Lock,
             iconBg: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20',
             natureLabel: 'MUTASI REKENING TITIPAN',
-            accentBorder: 'border-cyan-500/30',
+            chipBg: 'bg-cyan-50 text-cyan-700 border-cyan-200/80 dark:bg-cyan-950/40 dark:text-cyan-300 dark:border-cyan-800/40',
         },
     };
 
@@ -320,7 +349,7 @@ export function FinanceDetailModal({
         icon: Receipt,
         iconBg: 'bg-slate-500/10 text-slate-700 dark:text-zinc-300 border border-slate-500/20',
         natureLabel: 'NOMINAL TRANSAKSI',
-        accentBorder: 'border-slate-500/30',
+        chipBg: 'bg-slate-100 text-slate-700 border-slate-200',
     };
 
     const IconComp = cfg.icon;
@@ -340,6 +369,26 @@ export function FinanceDetailModal({
         tax_deduction_amount: target.rawItem.tax_deduction_amount ?? 0,
     });
 
+    // Determine if general specs exist so we never render an empty container
+    const hasGeneralSpecs = Boolean(
+        target.category ||
+        target.vendor ||
+        target.charge_to ||
+        (target.partner && target.entity !== 'partner-transactions') ||
+        target.method ||
+        (target.entity === 'invoices' && typeof target.outstanding_amount === 'number')
+    );
+
+    // Filter out redundant notes identical to the title or reference code
+    const rawNote = (target.notes || target.description || '').trim();
+    const isDuplicateNote = Boolean(
+        !rawNote ||
+        rawNote === target.title ||
+        rawNote === target.reference_number ||
+        rawNote === `${target.title} (${target.reference_number})` ||
+        (target.reference_number && rawNote === `(${target.reference_number})`)
+    );
+
     return (
         <Dialog
             open={isOpen}
@@ -357,12 +406,12 @@ export function FinanceDetailModal({
             }}
         >
             <DialogContent className="max-h-[92vh] flex flex-col p-0 gap-0 overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl sm:max-w-xl dark:border-white/10 dark:bg-[#12141a]">
-                {/* 1. Header: Executive, Clean & Structured */}
-                <div className="border-b border-slate-100 px-5 pt-4.5 pb-3.5 dark:border-white/[0.06] bg-slate-50/50 dark:bg-[#151821]/60">
+                {/* 1. Header: Clean, Crisp & High-Density */}
+                <div className="border-b border-slate-100 px-5 pt-4 pb-3.5 dark:border-white/[0.06] bg-slate-50/40 dark:bg-[#151821]/40">
                     <div className="flex items-start justify-between gap-3">
                         <div className="flex items-start gap-3 min-w-0 flex-1">
-                            <div className={`flex size-9.5 shrink-0 items-center justify-center rounded-xl ${cfg.iconBg} shadow-2xs`}>
-                                <IconComp className="size-5" />
+                            <div className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${cfg.iconBg} shadow-2xs`}>
+                                <IconComp className="size-4.5" />
                             </div>
                             <div className="min-w-0 flex-1">
                                 <div className="flex flex-wrap items-center gap-1.5 mb-1">
@@ -417,46 +466,43 @@ export function FinanceDetailModal({
                     </div>
                 </div>
 
-                {/* 2. Executive Monetary Card (Dark Fintech Voucher Strip) */}
+                {/* 2. Light & Crisp Executive Monetary Voucher Card (Pewarnaan Terang, Bersih & Elegan) */}
                 <div className="px-5 pt-3.5 pb-2">
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border border-slate-800/80 p-4 text-white shadow-md">
-                        {/* Background Watermark Pattern */}
-                        <div className="absolute -right-6 -bottom-6 opacity-5 pointer-events-none">
-                            <IconComp className="size-36 text-white" />
-                        </div>
-
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-50/90 via-white to-slate-50/70 border border-slate-200/90 p-4 text-slate-900 shadow-2xs dark:from-[#181a24] dark:via-[#14161f] dark:to-[#181a24] dark:border-white/10 dark:text-white">
                         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div>
-                                <span className="text-[9.5px] font-bold tracking-wider text-slate-400 uppercase">
-                                    {cfg.natureLabel}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[9.5px] font-bold tracking-wider text-slate-500 dark:text-zinc-400 uppercase">
+                                        {cfg.natureLabel}
+                                    </span>
+                                </div>
                                 <div className="mt-0.5 flex items-baseline gap-1.5">
-                                    <span className="font-mono text-xl sm:text-2xl font-black tracking-tight text-white">
+                                    <span className="font-mono text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
                                         {formatMoney(target.amount, target.currency || 'IDR')}
                                     </span>
                                 </div>
-                                <p className="mt-0.5 text-[10px] text-slate-400/90 italic line-clamp-1" title={terbilang(target.amount) + ' Rupiah'}>
+                                <p className="mt-0.5 text-[10.5px] text-slate-500 dark:text-zinc-400 italic line-clamp-1" title={terbilang(target.amount) + ' Rupiah'}>
                                     {target.amount > 0 ? `“${terbilang(target.amount)} Rupiah”` : 'Nol Rupiah'}
                                 </p>
                             </div>
 
-                            {/* Meta Tags Column */}
-                            <div className="flex flex-wrap sm:flex-col items-start sm:items-end gap-1.5 shrink-0 pt-2 sm:pt-0 border-t border-slate-800/80 sm:border-t-0">
+                            {/* Meta Tags Column (Crisp Light Badges) */}
+                            <div className="flex flex-wrap sm:flex-col items-start sm:items-end gap-1.5 shrink-0 pt-2 sm:pt-0 border-t border-slate-100 sm:border-t-0 dark:border-white/[0.06]">
                                 {target.date && (
-                                    <div className="inline-flex items-center gap-1.5 rounded-lg bg-white/[0.07] border border-white/[0.08] px-2 py-0.5 text-[10.5px] font-medium text-slate-300">
+                                    <div className="inline-flex items-center gap-1.5 rounded-lg bg-white dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/10 px-2.5 py-1 text-[11px] font-medium text-slate-700 dark:text-zinc-200 shadow-2xs">
                                         <Calendar className="size-3 text-slate-400" />
                                         <span>{formatDate(target.date)}</span>
                                     </div>
                                 )}
-                                {(target.account || target.partner) && (
-                                    <div className="inline-flex items-center gap-1.5 rounded-lg bg-white/[0.07] border border-white/[0.08] px-2 py-0.5 text-[10.5px] font-medium text-slate-300 truncate max-w-[200px]">
-                                        <Building2 className="size-3 text-blue-400 shrink-0" />
+                                {(target.account || (target.partner && target.entity !== 'partner-transactions')) && (
+                                    <div className="inline-flex items-center gap-1.5 rounded-lg bg-white dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/10 px-2.5 py-1 text-[11px] font-medium text-slate-700 dark:text-zinc-200 shadow-2xs truncate max-w-[200px]">
+                                        <Building2 className="size-3 text-blue-500 shrink-0" />
                                         <span className="truncate">{target.account?.name || (target.partner ? `Talangan ${target.partner.name}` : 'Kas Kantor')}</span>
                                     </div>
                                 )}
                                 {target.due_date && (
-                                    <div className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-[10.5px] font-medium text-amber-300">
-                                        <Clock className="size-3 text-amber-400" />
+                                    <div className="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 border border-amber-200/80 px-2.5 py-1 text-[11px] font-semibold text-amber-800 dark:bg-amber-950/40 dark:border-amber-900/40 dark:text-amber-300 shadow-2xs">
+                                        <Clock className="size-3 text-amber-600 dark:text-amber-400" />
                                         <span>Jatuh Tempo: {formatDate(target.due_date)}</span>
                                     </div>
                                 )}
@@ -465,90 +511,155 @@ export function FinanceDetailModal({
                     </div>
                 </div>
 
-                {/* 3. Specifications & Dynamic Sections */}
+                {/* 3. Specifications & Dynamic Sections (Scrollable) */}
                 <div className="px-5 py-2 overflow-y-auto flex-1 max-h-[46vh] space-y-3 text-xs [scrollbar-width:thin]">
-                    {/* Compact Specifications Grid */}
-                    <div className="rounded-xl border border-slate-200/90 bg-slate-50/40 p-2.5 dark:border-white/[0.06] dark:bg-[#161822]/40 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-                        {/* Kategori Pos */}
-                        {target.category && (
-                            <div className="flex flex-col gap-0.5">
-                                <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
-                                    Kategori Pembukuan
-                                </span>
-                                <div className="flex items-center gap-1 text-slate-800 dark:text-zinc-200 font-medium">
-                                    <Tag className="size-3 text-slate-400" />
-                                    <span>{displayCategory}</span>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Penerima / Vendor */}
-                        {target.vendor && (
-                            <div className="flex flex-col gap-0.5">
-                                <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
-                                    Pihak Penerima / Vendor
-                                </span>
-                                <span className="text-slate-900 dark:text-white font-semibold">
-                                    {target.vendor}
-                                </span>
-                            </div>
-                        )}
-
-                        {/* Beban Ditagihkan Ke */}
-                        {target.charge_to && (
-                            <div className="flex flex-col gap-0.5">
-                                <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
-                                    Alokasi Pembebanan
-                                </span>
-                                <span className="text-slate-800 dark:text-zinc-200 font-medium">
-                                    {target.charge_to === 'client' ? 'Tagihan Klien (Disbursement)' : 'Overhead Firma Kantor'}
-                                </span>
-                            </div>
-                        )}
-
-                        {/* Ditalangi Partner */}
-                        {target.partner && (
-                            <div className="flex flex-col gap-0.5">
-                                <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
-                                    Talangan Partner
-                                </span>
-                                <span className="text-amber-700 dark:text-amber-300 font-semibold flex items-center gap-1">
-                                    <User className="size-3 text-amber-500" />
-                                    {target.partner.name}
-                                </span>
-                            </div>
-                        )}
-
-                        {/* Metode Pembayaran */}
-                        {target.method && (
-                            <div className="flex flex-col gap-0.5">
-                                <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
-                                    Metode Transaksi
-                                </span>
-                                <span className="text-slate-800 dark:text-zinc-200 font-medium uppercase">
-                                    {target.method}
-                                </span>
-                            </div>
-                        )}
-
-                        {/* Status Piutang jika Invoice */}
-                        {target.entity === 'invoices' && typeof target.outstanding_amount === 'number' && (
-                            <div className="flex flex-col gap-0.5">
-                                <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
-                                    Sisa Piutang Tagihan
-                                </span>
-                                <span className="font-mono font-bold">
-                                    {target.outstanding_amount === 0 ? (
-                                        <span className="text-emerald-600 dark:text-emerald-400">Lunas Penuh (Rp 0)</span>
-                                    ) : (
-                                        <span className="text-amber-600 dark:text-amber-400">
-                                            {formatMoney(target.outstanding_amount, target.currency)}
+                    {/* User Profile Card for Payroll (Kalo ada penamaan user panggil photo profile) */}
+                    {target.user && target.entity === 'payrolls' && (
+                        <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50/80 border border-slate-200/80 dark:bg-white/[0.03] dark:border-white/10 shadow-2xs">
+                            <Avatar className="size-10 rounded-xl border border-slate-200 dark:border-white/10 shadow-2xs shrink-0">
+                                <AvatarImage src={getAvatarUrl(target.user.avatar_path || target.user.avatar_url)} alt={target.user.name} />
+                                <AvatarFallback className="rounded-xl bg-indigo-600 text-white font-bold text-xs">
+                                    {getInitials(target.user.name)}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                    <h4 className="font-bold text-slate-900 dark:text-white text-xs truncate">
+                                        {target.user.name}
+                                    </h4>
+                                    {target.user.employee_code && (
+                                        <span className="font-mono text-[9.5px] font-semibold px-1.5 py-0.2 rounded bg-slate-200/80 dark:bg-white/10 text-slate-700 dark:text-zinc-300">
+                                            {target.user.employee_code}
                                         </span>
                                     )}
-                                </span>
+                                </div>
+                                <p className="text-[11px] text-slate-500 dark:text-zinc-400 truncate mt-0.5">
+                                    {target.user.position_title || 'Staf Pegawai'} {target.user.department ? `• ${target.user.department}` : ''}
+                                </p>
                             </div>
-                        )}
-                    </div>
+                            {(target.user.bank_name || target.user.bank_account_number) && (
+                                <div className="text-right text-[10px] text-slate-500 dark:text-zinc-400 shrink-0 hidden sm:block">
+                                    <span className="font-semibold text-slate-700 dark:text-zinc-200">{target.user.bank_name || 'Rekening'}</span>
+                                    <span className="block font-mono">{target.user.bank_account_number}</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Partner Profile Card for Partner Transactions */}
+                    {target.partner && target.entity === 'partner-transactions' && (
+                        <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50/80 border border-slate-200/80 dark:bg-white/[0.03] dark:border-white/10 shadow-2xs">
+                            <Avatar className="size-10 rounded-full border border-slate-200 dark:border-white/10 shadow-2xs shrink-0">
+                                <AvatarImage src={getAvatarUrl(target.partner.avatar_path || (target.partner as any).avatar_url || target.user?.avatar_path)} alt={target.partner.name} />
+                                <AvatarFallback className="rounded-full bg-amber-600 text-white font-bold text-xs">
+                                    {getInitials(target.partner.name)}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                    <h4 className="font-bold text-slate-900 dark:text-white text-xs truncate">
+                                        {target.partner.name}
+                                    </h4>
+                                    <span className="text-[9.5px] font-bold text-amber-700 dark:text-amber-300 px-1.5 py-0.2 rounded bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-800/40">
+                                        Partner
+                                    </span>
+                                </div>
+                                <p className="text-[11px] text-slate-500 dark:text-zinc-400 truncate mt-0.5">
+                                    {displayCategory}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Compact Specifications Grid (Hanya dirender bila field tersedia, TIDAK AKAN PERNAH KOSONG) */}
+                    {hasGeneralSpecs && (
+                        <div className="rounded-xl border border-slate-200/90 bg-slate-50/40 p-2.5 dark:border-white/[0.06] dark:bg-[#161822]/40 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                            {/* Kategori Pos */}
+                            {target.category && target.entity !== 'partner-transactions' && (
+                                <div className="flex flex-col gap-0.5">
+                                    <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
+                                        Kategori Pembukuan
+                                    </span>
+                                    <div className="flex items-center gap-1 text-slate-800 dark:text-zinc-200 font-medium">
+                                        <Tag className="size-3 text-slate-400" />
+                                        <span>{displayCategory}</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Penerima / Vendor */}
+                            {target.vendor && (
+                                <div className="flex flex-col gap-0.5">
+                                    <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
+                                        Pihak Penerima / Vendor
+                                    </span>
+                                    <span className="text-slate-900 dark:text-white font-semibold">
+                                        {target.vendor}
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Beban Ditagihkan Ke */}
+                            {target.charge_to && (
+                                <div className="flex flex-col gap-0.5">
+                                    <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
+                                        Alokasi Pembebanan
+                                    </span>
+                                    <span className="text-slate-800 dark:text-zinc-200 font-medium">
+                                        {target.charge_to === 'client' ? 'Tagihan Klien (Disbursement)' : 'Overhead Firma Kantor'}
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Ditalangi Partner (dengan Photo Profile Avatar) */}
+                            {target.partner && target.entity !== 'partner-transactions' && (
+                                <div className="flex flex-col gap-0.5">
+                                    <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
+                                        Talangan Partner
+                                    </span>
+                                    <div className="flex items-center gap-1.5 text-slate-900 dark:text-white font-semibold">
+                                        <Avatar className="size-5 rounded-full border border-slate-200 shrink-0">
+                                            <AvatarImage src={getAvatarUrl(target.partner.avatar_path || (target.partner as any).avatar_url)} alt={target.partner.name} />
+                                            <AvatarFallback className="text-[8px] font-bold bg-amber-100 text-amber-800">
+                                                {getInitials(target.partner.name)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <span className="truncate">{target.partner.name}</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Metode Pembayaran */}
+                            {target.method && (
+                                <div className="flex flex-col gap-0.5">
+                                    <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
+                                        Metode Transaksi
+                                    </span>
+                                    <span className="text-slate-800 dark:text-zinc-200 font-medium uppercase">
+                                        {target.method}
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Status Piutang jika Invoice */}
+                            {target.entity === 'invoices' && typeof target.outstanding_amount === 'number' && (
+                                <div className="flex flex-col gap-0.5">
+                                    <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
+                                        Sisa Piutang Tagihan
+                                    </span>
+                                    <span className="font-mono font-bold">
+                                        {target.outstanding_amount === 0 ? (
+                                            <span className="text-emerald-600 dark:text-emerald-400">Lunas Penuh (Rp 0)</span>
+                                        ) : (
+                                            <span className="text-amber-600 dark:text-amber-400">
+                                                {formatMoney(target.outstanding_amount, target.currency)}
+                                            </span>
+                                        )}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {/* Line Items Table if Invoice or Quotation */}
                     {lineItems.length > 0 && (
@@ -677,20 +788,20 @@ export function FinanceDetailModal({
                         </div>
                     )}
 
-                    {/* Description / Notes Box */}
-                    {(target.description || target.notes) && (
-                        <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 dark:border-white/[0.06] dark:bg-[#161822]/40 space-y-1">
+                    {/* Description / Notes Box (Hanya dirender jika bukan duplikasi dari judul) */}
+                    {!isDuplicateNote && rawNote && (
+                        <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-2.5 dark:border-white/[0.06] dark:bg-[#161822]/40 space-y-0.5">
                             <span className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider">
-                                Uraian &amp; Catatan Khusus
+                                Catatan Khusus
                             </span>
                             <p className="text-xs leading-relaxed text-slate-700 dark:text-zinc-300 whitespace-pre-wrap">
-                                {target.description || target.notes}
+                                {rawNote}
                             </p>
                         </div>
                     )}
 
                     {/* 4. Streamlined Proof Document & Direct Upload Card */}
-                    <div className="rounded-xl border border-slate-200/90 p-3 space-y-2.5 dark:border-white/[0.06] bg-white dark:bg-[#14161f]/60 shadow-2xs">
+                    <div className="rounded-xl border border-slate-200/90 p-3 space-y-2 dark:border-white/[0.06] bg-white dark:bg-[#14161f]/60 shadow-2xs">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-zinc-200">
                                 <Paperclip className="size-3.5 text-blue-600 dark:text-blue-400" />
@@ -779,7 +890,7 @@ export function FinanceDetailModal({
                                 </div>
                             </div>
                         ) : (
-                            /* Direct Upload Dropzone */
+                            /* Direct Upload Dropzone (Compact) */
                             <form onSubmit={handleUploadProof} className="space-y-2">
                                 <div
                                     onDragOver={(e) => {
@@ -795,7 +906,7 @@ export function FinanceDetailModal({
                                         }
                                     }}
                                     onClick={() => fileInputRef.current?.click()}
-                                    className={`cursor-pointer rounded-xl border-2 border-dashed p-3 text-center transition-all ${
+                                    className={`cursor-pointer rounded-xl border-2 border-dashed p-2.5 text-center transition-all ${
                                         selectedFile
                                             ? 'border-emerald-400 bg-emerald-50/40 dark:bg-emerald-950/20'
                                             : isDragging
@@ -816,7 +927,7 @@ export function FinanceDetailModal({
                                     />
 
                                     <div className="flex items-center justify-center gap-2">
-                                        <UploadCloud className={`size-4.5 ${selectedFile ? 'text-emerald-600' : 'text-slate-400'}`} />
+                                        <UploadCloud className={`size-4 ${selectedFile ? 'text-emerald-600' : 'text-slate-400'}`} />
                                         <span className="text-xs font-semibold text-slate-800 dark:text-zinc-200">
                                             {selectedFile ? selectedFile.name : 'Pilih atau seret berkas bukti ke sini'}
                                         </span>
@@ -827,11 +938,11 @@ export function FinanceDetailModal({
                                 </div>
 
                                 {selectedFilePreview && (
-                                    <div className="relative rounded-lg border border-slate-200/90 dark:border-white/10 overflow-hidden bg-slate-900/5 p-1 flex items-center justify-center h-20">
+                                    <div className="relative rounded-lg border border-slate-200/90 dark:border-white/10 overflow-hidden bg-slate-900/5 p-1 flex items-center justify-center h-18">
                                         <img
                                             src={selectedFilePreview}
                                             alt="Pratinjau"
-                                            className="max-h-18 w-auto max-w-full object-contain rounded"
+                                            className="max-h-16 w-auto max-w-full object-contain rounded"
                                         />
                                         <button
                                             type="button"
@@ -846,40 +957,42 @@ export function FinanceDetailModal({
                                     </div>
                                 )}
 
-                                <div className="flex items-center justify-end gap-2 pt-0.5">
-                                    {(hasProof || isReplacingProof) && (
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => {
-                                                setIsReplacingProof(false);
-                                                handleFileSelect(null);
-                                            }}
-                                            className="h-7 text-xs font-semibold text-slate-500"
-                                        >
-                                            Batal
-                                        </Button>
-                                    )}
-                                    <Button
-                                        type="submit"
-                                        size="sm"
-                                        disabled={isUploading || !selectedFile}
-                                        className="h-7.5 px-3.5 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 rounded-lg shadow-2xs gap-1.5"
-                                    >
-                                        {isUploading ? (
-                                            <>
-                                                <Loader2 className="size-3.5 animate-spin" />
-                                                <span>Mengunggah...</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <UploadCloud className="size-3.5" />
-                                                <span>Unggah Berkas</span>
-                                            </>
+                                {selectedFile && (
+                                    <div className="flex items-center justify-end gap-2 pt-0.5">
+                                        {(hasProof || isReplacingProof) && (
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                    setIsReplacingProof(false);
+                                                    handleFileSelect(null);
+                                                }}
+                                                className="h-7 text-xs font-semibold text-slate-500"
+                                            >
+                                                Batal
+                                            </Button>
                                         )}
-                                    </Button>
-                                </div>
+                                        <Button
+                                            type="submit"
+                                            size="sm"
+                                            disabled={isUploading || !selectedFile}
+                                            className="h-7.5 px-3.5 text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 rounded-lg shadow-2xs gap-1.5"
+                                        >
+                                            {isUploading ? (
+                                                <>
+                                                    <Loader2 className="size-3.5 animate-spin" />
+                                                    <span>Mengunggah...</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <UploadCloud className="size-3.5" />
+                                                    <span>Unggah Berkas</span>
+                                                </>
+                                            )}
+                                        </Button>
+                                    </div>
+                                )}
                             </form>
                         )}
                     </div>
@@ -939,31 +1052,16 @@ export function FinanceDetailModal({
                             </Button>
                         )}
 
-                        {target.entity === 'payments' && (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-8 rounded-lg border-slate-200 text-xs font-semibold text-emerald-600 hover:bg-emerald-50 dark:border-white/10 dark:text-emerald-400 gap-1.5"
-                                asChild
-                            >
-                                <a
-                                    href={paymentRoutes.receipt.url(target.id)}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    <Receipt className="size-3.5" />
-                                    Kuitansi PDF
-                                </a>
-                            </Button>
-                        )}
-
                         {onEdit && (
                             <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                onClick={() => onEdit(target.rawItem || target)}
-                                className="h-8 rounded-lg border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/10 dark:text-zinc-300 gap-1.5 shadow-2xs"
+                                onClick={() => {
+                                    onClose();
+                                    onEdit(target.rawItem || target);
+                                }}
+                                className="h-8 rounded-lg border-slate-200 text-xs font-semibold text-slate-800 hover:bg-slate-100 dark:border-white/10 dark:text-zinc-200 gap-1.5"
                             >
                                 <Pencil className="size-3.5" />
                                 Edit Data
@@ -972,59 +1070,70 @@ export function FinanceDetailModal({
 
                         <Button
                             type="button"
-                            variant="default"
                             size="sm"
                             onClick={onClose}
-                            className="h-8 rounded-lg bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-100 text-xs font-bold px-4 shadow-2xs"
+                            className="h-8 rounded-lg bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200 text-xs font-semibold px-4"
                         >
                             Tutup
                         </Button>
                     </div>
                 </div>
+            </DialogContent>
 
-                {/* Sub-Dialog for Fullscreen Document Preview */}
-                {showPreviewModal && hasProof && (
-                    <Dialog open={showPreviewModal} onOpenChange={setShowPreviewModal}>
-                        <DialogContent className="max-h-[92vh] sm:max-w-3xl flex flex-col p-0 gap-0 rounded-2xl overflow-hidden bg-white dark:bg-[#14161b] border border-slate-200 dark:border-white/10 shadow-2xl">
-                            <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 dark:border-white/[0.06] bg-slate-50 dark:bg-[#161822]">
-                                <div className="flex items-center gap-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
-                                    <FileText className="size-4 text-blue-500" />
-                                    <span className="truncate">{version?.original_filename || 'Dokumen Bukti'}</span>
-                                </div>
-                                <div className="flex items-center gap-1.5">
-                                    <Button size="sm" variant="outline" className="h-7 text-xs font-semibold" asChild>
+            {/* Document Preview Sub-Modal */}
+            {hasProof && version && (
+                <Dialog open={showPreviewModal} onOpenChange={setShowPreviewModal}>
+                    <DialogContent className="max-w-4xl h-[85vh] flex flex-col p-0 overflow-hidden rounded-2xl bg-white dark:bg-[#12141a] border border-slate-200 dark:border-white/10">
+                        <DialogHeader className="px-5 py-3 border-b border-slate-100 dark:border-white/[0.06] flex flex-row items-center justify-between">
+                            <div className="min-w-0 flex-1">
+                                <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                                    {version.original_filename}
+                                </DialogTitle>
+                                <DialogDescription className="text-xs text-slate-500">
+                                    {formatBytes(version.file_size)} • Diunggah {formatDate(version.created_at)}
+                                </DialogDescription>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Button variant="outline" size="sm" asChild className="h-8 text-xs font-semibold">
+                                    <a href={downloadUrl} download>
+                                        <Download className="size-3.5 mr-1.5" />
+                                        Unduh Berkas
+                                    </a>
+                                </Button>
+                            </div>
+                        </DialogHeader>
+
+                        <div className="flex-1 bg-slate-100 dark:bg-black/40 overflow-auto flex items-center justify-center p-4">
+                            {isImage ? (
+                                <img
+                                    src={previewUrl}
+                                    alt={version.original_filename}
+                                    className="max-h-full max-w-full object-contain rounded-lg shadow-md"
+                                />
+                            ) : isPdf ? (
+                                <iframe
+                                    src={`${previewUrl}#toolbar=1`}
+                                    title={version.original_filename}
+                                    className="w-full h-full rounded-lg border border-slate-200 dark:border-white/10 bg-white"
+                                />
+                            ) : (
+                                <div className="text-center p-8">
+                                    <FileText className="size-16 text-slate-400 mx-auto mb-3" />
+                                    <p className="text-sm font-medium text-slate-700 dark:text-zinc-300">
+                                        Pratinjau langsung tidak didukung untuk tipe berkas ini.
+                                    </p>
+                                    <Button variant="outline" size="sm" asChild className="mt-4">
                                         <a href={downloadUrl} download>
-                                            <Download className="size-3 mr-1" />
-                                            Unduh
+                                            <Download className="size-4 mr-2" />
+                                            Unduh untuk Membuka
                                         </a>
                                     </Button>
-                                    <Button size="sm" variant="ghost" onClick={() => setShowPreviewModal(false)} className="size-7 p-0">
-                                        <X className="size-4" />
-                                    </Button>
                                 </div>
-                            </div>
-
-                            <div className="h-[65vh] flex items-center justify-center p-2 bg-slate-900/5 dark:bg-black/40">
-                                {isImage ? (
-                                    <img
-                                        src={previewUrl}
-                                        alt="Bukti Transaksi"
-                                        className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
-                                    />
-                                ) : isPdf ? (
-                                    <iframe
-                                        src={`${previewUrl}#toolbar=1`}
-                                        title="Bukti Transaksi"
-                                        className="w-full h-full rounded-lg border-0 bg-white"
-                                    />
-                                ) : (
-                                    <p className="text-xs text-slate-500">Pratinjau tidak tersedia untuk jenis berkas ini.</p>
-                                )}
-                            </div>
-                        </DialogContent>
-                    </Dialog>
-                )}
-            </DialogContent>
+                            )}
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            )}
         </Dialog>
     );
 }
