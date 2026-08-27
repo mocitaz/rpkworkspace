@@ -323,7 +323,8 @@ export default function UsersIndex({
                         <>
                             {/* Search & Filter Bar */}
                             <Form
-                                {...(userRoutes.index?.form ? userRoutes.index.form() : { action: '/admin/users', method: 'get' as const })}
+                                action={userRoutes.index.url()}
+                                method="get"
                                 className="space-y-2 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2 dark:border-white/[0.04] dark:bg-[#121418]"
                             >
                                 {/* Row 1: Search, Reset, Count */}

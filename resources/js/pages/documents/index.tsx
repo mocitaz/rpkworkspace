@@ -236,7 +236,8 @@ export default function DocumentsIndex({
 
                     {/* 3. Filter & Search Toolbar */}
                     <Form
-                        {...documentRoutes.index.form()}
+                        action={documentRoutes.index.url()}
+                        method="get"
                         className="space-y-2 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]"
                     >
                         {/* Row 1: Search, Reset, Count */}

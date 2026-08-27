@@ -577,7 +577,8 @@ export default function FinanceIndex({
                         <div className="space-y-3.5">
                             {/* Matter Selector Bar (Wajib Pilih) */}
                             <Form
-                                {...financeRoutes.index.form()}
+                                action={financeRoutes.index.url()}
+                                method="get"
                                 className="flex flex-col gap-2 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs sm:flex-row sm:items-center dark:border-white/[0.06] dark:bg-[#14161b]"
                             >
                                 <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">

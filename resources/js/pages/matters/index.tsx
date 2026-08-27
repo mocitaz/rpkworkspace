@@ -272,7 +272,8 @@ export default function MattersIndex({
                     <div className="space-y-2.5 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
                         {/* Row 1: Responsive Search Form + Practice Area + Action Group */}
                         <Form
-                            {...matterRoutes.index.form()}
+                            action={matterRoutes.index.url()}
+                            method="get"
                             className="flex flex-col gap-2 sm:flex-row sm:items-center"
                         >
                             <div className="relative flex-1">

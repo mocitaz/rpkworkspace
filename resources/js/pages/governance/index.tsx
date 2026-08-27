@@ -455,7 +455,8 @@ export default function GovernanceIndex({
 
                                     {/* Refined Filter Toolbar */}
                                     <Form
-                                        {...governanceRoutes.index.form()}
+                                        action={governanceRoutes.index.url()}
+                                        method="get"
                                         className="my-2.5 space-y-1.5 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2 dark:border-white/[0.04] dark:bg-[#121418]"
                                     >
                                         {/* Row 1: Search Input & Action Buttons */}
