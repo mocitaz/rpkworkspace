@@ -1,7 +1,6 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
 import {
     AlertCircle,
-    ArrowLeft,
     ArrowUpRight,
     Briefcase,
     Calendar,
@@ -12,27 +11,18 @@ import {
     ChevronDown,
     ChevronRight,
     Clock,
-    Columns2,
-    Copy,
-    DollarSign,
     ExternalLink,
-    Eye,
     FileText,
     Filter,
     FolderKanban,
     Grid,
-    Layers,
     LayoutList,
     ListTodo,
-    MessageSquare,
     Pencil,
-    Play,
     Plus,
     RotateCcw,
     Scale,
     Search,
-    ShieldCheck,
-    Sparkles,
     TrendingUp,
     Trash2,
     User,
@@ -139,120 +129,13 @@ export default function TasksIndex({
     const [editingTask, setEditingTask] = useState<Task | null>(null);
     const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
     const [isDeletingTask, setIsDeletingTask] = useState(false);
-    const [viewMode, setViewMode] = useState<'split' | 'table' | 'cards'>('split');
+    const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
     const [updatingTaskId, setUpdatingTaskId] = useState<string | null>(null);
-
-    // Split View dedicated state
-    const [splitSearch, setSplitSearch] = useState('');
-    const [splitTab, setSplitTab] = useState<'all' | 'overdue'>('all');
-    const [splitSelectedId, setSplitSelectedId] = useState<string | null>(
-        tasks.data[0]?.id ?? null,
-    );
-    const [splitMobileOpen, setSplitMobileOpen] = useState(false);
-    const [copiedTaskId, setCopiedTaskId] = useState<string | null>(null);
-    const [activeDetailTab, setActiveDetailTab] = useState<'details' | 'discussion'>('details');
-
-    const isTaskOverdue = (task: Task) =>
-        task.due_at &&
-        new Date(task.due_at) < new Date() &&
-        !['completed', 'cancelled'].includes(task.status);
-
-    const getDueCountdownBadge = (due_at?: string, status?: string) => {
-        if (!due_at) return null;
-        if (status === 'completed') {
-            return (
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
-                    <CheckCircle2 className="size-3 text-emerald-600" />
-                    Tuntas
-                </span>
-            );
-        }
-        const dueDate = new Date(due_at);
-        const now = new Date();
-        const d1 = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
-        const d2 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const diffDays = Math.round((d1.getTime() - d2.getTime()) / (1000 * 60 * 60 * 24));
-
-        if (diffDays < 0) {
-            return (
-                <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 ring-1 ring-rose-500/20 dark:bg-rose-950/60 dark:text-rose-300">
-                    <AlertCircle className="size-3 text-rose-600 dark:text-rose-400" />
-                    Lewat {Math.abs(diffDays)} Hari
-                </span>
-            );
-        }
-        if (diffDays === 0) {
-            return (
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-bold text-amber-800 ring-1 ring-amber-500/20 dark:bg-amber-950/60 dark:text-amber-300">
-                    <Clock className="size-3 text-amber-600 dark:text-amber-400" />
-                    Jatuh Tempo Hari Ini
-                </span>
-            );
-        }
-        if (diffDays === 1) {
-            return (
-                <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-[11px] font-bold text-blue-700 ring-1 ring-blue-500/20 dark:bg-blue-950/60 dark:text-blue-300">
-                    <Clock className="size-3 text-blue-600 dark:text-blue-400" />
-                    Besok
-                </span>
-            );
-        }
-        return (
-            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-medium text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
-                <Clock className="size-3 text-slate-400" />
-                Sisa {diffDays} Hari
-            </span>
-        );
-    };
-
-    const activeSplitTask = useMemo(() => {
-        if (!tasks.data.length) return null;
-        if (splitSelectedId) {
-            const found = tasks.data.find((t) => t.id === splitSelectedId);
-            if (found) return found;
-        }
-        return tasks.data[0] ?? null;
-    }, [tasks.data, splitSelectedId]);
-
-    const filteredSplitTasks = useMemo(() => {
-        return tasks.data.filter((task) => {
-            if (splitTab === 'overdue' && !isTaskOverdue(task)) {
-                return false;
-            }
-            if (splitSearch.trim() !== '') {
-                const q = splitSearch.toLowerCase();
-                const titleMatch = task.title?.toLowerCase().includes(q);
-                const matterMatch =
-                    task.matter?.title?.toLowerCase().includes(q) ||
-                    task.matter?.matter_number?.toLowerCase().includes(q);
-                const assigneeMatch = task.assignee?.name
-                    ?.toLowerCase()
-                    .includes(q);
-                if (!titleMatch && !matterMatch && !assigneeMatch) return false;
-            }
-            return true;
-        });
-    }, [tasks.data, splitTab, splitSearch]);
-
-    const handleCopyTask = (task: Task) => {
-        const text = `[${task.task_number || task.id}] ${task.title}\nPerkara: ${
-            task.matter
-                ? `${task.matter.matter_number} - ${task.matter.title}`
-                : 'Umum'
-        }\nStatus: ${task.status} | Prioritas: ${task.priority}\nAssignee: ${
-            task.assignee?.name || 'Unassigned'
-        }\nTenggat: ${task.due_at ? formatDate(task.due_at) : '-'}`;
-        navigator.clipboard.writeText(text);
-        setCopiedTaskId(task.id);
-        setTimeout(() => setCopiedTaskId(null), 2000);
-    };
 
     const changeStatus = (task: Task, status: string) => {
         setUpdatingTaskId(task.id);
         router.patch(
-            taskRoutes.update?.url
-                ? taskRoutes.update.url(task.id)
-                : `/tasks/${task.id}`,
+            taskRoutes.update?.url ? taskRoutes.update.url(task.id) : `/tasks/${task.id}`,
             {
                 title: task.title,
                 description: task.description ?? '',
@@ -280,6 +163,11 @@ export default function TasksIndex({
         { id: 'created', label: 'Dibuat Saya' },
         { id: 'overdue', label: 'Lewat Tenggat' },
     ];
+
+    const isTaskOverdue = (task: Task) =>
+        task.due_at &&
+        new Date(task.due_at) < new Date() &&
+        !['completed', 'cancelled'].includes(task.status);
 
     return (
         <>
@@ -546,46 +434,31 @@ export default function TasksIndex({
                                 )}
                             </div>
 
-                            {/* View Switcher: Split Pane (Default), Table & Cards */}
-                            <div className="flex items-center gap-0.5 rounded-lg border border-slate-200/70 bg-white p-0.5 dark:border-white/10 dark:bg-zinc-800">
-                                <button
-                                    type="button"
-                                    onClick={() => setViewMode('split')}
-                                    className={`flex h-7.5 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition-all ${
-                                        viewMode === 'split'
-                                            ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400'
-                                    }`}
-                                    title="Tampilan Split Master-Detail"
-                                >
-                                    <Columns2 className="size-3.5" />
-                                    <span>Split View</span>
-                                </button>
+                            {/* View Switcher Pills */}
+                            <div className="flex items-center gap-1 border-t border-slate-100 pt-2 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-2.5 dark:border-white/[0.04]">
                                 <button
                                     type="button"
                                     onClick={() => setViewMode('table')}
-                                    className={`flex h-7.5 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition-all ${
+                                    className={`flex size-7 items-center justify-center rounded-lg transition-all ${
                                         viewMode === 'table'
                                             ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                             : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400'
                                     }`}
-                                    title="Tampilan Tabel Data"
+                                    title="Tampilan Tabel"
                                 >
                                     <LayoutList className="size-3.5" />
-                                    <span>Tabel</span>
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setViewMode('cards')}
-                                    className={`flex h-7.5 items-center gap-1.5 rounded-md px-2.5 text-xs font-semibold transition-all ${
+                                    className={`flex size-7 items-center justify-center rounded-lg transition-all ${
                                         viewMode === 'cards'
                                             ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
                                             : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400'
                                     }`}
-                                    title="Tampilan Grid Kartu"
+                                    title="Tampilan Grid"
                                 >
                                     <Grid className="size-3.5" />
-                                    <span>Kartu</span>
                                 </button>
                             </div>
                         </div>
@@ -641,630 +514,6 @@ export default function TasksIndex({
                                     </div>
                                 }
                             />
-                        </div>
-                    ) : viewMode === 'split' ? (
-                        /* ========================================================================= */
-                        /* MASTER-DETAIL SPLIT PANE VIEW FOR TASKS                                   */
-                        /* ========================================================================= */
-                        <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xs dark:border-white/10 dark:bg-[#14161b]">
-                            <div className="flex flex-col lg:flex-row min-h-[640px] lg:h-[calc(100vh-270px)]">
-                                
-                                {/* LEFT MASTER LIST PANE */}
-                                <div
-                                    className={`w-full lg:w-[380px] xl:w-[420px] shrink-0 border-r border-slate-200/70 dark:border-white/[0.08] flex flex-col bg-slate-50/40 dark:bg-[#111317] ${
-                                        activeSplitTask && splitMobileOpen ? 'hidden lg:flex' : 'flex'
-                                    }`}
-                                >
-                                    {/* Left Pane Search & Quick Filter Pills */}
-                                    <div className="border-b border-slate-200/70 p-3 bg-white dark:border-white/[0.08] dark:bg-[#14161b] space-y-2">
-                                        <div className="relative">
-                                            <Search className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-slate-400" />
-                                            <Input
-                                                value={splitSearch}
-                                                onChange={(e) => setSplitSearch(e.target.value)}
-                                                placeholder="Cari tugas, perkara, atau assignee..."
-                                                className="h-8.5 w-full rounded-xl border-slate-200 bg-slate-50/60 pl-9 pr-8 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-zinc-800/80 dark:text-white"
-                                            />
-                                            {splitSearch && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setSplitSearch('')}
-                                                    className="absolute top-1/2 right-2.5 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                                                >
-                                                    <RotateCcw className="size-3" />
-                                                </button>
-                                            )}
-                                        </div>
-
-                                        {/* Filter Tabs */}
-                                        <div className="flex items-center gap-1">
-                                            <button
-                                                type="button"
-                                                onClick={() => setSplitTab('all')}
-                                                className={`flex-1 rounded-lg py-1 text-center text-[11px] font-semibold transition-all ${
-                                                    splitTab === 'all'
-                                                        ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-zinc-800'
-                                                }`}
-                                            >
-                                                Semua ({tasks.data.length})
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setSplitTab('overdue')}
-                                                className={`flex-1 flex items-center justify-center gap-1 rounded-lg py-1 text-center text-[11px] font-semibold transition-all ${
-                                                    splitTab === 'overdue'
-                                                        ? 'bg-rose-600 text-white shadow-2xs'
-                                                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-zinc-800'
-                                                }`}
-                                            >
-                                                <AlertCircle className="size-3 text-rose-500 group-hover:text-white" />
-                                                Mendesak ({tasks.data.filter((t) => isTaskOverdue(t)).length})
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* Left Pane Tasks List */}
-                                    <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-white/[0.04]">
-                                        {filteredSplitTasks.length === 0 ? (
-                                            <div className="p-8 text-center text-xs text-slate-400 dark:text-zinc-500">
-                                                {splitTab === 'overdue'
-                                                    ? 'Tidak ada tugas yang lewat tenggat.'
-                                                    : 'Tidak ada tugas yang sesuai filter.'}
-                                            </div>
-                                        ) : (
-                                            filteredSplitTasks.map((task) => {
-                                                const isSelected = activeSplitTask?.id === task.id;
-                                                const overdue = isTaskOverdue(task);
-
-                                                return (
-                                                    <div
-                                                        key={task.id}
-                                                        onClick={() => {
-                                                            setSplitSelectedId(task.id);
-                                                            setSplitMobileOpen(true);
-                                                        }}
-                                                        className={`group relative flex cursor-pointer flex-col gap-2 p-3 transition-all ${
-                                                            isSelected
-                                                                ? 'bg-blue-50/80 dark:bg-blue-950/40 border-l-4 border-blue-600 dark:border-blue-500 pl-2.5'
-                                                                : 'hover:bg-white dark:hover:bg-zinc-800/60'
-                                                        }`}
-                                                    >
-                                                        <div className="flex items-start justify-between gap-2">
-                                                            <h4
-                                                                className={`text-xs font-bold leading-snug line-clamp-2 ${
-                                                                    task.status === 'completed'
-                                                                        ? 'line-through opacity-60'
-                                                                        : isSelected
-                                                                        ? 'text-blue-900 dark:text-blue-200'
-                                                                        : 'text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400'
-                                                                }`}
-                                                            >
-                                                                {task.title}
-                                                            </h4>
-                                                            <StatusBadge value={task.priority} />
-                                                        </div>
-
-                                                        {task.matter ? (
-                                                            <p className="truncate font-mono text-[10px] font-semibold text-blue-600 dark:text-blue-400">
-                                                                {task.matter.matter_number} · {task.matter.title}
-                                                            </p>
-                                                        ) : (
-                                                            <p className="text-[10px] text-slate-400">Umum / Internal Kantor</p>
-                                                        )}
-
-                                                        <div className="flex items-center justify-between pt-1 text-[11px] border-t border-slate-100/70 dark:border-white/[0.04]">
-                                                            {/* Assignee */}
-                                                            <div className="flex items-center gap-1.5 min-w-0 pr-2">
-                                                                {task.assignee ? (
-                                                                    <>
-                                                                        <Avatar className="size-4.5 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
-                                                                            <AvatarImage src={task.assignee.avatar_url ?? undefined} />
-                                                                            <AvatarFallback className="text-[7px] font-bold">
-                                                                                {getInitials(task.assignee.name)}
-                                                                            </AvatarFallback>
-                                                                        </Avatar>
-                                                                        <span className="truncate text-[10px] font-medium text-slate-700 dark:text-zinc-300">
-                                                                            {task.assignee.name}
-                                                                        </span>
-                                                                    </>
-                                                                ) : (
-                                                                    <span className="text-[10px] text-slate-400">Unassigned</span>
-                                                                )}
-                                                            </div>
-
-                                                            {/* Status and Due Date */}
-                                                            <div className="flex items-center gap-1.5 shrink-0">
-                                                                <StatusBadge value={task.status} />
-                                                                {task.due_at && (
-                                                                    <span
-                                                                        className={`font-mono text-[10px] ${
-                                                                            overdue
-                                                                                ? 'font-bold text-rose-600 dark:text-rose-400'
-                                                                                : 'text-slate-400'
-                                                                        }`}
-                                                                    >
-                                                                        {formatDate(task.due_at)}
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })
-                                        )}
-                                    </div>
-
-                                    {/* Left Pane Pagination */}
-                                    <div className="border-t border-slate-200/70 p-2.5 bg-white dark:border-white/[0.08] dark:bg-[#14161b]">
-                                        <Pagination links={tasks.links} />
-                                    </div>
-                                </div>
-
-                                {/* RIGHT DETAILS PANE */}
-                                <div
-                                    className={`flex-1 flex flex-col bg-slate-50/30 dark:bg-[#14161b] overflow-y-auto ${
-                                        activeSplitTask && splitMobileOpen ? 'flex' : 'hidden lg:flex'
-                                    }`}
-                                >
-                                    {activeSplitTask ? (
-                                        <div className="flex flex-col h-full">
-                                            {/* 1. Header Toolbar Bar */}
-                                            <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200/80 bg-white/95 px-5 py-3 backdrop-blur-md dark:border-white/[0.08] dark:bg-[#14161b]/95">
-                                                <div className="flex items-center gap-2 min-w-0 pr-3">
-                                                    {/* Mobile Back Button */}
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setSplitMobileOpen(false)}
-                                                        className="lg:hidden flex size-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 dark:border-white/10 dark:text-zinc-300"
-                                                    >
-                                                        <ArrowLeft className="size-4" />
-                                                    </button>
-
-                                                    {/* Task ID Pill */}
-                                                    <div className="flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-50 px-2.5 py-1 text-xs font-mono font-bold text-slate-700 dark:border-white/10 dark:bg-zinc-800/80 dark:text-zinc-200">
-                                                        <span>#{activeSplitTask.task_number || activeSplitTask.id.slice(0, 8)}</span>
-                                                    </div>
-
-                                                    {/* Urgency / Due Countdown Badge */}
-                                                    {getDueCountdownBadge(activeSplitTask.due_at, activeSplitTask.status)}
-
-                                                    {/* Priority Badge */}
-                                                    <StatusBadge value={activeSplitTask.priority} />
-                                                </div>
-
-                                                {/* Top Right Action Icons */}
-                                                <div className="flex items-center gap-1.5 shrink-0">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleCopyTask(activeSplitTask)}
-                                                        className="flex h-8 items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-600 shadow-2xs hover:bg-slate-50 hover:text-slate-900 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300 dark:hover:bg-zinc-800 transition-all"
-                                                        title="Salin Rincian Tugas"
-                                                    >
-                                                        {copiedTaskId === activeSplitTask.id ? (
-                                                            <>
-                                                                <Check className="size-3.5 text-emerald-600" />
-                                                                <span className="text-emerald-600">Disalin!</span>
-                                                            </>
-                                                        ) : (
-                                                            <>
-                                                                <Copy className="size-3.5 text-slate-400" />
-                                                                <span className="hidden sm:inline">Salin</span>
-                                                            </>
-                                                        )}
-                                                    </button>
-
-                                                    {can.update && (
-                                                        <Button
-                                                            size="sm"
-                                                            variant="outline"
-                                                            asChild
-                                                            className="h-8 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
-                                                        >
-                                                            <Link href={taskRoutes.edit.url(activeSplitTask.id)}>
-                                                                <Pencil className="mr-1.5 size-3.5 text-slate-400" />
-                                                                Edit
-                                                            </Link>
-                                                        </Button>
-                                                    )}
-
-                                                    <Button
-                                                        size="sm"
-                                                        variant="outline"
-                                                        asChild
-                                                        className="h-8 rounded-lg border-blue-200/60 bg-blue-50/50 px-2.5 text-xs font-semibold text-blue-700 shadow-2xs hover:bg-blue-100/70 dark:border-blue-500/20 dark:bg-blue-950/40 dark:text-blue-300"
-                                                    >
-                                                        <Link href={taskRoutes.show?.url ? taskRoutes.show.url(activeSplitTask.id) : `/tasks/${activeSplitTask.id}`}>
-                                                            <ExternalLink className="mr-1.5 size-3.5" />
-                                                            Halaman Penuh
-                                                        </Link>
-                                                    </Button>
-
-                                                    {can.delete && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setTaskToDelete(activeSplitTask)}
-                                                            className="flex size-8 items-center justify-center rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30 dark:hover:text-rose-400 transition-all"
-                                                            title="Hapus Tugas"
-                                                        >
-                                                            <Trash2 className="size-3.5" />
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            {/* Scrollable Container */}
-                                            <div className="flex-1 p-5 sm:p-6 space-y-6 overflow-y-auto">
-                                                
-                                                {/* 2. Hero Title & Matter Banner */}
-                                                <div className="space-y-3">
-                                                    <h1 className={`text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-snug ${
-                                                        activeSplitTask.status === 'completed' ? 'line-through text-slate-400 dark:text-zinc-500' : ''
-                                                    }`}>
-                                                        {activeSplitTask.title}
-                                                    </h1>
-
-                                                    {/* Connected Matter Hero Card */}
-                                                    {activeSplitTask.matter ? (
-                                                        <div className="group relative overflow-hidden rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50/80 via-indigo-50/40 to-slate-50 p-3.5 transition-all hover:border-blue-300 dark:border-blue-900/40 dark:from-blue-950/30 dark:via-zinc-900/50 dark:to-zinc-900">
-                                                            <div className="flex items-center justify-between gap-3">
-                                                                <div className="flex items-center gap-3 min-w-0">
-                                                                    <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
-                                                                        <Briefcase className="size-4.5" />
-                                                                    </div>
-                                                                    <div className="min-w-0">
-                                                                        <div className="flex items-center gap-2">
-                                                                            <span className="font-mono text-xs font-bold text-blue-700 dark:text-blue-300">
-                                                                                {activeSplitTask.matter.matter_number}
-                                                                            </span>
-                                                                            <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500">
-                                                                                · Perkara Aktif
-                                                                            </span>
-                                                                        </div>
-                                                                        <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                                                                            {activeSplitTask.matter.title}
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-
-                                                                <Link
-                                                                    href={matterRoutes.show?.url ? matterRoutes.show.url(activeSplitTask.matter.id) : `/matters/${activeSplitTask.matter.id}`}
-                                                                    className="flex shrink-0 items-center gap-1 rounded-lg bg-white px-2.5 py-1.5 text-xs font-bold text-blue-600 shadow-2xs ring-1 ring-slate-200/70 hover:bg-blue-50 dark:bg-zinc-800 dark:text-blue-400 dark:ring-white/10"
-                                                                >
-                                                                    <span>Buka Perkara</span>
-                                                                    <ArrowUpRight className="size-3.5" />
-                                                                </Link>
-                                                            </div>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/70 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 dark:border-white/10 dark:bg-zinc-800/60 dark:text-zinc-400">
-                                                            <Sparkles className="size-3.5 text-slate-400" />
-                                                            <span>Tugas Internal / Kantor (Non-Perkara Klien)</span>
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                                {/* 3. Interactive Workflow Pipeline & Progress Meter */}
-                                                <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-2xs dark:border-white/10 dark:bg-[#16181d]">
-                                                    <div className="flex items-center justify-between pb-3">
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="flex size-6 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400">
-                                                                <TrendingUp className="size-3.5" />
-                                                            </div>
-                                                            <span className="text-xs font-bold text-slate-900 uppercase tracking-wider dark:text-white">
-                                                                Alur Pengerjaan Tugas
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center gap-1.5">
-                                                            <span className="text-[11px] font-semibold text-slate-400 dark:text-zinc-500">
-                                                                Kemajuan:
-                                                            </span>
-                                                            <span className="font-mono text-xs font-extrabold text-blue-600 dark:text-blue-400">
-                                                                {activeSplitTask.status === 'completed'
-                                                                    ? '100%'
-                                                                    : activeSplitTask.status === 'review'
-                                                                    ? '75%'
-                                                                    : activeSplitTask.status === 'in_progress'
-                                                                    ? '50%'
-                                                                    : '25%'}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Visual Progress Track */}
-                                                    <div className="relative mb-3 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-zinc-800">
-                                                        <div
-                                                            className={`h-full rounded-full transition-all duration-500 ${
-                                                                activeSplitTask.status === 'completed'
-                                                                    ? 'w-full bg-emerald-500'
-                                                                    : activeSplitTask.status === 'review'
-                                                                    ? 'w-3/4 bg-amber-500'
-                                                                    : activeSplitTask.status === 'in_progress'
-                                                                    ? 'w-1/2 bg-blue-600'
-                                                                    : 'w-1/4 bg-slate-600'
-                                                            }`}
-                                                        />
-                                                    </div>
-
-                                                    {/* Step Pods (Clickable) */}
-                                                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                                                        {[
-                                                            {
-                                                                key: 'pending',
-                                                                num: '1',
-                                                                label: 'To Do',
-                                                                sub: 'Antrean Kerja',
-                                                                icon: ListTodo,
-                                                                activeClass: 'bg-slate-900 text-white shadow-md ring-2 ring-slate-900/20 dark:bg-white dark:text-slate-900',
-                                                            },
-                                                            {
-                                                                key: 'in_progress',
-                                                                num: '2',
-                                                                label: 'Dikerjakan',
-                                                                sub: 'Proses Advokat',
-                                                                icon: Play,
-                                                                activeClass: 'bg-blue-600 text-white shadow-md ring-2 ring-blue-600/30',
-                                                            },
-                                                            {
-                                                                key: 'review',
-                                                                num: '3',
-                                                                label: 'Review',
-                                                                sub: 'Uji Partner',
-                                                                icon: Eye,
-                                                                activeClass: 'bg-amber-600 text-white shadow-md ring-2 ring-amber-600/30',
-                                                            },
-                                                            {
-                                                                key: 'completed',
-                                                                num: '4',
-                                                                label: 'Selesai',
-                                                                sub: 'Tuntas & Arsip',
-                                                                icon: CheckCircle2,
-                                                                activeClass: 'bg-emerald-600 text-white shadow-md ring-2 ring-emerald-600/30',
-                                                            },
-                                                        ].map((step) => {
-                                                            const isActive = activeSplitTask.status === step.key;
-                                                            const StepIcon = step.icon;
-
-                                                            return (
-                                                                <button
-                                                                    key={step.key}
-                                                                    type="button"
-                                                                    onClick={() => changeStatus(activeSplitTask, step.key)}
-                                                                    className={`group relative flex flex-col items-start rounded-xl p-2.5 text-left transition-all ${
-                                                                        isActive
-                                                                            ? step.activeClass
-                                                                            : 'border border-slate-200/70 bg-slate-50/60 hover:bg-slate-100 hover:border-slate-300 dark:border-white/[0.08] dark:bg-zinc-800/40 dark:hover:bg-zinc-800'
-                                                                    }`}
-                                                                >
-                                                                    <div className="flex w-full items-center justify-between">
-                                                                        <div
-                                                                            className={`flex size-5 items-center justify-center rounded-md text-[10px] font-bold ${
-                                                                                isActive
-                                                                                    ? 'bg-white/20 text-current'
-                                                                                    : 'bg-slate-200/80 text-slate-700 dark:bg-white/10 dark:text-zinc-300'
-                                                                            }`}
-                                                                        >
-                                                                            {step.num}
-                                                                        </div>
-                                                                        <StepIcon className={`size-3.5 ${isActive ? 'text-current' : 'text-slate-400 group-hover:text-slate-600'}`} />
-                                                                    </div>
-                                                                    <p className={`mt-1.5 text-xs font-bold ${isActive ? 'text-current' : 'text-slate-900 dark:text-white'}`}>
-                                                                        {step.label}
-                                                                    </p>
-                                                                    <p className={`text-[10px] ${isActive ? 'opacity-80' : 'text-slate-500 dark:text-zinc-400'}`}>
-                                                                        {step.sub}
-                                                                    </p>
-                                                                </button>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                </div>
-
-                                                {/* 4. Bento Grid of Core Task Properties */}
-                                                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                                                    
-                                                    {/* Card 1: Assignee */}
-                                                    <div className="rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs dark:border-white/10 dark:bg-[#16181d]">
-                                                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider dark:text-zinc-500">
-                                                            <User className="size-3 text-blue-600" />
-                                                            <span>Advokat Pelaksana</span>
-                                                        </div>
-                                                        <div className="mt-2 flex items-center gap-2.5">
-                                                            <Avatar className="size-8 shrink-0 rounded-full border border-blue-200 ring-2 ring-blue-50 dark:border-blue-900/50 dark:ring-blue-950/50">
-                                                                <AvatarImage src={activeSplitTask.assignee?.avatar_url ?? undefined} />
-                                                                <AvatarFallback className="bg-blue-100 text-xs font-bold text-blue-700">
-                                                                    {getInitials(activeSplitTask.assignee?.name || 'Unassigned')}
-                                                                </AvatarFallback>
-                                                            </Avatar>
-                                                            <div className="min-w-0">
-                                                                <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                                                                    {activeSplitTask.assignee?.name || 'Belum Ditugaskan'}
-                                                                </p>
-                                                                <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
-                                                                    {activeSplitTask.assignee?.position_title || 'Associate'}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Card 2: Reviewer */}
-                                                    <div className="rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs dark:border-white/10 dark:bg-[#16181d]">
-                                                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider dark:text-zinc-500">
-                                                            <Users className="size-3 text-amber-600" />
-                                                            <span>Partner Peninjau</span>
-                                                        </div>
-                                                        <div className="mt-2 flex items-center gap-2.5">
-                                                            <Avatar className="size-8 shrink-0 rounded-full border border-amber-200 ring-2 ring-amber-50 dark:border-amber-900/50 dark:ring-amber-950/50">
-                                                                <AvatarImage src={activeSplitTask.reviewer?.avatar_url ?? undefined} />
-                                                                <AvatarFallback className="bg-amber-100 text-xs font-bold text-amber-800">
-                                                                    {getInitials(activeSplitTask.reviewer?.name || 'None')}
-                                                                </AvatarFallback>
-                                                            </Avatar>
-                                                            <div className="min-w-0">
-                                                                <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                                                                    {activeSplitTask.reviewer?.name || 'Tanpa Reviewer'}
-                                                                </p>
-                                                                <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
-                                                                    {activeSplitTask.reviewer?.position_title || 'Partner in Charge'}
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Card 3: Due Date */}
-                                                    <div className="rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs dark:border-white/10 dark:bg-[#16181d]">
-                                                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider dark:text-zinc-500">
-                                                            <Calendar className="size-3 text-indigo-600" />
-                                                            <span>Tenggat Waktu</span>
-                                                        </div>
-                                                        <div className="mt-2">
-                                                            <p className="font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                                {activeSplitTask.due_at ? formatDate(activeSplitTask.due_at) : 'Tidak ditentukan'}
-                                                            </p>
-                                                            <p className="pt-0.5 text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
-                                                                {activeSplitTask.due_at && isTaskOverdue(activeSplitTask)
-                                                                    ? '⚠️ Melewati batas waktu'
-                                                                    : 'Target penyelesaian'}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Card 4: Priority & Category */}
-                                                    <div className="rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs dark:border-white/10 dark:bg-[#16181d]">
-                                                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider dark:text-zinc-500">
-                                                            <Layers className="size-3 text-emerald-600" />
-                                                            <span>Tingkat Prioritas</span>
-                                                        </div>
-                                                        <div className="mt-2 flex items-center justify-between">
-                                                            <StatusBadge value={activeSplitTask.priority} />
-                                                            <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                                                                Billable
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* 5. Tabbed Details Section */}
-                                                <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-2xs dark:border-white/10 dark:bg-[#16181d]">
-                                                    {/* Tab Headers */}
-                                                    <div className="flex items-center border-b border-slate-200/80 bg-slate-50/60 px-4 pt-2 dark:border-white/10 dark:bg-zinc-900/60">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setActiveDetailTab('details')}
-                                                            className={`relative flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-bold transition-all ${
-                                                                activeDetailTab === 'details'
-                                                                    ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
-                                                                    : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white'
-                                                            }`}
-                                                        >
-                                                            <FileText className="size-3.5" />
-                                                            <span>Instruksi &amp; Checklist</span>
-                                                            {activeSplitTask.checklists && activeSplitTask.checklists.length > 0 && (
-                                                                <span className="rounded-full bg-blue-100 px-1.5 py-0.2 text-[10px] font-bold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                                                                    {activeSplitTask.checklists.length}
-                                                                </span>
-                                                            )}
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setActiveDetailTab('discussion')}
-                                                            className={`relative flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-bold transition-all ${
-                                                                activeDetailTab === 'discussion'
-                                                                    ? 'border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400'
-                                                                    : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white'
-                                                            }`}
-                                                        >
-                                                            <MessageSquare className="size-3.5" />
-                                                            <span>Diskusi Tim &amp; Catatan</span>
-                                                            {activeSplitTask.comments && activeSplitTask.comments.length > 0 && (
-                                                                <span className="rounded-full bg-slate-200 px-1.5 py-0.2 text-[10px] font-bold text-slate-700 dark:bg-zinc-700 dark:text-zinc-200">
-                                                                    {activeSplitTask.comments.length}
-                                                                </span>
-                                                            )}
-                                                        </button>
-                                                    </div>
-
-                                                    {/* Tab Body */}
-                                                    <div className="p-5">
-                                                        {activeDetailTab === 'details' ? (
-                                                            <div className="space-y-6">
-                                                                {/* Deskripsi & Instruksi Kerja */}
-                                                                <div className="space-y-2">
-                                                                    <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-white">
-                                                                        <FileText className="size-3.5 text-blue-600" />
-                                                                        <span>Instruksi Kerja &amp; Catatan Khusus:</span>
-                                                                    </div>
-                                                                    <div className="rounded-xl border border-slate-200/70 bg-slate-50/70 p-4 text-xs leading-relaxed text-slate-800 whitespace-pre-wrap dark:border-white/[0.06] dark:bg-[#121418] dark:text-zinc-200">
-                                                                        {activeSplitTask.description || 'Tidak ada deskripsi detail tambahan untuk tugas ini.'}
-                                                                    </div>
-                                                                </div>
-
-                                                                {/* Checklist Sub-Tugas (Interactive) */}
-                                                                {activeSplitTask.checklists && activeSplitTask.checklists.length > 0 && (
-                                                                    <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-white/[0.06]">
-                                                                        <div className="flex items-center justify-between">
-                                                                            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-white">
-                                                                                <CheckSquare className="size-3.5 text-emerald-600" />
-                                                                                <span>Deliverable &amp; Checklist Sub-Tugas</span>
-                                                                            </div>
-                                                                            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-mono font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                                                                {activeSplitTask.checklists.filter((c) => c.is_completed).length} / {activeSplitTask.checklists.length} Selesai
-                                                                            </span>
-                                                                        </div>
-
-                                                                        <div className="space-y-2">
-                                                                            {activeSplitTask.checklists.map((chk) => (
-                                                                                <label
-                                                                                    key={chk.id}
-                                                                                    className="flex cursor-pointer items-center gap-3 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 text-xs transition-all hover:bg-slate-100/70 dark:border-white/[0.06] dark:bg-[#121418] dark:hover:bg-zinc-800"
-                                                                                >
-                                                                                    <input
-                                                                                        type="checkbox"
-                                                                                        checked={chk.is_completed}
-                                                                                        readOnly
-                                                                                        className="size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-zinc-600"
-                                                                                    />
-                                                                                    <span
-                                                                                        className={
-                                                                                            chk.is_completed
-                                                                                                ? 'line-through text-slate-400 dark:text-zinc-500'
-                                                                                                : 'font-medium text-slate-800 dark:text-zinc-200'
-                                                                                        }
-                                                                                    >
-                                                                                        {chk.title}
-                                                                                    </span>
-                                                                                </label>
-                                                                            ))}
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        ) : (
-                                                            /* Tab Diskusi Tim */
-                                                            <div>
-                                                                <DiscussionBox
-                                                                    commentableType="task"
-                                                                    commentableId={activeSplitTask.id}
-                                                                    comments={activeSplitTask.comments || []}
-                                                                />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="flex flex-1 items-center justify-center p-8 text-center">
-                                            <EmptyState
-                                                icon={ListTodo}
-                                                title="Pilih Tugas"
-                                                description="Pilih salah satu instruksi kerja dari daftar di sebelah kiri untuk melihat rincian alur tugas."
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
                         </div>
                     ) : viewMode === 'table' ? (
                         /* Precision Data Table View */
