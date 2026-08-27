@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:438
+* @see app/Http/Controllers/FinanceController.php:440
 * @route '/finance/partner-transactions'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:438
+* @see app/Http/Controllers/FinanceController.php:440
 * @route '/finance/partner-transactions'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:438
+* @see app/Http/Controllers/FinanceController.php:440
 * @route '/finance/partner-transactions'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:438
+* @see app/Http/Controllers/FinanceController.php:440
 * @route '/finance/partner-transactions'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:438
+* @see app/Http/Controllers/FinanceController.php:440
 * @route '/finance/partner-transactions'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -57,7 +57,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:501
+* @see app/Http/Controllers/FinanceController.php:503
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 export const update = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -72,7 +72,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:501
+* @see app/Http/Controllers/FinanceController.php:503
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 update.url = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -105,7 +105,7 @@ update.url = (args: { partnerTransaction: string | { id: string } } | [partnerTr
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:501
+* @see app/Http/Controllers/FinanceController.php:503
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 update.put = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -115,7 +115,7 @@ update.put = (args: { partnerTransaction: string | { id: string } } | [partnerTr
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:501
+* @see app/Http/Controllers/FinanceController.php:503
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 const updateForm = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -130,7 +130,7 @@ const updateForm = (args: { partnerTransaction: string | { id: string } } | [par
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:501
+* @see app/Http/Controllers/FinanceController.php:503
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 updateForm.put = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

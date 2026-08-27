@@ -320,7 +320,7 @@
                         <input type="hidden" name="page_number" id="inputPageNumber" value="1">
                         <input type="hidden" name="position_x" id="inputPositionX" value="60">
                         <input type="hidden" name="position_y" id="inputPositionY" value="75">
-                        <input type="hidden" name="stamp_width" id="inputStampWidth" value="50">
+                        <input type="hidden" name="stamp_width" id="inputStampWidth" value="58">
                         <input type="hidden" name="stamp_height" id="inputStampHeight" value="30">
                         <input type="hidden" name="show_qr" id="inputShowQr" value="1">
                         <input type="hidden" name="show_name" id="inputShowName" value="1">
@@ -456,15 +456,15 @@
                                 </button>
                             </div>
 
-                            <!-- Compact Square Signature Canvas Box -->
-                            <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white shadow-inner sig-pad-box max-w-sm mx-auto">
+                            <!-- Spacious Signature Canvas Box -->
+                            <div class="relative overflow-hidden rounded-xl border border-slate-200 bg-white shadow-inner sig-pad-box w-full mx-auto">
                                 <canvas 
                                     id="signatureCanvas" 
-                                    class="w-full h-28 touch-none cursor-crosshair bg-transparent block"
+                                    class="w-full h-36 touch-none cursor-crosshair bg-transparent block"
                                 ></canvas>
-                                <div class="pointer-events-none absolute bottom-2 left-2.5 flex items-center gap-1.5">
+                                <div class="pointer-events-none absolute bottom-2.5 left-3 flex items-center gap-1.5">
                                     <span class="font-mono text-[11px] font-bold text-slate-300">✍</span>
-                                    <span class="text-[9px] font-mono text-slate-400">Gores tanda tangan di sini</span>
+                                    <span class="text-[9.5px] font-mono text-slate-400">Goreskan tanda tangan Anda dengan leluasa di sini</span>
                                 </div>
                             </div>
                         </div>
@@ -548,36 +548,36 @@
                         <div class="space-y-2">
                             <div class="flex items-center justify-between text-xs">
                                 <span class="font-bold text-slate-700">Format &amp; Ukuran Stempel:</span>
-                                <span id="sizeBadge" class="font-mono text-[10.5px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md">Standar (50×30 mm)</span>
+                                <span id="sizeBadge" class="font-mono text-[10.5px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md">Standar (58×30 mm)</span>
                             </div>
 
                             <div class="grid grid-cols-3 gap-1.5 text-xs">
                                 <button 
                                     type="button" 
                                     id="btnSizeCompact" 
-                                    onclick="setStampDimensions(40, 24, 'Compact')" 
+                                    onclick="setStampDimensions(48, 26, 'Compact')" 
                                     class="rounded-xl border border-slate-200 bg-white p-2 text-center font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
                                 >
                                     <div class="text-[11px]">Ringkas</div>
-                                    <div class="text-[9px] font-mono text-slate-400 mt-0.5">40 × 24 mm</div>
+                                    <div class="text-[9px] font-mono text-slate-400 mt-0.5">48 × 26 mm</div>
                                 </button>
                                 <button 
                                     type="button" 
                                     id="btnSizeStandard" 
-                                    onclick="setStampDimensions(50, 30, 'Standar')" 
+                                    onclick="setStampDimensions(58, 30, 'Standar')" 
                                     class="rounded-xl border-2 border-blue-600 bg-blue-50/70 p-2 text-center font-bold text-blue-950 transition-all cursor-pointer"
                                 >
-                                    <div class="text-[11px]">Standar Kotak</div>
-                                    <div class="text-[9px] font-mono text-blue-700 mt-0.5">50 × 30 mm</div>
+                                    <div class="text-[11px]">Standar Luas</div>
+                                    <div class="text-[9px] font-mono text-blue-700 mt-0.5">58 × 30 mm</div>
                                 </button>
                                 <button 
                                     type="button" 
                                     id="btnSizeLarge" 
-                                    onclick="setStampDimensions(60, 36, 'Besar')" 
+                                    onclick="setStampDimensions(70, 34, 'Besar')" 
                                     class="rounded-xl border border-slate-200 bg-white p-2 text-center font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
                                 >
                                     <div class="text-[11px]">Besar / Formal</div>
-                                    <div class="text-[9px] font-mono text-slate-400 mt-0.5">60 × 36 mm</div>
+                                    <div class="text-[9px] font-mono text-slate-400 mt-0.5">70 × 34 mm</div>
                                 </button>
                             </div>
 
@@ -727,10 +727,10 @@
     <!-- Interactive JavaScript Engine (PDF.js, 1:1 Scale Mapping, Privy Fonts & Stamp Customizer) -->
     <script>
         // State variables
-        let baseStampWidthMm = 50.0;
+        let baseStampWidthMm = 58.0;
         let baseStampHeightMm = 30.0;
         let currentScaleRatio = 1.0;
-        let currentStampWidthMm = 50.0;
+        let currentStampWidthMm = 58.0;
         let currentStampHeightMm = 30.0;
 
         let showQrCode = true;

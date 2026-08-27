@@ -106,7 +106,7 @@ show.form = showForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:157
+* @see app/Http/Controllers/FinanceController.php:159
 * @route '/finance/invoices'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -121,7 +121,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:157
+* @see app/Http/Controllers/FinanceController.php:159
 * @route '/finance/invoices'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -130,7 +130,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:157
+* @see app/Http/Controllers/FinanceController.php:159
 * @route '/finance/invoices'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -140,7 +140,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:157
+* @see app/Http/Controllers/FinanceController.php:159
 * @route '/finance/invoices'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -150,7 +150,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:157
+* @see app/Http/Controllers/FinanceController.php:159
 * @route '/finance/invoices'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -162,7 +162,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:166
+* @see app/Http/Controllers/FinanceController.php:168
 * @route '/finance/invoices/{invoice}'
 */
 export const update = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -177,7 +177,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:166
+* @see app/Http/Controllers/FinanceController.php:168
 * @route '/finance/invoices/{invoice}'
 */
 update.url = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -210,7 +210,7 @@ update.url = (args: { invoice: string | { id: string } } | [invoice: string | { 
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:166
+* @see app/Http/Controllers/FinanceController.php:168
 * @route '/finance/invoices/{invoice}'
 */
 update.put = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -220,7 +220,7 @@ update.put = (args: { invoice: string | { id: string } } | [invoice: string | { 
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:166
+* @see app/Http/Controllers/FinanceController.php:168
 * @route '/finance/invoices/{invoice}'
 */
 const updateForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -235,7 +235,7 @@ const updateForm = (args: { invoice: string | { id: string } } | [invoice: strin
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:166
+* @see app/Http/Controllers/FinanceController.php:168
 * @route '/finance/invoices/{invoice}'
 */
 updateForm.put = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -252,7 +252,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::transition
-* @see app/Http/Controllers/FinanceController.php:193
+* @see app/Http/Controllers/FinanceController.php:195
 * @route '/finance/invoices/{invoice}/status'
 */
 export const transition = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -267,7 +267,7 @@ transition.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::transition
-* @see app/Http/Controllers/FinanceController.php:193
+* @see app/Http/Controllers/FinanceController.php:195
 * @route '/finance/invoices/{invoice}/status'
 */
 transition.url = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -300,7 +300,7 @@ transition.url = (args: { invoice: string | { id: string } } | [invoice: string 
 
 /**
 * @see \App\Http\Controllers\FinanceController::transition
-* @see app/Http/Controllers/FinanceController.php:193
+* @see app/Http/Controllers/FinanceController.php:195
 * @route '/finance/invoices/{invoice}/status'
 */
 transition.patch = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -310,7 +310,7 @@ transition.patch = (args: { invoice: string | { id: string } } | [invoice: strin
 
 /**
 * @see \App\Http\Controllers\FinanceController::transition
-* @see app/Http/Controllers/FinanceController.php:193
+* @see app/Http/Controllers/FinanceController.php:195
 * @route '/finance/invoices/{invoice}/status'
 */
 const transitionForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -325,7 +325,7 @@ const transitionForm = (args: { invoice: string | { id: string } } | [invoice: s
 
 /**
 * @see \App\Http\Controllers\FinanceController::transition
-* @see app/Http/Controllers/FinanceController.php:193
+* @see app/Http/Controllers/FinanceController.php:195
 * @route '/finance/invoices/{invoice}/status'
 */
 transitionForm.patch = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -342,7 +342,7 @@ transition.form = transitionForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:774
+* @see app/Http/Controllers/FinanceController.php:776
 * @route '/finance/invoices/{invoice}/pdf'
 */
 export const pdf = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -357,7 +357,7 @@ pdf.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:774
+* @see app/Http/Controllers/FinanceController.php:776
 * @route '/finance/invoices/{invoice}/pdf'
 */
 pdf.url = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -390,7 +390,7 @@ pdf.url = (args: { invoice: string | { id: string } } | [invoice: string | { id:
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:774
+* @see app/Http/Controllers/FinanceController.php:776
 * @route '/finance/invoices/{invoice}/pdf'
 */
 pdf.get = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -400,7 +400,7 @@ pdf.get = (args: { invoice: string | { id: string } } | [invoice: string | { id:
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:774
+* @see app/Http/Controllers/FinanceController.php:776
 * @route '/finance/invoices/{invoice}/pdf'
 */
 pdf.head = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -410,7 +410,7 @@ pdf.head = (args: { invoice: string | { id: string } } | [invoice: string | { id
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:774
+* @see app/Http/Controllers/FinanceController.php:776
 * @route '/finance/invoices/{invoice}/pdf'
 */
 const pdfForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -420,7 +420,7 @@ const pdfForm = (args: { invoice: string | { id: string } } | [invoice: string |
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:774
+* @see app/Http/Controllers/FinanceController.php:776
 * @route '/finance/invoices/{invoice}/pdf'
 */
 pdfForm.get = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -430,7 +430,7 @@ pdfForm.get = (args: { invoice: string | { id: string } } | [invoice: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:774
+* @see app/Http/Controllers/FinanceController.php:776
 * @route '/finance/invoices/{invoice}/pdf'
 */
 pdfForm.head = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

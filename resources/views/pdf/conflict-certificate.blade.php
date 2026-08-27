@@ -315,15 +315,15 @@
             margin-top: 1px;
         }
         .sig-space {
-            height: 38px;
+            height: 60px;
         }
         .sig-line {
-            width: 140px;
+            width: 195px;
             border-top: 1px solid #0a1b33;
-            margin: 0 auto 3px;
+            margin: 0 auto 4px;
         }
         .sig-name {
-            font-size: 7.2px;
+            font-size: 7.5px;
             font-weight: bold;
             color: #0a1b33;
         }

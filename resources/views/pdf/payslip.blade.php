@@ -421,15 +421,15 @@
             text-transform: uppercase;
         }
         .sig-space {
-            height: 48px;
+            height: 62px;
         }
         .sig-line {
-            width: 140px;
+            width: 175px;
             border-top: 1px solid #0a1b33;
-            margin: 0 auto 2px;
+            margin: 0 auto 4px;
         }
         .sig-name {
-            font-size: 7.4px;
+            font-size: 7.5px;
             font-weight: bold;
             color: #0a1b33;
         }
@@ -687,18 +687,18 @@
     <!-- 7. Closing Signatures -->
     <table class="closing-layout">
         <tr>
-            <td class="legal-clause" style="width: 48%; padding-right: 16px;">
+            <td class="legal-clause" style="width: 42%; padding-right: 16px;">
                 <strong>CATATAN PENGESAHAN DOKUMEN:</strong><br>
                 Slip penghasilan ini diterbitkan secara resmi melalui sistem terkomputerisasi RPK App - Integrated Legal Practice System. Bersifat rahasia (confidential) dan sah sebagai bukti pemenuhan hak keuangan pegawai / advokat.
             </td>
-            <td class="sig-box" style="width: 26%;">
+            <td class="sig-box" style="width: 29%;">
                 <div class="sig-role">PENERIMA / PEGAWAI</div>
                 <div class="sig-firm">&nbsp;</div>
                 <div class="sig-space"></div>
                 <div class="sig-line"></div>
                 <div class="sig-name">{{ $payroll->user->name }}</div>
             </td>
-            <td class="sig-box" style="width: 26%;">
+            <td class="sig-box" style="width: 29%;">
                 <div class="sig-role">DISETUJUI OLEH</div>
                 <div class="sig-firm">MANAGING PARTNER RPK</div>
                 <div class="sig-space"></div>

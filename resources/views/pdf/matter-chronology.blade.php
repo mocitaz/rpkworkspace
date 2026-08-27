@@ -46,8 +46,8 @@
 
         .signature-block { margin-top: 24px; page-break-inside: avoid; }
         .signature-block td { vertical-align: top; width: 45%; }
-        .sig-space { height: 42px; }
-        .sig-line { width: 170px; border-top: 1px solid #0a1b33; margin-top: 3px; margin-bottom: 3px; }
+        .sig-space { height: 62px; }
+        .sig-line { width: 200px; border-top: 1px solid #0a1b33; margin-top: 3px; margin-bottom: 4px; }
 
         .watermark { position: fixed; top: 38%; left: 0; width: 100%; text-align: center; transform: rotate(-25deg); opacity: 0.04; font-size: 26px; font-weight: bold; color: #0a1b33; z-index: -1000; }
         .footer { margin-top: 22px; padding-top: 8px; border-top: 1px solid #cbd5e1; font-size: 6.8px; color: #64748b; }

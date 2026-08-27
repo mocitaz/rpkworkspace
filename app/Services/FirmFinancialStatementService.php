@@ -243,6 +243,7 @@ class FirmFinancialStatementService
      */
     public function getBalanceSheet(): array
     {
+        FinancialAccount::syncAllBalances();
         $accounts = FinancialAccount::query()->get();
         $opCashBank = (int) $accounts->whereIn('type', ['cash', 'bank'])->sum('current_balance');
         $clientTrustBank = (int) $accounts->where('type', 'client_trust')->sum('current_balance');

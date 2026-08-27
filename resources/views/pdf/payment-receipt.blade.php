@@ -379,15 +379,15 @@
             margin-top: 1px;
         }
         .sig-space {
-            height: 38px;
+            height: 58px;
         }
         .sig-line {
-            width: 140px;
+            width: 180px;
             border-top: 1px solid #0a1b33;
-            margin: 0 auto 3px;
+            margin: 0 auto 4px;
         }
         .sig-name {
-            font-size: 7.2px;
+            font-size: 7.5px;
             font-weight: bold;
             color: #0a1b33;
         }
@@ -635,16 +635,16 @@
     <!-- 6. Closing Signatures & Stamp -->
     <table class="closing-layout">
         <tr>
-            <td class="legal-clause" style="width: 44%; padding-right: 14px;">
+            <td class="legal-clause" style="width: 42%; padding-right: 14px;">
                 <strong>CATATAN KEABSAHAN TRANSAKSI:</strong><br>
                 Kuitansi ini diterbitkan secara otomatis dan sah melalui sistem RPK App setelah dana efektif diterima pada rekening firma hukum Roni, Putra &amp; Kusumah. Dokumen ini merupakan bukti pelunasan yang mengikat menurut hukum perdata dan perpajakan.
             </td>
-            <td class="stamp-box" style="width: 26%;">
+            <td class="stamp-box" style="width: 22%;">
                 <div class="stamp-badge">
                     LUNAS<br><span style="font-size: 6.5px; font-weight: normal; letter-spacing: 0.8px;">OFFICIAL RECEIPT</span>
                 </div>
             </td>
-            <td class="sig-box" style="width: 30%;">
+            <td class="sig-box" style="width: 36%;">
                 <div class="sig-role">PENERIMA PEMBAYARAN</div>
                 <div class="sig-firm">RPK LAW FIRM</div>
                 <div class="sig-space"></div>

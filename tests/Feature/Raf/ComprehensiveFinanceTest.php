@@ -159,3 +159,29 @@ test('payroll can be recorded and payslip can be generated', function () {
     $response->assertOk()
         ->assertHeader('Content-Type', 'application/pdf');
 });
+
+test('finance sync balances command recalculates all account balances from ledger transactions', function () {
+    $user = rafUser(['billing.view', 'billing.manage']);
+
+    $bank = FinancialAccount::query()->create([
+        'name' => 'Bank Mandiri Sync Test',
+        'type' => 'bank',
+        'opening_balance' => 5000000,
+        'current_balance' => 0, // Intentionally drifted
+        'created_by' => $user->getKey(),
+    ]);
+
+    $kas = FinancialAccount::query()->create([
+        'name' => 'Kas Kantor Sync Test',
+        'type' => 'cash',
+        'opening_balance' => 1000000,
+        'current_balance' => 99999999, // Intentionally corrupted
+        'created_by' => $user->getKey(),
+    ]);
+
+    $this->artisan('finance:sync-balances')
+        ->assertSuccessful();
+
+    expect($bank->fresh()->current_balance)->toBe(5000000)
+        ->and($kas->fresh()->current_balance)->toBe(1000000);
+});

@@ -102,6 +102,8 @@ class FinanceController extends Controller
 
         $year = (int) ($request->input('year') ?: date('Y'));
 
+        FinancialAccount::syncAllBalances();
+
         return Inertia::render('finance/index', [
             'matters' => $matters->map(fn (Matter $matter) => [
                 'id' => $matter->getKey(), 'matter_number' => $matter->matter_number,

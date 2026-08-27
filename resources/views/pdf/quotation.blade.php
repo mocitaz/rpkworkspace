@@ -428,15 +428,15 @@
             margin-top: 1px;
         }
         .sig-space {
-            height: 38px;
+            height: 58px;
         }
         .sig-line {
-            width: 140px;
+            width: 175px;
             border-top: 1px solid #0a1b33;
-            margin: 0 auto 3px;
+            margin: 0 auto 4px;
         }
         .sig-name {
-            font-size: 7.2px;
+            font-size: 7.5px;
             font-weight: bold;
             color: #0a1b33;
         }
@@ -728,18 +728,18 @@
     <!-- 7. Closing Signatures -->
     <table class="closing-layout">
         <tr>
-            <td class="legal-clause" style="width: 46%; padding-right: 14px;">
+            <td class="legal-clause" style="width: 42%; padding-right: 14px;">
                 <strong>PENGESAHAN PERIKATAN HUKUM:</strong><br>
                 Surat penawaran ini disusun secara profesional melalui sistem terkomputerisasi RPK App. Penandatanganan dokumen ini oleh Klien merupakan persetujuan awal (Letter of Intent) untuk penyusunan Perjanjian Jasa Bantuan Hukum resmi.
             </td>
-            <td class="sig-box" style="width: 27%;">
+            <td class="sig-box" style="width: 29%;">
                 <div class="sig-role">DISETUJUI OLEH KLIEN</div>
                 <div class="sig-firm">{{ $quotation->client->display_name }}</div>
                 <div class="sig-space"></div>
                 <div class="sig-line"></div>
                 <div class="sig-name">Nama: .......................................</div>
             </td>
-            <td class="sig-box" style="width: 27%;">
+            <td class="sig-box" style="width: 29%;">
                 <div class="sig-role">HORMAT KAMI</div>
                 <div class="sig-firm">RPK LAW FIRM</div>
                 <div class="sig-space"></div>

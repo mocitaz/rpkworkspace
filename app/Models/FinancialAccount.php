@@ -95,4 +95,120 @@ class FinancialAccount extends Model
     {
         return $this->hasMany(Payroll::class, 'payment_account_id');
     }
+
+    /**
+     * Recalculate and update the account balance based on all underlying transactions.
+     */
+    public function recalculateBalance(): int
+    {
+        if ($this->type === 'partner_advance') {
+            $partnerId = $this->partner_id;
+            if (! $partnerId) {
+                $this->updateQuietly(['current_balance' => (int) $this->opening_balance]);
+
+                return (int) $this->opening_balance;
+            }
+
+            $directAdvances = (int) PartnerTransaction::query()
+                ->where('partner_id', $partnerId)
+                ->where('type', 'advance_incurred')
+                ->whereIn('status', ['approved', 'completed'])
+                ->sum('amount');
+
+            $expensesPaidByPartner = (int) Expense::query()
+                ->where('partner_id', $partnerId)
+                ->whereNotIn('status', ['cancelled', 'draft'])
+                ->sum('amount');
+
+            $reimbursed = (int) PartnerTransaction::query()
+                ->where('partner_id', $partnerId)
+                ->where('type', 'advance_reimbursed')
+                ->whereIn('status', ['approved', 'completed'])
+                ->sum('amount');
+
+            $bal = (int) $this->opening_balance + $directAdvances + $expensesPaidByPartner - $reimbursed;
+            $this->updateQuietly(['current_balance' => $bal]);
+
+            return $bal;
+        }
+
+        if ($this->type === 'client_trust') {
+            $depositIn = (int) ClientTrustFund::query()
+                ->where('account_id', $this->getKey())
+                ->where('type', 'deposit_in')
+                ->whereIn('status', ['approved', 'completed'])
+                ->sum('amount');
+
+            $disbursementOut = (int) ClientTrustFund::query()
+                ->where('account_id', $this->getKey())
+                ->where('type', 'disbursement_out')
+                ->whereIn('status', ['approved', 'completed'])
+                ->sum('amount');
+
+            $bal = (int) $this->opening_balance + $depositIn - $disbursementOut;
+            $this->updateQuietly(['current_balance' => $bal]);
+
+            return $bal;
+        }
+
+        // Cash and Bank accounts
+        $paymentsIn = (int) Payment::query()
+            ->where('account_id', $this->getKey())
+            ->whereNull('reversed_at')
+            ->whereNull('refunded_at')
+            ->sum('amount');
+
+        $expensesOut = (int) Expense::query()
+            ->where('account_id', $this->getKey())
+            ->whereNotIn('status', ['cancelled', 'draft'])
+            ->sum('amount');
+
+        $payrollsOut = (int) Payroll::query()
+            ->where('payment_account_id', $this->getKey())
+            ->whereIn('status', ['approved', 'paid'])
+            ->sum('net_salary');
+
+        $transfersIn = (int) AccountTransfer::query()
+            ->where('to_account_id', $this->getKey())
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $transfersOut = (int) AccountTransfer::query()
+            ->where('from_account_id', $this->getKey())
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        $partnerDistOut = (int) PartnerTransaction::query()
+            ->where('account_id', $this->getKey())
+            ->whereIn('type', ['profit_distribution', 'draw_prive'])
+            ->whereIn('status', ['approved', 'completed'])
+            ->sum('amount');
+
+        $partnerAdvReimbursedOut = (int) PartnerTransaction::query()
+            ->where('account_id', $this->getKey())
+            ->where('type', 'advance_reimbursed')
+            ->whereIn('status', ['approved', 'completed'])
+            ->sum('amount');
+
+        $partnerCapitalIn = (int) PartnerTransaction::query()
+            ->where('account_id', $this->getKey())
+            ->where('type', 'capital_injection')
+            ->whereIn('status', ['approved', 'completed'])
+            ->sum('amount');
+
+        $bal = (int) $this->opening_balance + $paymentsIn - $expensesOut - $payrollsOut + $transfersIn - $transfersOut - $partnerDistOut - $partnerAdvReimbursedOut + $partnerCapitalIn;
+        $this->updateQuietly(['current_balance' => $bal]);
+
+        return $bal;
+    }
+
+    /**
+     * Recalculate and synchronize all financial account balances.
+     */
+    public static function syncAllBalances(): void
+    {
+        static::query()->each(function (FinancialAccount $account): void {
+            $account->recalculateBalance();
+        });
+    }
 }

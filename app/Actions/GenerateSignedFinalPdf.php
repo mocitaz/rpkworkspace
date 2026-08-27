@@ -157,7 +157,7 @@ class GenerateSignedFinalPdf
                 'layout' => $signer->stamp_layout ?: 'sig_left',
                 'name_pos' => $signer->name_position ?: 'bottom',
                 'title' => $signer->signer_title,
-                'stamp_width' => $signer->stamp_width ?: 50.0,
+                'stamp_width' => $signer->stamp_width ?: 58.0,
                 'stamp_height' => $signer->stamp_height ?: 30.0,
                 'show_qr' => $signer->show_qr ?? true,
                 'show_name' => $signer->show_name ?? true,
@@ -194,7 +194,7 @@ class GenerateSignedFinalPdf
 
             foreach ($pageSigners as $signerItem) {
                 // Determine placement coordinates & dynamic size
-                $stampW = (float) ($signerItem['stamp_width'] ?? 50.0);
+                $stampW = (float) ($signerItem['stamp_width'] ?? 58.0);
                 $stampH = (float) ($signerItem['stamp_height'] ?? 30.0);
                 $showQr = (bool) ($signerItem['show_qr'] ?? true);
                 $showName = (bool) ($signerItem['show_name'] ?? true);
