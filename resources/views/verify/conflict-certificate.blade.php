@@ -110,32 +110,41 @@
                     </p>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-1">
-                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Nomor Registrasi</div>
-                        <div class="mt-1 font-mono text-xs sm:text-sm font-black text-slate-900 truncate">{{ $certNumber }}</div>
+                <div class="overflow-hidden rounded-2xl border border-slate-200/90 bg-slate-50/60 shadow-2xs grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-200/80">
+                    <div class="p-3.5 sm:px-4 sm:py-3 flex flex-col justify-center">
+                        <span class="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Nomor Registrasi</span>
+                        <span class="mt-0.5 font-mono text-xs sm:text-sm font-black text-slate-900 truncate" title="{{ $certNumber }}">
+                            {{ $certNumber }}
+                        </span>
                     </div>
-                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Tanggal Pemeriksaan</div>
-                        <div class="mt-1 text-xs sm:text-sm font-bold text-slate-900">
+
+                    <div class="p-3.5 sm:px-4 sm:py-3 flex flex-col justify-center">
+                        <span class="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Tanggal Pemeriksaan</span>
+                        <span class="mt-0.5 text-xs sm:text-sm font-bold text-slate-900">
                             {{ $conflictCheck->created_at?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}
-                        </div>
+                        </span>
                     </div>
-                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5">
-                        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Status Hasil Uji</div>
-                        <div class="mt-1">
+
+                    <div class="p-3.5 sm:px-4 sm:py-3 flex flex-col justify-center {{ $isClear ? 'bg-emerald-50/60' : ($isWaived ? 'bg-amber-50/60' : 'bg-rose-50/60') }}">
+                        <span class="text-[9.5px] font-bold uppercase tracking-wider {{ $isClear ? 'text-emerald-700' : ($isWaived ? 'text-amber-700' : 'text-rose-700') }}">
+                            Status Hasil Uji
+                        </span>
+                        <div class="mt-0.5 flex items-center gap-1.5 font-extrabold text-xs sm:text-[13px] {{ $isClear ? 'text-emerald-950' : ($isWaived ? 'text-amber-950' : 'text-rose-950') }}">
                             @if ($isClear)
-                                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-bold text-emerald-800">
-                                    BEBAS BENTURAN (CLEAR)
-                                </span>
+                                <svg class="size-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                                <span>Bebas Benturan (Clear)</span>
                             @elseif ($isWaived)
-                                <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-800">
-                                    DISPENSASI (WAIVED)
-                                </span>
+                                <svg class="size-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                <span>Dispensasi (Waived)</span>
                             @else
-                                <span class="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-bold text-rose-800">
-                                    TERDAPAT BENTURAN (BLOCKED)
-                                </span>
+                                <svg class="size-4 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                <span>Benturan Terdeteksi (Blocked)</span>
                             @endif
                         </div>
                     </div>
