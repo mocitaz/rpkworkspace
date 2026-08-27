@@ -117,9 +117,10 @@ export function CreatePartnerTransactionDialog({
                                         className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                     >
                                         <option value="advance_incurred">Talangan Pribadi (+ Utang Kantor ke Partner)</option>
-                                        <option value="advance_repaid">Pengembalian Talangan (- Utang Kantor ke Partner)</option>
+                                        <option value="advance_reimbursed">Pengembalian Talangan (- Utang Kantor ke Partner)</option>
                                         <option value="profit_distribution">Pembagian Keuntungan / Deviden (+ Hak Partner)</option>
-                                        <option value="draw">Penarikan Prive / Modal (- Saldo Partner)</option>
+                                        <option value="capital_injection">Tambahan Modal / Setoran Partner (+ Ekuitas Firma)</option>
+                                        <option value="draw_prive">Penarikan Prive / Modal (- Saldo Partner)</option>
                                     </select>
                                     <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-400" />
                                 </div>

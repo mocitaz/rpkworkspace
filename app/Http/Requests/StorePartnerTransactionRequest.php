@@ -20,7 +20,7 @@ class StorePartnerTransactionRequest extends FormRequest
         return [
             'partner_id' => ['required', 'exists:users,id'],
             'matter_id' => ['nullable', 'exists:matters,id'],
-            'type' => ['required', 'string', 'in:advance_incurred,advance_reimbursed,profit_distribution,capital_injection,draw_prive'],
+            'type' => ['required', 'string', 'in:advance_incurred,advance_reimbursed,advance_repaid,profit_distribution,capital_injection,draw_prive,draw'],
             'amount' => ['required', 'integer', 'min:1'],
             'transaction_date' => ['required', 'date'],
             'account_id' => ['nullable', 'exists:financial_accounts,id'],
@@ -43,8 +43,16 @@ class StorePartnerTransactionRequest extends FormRequest
             return $cleaned === '' ? null : (int) $cleaned;
         };
 
+        $type = $this->input('type');
+        if ($type === 'advance_repaid') {
+            $type = 'advance_reimbursed';
+        } elseif ($type === 'draw') {
+            $type = 'draw_prive';
+        }
+
         $this->merge([
             'amount' => $cleanInt($this->input('amount')) ?? 0,
+            'type' => $type,
         ]);
     }
 
@@ -57,6 +65,7 @@ class StorePartnerTransactionRequest extends FormRequest
             'partner_id.required' => 'Partner / Advokat wajib dipilih.',
             'partner_id.exists' => 'Data partner tidak ditemukan dalam sistem.',
             'type.required' => 'Jenis transaksi partner wajib dipilih.',
+            'type.in' => 'Pilihan jenis transaksi partner tidak valid.',
             'amount.required' => 'Nominal transaksi wajib diisi.',
             'amount.min' => 'Nominal transaksi minimal Rp 1.',
             'transaction_date.required' => 'Tanggal transaksi wajib diisi.',

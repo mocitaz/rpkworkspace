@@ -257,6 +257,51 @@ test('updates office expense and updates financial account balance', function ()
         ->and($account->current_balance)->toBe(19250000); // 19,500,000 + 500,000 (revert) - 750,000 (new) = 19,250,000
 });
 
+test('stores partner transaction with advance_repaid or advance_reimbursed successfully', function () {
+    $user = rafUser(['matter.view', 'billing.manage']);
+    $user->forceFill(['email_verified_at' => now()])->save();
+
+    $account = FinancialAccount::create([
+        'name' => 'BCA Rekening Firma',
+        'account_number' => '1122334455',
+        'type' => 'bank',
+        'currency' => 'IDR',
+        'opening_balance' => 30000000,
+        'current_balance' => 30000000,
+        'is_active' => true,
+    ]);
+
+    $partnerAccount = FinancialAccount::create([
+        'name' => 'Rekap Utang Partner '.$user->name,
+        'type' => 'partner_equity',
+        'currency' => 'IDR',
+        'opening_balance' => 5000000,
+        'current_balance' => 5000000,
+        'partner_id' => $user->id,
+        'is_active' => true,
+    ]);
+
+    $response = $this->actingAs($user)->post(route('finance.partner-transactions.store'), [
+        'partner_id' => $user->id,
+        'type' => 'advance_repaid', // alias for advance_reimbursed
+        'amount' => 1000000,
+        'transaction_date' => now()->toDateString(),
+        'account_id' => $account->id,
+        'notes' => 'Pengembalian talangan tes',
+    ]);
+
+    $response->assertRedirect();
+    $account->refresh();
+    $partnerAccount->refresh();
+
+    $trans = PartnerTransaction::latest('id')->first();
+    expect($trans)->not->toBeNull()
+        ->and($trans->type)->toBe('advance_reimbursed')
+        ->and($trans->amount)->toBe(1000000)
+        ->and($account->current_balance)->toBe(29000000)
+        ->and($partnerAccount->current_balance)->toBe(4000000);
+});
+
 test('updates partner advance transaction and adjusts balances', function () {
     $user = rafUser(['matter.view', 'billing.manage']);
     $user->forceFill(['email_verified_at' => now()])->save();
