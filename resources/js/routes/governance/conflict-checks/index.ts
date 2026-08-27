@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\GovernanceController::store
 * @see app/Http/Controllers/GovernanceController.php:160
@@ -34,28 +34,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:160
-* @route '/governance/conflict-checks'
-*/
-const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:160
-* @route '/governance/conflict-checks'
-*/
-storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-store.form = storeForm
-
-/**
 * @see \App\Http\Controllers\GovernanceController::preview
 * @see app/Http/Controllers/GovernanceController.php:186
 * @route '/governance/conflict-checks/preview'
@@ -88,28 +66,6 @@ preview.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: preview.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\GovernanceController::preview
-* @see app/Http/Controllers/GovernanceController.php:186
-* @route '/governance/conflict-checks/preview'
-*/
-const previewForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: preview.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\GovernanceController::preview
-* @see app/Http/Controllers/GovernanceController.php:186
-* @route '/governance/conflict-checks/preview'
-*/
-previewForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: preview.url(options),
-    method: 'post',
-})
-
-preview.form = previewForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::resolve
@@ -168,38 +124,6 @@ resolve.patch = (args: { conflictCheck: string | { id: string } } | [conflictChe
     url: resolve.url(args, options),
     method: 'patch',
 })
-
-/**
-* @see \App\Http\Controllers\GovernanceController::resolve
-* @see app/Http/Controllers/GovernanceController.php:176
-* @route '/governance/conflict-checks/{conflictCheck}'
-*/
-const resolveForm = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: resolve.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\GovernanceController::resolve
-* @see app/Http/Controllers/GovernanceController.php:176
-* @route '/governance/conflict-checks/{conflictCheck}'
-*/
-resolveForm.patch = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: resolve.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-resolve.form = resolveForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::certificate
@@ -270,43 +194,6 @@ certificate.head = (args: { conflictCheck: string | { id: string } } | [conflict
 })
 
 /**
-* @see \App\Http\Controllers\GovernanceController::certificate
-* @see app/Http/Controllers/GovernanceController.php:211
-* @route '/governance/conflict-checks/{conflictCheck}/certificate'
-*/
-const certificateForm = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: certificate.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\GovernanceController::certificate
-* @see app/Http/Controllers/GovernanceController.php:211
-* @route '/governance/conflict-checks/{conflictCheck}/certificate'
-*/
-certificateForm.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: certificate.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\GovernanceController::certificate
-* @see app/Http/Controllers/GovernanceController.php:211
-* @route '/governance/conflict-checks/{conflictCheck}/certificate'
-*/
-certificateForm.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: certificate.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-certificate.form = certificateForm
-
-/**
 * @see \App\Http\Controllers\GovernanceController::pdf
 * @see app/Http/Controllers/GovernanceController.php:231
 * @route '/governance/conflict-checks/{conflictCheck}/pdf'
@@ -373,43 +260,6 @@ pdf.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: s
     url: pdf.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\GovernanceController::pdf
-* @see app/Http/Controllers/GovernanceController.php:231
-* @route '/governance/conflict-checks/{conflictCheck}/pdf'
-*/
-const pdfForm = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: pdf.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\GovernanceController::pdf
-* @see app/Http/Controllers/GovernanceController.php:231
-* @route '/governance/conflict-checks/{conflictCheck}/pdf'
-*/
-pdfForm.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: pdf.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\GovernanceController::pdf
-* @see app/Http/Controllers/GovernanceController.php:231
-* @route '/governance/conflict-checks/{conflictCheck}/pdf'
-*/
-pdfForm.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: pdf.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-pdf.form = pdfForm
 
 const conflictChecks = {
     store: Object.assign(store, store),

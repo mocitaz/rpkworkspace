@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\MatterReportController::pdf
 * @see app/Http/Controllers/MatterReportController.php:14
@@ -66,43 +66,6 @@ pdf.head = (args: { matter: string | { id: string } } | [matter: string | { id: 
     url: pdf.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\MatterReportController::pdf
-* @see app/Http/Controllers/MatterReportController.php:14
-* @route '/matters/{matter}/status-report/pdf'
-*/
-const pdfForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: pdf.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\MatterReportController::pdf
-* @see app/Http/Controllers/MatterReportController.php:14
-* @route '/matters/{matter}/status-report/pdf'
-*/
-pdfForm.get = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: pdf.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\MatterReportController::pdf
-* @see app/Http/Controllers/MatterReportController.php:14
-* @route '/matters/{matter}/status-report/pdf'
-*/
-pdfForm.head = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: pdf.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-pdf.form = pdfForm
 
 const statusReport = {
     pdf: Object.assign(pdf, pdf),

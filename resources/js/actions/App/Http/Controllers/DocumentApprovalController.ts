@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\DocumentApprovalController::store
 * @see app/Http/Controllers/DocumentApprovalController.php:16
@@ -58,28 +58,6 @@ store.post = (args: { document: string | { id: string } } | [document: string | 
 })
 
 /**
-* @see \App\Http\Controllers\DocumentApprovalController::store
-* @see app/Http/Controllers/DocumentApprovalController.php:16
-* @route '/documents/{document}/approvals'
-*/
-const storeForm = (args: { document: string | { id: string } } | [document: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\DocumentApprovalController::store
-* @see app/Http/Controllers/DocumentApprovalController.php:16
-* @route '/documents/{document}/approvals'
-*/
-storeForm.post = (args: { document: string | { id: string } } | [document: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-store.form = storeForm
-
-/**
 * @see \App\Http\Controllers\DocumentApprovalController::resolve
 * @see app/Http/Controllers/DocumentApprovalController.php:26
 * @route '/document-approvals/{approval}'
@@ -136,38 +114,6 @@ resolve.patch = (args: { approval: string | { id: string } } | [approval: string
     url: resolve.url(args, options),
     method: 'patch',
 })
-
-/**
-* @see \App\Http\Controllers\DocumentApprovalController::resolve
-* @see app/Http/Controllers/DocumentApprovalController.php:26
-* @route '/document-approvals/{approval}'
-*/
-const resolveForm = (args: { approval: string | { id: string } } | [approval: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: resolve.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\DocumentApprovalController::resolve
-* @see app/Http/Controllers/DocumentApprovalController.php:26
-* @route '/document-approvals/{approval}'
-*/
-resolveForm.patch = (args: { approval: string | { id: string } } | [approval: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: resolve.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-resolve.form = resolveForm
 
 const DocumentApprovalController = { store, resolve }
 

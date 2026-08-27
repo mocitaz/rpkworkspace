@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\AuditLogController::index
 * @see app/Http/Controllers/AuditLogController.php:22
@@ -42,43 +42,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\AuditLogController::index
-* @see app/Http/Controllers/AuditLogController.php:22
-* @route '/admin/audit'
-*/
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\AuditLogController::index
-* @see app/Http/Controllers/AuditLogController.php:22
-* @route '/admin/audit'
-*/
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\AuditLogController::index
-* @see app/Http/Controllers/AuditLogController.php:22
-* @route '/admin/audit'
-*/
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\AuditLogController::exportMethod
@@ -125,43 +88,6 @@ exportMethod.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\AuditLogController::exportMethod
-* @see app/Http/Controllers/AuditLogController.php:50
-* @route '/admin/audit/export'
-*/
-const exportMethodForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportMethod.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\AuditLogController::exportMethod
-* @see app/Http/Controllers/AuditLogController.php:50
-* @route '/admin/audit/export'
-*/
-exportMethodForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportMethod.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\AuditLogController::exportMethod
-* @see app/Http/Controllers/AuditLogController.php:50
-* @route '/admin/audit/export'
-*/
-exportMethodForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportMethod.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-exportMethod.form = exportMethodForm
-
-/**
 * @see \App\Http\Controllers\AuditLogController::prune
 * @see app/Http/Controllers/AuditLogController.php:117
 * @route '/admin/audit/prune'
@@ -194,28 +120,6 @@ prune.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: prune.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\AuditLogController::prune
-* @see app/Http/Controllers/AuditLogController.php:117
-* @route '/admin/audit/prune'
-*/
-const pruneForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: prune.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\AuditLogController::prune
-* @see app/Http/Controllers/AuditLogController.php:117
-* @route '/admin/audit/prune'
-*/
-pruneForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: prune.url(options),
-    method: 'post',
-})
-
-prune.form = pruneForm
 
 const AuditLogController = { index, exportMethod, prune, export: exportMethod }
 

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FinanceDetailController::invoice
 * @see app/Http/Controllers/FinanceDetailController.php:19
@@ -66,43 +66,6 @@ invoice.head = (args: { invoice: string | { id: string } } | [invoice: string | 
     url: invoice.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::invoice
-* @see app/Http/Controllers/FinanceDetailController.php:19
-* @route '/finance/invoices/{invoice}'
-*/
-const invoiceForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: invoice.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::invoice
-* @see app/Http/Controllers/FinanceDetailController.php:19
-* @route '/finance/invoices/{invoice}'
-*/
-invoiceForm.get = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: invoice.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::invoice
-* @see app/Http/Controllers/FinanceDetailController.php:19
-* @route '/finance/invoices/{invoice}'
-*/
-invoiceForm.head = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: invoice.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-invoice.form = invoiceForm
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::payment
@@ -173,43 +136,6 @@ payment.head = (args: { payment: string | { id: string } } | [payment: string | 
 })
 
 /**
-* @see \App\Http\Controllers\FinanceDetailController::payment
-* @see app/Http/Controllers/FinanceDetailController.php:39
-* @route '/finance/payments/{payment}'
-*/
-const paymentForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: payment.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::payment
-* @see app/Http/Controllers/FinanceDetailController.php:39
-* @route '/finance/payments/{payment}'
-*/
-paymentForm.get = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: payment.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::payment
-* @see app/Http/Controllers/FinanceDetailController.php:39
-* @route '/finance/payments/{payment}'
-*/
-paymentForm.head = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: payment.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-payment.form = paymentForm
-
-/**
 * @see \App\Http\Controllers\FinanceDetailController::paymentReceipt
 * @see app/Http/Controllers/FinanceDetailController.php:51
 * @route '/finance/payments/{payment}/receipt'
@@ -276,43 +202,6 @@ paymentReceipt.head = (args: { payment: string | { id: string } } | [payment: st
     url: paymentReceipt.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::paymentReceipt
-* @see app/Http/Controllers/FinanceDetailController.php:51
-* @route '/finance/payments/{payment}/receipt'
-*/
-const paymentReceiptForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: paymentReceipt.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::paymentReceipt
-* @see app/Http/Controllers/FinanceDetailController.php:51
-* @route '/finance/payments/{payment}/receipt'
-*/
-paymentReceiptForm.get = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: paymentReceipt.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::paymentReceipt
-* @see app/Http/Controllers/FinanceDetailController.php:51
-* @route '/finance/payments/{payment}/receipt'
-*/
-paymentReceiptForm.head = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: paymentReceipt.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-paymentReceipt.form = paymentReceiptForm
 
 const FinanceDetailController = { invoice, payment, paymentReceipt }
 

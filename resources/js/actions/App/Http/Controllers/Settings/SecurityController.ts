@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Settings\SecurityController::edit
 * @see app/Http/Controllers/Settings/SecurityController.php:22
@@ -44,43 +44,6 @@ edit.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\Settings\SecurityController::edit
-* @see app/Http/Controllers/Settings/SecurityController.php:22
-* @route '/settings/security'
-*/
-const editForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\Settings\SecurityController::edit
-* @see app/Http/Controllers/Settings/SecurityController.php:22
-* @route '/settings/security'
-*/
-editForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\Settings\SecurityController::edit
-* @see app/Http/Controllers/Settings/SecurityController.php:22
-* @route '/settings/security'
-*/
-editForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: edit.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-edit.form = editForm
-
-/**
 * @see \App\Http\Controllers\Settings\SecurityController::verifyCurrentPassword
 * @see app/Http/Controllers/Settings/SecurityController.php:83
 * @route '/settings/security/verify-current-password'
@@ -115,28 +78,6 @@ verifyCurrentPassword.post = (options?: RouteQueryOptions): RouteDefinition<'pos
 })
 
 /**
-* @see \App\Http\Controllers\Settings\SecurityController::verifyCurrentPassword
-* @see app/Http/Controllers/Settings/SecurityController.php:83
-* @route '/settings/security/verify-current-password'
-*/
-const verifyCurrentPasswordForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: verifyCurrentPassword.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\Settings\SecurityController::verifyCurrentPassword
-* @see app/Http/Controllers/Settings/SecurityController.php:83
-* @route '/settings/security/verify-current-password'
-*/
-verifyCurrentPasswordForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: verifyCurrentPassword.url(options),
-    method: 'post',
-})
-
-verifyCurrentPassword.form = verifyCurrentPasswordForm
-
-/**
 * @see \App\Http\Controllers\Settings\SecurityController::update
 * @see app/Http/Controllers/Settings/SecurityController.php:69
 * @route '/settings/password'
@@ -169,38 +110,6 @@ update.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(options),
     method: 'put',
 })
-
-/**
-* @see \App\Http\Controllers\Settings\SecurityController::update
-* @see app/Http/Controllers/Settings/SecurityController.php:69
-* @route '/settings/password'
-*/
-const updateForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\Settings\SecurityController::update
-* @see app/Http/Controllers/Settings/SecurityController.php:69
-* @route '/settings/password'
-*/
-updateForm.put = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-update.form = updateForm
 
 const SecurityController = { edit, verifyCurrentPassword, update }
 

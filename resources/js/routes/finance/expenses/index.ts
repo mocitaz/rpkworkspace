@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FinanceController::store
 * @see app/Http/Controllers/FinanceController.php:211
@@ -32,28 +32,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:211
-* @route '/finance/expenses'
-*/
-const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:211
-* @route '/finance/expenses'
-*/
-storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroy
@@ -114,38 +92,6 @@ destroy.delete = (args: { expense: string | { id: string } } | [expense: string 
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::destroy
-* @see app/Http/Controllers/FinanceController.php:248
-* @route '/finance/expenses/{expense}'
-*/
-const destroyForm = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::destroy
-* @see app/Http/Controllers/FinanceController.php:248
-* @route '/finance/expenses/{expense}'
-*/
-destroyForm.delete = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroy.form = destroyForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::update
 * @see app/Http/Controllers/FinanceController.php:274
 * @route '/finance/expenses/{expense}'
@@ -202,38 +148,6 @@ update.put = (args: { expense: string | { id: string } } | [expense: string | { 
     url: update.url(args, options),
     method: 'put',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:274
-* @route '/finance/expenses/{expense}'
-*/
-const updateForm = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:274
-* @route '/finance/expenses/{expense}'
-*/
-updateForm.put = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-update.form = updateForm
 
 const expenses = {
     store: Object.assign(store, store),

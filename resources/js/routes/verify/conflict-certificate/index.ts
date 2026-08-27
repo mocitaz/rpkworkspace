@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\PublicVerificationController::qr
 * @see app/Http/Controllers/PublicVerificationController.php:240
@@ -66,43 +66,6 @@ qr.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: st
     url: qr.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:240
-* @route '/verify/conflict/{conflictCheck}/qr.svg'
-*/
-const qrForm = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: qr.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:240
-* @route '/verify/conflict/{conflictCheck}/qr.svg'
-*/
-qrForm.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: qr.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\PublicVerificationController::qr
-* @see app/Http/Controllers/PublicVerificationController.php:240
-* @route '/verify/conflict/{conflictCheck}/qr.svg'
-*/
-qrForm.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: qr.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-qr.form = qrForm
 
 const conflictCertificate = {
     qr: Object.assign(qr, qr),

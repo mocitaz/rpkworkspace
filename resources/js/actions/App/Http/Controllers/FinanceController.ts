@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FinanceController::index
 * @see app/Http/Controllers/FinanceController.php:64
@@ -42,43 +42,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:64
-* @route '/finance'
-*/
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:64
-* @route '/finance'
-*/
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:64
-* @route '/finance'
-*/
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::exportExcel
@@ -125,43 +88,6 @@ exportExcel.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::exportExcel
-* @see app/Http/Controllers/FinanceController.php:825
-* @route '/finance/export/excel'
-*/
-const exportExcelForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportExcel.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::exportExcel
-* @see app/Http/Controllers/FinanceController.php:825
-* @route '/finance/export/excel'
-*/
-exportExcelForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportExcel.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::exportExcel
-* @see app/Http/Controllers/FinanceController.php:825
-* @route '/finance/export/excel'
-*/
-exportExcelForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportExcel.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-exportExcel.form = exportExcelForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::storeInvoice
 * @see app/Http/Controllers/FinanceController.php:159
 * @route '/finance/invoices'
@@ -194,28 +120,6 @@ storeInvoice.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: storeInvoice.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::storeInvoice
-* @see app/Http/Controllers/FinanceController.php:159
-* @route '/finance/invoices'
-*/
-const storeInvoiceForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storeInvoice.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::storeInvoice
-* @see app/Http/Controllers/FinanceController.php:159
-* @route '/finance/invoices'
-*/
-storeInvoiceForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storeInvoice.url(options),
-    method: 'post',
-})
-
-storeInvoice.form = storeInvoiceForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::updateInvoice
@@ -276,38 +180,6 @@ updateInvoice.put = (args: { invoice: string | { id: string } } | [invoice: stri
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::updateInvoice
-* @see app/Http/Controllers/FinanceController.php:168
-* @route '/finance/invoices/{invoice}'
-*/
-const updateInvoiceForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: updateInvoice.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::updateInvoice
-* @see app/Http/Controllers/FinanceController.php:168
-* @route '/finance/invoices/{invoice}'
-*/
-updateInvoiceForm.put = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: updateInvoice.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-updateInvoice.form = updateInvoiceForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::transitionInvoice
 * @see app/Http/Controllers/FinanceController.php:195
 * @route '/finance/invoices/{invoice}/status'
@@ -366,38 +238,6 @@ transitionInvoice.patch = (args: { invoice: string | { id: string } } | [invoice
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::transitionInvoice
-* @see app/Http/Controllers/FinanceController.php:195
-* @route '/finance/invoices/{invoice}/status'
-*/
-const transitionInvoiceForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: transitionInvoice.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::transitionInvoice
-* @see app/Http/Controllers/FinanceController.php:195
-* @route '/finance/invoices/{invoice}/status'
-*/
-transitionInvoiceForm.patch = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: transitionInvoice.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-transitionInvoice.form = transitionInvoiceForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::storeQuotation
 * @see app/Http/Controllers/FinanceController.php:177
 * @route '/finance/quotations'
@@ -430,28 +270,6 @@ storeQuotation.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => 
     url: storeQuotation.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::storeQuotation
-* @see app/Http/Controllers/FinanceController.php:177
-* @route '/finance/quotations'
-*/
-const storeQuotationForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storeQuotation.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::storeQuotation
-* @see app/Http/Controllers/FinanceController.php:177
-* @route '/finance/quotations'
-*/
-storeQuotationForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storeQuotation.url(options),
-    method: 'post',
-})
-
-storeQuotation.form = storeQuotationForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::updateQuotation
@@ -512,38 +330,6 @@ updateQuotation.put = (args: { quotation: string | { id: string } } | [quotation
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::updateQuotation
-* @see app/Http/Controllers/FinanceController.php:186
-* @route '/finance/quotations/{quotation}'
-*/
-const updateQuotationForm = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: updateQuotation.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::updateQuotation
-* @see app/Http/Controllers/FinanceController.php:186
-* @route '/finance/quotations/{quotation}'
-*/
-updateQuotationForm.put = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: updateQuotation.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-updateQuotation.form = updateQuotationForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::approveQuotation
 * @see app/Http/Controllers/FinanceController.php:203
 * @route '/finance/quotations/{quotation}/approve'
@@ -602,28 +388,6 @@ approveQuotation.post = (args: { quotation: string | { id: string } } | [quotati
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::approveQuotation
-* @see app/Http/Controllers/FinanceController.php:203
-* @route '/finance/quotations/{quotation}/approve'
-*/
-const approveQuotationForm = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: approveQuotation.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::approveQuotation
-* @see app/Http/Controllers/FinanceController.php:203
-* @route '/finance/quotations/{quotation}/approve'
-*/
-approveQuotationForm.post = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: approveQuotation.url(args, options),
-    method: 'post',
-})
-
-approveQuotation.form = approveQuotationForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::storeExpense
 * @see app/Http/Controllers/FinanceController.php:211
 * @route '/finance/expenses'
@@ -656,28 +420,6 @@ storeExpense.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: storeExpense.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::storeExpense
-* @see app/Http/Controllers/FinanceController.php:211
-* @route '/finance/expenses'
-*/
-const storeExpenseForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storeExpense.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::storeExpense
-* @see app/Http/Controllers/FinanceController.php:211
-* @route '/finance/expenses'
-*/
-storeExpenseForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storeExpense.url(options),
-    method: 'post',
-})
-
-storeExpense.form = storeExpenseForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroyExpense
@@ -738,38 +480,6 @@ destroyExpense.delete = (args: { expense: string | { id: string } } | [expense: 
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::destroyExpense
-* @see app/Http/Controllers/FinanceController.php:248
-* @route '/finance/expenses/{expense}'
-*/
-const destroyExpenseForm = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroyExpense.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::destroyExpense
-* @see app/Http/Controllers/FinanceController.php:248
-* @route '/finance/expenses/{expense}'
-*/
-destroyExpenseForm.delete = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroyExpense.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroyExpense.form = destroyExpenseForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::updateExpense
 * @see app/Http/Controllers/FinanceController.php:274
 * @route '/finance/expenses/{expense}'
@@ -828,38 +538,6 @@ updateExpense.put = (args: { expense: string | { id: string } } | [expense: stri
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::updateExpense
-* @see app/Http/Controllers/FinanceController.php:274
-* @route '/finance/expenses/{expense}'
-*/
-const updateExpenseForm = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: updateExpense.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::updateExpense
-* @see app/Http/Controllers/FinanceController.php:274
-* @route '/finance/expenses/{expense}'
-*/
-updateExpenseForm.put = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: updateExpense.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-updateExpense.form = updateExpenseForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::storePayment
 * @see app/Http/Controllers/FinanceController.php:326
 * @route '/finance/payments'
@@ -892,28 +570,6 @@ storePayment.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: storePayment.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::storePayment
-* @see app/Http/Controllers/FinanceController.php:326
-* @route '/finance/payments'
-*/
-const storePaymentForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storePayment.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::storePayment
-* @see app/Http/Controllers/FinanceController.php:326
-* @route '/finance/payments'
-*/
-storePaymentForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storePayment.url(options),
-    method: 'post',
-})
-
-storePayment.form = storePaymentForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::reversePayment
@@ -974,28 +630,6 @@ reversePayment.post = (args: { payment: string | { id: string } } | [payment: st
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::reversePayment
-* @see app/Http/Controllers/FinanceController.php:362
-* @route '/finance/payments/{payment}/reverse'
-*/
-const reversePaymentForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: reversePayment.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::reversePayment
-* @see app/Http/Controllers/FinanceController.php:362
-* @route '/finance/payments/{payment}/reverse'
-*/
-reversePaymentForm.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: reversePayment.url(args, options),
-    method: 'post',
-})
-
-reversePayment.form = reversePaymentForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::refundPayment
 * @see app/Http/Controllers/FinanceController.php:374
 * @route '/finance/payments/{payment}/refund'
@@ -1052,28 +686,6 @@ refundPayment.post = (args: { payment: string | { id: string } } | [payment: str
     url: refundPayment.url(args, options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::refundPayment
-* @see app/Http/Controllers/FinanceController.php:374
-* @route '/finance/payments/{payment}/refund'
-*/
-const refundPaymentForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: refundPayment.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::refundPayment
-* @see app/Http/Controllers/FinanceController.php:374
-* @route '/finance/payments/{payment}/refund'
-*/
-refundPaymentForm.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: refundPayment.url(args, options),
-    method: 'post',
-})
-
-refundPayment.form = refundPaymentForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadInvoice
@@ -1144,43 +756,6 @@ downloadInvoice.head = (args: { invoice: string | { id: string } } | [invoice: s
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::downloadInvoice
-* @see app/Http/Controllers/FinanceController.php:799
-* @route '/finance/invoices/{invoice}/pdf'
-*/
-const downloadInvoiceForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadInvoice.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::downloadInvoice
-* @see app/Http/Controllers/FinanceController.php:799
-* @route '/finance/invoices/{invoice}/pdf'
-*/
-downloadInvoiceForm.get = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadInvoice.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::downloadInvoice
-* @see app/Http/Controllers/FinanceController.php:799
-* @route '/finance/invoices/{invoice}/pdf'
-*/
-downloadInvoiceForm.head = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadInvoice.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-downloadInvoice.form = downloadInvoiceForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::downloadQuotation
 * @see app/Http/Controllers/FinanceController.php:812
 * @route '/finance/quotations/{quotation}/pdf'
@@ -1249,43 +824,6 @@ downloadQuotation.head = (args: { quotation: string | { id: string } } | [quotat
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::downloadQuotation
-* @see app/Http/Controllers/FinanceController.php:812
-* @route '/finance/quotations/{quotation}/pdf'
-*/
-const downloadQuotationForm = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadQuotation.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::downloadQuotation
-* @see app/Http/Controllers/FinanceController.php:812
-* @route '/finance/quotations/{quotation}/pdf'
-*/
-downloadQuotationForm.get = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadQuotation.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::downloadQuotation
-* @see app/Http/Controllers/FinanceController.php:812
-* @route '/finance/quotations/{quotation}/pdf'
-*/
-downloadQuotationForm.head = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadQuotation.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-downloadQuotation.form = downloadQuotationForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::storeAccount
 * @see app/Http/Controllers/FinanceController.php:386
 * @route '/finance/accounts'
@@ -1318,28 +856,6 @@ storeAccount.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: storeAccount.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::storeAccount
-* @see app/Http/Controllers/FinanceController.php:386
-* @route '/finance/accounts'
-*/
-const storeAccountForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storeAccount.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::storeAccount
-* @see app/Http/Controllers/FinanceController.php:386
-* @route '/finance/accounts'
-*/
-storeAccountForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storeAccount.url(options),
-    method: 'post',
-})
-
-storeAccount.form = storeAccountForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeTransfer
@@ -1376,28 +892,6 @@ storeTransfer.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => (
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::storeTransfer
-* @see app/Http/Controllers/FinanceController.php:400
-* @route '/finance/transfers'
-*/
-const storeTransferForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storeTransfer.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::storeTransfer
-* @see app/Http/Controllers/FinanceController.php:400
-* @route '/finance/transfers'
-*/
-storeTransferForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storeTransfer.url(options),
-    method: 'post',
-})
-
-storeTransfer.form = storeTransferForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::storePartnerTransaction
 * @see app/Http/Controllers/FinanceController.php:440
 * @route '/finance/partner-transactions'
@@ -1430,28 +924,6 @@ storePartnerTransaction.post = (options?: RouteQueryOptions): RouteDefinition<'p
     url: storePartnerTransaction.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::storePartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:440
-* @route '/finance/partner-transactions'
-*/
-const storePartnerTransactionForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storePartnerTransaction.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::storePartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:440
-* @route '/finance/partner-transactions'
-*/
-storePartnerTransactionForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storePartnerTransaction.url(options),
-    method: 'post',
-})
-
-storePartnerTransaction.form = storePartnerTransactionForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePartnerTransaction
@@ -1512,38 +984,6 @@ updatePartnerTransaction.put = (args: { partnerTransaction: string | { id: strin
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::updatePartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:503
-* @route '/finance/partner-transactions/{partnerTransaction}'
-*/
-const updatePartnerTransactionForm = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: updatePartnerTransaction.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::updatePartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:503
-* @route '/finance/partner-transactions/{partnerTransaction}'
-*/
-updatePartnerTransactionForm.put = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: updatePartnerTransaction.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-updatePartnerTransaction.form = updatePartnerTransactionForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::destroyPartnerTransaction
 * @see app/Http/Controllers/FinanceController.php:586
 * @route '/finance/partner-transactions/{partnerTransaction}'
@@ -1602,38 +1042,6 @@ destroyPartnerTransaction.delete = (args: { partnerTransaction: string | { id: s
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::destroyPartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:586
-* @route '/finance/partner-transactions/{partnerTransaction}'
-*/
-const destroyPartnerTransactionForm = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroyPartnerTransaction.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::destroyPartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:586
-* @route '/finance/partner-transactions/{partnerTransaction}'
-*/
-destroyPartnerTransactionForm.delete = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroyPartnerTransaction.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroyPartnerTransaction.form = destroyPartnerTransactionForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::storeClientTrustFund
 * @see app/Http/Controllers/FinanceController.php:608
 * @route '/finance/client-trust-funds'
@@ -1668,28 +1076,6 @@ storeClientTrustFund.post = (options?: RouteQueryOptions): RouteDefinition<'post
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::storeClientTrustFund
-* @see app/Http/Controllers/FinanceController.php:608
-* @route '/finance/client-trust-funds'
-*/
-const storeClientTrustFundForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storeClientTrustFund.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::storeClientTrustFund
-* @see app/Http/Controllers/FinanceController.php:608
-* @route '/finance/client-trust-funds'
-*/
-storeClientTrustFundForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storeClientTrustFund.url(options),
-    method: 'post',
-})
-
-storeClientTrustFund.form = storeClientTrustFundForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::storePayroll
 * @see app/Http/Controllers/FinanceController.php:654
 * @route '/finance/payrolls'
@@ -1722,28 +1108,6 @@ storePayroll.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: storePayroll.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::storePayroll
-* @see app/Http/Controllers/FinanceController.php:654
-* @route '/finance/payrolls'
-*/
-const storePayrollForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storePayroll.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::storePayroll
-* @see app/Http/Controllers/FinanceController.php:654
-* @route '/finance/payrolls'
-*/
-storePayrollForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: storePayroll.url(options),
-    method: 'post',
-})
-
-storePayroll.form = storePayrollForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePayroll
@@ -1804,38 +1168,6 @@ updatePayroll.put = (args: { payroll: string | { id: string } } | [payroll: stri
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::updatePayroll
-* @see app/Http/Controllers/FinanceController.php:698
-* @route '/finance/payrolls/{payroll}'
-*/
-const updatePayrollForm = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: updatePayroll.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::updatePayroll
-* @see app/Http/Controllers/FinanceController.php:698
-* @route '/finance/payrolls/{payroll}'
-*/
-updatePayrollForm.put = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: updatePayroll.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-updatePayroll.form = updatePayrollForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::updatePayrollStatus
 * @see app/Http/Controllers/FinanceController.php:762
 * @route '/finance/payrolls/{payroll}/status'
@@ -1892,38 +1224,6 @@ updatePayrollStatus.patch = (args: { payroll: string | { id: string } } | [payro
     url: updatePayrollStatus.url(args, options),
     method: 'patch',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::updatePayrollStatus
-* @see app/Http/Controllers/FinanceController.php:762
-* @route '/finance/payrolls/{payroll}/status'
-*/
-const updatePayrollStatusForm = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: updatePayrollStatus.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::updatePayrollStatus
-* @see app/Http/Controllers/FinanceController.php:762
-* @route '/finance/payrolls/{payroll}/status'
-*/
-updatePayrollStatusForm.patch = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: updatePayrollStatus.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PATCH',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-updatePayrollStatus.form = updatePayrollStatusForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadPayslip
@@ -1992,43 +1292,6 @@ downloadPayslip.head = (args: { payroll: string | { id: string } } | [payroll: s
     url: downloadPayslip.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::downloadPayslip
-* @see app/Http/Controllers/FinanceController.php:784
-* @route '/finance/payrolls/{payroll}/slip'
-*/
-const downloadPayslipForm = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadPayslip.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::downloadPayslip
-* @see app/Http/Controllers/FinanceController.php:784
-* @route '/finance/payrolls/{payroll}/slip'
-*/
-downloadPayslipForm.get = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadPayslip.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::downloadPayslip
-* @see app/Http/Controllers/FinanceController.php:784
-* @route '/finance/payrolls/{payroll}/slip'
-*/
-downloadPayslipForm.head = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: downloadPayslip.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-downloadPayslip.form = downloadPayslipForm
 
 const FinanceController = { index, exportExcel, storeInvoice, updateInvoice, transitionInvoice, storeQuotation, updateQuotation, approveQuotation, storeExpense, destroyExpense, updateExpense, storePayment, reversePayment, refundPayment, downloadInvoice, downloadQuotation, storeAccount, storeTransfer, storePartnerTransaction, updatePartnerTransaction, destroyPartnerTransaction, storeClientTrustFund, storePayroll, updatePayroll, updatePayrollStatus, downloadPayslip }
 

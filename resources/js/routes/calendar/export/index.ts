@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\CalendarController::ics
 * @see app/Http/Controllers/CalendarController.php:142
@@ -42,43 +42,6 @@ ics.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: ics.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\CalendarController::ics
-* @see app/Http/Controllers/CalendarController.php:142
-* @route '/calendar/export/ics'
-*/
-const icsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: ics.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CalendarController::ics
-* @see app/Http/Controllers/CalendarController.php:142
-* @route '/calendar/export/ics'
-*/
-icsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: ics.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CalendarController::ics
-* @see app/Http/Controllers/CalendarController.php:142
-* @route '/calendar/export/ics'
-*/
-icsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: ics.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-ics.form = icsForm
 
 const exportMethod = {
     ics: Object.assign(ics, ics),

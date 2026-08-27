@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\SignatureReminderController::store
 * @see app/Http/Controllers/SignatureReminderController.php:13
@@ -56,28 +56,6 @@ store.post = (args: { signatureRequest: string | { id: string } } | [signatureRe
     url: store.url(args, options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\SignatureReminderController::store
-* @see app/Http/Controllers/SignatureReminderController.php:13
-* @route '/signature-requests/{signatureRequest}/reminders'
-*/
-const storeForm = (args: { signatureRequest: string | { id: string } } | [signatureRequest: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\SignatureReminderController::store
-* @see app/Http/Controllers/SignatureReminderController.php:13
-* @route '/signature-requests/{signatureRequest}/reminders'
-*/
-storeForm.post = (args: { signatureRequest: string | { id: string } } | [signatureRequest: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-store.form = storeForm
 
 const SignatureReminderController = { store }
 

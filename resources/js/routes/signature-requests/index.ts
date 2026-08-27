@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
 import reminders from './reminders'
 /**
 * @see \App\Http\Controllers\SignatureArtifactController::signedRecord
@@ -69,43 +69,6 @@ signedRecord.head = (args: { signatureRequest: string | { id: string } } | [sign
 })
 
 /**
-* @see \App\Http\Controllers\SignatureArtifactController::signedRecord
-* @see app/Http/Controllers/SignatureArtifactController.php:16
-* @route '/signature-requests/{signatureRequest}/signed-record'
-*/
-const signedRecordForm = (args: { signatureRequest: string | { id: string } } | [signatureRequest: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: signedRecord.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\SignatureArtifactController::signedRecord
-* @see app/Http/Controllers/SignatureArtifactController.php:16
-* @route '/signature-requests/{signatureRequest}/signed-record'
-*/
-signedRecordForm.get = (args: { signatureRequest: string | { id: string } } | [signatureRequest: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: signedRecord.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\SignatureArtifactController::signedRecord
-* @see app/Http/Controllers/SignatureArtifactController.php:16
-* @route '/signature-requests/{signatureRequest}/signed-record'
-*/
-signedRecordForm.head = (args: { signatureRequest: string | { id: string } } | [signatureRequest: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: signedRecord.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-signedRecord.form = signedRecordForm
-
-/**
 * @see \App\Http\Controllers\SignatureArtifactController::signedFinal
 * @see app/Http/Controllers/SignatureArtifactController.php:26
 * @route '/signature-requests/{signatureRequest}/signed-final'
@@ -174,43 +137,6 @@ signedFinal.head = (args: { signatureRequest: string | { id: string } } | [signa
 })
 
 /**
-* @see \App\Http\Controllers\SignatureArtifactController::signedFinal
-* @see app/Http/Controllers/SignatureArtifactController.php:26
-* @route '/signature-requests/{signatureRequest}/signed-final'
-*/
-const signedFinalForm = (args: { signatureRequest: string | { id: string } } | [signatureRequest: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: signedFinal.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\SignatureArtifactController::signedFinal
-* @see app/Http/Controllers/SignatureArtifactController.php:26
-* @route '/signature-requests/{signatureRequest}/signed-final'
-*/
-signedFinalForm.get = (args: { signatureRequest: string | { id: string } } | [signatureRequest: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: signedFinal.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\SignatureArtifactController::signedFinal
-* @see app/Http/Controllers/SignatureArtifactController.php:26
-* @route '/signature-requests/{signatureRequest}/signed-final'
-*/
-signedFinalForm.head = (args: { signatureRequest: string | { id: string } } | [signatureRequest: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: signedFinal.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-signedFinal.form = signedFinalForm
-
-/**
 * @see \App\Http\Controllers\SignatureArtifactController::certificate
 * @see app/Http/Controllers/SignatureArtifactController.php:21
 * @route '/signature-requests/{signatureRequest}/certificate'
@@ -277,43 +203,6 @@ certificate.head = (args: { signatureRequest: string | { id: string } } | [signa
     url: certificate.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\SignatureArtifactController::certificate
-* @see app/Http/Controllers/SignatureArtifactController.php:21
-* @route '/signature-requests/{signatureRequest}/certificate'
-*/
-const certificateForm = (args: { signatureRequest: string | { id: string } } | [signatureRequest: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: certificate.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\SignatureArtifactController::certificate
-* @see app/Http/Controllers/SignatureArtifactController.php:21
-* @route '/signature-requests/{signatureRequest}/certificate'
-*/
-certificateForm.get = (args: { signatureRequest: string | { id: string } } | [signatureRequest: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: certificate.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\SignatureArtifactController::certificate
-* @see app/Http/Controllers/SignatureArtifactController.php:21
-* @route '/signature-requests/{signatureRequest}/certificate'
-*/
-certificateForm.head = (args: { signatureRequest: string | { id: string } } | [signatureRequest: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: certificate.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-certificate.form = certificateForm
 
 const signatureRequests = {
     reminders: Object.assign(reminders, reminders),

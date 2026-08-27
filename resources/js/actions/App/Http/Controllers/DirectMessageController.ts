@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\DirectMessageController::index
 * @see app/Http/Controllers/DirectMessageController.php:21
@@ -44,43 +44,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\DirectMessageController::index
-* @see app/Http/Controllers/DirectMessageController.php:21
-* @route '/chat'
-*/
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\DirectMessageController::index
-* @see app/Http/Controllers/DirectMessageController.php:21
-* @route '/chat'
-*/
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\DirectMessageController::index
-* @see app/Http/Controllers/DirectMessageController.php:21
-* @route '/chat'
-*/
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
-
-/**
 * @see \App\Http\Controllers\DirectMessageController::contacts
 * @see app/Http/Controllers/DirectMessageController.php:64
 * @route '/api/chat/contacts'
@@ -123,43 +86,6 @@ contacts.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: contacts.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\DirectMessageController::contacts
-* @see app/Http/Controllers/DirectMessageController.php:64
-* @route '/api/chat/contacts'
-*/
-const contactsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: contacts.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\DirectMessageController::contacts
-* @see app/Http/Controllers/DirectMessageController.php:64
-* @route '/api/chat/contacts'
-*/
-contactsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: contacts.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\DirectMessageController::contacts
-* @see app/Http/Controllers/DirectMessageController.php:64
-* @route '/api/chat/contacts'
-*/
-contactsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: contacts.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-contacts.form = contactsForm
 
 /**
 * @see \App\Http\Controllers\DirectMessageController::messages
@@ -230,43 +156,6 @@ messages.head = (args: { user: number | { id: number } } | [user: number | { id:
 })
 
 /**
-* @see \App\Http\Controllers\DirectMessageController::messages
-* @see app/Http/Controllers/DirectMessageController.php:85
-* @route '/api/chat/messages/{user}'
-*/
-const messagesForm = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: messages.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\DirectMessageController::messages
-* @see app/Http/Controllers/DirectMessageController.php:85
-* @route '/api/chat/messages/{user}'
-*/
-messagesForm.get = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: messages.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\DirectMessageController::messages
-* @see app/Http/Controllers/DirectMessageController.php:85
-* @route '/api/chat/messages/{user}'
-*/
-messagesForm.head = (args: { user: number | { id: number } } | [user: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: messages.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-messages.form = messagesForm
-
-/**
 * @see \App\Http\Controllers\DirectMessageController::toggleReaction
 * @see app/Http/Controllers/DirectMessageController.php:169
 * @route '/api/chat/messages/{message}/reaction'
@@ -325,28 +214,6 @@ toggleReaction.post = (args: { message: string | { id: string } } | [message: st
 })
 
 /**
-* @see \App\Http\Controllers\DirectMessageController::toggleReaction
-* @see app/Http/Controllers/DirectMessageController.php:169
-* @route '/api/chat/messages/{message}/reaction'
-*/
-const toggleReactionForm = (args: { message: string | { id: string } } | [message: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: toggleReaction.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\DirectMessageController::toggleReaction
-* @see app/Http/Controllers/DirectMessageController.php:169
-* @route '/api/chat/messages/{message}/reaction'
-*/
-toggleReactionForm.post = (args: { message: string | { id: string } } | [message: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: toggleReaction.url(args, options),
-    method: 'post',
-})
-
-toggleReaction.form = toggleReactionForm
-
-/**
 * @see \App\Http\Controllers\DirectMessageController::store
 * @see app/Http/Controllers/DirectMessageController.php:111
 * @route '/chat'
@@ -379,28 +246,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\DirectMessageController::store
-* @see app/Http/Controllers/DirectMessageController.php:111
-* @route '/chat'
-*/
-const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\DirectMessageController::store
-* @see app/Http/Controllers/DirectMessageController.php:111
-* @route '/chat'
-*/
-storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-store.form = storeForm
 
 const DirectMessageController = { index, contacts, messages, toggleReaction, store }
 

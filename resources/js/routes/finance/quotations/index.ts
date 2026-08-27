@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FinanceController::store
 * @see app/Http/Controllers/FinanceController.php:177
@@ -32,28 +32,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:177
-* @route '/finance/quotations'
-*/
-const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:177
-* @route '/finance/quotations'
-*/
-storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
@@ -114,38 +92,6 @@ update.put = (args: { quotation: string | { id: string } } | [quotation: string 
 })
 
 /**
-* @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:186
-* @route '/finance/quotations/{quotation}'
-*/
-const updateForm = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:186
-* @route '/finance/quotations/{quotation}'
-*/
-updateForm.put = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-update.form = updateForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::approve
 * @see app/Http/Controllers/FinanceController.php:203
 * @route '/finance/quotations/{quotation}/approve'
@@ -202,28 +148,6 @@ approve.post = (args: { quotation: string | { id: string } } | [quotation: strin
     url: approve.url(args, options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::approve
-* @see app/Http/Controllers/FinanceController.php:203
-* @route '/finance/quotations/{quotation}/approve'
-*/
-const approveForm = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: approve.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::approve
-* @see app/Http/Controllers/FinanceController.php:203
-* @route '/finance/quotations/{quotation}/approve'
-*/
-approveForm.post = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: approve.url(args, options),
-    method: 'post',
-})
-
-approve.form = approveForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
@@ -292,43 +216,6 @@ pdf.head = (args: { quotation: string | { id: string } } | [quotation: string | 
     url: pdf.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:812
-* @route '/finance/quotations/{quotation}/pdf'
-*/
-const pdfForm = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: pdf.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:812
-* @route '/finance/quotations/{quotation}/pdf'
-*/
-pdfForm.get = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: pdf.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:812
-* @route '/finance/quotations/{quotation}/pdf'
-*/
-pdfForm.head = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: pdf.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-pdf.form = pdfForm
 
 const quotations = {
     store: Object.assign(store, store),

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../wayfinder'
 import audit from './audit'
 import users from './users'
 import roles from './roles'
@@ -45,43 +45,6 @@ systemReadiness.head = (options?: RouteQueryOptions): RouteDefinition<'head'> =>
     url: systemReadiness.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\SystemReadinessController::__invoke
-* @see app/Http/Controllers/SystemReadinessController.php:11
-* @route '/admin/system-readiness'
-*/
-const systemReadinessForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: systemReadiness.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\SystemReadinessController::__invoke
-* @see app/Http/Controllers/SystemReadinessController.php:11
-* @route '/admin/system-readiness'
-*/
-systemReadinessForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: systemReadiness.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\SystemReadinessController::__invoke
-* @see app/Http/Controllers/SystemReadinessController.php:11
-* @route '/admin/system-readiness'
-*/
-systemReadinessForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: systemReadiness.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-systemReadiness.form = systemReadinessForm
 
 const admin = {
     audit: Object.assign(audit, audit),

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\SignatureRequestController::store
 * @see app/Http/Controllers/SignatureRequestController.php:13
@@ -56,28 +56,6 @@ store.post = (args: { document: string | { id: string } } | [document: string | 
     url: store.url(args, options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\SignatureRequestController::store
-* @see app/Http/Controllers/SignatureRequestController.php:13
-* @route '/documents/{document}/signature-requests'
-*/
-const storeForm = (args: { document: string | { id: string } } | [document: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\SignatureRequestController::store
-* @see app/Http/Controllers/SignatureRequestController.php:13
-* @route '/documents/{document}/signature-requests'
-*/
-storeForm.post = (args: { document: string | { id: string } } | [document: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-store.form = storeForm
 
 const signatureRequests = {
     store: Object.assign(store, store),

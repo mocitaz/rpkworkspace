@@ -363,6 +363,9 @@ export default function MatterShow({
     const [eventToDelete, setEventToDelete] = useState<
         Matter['events'][number] | null
     >(null);
+    const [editingEvent, setEditingEvent] = useState<
+        Matter['events'][number] | null
+    >(null);
     const [recordingOutcomeEvent, setRecordingOutcomeEvent] = useState<
         Matter['events'][number] | null
     >(null);
@@ -1363,23 +1366,43 @@ export default function MatterShow({
                                                                     {/* Event Status Badges */}
                                                                     {event.status === 'completed' && (
                                                                         <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                                                                            ✓ Sidang Selesai
+                                                                            Sidang Selesai
                                                                         </span>
                                                                     )}
                                                                     {event.status === 'postponed' && (
                                                                         <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
-                                                                            ↺ Ditunda / Lanjutan
+                                                                            Ditunda / Lanjutan
                                                                         </span>
                                                                     )}
                                                                     {event.status === 'cancelled' && (
                                                                         <span className="rounded bg-rose-100 px-1.5 py-0.5 text-[9px] font-bold text-rose-800 dark:bg-rose-950/60 dark:text-rose-300">
-                                                                            ✕ Dibatalkan
+                                                                            Dibatalkan
                                                                         </span>
                                                                     )}
                                                                     {(!event.status || event.status === 'scheduled') && (
                                                                         <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[9px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                                                            📅 Terjadwal
+                                                                            Terjadwal
                                                                         </span>
+                                                                    )}
+
+                                                                    {/* Action: Edit Agenda & Notes */}
+                                                                    {can.update && (
+                                                                        <button
+                                                                            type="button"
+                                                                            disabled={Boolean(
+                                                                                matter.legal_hold_at,
+                                                                            )}
+                                                                            onClick={() =>
+                                                                                setEditingEvent(
+                                                                                    event,
+                                                                                )
+                                                                            }
+                                                                            className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-bold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
+                                                                            title="Edit Agenda & Catatan"
+                                                                        >
+                                                                            <Pencil className="size-3 text-slate-400" />
+                                                                            Edit / Catatan
+                                                                        </button>
                                                                     )}
 
                                                                     {/* Action: Record Hearing Outcome Button */}
@@ -2761,6 +2784,15 @@ export default function MatterShow({
                     onClose={() => setRecordingOutcomeEvent(null)}
                 />
             )}
+
+            {/* Edit Event & Notes Dialog */}
+            {editingEvent && (
+                <EditEventDialog
+                    matterId={matter.id}
+                    event={editingEvent}
+                    onClose={() => setEditingEvent(null)}
+                />
+            )}
         </>
     );
 }
@@ -3197,6 +3229,17 @@ function MatterOperationDialog({
                                             label="Lokasi / Ruang Sidang"
                                             placeholder="Contoh: Ruang Sidang Utama PN Bandung"
                                         />
+                                        <div className="grid gap-1">
+                                            <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                                Catatan / Rincian Agenda (Opsional)
+                                            </Label>
+                                            <textarea
+                                                name="description"
+                                                rows={3}
+                                                className="rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs leading-relaxed text-slate-900 outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                                placeholder="Tuliskan catatan, persiapan sidang, agenda pembahasan, atau instruksi..."
+                                            />
+                                        </div>
                                     </>
                                 )}
 
@@ -3607,17 +3650,17 @@ function PartyOperationFields({ matterId }: { matterId: string }) {
                         {previewResult.status === 'clear' ? (
                             <>
                                 <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                <span>✓ Bebas Benturan Kepentingan</span>
+                                <span>Bebas Benturan Kepentingan</span>
                             </>
                         ) : previewResult.status === 'blocked' ? (
                             <>
                                 <ShieldAlert className="size-3.5 text-rose-600 dark:text-rose-400" />
-                                <span>🛑 Peringatan Benturan Kepentingan Langsung</span>
+                                <span>Peringatan Benturan Kepentingan Langsung</span>
                             </>
                         ) : (
                             <>
                                 <ShieldAlert className="size-3.5 text-amber-600 dark:text-amber-400" />
-                                <span>⚠ Potensi Benturan Kepentingan Terdeteksi</span>
+                                <span>Potensi Benturan Kepentingan Terdeteksi</span>
                             </>
                         )}
                     </div>
@@ -3804,17 +3847,17 @@ function RecordHearingOutcomeModal({
                                     {[
                                         {
                                             key: 'completed',
-                                            label: '✓ Selesai Sesuai Agenda',
+                                            label: 'Selesai Sesuai Agenda',
                                             desc: 'Sidang terlaksana tuntas',
                                         },
                                         {
                                             key: 'postponed',
-                                            label: '↺ Ditunda / Lanjutan',
+                                            label: 'Ditunda / Lanjutan',
                                             desc: 'Ada sidang berikutnya',
                                         },
                                         {
                                             key: 'cancelled',
-                                            label: '✕ Dibatalkan / Gugur',
+                                            label: 'Dibatalkan / Gugur',
                                             desc: 'Sidang tidak berjalan',
                                         },
                                     ].map((opt) => (
@@ -4070,6 +4113,167 @@ function RecordHearingOutcomeModal({
                                             <Check className="mr-1.5 size-3.5" />
                                             Simpan Hasil Sidang
                                         </>
+                                    )}
+                                </Button>
+                            </div>
+                        </>
+                    )}
+                </Form>
+            </DialogContent>
+        </Dialog>
+    );
+}
+
+function EditEventDialog({
+    matterId,
+    event,
+    onClose,
+}: {
+    matterId: string;
+    event: Matter['events'][number];
+    onClose: () => void;
+}) {
+    return (
+        <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-4 shadow-xl sm:max-w-lg dark:border-white/10 dark:bg-[#16181d]">
+                <DialogHeader className="border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                    <div className="flex items-center gap-2.5">
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400">
+                            <Gavel className="size-4" />
+                        </div>
+                        <div>
+                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+                                Edit Agenda &amp; Catatan
+                            </DialogTitle>
+                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                Perbarui jadwal, lokasi, dan rincian catatan agenda perkara.
+                            </DialogDescription>
+                        </div>
+                    </div>
+                </DialogHeader>
+
+                <Form
+                    action={eventRoutes.update.url({
+                        matter: matterId,
+                        event: event.id,
+                    })}
+                    method="put"
+                    className="space-y-3 pt-1"
+                    onSuccess={onClose}
+                >
+                    {({ processing, errors }) => (
+                        <>
+                            <Field
+                                name="title"
+                                label="Judul Agenda / Sidang"
+                                required
+                                defaultValue={event.title}
+                                placeholder="Contoh: Sidang Pemeriksaan Saksi Ahli"
+                            />
+                            <div className="grid gap-1">
+                                <Label
+                                    htmlFor="edit_event_type"
+                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                >
+                                    Jenis Agenda
+                                </Label>
+                                <div className="relative">
+                                    <select
+                                        name="event_type"
+                                        id="edit_event_type"
+                                        defaultValue={event.event_type}
+                                        className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-900 outline-hidden hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                    >
+                                        <option value="court">
+                                            Sidang Pengadilan
+                                        </option>
+                                        <option value="meeting">
+                                            Pertemuan Klien / Negosiasi
+                                        </option>
+                                        <option value="hearing">
+                                            Pemeriksaan / Mediasi
+                                        </option>
+                                        <option value="internal">
+                                            Rapat Internal Tim
+                                        </option>
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
+                                </div>
+                            </div>
+                            <div className="grid gap-2 sm:grid-cols-2">
+                                <Field
+                                    name="starts_at"
+                                    label="Waktu Mulai"
+                                    type="datetime-local"
+                                    required
+                                    defaultValue={
+                                        event.starts_at
+                                            ? new Date(event.starts_at)
+                                                  .toISOString()
+                                                  .slice(0, 16)
+                                            : ''
+                                    }
+                                />
+                                <Field
+                                    name="ends_at"
+                                    label="Waktu Selesai"
+                                    type="datetime-local"
+                                    defaultValue={
+                                        event.ends_at
+                                            ? new Date(event.ends_at)
+                                                  .toISOString()
+                                                  .slice(0, 16)
+                                            : ''
+                                    }
+                                />
+                            </div>
+                            <Field
+                                name="location"
+                                label="Lokasi / Ruang Sidang"
+                                defaultValue={event.location ?? ''}
+                                placeholder="Contoh: Ruang Sidang Utama PN Bandung"
+                            />
+                            <div className="grid gap-1">
+                                <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                    Catatan / Rincian Agenda (Opsional)
+                                </Label>
+                                <textarea
+                                    name="description"
+                                    rows={3}
+                                    defaultValue={event.description ?? ''}
+                                    className="rounded-lg border border-slate-200 bg-slate-50/70 p-2 text-xs leading-relaxed text-slate-900 outline-hidden focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    placeholder="Tuliskan catatan, persiapan sidang, saksi yang dihadirkan, atau instruksi khusus..."
+                                />
+                            </div>
+
+                            {Object.keys(errors).length > 0 && (
+                                <p className="text-xs font-medium text-rose-600">
+                                    {Object.values(errors).join(' ')}
+                                </p>
+                            )}
+
+                            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-2.5 dark:border-white/[0.04]">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={onClose}
+                                    className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
+                                >
+                                    Batal
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    disabled={processing}
+                                    className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                                >
+                                    {processing ? (
+                                        <>
+                                            <Spinner className="mr-1.5 size-3" />
+                                            Menyimpan...
+                                        </>
+                                    ) : (
+                                        'Simpan Perubahan'
                                     )}
                                 </Button>
                             </div>

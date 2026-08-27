@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\MatterChronologyController::store
 * @see app/Http/Controllers/MatterChronologyController.php:16
@@ -58,28 +58,6 @@ store.post = (args: { matter: string | { id: string } } | [matter: string | { id
 })
 
 /**
-* @see \App\Http\Controllers\MatterChronologyController::store
-* @see app/Http/Controllers/MatterChronologyController.php:16
-* @route '/matters/{matter}/chronologies'
-*/
-const storeForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\MatterChronologyController::store
-* @see app/Http/Controllers/MatterChronologyController.php:16
-* @route '/matters/{matter}/chronologies'
-*/
-storeForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-store.form = storeForm
-
-/**
 * @see \App\Http\Controllers\MatterChronologyController::destroy
 * @see app/Http/Controllers/MatterChronologyController.php:42
 * @route '/matters/{matter}/chronologies/{chronology}'
@@ -133,38 +111,6 @@ destroy.delete = (args: { matter: string | { id: string }, chronology: string | 
     url: destroy.url(args, options),
     method: 'delete',
 })
-
-/**
-* @see \App\Http\Controllers\MatterChronologyController::destroy
-* @see app/Http/Controllers/MatterChronologyController.php:42
-* @route '/matters/{matter}/chronologies/{chronology}'
-*/
-const destroyForm = (args: { matter: string | { id: string }, chronology: string | { id: string } } | [matter: string | { id: string }, chronology: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\MatterChronologyController::destroy
-* @see app/Http/Controllers/MatterChronologyController.php:42
-* @route '/matters/{matter}/chronologies/{chronology}'
-*/
-destroyForm.delete = (args: { matter: string | { id: string }, chronology: string | { id: string } } | [matter: string | { id: string }, chronology: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroy.form = destroyForm
 
 /**
 * @see \App\Http\Controllers\MatterChronologyController::exportPdf
@@ -233,43 +179,6 @@ exportPdf.head = (args: { matter: string | { id: string } } | [matter: string | 
     url: exportPdf.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\MatterChronologyController::exportPdf
-* @see app/Http/Controllers/MatterChronologyController.php:57
-* @route '/matters/{matter}/chronologies/pdf'
-*/
-const exportPdfForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportPdf.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\MatterChronologyController::exportPdf
-* @see app/Http/Controllers/MatterChronologyController.php:57
-* @route '/matters/{matter}/chronologies/pdf'
-*/
-exportPdfForm.get = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportPdf.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\MatterChronologyController::exportPdf
-* @see app/Http/Controllers/MatterChronologyController.php:57
-* @route '/matters/{matter}/chronologies/pdf'
-*/
-exportPdfForm.head = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportPdf.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-exportPdf.form = exportPdfForm
 
 const MatterChronologyController = { store, destroy, exportPdf }
 

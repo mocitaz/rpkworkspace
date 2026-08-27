@@ -65,6 +65,30 @@ class MatterOperationController extends Controller
         return back()->with('success', 'Agenda ditambahkan.');
     }
 
+    public function updateEvent(Request $request, Matter $matter, MatterEvent $event, EnsureMatterIsNotOnLegalHold $hold, AuditService $audit): RedirectResponse
+    {
+        Gate::authorize('update', $matter);
+        $hold->handle($matter);
+
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'event_type' => ['required', 'string', 'max:100'],
+            'starts_at' => ['required', 'date'],
+            'ends_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
+            'location' => ['nullable', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $event->update($validated);
+
+        $audit->record($event, 'matter.event_updated', [
+            'matter_id' => $matter->getKey(),
+            'title' => $event->title,
+        ], $request->user(), $request);
+
+        return back()->with('success', 'Agenda dan catatan berhasil diperbarui.');
+    }
+
     public function storeNote(StoreMatterNoteRequest $request, Matter $matter, EnsureMatterIsNotOnLegalHold $hold, AuditService $audit): RedirectResponse
     {
         Gate::authorize('update', $matter);
@@ -283,7 +307,7 @@ class MatterOperationController extends Controller
             default => $validated['status'],
         };
 
-        $commentBody = "⚖️ **[Hasil Sidang: {$event->title}]**\n\n".
+        $commentBody = "**[Hasil Sidang: {$event->title}]**\n\n".
             "**Status Sidang:** {$statusLabel}\n".
             '**Advokat Pendamping:** '.($attendedUser?->name ?? $request->user()->name)."\n\n".
             "**Ringkasan Hasil:**\n".$validated['outcome'];
@@ -294,9 +318,9 @@ class MatterOperationController extends Controller
 
         if ($nextEvent) {
             $commentBody .= "\n\n**Jadwal Sidang Lanjutan:**\n".
-                '📅 '.($nextEvent->starts_at?->translatedFormat('l, d F Y - H:i') ?? '-')." WIB\n".
-                '📌 Agenda: '.$nextEvent->title."\n".
-                '📍 Lokasi: '.($nextEvent->location ?? '-');
+                'Waktu: '.($nextEvent->starts_at?->translatedFormat('l, d F Y - H:i') ?? '-')." WIB\n".
+                'Agenda: '.$nextEvent->title."\n".
+                'Lokasi: '.($nextEvent->location ?? '-');
         }
 
         $matter->comments()->create([

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\CalendarController::feed
 * @see app/Http/Controllers/CalendarController.php:72
@@ -62,43 +62,6 @@ feed.head = (args: { token: string | number } | [token: string | number ] | stri
 })
 
 /**
-* @see \App\Http\Controllers\CalendarController::feed
-* @see app/Http/Controllers/CalendarController.php:72
-* @route '/calendar/feed/{token}.ics'
-*/
-const feedForm = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: feed.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CalendarController::feed
-* @see app/Http/Controllers/CalendarController.php:72
-* @route '/calendar/feed/{token}.ics'
-*/
-feedForm.get = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: feed.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CalendarController::feed
-* @see app/Http/Controllers/CalendarController.php:72
-* @route '/calendar/feed/{token}.ics'
-*/
-feedForm.head = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: feed.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-feed.form = feedForm
-
-/**
 * @see \App\Http\Controllers\CalendarController::__invoke
 * @see app/Http/Controllers/CalendarController.php:25
 * @route '/calendar'
@@ -141,43 +104,6 @@ CalendarController.head = (options?: RouteQueryOptions): RouteDefinition<'head'>
     url: CalendarController.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\CalendarController::__invoke
-* @see app/Http/Controllers/CalendarController.php:25
-* @route '/calendar'
-*/
-const CalendarControllerForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: CalendarController.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CalendarController::__invoke
-* @see app/Http/Controllers/CalendarController.php:25
-* @route '/calendar'
-*/
-CalendarControllerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: CalendarController.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CalendarController::__invoke
-* @see app/Http/Controllers/CalendarController.php:25
-* @route '/calendar'
-*/
-CalendarControllerForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: CalendarController.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-CalendarController.form = CalendarControllerForm
 
 /**
 * @see \App\Http\Controllers\CalendarController::exportIcs
@@ -224,43 +150,6 @@ exportIcs.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\CalendarController::exportIcs
-* @see app/Http/Controllers/CalendarController.php:142
-* @route '/calendar/export/ics'
-*/
-const exportIcsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportIcs.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CalendarController::exportIcs
-* @see app/Http/Controllers/CalendarController.php:142
-* @route '/calendar/export/ics'
-*/
-exportIcsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportIcs.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\CalendarController::exportIcs
-* @see app/Http/Controllers/CalendarController.php:142
-* @route '/calendar/export/ics'
-*/
-exportIcsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: exportIcs.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-exportIcs.form = exportIcsForm
-
-/**
 * @see \App\Http\Controllers\CalendarController::rotateToken
 * @see app/Http/Controllers/CalendarController.php:132
 * @route '/calendar/feed/rotate'
@@ -293,28 +182,6 @@ rotateToken.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: rotateToken.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\CalendarController::rotateToken
-* @see app/Http/Controllers/CalendarController.php:132
-* @route '/calendar/feed/rotate'
-*/
-const rotateTokenForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: rotateToken.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\CalendarController::rotateToken
-* @see app/Http/Controllers/CalendarController.php:132
-* @route '/calendar/feed/rotate'
-*/
-rotateTokenForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: rotateToken.url(options),
-    method: 'post',
-})
-
-rotateToken.form = rotateTokenForm
 
 CalendarController.feed = feed
 CalendarController.exportIcs = exportIcs

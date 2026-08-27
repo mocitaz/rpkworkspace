@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\GovernanceController::download
 * @see app/Http/Controllers/GovernanceController.php:290
@@ -66,43 +66,6 @@ download.head = (args: { matterExport: string | { id: string } } | [matterExport
     url: download.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\GovernanceController::download
-* @see app/Http/Controllers/GovernanceController.php:290
-* @route '/governance/exports/{matterExport}/download'
-*/
-const downloadForm = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: download.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\GovernanceController::download
-* @see app/Http/Controllers/GovernanceController.php:290
-* @route '/governance/exports/{matterExport}/download'
-*/
-downloadForm.get = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: download.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\GovernanceController::download
-* @see app/Http/Controllers/GovernanceController.php:290
-* @route '/governance/exports/{matterExport}/download'
-*/
-downloadForm.head = (args: { matterExport: string | { id: string } } | [matterExport: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: download.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-download.form = downloadForm
 
 const exports = {
     download: Object.assign(download, download),

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ClientController::store
 * @see app/Http/Controllers/ClientController.php:149
@@ -58,28 +58,6 @@ store.post = (args: { client: string | { id: string } } | [client: string | { id
 })
 
 /**
-* @see \App\Http\Controllers\ClientController::store
-* @see app/Http/Controllers/ClientController.php:149
-* @route '/clients/{client}/compliance-documents'
-*/
-const storeForm = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ClientController::store
-* @see app/Http/Controllers/ClientController.php:149
-* @route '/clients/{client}/compliance-documents'
-*/
-storeForm.post = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-store.form = storeForm
-
-/**
 * @see \App\Http\Controllers\ClientController::update
 * @see app/Http/Controllers/ClientController.php:177
 * @route '/clients/{client}/compliance-documents/{complianceDocument}'
@@ -135,38 +113,6 @@ update.put = (args: { client: string | { id: string }, complianceDocument: strin
 })
 
 /**
-* @see \App\Http\Controllers\ClientController::update
-* @see app/Http/Controllers/ClientController.php:177
-* @route '/clients/{client}/compliance-documents/{complianceDocument}'
-*/
-const updateForm = (args: { client: string | { id: string }, complianceDocument: string | { id: string } } | [client: string | { id: string }, complianceDocument: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ClientController::update
-* @see app/Http/Controllers/ClientController.php:177
-* @route '/clients/{client}/compliance-documents/{complianceDocument}'
-*/
-updateForm.put = (args: { client: string | { id: string }, complianceDocument: string | { id: string } } | [client: string | { id: string }, complianceDocument: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-update.form = updateForm
-
-/**
 * @see \App\Http\Controllers\ClientController::destroy
 * @see app/Http/Controllers/ClientController.php:201
 * @route '/clients/{client}/compliance-documents/{complianceDocument}'
@@ -220,38 +166,6 @@ destroy.delete = (args: { client: string | { id: string }, complianceDocument: s
     url: destroy.url(args, options),
     method: 'delete',
 })
-
-/**
-* @see \App\Http\Controllers\ClientController::destroy
-* @see app/Http/Controllers/ClientController.php:201
-* @route '/clients/{client}/compliance-documents/{complianceDocument}'
-*/
-const destroyForm = (args: { client: string | { id: string }, complianceDocument: string | { id: string } } | [client: string | { id: string }, complianceDocument: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ClientController::destroy
-* @see app/Http/Controllers/ClientController.php:201
-* @route '/clients/{client}/compliance-documents/{complianceDocument}'
-*/
-destroyForm.delete = (args: { client: string | { id: string }, complianceDocument: string | { id: string } } | [client: string | { id: string }, complianceDocument: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroy.form = destroyForm
 
 const compliance = {
     store: Object.assign(store, store),

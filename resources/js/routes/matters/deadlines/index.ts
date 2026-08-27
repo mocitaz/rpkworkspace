@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\MatterOperationController::store
 * @see app/Http/Controllers/MatterOperationController.php:36
@@ -58,30 +58,8 @@ store.post = (args: { matter: string | { id: string } } | [matter: string | { id
 })
 
 /**
-* @see \App\Http\Controllers\MatterOperationController::store
-* @see app/Http/Controllers/MatterOperationController.php:36
-* @route '/matters/{matter}/deadlines'
-*/
-const storeForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\MatterOperationController::store
-* @see app/Http/Controllers/MatterOperationController.php:36
-* @route '/matters/{matter}/deadlines'
-*/
-storeForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-store.form = storeForm
-
-/**
 * @see \App\Http\Controllers\MatterOperationController::destroy
-* @see app/Http/Controllers/MatterOperationController.php:167
+* @see app/Http/Controllers/MatterOperationController.php:191
 * @route '/matters/{matter}/deadlines/{deadline}'
 */
 export const destroy = (args: { matter: string | { id: string }, deadline: string | { id: string } } | [matter: string | { id: string }, deadline: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -96,7 +74,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroy
-* @see app/Http/Controllers/MatterOperationController.php:167
+* @see app/Http/Controllers/MatterOperationController.php:191
 * @route '/matters/{matter}/deadlines/{deadline}'
 */
 destroy.url = (args: { matter: string | { id: string }, deadline: string | { id: string } } | [matter: string | { id: string }, deadline: string | { id: string } ], options?: RouteQueryOptions) => {
@@ -126,45 +104,13 @@ destroy.url = (args: { matter: string | { id: string }, deadline: string | { id:
 
 /**
 * @see \App\Http\Controllers\MatterOperationController::destroy
-* @see app/Http/Controllers/MatterOperationController.php:167
+* @see app/Http/Controllers/MatterOperationController.php:191
 * @route '/matters/{matter}/deadlines/{deadline}'
 */
 destroy.delete = (args: { matter: string | { id: string }, deadline: string | { id: string } } | [matter: string | { id: string }, deadline: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: destroy.url(args, options),
     method: 'delete',
 })
-
-/**
-* @see \App\Http\Controllers\MatterOperationController::destroy
-* @see app/Http/Controllers/MatterOperationController.php:167
-* @route '/matters/{matter}/deadlines/{deadline}'
-*/
-const destroyForm = (args: { matter: string | { id: string }, deadline: string | { id: string } } | [matter: string | { id: string }, deadline: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\MatterOperationController::destroy
-* @see app/Http/Controllers/MatterOperationController.php:167
-* @route '/matters/{matter}/deadlines/{deadline}'
-*/
-destroyForm.delete = (args: { matter: string | { id: string }, deadline: string | { id: string } } | [matter: string | { id: string }, deadline: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroy.form = destroyForm
 
 const deadlines = {
     store: Object.assign(store, store),

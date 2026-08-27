@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\DashboardController::__invoke
 * @see app/Http/Controllers/DashboardController.php:18
@@ -42,42 +42,5 @@ DashboardController.head = (options?: RouteQueryOptions): RouteDefinition<'head'
     url: DashboardController.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\DashboardController::__invoke
-* @see app/Http/Controllers/DashboardController.php:18
-* @route '/dashboard'
-*/
-const DashboardControllerForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: DashboardController.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\DashboardController::__invoke
-* @see app/Http/Controllers/DashboardController.php:18
-* @route '/dashboard'
-*/
-DashboardControllerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: DashboardController.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\DashboardController::__invoke
-* @see app/Http/Controllers/DashboardController.php:18
-* @route '/dashboard'
-*/
-DashboardControllerForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: DashboardController.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-DashboardController.form = DashboardControllerForm
 
 export default DashboardController
