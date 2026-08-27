@@ -83,6 +83,7 @@ type Matter = {
     matter_number: string;
     title: string;
     client?: string;
+    client_id?: string;
     budget_amount?: number;
 };
 
@@ -2325,6 +2326,28 @@ function FinanceDialog({
     const [taxRate, setTaxRate] = useState<string>('11');
     const [expensePartnerId, setExpensePartnerId] = useState<string>('');
 
+    // Payment Form States
+    const [paymentMatterId, setPaymentMatterId] = useState<string>('');
+    const [paymentClientId, setPaymentClientId] = useState<string>('');
+    const [paymentAmount, setPaymentAmount] = useState<string>('');
+    const [paymentAllocations, setPaymentAllocations] = useState<Record<string, string>>({});
+
+    const handleMatterChange = (newMatterId: string) => {
+        setPaymentMatterId(newMatterId);
+        const selected = matters.find((m) => m.id === newMatterId);
+        if (selected?.client_id) {
+            setPaymentClientId(selected.client_id);
+        }
+    };
+
+    const numericPaymentAmount = Number(paymentAmount) || 0;
+    const totalAllocatedAmount = Object.values(paymentAllocations).reduce(
+        (acc, val) => acc + (Number(val) || 0),
+        0,
+    );
+    const remainingToAllocate = Math.max(0, numericPaymentAmount - totalAllocatedAmount);
+    const isAllocationExceeded = totalAllocatedAmount > numericPaymentAmount && numericPaymentAmount > 0;
+
     const subtotal = lineItems.reduce((acc, item) => {
         const qty = Number(item.quantity) || 0;
         const amt = Number(item.unitAmount) || 0;
@@ -2858,32 +2881,78 @@ function FinanceDialog({
                                 <>
                                     <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.06] dark:bg-[#16181f]">
                                         <div className="mb-2.5 text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
-                                            Terkait Perkara &amp; Nominal Pembayaran
+                                            Terkait Perkara &amp; Identitas Klien
                                         </div>
-                                        <div className="space-y-3">
-                                            <SelectField
-                                                name="matter_id"
-                                                label="Terkait Perkara (Matter)"
-                                                matters={matters}
-                                                required={false}
-                                                placeholder="-- Pilih Perkara (Opsional) --"
-                                            />
+                                        <div className="grid gap-3.5 sm:grid-cols-2">
+                                            <div>
+                                                <Label htmlFor="pay_matter_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                    Terkait Perkara (Matter)
+                                                </Label>
+                                                <div className="relative mt-1">
+                                                    <select
+                                                        id="pay_matter_id"
+                                                        name="matter_id"
+                                                        value={paymentMatterId}
+                                                        onChange={(e) => handleMatterChange(e.target.value)}
+                                                        className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                    >
+                                                        <option value="">-- Tanpa Perkara (Pembayaran Langsung Klien) --</option>
+                                                        {matters.map((m) => (
+                                                            <option key={m.id} value={m.id}>
+                                                                {m.matter_number} - {m.title}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-400" />
+                                                </div>
+                                            </div>
 
-                                            <div className="grid gap-3.5 sm:grid-cols-2">
-                                                <Field
+                                            <div>
+                                                <Label htmlFor="pay_client_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                    Klien Pembayar (Client) <span className="text-red-500">*</span>
+                                                </Label>
+                                                <div className="relative mt-1">
+                                                    <select
+                                                        id="pay_client_id"
+                                                        name="client_id"
+                                                        value={paymentClientId}
+                                                        onChange={(e) => setPaymentClientId(e.target.value)}
+                                                        required
+                                                        className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                    >
+                                                        <option value="" disabled>-- Pilih Klien Pembayar --</option>
+                                                        {clients.map((c) => (
+                                                            <option key={c.id} value={c.id}>
+                                                                {c.display_name}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-4 -translate-y-1/2 text-slate-400 dark:text-zinc-400" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-3.5 grid gap-3.5 sm:grid-cols-2">
+                                            <div>
+                                                <Label htmlFor="pay_amount" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                                    Nominal Pembayaran Bersih (IDR) <span className="text-red-500">*</span>
+                                                </Label>
+                                                <MoneyInput
+                                                    id="pay_amount"
                                                     name="amount"
-                                                    label="Nominal Pembayaran Bersih (IDR) *"
-                                                    isMoney
+                                                    value={paymentAmount}
+                                                    onValueChange={(val) => setPaymentAmount(String(val))}
                                                     placeholder="0"
                                                     required
-                                                />
-                                                <Field
-                                                    name="tax_withheld"
-                                                    label="Potongan Pajak PPh 23 (2%)"
-                                                    isMoney
-                                                    placeholder="0"
+                                                    className="mt-1 h-9 rounded-lg border-slate-200 bg-white font-mono text-xs dark:border-white/10 dark:bg-zinc-800"
                                                 />
                                             </div>
+                                            <Field
+                                                name="tax_withheld"
+                                                label="Potongan Pajak PPh 23 (2%)"
+                                                isMoney
+                                                placeholder="0"
+                                            />
                                         </div>
                                     </div>
 
@@ -2946,11 +3015,17 @@ function FinanceDialog({
 
                                     {/* Invoice Allocation Builder */}
                                     {(() => {
-                                        const eligibleInvoices = invoices.filter(
-                                            (inv) =>
+                                        const eligibleInvoices = invoices.filter((inv) => {
+                                            const isStatusEligible =
                                                 ['sent', 'overdue', 'partially_paid'].includes(inv.status) &&
-                                                (inv.outstanding_amount ?? 0) > 0,
-                                        );
+                                                (inv.outstanding_amount ?? 0) > 0;
+                                            if (!isStatusEligible) return false;
+                                            if (paymentMatterId) {
+                                                return inv.matter?.id === paymentMatterId;
+                                            }
+                                            return true;
+                                        });
+
                                         const draftInvoices = invoices.filter(
                                             (inv) =>
                                                 ['draft', 'pending_approval'].includes(inv.status) &&
@@ -2963,48 +3038,125 @@ function FinanceDialog({
                                                     Alokasi Pelunasan Invoice Tagihan
                                                 </div>
 
+                                                {/* Live Allocation Breakdown Box */}
+                                                <div className={`mt-2.5 rounded-xl border p-3 transition-colors ${
+                                                    isAllocationExceeded
+                                                        ? 'border-rose-300 bg-rose-50/70 dark:border-rose-900/60 dark:bg-rose-950/30'
+                                                        : 'border-emerald-200/80 bg-emerald-50/50 dark:border-emerald-900/40 dark:bg-emerald-950/20'
+                                                }`}>
+                                                    <div className="grid grid-cols-3 gap-2 text-xs">
+                                                        <div>
+                                                            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">Total Pembayaran</div>
+                                                            <div className="font-mono font-bold text-slate-900 dark:text-white">IDR {formatMoney(numericPaymentAmount)}</div>
+                                                        </div>
+                                                        <div>
+                                                            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">Total Dialokasikan</div>
+                                                            <div className={`font-mono font-bold ${isAllocationExceeded ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-300'}`}>
+                                                                IDR {formatMoney(totalAllocatedAmount)}
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">Sisa Belum Dialokasikan</div>
+                                                            <div className="font-mono font-bold text-slate-700 dark:text-zinc-300">IDR {formatMoney(remainingToAllocate)}</div>
+                                                        </div>
+                                                    </div>
+                                                    {isAllocationExceeded && (
+                                                        <div className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-rose-700 dark:text-rose-300">
+                                                            <AlertCircle className="size-4 shrink-0 text-rose-600" />
+                                                            <span>Total alokasi melebihi nominal pembayaran sebesar IDR {formatMoney(totalAllocatedAmount - numericPaymentAmount)}. Mohon kurangi nominal alokasi invoice.</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+
                                                 {eligibleInvoices.length > 0 ? (
                                                     <>
-                                                        <p className="mt-0.5 text-xs text-slate-500 dark:text-zinc-400">
-                                                            Alokasikan nominal pembayaran ke invoice resmi yang terkirim / overdue:
+                                                        <p className="mt-3 text-xs text-slate-500 dark:text-zinc-400">
+                                                            Alokasikan nominal pembayaran ke invoice resmi terkait:
                                                         </p>
-                                                        <div className="mt-2.5 space-y-2">
-                                                            {eligibleInvoices.map((inv, index) => (
-                                                                <div
-                                                                    className="flex items-center justify-between gap-3 rounded-xl border border-slate-200/80 bg-white p-2.5 shadow-2xs dark:border-white/[0.04] dark:bg-[#121418]"
-                                                                    key={inv.id}
-                                                                >
-                                                                    <div className="min-w-0">
-                                                                        <div className="flex items-center gap-2">
-                                                                            <p className="truncate font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                                                {inv.invoice_number}
+                                                        <div className="mt-2 space-y-2">
+                                                            {eligibleInvoices.map((inv, index) => {
+                                                                const currentAllocVal = paymentAllocations[inv.id] || '';
+                                                                const maxCanAlloc = Math.min(remainingToAllocate, inv.outstanding_amount ?? 0);
+
+                                                                return (
+                                                                    <div
+                                                                        className="flex flex-col gap-2 rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs dark:border-white/[0.04] dark:bg-[#121418] sm:flex-row sm:items-center sm:justify-between"
+                                                                        key={inv.id}
+                                                                    >
+                                                                        <div className="min-w-0 flex-1">
+                                                                            <div className="flex items-center gap-2">
+                                                                                <p className="truncate font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                                                                    {inv.invoice_number}
+                                                                                </p>
+                                                                                <span className="rounded-md bg-blue-50 px-1.5 py-0.5 text-[9.5px] font-semibold text-blue-600 uppercase dark:bg-blue-950/40 dark:text-blue-400">
+                                                                                    {inv.status}
+                                                                                </span>
+                                                                            </div>
+                                                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                                                                Sisa Piutang: <strong className="font-mono text-slate-700 dark:text-zinc-300">{formatMoney(inv.outstanding_amount ?? 0, inv.currency)}</strong>
                                                                             </p>
-                                                                            <span className="rounded-md bg-blue-50 px-1.5 py-0.5 text-[9.5px] font-semibold text-blue-600 uppercase dark:bg-blue-950/40 dark:text-blue-400">
-                                                                                {inv.status}
-                                                                            </span>
                                                                         </div>
-                                                                        <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                                            Sisa Piutang: <strong className="font-mono text-slate-700 dark:text-zinc-300">{formatMoney(inv.outstanding_amount ?? 0, inv.currency)}</strong>
-                                                                        </p>
-                                                                    </div>
-                                                                    <input
-                                                                        type="hidden"
-                                                                        name={`allocations[${index}][invoice_id]`}
-                                                                        value={inv.id}
-                                                                    />
-                                                                    <div className="w-36">
-                                                                        <MoneyInput
-                                                                            name={`allocations[${index}][amount]`}
-                                                                            placeholder="Alokasi (IDR)"
-                                                                            className="h-8 rounded-lg border-slate-200 bg-slate-50/50 text-right font-mono text-xs dark:border-white/10 dark:bg-zinc-800"
+                                                                        <input
+                                                                            type="hidden"
+                                                                            name={`allocations[${index}][invoice_id]`}
+                                                                            value={inv.id}
                                                                         />
+                                                                        <div className="flex items-center gap-2">
+                                                                            <div className="w-36">
+                                                                                <MoneyInput
+                                                                                    name={`allocations[${index}][amount]`}
+                                                                                    placeholder="Alokasi (IDR)"
+                                                                                    value={currentAllocVal}
+                                                                                    onValueChange={(val) =>
+                                                                                        setPaymentAllocations((prev) => ({
+                                                                                            ...prev,
+                                                                                            [inv.id]: String(val),
+                                                                                        }))
+                                                                                    }
+                                                                                    className="h-8 rounded-lg border-slate-200 bg-slate-50/50 text-right font-mono text-xs dark:border-white/10 dark:bg-zinc-800"
+                                                                                />
+                                                                            </div>
+                                                                            {!currentAllocVal && maxCanAlloc > 0 && (
+                                                                                <Button
+                                                                                    type="button"
+                                                                                    size="sm"
+                                                                                    variant="outline"
+                                                                                    onClick={() =>
+                                                                                        setPaymentAllocations((prev) => ({
+                                                                                            ...prev,
+                                                                                            [inv.id]: String(maxCanAlloc),
+                                                                                        }))
+                                                                                    }
+                                                                                    className="h-8 rounded-lg px-2.5 text-[11px] font-semibold text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400"
+                                                                                >
+                                                                                    Alokasikan Rp {formatMoney(maxCanAlloc)}
+                                                                                </Button>
+                                                                            )}
+                                                                            {currentAllocVal && (
+                                                                                <Button
+                                                                                    type="button"
+                                                                                    size="sm"
+                                                                                    variant="ghost"
+                                                                                    onClick={() =>
+                                                                                        setPaymentAllocations((prev) => {
+                                                                                            const next = { ...prev };
+                                                                                            delete next[inv.id];
+                                                                                            return next;
+                                                                                        })
+                                                                                    }
+                                                                                    className="h-8 rounded-lg px-2 text-[11px] text-slate-400 hover:text-red-500"
+                                                                                >
+                                                                                    Reset
+                                                                                </Button>
+                                                                            )}
+                                                                        </div>
                                                                     </div>
-                                                                </div>
-                                                            ))}
+                                                                );
+                                                            })}
                                                         </div>
                                                     </>
                                                 ) : (
-                                                    <p className="mt-1 text-xs text-slate-500 dark:text-zinc-400">
+                                                    <p className="mt-2 text-xs text-slate-500 dark:text-zinc-400">
                                                         Tidak ada invoice aktif (Sent/Overdue) dengan sisa tagihan. Pembayaran ini akan dicatat sebagai <strong>dana titipan / uang muka (Unallocated Retainer)</strong>.
                                                     </p>
                                                 )}
@@ -3037,7 +3189,7 @@ function FinanceDialog({
                                 </Button>
                                 <Button
                                     type="submit"
-                                    disabled={processing}
+                                    disabled={processing || (isPayment && isAllocationExceeded)}
                                     className={`h-9 rounded-xl px-5 text-xs font-semibold text-white shadow-2xs active:scale-95 ${
                                         type === 'invoice'
                                             ? 'bg-blue-600 hover:bg-blue-700'

@@ -12,8 +12,10 @@ use App\Actions\TransitionInvoice;
 use App\Actions\UpdateInvoice;
 use App\Actions\UpdateQuotation;
 use App\Models\Client;
+use App\Models\FinancialAccount;
 use App\Models\Invoice;
 use App\Models\Matter;
+use App\Models\Payment;
 use App\Services\AuditService;
 use App\Services\MatterFinancialOverview;
 use App\WorkflowStatus;
@@ -383,4 +385,62 @@ it('updates quotation and recalculates totals and line items', function () {
         ->and($updated->total_amount)->toBe(7_770_000)
         ->and($updated->lineItems)->toHaveCount(2)
         ->and($updated->lineItems->first()->description)->toBe('Pendampingan Sidang');
+});
+
+it('auto-resolves client_id and validates allocations in storePayment endpoint', function () {
+    $user = rafUser(['payment.manage', 'matter.view', 'billing.view']);
+    $user->forceFill(['email_verified_at' => now()])->save();
+
+    $client = Client::factory()->recycle($user)->create();
+    $matter = Matter::factory()->recycle($user)->create(['client_id' => $client->getKey()]);
+    $account = FinancialAccount::create([
+        'name' => 'Kas Operasional Kantor',
+        'type' => 'cash',
+        'currency' => 'IDR',
+        'current_balance' => 10_000_000,
+    ]);
+    $invoice = Invoice::factory()->create([
+        'client_id' => $client->getKey(),
+        'matter_id' => $matter->getKey(),
+        'status' => 'sent',
+        'total_amount' => 33_500_000,
+        'paid_amount' => 0,
+        'outstanding_amount' => 33_500_000,
+        'currency' => 'IDR',
+    ]);
+
+    // Test 1: Validation failure when allocation exceeds payment amount
+    $failResponse = $this->actingAs($user)->post(route('finance.payments.store'), [
+        'matter_id' => $matter->getKey(),
+        'account_id' => $account->getKey(),
+        'amount' => 5_000_000,
+        'method' => 'Transfer bank',
+        'received_at' => now()->toDateTimeLocalString(),
+        'allocations' => [
+            ['invoice_id' => $invoice->getKey(), 'amount' => 33_500_000],
+        ],
+    ]);
+
+    $failResponse->assertSessionHasErrors(['allocations']);
+
+    // Test 2: Success when allocation is valid and client_id is auto-resolved from matter
+    $successResponse = $this->actingAs($user)->post(route('finance.payments.store'), [
+        'matter_id' => $matter->getKey(),
+        'account_id' => $account->getKey(),
+        'amount' => 5_000_000,
+        'method' => 'Transfer bank',
+        'received_at' => now()->toDateTimeLocalString(),
+        'allocations' => [
+            ['invoice_id' => $invoice->getKey(), 'amount' => 5_000_000],
+        ],
+    ]);
+
+    $successResponse->assertRedirect()->assertSessionHas('success');
+
+    $payment = Payment::query()->latest()->first();
+    expect($payment)->not->toBeNull()
+        ->and($payment->client_id)->toBe($client->getKey())
+        ->and($payment->matter_id)->toBe($matter->getKey())
+        ->and($payment->amount)->toBe(5_000_000)
+        ->and($payment->allocations)->toHaveCount(1);
 });

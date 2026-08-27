@@ -106,6 +106,7 @@ class FinanceController extends Controller
             'matters' => $matters->map(fn (Matter $matter) => [
                 'id' => $matter->getKey(), 'matter_number' => $matter->matter_number,
                 'title' => $matter->title, 'client' => $matter->client?->display_name,
+                'client_id' => $matter->client_id,
                 'budget_amount' => (int) ($matter->budget_amount ?? 0),
             ]),
             'clients' => Client::query()->where('status', 'active')->orderBy('display_name')->get(['id', 'display_name']),
