@@ -4,9 +4,9 @@ import {
     AlertCircle,
     ChevronDown,
     HandCoins,
+    Info,
     Loader2,
     Save,
-    ShieldCheck,
     Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -25,6 +25,29 @@ import { Label } from '@/components/ui/label';
 import UserPicker, { type UserOption } from '@/components/user-picker';
 import { formatMoney } from '@/lib/format';
 import type { PartnerTransactionItem } from './partner-advances-view';
+
+const TYPE_IMPACTS: Record<string, { label: string; impact: string }> = {
+    advance_incurred: {
+        label: 'Talangan Pribadi',
+        impact: 'Partner menalangi biaya perkara/kantor. Saldo utang kantor ke partner BERTAMBAH (+).',
+    },
+    advance_reimbursed: {
+        label: 'Pengembalian Talangan',
+        impact: 'Kantor membayar kembali talangan ke partner. Saldo utang kantor ke partner BERKURANG (-).',
+    },
+    profit_distribution: {
+        label: 'Pembagian Keuntungan',
+        impact: 'Pencairan deviden/profit share partner dari rekening kas operasional kantor.',
+    },
+    capital_injection: {
+        label: 'Setoran Modal Partner',
+        impact: 'Penyetoran modal tambahan dari partner ke kas firma. Saldo kas bertambah (+).',
+    },
+    draw_prive: {
+        label: 'Penarikan Prive Partner',
+        impact: 'Pengambilan dana pribadi/prive oleh partner dari kas kantor. Saldo kas berkurang (-).',
+    },
+};
 
 export function EditPartnerTransactionDialog({
     open,
@@ -174,9 +197,9 @@ export function EditPartnerTransactionDialog({
                                         value={data.type}
                                         onChange={(e) => setData({ ...data, type: e.target.value })}
                                         required
-                                        className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs text-slate-900 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                        className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                     >
-                                        <option value="advance_incurred">Talangan Pribadi (+ Utang)</option>
+                                        <option value="advance_incurred">Talangan Pribadi (+ Utang Kantor)</option>
                                         <option value="advance_reimbursed">Pengembalian Talangan (- Utang)</option>
                                         <option value="profit_distribution">Pembagian Keuntungan / Deviden</option>
                                         <option value="capital_injection">Setoran Modal Partner</option>
@@ -186,6 +209,17 @@ export function EditPartnerTransactionDialog({
                                 </div>
                             </div>
                         </div>
+
+                        {/* Live Accounting Impact Banner */}
+                        {TYPE_IMPACTS[data.type] && (
+                            <div className="flex items-start gap-2 rounded-lg border border-amber-200/80 bg-amber-50/70 p-2 text-[11px] text-amber-900 dark:border-amber-900/30 dark:bg-amber-950/20 dark:text-amber-300">
+                                <Info className="size-3.5 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+                                <div>
+                                    <span className="font-semibold">{TYPE_IMPACTS[data.type].label}:</span>{' '}
+                                    <span>{TYPE_IMPACTS[data.type].impact}</span>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Nominal & Date */}
@@ -251,7 +285,7 @@ export function EditPartnerTransactionDialog({
                                         onChange={(e) => setData({ ...data, account_id: e.target.value })}
                                         className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs text-slate-900 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                     >
-                                        <option value="">-- Langsung Tunai/Pribadi --</option>
+                                        <option value="">-- Tanpa Kas / Talangan Langsung --</option>
                                         {accounts.map((a) => (
                                             <option key={a.id} value={a.id}>
                                                 {a.name}
@@ -265,30 +299,30 @@ export function EditPartnerTransactionDialog({
 
                         <div>
                             <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                Keterangan Transaksi
+                                Catatan / Keperluan Transaksi
                             </Label>
                             <Input
                                 type="text"
                                 value={data.notes}
                                 onChange={(e) => setData({ ...data, notes: e.target.value })}
-                                placeholder="cth: Talangan biaya operasional sidang..."
+                                placeholder="cth: Talangan akomodasi persidangan PN Surabaya..."
                                 className="mt-1 h-8.5 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-[#121418]"
                             />
                         </div>
-                    </div>
 
-                    <div>
-                        <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                            Ganti / Unggah Bukti Baru (Opsional)
-                        </Label>
-                        <div className="mt-1">
-                            <FileInput
-                                name="proof"
-                                accept="application/pdf,image/png,image/jpeg,image/webp"
-                                buttonText="Pilih Berkas"
-                                placeholder="Unggah berkas bukti baru..."
-                                onFileSelect={(file) => setData({ ...data, proof: file })}
-                            />
+                        <div>
+                            <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Ganti / Unggah Bukti Transaksi (Opsional)
+                            </Label>
+                            <div className="mt-1">
+                                <FileInput
+                                    name="proof"
+                                    accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf"
+                                    buttonText="Pilih Berkas"
+                                    placeholder="Unggah bukti baru..."
+                                    onFileSelect={(file) => setData({ ...data, proof: file })}
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -306,16 +340,17 @@ export function EditPartnerTransactionDialog({
                         </div>
                     )}
 
-                    <DialogFooter className="border-t border-slate-100 pt-3 dark:border-white/[0.06] flex items-center justify-between sm:justify-between">
+                    <DialogFooter className="border-t border-slate-100 pt-3 dark:border-white/[0.06] flex flex-row items-center justify-between sm:justify-between">
                         <Button
                             type="button"
                             variant="ghost"
                             size="sm"
                             onClick={handleDelete}
                             disabled={processing}
-                            className="h-8.5 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-950/30 gap-1"
+                            className="h-8.5 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/30 gap-1.5"
                         >
-                            <Trash2 className="size-3.5" /> Hapus
+                            <Trash2 className="size-3.5" />
+                            Hapus Transaksi
                         </Button>
 
                         <div className="flex items-center gap-2">

@@ -3,6 +3,7 @@ import {
     AlertCircle,
     ChevronDown,
     HandCoins,
+    Info,
     Loader2,
     ShieldCheck,
 } from 'lucide-react';
@@ -20,6 +21,29 @@ import { Input } from '@/components/ui/input';
 import { MoneyInput } from '@/components/ui/money-input';
 import { Label } from '@/components/ui/label';
 import UserPicker, { type UserOption } from '@/components/user-picker';
+
+const TYPE_IMPACTS: Record<string, { label: string; impact: string }> = {
+    advance_incurred: {
+        label: 'Talangan Pribadi',
+        impact: 'Partner menalangi biaya perkara/kantor. Saldo utang kantor ke partner BERTAMBAH (+).',
+    },
+    advance_reimbursed: {
+        label: 'Pengembalian Talangan',
+        impact: 'Kantor membayar kembali talangan ke partner. Saldo utang kantor ke partner BERKURANG (-).',
+    },
+    profit_distribution: {
+        label: 'Pembagian Keuntungan',
+        impact: 'Pencairan deviden/profit share partner dari rekening kas operasional kantor.',
+    },
+    capital_injection: {
+        label: 'Setoran Modal Partner',
+        impact: 'Penyetoran modal tambahan dari partner ke kas firma. Saldo kas bertambah (+).',
+    },
+    draw_prive: {
+        label: 'Penarikan Prive Partner',
+        impact: 'Pengambilan dana pribadi/prive oleh partner dari kas kantor. Saldo kas berkurang (-).',
+    },
+};
 
 export function CreatePartnerTransactionDialog({
     open,
@@ -116,6 +140,17 @@ export function CreatePartnerTransactionDialog({
                                 </div>
                             </div>
                         </div>
+
+                        {/* Live Accounting Impact Banner */}
+                        {TYPE_IMPACTS[form.data.type] && (
+                            <div className="flex items-start gap-2 rounded-lg border border-amber-200/80 bg-amber-50/70 p-2 text-[11px] text-amber-900 dark:border-amber-900/30 dark:bg-amber-950/20 dark:text-amber-300">
+                                <Info className="size-3.5 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+                                <div>
+                                    <span className="font-semibold">{TYPE_IMPACTS[form.data.type].label}:</span>{' '}
+                                    <span>{TYPE_IMPACTS[form.data.type].impact}</span>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Nominal & Date */}
@@ -181,7 +216,7 @@ export function CreatePartnerTransactionDialog({
                                         onChange={(e) => form.setData('account_id', e.target.value)}
                                         className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs text-slate-900 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                     >
-                                        <option value="">-- Langsung Tunai/Pribadi --</option>
+                                        <option value="">-- Tanpa Kas / Talangan Langsung --</option>
                                         {accounts.map((a) => (
                                             <option key={a.id} value={a.id}>
                                                 {a.name}
@@ -195,30 +230,30 @@ export function CreatePartnerTransactionDialog({
 
                         <div>
                             <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                Keterangan Transaksi
+                                Catatan / Keperluan Transaksi
                             </Label>
                             <Input
                                 type="text"
                                 value={form.data.notes}
                                 onChange={(e) => form.setData('notes', e.target.value)}
-                                placeholder="cth: Talangan biaya operasional sidang..."
+                                placeholder="cth: Talangan akomodasi persidangan PN Surabaya..."
                                 className="mt-1 h-8.5 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-[#121418]"
                             />
                         </div>
-                    </div>
 
-                    <div>
-                        <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                            Bukti Transfer / Nota (Opsional)
-                        </Label>
-                        <div className="mt-1">
-                            <FileInput
-                                name="proof"
-                                accept="application/pdf,image/png,image/jpeg,image/webp"
-                                buttonText="Pilih Berkas"
-                                placeholder="Unggah nota / mutasi rekening..."
-                                onFileSelect={(file) => form.setData('proof', file)}
-                            />
+                        <div>
+                            <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                Unggah Bukti Transaksi / Kuitansi (Opsional)
+                            </Label>
+                            <div className="mt-1">
+                                <FileInput
+                                    name="proof"
+                                    accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf"
+                                    buttonText="Pilih Berkas"
+                                    placeholder="Unggah berkas bukti transaksi / kuitansi..."
+                                    onFileSelect={(file) => form.setData('proof', file)}
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -236,39 +271,30 @@ export function CreatePartnerTransactionDialog({
                         </div>
                     )}
 
-                    <DialogFooter className="border-t border-slate-100 pt-3 dark:border-white/[0.06] flex items-center justify-between sm:justify-between">
-                        <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
-                            <ShieldCheck className="size-3.5 text-amber-600 dark:text-amber-400" />
-                            <span>Buku besar partner terupdate otomatis</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                onClick={() => onOpenChange(false)}
-                                disabled={form.processing}
-                                className="h-8.5 rounded-lg text-xs font-semibold"
-                            >
-                                Batal
-                            </Button>
-                            <Button
-                                type="submit"
-                                disabled={form.processing}
-                                className="h-8.5 rounded-lg bg-amber-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 dark:bg-amber-600 dark:hover:bg-amber-700 gap-1.5"
-                            >
-                                {form.processing ? (
-                                    <>
-                                        <Loader2 className="size-3.5 animate-spin" />
-                                        Menyimpan...
-                                    </>
-                                ) : (
-                                    <>
-                                        <HandCoins className="size-3.5" />
-                                        Simpan Transaksi
-                                    </>
-                                )}
-                            </Button>
-                        </div>
+                    <DialogFooter className="border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => onOpenChange(false)}
+                            disabled={form.processing}
+                            className="h-8.5 rounded-lg text-xs font-semibold"
+                        >
+                            Batal
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={form.processing}
+                            className="h-8.5 rounded-lg bg-amber-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 dark:bg-amber-600 dark:hover:bg-amber-700 gap-1.5"
+                        >
+                            {form.processing ? (
+                                <>
+                                    <Loader2 className="size-3.5 animate-spin" />
+                                    Menyimpan...
+                                </>
+                            ) : (
+                                'Simpan Transaksi Partner'
+                            )}
+                        </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>
