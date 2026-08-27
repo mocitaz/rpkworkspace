@@ -69,6 +69,12 @@ class Document extends Model
         return $this->belongsTo(DocumentVersion::class, 'current_version_id');
     }
 
+    /** @return BelongsTo<DocumentVersion, $this> */
+    public function latestVersion(): BelongsTo
+    {
+        return $this->belongsTo(DocumentVersion::class, 'current_version_id');
+    }
+
     /** @return HasMany<DocumentVersion, $this> */
     public function versions(): HasMany
     {

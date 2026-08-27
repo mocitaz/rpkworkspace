@@ -15,7 +15,7 @@ class Contact extends Model
 
     protected $fillable = [
         'client_id', 'first_name', 'last_name', 'job_title', 'organization_name',
-        'email', 'phone', 'mobile', 'notes', 'created_by',
+        'email', 'phone', 'mobile', 'avatar_url', 'notes', 'created_by',
     ];
 
     protected $appends = ['full_name'];

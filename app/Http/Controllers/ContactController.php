@@ -72,7 +72,7 @@ class ContactController extends Controller
      */
     public function update(UpdateContactRequest $request, Contact $contact, AuditService $audit): RedirectResponse
     {
-        $old = $contact->only(['first_name', 'last_name', 'job_title', 'organization_name', 'email', 'phone', 'mobile', 'notes', 'client_id']);
+        $old = $contact->only(['first_name', 'last_name', 'job_title', 'organization_name', 'email', 'phone', 'mobile', 'avatar_url', 'notes', 'client_id']);
         $contact->update($request->validated());
         $audit->record($contact, 'contact.updated', ['old' => $old, 'new' => $contact->only(array_keys($old))], $request->user(), $request);
 

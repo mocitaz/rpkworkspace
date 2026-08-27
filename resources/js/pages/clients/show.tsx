@@ -5,10 +5,13 @@ import {
     Briefcase,
     Building2,
     Calendar,
+    Camera,
+    Check,
     CheckCircle2,
     ChevronDown,
     ChevronRight,
     Clock,
+    ContactRound,
     Copy,
     ExternalLink,
     FileBadge,
@@ -24,7 +27,6 @@ import {
     Shield,
     ShieldAlert,
     ShieldCheck,
-    ContactRound,
     Trash2,
     User,
     Users,
@@ -131,7 +133,28 @@ type Contact = {
     job_title?: string;
     email?: string;
     mobile?: string;
+    avatar_url?: string | null;
 };
+
+const AVAILABLE_AVATARS = Array.from({ length: 15 }, (_, i) => ({
+    id: `avatar-${i + 1}`,
+    url: `/images/avatars/avatar-${i + 1}.svg`,
+    label: `Avatar 3D ${i + 1}`,
+}));
+
+function getContactAvatarUrl(contact?: { id?: string; full_name?: string; avatar_url?: string | null } | null): string {
+    if (!contact) return '/images/avatars/avatar-1.svg';
+    if (contact.avatar_url && contact.avatar_url.trim() !== '') {
+        return contact.avatar_url;
+    }
+    let hash = 0;
+    const str = (contact.id || '') + (contact.full_name || '');
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = (Math.abs(hash) % 15) + 1;
+    return `/images/avatars/avatar-${index}.svg`;
+}
 
 type Document = {
     id: string;
@@ -626,11 +649,22 @@ export default function ClientShow({
                                                             className="flex items-center justify-between py-2.5 text-xs"
                                                         >
                                                             <div className="flex min-w-0 items-center gap-2.5 pr-3">
-                                                                <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[10px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                                                    {getInitials(
-                                                                        contact.full_name,
-                                                                    )}
-                                                                </div>
+                                                                <Avatar className="size-8 shrink-0 overflow-hidden rounded-full border border-white bg-white shadow-2xs dark:border-zinc-800 dark:bg-zinc-800">
+                                                                    <AvatarImage
+                                                                        src={getContactAvatarUrl(
+                                                                            contact,
+                                                                        )}
+                                                                        alt={
+                                                                            contact.full_name
+                                                                        }
+                                                                        className="size-full object-cover"
+                                                                    />
+                                                                    <AvatarFallback className="bg-blue-50 text-[10px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                                        {getInitials(
+                                                                            contact.full_name,
+                                                                        )}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
                                                                 <div className="min-w-0">
                                                                     <p className="truncate font-semibold text-slate-900 dark:text-white">
                                                                         {
@@ -1192,11 +1226,22 @@ export default function ClientShow({
                                                 >
                                                     <div className="flex items-start justify-between gap-2">
                                                         <div className="flex min-w-0 items-start gap-2.5">
-                                                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[10px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                                                {getInitials(
-                                                                    contact.full_name,
-                                                                )}
-                                                            </div>
+                                                            <Avatar className="size-9 shrink-0 overflow-hidden rounded-full border-2 border-white bg-white shadow-xs dark:border-zinc-800 dark:bg-zinc-800">
+                                                                <AvatarImage
+                                                                    src={getContactAvatarUrl(
+                                                                        contact,
+                                                                    )}
+                                                                    alt={
+                                                                        contact.full_name
+                                                                    }
+                                                                    className="size-full object-cover"
+                                                                />
+                                                                <AvatarFallback className="bg-blue-50 text-[10px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                                    {getInitials(
+                                                                        contact.full_name,
+                                                                    )}
+                                                                </AvatarFallback>
+                                                            </Avatar>
                                                             <div className="min-w-0">
                                                                 <h4 className="truncate font-semibold text-slate-900 dark:text-white">
                                                                     {
@@ -2204,6 +2249,124 @@ function ComplianceDocumentDialog({
     );
 }
 
+function AvatarPicker({
+    value,
+    onChange,
+    contactName = 'Kontak',
+}: {
+    value: string;
+    onChange: (url: string) => void;
+    contactName?: string;
+}) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 transition-all dark:border-white/10 dark:bg-[#121418]">
+            <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                    <div
+                        className="group relative cursor-pointer"
+                        onClick={() => setIsOpen(!isOpen)}
+                        title="Klik untuk membuka pilihan avatar"
+                    >
+                        <Avatar className="size-11 shrink-0 overflow-hidden rounded-full border-2 border-white bg-white shadow-xs ring-1 ring-slate-200/80 transition-transform group-hover:scale-105 dark:border-zinc-800 dark:bg-zinc-800 dark:ring-white/10">
+                            <AvatarImage
+                                src={value || '/images/avatars/avatar-1.svg'}
+                                alt={contactName}
+                                className="size-full object-cover"
+                            />
+                            <AvatarFallback className="bg-blue-50 text-xs font-bold text-blue-700">
+                                {getInitials(contactName)}
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                            <Pencil className="size-3 text-white" />
+                        </div>
+                    </div>
+                    <div>
+                        <Label
+                            className="cursor-pointer text-xs font-bold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
+                            onClick={() => setIsOpen(!isOpen)}
+                        >
+                            Foto Profil Kontak
+                        </Label>
+                        <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                            {isOpen
+                                ? 'Pilih salah satu karakter di bawah'
+                                : 'Avatar 3D aktif · Klik untuk mengganti'}
+                        </p>
+                    </div>
+                </div>
+
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsOpen(!isOpen)}
+                    className={`h-7.5 gap-1.5 rounded-lg border-slate-200 px-2.5 text-xs font-medium transition-colors hover:bg-slate-100 dark:border-white/10 dark:hover:bg-zinc-800 ${
+                        isOpen
+                            ? 'border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-400'
+                            : 'text-slate-700 dark:text-zinc-300'
+                    }`}
+                >
+                    <Camera className="size-3.5 text-blue-600 dark:text-blue-400" />
+                    <span>{isOpen ? 'Tutup' : 'Pilih Avatar'}</span>
+                    <ChevronDown
+                        className={`size-3 text-slate-400 transition-transform duration-200 ${
+                            isOpen ? 'rotate-180 text-blue-500' : ''
+                        }`}
+                    />
+                </Button>
+            </div>
+
+            {isOpen && (
+                <div className="mt-2.5 border-t border-slate-200/70 pt-2.5 dark:border-white/[0.06]">
+                    <div className="mb-2 flex items-center justify-between px-0.5">
+                        <span className="text-[11px] font-semibold text-slate-600 dark:text-zinc-300">
+                            Koleksi Karakter 3D (1 - 15):
+                        </span>
+                        <span className="text-[10px] text-slate-400 dark:text-zinc-500">
+                            Klik untuk memilih
+                        </span>
+                    </div>
+                    <div className="grid grid-cols-5 gap-1.5 rounded-lg bg-slate-100/60 p-1.5 sm:grid-cols-8 dark:bg-zinc-900/60">
+                        {AVAILABLE_AVATARS.map((avatar, idx) => {
+                            const isSelected =
+                                value === avatar.url || (!value && idx === 0);
+                            return (
+                                <button
+                                    key={avatar.id}
+                                    type="button"
+                                    onClick={() => {
+                                        onChange(avatar.url);
+                                    }}
+                                    className={`group relative flex size-9 items-center justify-center rounded-full p-0.5 transition-all sm:size-9.5 ${
+                                        isSelected
+                                            ? 'scale-105 bg-white shadow-xs ring-2 ring-blue-600 ring-offset-2 dark:bg-blue-950 dark:ring-offset-[#121418]'
+                                            : 'opacity-75 hover:scale-105 hover:bg-white/80 hover:opacity-100 dark:hover:bg-zinc-800'
+                                    }`}
+                                    title={`Avatar ${idx + 1}`}
+                                >
+                                    <img
+                                        src={avatar.url}
+                                        alt={avatar.label}
+                                        className="size-full rounded-full object-cover shadow-2xs"
+                                    />
+                                    {isSelected && (
+                                        <span className="absolute -right-0.5 -bottom-0.5 flex size-3.5 items-center justify-center rounded-full bg-blue-600 text-white shadow-xs">
+                                            <Check className="size-2.5 stroke-[3]" />
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
 function AddContactModal({
     isOpen,
     onClose,
@@ -2225,6 +2388,7 @@ function AddContactModal({
             email: '',
             phone: '',
             mobile: '',
+            avatar_url: '/images/avatars/avatar-1.svg',
             notes: '',
         });
 
@@ -2269,6 +2433,17 @@ function AddContactModal({
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-3.5 pt-1">
+                    {/* Avatar Selector */}
+                    <AvatarPicker
+                        value={data.avatar_url}
+                        onChange={(url) => setData('avatar_url', url)}
+                        contactName={
+                            data.first_name
+                                ? `${data.first_name} ${data.last_name}`
+                                : 'Kontak Perwakilan'
+                        }
+                    />
+
                     <div className="grid gap-2.5 sm:grid-cols-2">
                         <div className="grid gap-1">
                             <Label

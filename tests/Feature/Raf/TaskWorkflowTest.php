@@ -2,6 +2,7 @@
 
 use App\Models\AuditLog;
 use App\Models\Client;
+use App\Models\Document;
 use App\Models\Matter;
 use App\Models\Task;
 use App\Notifications\TaskApprovedNotification;
@@ -70,11 +71,21 @@ it('can render tasks.create and tasks.show pages', function () {
         'matter_id' => $matter->getKey(),
     ]);
 
+    $document = Document::factory()->create([
+        'matter_id' => $matter->getKey(),
+        'client_id' => $client->getKey(),
+        'created_by' => $manager->getKey(),
+    ]);
+
     $this->actingAs($manager)->get(route('tasks.create'))
         ->assertOk();
 
     $this->actingAs($manager)->get(route('tasks.show', $task))
-        ->assertOk();
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('tasks/show')
+            ->has('documents', 1)
+        );
 });
 
 it('denies task creation and updates without the required capability', function () {

@@ -175,10 +175,10 @@ class TaskController extends Controller
         if ($task->matter_id) {
             $documents = Document::query()
                 ->where('matter_id', $task->matter_id)
-                ->with('latestVersion')
+                ->with('currentVersion')
                 ->latest()
                 ->take(10)
-                ->get(['id', 'document_number', 'title', 'category', 'status', 'created_at']);
+                ->get(['id', 'document_number', 'title', 'category', 'status', 'created_at', 'current_version_id']);
         }
 
         $auditLogs = AuditLog::query()

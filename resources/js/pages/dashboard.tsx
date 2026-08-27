@@ -611,12 +611,16 @@ export default function Dashboard({
                                     <div className="flex-1 [scrollbar-width:thin] divide-y divide-slate-100 overflow-y-auto pr-1 dark:divide-white/[0.04]">
                                         {currentQueueItems.map((item, idx) => {
                                             const isUrgent =
-                                                item.priority === 'high';
+                                                item.priority === 'high' || item.priority === 'critical';
+                                            const taskUrl = tasksRoutes.show?.url
+                                                ? tasksRoutes.show.url(item.id)
+                                                : `/tasks/${item.id}`;
 
                                             return (
-                                                <div
+                                                <Link
                                                     key={item.id || idx}
-                                                    className="group flex items-center justify-between gap-3 py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                    href={taskUrl}
+                                                    className="group flex items-center justify-between gap-3 py-2 px-2 -mx-1.5 rounded-lg transition-colors hover:bg-slate-50/80 dark:hover:bg-white/[0.03]"
                                                 >
                                                     <div className="min-w-0 flex-1 space-y-0.5">
                                                         <div className="flex items-center gap-2">
@@ -671,44 +675,33 @@ export default function Dashboard({
                                                                   )
                                                                 : 'Hari ini'}
                                                         </span>
-                                                        <TooltipProvider
-                                                            delayDuration={100}
+                                                        <Avatar
+                                                            className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10"
+                                                            title={item.assignee?.name ?? 'Staf Pelaksana'}
                                                         >
-                                                            <Tooltip>
-                                                                <TooltipTrigger
-                                                                    asChild
-                                                                >
-                                                                    <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                                        <AvatarImage
-                                                                            src={
-                                                                                item
-                                                                                    .assignee
-                                                                                    ?.avatar_url
-                                                                            }
-                                                                        />
-                                                                        <AvatarFallback className="text-[8px] font-bold">
-                                                                            {getInitials(
-                                                                                item
-                                                                                    .assignee
-                                                                                    ?.name ??
-                                                                                    'FR',
-                                                                            )}
-                                                                        </AvatarFallback>
-                                                                    </Avatar>
-                                                                </TooltipTrigger>
-                                                                <TooltipContent
-                                                                    side="top"
-                                                                    className="bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800"
-                                                                >
-                                                                    {item
+                                                            <AvatarImage
+                                                                src={
+                                                                    item
+                                                                        .assignee
+                                                                        ?.avatar_url ||
+                                                                    item
+                                                                        .assignee
+                                                                        ?.avatar_path ||
+                                                                    '/images/default-avatar.svg'
+                                                                }
+                                                                alt={item.assignee?.name || 'Assignee'}
+                                                            />
+                                                            <AvatarFallback className="text-[8px] font-bold">
+                                                                {getInitials(
+                                                                    item
                                                                         .assignee
                                                                         ?.name ??
-                                                                        'Fajar Roni'}
-                                                                </TooltipContent>
-                                                            </Tooltip>
-                                                        </TooltipProvider>
+                                                                        'FR',
+                                                                )}
+                                                            </AvatarFallback>
+                                                        </Avatar>
                                                     </div>
-                                                </div>
+                                                </Link>
                                             );
                                         })}
                                     </div>
@@ -872,10 +865,15 @@ export default function Dashboard({
                                     <div className="flex-1 [scrollbar-width:thin] divide-y divide-slate-100 overflow-y-auto pr-1 dark:divide-white/[0.04]">
                                         {executive_actions.map(
                                             (action, idx) => {
+                                                const actionUrl = tasksRoutes.show?.url
+                                                    ? tasksRoutes.show.url(action.id)
+                                                    : `/tasks/${action.id}`;
+
                                                 return (
-                                                    <div
+                                                    <Link
                                                         key={action.id || idx}
-                                                        className="group flex items-start justify-between gap-3 py-2.5 transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                        href={actionUrl}
+                                                        className="group flex items-start justify-between gap-3 py-2 px-2 -mx-1.5 rounded-lg transition-colors hover:bg-slate-50/80 dark:hover:bg-white/[0.03]"
                                                     >
                                                         <div className="min-w-0 flex-1 space-y-1">
                                                             <div className="flex items-center gap-2">
@@ -914,41 +912,25 @@ export default function Dashboard({
                                                         </div>
 
                                                         <div className="flex shrink-0 items-center gap-1.5 pt-1">
-                                                            <TooltipProvider
-                                                                delayDuration={
-                                                                    100
-                                                                }
+                                                            <Avatar
+                                                                className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10"
+                                                                title={action.assignee_name}
                                                             >
-                                                                <Tooltip>
-                                                                    <TooltipTrigger
-                                                                        asChild
-                                                                    >
-                                                                        <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                                            <AvatarImage
-                                                                                src={
-                                                                                    action.assignee_avatar ??
-                                                                                    undefined
-                                                                                }
-                                                                            />
-                                                                            <AvatarFallback className="text-[7px] font-bold">
-                                                                                {getInitials(
-                                                                                    action.assignee_name,
-                                                                                )}
-                                                                            </AvatarFallback>
-                                                                        </Avatar>
-                                                                    </TooltipTrigger>
-                                                                    <TooltipContent
-                                                                        side="top"
-                                                                        className="bg-slate-900 px-2 py-0.5 text-[10px] font-medium text-white shadow-md dark:bg-zinc-800"
-                                                                    >
-                                                                        {
-                                                                            action.assignee_name
-                                                                        }
-                                                                    </TooltipContent>
-                                                                </Tooltip>
-                                                            </TooltipProvider>
+                                                                <AvatarImage
+                                                                    src={
+                                                                        action.assignee_avatar ||
+                                                                        '/images/default-avatar.svg'
+                                                                    }
+                                                                    alt={action.assignee_name || 'Assignee'}
+                                                                />
+                                                                <AvatarFallback className="text-[7px] font-bold">
+                                                                    {getInitials(
+                                                                        action.assignee_name,
+                                                                    )}
+                                                                </AvatarFallback>
+                                                            </Avatar>
                                                         </div>
-                                                    </div>
+                                                    </Link>
                                                 );
                                             },
                                         )}

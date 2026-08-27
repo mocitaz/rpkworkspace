@@ -2,6 +2,7 @@ import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import {
     AlertCircle,
     ArrowLeft,
+    ArrowRight,
     Briefcase,
     Building2,
     Calendar,
@@ -18,6 +19,7 @@ import {
     FolderKanban,
     Gavel,
     History,
+    Info,
     Layers,
     ListChecks,
     MessageSquare,
@@ -403,7 +405,7 @@ export default function TaskShow({
                                                 <Button
                                                     size="sm"
                                                     onClick={() => setIsSubmitReviewOpen(true)}
-                                                    className="h-7.5 rounded-lg bg-purple-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-purple-700 gap-1.5"
+                                                    className="h-7.5 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95 gap-1.5 transition-all"
                                                 >
                                                     <Send className="size-3.5" />
                                                     Ajukan Review
@@ -564,17 +566,17 @@ export default function TaskShow({
 
                     {/* Notification Banner when in review status */}
                     {task.status === 'review' && (
-                        <div className="rounded-xl border border-purple-200 bg-purple-50/70 p-4 dark:border-purple-900/50 dark:bg-purple-950/20">
+                        <div className="rounded-xl border border-blue-200/80 bg-blue-50/60 p-4 dark:border-blue-900/50 dark:bg-blue-950/20">
                             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                 <div className="flex items-start gap-3">
-                                    <div className="rounded-lg bg-purple-600 p-2 text-white shadow-2xs">
+                                    <div className="rounded-lg bg-blue-600 p-2 text-white shadow-2xs">
                                         <Clock className="size-5" />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-bold text-purple-950 dark:text-purple-200">
+                                        <h3 className="text-sm font-bold text-blue-950 dark:text-blue-200">
                                             Tugas Sedang Menunggu Penelaahan &amp; Persetujuan (Review)
                                         </h3>
-                                        <p className="mt-0.5 text-xs text-purple-800 dark:text-purple-300">
+                                        <p className="mt-0.5 text-xs text-blue-800 dark:text-blue-300">
                                             {task.reviewer
                                                 ? `Tugas telah diajukan oleh ${task.assignee?.name || 'Pelaksana'} dan menunggu penelaahan dari ${task.reviewer.name}.`
                                                 : `Tugas telah diajukan dan menunggu penelaahan dari Partner.`}
@@ -674,7 +676,7 @@ export default function TaskShow({
                                                 src={getAvatarUrl(task.reviewer)}
                                                 alt={task.reviewer.name}
                                             />
-                                            <AvatarFallback className="bg-purple-600 text-[6px] font-bold text-white">
+                                            <AvatarFallback className="bg-blue-600 text-[6px] font-bold text-white">
                                                 {initials(task.reviewer.name)}
                                             </AvatarFallback>
                                         </Avatar>
@@ -887,7 +889,7 @@ export default function TaskShow({
                                 <div className="rounded-xl border border-slate-200/70 bg-white p-5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b] space-y-4">
                                     <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
                                         <div className="flex items-center gap-2">
-                                            <FileText className="size-4 text-purple-600 dark:text-purple-400" />
+                                            <FileText className="size-4 text-blue-600 dark:text-blue-400" />
                                             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
                                                 Instruksi & Panduan Pengerjaan Lengkap
                                             </h3>
@@ -1141,7 +1143,7 @@ export default function TaskShow({
                                                     <AvatarImage
                                                         src={getAvatarUrl(task.reviewer)}
                                                     />
-                                                    <AvatarFallback className="bg-purple-600 text-[9px] font-bold text-white">
+                                                    <AvatarFallback className="bg-blue-600 text-[9px] font-bold text-white">
                                                         {initials(task.reviewer.name)}
                                                     </AvatarFallback>
                                                 </Avatar>
@@ -1557,35 +1559,194 @@ export default function TaskShow({
 
             {/* SUBMIT REVIEW MODAL */}
             <Dialog open={isSubmitReviewOpen} onOpenChange={setIsSubmitReviewOpen}>
-                <DialogContent className="max-w-md">
-                    <DialogHeader>
-                        <DialogTitle className="text-base font-bold flex items-center gap-2 text-purple-700 dark:text-purple-400">
-                            <Send className="size-5" />
-                            Ajukan Review Tugas: {task.task_number}
-                        </DialogTitle>
-                        <DialogDescription className="text-xs">
-                            Kirimkan tugas ini kepada {task.reviewer?.name || 'Partner Pemeriksa'} untuk ditelaah dan disetujui.
-                        </DialogDescription>
+                <DialogContent className="max-h-[90vh] w-full min-w-0 max-w-[calc(100vw-2rem)] sm:max-w-2xl overflow-y-auto overflow-x-hidden rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
+                    <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06] w-full min-w-0">
+                        <div className="flex items-start gap-3 w-full min-w-0">
+                            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-blue-200/70 bg-blue-50 text-blue-600 shadow-2xs dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-400">
+                                <Send className="size-4.5" />
+                            </div>
+                            <div className="min-w-0 flex-1 space-y-1">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                        Ajukan Review Tugas
+                                    </DialogTitle>
+                                    <span className="inline-flex shrink-0 items-center rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[11px] font-semibold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                        {task.task_number}
+                                    </span>
+                                </div>
+                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                    Kirimkan tugas ini kepada Pemeriksa untuk ditelaah, dievaluasi, dan disetujui.
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
 
-                    <form onSubmit={handleSubmitReview} className="space-y-3.5 pt-2">
-                        <div className="space-y-1.5">
-                            <Label className="text-xs font-semibold">Catatan Hasil Pengerjaan / Resume (Opsional)</Label>
+                    <form onSubmit={handleSubmitReview} className="space-y-4 pt-1 w-full min-w-0 max-w-full flex flex-col">
+                        {/* Reviewer / Target Destination Card */}
+                        {(() => {
+                            const targetReviewer = task.reviewer || task.reporter;
+                            const avatarSrc = getAvatarUrl(targetReviewer);
+
+                            return (
+                                <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 sm:p-4 dark:border-white/10 dark:bg-[#191c22] w-full min-w-0 max-w-full box-border">
+                                    <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/60 pb-2 dark:border-white/[0.06] w-full min-w-0">
+                                        <div className="flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-blue-600 uppercase dark:text-blue-400 shrink-0">
+                                            <UserCheck className="size-3.5" />
+                                            <span>Pemeriksa (Reviewer) Dituju</span>
+                                        </div>
+                                        <span className="text-[10px] font-medium text-slate-400 dark:text-zinc-500 shrink-0">
+                                            Penerima Pengajuan
+                                        </span>
+                                    </div>
+
+                                    <div className="flex items-start sm:items-center gap-3.5 w-full min-w-0">
+                                        <div className="relative shrink-0">
+                                            <Avatar className="size-11 sm:size-12 shrink-0 overflow-hidden rounded-full border-2 border-white shadow-xs bg-slate-100 dark:border-zinc-800 dark:bg-zinc-800">
+                                                <AvatarImage
+                                                    src={avatarSrc}
+                                                    alt={targetReviewer?.name || 'Reviewer'}
+                                                    className="size-full object-cover"
+                                                />
+                                                <AvatarFallback className="bg-slate-100 dark:bg-zinc-800 p-0 overflow-hidden">
+                                                    <img
+                                                        src="/images/default-avatar.svg"
+                                                        alt={targetReviewer?.name || 'Default Avatar'}
+                                                        className="size-full object-cover"
+                                                    />
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <div className="absolute -bottom-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-blue-600 ring-2 ring-white text-white dark:ring-[#191c22]">
+                                                <UserCheck className="size-2.5" />
+                                            </div>
+                                        </div>
+
+                                        <div className="min-w-0 flex-1 space-y-0.5">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate min-w-0">
+                                                    {targetReviewer?.name || 'Partner / Supervising Partner'}
+                                                </h4>
+                                                {!task.reviewer && task.reporter ? (
+                                                    <span className="inline-flex shrink-0 rounded border border-amber-200/60 bg-amber-50 px-1.5 py-0.2 text-[9px] font-semibold text-amber-700 dark:border-amber-900/40 dark:bg-amber-950/40 dark:text-amber-300">
+                                                        Pembuat Tugas (Reviewer)
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex shrink-0 rounded border border-blue-200/60 bg-blue-50 px-1.5 py-0.2 text-[9px] font-semibold text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-300">
+                                                        Pemeriksa Berkas
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-xs text-slate-500 dark:text-zinc-400 truncate min-w-0">
+                                                {targetReviewer?.position_title || 'Managing Partner / Advokat Senior'}
+                                                {targetReviewer?.department ? ` · ${targetReviewer.department}` : ''}
+                                            </p>
+                                            {targetReviewer?.email && (
+                                                <p className="text-[11px] text-slate-400 dark:text-zinc-500 truncate min-w-0">
+                                                    {targetReviewer.email}
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Task Context Snippet */}
+                                    <div className="mt-3 space-y-1 rounded-lg border border-slate-200/60 bg-white/90 p-3 text-xs dark:border-white/[0.04] dark:bg-[#121418] w-full min-w-0 max-w-full box-border">
+                                        <div className="flex items-center gap-2 font-semibold text-slate-700 dark:text-zinc-200 min-w-0 w-full">
+                                            <FileText className="size-3.5 shrink-0 text-slate-400" />
+                                            <span className="truncate min-w-0 flex-1">{task.title}</span>
+                                        </div>
+                                        {task.matter && (
+                                            <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-zinc-400 min-w-0 w-full">
+                                                <Scale className="size-3 shrink-0 text-slate-400" />
+                                                <span className="truncate min-w-0 flex-1">
+                                                    Perkara: {task.matter.matter_number} · {task.matter.title}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })()}
+
+                        {/* Status workflow transition */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-blue-100/80 bg-blue-50/50 px-3.5 py-2.5 text-xs text-blue-900 dark:border-blue-900/40 dark:bg-blue-950/20 dark:text-blue-300 w-full min-w-0 max-w-full box-border">
+                            <div className="flex items-center gap-2 shrink-0">
+                                <span className="inline-flex items-center rounded bg-blue-100/80 px-2 py-0.5 text-[10.5px] font-bold text-blue-800 dark:bg-blue-900/60 dark:text-blue-200">
+                                    Dikerjakan
+                                </span>
+                                <ArrowRight className="size-3 text-blue-400" />
+                                <span className="inline-flex items-center rounded bg-amber-100/80 px-2 py-0.5 text-[10.5px] font-bold text-amber-800 dark:bg-amber-900/60 dark:text-amber-200">
+                                    Menunggu Review
+                                </span>
+                            </div>
+                            <span className="text-[10px] font-medium text-slate-500 dark:text-zinc-400 shrink-0">
+                                Status otomatis diperbarui
+                            </span>
+                        </div>
+
+                        {/* Catatan / Notes Textarea */}
+                        <div className="space-y-2 w-full min-w-0 max-w-full">
+                            <div className="flex items-center justify-between w-full min-w-0">
+                                <Label htmlFor="review_notes" className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                    Catatan Hasil Pengerjaan / Resume <span className="text-[11px] font-normal text-slate-400">(Opsional)</span>
+                                </Label>
+                                <span className="font-mono text-[10.5px] text-slate-400">
+                                    {reviewForm.data.notes.length}/2000
+                                </span>
+                            </div>
+
+                            {/* Quick Note Snippets in structured wrap */}
+                            <div className="w-full min-w-0 space-y-1">
+                                <span className="text-[10px] font-medium text-slate-400 dark:text-zinc-500">Pilihan Cepat:</span>
+                                <div className="flex flex-wrap gap-1.5 w-full min-w-0">
+                                    {[
+                                        'Draf dokumen telah selesai dibuat & diunggah',
+                                        'Seluruh checklist tugas telah diselesaikan',
+                                        'Mohon review dan arahan koreksi posita',
+                                    ].map((template) => (
+                                        <button
+                                            key={template}
+                                            type="button"
+                                            onClick={() => {
+                                                const current = reviewForm.data.notes;
+                                                const updated = current ? `${current}\n${template}` : template;
+                                                reviewForm.setData('notes', updated);
+                                            }}
+                                            className="inline-flex items-center rounded-md border border-slate-200 bg-white px-2.5 py-1 text-[10.5px] font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 text-left whitespace-normal break-words max-w-full dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-400 dark:hover:bg-zinc-800"
+                                        >
+                                            + {template}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
                             <textarea
-                                rows={4}
+                                id="review_notes"
+                                rows={3}
+                                maxLength={2000}
                                 placeholder="Contoh: Draf gugatan dan somasi termin 1 telah selesai dibuat dan diunggah pada tab Dokumen. Mohon review dan arahan koreksi..."
                                 value={reviewForm.data.notes}
                                 onChange={(e) => reviewForm.setData('notes', e.target.value)}
-                                className="w-full rounded-lg border border-slate-200 bg-white p-3 text-xs dark:border-white/10 dark:bg-[#191c22]"
+                                className="w-full min-w-0 max-w-full box-border rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:border-white/10 dark:bg-[#191c22] dark:text-white dark:placeholder:text-zinc-500 resize-none"
                             />
                         </div>
 
-                        <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-white/10">
+                        {/* Info Note */}
+                        <div className="flex items-start gap-2.5 rounded-lg border border-slate-200/60 bg-slate-50 px-3.5 py-2.5 text-[11px] text-slate-600 dark:border-white/[0.06] dark:bg-zinc-900/40 dark:text-zinc-400 w-full min-w-0 max-w-full box-border">
+                            <Info className="size-3.5 shrink-0 text-blue-600 dark:text-blue-400 mt-0.5" />
+                            <span className="min-w-0 flex-1 leading-relaxed">
+                                {task.reviewer?.name || task.reporter?.name
+                                    ? `${task.reviewer?.name || task.reporter?.name} akan menerima notifikasi pengajuan review dan catatan ini akan tercatat pada aktivitas tugas.`
+                                    : 'Pemeriksa akan menerima notifikasi dan catatan ini akan otomatis dicatat pada riwayat tugas.'}
+                            </span>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center justify-end gap-2.5 border-t border-slate-100 pt-3 dark:border-white/10 w-full min-w-0">
                             <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setIsSubmitReviewOpen(false)}
+                                className="h-9 px-4 text-xs font-semibold"
                             >
                                 Batal
                             </Button>
@@ -1593,9 +1754,13 @@ export default function TaskShow({
                                 type="submit"
                                 size="sm"
                                 disabled={reviewForm.processing}
-                                className="bg-purple-600 text-white hover:bg-purple-700 dark:bg-purple-600"
+                                className="h-9 gap-1.5 rounded-lg bg-blue-600 px-4.5 text-xs font-semibold text-white shadow-2xs transition-all hover:bg-blue-700 active:scale-95 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-500 shrink-0"
                             >
-                                {reviewForm.processing ? <Spinner className="size-3.5 mr-1" /> : null}
+                                {reviewForm.processing ? (
+                                    <Spinner className="size-3.5" />
+                                ) : (
+                                    <Send className="size-3.5" />
+                                )}
                                 Kirim Pengajuan Review
                             </Button>
                         </div>

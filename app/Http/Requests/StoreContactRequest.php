@@ -32,6 +32,7 @@ class StoreContactRequest extends FormRequest
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],
             'mobile' => ['nullable', 'string', 'max:50'],
+            'avatar_url' => ['nullable', 'string', 'max:255'],
             'notes' => ['nullable', 'string', 'max:10000'],
         ];
     }
