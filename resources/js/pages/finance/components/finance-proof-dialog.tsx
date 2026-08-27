@@ -126,27 +126,15 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
         }
     };
 
-    const handleDeleteProof = () => {
-        if (!confirm('Apakah Anda yakin ingin menghapus bukti transaksi ini? Dokumen bukti akan dihapus permanen.')) {
-            return;
-        }
-        router.delete(`/finance/${target.entity}/${target.id}/proof`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                handleClose();
-            },
-        });
-    };
-
     const entityLabels: Record<string, { label: string; bg: string; text: string; iconBg: string }> = {
         invoices: {
-            label: 'Invoice',
+            label: 'Invoice Klien',
             bg: 'bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/40 text-blue-700 dark:text-blue-300',
             text: 'text-blue-600 dark:text-blue-400',
             iconBg: 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400',
         },
         payments: {
-            label: 'Penerimaan',
+            label: 'Pembayaran Kas',
             bg: 'bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-300',
             text: 'text-emerald-600 dark:text-emerald-400',
             iconBg: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400',
@@ -273,7 +261,7 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                             }
                                         }}
                                         onClick={() => fileInputRef.current?.click()}
-                                        className={`group relative cursor-pointer rounded-xl border-2 border-dashed p-5 text-center transition-all duration-150 ${
+                                        className={`group relative cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-all duration-150 ${
                                             isDragging
                                                 ? 'border-blue-500 bg-blue-50/50 dark:border-blue-400 dark:bg-blue-950/20'
                                                 : selectedFile
@@ -297,83 +285,68 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
 
                                         <div className="flex flex-col items-center justify-center space-y-2">
                                             <div
-                                                className={`flex size-10 items-center justify-center rounded-xl transition-transform duration-150 group-hover:scale-105 ${
+                                                className={`flex size-11 items-center justify-center rounded-xl transition-transform duration-150 group-hover:scale-105 ${
                                                     selectedFile
-                                                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300'
-                                                        : 'bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400'
+                                                        ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400'
+                                                        : 'bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400'
                                                 }`}
                                             >
                                                 {selectedFile ? (
-                                                    <CheckCircle2 className="size-5 text-emerald-600 dark:text-emerald-400" />
+                                                    <FileCheck className="size-5.5" />
                                                 ) : (
-                                                    <UploadCloud className="size-5" />
+                                                    <UploadCloud className="size-5.5" />
                                                 )}
                                             </div>
 
                                             <div>
                                                 <p className="text-xs font-bold text-slate-800 dark:text-zinc-100">
                                                     {selectedFile
-                                                        ? 'Berkas Terpilih'
-                                                        : isDragging
-                                                          ? 'Lepaskan berkas di sini...'
-                                                          : 'Pilih Berkas atau Seret ke Sini'}
+                                                        ? selectedFile.name
+                                                        : 'Pilih Berkas atau Seret ke Sini'}
                                                 </p>
                                                 <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500">
-                                                    PDF, JPG, JPEG, PNG, WEBP (Maksimal 20 MB)
+                                                    {selectedFile
+                                                        ? `${formatBytes(selectedFile.size)} • Siap diunggah`
+                                                        : 'PDF, JPG, JPEG, PNG, WEBP (Maksimal 20 MB)'}
                                                 </p>
+                                            </div>
+
+                                            <div className="flex items-center gap-1.5 pt-1">
+                                                {['PDF', 'JPG', 'PNG', 'WEBP'].map((fmt) => (
+                                                    <span key={fmt} className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-slate-600 dark:bg-white/10 dark:text-zinc-300">
+                                                        {fmt}
+                                                    </span>
+                                                ))}
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Selected File Details */}
-                                    {selectedFile && (
-                                        <div className="flex items-center justify-between rounded-xl border border-emerald-200/80 bg-emerald-50/50 p-2.5 dark:border-emerald-900/30 dark:bg-emerald-950/20">
-                                            <div className="flex items-center gap-2.5 min-w-0">
-                                                {selectedFilePreview ? (
-                                                    <img
-                                                        src={selectedFilePreview}
-                                                        alt="Preview"
-                                                        className="size-8.5 rounded-lg object-cover border border-emerald-300 dark:border-emerald-700 shrink-0"
-                                                    />
-                                                ) : (
-                                                    <div className="flex size-8.5 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 shrink-0">
-                                                        <FileText className="size-4" />
-                                                    </div>
-                                                )}
-                                                <div className="min-w-0 flex-1">
-                                                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                                                        {selectedFile.name}
-                                                    </p>
-                                                    <p className="text-[10.5px] text-emerald-700 dark:text-emerald-400 font-mono">
-                                                        {formatBytes(selectedFile.size)}
-                                                    </p>
-                                                </div>
-                                            </div>
-
-                                            <Button
+                                    {/* Preview selected image if any */}
+                                    {selectedFilePreview && (
+                                        <div className="relative rounded-xl border border-slate-200/80 dark:border-white/10 overflow-hidden bg-slate-900/5 dark:bg-black/30 p-1 flex items-center justify-center h-28">
+                                            <img
+                                                src={selectedFilePreview}
+                                                alt="Preview"
+                                                className="max-h-24 w-auto max-w-full object-contain rounded-lg shadow-xs"
+                                            />
+                                            <button
                                                 type="button"
-                                                variant="ghost"
-                                                size="icon"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     handleFileSelect(null);
-                                                    if (fileInputRef.current) {
-                                                        fileInputRef.current.value = '';
-                                                    }
                                                 }}
-                                                className="size-7 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/30"
-                                                title="Hapus pilihan"
+                                                className="absolute top-2 right-2 flex size-5.5 items-center justify-center rounded-full bg-slate-900/70 text-white hover:bg-rose-600 transition-colors"
+                                                title="Hapus pilihan berkas"
                                             >
-                                                <X className="size-3.5" />
-                                            </Button>
+                                                <X className="size-3" />
+                                            </button>
                                         </div>
                                     )}
                                 </div>
 
-                                {/* Unified Footer */}
                                 <DialogFooter className="border-t border-slate-100 px-5 py-3 dark:border-white/[0.06] bg-slate-50/50 dark:bg-[#16181f]/60 flex flex-row items-center justify-between sm:justify-between">
-                                    <div className="flex items-center gap-1.5 text-[11px] text-slate-400 dark:text-zinc-500">
-                                        <ShieldCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                    <div className="flex items-center gap-1 text-[10.5px] text-slate-400">
+                                        <ShieldCheck className="size-3 text-emerald-500" />
                                         <span>Terisolasi dari berkas perkara</span>
                                     </div>
 
@@ -452,7 +425,7 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                             size="icon"
                                             className="size-7 rounded-md text-slate-600 hover:bg-white dark:text-zinc-300 dark:hover:bg-white/10"
                                             onClick={() => setRotation((r) => (r + 90) % 360)}
-                                            title="Rotate"
+                                            title="Putar 90 Derajat"
                                         >
                                             <RotateCw className="size-3.5" />
                                         </Button>
@@ -465,36 +438,26 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                                 setZoomLevel(1);
                                                 setRotation(0);
                                             }}
-                                            title="Reset"
+                                            title="Reset Tampilan"
                                         >
-                                            <RefreshCw className="size-3" />
+                                            <RefreshCw className="size-3.5" />
                                         </Button>
-                                        <div className="h-3.5 w-px bg-slate-300 dark:bg-white/10 mx-0.5" />
-                                        <a
-                                            href={previewUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex size-7 items-center justify-center rounded-md text-slate-600 hover:bg-white hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
-                                            title="Buka Layar Penuh"
-                                        >
-                                            <ExternalLink className="size-3.5" />
-                                        </a>
                                     </div>
                                 </div>
                             )}
 
                             {/* Viewer Frame */}
-                            <div className="w-full h-[50vh] sm:h-[54vh] overflow-hidden flex items-center justify-center rounded-xl bg-slate-900/5 dark:bg-black/30 border border-slate-200/80 dark:border-white/10 p-1">
+                            <div className="relative w-full h-[50vh] sm:h-[54vh] overflow-hidden flex items-center justify-center rounded-xl bg-slate-900/5 dark:bg-black/30 border border-slate-200/80 dark:border-white/10 p-1">
                                 {isImage ? (
-                                    <div className="overflow-auto w-full h-full flex items-center justify-center p-2">
+                                    <div className="w-full h-full flex items-center justify-center overflow-auto p-2">
                                         <img
                                             src={previewUrl}
                                             alt={target.title}
                                             style={{
                                                 transform: `scale(${zoomLevel}) rotate(${rotation}deg)`,
-                                                transition: 'transform 0.15s ease-in-out',
+                                                transition: 'transform 0.15s ease-out',
                                             }}
-                                            className="max-h-[46vh] w-auto max-w-full object-contain rounded-lg shadow-xs"
+                                            className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
                                         />
                                     </div>
                                 ) : isPdf ? (
@@ -505,72 +468,55 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                     />
                                 ) : (
                                     <div className="text-center p-6 space-y-2">
-                                        <div className="flex size-11 mx-auto items-center justify-center rounded-xl bg-slate-100 text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                            <FileText className="size-5.5" />
-                                        </div>
-                                        <div className="space-y-0.5">
-                                            <p className="text-xs font-bold text-slate-800 dark:text-zinc-200">
-                                                Pratinjau langsung tidak tersedia untuk format ini.
-                                            </p>
-                                            <p className="text-[11px] text-slate-400">
-                                                {version?.original_filename || 'Dokumen Bukti'}
-                                            </p>
-                                        </div>
-                                        <a
-                                            href={downloadUrl}
-                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow-2xs"
+                                        <FileText className="size-12 mx-auto text-slate-400" />
+                                        <p className="text-xs font-semibold text-slate-800 dark:text-white">
+                                            {version?.original_filename || 'Dokumen Bukti'}
+                                        </p>
+                                        <p className="text-[11px] text-slate-500">
+                                            Format berkas tidak mendukung pratinjau langsung.
+                                        </p>
+                                        <Button
+                                            size="sm"
+                                            variant="outline"
+                                            className="mt-2 h-7.5 rounded-lg text-xs"
+                                            asChild
                                         >
-                                            <Download className="size-3.5" /> Unduh Dokumen
-                                        </a>
+                                            <a href={downloadUrl} download>
+                                                <Download className="size-3 mr-1" />
+                                                Unduh untuk Membuka
+                                            </a>
+                                        </Button>
                                     </div>
                                 )}
                             </div>
 
-                            {/* Meta Chips */}
-                            {version && (
-                                <div className="flex flex-wrap items-center justify-center gap-2 text-[11px] pt-1">
-                                    <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-50/80 px-2.5 py-1 font-medium text-slate-700 dark:border-white/10 dark:bg-[#16181f] dark:text-zinc-300">
-                                        <FileText className="size-3 text-blue-500" />
-                                        <span className="font-semibold truncate max-w-[220px]">
-                                            {version.original_filename || version.mime_type}
-                                        </span>
+                            {/* File Meta Pill */}
+                            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2 text-[11px] text-slate-600 dark:bg-white/[0.02] dark:text-zinc-400">
+                                <div className="flex items-center gap-2">
+                                    <HardDrive className="size-3.5 text-purple-500" />
+                                    <span className="font-medium text-slate-800 dark:text-zinc-200 truncate max-w-xs">
+                                        {version?.original_filename || 'Dokumen'}
                                     </span>
-                                    {version.file_size && (
-                                        <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-50/80 px-2.5 py-1 font-medium text-slate-700 dark:border-white/10 dark:bg-[#16181f] dark:text-zinc-300">
-                                            <HardDrive className="size-3 text-purple-500" />
-                                            <span>{formatBytes(version.file_size)}</span>
-                                        </span>
-                                    )}
-                                    {version.created_at && (
-                                        <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-50/80 px-2.5 py-1 font-medium text-slate-700 dark:border-white/10 dark:bg-[#16181f] dark:text-zinc-300">
-                                            <Clock className="size-3 text-emerald-500" />
-                                            <span>{formatDate(version.created_at)}</span>
-                                        </span>
-                                    )}
+                                    <span>•</span>
+                                    <span>{version?.file_size ? formatBytes(version.file_size) : 'File'}</span>
+                                    <span>•</span>
+                                    <span>{version?.created_at ? formatDate(version.created_at) : ''}</span>
                                 </div>
-                            )}
+                            </div>
                         </div>
 
-                        {/* Viewer Footer */}
+                        {/* Footer */}
                         <DialogFooter className="border-t border-slate-100 px-5 py-3 dark:border-white/[0.06] bg-slate-50/50 dark:bg-[#16181f]/60 flex flex-row items-center justify-between sm:justify-between">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1.5">
                                 <Button
                                     type="button"
                                     variant="outline"
                                     size="sm"
                                     onClick={() => setIsUploadingNew(true)}
-                                    className="h-8.5 rounded-lg border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/10 dark:text-zinc-300 gap-1.5"
+                                    className="h-8.5 rounded-lg text-xs font-semibold"
                                 >
-                                    <UploadCloud className="size-3.5" /> Ganti Berkas
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={handleDeleteProof}
-                                    className="h-8.5 rounded-lg text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/30 gap-1.5"
-                                >
-                                    <Trash2 className="size-3.5" /> Hapus
+                                    <UploadCloud className="size-3.5 mr-1" />
+                                    Ganti Bukti Baru
                                 </Button>
                             </div>
 
@@ -578,13 +524,27 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="h-8.5 rounded-lg border-slate-200 text-xs font-semibold text-slate-800 hover:bg-slate-100 dark:border-white/10 dark:text-zinc-200 gap-1.5"
+                                    className="h-8.5 rounded-lg text-xs font-semibold"
                                     asChild
                                 >
                                     <a href={downloadUrl} download>
-                                        <Download className="size-3.5" /> Unduh Asli
+                                        <Download className="size-3.5 mr-1" />
+                                        Unduh
                                     </a>
                                 </Button>
+
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8.5 rounded-lg text-xs font-semibold"
+                                    asChild
+                                >
+                                    <a href={previewUrl} target="_blank" rel="noreferrer">
+                                        <ExternalLink className="size-3.5 mr-1" />
+                                        Fullscreen
+                                    </a>
+                                </Button>
+
                                 <Button
                                     type="button"
                                     variant="default"

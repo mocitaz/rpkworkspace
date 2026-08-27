@@ -72,7 +72,7 @@ import { ClientTrustView, type ClientTrustSummary, type ClientTrustFundItem } fr
 import { PayrollView, type PayrollItem } from './components/payroll-view';
 import { ReportsView, type IncomeStatementData, type BalanceSheetData } from './components/reports-view';
 import { FinanceProofDialog, type FinanceEntityProofTarget, type ProofDocumentData } from './components/finance-proof-dialog';
-import { FinanceDetailModal, type FinanceDetailTarget } from './components/finance-detail-modal';
+import { FinanceDetailModal, humanizeCategory, type FinanceDetailTarget } from './components/finance-detail-modal';
 import { FinancialAnalyticsView } from './components/financial-analytics-view';
 import { CreateAccountDialog } from './components/create-account-dialog';
 import { CreateTransferDialog } from './components/create-transfer-dialog';
@@ -213,12 +213,19 @@ export default function FinanceIndex({
     const [detailTarget, setDetailTarget] = useState<FinanceDetailTarget | null>(null);
 
     const openDetailForExpense = (exp: LedgerItem) => {
+        const refCode = exp.title && exp.title.startsWith('EXP-')
+            ? exp.title
+            : exp.description?.match(/EXP-\d+-\d+/)?.[0] || `EXP-${exp.id?.slice(0, 8).toUpperCase()}`;
+        const mainTitle = exp.description
+            ? exp.description.replace(/\(EXP-[^)]+\)/, '').trim()
+            : humanizeCategory(exp.category);
+
         setDetailTarget({
             id: exp.id,
             entity: 'expenses',
-            reference_number: exp.title || exp.category || 'EXPENSE',
-            title: exp.description || exp.title || 'Biaya Operasional',
-            subtitle: exp.matter?.title || 'Non-Perkara / Umum',
+            reference_number: refCode,
+            title: mainTitle || 'Beban Biaya Pengeluaran',
+            subtitle: exp.matter?.title || 'Biaya Operasional Umum Kantor',
             category: exp.category,
             charge_to: exp.charge_to,
             status: exp.status || 'paid',
@@ -240,8 +247,8 @@ export default function FinanceIndex({
             id: inv.id,
             entity: 'invoices',
             reference_number: inv.invoice_number,
-            title: inv.title || `Invoice ${inv.invoice_number}`,
-            subtitle: inv.matter?.title || 'Invoice Tagihan',
+            title: inv.title || `Invoice Tagihan: ${inv.invoice_number}`,
+            subtitle: inv.matter?.title || 'Invoice Tagihan Klien',
             status: inv.status,
             amount: inv.total_amount ?? inv.outstanding_amount ?? 0,
             currency: inv.currency || currency,
@@ -260,7 +267,7 @@ export default function FinanceIndex({
             id: q.id,
             entity: 'quotations',
             reference_number: q.quotation_number,
-            title: q.title || `Quotation ${q.quotation_number}`,
+            title: q.title || `Proposal Quotation: ${q.quotation_number}`,
             subtitle: q.matter?.title || 'Penawaran Honorarium',
             status: q.status,
             amount: q.total_amount ?? 0,
@@ -275,12 +282,13 @@ export default function FinanceIndex({
     };
 
     const openDetailForPayment = (pmt: LedgerItem) => {
+        const refCode = (pmt as any).reference_number || `PAY-${pmt.id?.slice(0, 8).toUpperCase()}`;
         setDetailTarget({
             id: pmt.id,
             entity: 'payments',
-            reference_number: (pmt as any).reference_number || 'RECEIPT',
-            title: `Penerimaan Kas: ${(pmt as any).reference_number || formatMoney(pmt.amount ?? 0, pmt.currency || currency)}`,
-            subtitle: (pmt as any).client?.display_name || pmt.matter?.title || 'Penerimaan Kas',
+            reference_number: refCode,
+            title: `Penerimaan Pembayaran Kas (${refCode})`,
+            subtitle: (pmt as any).client?.display_name || pmt.matter?.title || 'Penerimaan Pembayaran Klien',
             status: pmt.reversed_at ? 'reversed' : pmt.refunded_at ? 'refunded' : 'verified',
             amount: pmt.amount ?? 0,
             currency: pmt.currency || currency,
@@ -300,7 +308,7 @@ export default function FinanceIndex({
         setDetailTarget({
             id: p.id,
             entity: 'payrolls',
-            reference_number: p.payslip_number,
+            reference_number: p.payslip_number || `PAYROLL-${p.id?.slice(0, 8).toUpperCase()}`,
             title: `Slip Gaji: ${p.user?.name || 'Pegawai'}`,
             subtitle: `Periode ${p.period} • ${p.user?.position_title || 'Staf'}`,
             status: p.status,
@@ -317,9 +325,9 @@ export default function FinanceIndex({
         setDetailTarget({
             id: tx.id,
             entity: 'partner-transactions',
-            reference_number: tx.transaction_number,
-            title: `Transaksi Partner: ${tx.partner?.name || 'Partner'}`,
-            subtitle: tx.matter?.title || 'Non-Perkara',
+            reference_number: tx.transaction_number || `PTX-${tx.id?.slice(0, 8).toUpperCase()}`,
+            title: `${humanizeCategory(tx.type)}: ${tx.partner?.name || 'Partner'}`,
+            subtitle: tx.matter?.title || 'Non-Perkara / Transaksi Firma',
             category: tx.type,
             status: 'approved',
             amount: tx.amount,
