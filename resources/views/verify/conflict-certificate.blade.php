@@ -52,19 +52,34 @@
 
             <div>
                 @if ($isClear)
-                    <div class="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
-                        <span class="size-1.5 rounded-full bg-emerald-500"></span>
-                        <span>Terverifikasi Resmi</span>
+                    <div class="flex items-center gap-2 rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 py-1.5 shadow-2xs">
+                        <svg class="size-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                        <div class="text-left">
+                            <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Status Validasi</div>
+                            <div class="text-[11.5px] font-extrabold text-slate-900 leading-tight">Clearance Disetujui</div>
+                        </div>
                     </div>
                 @elseif ($isWaived)
-                    <div class="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">
-                        <span class="size-1.5 rounded-full bg-amber-500"></span>
-                        <span>Dispensasi Disetujui</span>
+                    <div class="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50/70 px-3 py-1.5 shadow-2xs">
+                        <svg class="size-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <div class="text-left">
+                            <div class="text-[9px] font-bold text-amber-700 uppercase tracking-wider">Status Validasi</div>
+                            <div class="text-[11.5px] font-extrabold text-amber-900 leading-tight">Dispensasi Bersyarat</div>
+                        </div>
                     </div>
                 @else
-                    <div class="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-800">
-                        <span class="size-1.5 rounded-full bg-rose-500"></span>
-                        <span>Benturan Terdeteksi</span>
+                    <div class="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50/70 px-3 py-1.5 shadow-2xs">
+                        <svg class="size-4 text-rose-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        <div class="text-left">
+                            <div class="text-[9px] font-bold text-rose-700 uppercase tracking-wider">Status Validasi</div>
+                            <div class="text-[11.5px] font-extrabold text-rose-900 leading-tight">Benturan Terdeteksi</div>
+                        </div>
                     </div>
                 @endif
             </div>
@@ -199,7 +214,9 @@
                         </div>
                         <div class="space-y-1 text-xs">
                             <div class="font-bold text-slate-900 flex items-center gap-1.5">
-                                <span class="size-2 rounded-full bg-emerald-500"></span>
+                                <svg class="size-3.5 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                </svg>
                                 <span>Dokumen Terdaftar Resmi</span>
                             </div>
                             <p class="text-slate-500 text-[11px]">
