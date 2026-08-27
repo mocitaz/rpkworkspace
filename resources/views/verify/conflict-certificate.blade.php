@@ -152,49 +152,91 @@
             </div>
 
             <!-- Subject & Parties Details -->
-            <div class="p-6 sm:p-8 space-y-5">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <div class="space-y-2.5">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Subjek yang Diperiksa</h3>
-                        <div class="rounded-2xl border border-slate-200 p-4 space-y-2 bg-slate-50/50">
-                            <div class="text-base font-black text-slate-900">{{ $conflictCheck->subject_name }}</div>
-                            <div class="text-xs text-slate-600 space-y-1">
-                                @if ($conflictCheck->client)
-                                    <div><span class="text-slate-400">Klien Terkait:</span> <strong class="text-slate-800">{{ $conflictCheck->client->display_name }}</strong></div>
-                                @endif
-                                @if ($conflictCheck->matter)
-                                    <div><span class="text-slate-400">Perkara:</span> {{ $conflictCheck->matter->title }} ({{ $conflictCheck->matter->matter_number }})</div>
-                                @else
-                                    <div><span class="text-slate-400">Perkara:</span> Penjajakan Awal / Klien Baru</div>
-                                @endif
-                                <div><span class="text-slate-400">Pemohon Uji:</span> {{ $conflictCheck->requester->name ?? 'Tim Legal Practice' }}</div>
+            <div class="p-6 sm:p-8 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Left: Subjek yang Diperiksa -->
+                    <div class="rounded-2xl border border-slate-200/90 bg-slate-50/40 p-4 space-y-3">
+                        <div>
+                            <span class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">
+                                Subjek yang Diperiksa
+                            </span>
+                            <h2 class="mt-0.5 text-sm sm:text-base font-extrabold text-slate-900 leading-snug">
+                                {{ $conflictCheck->subject_name }}
+                            </h2>
+                        </div>
+
+                        <div class="space-y-1.5 border-t border-slate-200/70 pt-2.5 text-xs text-slate-600">
+                            @if ($conflictCheck->client)
+                                <div class="flex items-start justify-between gap-2">
+                                    <span class="text-slate-400 shrink-0">Klien Terkait:</span>
+                                    <span class="font-bold text-slate-900 text-right truncate max-w-[220px]">
+                                        {{ $conflictCheck->client->display_name }}
+                                    </span>
+                                </div>
+                            @endif
+                            @if ($conflictCheck->matter)
+                                <div class="flex items-start justify-between gap-2">
+                                    <span class="text-slate-400 shrink-0">Perkara:</span>
+                                    <span class="font-semibold text-slate-800 text-right text-[11.5px] leading-tight max-w-[220px]">
+                                        {{ $conflictCheck->matter->title }} <span class="font-mono font-bold text-blue-600">({{ $conflictCheck->matter->matter_number }})</span>
+                                    </span>
+                                </div>
+                            @else
+                                <div class="flex items-center justify-between gap-2">
+                                    <span class="text-slate-400">Perkara:</span>
+                                    <span class="font-medium text-slate-700">Penjajakan Awal / Klien Baru</span>
+                                </div>
+                            @endif
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-slate-400">Pemohon Uji:</span>
+                                <span class="font-semibold text-slate-800">{{ $conflictCheck->requester->name ?? 'Tim Legal Practice' }}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="space-y-2.5">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Otorisasi &amp; Peninjauan Etika</h3>
-                        <div class="rounded-2xl border border-slate-200 p-4 bg-slate-50/50 space-y-2">
-                            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Pejabat Kepatuhan Etika</div>
-                            <div class="text-base font-black text-slate-900">
+                    <!-- Right: Otorisasi & Peninjauan Etika -->
+                    <div class="rounded-2xl border border-slate-200/90 bg-slate-50/40 p-4 space-y-3">
+                        <div>
+                            <span class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">
+                                Otorisasi &amp; Peninjauan Etika
+                            </span>
+                            <h2 class="mt-0.5 text-sm sm:text-base font-extrabold text-slate-900 leading-snug">
                                 {{ $conflictCheck->reviewer->name ?? 'Managing Partner RPK' }}
+                            </h2>
+                        </div>
+
+                        <div class="space-y-1.5 border-t border-slate-200/70 pt-2.5 text-xs text-slate-600">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-slate-400">Jabatan:</span>
+                                <span class="font-semibold text-slate-800">{{ $conflictCheck->reviewer->position_title ?? 'Managing Partner' }}</span>
                             </div>
-                            <div class="text-xs text-slate-600">
-                                Jabatan: <span class="font-semibold text-slate-800">{{ $conflictCheck->reviewer->position_title ?? 'Managing Partner' }}</span>
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-slate-400">Tanggal Otorisasi:</span>
+                                <span class="font-semibold text-slate-800">
+                                    {{ $conflictCheck->reviewed_at ? $conflictCheck->reviewed_at->translatedFormat('d F Y, H:i') . ' WIB' : ($conflictCheck->created_at?->translatedFormat('d F Y, H:i') . ' WIB' ?? '-') }}
+                                </span>
                             </div>
-                            <div class="text-xs text-slate-600">
-                                Tanggal Otorisasi: <span class="font-semibold text-slate-800">{{ $conflictCheck->reviewed_at ? $conflictCheck->reviewed_at->translatedFormat('d F Y, H:i') . ' WIB' : ($conflictCheck->created_at?->translatedFormat('d F Y, H:i') . ' WIB' ?? '-') }}</span>
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-slate-400">Metode Verifikasi:</span>
+                                <span class="font-semibold text-emerald-700 flex items-center gap-1">
+                                    <svg class="size-3 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    <span>Database Perkara Firma</span>
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 @if (is_array($conflictCheck->searched_names) && count($conflictCheck->searched_names) > 0)
-                    <div class="space-y-2 pt-1">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Entitas &amp; Nama yang Disisir Database</h3>
+                    <div class="rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 space-y-1.5">
+                        <span class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">
+                            Entitas &amp; Nama yang Disisir Database ({{ count($conflictCheck->searched_names) }})
+                        </span>
                         <div class="flex flex-wrap gap-1.5">
                             @foreach ($conflictCheck->searched_names as $name)
-                                <span class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700">
+                                <span class="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 shadow-2xs">
                                     {{ $name }}
                                 </span>
                             @endforeach
@@ -203,35 +245,37 @@
                 @endif
 
                 @if ($conflictCheck->decision_note)
-                    <div class="space-y-2 pt-1">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Catatan &amp; Pertimbangan Legal</h3>
-                        <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-xs text-slate-700 leading-relaxed">
-                            {{ $conflictCheck->decision_note }}
-                        </div>
+                    <div class="rounded-xl border-l-3 border-indigo-500 bg-slate-50/80 p-3.5 space-y-1 text-xs">
+                        <span class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">
+                            Catatan &amp; Pertimbangan Legal
+                        </span>
+                        <p class="text-slate-700 leading-relaxed italic">
+                            &ldquo;{{ $conflictCheck->decision_note }}&rdquo;
+                        </p>
                     </div>
                 @endif
 
                 <!-- QR Code & Verification Security Box -->
-                <div class="rounded-2xl border border-slate-200 bg-slate-50/60 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="shrink-0 rounded-xl bg-white p-2 border border-slate-200 shadow-2xs">
+                <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3.5">
+                        <div class="shrink-0 rounded-xl bg-white p-1.5 border border-slate-200 shadow-2xs">
                             <img 
                                 src="{{ route('verify.conflict-certificate.qr', $conflictCheck) }}" 
                                 alt="QR Code Verifikasi" 
                                 class="size-16 sm:size-18 object-contain"
                             />
                         </div>
-                        <div class="space-y-1 text-xs">
+                        <div class="space-y-0.5 text-xs">
                             <div class="font-bold text-slate-900 flex items-center gap-1.5">
                                 <svg class="size-3.5 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                                 </svg>
                                 <span>Dokumen Terdaftar Resmi</span>
                             </div>
-                            <p class="text-slate-500 text-[11px]">
+                            <p class="text-slate-500 text-[11px] leading-tight">
                                 Dokumen ini diterbitkan melalui sistem terkomputerisasi RPK Law Firm dan sah tanpa tanda tangan basah.
                             </p>
-                            <div class="font-mono text-[10px] text-slate-400 truncate max-w-[340px]">
+                            <div class="font-mono text-[10px] text-slate-400 truncate max-w-[320px] pt-0.5">
                                 ID: {{ $conflictCheck->id }}
                             </div>
                         </div>
@@ -241,7 +285,7 @@
                         <button 
                             type="button" 
                             onclick="window.print()" 
-                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 active:scale-95 transition-all cursor-pointer"
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 active:scale-95 transition-all cursor-pointer"
                         >
                             <svg class="size-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -252,7 +296,7 @@
                             type="button" 
                             onclick="copyLink()" 
                             id="copyBtn"
-                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 transition-all cursor-pointer"
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 transition-all cursor-pointer"
                         >
                             <svg class="size-3.5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
