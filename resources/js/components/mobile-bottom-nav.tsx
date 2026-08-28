@@ -62,7 +62,7 @@ export function MobileBottomNav() {
     return (
         <nav
             aria-label="Navigasi Utama Mobile"
-            className="fixed inset-x-0 bottom-0 z-40 flex h-14 items-center justify-around border-t border-slate-200/80 bg-white/92 px-1 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_20px_rgba(0,0,0,0.04)] backdrop-blur-2xl md:hidden dark:border-white/[0.08] dark:bg-[#101216]/92 dark:shadow-[0_-4px_20px_rgba(0,0,0,0.3)]"
+            className="fixed inset-x-0 bottom-0 z-40 flex h-[calc(3.5rem+env(safe-area-inset-bottom))] items-center justify-around border-t border-slate-200/80 bg-white/92 px-1 pb-[env(safe-area-inset-bottom)] shadow-[0_-4px_20px_rgba(0,0,0,0.04)] backdrop-blur-2xl md:hidden dark:border-white/[0.08] dark:bg-[#101216]/92 dark:shadow-[0_-4px_20px_rgba(0,0,0,0.3)]"
         >
             {navItems.map((item) => {
                 const Icon = item.icon;

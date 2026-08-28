@@ -41,7 +41,7 @@ export function PersonnelAccessHero({
     ] as const;
 
     return (
-        <section className="group relative min-h-[250px] overflow-hidden rounded-[20px] border border-slate-200/80 bg-gradient-to-br from-[#f7f9ff] via-white to-[#eaf2ff] px-6 py-6 shadow-[0_10px_28px_rgba(71,85,105,0.075)] sm:px-8 dark:border-white/[0.08] dark:from-[#17191f] dark:via-[#17191f] dark:to-[#18212c]">
+        <section className="group relative flex min-h-[250px] flex-col justify-between overflow-hidden rounded-[20px] border border-slate-200/80 bg-gradient-to-br from-[#f7f9ff] via-white to-[#eaf2ff] px-6 py-6 shadow-[0_10px_28px_rgba(71,85,105,0.075)] sm:h-[250px] sm:px-8 dark:border-white/[0.08] dark:from-[#17191f] dark:via-[#17191f] dark:to-[#18212c]">
             <div className="personnel-hero-glow pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_84%_38%,rgba(96,165,250,0.28),transparent_30%),radial-gradient(circle_at_66%_112%,rgba(251,191,36,0.12),transparent_28%)]" />
             <div className="personnel-hero-dots pointer-events-none absolute inset-y-0 right-0 hidden w-[43%] [background-image:radial-gradient(rgba(59,130,246,0.23)_1px,transparent_1px)] [mask-image:linear-gradient(to_right,transparent,black_28%)] [background-size:18px_18px] opacity-30 md:block" />
             <svg
@@ -105,7 +105,7 @@ export function PersonnelAccessHero({
                     </div>
                 ))}
             </div>
-            <div className="personnel-hero-people pointer-events-none absolute right-[1%] bottom-0 hidden h-[255px] w-[465px] translate-y-[3%] md:block lg:right-[2.5%]">
+            <div className="personnel-hero-people pointer-events-none absolute right-[1%] bottom-0 hidden h-[255px] w-[465px] shrink-0 translate-y-[7%] md:block lg:right-[2.5%]">
                 <img
                     src="/images/personnel-access-hero.png"
                     alt=""

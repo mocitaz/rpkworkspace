@@ -482,6 +482,44 @@
     box-shadow: 0 2px 7px -4px rgb(37 99 235 / 0.7);
 }
 
+@media (width < 40rem) {
+    .workspace-mobile-safe {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        background-attachment: scroll;
+    }
+
+    .workspace-mobile-safe > * {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .workspace-mobile-safe :where(main, section, article, form) {
+        min-width: 0;
+    }
+
+    .workspace-mobile-safe :where(input, textarea, select) {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .workspace-mobile-safe .overflow-x-auto {
+        overscroll-behavior-inline: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    [data-slot='dialog-content'] {
+        width: calc(100vw - 1rem);
+        max-width: calc(100vw - 1rem);
+        max-height: calc(100dvh - 1rem);
+        overflow-x: hidden;
+        overflow-y: auto;
+        border-radius: 1rem;
+        padding: 1rem;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     .workspace-page {
         animation: none;

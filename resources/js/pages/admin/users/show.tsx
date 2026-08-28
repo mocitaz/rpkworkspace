@@ -203,8 +203,8 @@ export default function UserShow({
         <TooltipProvider>
             <Head title={`${staff.name} - Profil Staf & Advokat`} />
 
-            <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
-                <main className="mx-auto max-w-7xl space-y-4 px-4 py-5 sm:px-6 lg:px-8">
+            <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-10 dark:bg-[#0c0d10]">
+                <main className="w-full space-y-4 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
                     {/* 1. Executive Dossier Header Card (Unified 2-Tier Concept) */}
                     <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs sm:p-5 dark:border-white/[0.08] dark:bg-[#14161b]">
                         {/* Subtle Luxury Ambient Glow */}

@@ -175,6 +175,14 @@ type Overview = {
     net_cash_flow?: number;
 };
 
+const agingBracketLabels: Record<string, string> = {
+    current: 'Belum jatuh tempo',
+    '1_30': '1–30 hari',
+    '31_60': '31–60 hari',
+    '61_90': '61–90 hari',
+    over_90: '> 90 hari',
+};
+
 export default function FinanceIndex({
     matters,
     clients,
@@ -494,7 +502,7 @@ export default function FinanceIndex({
             <Head title="Keuangan & Billing Operasional - RPK Legal Workspace" />
 
             <div className="min-h-screen bg-[#fafafc] pb-16 dark:bg-[#0c0d10]">
-                <main className="mx-auto max-w-7xl space-y-4 px-4 py-3.5 sm:px-6 lg:px-8">
+                <main className="w-full space-y-4 px-4 py-3.5 sm:px-6 lg:px-8">
                     <FinanceDashboardHero
                         scope={scope}
                         onScopeChange={setScope}
@@ -1026,42 +1034,58 @@ export default function FinanceIndex({
 
                                             {showDetailedAnalytics &&
                                                 overview.aging && (
-                                                    <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                                        <span className="text-xs font-bold text-slate-900 uppercase dark:text-white">
-                                                            Klasifikasi Umur
-                                                            Piutang Klien (Aging
-                                                            Analysis)
-                                                        </span>
-                                                        <div className="mt-2.5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-                                                            {Object.entries(
-                                                                overview.aging,
-                                                            ).map(
-                                                                ([
-                                                                    bracket,
-                                                                    val,
-                                                                ]) => (
-                                                                    <div
-                                                                        key={
-                                                                            bracket
-                                                                        }
-                                                                        className="rounded-lg bg-slate-50 p-2.5 text-center dark:bg-zinc-800/50"
-                                                                    >
-                                                                        <span className="text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                                            {
+                                                    <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-gradient-to-br from-white to-slate-50/70 shadow-2xs dark:border-white/[0.06] dark:from-[#14161b] dark:to-zinc-900/60">
+                                                        <div className="flex items-center gap-2 border-b border-slate-200/60 px-4 py-3 dark:border-white/[0.06]">
+                                                            <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
+                                                                <BarChart3 className="size-3.5" />
+                                                            </span>
+                                                            <div>
+                                                                <p className="text-xs font-bold text-slate-900 dark:text-white">
+                                                                    Klasifikasi
+                                                                    Umur Piutang
+                                                                    Klien
+                                                                </p>
+                                                                <p className="text-[9px] text-slate-400 dark:text-zinc-500">
+                                                                    Aging
+                                                                    analysis
+                                                                    berdasarkan
+                                                                    jatuh tempo
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="overflow-x-auto overscroll-x-contain">
+                                                            <div className="grid min-w-[620px] grid-cols-5 px-2 py-3">
+                                                                {Object.entries(
+                                                                    overview.aging,
+                                                                ).map(
+                                                                    ([
+                                                                        bracket,
+                                                                        val,
+                                                                    ]) => (
+                                                                        <div
+                                                                            key={
                                                                                 bracket
                                                                             }
-                                                                        </span>
-                                                                        <p className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                                                            {formatMoney(
-                                                                                Number(
-                                                                                    val,
-                                                                                ),
-                                                                                currency,
-                                                                            )}
-                                                                        </p>
-                                                                    </div>
-                                                                ),
-                                                            )}
+                                                                            className="border-l border-slate-200/70 px-3 first:border-l-0 dark:border-white/[0.07]"
+                                                                        >
+                                                                            <span className="block text-[9px] font-bold tracking-[0.08em] text-slate-400 uppercase dark:text-zinc-500">
+                                                                                {agingBracketLabels[
+                                                                                    bracket
+                                                                                ] ??
+                                                                                    bracket}
+                                                                            </span>
+                                                                            <p className="mt-1 font-mono text-sm font-bold tracking-tight text-slate-950 dark:text-white">
+                                                                                {formatMoney(
+                                                                                    Number(
+                                                                                        val,
+                                                                                    ),
+                                                                                    currency,
+                                                                                )}
+                                                                            </p>
+                                                                        </div>
+                                                                    ),
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 )}

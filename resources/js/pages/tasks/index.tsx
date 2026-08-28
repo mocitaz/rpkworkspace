@@ -175,8 +175,8 @@ export default function TasksIndex({
         <>
             <Head title="Manajemen Tugas & Instruksi Kerja" />
 
-            <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
-                <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+            <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-8 dark:bg-[#0c0d10]">
+                <main className="w-full space-y-5 px-4 py-5 sm:px-6 lg:px-8">
                     <TasksWorkHero
                         totalTasks={metrics.total}
                         visibleTasks={tasks.data.length}

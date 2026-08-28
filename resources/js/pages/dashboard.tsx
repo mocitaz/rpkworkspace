@@ -382,12 +382,13 @@ export default function Dashboard({
             />
 
             <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-10 dark:bg-[#0c0d10]">
-                <main className="mx-auto max-w-7xl space-y-6 px-4 py-5 sm:px-6 lg:px-8">
+                <main className="w-full space-y-6 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
                     <DashboardWelcomeHero
                         fullName={fullName}
                         activeMatters={activeMattersCount}
                         openTasks={openTasksCount}
                         urgentTasks={urgentTasksCount}
+                        todayFormatted={todayFormatted}
                     />
 
                     {/* 2. Animated KPI cards driven by real workspace metrics */}

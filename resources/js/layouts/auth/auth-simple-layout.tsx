@@ -70,8 +70,8 @@ export default function AuthSimpleLayout({
             {/* Subtle Clean Footer */}
             <footer className="relative z-10 py-3 text-center text-xs font-medium text-slate-500/90 drop-shadow-xs dark:text-zinc-400">
                 <div className="mx-auto max-w-5xl px-4">
-                    &copy; {new Date().getFullYear()} RPK App — Integrated
-                    Legal Practice System. All rights reserved.
+                    &copy; {new Date().getFullYear()} RPK App — Integrated Legal
+                    Practice System. All rights reserved.
                 </div>
             </footer>
         </div>

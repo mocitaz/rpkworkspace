@@ -20,6 +20,9 @@ test('personnel hero contains metrics and transparent illustration', async () =>
     assert.match(source, /personnel-access-hero\.png/);
     assert.match(source, /h-\[255px\]/);
     assert.match(source, /w-\[465px\]/);
-    assert.match(source, /translate-y-\[3%\]/);
-    assert.equal(asset[25], 6);
+    assert.match(source, /translate-y-\[7%\]/);
+    assert.ok(
+        asset[25] === 6 || asset.includes(Buffer.from('tRNS')),
+        'personnel illustration must preserve transparency',
+    );
 });

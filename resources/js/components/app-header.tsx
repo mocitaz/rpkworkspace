@@ -212,11 +212,12 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                         </div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    className="size-10 rounded-full p-1"
+                                <button
+                                    type="button"
+                                    aria-label="Menu Pengguna"
+                                    className="group relative flex size-9 cursor-pointer items-center justify-center rounded-full transition-all active:scale-95"
                                 >
-                                    <Avatar className="size-8 overflow-hidden rounded-full">
+                                    <Avatar className="size-8.5 shrink-0 overflow-hidden rounded-full border border-slate-200/80 shadow-2xs transition-all group-hover:scale-105 dark:border-white/10">
                                         <AvatarImage
                                             src={
                                                 auth.user?.avatar_url ||
@@ -225,13 +226,17 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                             }
                                             alt={auth.user?.name}
                                         />
-                                        <AvatarFallback className="rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
+                                        <AvatarFallback className="rounded-full bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white">
                                             {getInitials(auth.user?.name ?? '')}
                                         </AvatarFallback>
                                     </Avatar>
-                                </Button>
+                                    <span className="absolute right-0 bottom-0 size-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-zinc-900" />
+                                </button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56" align="end">
+                            <DropdownMenuContent
+                                className="w-[252px] max-w-[calc(100vw-1rem)] rounded-xl border border-slate-200/90 bg-white p-1.5 shadow-[0_14px_36px_-18px_rgba(15,23,42,0.3)] dark:border-white/10 dark:bg-[#16181d]"
+                                align="end"
+                            >
                                 {auth.user && (
                                     <UserMenuContent user={auth.user} />
                                 )}

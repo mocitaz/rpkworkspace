@@ -223,17 +223,14 @@ export function NotificationMenu() {
             <DropdownMenuTrigger asChild>
                 <button
                     type="button"
-                    className="relative flex size-8.5 cursor-pointer items-center justify-center rounded-xl border border-slate-200/90 bg-white text-slate-600 shadow-2xs transition-all hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none active:scale-95 dark:border-white/[0.1] dark:bg-[#1c1f24] dark:text-zinc-300 dark:hover:bg-white/[0.08] dark:hover:text-white"
+                    className="relative flex size-9 cursor-pointer items-center justify-center rounded-full text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none active:scale-95 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
                     aria-label={`Notifikasi${unreadLocalCount ? `, ${unreadLocalCount} belum dibaca` : ''}`}
                 >
-                    <Bell className="size-4" />
+                    <Bell className="size-4.5" />
                     {unreadLocalCount > 0 && (
-                        <>
-                            <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-rose-600 text-[9px] font-black text-white shadow-xs">
-                                {unreadLocalCount > 9 ? '9+' : unreadLocalCount}
-                            </span>
-                            <span className="absolute -top-1 -right-1 size-4 animate-ping rounded-full bg-rose-400 opacity-60" />
-                        </>
+                        <span className="absolute top-0.5 right-0.5 flex size-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow-xs">
+                            {unreadLocalCount > 9 ? '9+' : unreadLocalCount}
+                        </span>
                     )}
                 </button>
             </DropdownMenuTrigger>

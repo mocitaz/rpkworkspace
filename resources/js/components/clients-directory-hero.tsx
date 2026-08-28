@@ -51,13 +51,13 @@ export function ClientsDirectoryHero({
     ];
 
     return (
-        <section className="group relative min-h-[250px] overflow-hidden rounded-[20px] border border-slate-200/80 bg-gradient-to-br from-[#f7f9ff] via-white to-[#eaf3ff] px-6 py-6 shadow-[0_10px_28px_rgba(71,85,105,0.075)] sm:px-8 dark:border-white/[0.08] dark:from-[#17191f] dark:via-[#17191f] dark:to-[#18202b]">
+        <section className="group relative flex min-h-[250px] flex-col justify-between overflow-hidden rounded-[20px] border border-slate-200/80 bg-gradient-to-br from-[#f7f9ff] via-white to-[#eaf3ff] px-6 py-6 shadow-[0_10px_28px_rgba(71,85,105,0.075)] sm:h-[250px] sm:px-8 dark:border-white/[0.08] dark:from-[#17191f] dark:via-[#17191f] dark:to-[#18202b]">
             <div className="clients-hero-glow pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_84%_38%,rgba(96,165,250,0.22),transparent_30%),radial-gradient(circle_at_66%_112%,rgba(147,197,253,0.14),transparent_28%)]" />
-            <div className="clients-hero-dots pointer-events-none absolute inset-y-0 right-0 hidden w-[43%] [background-image:radial-gradient(rgba(59,130,246,0.22)_1px,transparent_1px)] [mask-image:linear-gradient(to_right,transparent,black_28%)] [background-size:18px_18px] opacity-30 md:block" />
+            <div className="clients-hero-dots pointer-events-none absolute inset-y-0 right-0 hidden w-[455px] [background-image:radial-gradient(rgba(59,130,246,0.22)_1px,transparent_1px)] [mask-image:linear-gradient(to_right,transparent,black_28%)] [background-size:18px_18px] opacity-30 md:block" />
             <svg
                 viewBox="0 0 560 250"
                 aria-hidden="true"
-                className="pointer-events-none absolute right-0 bottom-0 hidden h-full w-[48%] text-white/90 drop-shadow-[0_0_8px_rgba(96,165,250,0.30)] md:block"
+                className="pointer-events-none absolute right-0 bottom-0 hidden h-full w-[480px] text-white/90 drop-shadow-[0_0_8px_rgba(96,165,250,0.30)] md:block"
             >
                 <path
                     d="M8 202 C104 120 185 220 276 134 S436 68 556 92"
@@ -72,7 +72,7 @@ export function ClientsDirectoryHero({
                 <circle cx="436" cy="82" r="3" fill="currentColor" />
             </svg>
 
-            <div className="relative z-10 max-w-[760px] md:max-w-[62%]">
+            <div className="relative z-10 max-w-[760px] md:max-w-[58%] lg:max-w-[55%]">
                 <h1 className="text-2xl leading-tight font-bold tracking-[-0.035em] text-slate-950 sm:text-[30px] dark:text-white">
                     Direktori Klien
                 </h1>
@@ -94,7 +94,7 @@ export function ClientsDirectoryHero({
                 )}
             </div>
 
-            <div className="relative z-10 mt-5 grid max-w-[760px] grid-cols-2 border-t border-slate-200/70 pt-3 md:max-w-[62%] md:grid-cols-4 dark:border-white/[0.08]">
+            <div className="relative z-10 mt-5 grid max-w-[760px] grid-cols-2 border-t border-slate-200/70 pt-3 md:max-w-[58%] lg:max-w-[55%] md:grid-cols-4 dark:border-white/[0.08]">
                 {metrics.map((metric, index) => (
                     <div
                         key={metric.label}
@@ -117,7 +117,7 @@ export function ClientsDirectoryHero({
                 ))}
             </div>
 
-            <div className="clients-hero-people pointer-events-none absolute right-[1%] bottom-0 hidden h-[255px] w-[455px] md:block lg:right-[2.5%]">
+            <div className="clients-hero-people pointer-events-none absolute right-0 bottom-0 hidden h-[255px] w-[455px] overflow-hidden md:block">
                 <img
                     src="/images/clients-directory-hero.png"
                     alt=""

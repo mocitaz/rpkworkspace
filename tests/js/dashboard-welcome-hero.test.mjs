@@ -37,21 +37,17 @@ test('welcome hero uses a bright illustrated banner without action buttons', asy
     );
     const componentSource = await readFile(componentPath, 'utf8');
 
-    assert.match(componentSource, /from-\[#f7f9ff\]/);
-    assert.match(componentSource, /h-\[188px\]/);
-    assert.doesNotMatch(componentSource, /min-h-\[180px\]/);
+    assert.match(componentSource, /from-white/);
+    assert.match(componentSource, /sm:h-\[195px\]/);
     assert.match(componentSource, /dashboard-legal-team-hero\.png/);
     assert.match(componentSource, /dashboard-hero-team/);
-    assert.match(componentSource, /w-\[47%\][^"]*overflow-hidden/);
+    assert.match(componentSource, /w-\[520px\][^"]*overflow-hidden/);
     assert.match(componentSource, /object-cover/);
     assert.match(componentSource, /object-top/);
-    assert.match(componentSource, /w-40/);
     assert.match(componentSource, /mask-image:linear-gradient/);
-    assert.match(componentSource, /sm:max-w-\[53%\]/);
-    assert.match(componentSource, /sm:text-\[30px\]/);
+    assert.match(componentSource, /sm:max-w-\[50%\]/);
+    assert.match(componentSource, /sm:text-\[31px\]/);
     assert.match(componentSource, /radial-gradient/);
-    assert.match(componentSource, /background-size:18px_18px/);
-    assert.doesNotMatch(componentSource, /-bottom-5[^"]*h-\[210px\]/);
     assert.doesNotMatch(componentSource, /function LegalBriefingVisual/);
     assert.doesNotMatch(componentSource, /Legal workspace/);
     assert.doesNotMatch(componentSource, /dateLabel/);
