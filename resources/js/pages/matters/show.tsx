@@ -50,7 +50,7 @@ import {
     DocumentPreviewModal,
     type PreviewableDocument,
 } from '@/components/documents/document-preview-modal';
-import { StatusBadge } from '@/components/status-badge';
+import { StatusText, StatusTextGroup } from '@/components/status-text';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -70,6 +70,7 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useInitials } from '@/hooks/use-initials';
+import { getDetailHeaderMetadata } from '@/lib/detail-header-meta';
 import { formatBytes, formatDate } from '@/lib/format';
 import * as clientRoutes from '@/routes/clients';
 import * as documentRoutes from '@/routes/documents';
@@ -254,25 +255,6 @@ const relationshipTypeLabels: Record<string, string> = {
     related_dispute: 'Perkara Terkait / Turunan',
 };
 
-const evidenceStatusMeta: Record<string, { label: string; color: string }> = {
-    in_vault: {
-        label: 'Di Brankas Firma',
-        color: 'bg-emerald-50/70 text-emerald-800 border border-emerald-200/60 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-900/30',
-    },
-    borrowed_for_hearing: {
-        label: 'Dipinjam Advokat Sidang',
-        color: 'bg-slate-100 text-slate-700 border border-slate-200/80 dark:bg-white/[0.08] dark:text-zinc-300 dark:border-white/10',
-    },
-    submitted_to_court: {
-        label: 'Diserahkan ke Majelis Hakim',
-        color: 'bg-blue-50/70 text-blue-700 border border-blue-200/60 dark:bg-blue-950/30 dark:text-blue-300 dark:border-blue-900/30',
-    },
-    returned_to_client: {
-        label: 'Dikembalikan ke Klien',
-        color: 'bg-slate-100/60 text-slate-600 border border-slate-200/50 dark:bg-zinc-800/60 dark:text-zinc-400 dark:border-white/[0.06]',
-    },
-};
-
 const originalityLabels: Record<string, string> = {
     original: 'Asli (Original)',
     legalized_copy: 'Salinan Legalisir',
@@ -374,6 +356,7 @@ export default function MatterShow({
     >(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const nextDeadline = matter.deadlines[0];
+    const headerMetadata = getDetailHeaderMetadata(matter.matter_number);
 
     const upcomingHearing = useMemo(() => {
         const now = new Date();
@@ -406,7 +389,7 @@ export default function MatterShow({
                     <div className="space-y-3 border-b border-slate-200/60 pb-5 dark:border-white/[0.06]">
                         {/* Top Tier: Breadcrumbs / Matter Code + Action Buttons */}
                         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                            {/* Left: Breadcrumbs & Status Badges */}
+                            {/* Left: Breadcrumbs & Matter Metadata */}
                             <div className="flex flex-wrap items-center gap-2">
                                 <Button
                                     variant="ghost"
@@ -419,18 +402,18 @@ export default function MatterShow({
                                         Portofolio Perkara
                                     </Link>
                                 </Button>
-                                <span className="text-slate-300 dark:text-zinc-600">/</span>
-                                <span className="inline-block rounded-md bg-blue-600 px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs">
-                                    {matter.matter_number}
+                                <span className="text-slate-300 dark:text-zinc-600">
+                                    /
                                 </span>
-                                <StatusBadge value={matter.status} />
-                                <StatusBadge value={matter.priority} />
-                                {matter.confidentiality_level !==
-                                    'standard' && (
-                                    <StatusBadge
-                                        value={matter.confidentiality_level}
-                                    />
-                                )}
+                                {headerMetadata.map((item) => (
+                                    <span
+                                        key={item.testId}
+                                        data-testid={item.testId}
+                                        className={`text-[11px] font-bold tracking-tight whitespace-nowrap ${item.className}`}
+                                    >
+                                        {item.label}
+                                    </span>
+                                ))}
                             </div>
 
                             {/* Right: Actions */}
@@ -740,7 +723,7 @@ export default function MatterShow({
                     </section>
 
                     {/* 3. Segmented Navigation Tabs (Horizontal Swipeable on Mobile) */}
-                    <div className="flex items-center gap-1 overflow-x-auto rounded-xl border border-slate-200/70 bg-white p-1 shadow-2xs [scrollbar-width:none] [-ms-overflow-style:none] dark:border-white/[0.06] dark:bg-[#14161b] [&::-webkit-scrollbar]:hidden">
+                    <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto rounded-xl border border-slate-200/70 bg-white p-1 shadow-2xs [-ms-overflow-style:none] dark:border-white/[0.06] dark:bg-[#14161b] [&::-webkit-scrollbar]:hidden">
                         {tabs.map((item) => {
                             const isActive = tab === item.id;
                             const count =
@@ -916,7 +899,7 @@ export default function MatterShow({
                                                                         ] ??
                                                                             'Turunan'}
                                                                     </span>
-                                                                    <StatusBadge
+                                                                    <StatusText
                                                                         value={
                                                                             child.status
                                                                         }
@@ -1118,9 +1101,6 @@ export default function MatterShow({
                                                         <th className="px-3 py-2.5 font-semibold">
                                                             Tenggat
                                                         </th>
-                                                        <th className="px-3 py-2.5 font-semibold">
-                                                            Prioritas
-                                                        </th>
                                                         <th className="py-2.5 pr-3 pl-3 text-right font-semibold">
                                                             Status
                                                         </th>
@@ -1175,18 +1155,12 @@ export default function MatterShow({
                                                                           )
                                                                         : '-'}
                                                                 </td>
-                                                                <td className="px-3 py-2.5 whitespace-nowrap">
-                                                                    <StatusBadge
-                                                                        value={
-                                                                            task.priority
-                                                                        }
-                                                                    />
-                                                                </td>
                                                                 <td className="py-2.5 pr-3 pl-3 text-right whitespace-nowrap">
-                                                                    <StatusBadge
-                                                                        value={
-                                                                            task.status
-                                                                        }
+                                                                    <StatusTextGroup
+                                                                        values={[
+                                                                            task.priority,
+                                                                            task.status,
+                                                                        ]}
                                                                     />
                                                                 </td>
                                                             </tr>
@@ -1363,27 +1337,13 @@ export default function MatterShow({
                                                                         }
                                                                     </span>
 
-                                                                    {/* Event Status Badges */}
-                                                                    {event.status === 'completed' && (
-                                                                        <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                                                                            Sidang Selesai
-                                                                        </span>
-                                                                    )}
-                                                                    {event.status === 'postponed' && (
-                                                                        <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">
-                                                                            Ditunda / Lanjutan
-                                                                        </span>
-                                                                    )}
-                                                                    {event.status === 'cancelled' && (
-                                                                        <span className="rounded bg-rose-100 px-1.5 py-0.5 text-[9px] font-bold text-rose-800 dark:bg-rose-950/60 dark:text-rose-300">
-                                                                            Dibatalkan
-                                                                        </span>
-                                                                    )}
-                                                                    {(!event.status || event.status === 'scheduled') && (
-                                                                        <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[9px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                                                            Terjadwal
-                                                                        </span>
-                                                                    )}
+                                                                    <StatusText
+                                                                        value={
+                                                                            event.status ??
+                                                                            'scheduled'
+                                                                        }
+                                                                        className="text-[9px]"
+                                                                    />
 
                                                                     {/* Action: Edit Agenda & Notes */}
                                                                     {can.update && (
@@ -1401,7 +1361,9 @@ export default function MatterShow({
                                                                             title="Edit Agenda & Catatan"
                                                                         >
                                                                             <Pencil className="size-3 text-slate-400" />
-                                                                            Edit / Catatan
+                                                                            Edit
+                                                                            /
+                                                                            Catatan
                                                                         </button>
                                                                     )}
 
@@ -1470,7 +1432,9 @@ export default function MatterShow({
                                                             {event.location && (
                                                                 <p className="mt-0.5 flex items-center gap-1 text-[11px] text-slate-500 dark:text-zinc-400">
                                                                     <MapPin className="size-3 text-slate-400" />
-                                                                    {event.location}
+                                                                    {
+                                                                        event.location
+                                                                    }
                                                                 </p>
                                                             )}
 
@@ -1488,26 +1452,50 @@ export default function MatterShow({
                                                                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-200/60 pb-1.5 dark:border-emerald-900/30">
                                                                         <div className="flex items-center gap-1.5 font-bold text-emerald-900 dark:text-emerald-200">
                                                                             <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                                                            <span>Resume &amp; Berita Acara Sidang</span>
+                                                                            <span>
+                                                                                Resume
+                                                                                &amp;
+                                                                                Berita
+                                                                                Acara
+                                                                                Sidang
+                                                                            </span>
                                                                         </div>
                                                                         {event.attendee && (
                                                                             <div className="flex items-center gap-1.5 text-[10.5px] text-slate-600 dark:text-zinc-300">
-                                                                                <span className="text-slate-400 dark:text-zinc-500">Advokat:</span>
-                                                                                <span className="font-semibold text-slate-900 dark:text-white">{event.attendee.name}</span>
+                                                                                <span className="text-slate-400 dark:text-zinc-500">
+                                                                                    Advokat:
+                                                                                </span>
+                                                                                <span className="font-semibold text-slate-900 dark:text-white">
+                                                                                    {
+                                                                                        event
+                                                                                            .attendee
+                                                                                            .name
+                                                                                    }
+                                                                                </span>
                                                                             </div>
                                                                         )}
                                                                     </div>
 
-                                                                    <p className="whitespace-pre-line text-xs leading-relaxed text-slate-800 dark:text-zinc-200">
-                                                                        {event.outcome}
+                                                                    <p className="text-xs leading-relaxed whitespace-pre-line text-slate-800 dark:text-zinc-200">
+                                                                        {
+                                                                            event.outcome
+                                                                        }
                                                                     </p>
 
                                                                     {event.judge_notes && (
                                                                         <div className="mt-2 rounded-lg border border-amber-200/80 bg-amber-50/70 p-2 text-[11px] text-amber-950 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
-                                                                            <strong className="block font-bold uppercase tracking-wider text-[9.5px] text-amber-800 dark:text-amber-400">
-                                                                                Arahan / Perintah Majelis Hakim:
+                                                                            <strong className="block text-[9.5px] font-bold tracking-wider text-amber-800 uppercase dark:text-amber-400">
+                                                                                Arahan
+                                                                                /
+                                                                                Perintah
+                                                                                Majelis
+                                                                                Hakim:
                                                                             </strong>
-                                                                            <span className="whitespace-pre-line text-amber-900 dark:text-amber-200">{event.judge_notes}</span>
+                                                                            <span className="whitespace-pre-line text-amber-900 dark:text-amber-200">
+                                                                                {
+                                                                                    event.judge_notes
+                                                                                }
+                                                                            </span>
                                                                         </div>
                                                                     )}
 
@@ -1517,16 +1505,33 @@ export default function MatterShow({
                                                                                 <CalendarClock className="size-4 shrink-0 text-blue-600 dark:text-blue-400" />
                                                                                 <div>
                                                                                     <span className="block font-bold text-slate-900 dark:text-white">
-                                                                                        Sidang Lanjutan: {event.next_event.title}
+                                                                                        Sidang
+                                                                                        Lanjutan:{' '}
+                                                                                        {
+                                                                                            event
+                                                                                                .next_event
+                                                                                                .title
+                                                                                        }
                                                                                     </span>
                                                                                     <span className="font-mono text-[10.5px] text-slate-600 dark:text-zinc-400">
-                                                                                        {formatDate(event.next_event.starts_at, true)} {event.next_event.location ? `• ${event.next_event.location}` : ''}
+                                                                                        {formatDate(
+                                                                                            event
+                                                                                                .next_event
+                                                                                                .starts_at,
+                                                                                            true,
+                                                                                        )}{' '}
+                                                                                        {event
+                                                                                            .next_event
+                                                                                            .location
+                                                                                            ? `• ${event.next_event.location}`
+                                                                                            : ''}
                                                                                     </span>
                                                                                 </div>
                                                                             </div>
-                                                                            <span className="rounded bg-blue-200/70 px-2 py-0.5 text-[9px] font-bold text-blue-800 dark:bg-blue-900/60 dark:text-blue-300">
-                                                                                Terjadwal
-                                                                            </span>
+                                                                            <StatusText
+                                                                                value="scheduled"
+                                                                                className="text-[9px]"
+                                                                            />
                                                                         </div>
                                                                     )}
                                                                 </div>
@@ -1882,7 +1887,8 @@ export default function MatterShow({
                                             </div>
                                             <div className="mt-2 flex items-baseline justify-between">
                                                 <p className="font-mono text-lg font-bold tracking-tight text-slate-900 dark:text-white">
-                                                    {matter.evidences?.length ?? 0}
+                                                    {matter.evidences?.length ??
+                                                        0}
                                                 </p>
                                                 <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
                                                     berkas
@@ -1904,7 +1910,8 @@ export default function MatterShow({
                                                 <p className="font-mono text-lg font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
                                                     {matter.evidences?.filter(
                                                         (e) =>
-                                                            e.status === 'in_vault',
+                                                            e.status ===
+                                                            'in_vault',
                                                     ).length ?? 0}
                                                 </p>
                                                 <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
@@ -1968,13 +1975,6 @@ export default function MatterShow({
                                     matter.evidences.length > 0 ? (
                                         <div className="space-y-2.5 pt-1">
                                             {matter.evidences.map((ev) => {
-                                                const statusInfo =
-                                                    evidenceStatusMeta[
-                                                        ev.status
-                                                    ] ?? {
-                                                        label: ev.status,
-                                                        color: 'bg-slate-100 text-slate-700 border border-slate-200',
-                                                    };
                                                 return (
                                                     <div
                                                         key={ev.id}
@@ -1995,13 +1995,12 @@ export default function MatterShow({
                                                                         ] ??
                                                                             ev.originality}
                                                                     </span>
-                                                                    <span
-                                                                        className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${statusInfo.color}`}
-                                                                    >
-                                                                        {
-                                                                            statusInfo.label
+                                                                    <StatusText
+                                                                        value={
+                                                                            ev.status
                                                                         }
-                                                                    </span>
+                                                                        className="text-[10px]"
+                                                                    />
                                                                 </div>
 
                                                                 <h4 className="text-xs leading-snug font-bold text-slate-900 dark:text-white">
@@ -2147,13 +2146,15 @@ export default function MatterShow({
                                                 asChild
                                             >
                                                 <Link
-                                                    href={documentRoutes.index.url({
-                                                        query: {
-                                                            upload: 1,
-                                                            matter_id:
-                                                                matter.id,
+                                                    href={documentRoutes.index.url(
+                                                        {
+                                                            query: {
+                                                                upload: 1,
+                                                                matter_id:
+                                                                    matter.id,
+                                                            },
                                                         },
-                                                    })}
+                                                    )}
                                                 >
                                                     <FileUp className="mr-1 size-3.5" />
                                                     Unggah Dokumen
@@ -2235,7 +2236,7 @@ export default function MatterShow({
                                                                     )}
                                                                 </td>
                                                                 <td className="px-3 py-2.5 whitespace-nowrap">
-                                                                    <StatusBadge
+                                                                    <StatusText
                                                                         value={
                                                                             doc.status
                                                                         }
@@ -2334,7 +2335,7 @@ export default function MatterShow({
                                                                     'Catatan Internal'}
                                                             </h4>
                                                             <div className="flex items-center gap-1.5">
-                                                                <StatusBadge
+                                                                <StatusText
                                                                     value={
                                                                         note.classification
                                                                     }
@@ -2505,7 +2506,7 @@ export default function MatterShow({
                                         <span className="text-slate-500 dark:text-zinc-400">
                                             Status
                                         </span>
-                                        <StatusBadge value={matter.status} />
+                                        <StatusText value={matter.status} />
                                     </div>
                                 </div>
                             </div>
@@ -3244,7 +3245,8 @@ function MatterOperationDialog({
                                         />
                                         <div className="grid gap-1">
                                             <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                                                Catatan / Rincian Agenda (Opsional)
+                                                Catatan / Rincian Agenda
+                                                (Opsional)
                                             </Label>
                                             <textarea
                                                 name="description"
@@ -3568,7 +3570,11 @@ function PartyOperationFields({ matterId }: { matterId: string }) {
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-TOKEN':
-                        (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
+                        (
+                            document.querySelector(
+                                'meta[name="csrf-token"]',
+                            ) as HTMLMetaElement
+                        )?.content || '',
                 },
                 body: JSON.stringify({
                     matter_id: matterId,
@@ -3589,7 +3595,10 @@ function PartyOperationFields({ matterId }: { matterId: string }) {
     return (
         <div className="space-y-3">
             <div className="grid gap-1">
-                <Label htmlFor="party_type" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                <Label
+                    htmlFor="party_type"
+                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                >
                     Peran / Jenis Pihak <span className="text-rose-500">*</span>
                 </Label>
                 <div className="relative">
@@ -3600,11 +3609,19 @@ function PartyOperationFields({ matterId }: { matterId: string }) {
                         required
                         className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-8 pl-2.5 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                     >
-                        <option value="opposing_party">Pihak Lawan (Adverse / Opponent)</option>
-                        <option value="opposing_counsel">Kuasa Hukum Lawan (Opposing Counsel)</option>
-                        <option value="co_defendant">Turut Tergugat / Pihak Ketiga</option>
+                        <option value="opposing_party">
+                            Pihak Lawan (Adverse / Opponent)
+                        </option>
+                        <option value="opposing_counsel">
+                            Kuasa Hukum Lawan (Opposing Counsel)
+                        </option>
+                        <option value="co_defendant">
+                            Turut Tergugat / Pihak Ketiga
+                        </option>
                         <option value="witness">Saksi / Saksi Ahli</option>
-                        <option value="related_party">Pihak Terafiliasi / Terkait Lainnya</option>
+                        <option value="related_party">
+                            Pihak Terafiliasi / Terkait Lainnya
+                        </option>
                     </select>
                     <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                 </div>
@@ -3612,10 +3629,16 @@ function PartyOperationFields({ matterId }: { matterId: string }) {
 
             <div className="grid gap-1">
                 <div className="flex items-center justify-between">
-                    <Label htmlFor="party_name" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                        Nama Lengkap / Entitas Perusahaan <span className="text-rose-500">*</span>
+                    <Label
+                        htmlFor="party_name"
+                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                    >
+                        Nama Lengkap / Entitas Perusahaan{' '}
+                        <span className="text-rose-500">*</span>
                     </Label>
-                    <span className="text-[10px] text-slate-400">Pindai benturan etik otomatis</span>
+                    <span className="text-[10px] text-slate-400">
+                        Pindai benturan etik otomatis
+                    </span>
                 </div>
                 <div className="flex gap-1.5">
                     <Input
@@ -3652,13 +3675,15 @@ function PartyOperationFields({ matterId }: { matterId: string }) {
 
             {/* Live Scan Results & Conflict Warnings */}
             {previewResult && (
-                <div className={`rounded-lg border p-2.5 text-xs ${
-                    previewResult.status === 'clear'
-                        ? 'border-emerald-500/30 bg-emerald-50/80 text-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300'
-                        : previewResult.status === 'blocked'
-                          ? 'border-rose-500/40 bg-rose-50/90 text-rose-900 dark:bg-rose-950/40 dark:text-rose-200'
-                          : 'border-amber-500/30 bg-amber-50/80 text-amber-900 dark:bg-amber-950/30 dark:text-amber-300'
-                }`}>
+                <div
+                    className={`rounded-lg border p-2.5 text-xs ${
+                        previewResult.status === 'clear'
+                            ? 'border-emerald-500/30 bg-emerald-50/80 text-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300'
+                            : previewResult.status === 'blocked'
+                              ? 'border-rose-500/40 bg-rose-50/90 text-rose-900 dark:bg-rose-950/40 dark:text-rose-200'
+                              : 'border-amber-500/30 bg-amber-50/80 text-amber-900 dark:bg-amber-950/30 dark:text-amber-300'
+                    }`}
+                >
                     <div className="flex items-center gap-1.5 font-bold">
                         {previewResult.status === 'clear' ? (
                             <>
@@ -3668,12 +3693,16 @@ function PartyOperationFields({ matterId }: { matterId: string }) {
                         ) : previewResult.status === 'blocked' ? (
                             <>
                                 <ShieldAlert className="size-3.5 text-rose-600 dark:text-rose-400" />
-                                <span>Peringatan Benturan Kepentingan Langsung</span>
+                                <span>
+                                    Peringatan Benturan Kepentingan Langsung
+                                </span>
                             </>
                         ) : (
                             <>
                                 <ShieldAlert className="size-3.5 text-amber-600 dark:text-amber-400" />
-                                <span>Potensi Benturan Kepentingan Terdeteksi</span>
+                                <span>
+                                    Potensi Benturan Kepentingan Terdeteksi
+                                </span>
                             </>
                         )}
                     </div>
@@ -3681,9 +3710,19 @@ function PartyOperationFields({ matterId }: { matterId: string }) {
                     {previewResult.matches.length > 0 && (
                         <div className="mt-1.5 space-y-1">
                             {previewResult.matches.map((m, idx) => (
-                                <p key={idx} className="text-[11px] leading-relaxed">
-                                    • Cocok dengan <strong>{m.name}</strong> ({m.role_label ?? m.type}{m.similarity ? ` - ${m.similarity}%` : ''})
-                                    {m.details && <span className="opacity-80"> — {m.details}</span>}
+                                <p
+                                    key={idx}
+                                    className="text-[11px] leading-relaxed"
+                                >
+                                    • Cocok dengan <strong>{m.name}</strong> (
+                                    {m.role_label ?? m.type}
+                                    {m.similarity ? ` - ${m.similarity}%` : ''})
+                                    {m.details && (
+                                        <span className="opacity-80">
+                                            {' '}
+                                            — {m.details}
+                                        </span>
+                                    )}
                                 </p>
                             ))}
                         </div>
@@ -3763,10 +3802,10 @@ function TaskList({
                             </p>
                         </div>
                     </div>
-                    <div className="flex shrink-0 items-center gap-1.5">
-                        <StatusBadge value={task.priority} />
-                        <StatusBadge value={task.status} />
-                    </div>
+                    <StatusTextGroup
+                        values={[task.priority, task.status]}
+                        className="shrink-0"
+                    />
                 </div>
             ))}
         </div>
@@ -3834,7 +3873,8 @@ function RecordHearingOutcomeModal({
                                 Catat Hasil Sidang / Persidangan
                             </DialogTitle>
                             <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                {event.title} • {formatDate(event.starts_at, true)}
+                                {event.title} •{' '}
+                                {formatDate(event.starts_at, true)}
                             </DialogDescription>
                         </div>
                     </div>
@@ -3854,7 +3894,8 @@ function RecordHearingOutcomeModal({
                             {/* 1. Status Hasil Sidang */}
                             <div className="space-y-1.5">
                                 <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                                    Status Hasil Sidang <span className="text-rose-500">*</span>
+                                    Status Hasil Sidang{' '}
+                                    <span className="text-rose-500">*</span>
                                 </Label>
                                 <div className="grid grid-cols-3 gap-2">
                                     {[
@@ -3883,7 +3924,7 @@ function RecordHearingOutcomeModal({
                                             }`}
                                         >
                                             <div className="flex items-center justify-between">
-                                                <span className="font-bold text-[11px]">
+                                                <span className="text-[11px] font-bold">
                                                     {opt.label}
                                                 </span>
                                                 <input
@@ -3892,9 +3933,16 @@ function RecordHearingOutcomeModal({
                                                     value={opt.key}
                                                     checked={status === opt.key}
                                                     onChange={(e) => {
-                                                        setStatus(e.target.value);
-                                                        if (e.target.value === 'postponed') {
-                                                            setScheduleNext(true);
+                                                        setStatus(
+                                                            e.target.value,
+                                                        );
+                                                        if (
+                                                            e.target.value ===
+                                                            'postponed'
+                                                        ) {
+                                                            setScheduleNext(
+                                                                true,
+                                                            );
                                                         }
                                                     }}
                                                     className="size-3 text-emerald-600"
@@ -3925,10 +3973,14 @@ function RecordHearingOutcomeModal({
                                         className="h-9 w-full rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs text-slate-900 shadow-2xs dark:border-white/10 dark:bg-[#14161b] dark:text-white"
                                     >
                                         <option value="">
-                                            Pilih advokat yang menghadiri sidang...
+                                            Pilih advokat yang menghadiri
+                                            sidang...
                                         </option>
                                         {firmStaff.map((staff) => (
-                                            <option key={staff.id} value={staff.id}>
+                                            <option
+                                                key={staff.id}
+                                                value={staff.id}
+                                            >
                                                 {staff.name}{' '}
                                                 {staff.position_title
                                                     ? `(${staff.position_title})`
@@ -3956,7 +4008,7 @@ function RecordHearingOutcomeModal({
                                     required
                                     defaultValue={event.outcome ?? ''}
                                     placeholder="Contoh: Pemeriksaan saksi fakta Penggugat (Saksi A & Saksi B). Tergugat mengajukan 2 bukti surat tandingan. Seluruh alat bukti P-1 s/d P-5 telah dicocokkan dengan aslinya di hadapan Majelis Hakim."
-                                    className="w-full rounded-lg border border-slate-200 bg-transparent px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 dark:border-white/10 dark:text-white dark:placeholder:text-zinc-500 dark:focus:ring-white"
+                                    className="w-full rounded-lg border border-slate-200 bg-transparent px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:ring-1 focus:ring-slate-900 focus:outline-none dark:border-white/10 dark:text-white dark:placeholder:text-zinc-500 dark:focus:ring-white"
                                 />
                                 <InputError message={errors.outcome} />
                             </div>
@@ -3975,7 +4027,7 @@ function RecordHearingOutcomeModal({
                                     rows={2}
                                     defaultValue={event.judge_notes ?? ''}
                                     placeholder="Contoh: Hakim memerintahkan Kuasa Penggugat untuk menyiapkan Kesimpulan paling lambat 1 minggu sebelum sidang putusan."
-                                    className="w-full rounded-lg border border-slate-200 bg-transparent px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-900 dark:border-white/10 dark:text-white dark:placeholder:text-zinc-500 dark:focus:ring-white"
+                                    className="w-full rounded-lg border border-slate-200 bg-transparent px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:ring-1 focus:ring-slate-900 focus:outline-none dark:border-white/10 dark:text-white dark:placeholder:text-zinc-500 dark:focus:ring-white"
                                 />
                                 <InputError message={errors.judge_notes} />
                             </div>
@@ -3987,11 +4039,14 @@ function RecordHearingOutcomeModal({
                                         <div className="flex items-center gap-1.5">
                                             <CalendarClock className="size-4 text-blue-600 dark:text-blue-400" />
                                             <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                                Jadwalkan Sidang Lanjutan Berikutnya
+                                                Jadwalkan Sidang Lanjutan
+                                                Berikutnya
                                             </span>
                                         </div>
                                         <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                            Otomatis buat agenda baru di Kalender &amp; kirim notifikasi ke tim.
+                                            Otomatis buat agenda baru di
+                                            Kalender &amp; kirim notifikasi ke
+                                            tim.
                                         </p>
                                     </div>
                                     <label className="relative inline-flex cursor-pointer items-center">
@@ -4001,7 +4056,9 @@ function RecordHearingOutcomeModal({
                                             value="1"
                                             checked={scheduleNext}
                                             onChange={(e) =>
-                                                setScheduleNext(e.target.checked)
+                                                setScheduleNext(
+                                                    e.target.checked,
+                                                )
                                             }
                                             className="sr-only"
                                         />
@@ -4159,7 +4216,8 @@ function EditEventDialog({
                                 Edit Agenda &amp; Catatan
                             </DialogTitle>
                             <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Perbarui jadwal, lokasi, dan rincian catatan agenda perkara.
+                                Perbarui jadwal, lokasi, dan rincian catatan
+                                agenda perkara.
                             </DialogDescription>
                         </div>
                     </div>

@@ -8,13 +8,10 @@ import {
     Clock,
     FileText,
     Filter,
-    FolderKanban,
     Layers,
     Plus,
     RotateCcw,
-    Scale,
     Search,
-    ShieldAlert,
     TrendingUp,
     User,
     UserCheck,
@@ -22,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { EmptyState } from '@/components/empty-state';
+import { MattersPortfolioHero } from '@/components/matters-portfolio-hero';
 import { Pagination } from '@/components/pagination';
 import { StatusBadge } from '@/components/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -131,142 +129,16 @@ export default function MattersIndex({
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
-                    {/* 1. Header Navigation & Action Bar */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
-                        <div className="space-y-1">
-                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                Portofolio Perkara
-                            </h1>
-                            <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Seluruh registrasi perkara hukum, penugasan
-                                partner, jadwal sidang, dan monitoring tenggat
-                                perkara.
-                            </p>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="flex shrink-0 items-center gap-2">
-                            {can.create && (
-                                <Button
-                                    asChild
-                                    className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
-                                >
-                                    <Link href={matterRoutes.create.url()}>
-                                        <Plus className="mr-1 size-3.5" />
-                                        Registrasi Perkara Baru
-                                    </Link>
-                                </Button>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* 2. Streamlined KPI Bento Cards (Compact & Symmetrical) */}
-                    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                        {/* 1. Total Matters */}
-                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                    TOTAL PERKARA
-                                </span>
-                                <div className="flex size-6 items-center justify-center rounded-md bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
-                                    <FolderKanban className="size-3.5" />
-                                </div>
-                            </div>
-                            <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                                    {matters.total}
-                                </span>
-                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                    {matters.data.length} di halaman ini
-                                </span>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Arsip Portofolio Firma</span>
-                                <span className="font-mono font-semibold text-slate-700 dark:text-zinc-300">
-                                    100% Tercatat
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* 2. Active Matters */}
-                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                    PERKARA AKTIF
-                                </span>
-                                <div className="flex size-6 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
-                                    <Briefcase className="size-3.5" />
-                                </div>
-                            </div>
-                            <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                                    {activeMattersCount}
-                                </span>
-                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                    {corporateCount} Corp · {litigationCount}{' '}
-                                    Litigasi
-                                </span>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Dalam Penanganan</span>
-                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                                    Aktif
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* 3. High/Critical Priority */}
-                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                    PRIORITAS TINGGI
-                                </span>
-                                <div className="flex size-6 items-center justify-center rounded-md bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400">
-                                    <ShieldAlert className="size-3.5" />
-                                </div>
-                            </div>
-                            <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                                    {highPriorityCount}
-                                </span>
-                                <span className="text-[11px] font-medium text-rose-600 dark:text-rose-400">
-                                    kasus atensi
-                                </span>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Tenggat Terpantau</span>
-                                <span className="font-semibold text-rose-600 dark:text-rose-400">
-                                    Atensi Partner
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* 4. Practice Area */}
-                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                    AREA PRAKTIK
-                                </span>
-                                <div className="flex size-6 items-center justify-center rounded-md bg-purple-50 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400">
-                                    <Scale className="size-3.5" />
-                                </div>
-                            </div>
-                            <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                                    {practiceAreas.length}
-                                </span>
-                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                    bidang keahlian
-                                </span>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Spesialisasi Hukum</span>
-                                <span className="font-semibold text-purple-600 dark:text-purple-400">
-                                    Terdistribusi
-                                </span>
-                            </div>
-                        </div>
-                    </section>
+                    <MattersPortfolioHero
+                        totalMatters={matters.total}
+                        visibleMatters={matters.data.length}
+                        activeMatters={activeMattersCount}
+                        corporateMatters={corporateCount}
+                        litigationMatters={litigationCount}
+                        highPriorityMatters={highPriorityCount}
+                        practiceAreas={practiceAreas.length}
+                        canCreate={can.create}
+                    />
 
                     {/* 3. Filter Controls & Segmented Quick Filter Bar */}
                     <div className="space-y-2.5 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
@@ -295,9 +167,14 @@ export default function MattersIndex({
                                         }
                                         className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-blue-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                     >
-                                        <option value="">Semua Area Praktik</option>
+                                        <option value="">
+                                            Semua Area Praktik
+                                        </option>
                                         {practiceAreas.map((area) => (
-                                            <option key={area.id} value={area.id}>
+                                            <option
+                                                key={area.id}
+                                                value={area.id}
+                                            >
                                                 {area.name}
                                             </option>
                                         ))}
@@ -337,7 +214,7 @@ export default function MattersIndex({
                         </Form>
 
                         {/* Row 2: Segmented Quick Status Pills with Smooth Mobile Scroll */}
-                        <div className="flex items-center gap-1 overflow-x-auto border-t border-slate-200/40 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] dark:border-white/[0.04] [&::-webkit-scrollbar]:hidden">
+                        <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto border-t border-slate-200/40 pt-2 [-ms-overflow-style:none] dark:border-white/[0.04] [&::-webkit-scrollbar]:hidden">
                             <button
                                 type="button"
                                 onClick={() => handleFilterStatus('')}
@@ -449,7 +326,9 @@ export default function MattersIndex({
                                     {matters.data.map((matter) => (
                                         <Link
                                             key={matter.id}
-                                            href={matterRoutes.show.url(matter.id)}
+                                            href={matterRoutes.show.url(
+                                                matter.id,
+                                            )}
                                             className="block p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
                                         >
                                             <div className="flex items-start justify-between gap-2">

@@ -167,9 +167,9 @@ export default function DocumentShow({
                 <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
                     {/* 1. Header Navigation & Document Cockpit Bar */}
                     <div className="space-y-3 border-b border-slate-200/60 pb-5 dark:border-white/[0.06]">
-                        {/* Top Tier: Breadcrumbs & Badges + Action Buttons */}
+                        {/* Top Tier: Breadcrumbs + Action Buttons */}
                         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                            {/* Left: Breadcrumbs & Status Badges */}
+                            {/* Left: Breadcrumbs */}
                             <div className="flex flex-wrap items-center gap-2">
                                 <Button
                                     variant="ghost"
@@ -182,30 +182,6 @@ export default function DocumentShow({
                                         Repositori Dokumen
                                     </Link>
                                 </Button>
-                                <span className="text-slate-300 dark:text-zinc-600">/</span>
-                                <StatusBadge value={document.status} />
-                                <span
-                                    className={`rounded px-1.5 py-0.5 text-[9.5px] font-semibold uppercase ${
-                                        document.confidentiality_level ===
-                                        'strictly_confidential'
-                                            ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
-                                            : document.confidentiality_level ===
-                                                'restricted'
-                                              ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'
-                                              : 'bg-slate-100 text-slate-600 dark:bg-white/[0.06]'
-                                    }`}
-                                >
-                                    {document.confidentiality_level}
-                                </span>
-                                <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[9.5px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                    {document.document_type ?? 'Dokumen'}
-                                </span>
-                                {document.matter?.legal_hold_at && (
-                                    <span className="inline-flex items-center gap-1 rounded bg-rose-50 px-1.5 py-0.5 text-[9.5px] font-semibold text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
-                                        <ShieldAlert className="size-2.5" />
-                                        Legal Hold Aktif
-                                    </span>
-                                )}
                             </div>
 
                             {/* Right: Action Buttons */}

@@ -2,18 +2,15 @@ import { Head, Link, usePage } from '@inertiajs/react';
 import {
     AlertCircle,
     ArrowRight,
-    Briefcase,
     Calendar as CalendarIcon,
     CheckCircle2,
     CheckSquare,
     ChevronLeft,
     ChevronRight,
-    Clock,
     CreditCard,
     FileCheck2,
     FileEdit,
     FilePlus2,
-    FileText,
     FolderKanban,
     Gavel,
     Plus,
@@ -29,6 +26,15 @@ import {
     Users,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import {
+    DashboardStatCard,
+    DeadlineRadarVisual,
+    DocumentReviewVisual,
+    dashboardStatIcons,
+    MatterPortfolioVisual,
+    TaskLoadVisual,
+} from '@/components/dashboard-stat-card';
+import { DashboardWelcomeHero } from '@/components/dashboard-welcome-hero';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -377,177 +383,112 @@ export default function Dashboard({
 
             <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-10 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-6 px-4 py-5 sm:px-6 lg:px-8">
-                    {/* 1. Sleek Notion-Style Header */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
-                        <div className="space-y-1">
-                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                Halo, {fullName}
-                            </h1>
-                            <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                {todayFormatted} ·{' '}
-                                <span className="font-semibold text-slate-700 dark:text-zinc-300">
-                                    {activeMattersCount}
-                                </span>{' '}
-                                perkara aktif ·{' '}
-                                <span className="font-semibold text-slate-700 dark:text-zinc-300">
-                                    {openTasksCount}
-                                </span>{' '}
-                                tugas berjalan
-                            </p>
-                        </div>
+                    <DashboardWelcomeHero
+                        fullName={fullName}
+                        activeMatters={activeMattersCount}
+                        openTasks={openTasksCount}
+                        urgentTasks={urgentTasksCount}
+                    />
 
-                        {/* Top Action Cluster */}
-                        <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0 sm:items-center sm:gap-2">
-                            <Button
-                                asChild
-                                variant="outline"
-                                className="h-8.5 rounded-xl border-slate-200/80 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 active:scale-[0.98] dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
-                            >
-                                <Link
-                                    href={tasksRoutes.index.url({
-                                        query: { create: 1 },
-                                    })}
-                                >
-                                    <Plus className="mr-1 size-3.5 text-slate-400" />
-                                    Tugas Baru
-                                </Link>
-                            </Button>
-                            <Button
-                                asChild
-                                className="h-8.5 rounded-xl bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
-                            >
-                                <Link href={mattersRoutes.create.url()}>
-                                    <Plus className="mr-1 size-3.5" />
-                                    Perkara Baru
-                                </Link>
-                            </Button>
-                        </div>
-                    </div>
-
-                    {/* 2. Streamlined KPI Bento Cards (2-column on mobile for compact density) */}
+                    {/* 2. Animated KPI cards driven by real workspace metrics */}
                     <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
-                        {/* Card 1: Perkara Aktif */}
-                        <div className="group flex flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
-                                    PERKARA AKTIF
-                                </span>
-                                <Briefcase className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
-                            </div>
-                            <div className="mt-2 flex items-baseline justify-between gap-1">
-                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                    {activeMattersCount}
-                                </span>
-                                <span className="truncate text-[10px] font-medium text-slate-500 sm:text-[11px] dark:text-zinc-400">
-                                    {corporateCount} Corp · {litigationCount} Lit
-                                </span>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
-                                <span className="truncate">
-                                    Portofolio Berjalan
-                                </span>
-                                <Link
-                                    href={mattersRoutes.index.url()}
-                                    className="shrink-0 font-semibold text-blue-600 hover:underline dark:text-blue-400"
-                                >
-                                    Lihat →
-                                </Link>
-                            </div>
-                        </div>
+                        <DashboardStatCard
+                            title="Perkara Aktif"
+                            value={activeMattersCount}
+                            meta={
+                                <>
+                                    <span className="text-blue-600 dark:text-blue-400">
+                                        {corporateCount} korporasi
+                                    </span>{' '}
+                                    · {litigationCount} litigasi
+                                </>
+                            }
+                            href={mattersRoutes.index.url()}
+                            tone="blue"
+                            icon={dashboardStatIcons.matters}
+                            illustration={
+                                <MatterPortfolioVisual
+                                    corporate={corporateCount}
+                                    litigation={litigationCount}
+                                />
+                            }
+                        />
 
-                        {/* Card 2: Tugas Terbuka */}
-                        <div className="group flex flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
-                                    TUGAS TERBUKA
-                                </span>
-                                <CheckCircle2 className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
-                            </div>
-                            <div className="mt-2 flex items-baseline justify-between gap-1">
-                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                    {openTasksCount}
-                                </span>
-                                <span className="truncate text-[10px] font-medium text-rose-600 sm:text-[11px] dark:text-rose-400">
-                                    {urgentTasksCount} prioritas
-                                </span>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
-                                <span className="truncate">Distribusi Tim</span>
-                                <Link
-                                    href={tasksRoutes.index.url()}
-                                    className="shrink-0 font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
+                        <DashboardStatCard
+                            title="Tugas Terbuka"
+                            value={openTasksCount}
+                            meta={
+                                <span
+                                    className={
+                                        urgentTasksCount > 0
+                                            ? 'text-rose-600 dark:text-rose-400'
+                                            : 'text-emerald-600 dark:text-emerald-400'
+                                    }
                                 >
-                                    Kelola →
-                                </Link>
-                            </div>
-                        </div>
+                                    {urgentTasksCount} tugas prioritas
+                                </span>
+                            }
+                            href={tasksRoutes.index.url()}
+                            tone="emerald"
+                            icon={dashboardStatIcons.tasks}
+                            illustration={
+                                <TaskLoadVisual
+                                    urgent={urgentTasksCount}
+                                    total={openTasksCount}
+                                />
+                            }
+                        />
 
-                        {/* Card 3: Tenggat & Sidang */}
-                        <div className="group flex flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
-                                    TENGGAT &amp; SIDANG
-                                </span>
-                                <Clock className="size-3.5 text-slate-400 transition-colors group-hover:text-amber-600 dark:text-zinc-500" />
-                            </div>
-                            <div className="mt-2 flex items-baseline justify-between gap-1">
-                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                    {criticalDeadlinesCount}
-                                </span>
-                                <span className="truncate text-[10px] font-medium text-amber-600 sm:text-[11px] dark:text-amber-400">
+                        <DashboardStatCard
+                            title="Tenggat & Sidang"
+                            value={criticalDeadlinesCount}
+                            meta={
+                                <span className="text-amber-600 dark:text-amber-400">
                                     {todayDeadlinesCount > 0
-                                        ? `${todayDeadlinesCount} hari ini`
-                                        : 'minggu ini'}
+                                        ? `${todayDeadlinesCount} jatuh tempo hari ini`
+                                        : 'Tidak ada tenggat hari ini'}
                                 </span>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
-                                <span className="truncate">
-                                    Jadwal Sidang
-                                </span>
-                                <Link
-                                    href={calendarRoutes.index.url()}
-                                    className="shrink-0 font-semibold text-amber-600 hover:underline dark:text-amber-400"
-                                >
-                                    Kalender →
-                                </Link>
-                            </div>
-                        </div>
+                            }
+                            href={calendarRoutes.index.url()}
+                            tone="amber"
+                            icon={dashboardStatIcons.deadlines}
+                            illustration={
+                                <DeadlineRadarVisual
+                                    critical={criticalDeadlinesCount}
+                                    today={todayDeadlinesCount}
+                                />
+                            }
+                        />
 
-                        {/* Card 4: Dokumen Menunggu Review */}
-                        <div className="group flex flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
-                                    DOKUMEN &amp; REVIEW
-                                </span>
-                                <FileText className="size-3.5 text-slate-400 transition-colors group-hover:text-purple-600 dark:text-zinc-500" />
-                            </div>
-                            <div className="mt-2 flex items-baseline justify-between gap-1">
-                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                    {reviewDocsCount}
-                                </span>
-                                <span className="truncate text-[10px] font-medium text-slate-500 sm:text-[11px] dark:text-zinc-400">
+                        <DashboardStatCard
+                            title="Dokumen & Review"
+                            value={reviewDocsCount}
+                            meta={
+                                <>
+                                    <span className="text-violet-600 dark:text-violet-400">
+                                        {docApprovedCount} disetujui
+                                    </span>{' '}
                                     dari {totalDocsCount} berkas
-                                </span>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
-                                <span className="truncate">
-                                    {docApprovedCount} Disetujui
-                                </span>
-                                <Link
-                                    href={documentsRoutes.index.url()}
-                                    className="shrink-0 font-semibold text-purple-600 hover:underline dark:text-purple-400"
-                                >
-                                    Arsip →
-                                </Link>
-                            </div>
-                        </div>
+                                </>
+                            }
+                            href={documentsRoutes.index.url()}
+                            tone="violet"
+                            icon={dashboardStatIcons.documents}
+                            illustration={
+                                <DocumentReviewVisual
+                                    approved={docApprovedCount}
+                                    review={reviewDocsCount}
+                                    total={totalDocsCount}
+                                />
+                            }
+                        />
                     </section>
 
-                    {/* 3. Main Bento Hub: Symmetrical 2x2 Grid (Equal Heights & Internal Scroll on Overflow) */}
-                    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                    {/* 3. Compact operational overview */}
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                         {/* [Row 1, Col 1] Widget 1: Work Queue & Tugas */}
-                        <div className="flex h-[390px] flex-col rounded-xl border border-slate-200/70 bg-white p-3.5 sm:p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex flex-col gap-2 border-b border-slate-100 pb-3 sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.05]">
+                        <div className="flex h-[320px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex flex-col gap-2 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.05]">
                                 <div className="flex items-center gap-2">
                                     <h2 className="text-xs font-bold text-slate-900 dark:text-white">
                                         Work Queue &amp; Tugas
@@ -555,16 +496,21 @@ export default function Dashboard({
                                     <span className="font-mono text-[10px] text-slate-400">
                                         ({currentQueueItems.length})
                                     </span>
+                                    <Link
+                                        href={tasksRoutes.index.url()}
+                                        className="ml-1 text-[10px] font-semibold text-slate-400 transition-colors hover:text-slate-900 dark:text-zinc-500 dark:hover:text-white"
+                                    >
+                                        Semua →
+                                    </Link>
                                 </div>
-                                {/* Sleek Segmented Switch with swipeable container */}
-                                <div className="flex items-center overflow-x-auto rounded-lg bg-slate-100 p-0.5 text-xs [scrollbar-width:none] dark:bg-white/[0.04] [&::-webkit-scrollbar]:hidden">
+                                <div className="flex [scrollbar-width:none] items-center gap-3 overflow-x-auto text-xs [&::-webkit-scrollbar]:hidden">
                                     <button
                                         type="button"
                                         onClick={() => setQueueTab('pending')}
-                                        className={`shrink-0 cursor-pointer rounded-md px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap transition-all ${
+                                        className={`relative shrink-0 cursor-pointer py-1 text-[11px] font-semibold whitespace-nowrap transition-colors after:absolute after:right-0 after:-bottom-0.5 after:left-0 after:h-px after:origin-left after:bg-slate-900 after:transition-transform dark:after:bg-white ${
                                             queueTab === 'pending'
-                                                ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
-                                                : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
+                                                ? 'text-slate-900 after:scale-x-100 dark:text-white'
+                                                : 'text-slate-400 after:scale-x-0 hover:text-slate-700 dark:text-zinc-500 dark:hover:text-zinc-300'
                                         }`}
                                     >
                                         Menunggu ({pendingCount})
@@ -574,10 +520,10 @@ export default function Dashboard({
                                         onClick={() =>
                                             setQueueTab('in_progress')
                                         }
-                                        className={`shrink-0 cursor-pointer rounded-md px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap transition-all ${
+                                        className={`relative shrink-0 cursor-pointer py-1 text-[11px] font-semibold whitespace-nowrap transition-colors after:absolute after:right-0 after:-bottom-0.5 after:left-0 after:h-px after:origin-left after:bg-slate-900 after:transition-transform dark:after:bg-white ${
                                             queueTab === 'in_progress'
-                                                ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
-                                                : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
+                                                ? 'text-slate-900 after:scale-x-100 dark:text-white'
+                                                : 'text-slate-400 after:scale-x-0 hover:text-slate-700 dark:text-zinc-500 dark:hover:text-zinc-300'
                                         }`}
                                     >
                                         Review ({reviewCount})
@@ -585,10 +531,10 @@ export default function Dashboard({
                                     <button
                                         type="button"
                                         onClick={() => setQueueTab('completed')}
-                                        className={`shrink-0 cursor-pointer rounded-md px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap transition-all ${
+                                        className={`relative shrink-0 cursor-pointer py-1 text-[11px] font-semibold whitespace-nowrap transition-colors after:absolute after:right-0 after:-bottom-0.5 after:left-0 after:h-px after:origin-left after:bg-slate-900 after:transition-transform dark:after:bg-white ${
                                             queueTab === 'completed'
-                                                ? 'bg-white text-slate-900 shadow-2xs dark:bg-zinc-800 dark:text-white'
-                                                : 'text-slate-500 hover:text-slate-900 dark:text-zinc-400'
+                                                ? 'text-slate-900 after:scale-x-100 dark:text-white'
+                                                : 'text-slate-400 after:scale-x-0 hover:text-slate-700 dark:text-zinc-500 dark:hover:text-zinc-300'
                                         }`}
                                     >
                                         Selesai ({completedCount})
@@ -620,9 +566,13 @@ export default function Dashboard({
                                                 className="mt-2.5 h-7 rounded-lg text-[11px] font-bold text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/40"
                                             >
                                                 <Link
-                                                    href={tasksRoutes.index.url({
-                                                        query: { create: 1 },
-                                                    })}
+                                                    href={tasksRoutes.index.url(
+                                                        {
+                                                            query: {
+                                                                create: 1,
+                                                            },
+                                                        },
+                                                    )}
                                                 >
                                                     <Plus className="mr-1 size-3" />{' '}
                                                     Buat Tugas Baru
@@ -631,119 +581,118 @@ export default function Dashboard({
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="flex-1 [scrollbar-width:thin] divide-y divide-slate-100 overflow-y-auto pr-1 dark:divide-white/[0.04]">
-                                        {currentQueueItems.map((item, idx) => {
-                                            const isUrgent =
-                                                item.priority === 'high' || item.priority === 'critical';
-                                            const taskUrl = tasksRoutes.show?.url
-                                                ? tasksRoutes.show.url(item.id)
-                                                : `/tasks/${item.id}`;
+                                    <div className="flex-1 divide-y divide-slate-100 overflow-hidden dark:divide-white/[0.04]">
+                                        {currentQueueItems
+                                            .slice(0, 4)
+                                            .map((item, idx) => {
+                                                const isUrgent =
+                                                    item.priority === 'high' ||
+                                                    item.priority ===
+                                                        'critical';
+                                                const taskUrl = tasksRoutes.show
+                                                    ?.url
+                                                    ? tasksRoutes.show.url(
+                                                          item.id,
+                                                      )
+                                                    : `/tasks/${item.id}`;
 
-                                            return (
-                                                <Link
-                                                    key={item.id || idx}
-                                                    href={taskUrl}
-                                                    className="group flex items-center justify-between gap-3 py-2 px-2 -mx-1.5 rounded-lg transition-colors hover:bg-slate-50/80 dark:hover:bg-white/[0.03]"
-                                                >
-                                                    <div className="min-w-0 flex-1 space-y-0.5">
-                                                        <div className="flex items-center gap-2">
+                                                return (
+                                                    <Link
+                                                        key={item.id || idx}
+                                                        href={taskUrl}
+                                                        className="group -mx-1.5 flex items-center justify-between gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-slate-50/80 dark:hover:bg-white/[0.03]"
+                                                    >
+                                                        <div className="min-w-0 flex-1 space-y-0.5">
+                                                            <div className="flex items-center gap-2">
+                                                                <p
+                                                                    className="truncate text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
+                                                                    title={
+                                                                        item.title
+                                                                    }
+                                                                >
+                                                                    {item.title}
+                                                                </p>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                                                <span className="font-mono text-slate-700 dark:text-zinc-300">
+                                                                    {item.matter
+                                                                        ?.matter_number ??
+                                                                        'RPK-TASK'}
+                                                                </span>
+                                                                <span>·</span>
+                                                                <span className="truncate">
+                                                                    {item.matter
+                                                                        ?.client
+                                                                        ?.display_name ??
+                                                                        item
+                                                                            .matter
+                                                                            ?.title ??
+                                                                        'Internal'}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex shrink-0 items-center gap-2.5 text-right">
                                                             <span
-                                                                className={`size-1.5 shrink-0 rounded-full ${
+                                                                className={`font-mono text-[10px] font-semibold ${
                                                                     isUrgent
-                                                                        ? 'bg-rose-500'
-                                                                        : queueTab ===
-                                                                            'completed'
-                                                                          ? 'bg-emerald-500'
-                                                                          : 'bg-blue-500'
+                                                                        ? 'text-rose-600 dark:text-rose-400'
+                                                                        : 'text-slate-500 dark:text-zinc-400'
                                                                 }`}
-                                                            />
-                                                            <p
-                                                                className="truncate text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
-                                                                title={
-                                                                    item.title
-                                                                }
                                                             >
-                                                                {item.title}
-                                                            </p>
-                                                        </div>
-                                                        <div className="flex items-center gap-1.5 pl-3.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                            <span className="font-mono text-slate-700 dark:text-zinc-300">
-                                                                {item.matter
-                                                                    ?.matter_number ??
-                                                                    'RPK-TASK'}
+                                                                {item.due_at
+                                                                    ? formatDate(
+                                                                          item.due_at,
+                                                                      )
+                                                                    : 'Hari ini'}
                                                             </span>
-                                                            <span>·</span>
-                                                            <span className="truncate">
-                                                                {item.matter
-                                                                    ?.client
-                                                                    ?.display_name ??
-                                                                    item.matter
-                                                                        ?.title ??
-                                                                    'Internal'}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="flex shrink-0 items-center gap-2.5 text-right">
-                                                        <span
-                                                            className={`rounded-md px-1.5 py-0.5 font-mono text-[10px] font-semibold ${
-                                                                isUrgent
-                                                                    ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
-                                                                    : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-300'
-                                                            }`}
-                                                        >
-                                                            {item.due_at
-                                                                ? formatDate(
-                                                                      item.due_at,
-                                                                  )
-                                                                : 'Hari ini'}
-                                                        </span>
-                                                        <Avatar
-                                                            className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10"
-                                                            title={item.assignee?.name ?? 'Staf Pelaksana'}
-                                                        >
-                                                            <AvatarImage
-                                                                src={
-                                                                    item
-                                                                        .assignee
-                                                                        ?.avatar_url ||
-                                                                    item
-                                                                        .assignee
-                                                                        ?.avatar_path ||
-                                                                    '/images/default-avatar.svg'
-                                                                }
-                                                                alt={item.assignee?.name || 'Assignee'}
-                                                            />
-                                                            <AvatarFallback className="text-[8px] font-bold">
-                                                                {getInitials(
+                                                            <Avatar
+                                                                className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10"
+                                                                title={
                                                                     item
                                                                         .assignee
                                                                         ?.name ??
-                                                                        'FR',
-                                                                )}
-                                                            </AvatarFallback>
-                                                        </Avatar>
-                                                    </div>
-                                                </Link>
-                                            );
-                                        })}
+                                                                    'Staf Pelaksana'
+                                                                }
+                                                            >
+                                                                <AvatarImage
+                                                                    src={
+                                                                        item
+                                                                            .assignee
+                                                                            ?.avatar_url ||
+                                                                        item
+                                                                            .assignee
+                                                                            ?.avatar_path ||
+                                                                        '/images/default-avatar.svg'
+                                                                    }
+                                                                    alt={
+                                                                        item
+                                                                            .assignee
+                                                                            ?.name ||
+                                                                        'Assignee'
+                                                                    }
+                                                                />
+                                                                <AvatarFallback className="text-[8px] font-bold">
+                                                                    {getInitials(
+                                                                        item
+                                                                            .assignee
+                                                                            ?.name ??
+                                                                            'FR',
+                                                                    )}
+                                                                </AvatarFallback>
+                                                            </Avatar>
+                                                        </div>
+                                                    </Link>
+                                                );
+                                            })}
                                     </div>
                                 )}
-                            </div>
-
-                            <div className="mt-auto shrink-0 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
-                                <Link
-                                    href={tasksRoutes.index.url()}
-                                    className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
-                                >
-                                    Buka Seluruh Daftar Tugas →
-                                </Link>
                             </div>
                         </div>
 
                         {/* [Row 1, Col 2] Widget 2: Jadwal Sidang & Agenda */}
-                        <div className="flex h-[390px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                        <div className="flex h-[320px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.05]">
                                 <h2 className="text-xs font-bold text-slate-900 dark:text-white">
                                     Jadwal Sidang &amp; Agenda
                                 </h2>
@@ -751,7 +700,7 @@ export default function Dashboard({
                                     href={calendarRoutes.index.url()}
                                     className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                                 >
-                                    Buka Kalender →
+                                    Kalender →
                                 </Link>
                             </div>
 
@@ -791,69 +740,63 @@ export default function Dashboard({
 
                             <div className="flex flex-1 flex-col overflow-hidden py-1">
                                 {filteredDayEvents.length === 0 ? (
-                                    <div className="flex flex-1 flex-col items-center justify-center px-4 py-2 text-center">
-                                        <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
+                                    <div className="flex flex-1 items-center justify-center gap-3 px-4 py-4 text-left">
+                                        <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
                                             <CalendarIcon className="size-4.5" />
                                         </div>
-                                        <p className="mt-2 text-xs font-bold text-slate-800 dark:text-zinc-200">
-                                            Agenda Lengang
-                                        </p>
-                                        <p className="mt-0.5 max-w-xs text-[11px] text-slate-400 dark:text-zinc-500">
-                                            Tidak ada jadwal sidang pengadilan
-                                            atau agenda pada tanggal ini.
-                                        </p>
+                                        <div>
+                                            <p className="text-xs font-bold text-slate-800 dark:text-zinc-200">
+                                                Belum ada agenda
+                                            </p>
+                                            <p className="mt-0.5 text-[11px] text-slate-400 dark:text-zinc-500">
+                                                Tidak ada sidang atau agenda
+                                                pada tanggal ini.
+                                            </p>
+                                        </div>
                                     </div>
                                 ) : (
-                                    <div className="flex-1 [scrollbar-width:thin] space-y-2 overflow-y-auto py-1.5 pr-1">
-                                        {filteredDayEvents.map((ev, idx) => (
-                                            <div
-                                                key={ev.id || idx}
-                                                className="flex items-center justify-between gap-2 text-xs"
-                                            >
-                                                <div className="flex min-w-0 items-center gap-2">
-                                                    <span className="size-1.5 shrink-0 rounded-full bg-blue-600" />
-                                                    <span className="font-mono text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
-                                                        {ev.time}
-                                                    </span>
-                                                    <div className="min-w-0 truncate">
-                                                        <p
-                                                            className="truncate font-medium text-slate-900 dark:text-white"
-                                                            title={ev.title}
-                                                        >
-                                                            {ev.title}
-                                                        </p>
-                                                        <p className="truncate text-[10px] text-slate-400">
-                                                            {ev.subtitle}
-                                                        </p>
+                                    <div className="flex-1 divide-y divide-slate-100 overflow-hidden py-1 dark:divide-white/[0.04]">
+                                        {filteredDayEvents
+                                            .slice(0, 4)
+                                            .map((ev, idx) => (
+                                                <div
+                                                    key={ev.id || idx}
+                                                    className="flex items-center justify-between gap-2 text-xs"
+                                                >
+                                                    <div className="flex min-w-0 items-center gap-2">
+                                                        <span className="font-mono text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
+                                                            {ev.time}
+                                                        </span>
+                                                        <div className="min-w-0 truncate">
+                                                            <p
+                                                                className="truncate font-medium text-slate-900 dark:text-white"
+                                                                title={ev.title}
+                                                            >
+                                                                {ev.title}
+                                                            </p>
+                                                            <p className="truncate text-[10px] text-slate-400">
+                                                                {ev.subtitle}
+                                                            </p>
+                                                        </div>
                                                     </div>
+                                                    <span className="shrink-0 text-[9px] font-semibold text-blue-600 dark:text-blue-400">
+                                                        {ev.category}
+                                                    </span>
                                                 </div>
-                                                <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                    {ev.category}
-                                                </span>
-                                            </div>
-                                        ))}
+                                            ))}
                                     </div>
                                 )}
-                            </div>
-
-                            <div className="mt-auto shrink-0 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
-                                <Link
-                                    href={calendarRoutes.index.url()}
-                                    className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
-                                >
-                                    Buka Kalender &amp; Agenda →
-                                </Link>
                             </div>
                         </div>
 
                         {/* [Row 2, Col 1] Widget 3: Prioritas & Tindakan Kemitraan */}
-                        <div className="flex h-[390px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                        <div className="flex h-[320px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.05]">
                                 <div className="flex items-center gap-2">
                                     <h2 className="text-xs font-bold text-slate-900 dark:text-white">
                                         Prioritas &amp; Tindakan Kemitraan
                                     </h2>
-                                    <span className="rounded-full bg-rose-50 px-2 py-0.5 font-mono text-[9px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
+                                    <span className="font-mono text-[9px] font-bold text-rose-600 dark:text-rose-400">
                                         {executive_actions?.length ?? 0}{' '}
                                         MENDESAK
                                     </span>
@@ -885,30 +828,34 @@ export default function Dashboard({
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="flex-1 [scrollbar-width:thin] divide-y divide-slate-100 overflow-y-auto pr-1 dark:divide-white/[0.04]">
-                                        {executive_actions.map(
-                                            (action, idx) => {
-                                                const actionUrl = tasksRoutes.show?.url
-                                                    ? tasksRoutes.show.url(action.id)
+                                    <div className="flex-1 divide-y divide-slate-100 overflow-hidden dark:divide-white/[0.04]">
+                                        {executive_actions
+                                            .slice(0, 4)
+                                            .map((action, idx) => {
+                                                const actionUrl = tasksRoutes
+                                                    .show?.url
+                                                    ? tasksRoutes.show.url(
+                                                          action.id,
+                                                      )
                                                     : `/tasks/${action.id}`;
 
                                                 return (
                                                     <Link
                                                         key={action.id || idx}
                                                         href={actionUrl}
-                                                        className="group flex items-start justify-between gap-3 py-2 px-2 -mx-1.5 rounded-lg transition-colors hover:bg-slate-50/80 dark:hover:bg-white/[0.03]"
+                                                        className="group -mx-1.5 flex items-start justify-between gap-3 rounded-lg px-2 py-2 transition-colors hover:bg-slate-50/80 dark:hover:bg-white/[0.03]"
                                                     >
                                                         <div className="min-w-0 flex-1 space-y-1">
                                                             <div className="flex items-center gap-2">
                                                                 <span
-                                                                    className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold ${
+                                                                    className={`text-[9px] font-bold ${
                                                                         action.badge_color ===
                                                                         'rose'
-                                                                            ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300'
+                                                                            ? 'text-rose-600 dark:text-rose-400'
                                                                             : action.badge_color ===
                                                                                 'amber'
-                                                                              ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
-                                                                              : 'bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300'
+                                                                              ? 'text-amber-600 dark:text-amber-400'
+                                                                              : 'text-blue-600 dark:text-blue-400'
                                                                     }`}
                                                                 >
                                                                     {
@@ -937,14 +884,19 @@ export default function Dashboard({
                                                         <div className="flex shrink-0 items-center gap-1.5 pt-1">
                                                             <Avatar
                                                                 className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10"
-                                                                title={action.assignee_name}
+                                                                title={
+                                                                    action.assignee_name
+                                                                }
                                                             >
                                                                 <AvatarImage
                                                                     src={
                                                                         action.assignee_avatar ||
                                                                         '/images/default-avatar.svg'
                                                                     }
-                                                                    alt={action.assignee_name || 'Assignee'}
+                                                                    alt={
+                                                                        action.assignee_name ||
+                                                                        'Assignee'
+                                                                    }
                                                                 />
                                                                 <AvatarFallback className="text-[7px] font-bold">
                                                                     {getInitials(
@@ -955,27 +907,15 @@ export default function Dashboard({
                                                         </div>
                                                     </Link>
                                                 );
-                                            },
-                                        )}
+                                            })}
                                     </div>
                                 )}
-                            </div>
-
-                            <div className="mt-auto shrink-0 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
-                                <Link
-                                    href={tasksRoutes.index.url({
-                                        query: { priority: 'high' },
-                                    })}
-                                    className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
-                                >
-                                    Buka Daftar Prioritas →
-                                </Link>
                             </div>
                         </div>
 
                         {/* [Row 2, Col 2] Widget 4: Recent Case Milestones (Perkembangan Perkara Terkini) */}
-                        <div className="flex h-[390px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                        <div className="flex h-[320px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.05]">
                                 <div className="flex items-center gap-2">
                                     <h2 className="text-xs font-bold text-slate-900 dark:text-white">
                                         Milestone &amp; Perkembangan Perkara
@@ -990,7 +930,8 @@ export default function Dashboard({
                             </div>
 
                             <div className="flex flex-1 flex-col overflow-hidden py-1">
-                                {!case_milestones || case_milestones.length === 0 ? (
+                                {!case_milestones ||
+                                case_milestones.length === 0 ? (
                                     <div className="flex flex-1 flex-col items-center justify-center px-4 py-4 text-center">
                                         <div className="flex size-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
                                             <Scale className="size-4.5" />
@@ -999,103 +940,123 @@ export default function Dashboard({
                                             Belum Ada Milestone Baru
                                         </p>
                                         <p className="mt-0.5 max-w-xs text-[11px] text-slate-400 dark:text-zinc-500">
-                                            Setiap peristiwa penting, mediasi, replik/duplik, atau putusan perkara akan otomatis tercatat di sini.
+                                            Setiap peristiwa penting, mediasi,
+                                            replik/duplik, atau putusan perkara
+                                            akan otomatis tercatat di sini.
                                         </p>
                                     </div>
                                 ) : (
-                                    <div className="flex-1 [scrollbar-width:thin] divide-y divide-slate-100 overflow-y-auto pr-1 dark:divide-white/[0.04]">
-                                        {case_milestones.map((ms, idx) => {
-                                            const badgeColorClass =
-                                                ms.badge_color === 'rose'
-                                                    ? 'bg-rose-50 text-rose-700 border border-rose-200/60 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-900/40'
-                                                    : ms.badge_color === 'amber'
-                                                      ? 'bg-amber-50 text-amber-700 border border-amber-200/60 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-900/40'
-                                                      : ms.badge_color === 'emerald'
-                                                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-900/40'
-                                                        : ms.badge_color === 'slate'
-                                                          ? 'bg-slate-100 text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300'
-                                                          : 'bg-blue-50 text-blue-700 border border-blue-200/60 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-900/40';
+                                    <div className="flex-1 divide-y divide-slate-100 overflow-hidden dark:divide-white/[0.04]">
+                                        {case_milestones
+                                            .slice(0, 4)
+                                            .map((ms, idx) => {
+                                                const statusColorClass =
+                                                    ms.badge_color === 'rose'
+                                                        ? 'text-rose-600 dark:text-rose-400'
+                                                        : ms.badge_color ===
+                                                            'amber'
+                                                          ? 'text-amber-600 dark:text-amber-400'
+                                                          : ms.badge_color ===
+                                                              'emerald'
+                                                            ? 'text-emerald-600 dark:text-emerald-400'
+                                                            : ms.badge_color ===
+                                                                'slate'
+                                                              ? 'text-slate-500 dark:text-zinc-400'
+                                                              : 'text-blue-600 dark:text-blue-400';
 
-                                            const content = (
-                                                <div className="min-w-0 flex-1 space-y-1">
-                                                    <div className="flex items-center justify-between gap-2">
-                                                        <div className="flex min-w-0 items-center gap-1.5">
-                                                            <span
-                                                                className={`shrink-0 rounded-md px-1.5 py-0.5 text-[9px] font-bold ${badgeColorClass}`}
-                                                            >
-                                                                {ms.badge_label || 'Milestone'}
-                                                            </span>
-                                                            <span className="truncate text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
-                                                                {ms.title}
+                                                const content = (
+                                                    <div className="min-w-0 flex-1 space-y-1">
+                                                        <div className="flex items-center justify-between gap-2">
+                                                            <div className="flex min-w-0 items-center gap-1.5">
+                                                                <span
+                                                                    className={`shrink-0 text-[9px] font-bold ${statusColorClass}`}
+                                                                >
+                                                                    {ms.badge_label ||
+                                                                        'Milestone'}
+                                                                </span>
+                                                                <span className="truncate text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                                                                    {ms.title}
+                                                                </span>
+                                                            </div>
+                                                            <span className="shrink-0 font-mono text-[10px] whitespace-nowrap text-slate-400">
+                                                                {ms.event_date ||
+                                                                    ms.relative_time}
                                                             </span>
                                                         </div>
-                                                        <span className="shrink-0 font-mono text-[10px] whitespace-nowrap text-slate-400">
-                                                            {ms.event_date || ms.relative_time}
-                                                        </span>
-                                                    </div>
 
-                                                    <p
-                                                        className="truncate text-[11px] text-slate-500 dark:text-zinc-400"
-                                                        title={ms.description || `${ms.matter_number} · ${ms.matter_title}`}
+                                                        <p
+                                                            className="truncate text-[11px] text-slate-500 dark:text-zinc-400"
+                                                            title={
+                                                                ms.description ||
+                                                                `${ms.matter_number} · ${ms.matter_title}`
+                                                            }
+                                                        >
+                                                            {ms.matter_number ? (
+                                                                <span className="font-mono font-semibold text-slate-700 dark:text-zinc-300">
+                                                                    {
+                                                                        ms.matter_number
+                                                                    }{' '}
+                                                                    ·{' '}
+                                                                </span>
+                                                            ) : null}
+                                                            <span>
+                                                                {ms.description ||
+                                                                    ms.matter_title}
+                                                            </span>
+                                                        </p>
+
+                                                        <div className="flex items-center justify-between gap-2 pt-0.5 text-[10px]">
+                                                            <div className="flex min-w-0 items-center gap-1.5">
+                                                                <Avatar className="size-4 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                    <AvatarImage
+                                                                        src={
+                                                                            ms.creator_avatar ||
+                                                                            undefined
+                                                                        }
+                                                                    />
+                                                                    <AvatarFallback className="text-[6.5px] font-bold">
+                                                                        {getInitials(
+                                                                            ms.creator_name,
+                                                                        )}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+                                                                <span className="truncate font-medium text-slate-600 dark:text-zinc-400">
+                                                                    {
+                                                                        ms.creator_name
+                                                                    }
+                                                                </span>
+                                                            </div>
+
+                                                            {ms.client_name && (
+                                                                <span className="max-w-[130px] shrink-0 truncate font-medium text-slate-400">
+                                                                    {
+                                                                        ms.client_name
+                                                                    }
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                );
+
+                                                return ms.url ? (
+                                                    <Link
+                                                        key={ms.id || idx}
+                                                        href={ms.url}
+                                                        className="group -mx-1.5 flex items-start gap-2.5 rounded-lg px-1.5 py-2.5 transition-colors hover:bg-slate-50/80 dark:hover:bg-white/[0.03]"
                                                     >
-                                                        {ms.matter_number ? (
-                                                            <span className="font-mono font-semibold text-slate-700 dark:text-zinc-300">
-                                                                {ms.matter_number} ·{' '}
-                                                            </span>
-                                                        ) : null}
-                                                        <span>{ms.description || ms.matter_title}</span>
-                                                    </p>
-
-                                                    <div className="flex items-center justify-between gap-2 pt-0.5 text-[10px]">
-                                                        <div className="flex items-center gap-1.5 min-w-0">
-                                                            <Avatar className="size-4 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                                <AvatarImage src={ms.creator_avatar || undefined} />
-                                                                <AvatarFallback className="text-[6.5px] font-bold">
-                                                                    {getInitials(ms.creator_name)}
-                                                                </AvatarFallback>
-                                                            </Avatar>
-                                                            <span className="truncate font-medium text-slate-600 dark:text-zinc-400">
-                                                                {ms.creator_name}
-                                                            </span>
-                                                        </div>
-
-                                                        {ms.client_name && (
-                                                            <span className="shrink-0 font-medium text-slate-400 truncate max-w-[130px]">
-                                                                {ms.client_name}
-                                                            </span>
-                                                        )}
+                                                        {content}
+                                                    </Link>
+                                                ) : (
+                                                    <div
+                                                        key={ms.id || idx}
+                                                        className="group -mx-1.5 flex items-start gap-2.5 px-1.5 py-2.5"
+                                                    >
+                                                        {content}
                                                     </div>
-                                                </div>
-                                            );
-
-                                            return ms.url ? (
-                                                <Link
-                                                    key={ms.id || idx}
-                                                    href={ms.url}
-                                                    className="group -mx-1.5 flex items-start gap-2.5 rounded-lg px-1.5 py-2.5 transition-colors hover:bg-slate-50/80 dark:hover:bg-white/[0.03]"
-                                                >
-                                                    {content}
-                                                </Link>
-                                            ) : (
-                                                <div
-                                                    key={ms.id || idx}
-                                                    className="group -mx-1.5 flex items-start gap-2.5 px-1.5 py-2.5"
-                                                >
-                                                    {content}
-                                                </div>
-                                            );
-                                        })}
+                                                );
+                                            })}
                                     </div>
                                 )}
-                            </div>
-
-                            <div className="mt-auto shrink-0 border-t border-slate-100 pt-2.5 text-right dark:border-white/[0.04]">
-                                <Link
-                                    href={mattersRoutes.index.url()}
-                                    className="text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
-                                >
-                                    Buka Seluruh Perkara →
-                                </Link>
                             </div>
                         </div>
                     </div>

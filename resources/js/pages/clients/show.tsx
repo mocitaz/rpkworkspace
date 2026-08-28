@@ -35,7 +35,7 @@ import { useMemo, useRef, useState } from 'react';
 import { ClientEditDialog } from '@/components/client-edit-dialog';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { EmptyState } from '@/components/empty-state';
-import { StatusBadge } from '@/components/status-badge';
+import { StatusText } from '@/components/status-text';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -56,6 +56,7 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { useInitials } from '@/hooks/use-initials';
+import { getDetailHeaderMetadata } from '@/lib/detail-header-meta';
 import { formatBytes, formatDate } from '@/lib/format';
 import * as clientRoutes from '@/routes/clients';
 import * as documentRoutes from '@/routes/documents';
@@ -247,7 +248,7 @@ export default function ClientShow({
                     <div className="space-y-3 border-b border-slate-200/60 pb-5 dark:border-white/[0.06]">
                         {/* Top Tier: Breadcrumbs / Client Code + Action Buttons */}
                         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                            {/* Left: Breadcrumbs & Badges */}
+                            {/* Left: Breadcrumbs & Client Number */}
                             <div className="flex flex-wrap items-center gap-2">
                                 <Button
                                     variant="ghost"
@@ -261,23 +262,17 @@ export default function ClientShow({
                                     </Link>
                                 </Button>
                                 <span className="text-slate-300 dark:text-zinc-600">/</span>
-                                <span className="inline-block rounded-md bg-blue-600 px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs">
-                                    {client.client_number}
-                                </span>
-                                <StatusBadge value={client.status} />
-                                <span
-                                    className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${
-                                        client.type === 'individual' ||
-                                        client.type === 'person'
-                                            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
-                                            : 'bg-slate-100 text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300'
-                                    }`}
-                                >
-                                    {client.type === 'individual' ||
-                                    client.type === 'person'
-                                        ? 'Individu'
-                                        : 'Badan Hukum'}
-                                </span>
+                                {getDetailHeaderMetadata(
+                                    client.client_number,
+                                ).map((item) => (
+                                    <span
+                                        key={item.testId}
+                                        data-testid={item.testId}
+                                        className={`text-[11px] font-bold tracking-tight whitespace-nowrap ${item.className}`}
+                                    >
+                                        {item.label}
+                                    </span>
+                                ))}
                             </div>
 
                             {/* Right: Action Buttons */}
@@ -601,7 +596,7 @@ export default function ClientShow({
                                                                 </span>
                                                             </div>
                                                         </div>
-                                                        <StatusBadge
+                                                        <StatusText
                                                             value={
                                                                 matter.status
                                                             }
@@ -839,7 +834,7 @@ export default function ClientShow({
                                                                     )}
                                                                 </td>
                                                                 <td className="px-3 py-2.5 whitespace-nowrap">
-                                                                    <StatusBadge
+                                                                    <StatusText
                                                                         value={
                                                                             matter.status
                                                                         }
@@ -1009,13 +1004,6 @@ export default function ClientShow({
                                         <div className="space-y-2.5 pt-1">
                                             {client.compliance_documents.map(
                                                 (doc) => {
-                                                    const isExpired =
-                                                        doc.compliance_status ===
-                                                        'expired';
-                                                    const isExpiring =
-                                                        doc.compliance_status ===
-                                                        'expiring_soon';
-
                                                     return (
                                                         <div
                                                             key={doc.id}
@@ -1039,36 +1027,12 @@ export default function ClientShow({
                                                                                 }
                                                                             </span>
                                                                         )}
-                                                                        {isExpired && (
-                                                                            <span className="flex items-center gap-1 rounded-md border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-400">
-                                                                                <AlertTriangle className="size-3" />
-                                                                                KEDALUWARSA
-                                                                            </span>
-                                                                        )}
-                                                                        {isExpiring && (
-                                                                            <span className="flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-400">
-                                                                                <Clock className="size-3" />
-                                                                                SEGERA
-                                                                                BERAKHIR
-                                                                            </span>
-                                                                        )}
-                                                                        {doc.compliance_status ===
-                                                                            'active' && (
-                                                                            <span className="flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-400">
-                                                                                <CheckCircle2 className="size-3" />
-                                                                                BERLAKU
-                                                                                AKTIF
-                                                                            </span>
-                                                                        )}
-                                                                        {doc.compliance_status ===
-                                                                            'no_expiry' && (
-                                                                            <span className="rounded-md border border-slate-200/70 bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300">
-                                                                                TETAP
-                                                                                /
-                                                                                TIDAK
-                                                                                BERAKHIR
-                                                                            </span>
-                                                                        )}
+                                                                        <StatusText
+                                                                            value={
+                                                                                doc.compliance_status
+                                                                            }
+                                                                            className="text-[10px]"
+                                                                        />
                                                                     </div>
 
                                                                     <h4 className="text-xs leading-snug font-bold text-slate-900 dark:text-white">
@@ -1351,30 +1315,13 @@ export default function ClientShow({
                                             </p>
                                         </div>
                                         <div className="flex flex-wrap items-center gap-2">
-                                            {client.kyc_status ===
-                                            'rejected' ? (
-                                                <span className="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
-                                                    <ShieldAlert className="size-3 text-rose-600" />
-                                                    DITOLAK / RISIKO TINGGI
-                                                </span>
-                                            ) : client.kyc_status ===
-                                              'pending_documents' ? (
-                                                <span className="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:bg-amber-950/50 dark:text-amber-300">
-                                                    <ShieldAlert className="size-3 text-amber-600" />
-                                                    MENUNGGU BERKAS
-                                                </span>
-                                            ) : client.kyc_status ===
-                                              'in_review' ? (
-                                                <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
-                                                    <ShieldCheck className="size-3 text-blue-600" />
-                                                    DALAM PENELAAHAN
-                                                </span>
-                                            ) : (
-                                                <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-                                                    <ShieldCheck className="size-3 text-emerald-600" />
-                                                    TERVERIFIKASI
-                                                </span>
-                                            )}
+                                            <StatusText
+                                                value={
+                                                    client.kyc_status ??
+                                                    'verified'
+                                                }
+                                                className="text-[10px]"
+                                            />
 
                                             {can.update && (
                                                 <ClientEditDialog
@@ -1529,17 +1476,14 @@ export default function ClientShow({
                                                                 {doc.label}
                                                             </span>
                                                         </div>
-                                                        <span
-                                                            className={`rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold ${
+                                                        <StatusText
+                                                            value={
                                                                 isChecked
-                                                                    ? 'bg-emerald-100/70 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
-                                                                    : 'bg-amber-100/70 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
-                                                            }`}
-                                                        >
-                                                            {isChecked
-                                                                ? 'Lengkap'
-                                                                : 'Belum Terlampir'}
-                                                        </span>
+                                                                    ? 'complete'
+                                                                    : 'incomplete'
+                                                            }
+                                                            className="font-mono text-[10px]"
+                                                        />
                                                     </div>
                                                 );
                                             })}
@@ -1650,7 +1594,7 @@ export default function ClientShow({
                                                                 )}
                                                             </td>
                                                             <td className="px-3 py-2.5 whitespace-nowrap">
-                                                                <StatusBadge
+                                                                <StatusText
                                                                     value={
                                                                         doc.status
                                                                     }
@@ -1815,7 +1759,7 @@ export default function ClientShow({
                                         <span className="text-slate-500 dark:text-zinc-400">
                                             Status Klien
                                         </span>
-                                        <StatusBadge value={client.status} />
+                                        <StatusText value={client.status} />
                                     </div>
                                 </div>
                             </div>

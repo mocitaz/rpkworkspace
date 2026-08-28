@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Matter;
 use App\Models\User;
 
 test('the sign-in page is visually stable on desktop', function () {
@@ -126,4 +127,49 @@ test('finance controls remain usable in the operational workspace', function () 
         ->assertSee('Item tagihan')
         ->assertNoSmoke()
         ->assertNoBrokenImages();
+});
+
+test('the matter header only presents the matter number', function () {
+    $user = rafUser(['matter.view']);
+    $user->update(['password' => 'password']);
+
+    $matter = Matter::factory()->recycle($user)->create([
+        'matter_number' => 'RPK-2026-0001',
+        'status' => 'active',
+        'priority' => 'critical',
+        'confidentiality_level' => 'restricted',
+    ]);
+
+    $page = visit('/login')
+        ->inLightMode()
+        ->on()
+        ->desktop()
+        ->fill('email', $user->email)
+        ->fill('password', 'password')
+        ->click('Masuk ke Workspace')
+        ->wait(1)
+        ->navigate(route('matters.show', $matter))
+        ->assertSee('RPK-2026-0001')
+        ->assertPresent('[data-testid="detail-number-text"]')
+        ->assertMissing('[data-testid="matter-status-text"]')
+        ->assertMissing('[data-testid="matter-priority-text"]')
+        ->assertMissing('[data-testid="matter-confidentiality-text"]');
+
+    $style = $page->script(<<<'JS'
+        () => {
+            const element = document.querySelector('[data-testid="detail-number-text"]');
+            const computedStyle = window.getComputedStyle(element);
+
+            return {
+                childElementCount: element.childElementCount,
+                backgroundColor: computedStyle.backgroundColor,
+                borderTopStyle: computedStyle.borderTopStyle,
+            };
+        }
+    JS);
+
+    expect($style)
+        ->childElementCount->toBe(0)
+        ->backgroundColor->toBe('rgba(0, 0, 0, 0)')
+        ->borderTopStyle->toBe('none');
 });

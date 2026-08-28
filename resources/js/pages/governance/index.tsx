@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { EmptyState } from '@/components/empty-state';
+import { GovernanceComplianceHero } from '@/components/governance-compliance-hero';
 import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -202,8 +203,21 @@ export default function GovernanceIndex({
 
             <div className="min-h-screen bg-[#fafafc] pb-16 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-3.5 px-4 py-3.5 sm:px-6 lg:px-8">
+                    <GovernanceComplianceHero
+                        correspondences={metrics.total_correspondences}
+                        conflictChecks={metrics.conflict_checks}
+                        pendingConflicts={metrics.pending_conflicts}
+                        legalHolds={metrics.legal_holds}
+                        archivedMatters={metrics.archived}
+                        canRunConflictCheck={can.conflict}
+                        canCreateCorrespondence={can.correspondence}
+                        onRunConflictCheck={() => setConflictModal(true)}
+                        onCreateCorrespondence={() =>
+                            setCorrespondenceModal(true)
+                        }
+                    />
                     {/* 1. Header Navigation & Action Bar */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
+                    <div className="hidden">
                         <div className="space-y-1">
                             <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                 Tata Kelola &amp; Kepatuhan
@@ -242,7 +256,7 @@ export default function GovernanceIndex({
                     </div>
 
                     {/* 2. Top 4 Compact Bento KPI Cards */}
-                    <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+                    <section className="hidden">
                         {/* 1. Total Korespondensi */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
@@ -545,7 +559,7 @@ export default function GovernanceIndex({
                                     </Form>
 
                                     {/* List Data / Empty State */}
-                                    <div className="flex-1 min-h-0 overflow-y-auto pr-1">
+                                    <div className="min-h-0 flex-1 overflow-y-auto pr-1">
                                         {correspondences.length ? (
                                             <div className="space-y-1.5">
                                                 {correspondences.map((item) => {
@@ -876,7 +890,7 @@ export default function GovernanceIndex({
                                     </div>
 
                                     {/* List Data / Empty State */}
-                                    <div className="flex-1 min-h-0 overflow-y-auto pr-1">
+                                    <div className="min-h-0 flex-1 overflow-y-auto pr-1">
                                         {filteredConflictChecks.length ? (
                                             <div className="space-y-1.5">
                                                 {filteredConflictChecks.map(
@@ -1192,7 +1206,9 @@ export default function GovernanceIndex({
                                             size="sm"
                                             className="mt-3.5 h-8 rounded-lg border-emerald-200 text-xs font-semibold text-emerald-600 hover:bg-emerald-50 dark:border-emerald-900/40 dark:text-emerald-400 dark:hover:bg-emerald-950/40"
                                         >
-                                            <Link href={matterRoutes.create.url()}>
+                                            <Link
+                                                href={matterRoutes.create.url()}
+                                            >
                                                 <Plus className="mr-1 size-3.5" />{' '}
                                                 Registrasi Perkara Baru
                                             </Link>
@@ -1676,8 +1692,8 @@ function ConflictCheckModal({
                                         onClick={addNameField}
                                         className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400"
                                     >
-                                        <Plus className="size-3" /> Tambah
-                                        Pihak / Afiliasi Lainnya
+                                        <Plus className="size-3" /> Tambah Pihak
+                                        / Afiliasi Lainnya
                                     </button>
                                 )}
                             </div>
@@ -1762,7 +1778,7 @@ function ConflictCheckModal({
                                                                     <span className="font-bold text-slate-900 dark:text-white">
                                                                         {m.name}
                                                                     </span>
-                                                                    <span className="rounded bg-slate-100 px-1 py-0.2 text-[9.5px] font-semibold text-slate-600 dark:bg-zinc-700 dark:text-zinc-300">
+                                                                    <span className="py-0.2 rounded bg-slate-100 px-1 text-[9.5px] font-semibold text-slate-600 dark:bg-zinc-700 dark:text-zinc-300">
                                                                         {m.role_label ??
                                                                             m.type}
                                                                     </span>
@@ -2009,7 +2025,7 @@ function ConflictCheckRow({
                                     </div>
                                     <div className="mt-1 flex flex-wrap items-center gap-1 text-[9.5px]">
                                         <span
-                                            className={`rounded px-1.5 py-0.2 font-bold uppercase ${
+                                            className={`py-0.2 rounded px-1.5 font-bold uppercase ${
                                                 match.risk === 'blocked'
                                                     ? 'bg-rose-200 text-rose-900 dark:bg-rose-900 dark:text-rose-200'
                                                     : 'bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200'

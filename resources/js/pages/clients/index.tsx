@@ -16,6 +16,7 @@ import {
     Users,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { ClientsDirectoryHero } from '@/components/clients-directory-hero';
 import { EmptyState } from '@/components/empty-state';
 import { Pagination } from '@/components/pagination';
 import { StatusBadge } from '@/components/status-badge';
@@ -132,131 +133,14 @@ export default function ClientsIndex({
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
-                    {/* 1. Header & Actions */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
-                        <div className="space-y-1">
-                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                Direktori Klien
-                            </h1>
-                            <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Profil korporasi &amp; perorangan, perwakilan
-                                hukum, portofolio perkara, dan kepatuhan KYC.
-                            </p>
-                        </div>
-
-                        <div className="flex shrink-0 items-center gap-2">
-                            {can.create && (
-                                <Button
-                                    asChild
-                                    className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
-                                >
-                                    <Link href={clientRoutes.create.url()}>
-                                        <Plus className="mr-1 size-3.5" />
-                                        Registrasi Klien Baru
-                                    </Link>
-                                </Button>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* 2. Top 4 KPI Metrics Bento Cards */}
-                    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                        {/* 1. Total Portofolio */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
-                                    TOTAL PORTOFOLIO
-                                </span>
-                                <Building2 className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
-                            </div>
-                            <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                                    {clients.total}
-                                </span>
-                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                    entitas terdaftar
-                                </span>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Arsip Portofolio Klien</span>
-                                <span className="font-semibold text-slate-700 dark:text-zinc-300">
-                                    {clients.data.length} di halaman ini
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* 2. Klien Aktif */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
-                                    KLIEN AKTIF
-                                </span>
-                                <Users className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
-                            </div>
-                            <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                                    {activeClientsCount}
-                                </span>
-                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                    kerjasama berjalan
-                                </span>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Retainer &amp; Kasus</span>
-                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                                    Aktif
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* 3. Perkara Terkait */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
-                                    PERKARA TERKAIT
-                                </span>
-                                <Briefcase className="size-3.5 text-slate-400 transition-colors group-hover:text-amber-600 dark:text-zinc-500" />
-                            </div>
-                            <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                                    {totalMattersCount}
-                                </span>
-                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                    total matter
-                                </span>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Akumulasi Kasus</span>
-                                <span className="font-semibold text-amber-600 dark:text-amber-400">
-                                    Terhubung
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* 4. Kontak Person */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[11px] font-semibold">
-                                    KONTAK PERSON
-                                </span>
-                                <ContactRound className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
-                            </div>
-                            <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                                    {totalContactsCount}
-                                </span>
-                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                    perwakilan resmi
-                                </span>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Personil Terdaftar</span>
-                                <span className="font-semibold text-purple-600 dark:text-purple-400">
-                                    Terotorisasi
-                                </span>
-                            </div>
-                        </div>
-                    </section>
+                    <ClientsDirectoryHero
+                        totalClients={clients.total}
+                        visibleClients={clients.data.length}
+                        activeClients={activeClientsCount}
+                        relatedMatters={totalMattersCount}
+                        contacts={totalContactsCount}
+                        canCreate={can.create}
+                    />
 
                     {/* 3. Filter Controls & Segmented Quick Filter Bar */}
                     <div className="space-y-2.5 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2.5 dark:border-white/[0.04] dark:bg-[#121418]">
@@ -306,7 +190,7 @@ export default function ClientsIndex({
                         </form>
 
                         {/* Row 2: Segmented Quick Status Pills with Smooth Mobile Scroll */}
-                        <div className="flex items-center gap-1 overflow-x-auto border-t border-slate-200/40 pt-2 [scrollbar-width:none] [-ms-overflow-style:none] dark:border-white/[0.04] [&::-webkit-scrollbar]:hidden">
+                        <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto border-t border-slate-200/40 pt-2 [-ms-overflow-style:none] dark:border-white/[0.04] [&::-webkit-scrollbar]:hidden">
                             <button
                                 type="button"
                                 onClick={() => handleFilterStatus('')}
@@ -415,7 +299,9 @@ export default function ClientsIndex({
                                     {clients.data.map((client) => (
                                         <Link
                                             key={client.id}
-                                            href={clientRoutes.show.url(client.id)}
+                                            href={clientRoutes.show.url(
+                                                client.id,
+                                            )}
                                             className="block p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
                                         >
                                             <div className="flex items-start justify-between gap-2">

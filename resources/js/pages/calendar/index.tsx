@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { EmptyState } from '@/components/empty-state';
+import { CalendarDashboardHero } from '@/components/calendar-dashboard-hero';
 import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -151,8 +152,26 @@ export default function CalendarIndex({
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                    <CalendarDashboardHero
+                        formattedMonthTitle={formattedMonthTitle}
+                        timezone={timezone}
+                        view={view}
+                        onViewChange={setView}
+                        previousMonthHref={calendarRoutes.index.url({
+                            query: { month: shiftMonth(month, -1) },
+                        })}
+                        todayHref={calendarRoutes.index.url()}
+                        nextMonthHref={calendarRoutes.index.url({
+                            query: { month: shiftMonth(month, 1) },
+                        })}
+                        onOpenSubscription={() => setLiveSyncOpen(true)}
+                        events={events.length}
+                        deadlines={deadlines.length}
+                        tasks={tasks.length}
+                        total={allItems.length}
+                    />
                     {/* 1. Header Navigation & Top Control Bar */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
+                    <div className="hidden">
                         <div className="space-y-1">
                             <h1 className="text-xl font-bold tracking-tight text-slate-900 capitalize sm:text-2xl dark:text-white">
                                 {formattedMonthTitle}
@@ -273,7 +292,7 @@ export default function CalendarIndex({
                     </div>
 
                     {/* 2. Top 4 KPI Metrics Bento Cards */}
-                    <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+                    <section className="hidden">
                         {/* 1. Sidang & Agenda */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
@@ -527,7 +546,9 @@ export default function CalendarIndex({
                                     <div className="flex items-center justify-between border-b border-emerald-200/50 pb-1.5 dark:border-emerald-900/30">
                                         <div className="flex items-center gap-1.5 font-bold text-emerald-900 dark:text-emerald-200">
                                             <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                            <span>Hasil &amp; Resume Sidang</span>
+                                            <span>
+                                                Hasil &amp; Resume Sidang
+                                            </span>
                                         </div>
                                         {selectedItem.attendee && (
                                             <span className="text-[10px] font-semibold text-slate-600 dark:text-zinc-300">
@@ -535,25 +556,36 @@ export default function CalendarIndex({
                                             </span>
                                         )}
                                     </div>
-                                    <p className="whitespace-pre-line text-xs leading-relaxed text-slate-800 dark:text-zinc-200">
+                                    <p className="text-xs leading-relaxed whitespace-pre-line text-slate-800 dark:text-zinc-200">
                                         {selectedItem.outcome}
                                     </p>
                                     {selectedItem.judge_notes && (
                                         <div className="mt-1.5 rounded-md border border-amber-200/70 bg-amber-50/60 p-2 text-[11px] text-amber-950 dark:border-amber-900/30 dark:bg-amber-950/30 dark:text-amber-200">
-                                            <strong className="block font-bold uppercase tracking-wider text-[9px] text-amber-800 dark:text-amber-400">
+                                            <strong className="block text-[9px] font-bold tracking-wider text-amber-800 uppercase dark:text-amber-400">
                                                 Arahan Majelis Hakim:
                                             </strong>
-                                            <span>{selectedItem.judge_notes}</span>
+                                            <span>
+                                                {selectedItem.judge_notes}
+                                            </span>
                                         </div>
                                     )}
                                     {selectedItem.next_event && (
                                         <div className="mt-2 flex items-center justify-between rounded-md border border-blue-200/70 bg-blue-50/60 p-2 text-[11px] text-blue-950 dark:border-blue-900/30 dark:bg-blue-950/20 dark:text-blue-200">
                                             <div className="flex items-center gap-1.5">
-                                                <CalendarClock className="size-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
-                                                <span className="font-semibold">{selectedItem.next_event.title}</span>
+                                                <CalendarClock className="size-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
+                                                <span className="font-semibold">
+                                                    {
+                                                        selectedItem.next_event
+                                                            .title
+                                                    }
+                                                </span>
                                             </div>
                                             <span className="font-mono text-[10px] text-slate-600 dark:text-zinc-400">
-                                                {formatDate(selectedItem.next_event.starts_at, true)}
+                                                {formatDate(
+                                                    selectedItem.next_event
+                                                        .starts_at,
+                                                    true,
+                                                )}
                                             </span>
                                         </div>
                                     )}
@@ -604,6 +636,7 @@ export default function CalendarIndex({
                 open={liveSyncOpen}
                 onOpenChange={setLiveSyncOpen}
                 feed={feed}
+                exportHref={calendarExportRoutes.ics.url()}
             />
         </>
     );
@@ -613,10 +646,12 @@ function LiveCalendarSyncModal({
     open,
     onOpenChange,
     feed,
+    exportHref,
 }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     feed?: CalendarFeed;
+    exportHref: string;
 }) {
     const [copied, setCopied] = useState(false);
     if (!feed) return null;
@@ -648,6 +683,14 @@ function LiveCalendarSyncModal({
                 </DialogHeader>
 
                 <div className="space-y-3.5 pt-2 text-xs">
+                    <a
+                        href={exportHref}
+                        download="RPK-Law-Firm-Calendar.ics"
+                        className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-[11px] font-semibold text-slate-700 shadow-xs hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-200"
+                    >
+                        <Download className="size-3.5" />
+                        Unduh kalender manual (.ics)
+                    </a>
                     {/* Opsi 1: Apple Calendar (iPhone / Mac / iPad) */}
                     <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 transition-all hover:border-slate-400 hover:bg-white dark:border-white/[0.06] dark:bg-[#121418] dark:hover:border-zinc-700">
                         <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">

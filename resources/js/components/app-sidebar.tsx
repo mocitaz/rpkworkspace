@@ -25,6 +25,7 @@ import {
     SidebarRail,
     useSidebar,
 } from '@/components/ui/sidebar';
+import { usePermission } from '@/hooks/use-permission';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import * as adminAudit from '@/routes/admin/audit';
@@ -38,7 +39,6 @@ import * as governance from '@/routes/governance';
 import * as matters from '@/routes/matters';
 import * as profile from '@/routes/profile';
 import * as tasks from '@/routes/tasks';
-import { usePermission } from '@/hooks/use-permission';
 import type { NavItem } from '@/types';
 
 export function AppSidebar() {
@@ -155,7 +155,7 @@ export function AppSidebar() {
             variant="sidebar"
             className="border-r border-slate-200/80 bg-white text-slate-700 shadow-none dark:border-white/[0.08] dark:bg-[#121418] dark:text-white [&_[data-sidebar=sidebar]]:bg-white dark:[&_[data-sidebar=sidebar]]:bg-[#121418]"
         >
-            <SidebarHeader className="flex h-14 shrink-0 flex-row items-center border-b border-slate-200/80 px-2.5 py-0 group-data-[collapsible=icon]:px-1.5 dark:border-white/[0.07]">
+            <SidebarHeader className="flex h-auto shrink-0 flex-col items-stretch border-b border-slate-200/80 px-2.5 py-1.5 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-1.5 group-data-[collapsible=icon]:py-2 dark:border-white/[0.07]">
                 <Link
                     href={dashboard()}
                     prefetch
@@ -164,10 +164,11 @@ export function AppSidebar() {
                             setOpenMobile(false);
                         }
                     }}
-                    className="group flex h-full w-full items-center rounded-xl p-1 transition-colors hover:bg-slate-100/80 focus:outline-none dark:hover:bg-white/[0.06]"
+                    className="group flex h-9 w-full items-center rounded-xl px-1 group-data-[collapsible=icon]:justify-center focus:outline-none"
                 >
                     <AppLogo />
                 </Link>
+                <NavUser variant="header" />
             </SidebarHeader>
 
             <SidebarContent className="space-y-0.5 px-1 py-1.5 group-data-[collapsible=icon]:px-0">
@@ -181,7 +182,6 @@ export function AppSidebar() {
             </SidebarContent>
 
             <SidebarFooter className="space-y-1 border-t border-slate-100 p-2 group-data-[collapsible=icon]:p-1.5 dark:border-white/[0.06]">
-                <NavUser />
                 <SidebarCollapseButton />
             </SidebarFooter>
             <SidebarRail />

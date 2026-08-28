@@ -17,6 +17,7 @@ import {
     Users,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { AuditLogHero } from '@/components/audit-log-hero';
 import { EmptyState } from '@/components/empty-state';
 import { Pagination } from '@/components/pagination';
 import { Button } from '@/components/ui/button';
@@ -333,8 +334,16 @@ export default function AuditIndex({
                         </div>
                     )}
 
+                    <AuditLogHero
+                        metrics={metrics}
+                        exportUrl={auditRoutes.exportMethod.url({
+                            query: filters,
+                        })}
+                        onClean={() => setCleanOpen(true)}
+                    />
+
                     {/* 1. Header Navigation & Action Bar */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
+                    <div className="hidden">
                         <div className="space-y-1">
                             <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                 Audit Log &amp; Jejak Aktivitas
@@ -378,7 +387,7 @@ export default function AuditIndex({
                     </div>
 
                     {/* 2. Top 4 Compact KPI Cards */}
-                    <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+                    <section className="hidden">
                         {/* 1. Total Log */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
@@ -577,7 +586,8 @@ export default function AuditIndex({
                                 size="sm"
                                 className="h-8 w-full shrink-0 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 sm:w-auto dark:bg-white dark:text-slate-900"
                             >
-                                <Filter className="mr-1.5 size-3" /> Terapkan Filter
+                                <Filter className="mr-1.5 size-3" /> Terapkan
+                                Filter
                             </Button>
                         </div>
                     </Form>

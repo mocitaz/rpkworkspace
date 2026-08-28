@@ -1,6 +1,5 @@
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import {
-    AlertCircle,
     ArrowLeft,
     ArrowRight,
     Briefcase,
@@ -11,7 +10,6 @@ import {
     CheckCircle2,
     ChevronRight,
     Clock,
-    DollarSign,
     Download,
     Eye,
     FileCheck,
@@ -48,7 +46,6 @@ import {
     DocumentPreviewModal,
     type PreviewableDocument,
 } from '@/components/documents/document-preview-modal';
-import { StatusBadge } from '@/components/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -62,6 +59,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { useInitials } from '@/hooks/use-initials';
+import { getDetailHeaderMetadata } from '@/lib/detail-header-meta';
 import { formatDate } from '@/lib/format';
 import * as clientRoutes from '@/routes/clients';
 import * as documentRoutes from '@/routes/documents';
@@ -317,7 +315,6 @@ export default function TaskShow({
     };
 
     const categoryName = categories.find((c) => c.id === task.category)?.name || task.category || 'Umum';
-    const stageName = stages.find((s) => s.id === task.stage)?.name || task.stage || 'Umum';
     const clientName = task.matter?.client?.display_name || task.matter?.client?.legal_name || task.matter?.client?.name || 'Klien';
 
     const tabsList = [
@@ -338,7 +335,7 @@ export default function TaskShow({
                     <div className="space-y-3 border-b border-slate-200/60 pb-5 dark:border-white/[0.06]">
                         {/* Top Tier: Breadcrumbs / Task Code + Badges + Action Buttons */}
                         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                            {/* Left: Breadcrumbs & Badges */}
+                            {/* Left: Breadcrumbs & Task Number */}
                             <div className="flex flex-wrap items-center gap-2">
                                 <Button
                                     variant="ghost"
@@ -352,36 +349,17 @@ export default function TaskShow({
                                     </Link>
                                 </Button>
                                 <span className="text-slate-300 dark:text-zinc-600">/</span>
-                                <span className="inline-block rounded-md bg-blue-600 px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs">
-                                    {task.task_number}
-                                </span>
-
-                                <StatusBadge value={task.status} />
-                                <StatusBadge value={task.priority} />
-
-                                <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
-                                    {categoryName}
-                                </span>
-
-                                {task.stage && (
-                                    <span className="rounded-md bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
-                                        {stageName}
+                                {getDetailHeaderMetadata(
+                                    task.task_number,
+                                ).map((item) => (
+                                    <span
+                                        key={item.testId}
+                                        data-testid={item.testId}
+                                        className={`text-[11px] font-bold tracking-tight whitespace-nowrap ${item.className}`}
+                                    >
+                                        {item.label}
                                     </span>
-                                )}
-
-                                {task.is_billable && (
-                                    <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
-                                        <DollarSign className="size-3" />
-                                        Billable
-                                    </span>
-                                )}
-
-                                {isOverdue && (
-                                    <span className="inline-flex items-center gap-1 rounded-md bg-rose-500 px-2 py-0.5 text-[10px] font-bold text-white shadow-xs animate-pulse">
-                                        <AlertCircle className="size-3" />
-                                        Terlewat (Overdue)
-                                    </span>
-                                )}
+                                ))}
                             </div>
 
                             {/* Right: Actions */}

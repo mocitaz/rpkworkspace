@@ -20,6 +20,7 @@ import {
     DocumentPreviewModal,
     type PreviewableDocument,
 } from '@/components/documents/document-preview-modal';
+import { DocumentsVaultHero } from '@/components/documents-vault-hero';
 import { EmptyState } from '@/components/empty-state';
 import InputError from '@/components/input-error';
 import { Pagination } from '@/components/pagination';
@@ -107,8 +108,13 @@ export default function DocumentsIndex({
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                    <DocumentsVaultHero
+                        metrics={metrics}
+                        canUpload={can.upload}
+                        onUpload={() => setOpen(true)}
+                    />
                     {/* 1. Header Navigation & Action Bar */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
+                    <div className="hidden">
                         <div className="space-y-1">
                             <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                 Dokumen &amp; Repositori Legal
@@ -136,7 +142,7 @@ export default function DocumentsIndex({
                     </div>
 
                     {/* 2. Top 4 Compact Bento KPI Cards */}
-                    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <section className="hidden">
                         {/* 1. Total Dokumen */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">

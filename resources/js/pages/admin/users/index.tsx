@@ -43,6 +43,7 @@ import {
 import { useState } from 'react';
 import InputError from '@/components/input-error';
 import { Pagination } from '@/components/pagination';
+import { PersonnelAccessHero } from '@/components/personnel-access-hero';
 import { StatusBadge } from '@/components/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -151,8 +152,9 @@ export default function UsersIndex({
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-4 px-4 py-4 sm:px-6 lg:px-8">
+                    <PersonnelAccessHero metrics={metrics} />
                     {/* 1. Header Navigation & Action Bar */}
-                    <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
+                    <div className="hidden">
                         <div className="space-y-1">
                             <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                 Personel &amp; Hak Akses
@@ -171,7 +173,13 @@ export default function UsersIndex({
                                     asChild
                                     className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
                                 >
-                                    <Link href={userRoutes.create?.url ? userRoutes.create.url() : '/admin/users/create'}>
+                                    <Link
+                                        href={
+                                            userRoutes.create?.url
+                                                ? userRoutes.create.url()
+                                                : '/admin/users/create'
+                                        }
+                                    >
                                         <UserPlus className="mr-1.5 size-3.5" />
                                         Tambah Staf Baru
                                     </Link>
@@ -181,7 +189,7 @@ export default function UsersIndex({
                     </div>
 
                     {/* 2. Top 4 Compact Bento KPI Cards */}
-                    <section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+                    <section className="hidden">
                         {/* 1. Total Pengguna */}
                         <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
@@ -280,7 +288,7 @@ export default function UsersIndex({
                     </section>
 
                     {/* 3. Segmented View Switcher (Horizontal Swipeable on Mobile) */}
-                    <div className="flex items-center gap-1.5 overflow-x-auto border-b border-slate-200/60 pb-2 [scrollbar-width:none] [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
+                    <div className="flex [scrollbar-width:none] items-center gap-1.5 overflow-x-auto border-b border-slate-200/60 pb-2 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
                         <button
                             type="button"
                             onClick={() => setTab('cards')}
@@ -339,7 +347,8 @@ export default function UsersIndex({
                                         />
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        {(filters.search || filters.role_id) && (
+                                        {(filters.search ||
+                                            filters.role_id) && (
                                             <Button
                                                 asChild
                                                 variant="outline"
@@ -347,7 +356,13 @@ export default function UsersIndex({
                                                 className="h-7.5 shrink-0 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
                                                 title="Reset Semua Filter"
                                             >
-                                                <Link href={userRoutes.index?.url ? userRoutes.index.url() : '/admin/users'}>
+                                                <Link
+                                                    href={
+                                                        userRoutes.index?.url
+                                                            ? userRoutes.index.url()
+                                                            : '/admin/users'
+                                                    }
+                                                >
                                                     <RotateCcw className="size-3.5 text-slate-400" />
                                                 </Link>
                                             </Button>
@@ -421,7 +436,14 @@ export default function UsersIndex({
                                                         asChild
                                                         className="mt-3.5 h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                                     >
-                                                        <Link href={userRoutes.create?.url ? userRoutes.create.url() : '/admin/users/create'}>
+                                                        <Link
+                                                            href={
+                                                                userRoutes
+                                                                    .create?.url
+                                                                    ? userRoutes.create.url()
+                                                                    : '/admin/users/create'
+                                                            }
+                                                        >
                                                             <UserPlus className="mr-1 size-3" />{' '}
                                                             Tambah Staf Baru
                                                         </Link>
@@ -497,9 +519,15 @@ export default function UsersIndex({
                                                                 </Avatar>
                                                                 <div className="min-w-0">
                                                                     <Link
-                                                                        href={userRoutes.show?.url ? userRoutes.show.url(
-                                                                            user.id,
-                                                                        ) : `/admin/users/${user.id}`}
+                                                                        href={
+                                                                            userRoutes
+                                                                                .show
+                                                                                ?.url
+                                                                                ? userRoutes.show.url(
+                                                                                      user.id,
+                                                                                  )
+                                                                                : `/admin/users/${user.id}`
+                                                                        }
                                                                         className="text-left font-semibold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
                                                                     >
                                                                         {
@@ -583,9 +611,15 @@ export default function UsersIndex({
                                                                     title="Lihat Profil Staf & CV"
                                                                 >
                                                                     <Link
-                                                                        href={userRoutes.show?.url ? userRoutes.show.url(
-                                                                            user.id,
-                                                                        ) : `/admin/users/${user.id}`}
+                                                                        href={
+                                                                            userRoutes
+                                                                                .show
+                                                                                ?.url
+                                                                                ? userRoutes.show.url(
+                                                                                      user.id,
+                                                                                  )
+                                                                                : `/admin/users/${user.id}`
+                                                                        }
                                                                     >
                                                                         <UserIcon className="mr-1 size-3" />
                                                                         Profil
@@ -600,7 +634,15 @@ export default function UsersIndex({
                                                                         title="Edit Profil & Hak Akses"
                                                                     >
                                                                         <Link
-                                                                            href={userRoutes.edit?.url ? userRoutes.edit.url(user.id) : `/admin/users/${user.id}/edit`}
+                                                                            href={
+                                                                                userRoutes
+                                                                                    .edit
+                                                                                    ?.url
+                                                                                    ? userRoutes.edit.url(
+                                                                                          user.id,
+                                                                                      )
+                                                                                    : `/admin/users/${user.id}/edit`
+                                                                            }
                                                                         >
                                                                             <Pencil className="mr-1 size-3 text-slate-400" />
                                                                             Edit
@@ -793,11 +835,7 @@ export default function UsersIndex({
     );
 }
 
-function StaffCard({
-    user,
-}: {
-    user: User;
-}) {
+function StaffCard({ user }: { user: User }) {
     const getInitials = useInitials();
     const [copied, setCopied] = useState(false);
     const displayId =
@@ -827,7 +865,13 @@ function StaffCard({
 
     return (
         <div
-            onClick={() => router.visit(userRoutes.show?.url ? userRoutes.show.url(user.id) : `/admin/users/${user.id}`)}
+            onClick={() =>
+                router.visit(
+                    userRoutes.show?.url
+                        ? userRoutes.show.url(user.id)
+                        : `/admin/users/${user.id}`,
+                )
+            }
             className="group relative flex cursor-pointer flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md dark:border-white/[0.06] dark:bg-[#14161b] dark:hover:border-white/[0.12] dark:hover:shadow-none"
         >
             <div className="space-y-3">
@@ -876,11 +920,17 @@ function StaffCard({
                         </p>
                         <div className="flex items-center gap-1.5 truncate text-[10.5px] text-slate-400 dark:text-zinc-500">
                             {user.department && (
-                                <span className="truncate">{user.department}</span>
+                                <span className="truncate">
+                                    {user.department}
+                                </span>
                             )}
-                            {user.department && user.practice_areas && <span>·</span>}
+                            {user.department && user.practice_areas && (
+                                <span>·</span>
+                            )}
                             {user.practice_areas && (
-                                <span className="truncate">{user.practice_areas}</span>
+                                <span className="truncate">
+                                    {user.practice_areas}
+                                </span>
                             )}
                         </div>
                     </div>
@@ -914,7 +964,11 @@ function StaffCard({
             {/* Footer Action Bar */}
             <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-white/[0.04]">
                 <Link
-                    href={userRoutes.show?.url ? userRoutes.show.url(user.id) : `/admin/users/${user.id}`}
+                    href={
+                        userRoutes.show?.url
+                            ? userRoutes.show.url(user.id)
+                            : `/admin/users/${user.id}`
+                    }
                     onClick={(e) => e.stopPropagation()}
                     className="flex items-center gap-1 text-[11px] font-semibold text-slate-700 transition-colors group-hover:text-blue-600 dark:text-zinc-300 dark:group-hover:text-blue-400"
                 >
@@ -954,7 +1008,11 @@ function StaffCard({
                             className="h-7 rounded-lg px-2 text-[11px] font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
                         >
                             <Link
-                                href={userRoutes.edit?.url ? userRoutes.edit.url(user.id) : `/admin/users/${user.id}/edit`}
+                                href={
+                                    userRoutes.edit?.url
+                                        ? userRoutes.edit.url(user.id)
+                                        : `/admin/users/${user.id}/edit`
+                                }
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 <Pencil className="mr-1 size-3" />
@@ -990,9 +1048,9 @@ function EditUserDialog({
 
     return (
         <Dialog open={!!user} onOpenChange={onOpenChange}>
-            <DialogContent className="flex max-h-[90vh] max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 gap-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className="flex max-h-[90vh] max-w-2xl flex-col gap-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
                 {/* 1. Modal Cockpit Header */}
-                <div className="shrink-0 border-b border-slate-100 bg-slate-50/70 px-6 pt-5 pb-3.5 pr-12 dark:border-white/[0.06] dark:bg-[#121418]">
+                <div className="shrink-0 border-b border-slate-100 bg-slate-50/70 px-6 pt-5 pr-12 pb-3.5 dark:border-white/[0.06] dark:bg-[#121418]">
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
                             <div className="relative size-10 shrink-0 rounded-full bg-linear-to-b from-slate-200 via-slate-100 to-slate-300 p-0.5 shadow-xs dark:from-white/20 dark:via-white/5 dark:to-white/15">
@@ -1130,7 +1188,9 @@ function EditUserDialog({
                                             <Field
                                                 name="department"
                                                 label="Departemen / Divisi"
-                                                defaultValue={user.department ?? ''}
+                                                defaultValue={
+                                                    user.department ?? ''
+                                                }
                                                 placeholder="Litigasi & Arbitrase / Corporate"
                                             />
                                             <Field
@@ -1147,11 +1207,13 @@ function EditUserDialog({
                                                 <div className="flex items-center gap-1.5">
                                                     <Shield className="size-3.5 text-purple-600 dark:text-purple-400" />
                                                     <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                                        Hak Akses &amp; Role Sistem
+                                                        Hak Akses &amp; Role
+                                                        Sistem
                                                     </span>
                                                 </div>
                                                 <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                                    Pilih satu atau beberapa role
+                                                    Pilih satu atau beberapa
+                                                    role
                                                 </span>
                                             </div>
 
@@ -1170,7 +1232,9 @@ function EditUserDialog({
                                                                 <input
                                                                     type="checkbox"
                                                                     name="role_ids[]"
-                                                                    value={role.id}
+                                                                    value={
+                                                                        role.id
+                                                                    }
                                                                     defaultChecked={
                                                                         isChecked
                                                                     }
@@ -1187,7 +1251,9 @@ function EditUserDialog({
                                                     );
                                                 })}
                                             </div>
-                                            <InputError message={errors.role_ids} />
+                                            <InputError
+                                                message={errors.role_ids}
+                                            />
                                         </div>
 
                                         {/* Status Card */}
@@ -1201,7 +1267,9 @@ function EditUserDialog({
                                                         Status Akun Aktif
                                                     </p>
                                                     <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                        Izinkan staf untuk login dan mengakses modul aplikasi
+                                                        Izinkan staf untuk login
+                                                        dan mengakses modul
+                                                        aplikasi
                                                     </p>
                                                 </div>
                                             </div>
@@ -1225,7 +1293,8 @@ function EditUserDialog({
                                                 name="advocate_license_no"
                                                 label="Nomor Induk Advokat (NIA)"
                                                 defaultValue={
-                                                    user.advocate_license_no ?? ''
+                                                    user.advocate_license_no ??
+                                                    ''
                                                 }
                                                 placeholder="Contoh: 18.01234/PERADI"
                                             />
@@ -1237,7 +1306,7 @@ function EditUserDialog({
                                                     user.kta_expiry_date
                                                         ? user.kta_expiry_date.split(
                                                               'T',
-                                                           )[0]
+                                                          )[0]
                                                         : ''
                                                 }
                                             />
@@ -1247,7 +1316,9 @@ function EditUserDialog({
                                             <Field
                                                 name="bas_number"
                                                 label="Nomor Berita Acara Sumpah (BAS)"
-                                                defaultValue={user.bas_number ?? ''}
+                                                defaultValue={
+                                                    user.bas_number ?? ''
+                                                }
                                                 placeholder="No. Surat Pengadilan Tinggi"
                                             />
                                             <Field
@@ -1258,7 +1329,7 @@ function EditUserDialog({
                                                     user.bas_date
                                                         ? user.bas_date.split(
                                                               'T',
-                                                           )[0]
+                                                          )[0]
                                                         : ''
                                                 }
                                             />
@@ -1274,7 +1345,9 @@ function EditUserDialog({
                                         <TextareaField
                                             name="practice_areas"
                                             label="Bidang Keahlian / Spesialisasi Hukum (Practice Areas)"
-                                            defaultValue={user.practice_areas ?? ''}
+                                            defaultValue={
+                                                user.practice_areas ?? ''
+                                            }
                                             placeholder="Contoh: Corporate M&A, Commercial Litigation, Dispute Resolution, IPR, Employment Law"
                                             rows={2}
                                             helperText="Pisahkan beberapa keahlian dengan koma"
@@ -1300,7 +1373,7 @@ function EditUserDialog({
                                                     user.birth_date
                                                         ? user.birth_date.split(
                                                               'T',
-                                                           )[0]
+                                                          )[0]
                                                         : ''
                                                 }
                                             />
@@ -1310,7 +1383,9 @@ function EditUserDialog({
                                             <TextareaField
                                                 name="address"
                                                 label="Alamat Domisili Saat Ini"
-                                                defaultValue={user.address ?? ''}
+                                                defaultValue={
+                                                    user.address ?? ''
+                                                }
                                                 placeholder="Alamat tempat tinggal lengkap saat ini..."
                                                 rows={3}
                                             />
@@ -1343,7 +1418,8 @@ function EditUserDialog({
                                             <div className="flex items-center gap-1.5">
                                                 <CreditCard className="size-3.5 text-slate-600 dark:text-zinc-400" />
                                                 <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Informasi Rekening Bank (Payroll &amp; Fee Sharing)
+                                                    Informasi Rekening Bank
+                                                    (Payroll &amp; Fee Sharing)
                                                 </span>
                                             </div>
 
@@ -1618,7 +1694,14 @@ function TextareaField({
 }
 
 UsersIndex.layout = {
-    breadcrumbs: [{ title: 'Pengguna & Akses', href: userRoutes.index?.url ? userRoutes.index.url() : '/admin/users' }],
+    breadcrumbs: [
+        {
+            title: 'Pengguna & Akses',
+            href: userRoutes.index?.url
+                ? userRoutes.index.url()
+                : '/admin/users',
+        },
+    ],
 };
 
 const PERMISSION_GROUPS = [
