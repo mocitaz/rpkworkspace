@@ -153,9 +153,9 @@ export function AppSidebar() {
         <Sidebar
             collapsible="icon"
             variant="sidebar"
-            className="border-r border-slate-200/80 bg-white text-slate-700 shadow-none dark:border-white/[0.08] dark:bg-[#121418] dark:text-white [&_[data-sidebar=sidebar]]:bg-white dark:[&_[data-sidebar=sidebar]]:bg-[#121418]"
+            className="border-r border-slate-200/70 bg-[#fbfcfe]/94 text-slate-700 shadow-[8px_0_28px_rgba(15,23,42,0.035)] backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#121418]/94 dark:text-white [&_[data-sidebar=sidebar]]:bg-[#fbfcfe]/94 dark:[&_[data-sidebar=sidebar]]:bg-[#121418]/94"
         >
-            <SidebarHeader className="flex h-auto shrink-0 flex-col items-stretch border-b border-slate-200/80 px-2.5 py-1.5 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-1.5 group-data-[collapsible=icon]:py-2 dark:border-white/[0.07]">
+            <SidebarHeader className="flex h-auto shrink-0 flex-col items-stretch border-b border-slate-200/70 px-2.5 py-1.5 group-data-[collapsible=icon]:items-center group-data-[collapsible=icon]:px-1.5 group-data-[collapsible=icon]:py-2 dark:border-white/[0.07]">
                 <Link
                     href={dashboard()}
                     prefetch

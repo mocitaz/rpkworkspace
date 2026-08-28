@@ -44,7 +44,7 @@ export function AppSidebarHeader({
           );
 
     return (
-        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-slate-200/80 bg-white/80 px-3 backdrop-blur-xl transition-colors sm:px-5 dark:border-white/[0.07] dark:bg-[#101216]/80">
+        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between border-b border-slate-200/70 bg-[#fbfcfe]/78 px-3 shadow-[0_8px_24px_rgba(15,23,42,0.035)] backdrop-blur-2xl transition-colors sm:px-5 dark:border-white/[0.07] dark:bg-[#101216]/82 dark:shadow-black/10">
             {/* 1. Left Section: Mobile Trigger & Crisp Page Path */}
             <div className="z-10 flex min-w-0 items-center gap-2">
                 <SidebarTrigger className="size-8.5 shrink-0 rounded-xl text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 active:scale-95 md:hidden dark:text-zinc-400 dark:hover:bg-white/[0.08] dark:hover:text-white" />
@@ -52,14 +52,14 @@ export function AppSidebarHeader({
                 {/* Mobile Brand Label on Dashboard */}
                 {isDashboard && (
                     <div className="flex items-center gap-1.5 md:hidden">
-                        <span className="font-bold text-xs tracking-tight text-slate-900 dark:text-white">
+                        <span className="text-xs font-bold tracking-tight text-slate-900 dark:text-white">
                             RPK Law Office
                         </span>
                     </div>
                 )}
 
                 {!isDashboard && validBreadcrumbs.length > 0 && (
-                    <div className="min-w-0 flex items-center">
+                    <div className="flex min-w-0 items-center">
                         <Breadcrumbs breadcrumbs={validBreadcrumbs} />
                     </div>
                 )}
