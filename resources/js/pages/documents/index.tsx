@@ -2,6 +2,7 @@ import { Form, Head, Link, useForm } from '@inertiajs/react';
 import {
     Building2,
     ChevronDown,
+    ChevronRight,
     Eye,
     FileCheck,
     FileClock,
@@ -20,6 +21,121 @@ import {
     DocumentPreviewModal,
     type PreviewableDocument,
 } from '@/components/documents/document-preview-modal';
+
+function formatDocumentType(type?: string): string {
+    if (!type) return 'Dokumen Umum';
+    const map: Record<string, string> = {
+        court_filing: 'Dokumen Peradilan',
+        contract: 'Kontrak / Perjanjian',
+        agreement: 'Perjanjian',
+        evidence: 'Alat Bukti',
+        legal_opinion: 'Opini Hukum',
+        pleading: 'Pledoi / Gugatan',
+        correspondence: 'Korespondensi',
+        memo: 'Memo Internal',
+        brief: 'Ringkasan Kasus',
+        corporate: 'Dokumen Korporasi',
+        regulation: 'Regulasi & Hukum',
+        invoice: 'Faktur / Tagihan',
+        power_of_attorney: 'Surat Kuasa',
+        other: 'Dokumen Lain',
+    };
+    return (
+        map[type.toLowerCase()] ||
+        type.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+    );
+}
+
+function formatConfidentiality(level?: string): {
+    label: string;
+    className: string;
+} {
+    switch (level?.toLowerCase()) {
+        case 'strictly_confidential':
+            return {
+                label: 'Sangat Rahasia',
+                className: 'font-semibold text-rose-600 dark:text-rose-400',
+            };
+        case 'confidential':
+            return {
+                label: 'Rahasia',
+                className: 'font-semibold text-purple-600 dark:text-purple-400',
+            };
+        case 'restricted':
+            return {
+                label: 'Terbatas',
+                className: 'font-semibold text-amber-600 dark:text-amber-400',
+            };
+        case 'internal':
+        case 'standard':
+            return {
+                label: 'Standar Internal',
+                className: 'font-medium text-slate-600 dark:text-zinc-400',
+            };
+        case 'public':
+            return {
+                label: 'Publik',
+                className: 'font-medium text-emerald-600 dark:text-emerald-400',
+            };
+        default:
+            return {
+                label: level
+                    ? level
+                          .replace(/_/g, ' ')
+                          .replace(/\b\w/g, (c) => c.toUpperCase())
+                    : 'Standar',
+                className: 'font-medium text-slate-600 dark:text-zinc-400',
+            };
+    }
+}
+
+function formatDocumentStatus(status?: string): {
+    label: string;
+    className: string;
+} {
+    switch (status?.toLowerCase()) {
+        case 'draft':
+            return {
+                label: 'Draf',
+                className: 'font-semibold text-slate-600 dark:text-zinc-400',
+            };
+        case 'under_review':
+            return {
+                label: 'Dalam Review',
+                className: 'font-semibold text-amber-600 dark:text-amber-400',
+            };
+        case 'revision_requested':
+            return {
+                label: 'Perlu Revisi',
+                className: 'font-semibold text-rose-600 dark:text-rose-400',
+            };
+        case 'approved':
+            return {
+                label: 'Disetujui',
+                className: 'font-semibold text-emerald-600 dark:text-emerald-400',
+            };
+        case 'final':
+            return {
+                label: 'Final',
+                className: 'font-semibold text-blue-600 dark:text-blue-400',
+            };
+        case 'signed':
+            return {
+                label: 'Ditandatangani',
+                className: 'font-semibold text-emerald-600 dark:text-emerald-400',
+            };
+        case 'archived':
+            return {
+                label: 'Diarsipkan',
+                className: 'font-medium text-slate-400 dark:text-zinc-500',
+            };
+        default:
+            return {
+                label: status || '-',
+                className: 'font-semibold text-slate-600 dark:text-zinc-400',
+            };
+    }
+}
 import { DocumentsVaultHero } from '@/components/documents-vault-hero';
 import { EmptyState } from '@/components/empty-state';
 import InputError from '@/components/input-error';
@@ -389,34 +505,41 @@ export default function DocumentsIndex({
                             <>
                                 {/* Mobile Cards (sm:hidden) */}
                                 <div className="divide-y divide-slate-100 sm:hidden dark:divide-white/[0.04]">
-                                    {documents.data.map((document) => (
-                                        <div
-                                            key={document.id}
-                                            className="space-y-2 p-3.5"
-                                        >
-                                            <div className="flex items-start gap-2.5">
-                                                <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-slate-200/70 bg-blue-50 text-blue-600 dark:border-white/10 dark:bg-blue-950/40 dark:text-blue-400">
-                                                    <FileText className="size-4" />
-                                                </div>
-                                                <div className="min-w-0 flex-1">
-                                                    <Link
-                                                        href={documentRoutes.show.url(
-                                                            document.id,
-                                                        )}
-                                                        className="line-clamp-2 text-xs font-bold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
-                                                    >
-                                                        {document.title}
-                                                    </Link>
-                                                    {document.matter && (
+                                    {documents.data.map((document) => {
+                                        const conf = formatConfidentiality(
+                                            document.confidentiality_level,
+                                        );
+                                        const stat = formatDocumentStatus(
+                                            document.status,
+                                        );
+                                        const docType = formatDocumentType(
+                                            document.document_type,
+                                        );
+
+                                        return (
+                                            <div
+                                                key={document.id}
+                                                className="space-y-2 p-3.5"
+                                            >
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <div className="min-w-0 flex-1">
                                                         <Link
-                                                            href={matterRoutes.show.url(
-                                                                document.matter
-                                                                    .id,
+                                                            href={documentRoutes.show.url(
+                                                                document.id,
                                                             )}
-                                                            className="mt-0.5 inline-flex items-center gap-1 font-mono text-[10px] font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                                            className="line-clamp-2 text-xs font-bold text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
                                                         >
-                                                            <FolderKanban className="size-2.5 shrink-0" />
-                                                            <span className="truncate">
+                                                            {document.title}
+                                                        </Link>
+                                                        {document.matter ? (
+                                                            <Link
+                                                                href={matterRoutes.show.url(
+                                                                    document
+                                                                        .matter
+                                                                        .id,
+                                                                )}
+                                                                className="mt-0.5 inline-block font-mono text-[10px] font-semibold text-slate-700 hover:underline dark:text-zinc-300"
+                                                            >
                                                                 {
                                                                     document
                                                                         .matter
@@ -428,240 +551,229 @@ export default function DocumentsIndex({
                                                                         .matter
                                                                         .title
                                                                 }
+                                                            </Link>
+                                                        ) : document.client ? (
+                                                            <span className="mt-0.5 inline-block text-[10px] font-medium text-slate-600 dark:text-zinc-400">
+                                                                {
+                                                                    document
+                                                                        .client
+                                                                        .display_name
+                                                                }
                                                             </span>
-                                                        </Link>
-                                                    )}
+                                                        ) : null}
+                                                    </div>
+                                                    <Link
+                                                        href={documentRoutes.show.url(
+                                                            document.id,
+                                                        )}
+                                                        className="inline-flex size-7 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                                    >
+                                                        <ChevronRight className="size-4" />
+                                                    </Link>
                                                 </div>
-                                                <Button
-                                                    type="button"
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() =>
-                                                        setPreviewDoc(document)
-                                                    }
-                                                    className="h-7 shrink-0 rounded-lg px-2 text-[11px] font-semibold text-blue-600 dark:text-blue-400"
-                                                >
-                                                    <Eye className="mr-1 size-3" />
-                                                    Lihat
-                                                </Button>
-                                            </div>
-                                            <div className="flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-2 text-[10px] dark:border-white/[0.04]">
-                                                <StatusBadge
-                                                    value={document.status}
-                                                />
-                                                <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-white">
-                                                    v
-                                                    {document.current_version
-                                                        ?.version_number ?? 1}
-                                                    .0
-                                                </span>
-                                                {document.current_version
-                                                    ?.file_size ? (
-                                                    <span className="font-mono text-slate-500 dark:text-zinc-400">
-                                                        {formatBytes(
-                                                            document
-                                                                .current_version
-                                                                .file_size,
+                                                <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 pt-2 text-[10px] dark:border-white/[0.04]">
+                                                    <span className="text-slate-600 dark:text-zinc-400">
+                                                        {docType}
+                                                    </span>
+                                                    <span className="text-slate-300 dark:text-zinc-600">
+                                                        ·
+                                                    </span>
+                                                    <span
+                                                        className={
+                                                            conf.className
+                                                        }
+                                                    >
+                                                        {conf.label}
+                                                    </span>
+                                                    <span className="text-slate-300 dark:text-zinc-600">
+                                                        ·
+                                                    </span>
+                                                    <span
+                                                        className={
+                                                            stat.className
+                                                        }
+                                                    >
+                                                        {stat.label}
+                                                    </span>
+                                                    <span className="ml-auto font-mono text-slate-400 dark:text-zinc-500">
+                                                        {formatDate(
+                                                            document.updated_at,
                                                         )}
                                                     </span>
-                                                ) : null}
-                                                <span className="ml-auto font-mono text-slate-400 dark:text-zinc-500">
-                                                    {formatDate(
-                                                        document.updated_at,
-                                                    )}
-                                                </span>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
 
                                 {/* Desktop Table (hidden sm:block) */}
                                 <div className="hidden overflow-x-auto sm:block">
-                                    <table className="w-full text-left text-xs">
+                                    <table className="w-full table-fixed text-left text-xs">
                                         <thead>
                                             <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                                <th className="py-2.5 pr-3 pl-4 font-semibold">
-                                                    Nama Dokumen &amp; Tipe
+                                                <th className="w-[30%] py-2.5 pr-3 pl-4 font-semibold">
+                                                    Nama Dokumen
                                                 </th>
-                                                <th className="px-3 py-2.5 font-semibold">
-                                                    Terkait Perkara / Klien
+                                                <th className="w-[18%] px-3 py-2.5 text-center font-semibold">
+                                                    Perkara / Klien
                                                 </th>
-                                                <th className="px-3 py-2.5 text-center font-semibold">
-                                                    Versi
+                                                <th className="w-[14%] px-3 py-2.5 text-center font-semibold">
+                                                    Tipe Dokumen
                                                 </th>
-                                                <th className="px-3 py-2.5 text-right font-semibold">
-                                                    Ukuran
+                                                <th className="w-[13%] px-3 py-2.5 text-center font-semibold">
+                                                    Kerahasiaan
                                                 </th>
-                                                <th className="px-3 py-2.5 text-center font-semibold">
+                                                <th className="w-[11%] px-3 py-2.5 text-center font-semibold">
                                                     Status
                                                 </th>
-                                                <th className="px-3 py-2.5 text-right font-semibold">
+                                                <th className="w-[10%] px-3 py-2.5 text-center font-semibold">
                                                     Diperbarui
                                                 </th>
-                                                <th className="py-2.5 pr-4 pl-3 text-center font-semibold">
-                                                    Aksi
-                                                </th>
+                                                <th className="w-[4%] py-2.5 pr-4 pl-1 text-right font-semibold"></th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                                            {documents.data.map((document) => (
-                                                <tr
-                                                    key={document.id}
-                                                    className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
-                                                >
-                                                    {/* Document Title & Badges */}
-                                                    <td className="py-2.5 pr-3 pl-4">
-                                                        <div className="flex items-center gap-2.5">
-                                                            <div className="flex size-8 shrink-0 items-center justify-center rounded-xl border border-slate-200/70 bg-blue-50 text-blue-600 transition-transform group-hover:scale-105 dark:border-white/10 dark:bg-blue-950/40 dark:text-blue-400">
-                                                                <FileText className="size-4" />
-                                                            </div>
-                                                            <div className="min-w-0 space-y-0.5">
-                                                                <Link
-                                                                    href={documentRoutes.show.url(
-                                                                        document.id,
-                                                                    )}
-                                                                    className="font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
-                                                                >
-                                                                    {
-                                                                        document.title
-                                                                    }
-                                                                </Link>
-                                                                <div className="flex flex-wrap items-center gap-1">
-                                                                    <span className="py-0.2 rounded bg-slate-100 px-1.5 text-[9.5px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                                        {document.document_type ??
-                                                                            'Dokumen Umum'}
-                                                                    </span>
-                                                                    <span
-                                                                        className={`py-0.2 rounded px-1.5 text-[9.5px] font-semibold ${
-                                                                            document.confidentiality_level ===
-                                                                            'strictly_confidential'
-                                                                                ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300'
-                                                                                : document.confidentiality_level ===
-                                                                                    'restricted'
-                                                                                  ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300'
-                                                                                  : 'bg-slate-100 text-slate-600 dark:bg-white/[0.06]'
-                                                                        }`}
-                                                                    >
-                                                                        {
-                                                                            document.confidentiality_level
-                                                                        }
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </td>
+                                            {documents.data.map((document) => {
+                                                const conf =
+                                                    formatConfidentiality(
+                                                        document.confidentiality_level,
+                                                    );
+                                                const stat =
+                                                    formatDocumentStatus(
+                                                        document.status,
+                                                    );
+                                                const docType =
+                                                    formatDocumentType(
+                                                        document.document_type,
+                                                    );
 
-                                                    {/* Matter / Client Info */}
-                                                    <td className="px-3 py-2.5 whitespace-nowrap">
-                                                        {document.matter ? (
+                                                return (
+                                                    <tr
+                                                        key={document.id}
+                                                        className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                    >
+                                                        {/* Document Title (No Icon, Pure Typography) */}
+                                                        <td className="py-2.5 pr-3 pl-4">
                                                             <Link
-                                                                href={matterRoutes.show.url(
-                                                                    document
-                                                                        .matter
-                                                                        .id,
+                                                                href={documentRoutes.show.url(
+                                                                    document.id,
                                                                 )}
-                                                                className="inline-flex items-center gap-1 font-mono text-xs text-blue-600 hover:underline dark:text-blue-400"
+                                                                title={
+                                                                    document.title
+                                                                }
+                                                                className="block truncate font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
                                                             >
-                                                                <FolderKanban className="size-3 shrink-0 text-slate-400" />
-                                                                <span className="max-w-[200px] truncate font-semibold">
-                                                                    {
+                                                                {
+                                                                    document.title
+                                                                }
+                                                            </Link>
+                                                        </td>
+
+                                                        {/* Matter / Client Info (Centered) */}
+                                                        <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                                                            {document.matter ? (
+                                                                <Link
+                                                                    href={matterRoutes.show.url(
                                                                         document
                                                                             .matter
-                                                                            .matter_number
-                                                                    }{' '}
-                                                                    ·{' '}
-                                                                    {
+                                                                            .id,
+                                                                    )}
+                                                                    title={
                                                                         document
                                                                             .matter
                                                                             .title
                                                                     }
-                                                                </span>
-                                                            </Link>
-                                                        ) : document.client ? (
-                                                            <Link
-                                                                href={clientRoutes.show.url(
-                                                                    document
-                                                                        .client
-                                                                        .id,
-                                                                )}
-                                                                className="inline-flex items-center gap-1 text-xs text-slate-700 hover:underline dark:text-zinc-300"
-                                                            >
-                                                                <Building2 className="size-3 shrink-0 text-slate-400" />
-                                                                <span className="max-w-[160px] truncate font-semibold">
+                                                                    className="font-mono text-xs font-semibold text-slate-700 hover:text-blue-600 hover:underline dark:text-zinc-300 dark:hover:text-blue-400"
+                                                                >
+                                                                    {
+                                                                        document
+                                                                            .matter
+                                                                            .matter_number
+                                                                    }
+                                                                </Link>
+                                                            ) : document.client ? (
+                                                                <Link
+                                                                    href={clientRoutes.show.url(
+                                                                        document
+                                                                            .client
+                                                                            .id,
+                                                                    )}
+                                                                    title={
+                                                                        document
+                                                                            .client
+                                                                            .display_name
+                                                                    }
+                                                                    className="inline-block max-w-[150px] truncate text-xs font-semibold text-slate-700 hover:text-blue-600 hover:underline dark:text-zinc-300 dark:hover:text-blue-400"
+                                                                >
                                                                     {
                                                                         document
                                                                             .client
                                                                             .display_name
                                                                     }
+                                                                </Link>
+                                                            ) : (
+                                                                <span className="font-mono text-slate-400 dark:text-zinc-500">
+                                                                    -
                                                                 </span>
-                                                            </Link>
-                                                        ) : (
-                                                            <span className="text-slate-400 dark:text-zinc-500">
-                                                                -
+                                                            )}
+                                                        </td>
+
+                                                        {/* Tipe Dokumen (Centered) */}
+                                                        <td className="px-3 py-2.5 text-center whitespace-nowrap text-xs text-slate-600 dark:text-zinc-400">
+                                                            <span
+                                                                title={docType}
+                                                                className="inline-block max-w-[130px] truncate"
+                                                            >
+                                                                {docType}
                                                             </span>
-                                                        )}
-                                                    </td>
+                                                        </td>
 
-                                                    {/* Version Chip */}
-                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                        <span className="py-0.2 rounded bg-slate-100 px-1.5 font-mono text-[11px] font-semibold text-slate-900 dark:bg-zinc-800 dark:text-white">
-                                                            v
-                                                            {document
-                                                                .current_version
-                                                                ?.version_number ??
-                                                                1}
-                                                            .0
-                                                        </span>
-                                                    </td>
+                                                        {/* Kerahasiaan (Centered, Solid Text) */}
+                                                        <td className="px-3 py-2.5 text-center whitespace-nowrap text-xs">
+                                                            <span
+                                                                className={
+                                                                    conf.className
+                                                                }
+                                                            >
+                                                                {conf.label}
+                                                            </span>
+                                                        </td>
 
-                                                    {/* File Size */}
-                                                    <td className="px-3 py-2.5 text-right font-mono text-xs whitespace-nowrap text-slate-500 dark:text-zinc-400">
-                                                        {document
-                                                            .current_version
-                                                            ?.file_size
-                                                            ? formatBytes(
-                                                                  document
-                                                                      .current_version
-                                                                      .file_size,
-                                                              )
-                                                            : '-'}
-                                                    </td>
+                                                        {/* Status (Centered, Solid Text) */}
+                                                        <td className="px-3 py-2.5 text-center whitespace-nowrap text-xs">
+                                                            <span
+                                                                className={
+                                                                    stat.className
+                                                                }
+                                                            >
+                                                                {stat.label}
+                                                            </span>
+                                                        </td>
 
-                                                    {/* Status Badge */}
-                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                        <StatusBadge
-                                                            value={
-                                                                document.status
-                                                            }
-                                                        />
-                                                    </td>
+                                                        {/* Diperbarui (Centered) */}
+                                                        <td className="px-3 py-2.5 text-center font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                            {formatDate(
+                                                                document.updated_at,
+                                                            )}
+                                                        </td>
 
-                                                    {/* Updated At */}
-                                                    <td className="px-3 py-2.5 text-right font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
-                                                        {formatDate(
-                                                            document.updated_at,
-                                                        )}
-                                                    </td>
-
-                                                    {/* Action: Quick Preview */}
-                                                    <td className="py-2.5 pr-4 pl-3 text-center whitespace-nowrap">
-                                                        <Button
-                                                            type="button"
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() =>
-                                                                setPreviewDoc(
-                                                                    document,
-                                                                )
-                                                            }
-                                                            className="h-7 cursor-pointer rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-blue-600 shadow-2xs hover:border-blue-300 hover:bg-blue-50/80 active:scale-95 dark:border-white/10 dark:bg-[#14161b] dark:text-blue-400"
-                                                        >
-                                                            <Eye className="mr-1 size-3" />
-                                                            Pratinjau
-                                                        </Button>
-                                                    </td>
-                                                </tr>
-                                            ))}
+                                                        {/* Action: Chevron */}
+                                                        <td className="py-2.5 pr-4 pl-1 text-right whitespace-nowrap">
+                                                            <div className="flex items-center justify-end">
+                                                                <Link
+                                                                    href={documentRoutes.show.url(
+                                                                        document.id,
+                                                                    )}
+                                                                    className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                                                    title="Buka Detail Dokumen"
+                                                                >
+                                                                    <ChevronRight className="size-4" />
+                                                                </Link>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
                                         </tbody>
                                     </table>
                                 </div>

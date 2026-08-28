@@ -1,27 +1,18 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
 import {
     Briefcase,
-    Building2,
-    Calendar,
     ChevronDown,
     ChevronRight,
-    Clock,
-    FileText,
-    Filter,
-    Layers,
     Plus,
     RotateCcw,
     Search,
-    TrendingUp,
-    User,
-    UserCheck,
-    Users,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { EmptyState } from '@/components/empty-state';
 import { MattersPortfolioHero } from '@/components/matters-portfolio-hero';
 import { Pagination } from '@/components/pagination';
 import { StatusBadge } from '@/components/status-badge';
+import { StatusText } from '@/components/status-text';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -76,7 +67,6 @@ export default function MattersIndex({
     can: { create: boolean };
 }) {
     const getInitials = useInitials();
-    const [searchQuery, setSearchQuery] = useState(filters.search ?? '');
 
     const activeMattersCount = useMemo(
         () => matters.data.filter((m) => m.status === 'active').length,
@@ -95,6 +85,7 @@ export default function MattersIndex({
         () =>
             matters.data.filter((m) => {
                 const pa = m.practice_area?.name?.toLowerCase() ?? '';
+
                 return (
                     pa.includes('corporate') ||
                     pa.includes('bisnis') ||
@@ -108,11 +99,13 @@ export default function MattersIndex({
 
     const handleFilterStatus = (statusValue: string) => {
         const queryParams = new URLSearchParams(window.location.search);
+
         if (statusValue) {
             queryParams.set('status', statusValue);
         } else {
             queryParams.delete('status');
         }
+
         router.get(
             matterRoutes.index.url(),
             Object.fromEntries(queryParams.entries()),
@@ -380,31 +373,28 @@ export default function MattersIndex({
 
                                 {/* Desktop Data Table (hidden sm:block) */}
                                 <div className="hidden overflow-x-auto sm:block">
-                                    <table className="w-full text-left text-xs">
+                                    <table className="w-full table-fixed text-left text-xs">
                                         <thead>
                                             <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                                <th className="py-2.5 pr-3 pl-4 font-semibold">
+                                                <th className="w-[32%] py-2.5 pr-3 pl-4 font-semibold">
                                                     Perkara &amp; Nomor
                                                 </th>
-                                                <th className="px-3 py-2.5 font-semibold">
+                                                <th className="w-[22%] px-3 py-2.5 font-semibold">
                                                     Klien
                                                 </th>
-                                                <th className="px-3 py-2.5 font-semibold">
-                                                    Area Praktik
-                                                </th>
-                                                <th className="px-3 py-2.5 text-center font-semibold">
+                                                <th className="w-[12%] px-3 py-2.5 text-center font-semibold">
                                                     Lead Partner
                                                 </th>
-                                                <th className="px-3 py-2.5 font-semibold">
+                                                <th className="w-[11%] px-3 py-2.5 text-center font-semibold">
                                                     Status
                                                 </th>
-                                                <th className="px-3 py-2.5 font-semibold">
+                                                <th className="w-[10%] px-3 py-2.5 text-center font-semibold">
                                                     Prioritas
                                                 </th>
-                                                <th className="px-3 py-2.5 font-semibold">
+                                                <th className="w-[10%] px-3 py-2.5 text-center font-semibold">
                                                     Tenggat
                                                 </th>
-                                                <th className="py-2.5 pr-4 pl-1 text-right font-semibold"></th>
+                                                <th className="w-[3%] py-2.5 pr-4 pl-1 text-right font-semibold"></th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
@@ -419,23 +409,21 @@ export default function MattersIndex({
                                                             href={matterRoutes.show.url(
                                                                 matter.id,
                                                             )}
-                                                            className="flex items-center gap-2.5"
+                                                            className="block min-w-0 space-y-0.5"
                                                         >
-                                                            <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-colors group-hover:bg-blue-600 group-hover:text-white dark:bg-blue-950/40 dark:text-blue-400">
-                                                                <Briefcase className="size-3.5" />
-                                                            </div>
-                                                            <div className="min-w-0 space-y-0.5">
-                                                                <p className="truncate text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
-                                                                    {
-                                                                        matter.title
-                                                                    }
-                                                                </p>
-                                                                <span className="inline-block font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
-                                                                    {
-                                                                        matter.matter_number
-                                                                    }
-                                                                </span>
-                                                            </div>
+                                                            <p
+                                                                title={matter.title}
+                                                                className="truncate text-xs font-bold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
+                                                            >
+                                                                {
+                                                                    matter.title
+                                                                }
+                                                            </p>
+                                                            <span className="inline-block font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                                {
+                                                                    matter.matter_number
+                                                                }
+                                                            </span>
                                                         </Link>
                                                     </td>
 
@@ -448,57 +436,24 @@ export default function MattersIndex({
                                                                         .client
                                                                         .id,
                                                                 )}
-                                                                className="inline-flex items-center gap-1.5 text-slate-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
+                                                                className="block max-w-[210px] truncate text-xs text-slate-700 hover:text-blue-600 hover:underline dark:text-zinc-300 dark:hover:text-blue-400"
+                                                                title={matter.client.display_name}
                                                             >
-                                                                {matter.client
-                                                                    .type ===
-                                                                    'individual' ||
-                                                                matter.client
-                                                                    .type ===
-                                                                    'person' ? (
-                                                                    <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                                                ) : (
-                                                                    <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
-                                                                )}
-                                                                <span className="hover:underline">
-                                                                    {
-                                                                        matter
-                                                                            .client
-                                                                            .display_name
-                                                                    }
-                                                                </span>
+                                                                {
+                                                                    matter
+                                                                        .client
+                                                                        .display_name
+                                                                }
                                                             </Link>
                                                         ) : (
-                                                            <span className="inline-flex items-center gap-1.5 text-slate-700 dark:text-zinc-300">
-                                                                {matter.client
-                                                                    .type ===
-                                                                    'individual' ||
-                                                                matter.client
-                                                                    .type ===
-                                                                    'person' ? (
-                                                                    <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                                                ) : (
-                                                                    <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
-                                                                )}
-                                                                <span>
-                                                                    {
-                                                                        matter
-                                                                            .client
-                                                                            .display_name
-                                                                    }
-                                                                </span>
+                                                            <span className="block max-w-[210px] truncate text-xs text-slate-700 dark:text-zinc-300" title={matter.client.display_name}>
+                                                                {
+                                                                    matter
+                                                                        .client
+                                                                        .display_name
+                                                                }
                                                             </span>
                                                         )}
-                                                    </td>
-
-                                                    {/* 3. Practice Area */}
-                                                    <td className="px-3 py-2.5 whitespace-nowrap">
-                                                        <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                            {matter
-                                                                .practice_area
-                                                                ?.name ??
-                                                                'Umum'}
-                                                        </span>
                                                     </td>
 
                                                     {/* 4. Responsible Partner */}
@@ -545,8 +500,8 @@ export default function MattersIndex({
                                                     </td>
 
                                                     {/* 5. Status */}
-                                                    <td className="px-3 py-2.5 whitespace-nowrap">
-                                                        <StatusBadge
+                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                                                        <StatusText
                                                             value={
                                                                 matter.status
                                                             }
@@ -554,8 +509,8 @@ export default function MattersIndex({
                                                     </td>
 
                                                     {/* 6. Priority */}
-                                                    <td className="px-3 py-2.5 whitespace-nowrap">
-                                                        <StatusBadge
+                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
+                                                        <StatusText
                                                             value={
                                                                 matter.priority
                                                             }
@@ -563,7 +518,7 @@ export default function MattersIndex({
                                                     </td>
 
                                                     {/* 7. Next Deadline */}
-                                                    <td className="px-3 py-2.5 font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                    <td className="px-3 py-2.5 text-center font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
                                                         {matter.next_deadline
                                                             ? formatDate(
                                                                   matter.next_deadline,
@@ -572,7 +527,7 @@ export default function MattersIndex({
                                                     </td>
 
                                                     {/* 8. Action Arrow */}
-                                                    <td className="py-2.5 pr-4 pl-1 text-right">
+                                                    <td className="py-2.5 pr-4 pl-1 text-right whitespace-nowrap">
                                                         <Link
                                                             href={matterRoutes.show.url(
                                                                 matter.id,

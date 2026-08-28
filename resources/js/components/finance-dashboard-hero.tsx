@@ -115,12 +115,11 @@ export function FinanceDashboardHero({ scope, onScopeChange }: Props) {
                 </div>
             </div>
 
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-[2] hidden w-[43%] overflow-hidden rounded-r-[25px] lg:block">
-                <div className="absolute inset-y-0 left-0 z-10 w-20 bg-gradient-to-r from-[#f3f8ff] to-transparent" />
+            <div className="pointer-events-none absolute right-[5%] bottom-0 z-[2] hidden h-[240px] w-[320px] lg:block xl:right-[8%]">
                 <img
-                    src="/images/finance-dashboard-hero.png"
+                    src="/images/finance-dashboard-hero-v3.png"
                     alt="Ilustrasi pengelolaan keuangan firma hukum"
-                    className="finance-hero-person h-full w-full object-cover object-center"
+                    className="finance-hero-person h-full w-full object-contain object-bottom"
                 />
             </div>
         </section>

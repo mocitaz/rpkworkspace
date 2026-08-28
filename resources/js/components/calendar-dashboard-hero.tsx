@@ -159,12 +159,11 @@ export function CalendarDashboardHero({
                 })}
             </div>
 
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-[2] hidden w-[42%] overflow-hidden rounded-r-[19px] [mask-image:linear-gradient(to_right,transparent_0%,black_18%,black_100%)] md:block">
-                <div className="absolute inset-y-0 left-0 z-10 w-28 bg-gradient-to-r from-[#f4f8ff] via-[#edf5ff]/80 to-transparent dark:from-[#17191f] dark:via-[#17191f]/80" />
+            <div className="pointer-events-none absolute right-[2%] bottom-0 z-[2] hidden h-[240px] w-[340px] translate-y-[7%] md:block lg:right-[5%]">
                 <img
-                    src="/images/calendar-legal-hero-v2.png"
+                    src="/images/calendar-legal-hero-v3.png"
                     alt=""
-                    className="calendar-hero-person h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.01]"
+                    className="calendar-hero-person h-full w-full object-contain object-bottom transition-transform duration-700 group-hover:scale-[1.01]"
                 />
             </div>
         </section>

@@ -187,42 +187,9 @@ export default function TasksIndex({
                     />
 
                     {/* 3. Filter Controls & Segmented Quick Filter Bar */}
-                    <div className="space-y-3">
-                        {/* Segmented Quick Status Pills with Smooth Mobile Scroll */}
-                        <div className="flex [scrollbar-width:none] items-center gap-1.5 overflow-x-auto [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                            {viewTabs.map((tab) => {
-                                const isCurrent =
-                                    (filters.view ?? '') === tab.id;
-                                return (
-                                    <button
-                                        key={tab.id}
-                                        type="button"
-                                        onClick={() =>
-                                            router.get(
-                                                taskRoutes.index?.url
-                                                    ? taskRoutes.index.url()
-                                                    : '/tasks',
-                                                {
-                                                    ...filters,
-                                                    view: tab.id || undefined,
-                                                },
-                                                { preserveState: true },
-                                            )
-                                        }
-                                        className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
-                                            isCurrent
-                                                ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                                : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
-                                        }`}
-                                    >
-                                        {tab.label}
-                                    </button>
-                                );
-                            })}
-                        </div>
-
-                        {/* Dropdown Filters & View Switcher */}
-                        <div className="flex flex-col gap-3 rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.06] dark:bg-[#14161b]">
+                    <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                        {/* Row 1: Dropdown Filters & View Switcher */}
+                        <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex flex-1 flex-col gap-2 sm:flex-row sm:items-center">
                                 {/* Matter Filter */}
                                 <div className="relative w-full flex-1 sm:max-w-xs">
@@ -319,12 +286,16 @@ export default function TasksIndex({
                                                 { preserveState: true },
                                             )
                                         }
-                                        className="h-8 w-full rounded-lg border-slate-200 px-2.5 text-xs text-slate-600 hover:bg-slate-50 sm:w-auto dark:border-white/10 dark:text-zinc-300"
+                                        className="h-8 w-full shrink-0 rounded-lg border-slate-200 px-2.5 text-xs text-slate-600 hover:bg-slate-50 sm:w-auto dark:border-white/10 dark:text-zinc-300"
                                     >
                                         <RotateCcw className="mr-1 size-3 text-slate-400" />
                                         Reset
                                     </Button>
                                 )}
+
+                                <span className="hidden shrink-0 rounded-md border border-slate-200/70 bg-white px-2 py-1 font-mono text-[11px] font-semibold text-slate-700 shadow-2xs sm:inline-block dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
+                                    {tasks.total} tugas
+                                </span>
                             </div>
 
                             {/* View Switcher Pills */}
@@ -354,6 +325,39 @@ export default function TasksIndex({
                                     <Grid className="size-3.5" />
                                 </button>
                             </div>
+                        </div>
+
+                        {/* Row 2: Segmented Quick Status Pills with Smooth Mobile Scroll */}
+                        <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto border-t border-slate-200/40 pt-2 [-ms-overflow-style:none] dark:border-white/[0.04] [&::-webkit-scrollbar]:hidden">
+                            {viewTabs.map((tab) => {
+                                const isCurrent =
+                                    (filters.view ?? '') === tab.id;
+                                return (
+                                    <button
+                                        key={tab.id}
+                                        type="button"
+                                        onClick={() =>
+                                            router.get(
+                                                taskRoutes.index?.url
+                                                    ? taskRoutes.index.url()
+                                                    : '/tasks',
+                                                {
+                                                    ...filters,
+                                                    view: tab.id || undefined,
+                                                },
+                                                { preserveState: true },
+                                            )
+                                        }
+                                        className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-semibold whitespace-nowrap transition-all ${
+                                            isCurrent
+                                                ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
+                                                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-zinc-800'
+                                        }`}
+                                    >
+                                        {tab.label}
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -450,7 +454,7 @@ export default function TasksIndex({
                                                         {task.title}
                                                     </p>
                                                     {task.matter && (
-                                                        <p className="mt-0.5 truncate font-mono text-[10px] font-semibold text-blue-600 dark:text-blue-400">
+                                                        <p className="mt-0.5 truncate font-mono text-[10px] font-medium text-slate-500 dark:text-zinc-400">
                                                             {
                                                                 task.matter
                                                                     .matter_number
@@ -490,28 +494,28 @@ export default function TasksIndex({
 
                             {/* Desktop Table (hidden sm:block) */}
                             <div className="hidden overflow-x-auto sm:block">
-                                <table className="w-full text-left text-xs">
+                                <table className="w-full table-fixed text-left text-xs">
                                     <thead>
                                         <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <th className="py-2.5 pr-3 pl-4 font-semibold">
+                                            <th className="w-[34%] py-2.5 pr-3 pl-4 font-semibold">
                                                 Tugas &amp; Kasus
                                             </th>
-                                            <th className="px-3 py-2.5 text-center font-semibold">
+                                            <th className="w-[10%] px-3 py-2.5 text-center font-semibold">
                                                 Assignee
                                             </th>
-                                            <th className="px-3 py-2.5 text-center font-semibold">
+                                            <th className="w-[10%] px-3 py-2.5 text-center font-semibold">
                                                 Reviewer
                                             </th>
-                                            <th className="px-3 py-2.5 font-semibold">
+                                            <th className="w-[14%] px-3 py-2.5 text-center font-semibold">
                                                 Tenggat
                                             </th>
-                                            <th className="px-3 py-2.5 font-semibold">
+                                            <th className="w-[12%] px-3 py-2.5 text-center font-semibold">
                                                 Prioritas
                                             </th>
-                                            <th className="px-3 py-2.5 font-semibold">
+                                            <th className="w-[16%] px-3 py-2.5 text-center font-semibold">
                                                 Status
                                             </th>
-                                            <th className="py-2.5 pr-4 pl-1 text-right font-semibold"></th>
+                                            <th className="w-[4%] py-2.5 pr-4 pl-1 text-right font-semibold"></th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
@@ -537,7 +541,7 @@ export default function TasksIndex({
                                                                               )
                                                                             : `/tasks/${task.id}`
                                                                     }
-                                                                    className={`block text-left text-xs font-semibold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400 ${
+                                                                    className={`block text-left text-xs font-bold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400 ${
                                                                         task.status ===
                                                                         'completed'
                                                                             ? 'line-through opacity-50'
@@ -562,16 +566,16 @@ export default function TasksIndex({
                                                                                   )
                                                                                 : `/matters/${task.matter.id}`
                                                                         }
-                                                                        className="inline-flex items-center gap-1 font-mono text-[10px] font-medium text-slate-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400"
+                                                                        className="inline-flex items-center gap-1.5 font-mono text-[10px] font-medium text-slate-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400"
                                                                     >
-                                                                        <span className="rounded bg-blue-50/80 px-1 py-0.5 font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                                                                        <span className="font-semibold text-slate-600 dark:text-zinc-300">
                                                                             {
                                                                                 task
                                                                                     .matter
                                                                                     .matter_number
                                                                             }
                                                                         </span>
-                                                                        <span className="max-w-[240px] truncate">
+                                                                        <span className="max-w-[260px] truncate">
                                                                             ·{' '}
                                                                             {
                                                                                 task
@@ -583,7 +587,7 @@ export default function TasksIndex({
                                                                 </div>
                                                             ) : (
                                                                 <div>
-                                                                    <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9.5px] font-medium text-slate-500 dark:bg-white/[0.06] dark:text-zinc-400">
+                                                                    <span className="text-[10px] font-medium text-slate-400 dark:text-zinc-500">
                                                                         Umum /
                                                                         Non-Perkara
                                                                     </span>
@@ -711,7 +715,7 @@ export default function TasksIndex({
                                                     </td>
 
                                                     {/* Due Date */}
-                                                    <td className="px-3 py-2.5 font-mono text-[11px] whitespace-nowrap">
+                                                    <td className="px-3 py-2.5 text-center font-mono text-[11px] whitespace-nowrap">
                                                         {task.due_at ? (
                                                             <span
                                                                 className={
@@ -735,16 +739,32 @@ export default function TasksIndex({
                                                     </td>
 
                                                     {/* Priority */}
-                                                    <td className="px-3 py-2.5 whitespace-nowrap">
-                                                        <StatusBadge
-                                                            value={
-                                                                task.priority
+                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap text-xs">
+                                                        <span
+                                                            className={
+                                                                task.priority === 'critical'
+                                                                    ? 'font-semibold text-rose-600 dark:text-rose-400'
+                                                                    : task.priority === 'high'
+                                                                      ? 'font-semibold text-amber-600 dark:text-amber-400'
+                                                                      : task.priority === 'normal'
+                                                                        ? 'font-semibold text-blue-600 dark:text-blue-400'
+                                                                        : 'font-semibold text-slate-600 dark:text-zinc-400'
                                                             }
-                                                        />
+                                                        >
+                                                            {task.priority === 'critical'
+                                                                ? 'Kritis'
+                                                                : task.priority === 'high'
+                                                                  ? 'Tinggi'
+                                                                  : task.priority === 'normal'
+                                                                    ? 'Normal'
+                                                                    : task.priority === 'low'
+                                                                      ? 'Rendah'
+                                                                      : task.priority}
+                                                        </span>
                                                     </td>
 
                                                     {/* Status Selector */}
-                                                    <td className="px-3 py-2.5 whitespace-nowrap">
+                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
                                                         <div className="relative inline-block">
                                                             <select
                                                                 value={
@@ -761,7 +781,7 @@ export default function TasksIndex({
                                                                             .value,
                                                                     )
                                                                 }
-                                                                className="h-7 cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-6 pl-2 text-[10.5px] font-medium text-slate-800 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                                className="h-7 cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-6 pl-2.5 text-[10.5px] font-medium text-slate-800 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                                             >
                                                                 <option value="todo">
                                                                     Belum Mulai
@@ -788,27 +808,21 @@ export default function TasksIndex({
 
                                                     {/* Action */}
                                                     <td className="py-2.5 pr-4 pl-1 text-right whitespace-nowrap">
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            asChild
-                                                            className="h-7 px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/[0.06]"
+                                                        <Link
+                                                            href={
+                                                                taskRoutes
+                                                                    .show
+                                                                    ?.url
+                                                                    ? taskRoutes.show.url(
+                                                                          task.id,
+                                                                      )
+                                                                    : `/tasks/${task.id}`
+                                                            }
+                                                            className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                                            title="Lihat Detail Tugas"
                                                         >
-                                                            <Link
-                                                                href={
-                                                                    taskRoutes
-                                                                        .show
-                                                                        ?.url
-                                                                        ? taskRoutes.show.url(
-                                                                              task.id,
-                                                                          )
-                                                                        : `/tasks/${task.id}`
-                                                                }
-                                                            >
-                                                                Detail
-                                                                <ChevronRight className="ml-0.5 size-3 text-slate-400" />
-                                                            </Link>
-                                                        </Button>
+                                                            <ChevronRight className="size-4" />
+                                                        </Link>
                                                     </td>
                                                 </tr>
                                             );

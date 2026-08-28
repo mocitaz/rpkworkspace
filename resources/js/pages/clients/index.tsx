@@ -1,25 +1,16 @@
 import { Head, Link, router } from '@inertiajs/react';
 import {
-    ArrowRight,
-    Briefcase,
-    Building2,
-    ChevronDown,
     ChevronRight,
-    ExternalLink,
-    Filter,
     Plus,
     RotateCcw,
     Search,
-    TrendingUp,
-    ContactRound,
-    User,
     Users,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { ClientsDirectoryHero } from '@/components/clients-directory-hero';
 import { EmptyState } from '@/components/empty-state';
 import { Pagination } from '@/components/pagination';
-import { StatusBadge } from '@/components/status-badge';
+import { StatusText } from '@/components/status-text';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,7 +22,6 @@ import {
 } from '@/components/ui/tooltip';
 import { useInitials } from '@/hooks/use-initials';
 import * as clientRoutes from '@/routes/clients';
-import * as matterRoutes from '@/routes/matters';
 
 type Client = {
     id: string;
@@ -85,11 +75,13 @@ export default function ClientsIndex({
 
     const handleFilterStatus = (statusValue: string) => {
         const queryParams = new URLSearchParams(window.location.search);
+
         if (statusValue) {
             queryParams.set('status', statusValue);
         } else {
             queryParams.delete('status');
         }
+
         router.get(
             clientRoutes.index.url(),
             Object.fromEntries(queryParams.entries()),
@@ -103,11 +95,13 @@ export default function ClientsIndex({
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const queryParams = new URLSearchParams(window.location.search);
+
         if (searchQuery.trim()) {
             queryParams.set('search', searchQuery.trim());
         } else {
             queryParams.delete('search');
         }
+
         router.get(
             clientRoutes.index.url(),
             Object.fromEntries(queryParams.entries()),
@@ -325,7 +319,7 @@ export default function ClientsIndex({
                                                 <ChevronRight className="size-4 shrink-0 text-slate-400" />
                                             </div>
                                             <div className="mt-2.5 flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-2 text-[10px] dark:border-white/[0.04]">
-                                                <StatusBadge
+                                                <StatusText
                                                     value={client.status}
                                                 />
                                                 <span className="inline-flex items-center gap-1 rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9.5px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
@@ -353,28 +347,25 @@ export default function ClientsIndex({
 
                                 {/* Desktop Table (hidden sm:block) */}
                                 <div className="hidden overflow-x-auto sm:block">
-                                    <table className="w-full text-left text-xs">
+                                    <table className="w-full table-fixed text-left text-xs">
                                         <thead>
                                             <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                                <th className="py-2.5 pr-3 pl-4 font-semibold">
+                                                <th className="w-[34%] py-2.5 pr-3 pl-4 font-semibold">
                                                     Klien &amp; Nomor
                                                 </th>
-                                                <th className="px-3 py-2.5 font-semibold">
+                                                <th className="w-[14%] px-3 py-2.5 text-center font-semibold">
+                                                    Tipe Klien
+                                                </th>
+                                                <th className="w-[20%] px-3 py-2.5 text-center font-semibold">
                                                     Sektor Industri
                                                 </th>
-                                                <th className="px-3 py-2.5 text-center font-semibold">
+                                                <th className="w-[15%] px-3 py-2.5 text-center font-semibold">
                                                     Partner Relasi
                                                 </th>
-                                                <th className="px-3 py-2.5 text-center font-semibold">
-                                                    Matter
-                                                </th>
-                                                <th className="px-3 py-2.5 text-center font-semibold">
-                                                    Kontak
-                                                </th>
-                                                <th className="px-3 py-2.5 font-semibold">
+                                                <th className="w-[13%] px-3 py-2.5 text-center font-semibold">
                                                     Status
                                                 </th>
-                                                <th className="py-2.5 pr-4 pl-1 text-right font-semibold"></th>
+                                                <th className="w-[4%] py-2.5 pr-4 pl-1 text-right font-semibold"></th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
@@ -389,60 +380,34 @@ export default function ClientsIndex({
                                                             href={clientRoutes.show.url(
                                                                 client.id,
                                                             )}
-                                                            className="flex items-center gap-2.5"
+                                                            className="block min-w-0 space-y-0.5"
                                                         >
-                                                            {client.type ===
-                                                                'individual' ||
-                                                            client.type ===
-                                                                'person' ? (
-                                                                <div className="flex size-7.5 shrink-0 items-center justify-center rounded-xl border border-emerald-200/60 bg-emerald-50 text-emerald-700 shadow-2xs transition-colors group-hover:bg-emerald-600 group-hover:text-white dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-300">
-                                                                    <User className="size-3.5" />
-                                                                </div>
-                                                            ) : (
-                                                                <div className="flex size-7.5 shrink-0 items-center justify-center rounded-xl border border-blue-200/60 bg-blue-50 text-blue-700 shadow-2xs transition-colors group-hover:bg-blue-600 group-hover:text-white dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-300">
-                                                                    <Building2 className="size-3.5" />
-                                                                </div>
-                                                            )}
-                                                            <div className="min-w-0 space-y-0.5">
-                                                                <div className="flex items-center gap-1.5">
-                                                                    <p className="truncate text-xs font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
-                                                                        {
-                                                                            client.display_name
-                                                                        }
-                                                                    </p>
-                                                                    <span
-                                                                        className={`py-0.2 inline-block rounded px-1.5 text-[9px] font-bold ${
-                                                                            client.type ===
-                                                                                'individual' ||
-                                                                            client.type ===
-                                                                                'person'
-                                                                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
-                                                                                : 'bg-slate-100 text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300'
-                                                                        }`}
-                                                                    >
-                                                                        {client.type ===
-                                                                            'individual' ||
-                                                                        client.type ===
-                                                                            'person'
-                                                                            ? 'Individu'
-                                                                            : 'Badan Hukum'}
-                                                                    </span>
-                                                                </div>
-                                                                <span className="inline-block font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
-                                                                    {
-                                                                        client.client_number
-                                                                    }
-                                                                </span>
-                                                            </div>
+                                                            <p
+                                                                title={client.display_name}
+                                                                className="truncate text-xs font-bold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
+                                                            >
+                                                                {
+                                                                    client.display_name
+                                                                }
+                                                            </p>
+                                                            <span className="inline-block font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                                {
+                                                                    client.client_number
+                                                                }
+                                                            </span>
                                                         </Link>
                                                     </td>
 
-                                                    {/* 2. Industry */}
-                                                    <td className="px-3 py-2.5 whitespace-nowrap">
-                                                        <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                            {client.industry ??
-                                                                'Umum'}
-                                                        </span>
+                                                    {/* 2. Client Type */}
+                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap text-xs font-medium text-slate-700 dark:text-zinc-300">
+                                                        {client.type === 'individual' || client.type === 'person'
+                                                            ? 'Individu'
+                                                            : 'Badan Hukum'}
+                                                    </td>
+
+                                                    {/* 3. Industry */}
+                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap text-xs text-slate-700 dark:text-zinc-300">
+                                                        {client.industry ?? '-'}
                                                     </td>
 
                                                     {/* 3. Relationship Partner */}
@@ -496,34 +461,16 @@ export default function ClientsIndex({
                                                         )}
                                                     </td>
 
-                                                    {/* 4. Matters Count */}
+                                                    {/* 4. Status */}
                                                     <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                        <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                            <Briefcase className="size-3 text-slate-400" />
-                                                            {client.matters_count ??
-                                                                0}
-                                                        </span>
-                                                    </td>
-
-                                                    {/* 5. Contacts Count */}
-                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                        <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 font-mono text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                                            <ContactRound className="size-3 text-blue-500" />
-                                                            {client.contacts_count ??
-                                                                0}
-                                                        </span>
-                                                    </td>
-
-                                                    {/* 6. Status */}
-                                                    <td className="px-3 py-2.5 whitespace-nowrap">
-                                                        <StatusBadge
+                                                        <StatusText
                                                             value={
                                                                 client.status
                                                             }
                                                         />
                                                     </td>
 
-                                                    {/* 7. Action */}
+                                                    {/* 5. Action */}
                                                     <td className="py-2.5 pr-4 pl-1 text-right whitespace-nowrap">
                                                         <Link
                                                             href={clientRoutes.show.url(
