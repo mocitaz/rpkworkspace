@@ -79,6 +79,28 @@ test('renders finance workspace filtered by specific matter_id parameter', funct
         );
 });
 
+test('keeps global office expenses visible when finance is filtered by matter', function () {
+    $user = rafUser(['matter.view', 'billing.view']);
+    $matter = Matter::factory()->create(['responsible_partner_id' => $user->id]);
+    $officeExpense = Expense::factory()->create([
+        'matter_id' => null,
+        'charge_to' => 'office',
+        'description' => 'Operasional kantor global',
+        'status' => 'approved',
+        'created_by' => $user->id,
+    ]);
+
+    $response = $this->actingAs($user)->get(route('finance.index', ['matter_id' => $matter->id]));
+
+    $response->assertSuccessful()
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('selectedMatterId', $matter->id)
+            ->has('expenses', 1)
+            ->where('expenses.0.id', $officeExpense->id)
+            ->where('expenses.0.charge_to', 'office')
+        );
+});
+
 test('downloads professional payslip pdf document', function () {
     $user = rafUser(['matter.view', 'billing.view']);
     $user->forceFill(['email_verified_at' => now()])->save();

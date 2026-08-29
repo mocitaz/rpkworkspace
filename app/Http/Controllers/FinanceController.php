@@ -91,7 +91,9 @@ class FinanceController extends Controller
         if ($selectedMatter) {
             $invoiceQuery->where('matter_id', $selectedMatter->getKey());
             $quotationQuery->where('matter_id', $selectedMatter->getKey());
-            $expenseQuery->where('matter_id', $selectedMatter->getKey());
+            $expenseQuery->where(fn ($query) => $query
+                ->where('matter_id', $selectedMatter->getKey())
+                ->orWhere('charge_to', 'office'));
             $paymentQuery->where('matter_id', $selectedMatter->getKey());
             $clientTrustQuery->where('matter_id', $selectedMatter->getKey());
         } else {
