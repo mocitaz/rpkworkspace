@@ -30,11 +30,11 @@ export function DashboardWelcomeHero({
         }).format(new Date());
 
     return (
-        <section className="group relative flex min-h-[195px] items-center overflow-hidden rounded-[22px] border border-slate-200/80 bg-gradient-to-br from-white via-[#f8faff] to-[#e9f2ff] px-6 py-6 sm:h-[195px] sm:px-11 sm:py-0 shadow-[0_16px_40px_-24px_rgba(30,64,175,0.3)] dark:border-white/[0.08] dark:from-[#17191f] dark:via-[#171a21] dark:to-[#182331]">
+        <section className="group relative flex min-h-[195px] items-center overflow-hidden rounded-[22px] border border-slate-200/80 bg-gradient-to-br from-white via-[#f8faff] to-[#e9f2ff] px-6 py-6 shadow-[0_16px_40px_-24px_rgba(30,64,175,0.3)] sm:h-[195px] sm:px-11 sm:py-0 dark:border-white/[0.08] dark:from-[#17191f] dark:via-[#171a21] dark:to-[#182331]">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-300/70 to-transparent" />
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_83%_48%,rgba(147,197,253,0.38),transparent_28%),radial-gradient(circle_at_61%_118%,rgba(245,158,11,0.1),transparent_27%)]" />
             <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[520px] bg-gradient-to-r from-transparent via-blue-50/35 to-blue-100/35 sm:block dark:via-blue-500/[0.025] dark:to-blue-500/[0.05]" />
-            <div className="pointer-events-none absolute right-16 top-1/2 -translate-y-1/2 hidden size-72 rounded-full border-[20px] border-white/65 sm:block dark:border-white/[0.04]" />
+            <div className="pointer-events-none absolute top-1/2 right-16 hidden size-72 -translate-y-1/2 rounded-full border-[20px] border-white/65 sm:block dark:border-white/[0.04]" />
             <svg
                 viewBox="0 0 520 180"
                 aria-hidden="true"
@@ -91,7 +91,8 @@ export function DashboardWelcomeHero({
                         </p>
                     ) : (
                         <p className="text-slate-500 dark:text-zinc-400">
-                            Seluruh agenda perkara dan berkas dalam monitoring terkendali.
+                            Seluruh agenda perkara dan berkas dalam monitoring
+                            terkendali.
                         </p>
                     )}
                 </div>
@@ -103,7 +104,12 @@ export function DashboardWelcomeHero({
                 <img
                     src="/images/dashboard-legal-team-hero.png"
                     alt=""
-                    className="h-full w-full object-cover object-top saturate-[0.96] transition duration-700 group-hover:scale-[1.015] group-hover:saturate-100"
+                    className="h-full w-full object-cover object-top saturate-[0.96] transition duration-700 group-hover:scale-[1.015] group-hover:saturate-100 dark:hidden"
+                />
+                <img
+                    src="/images/dashboard-legal-team-hero-dark.png"
+                    alt=""
+                    className="hidden h-full w-full object-cover object-top saturate-[0.94] transition duration-700 group-hover:scale-[1.015] group-hover:saturate-100 dark:block"
                 />
             </div>
         </section>

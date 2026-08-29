@@ -92,7 +92,7 @@ export function ContactsDirectoryHero({
                 )}
             </div>
 
-            <div className="relative z-10 mt-5 grid max-w-[760px] grid-cols-2 border-t border-slate-200/70 pt-3 md:max-w-[58%] lg:max-w-[55%] md:grid-cols-4 dark:border-white/[0.08]">
+            <div className="relative z-10 mt-5 grid max-w-[760px] grid-cols-2 border-t border-slate-200/70 pt-3 md:max-w-[58%] md:grid-cols-4 lg:max-w-[55%] dark:border-white/[0.08]">
                 {metrics.map((metric, index) => (
                     <div
                         key={metric.label}

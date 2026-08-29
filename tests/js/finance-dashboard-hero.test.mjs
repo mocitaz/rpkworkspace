@@ -32,8 +32,8 @@ test('finance hero uses a compact transparent illustration', async () => {
     const image = await readFile(imagePath);
 
     assert.match(source, /finance-dashboard-hero-v3\.png/);
-    assert.match(source, /h-\[240px\] w-\[320px\]/);
+    assert.match(source, /h-\[252px\] w-\[340px\]/);
     assert.match(source, /object-contain object-bottom/);
     assert.equal(image.subarray(1, 4).toString(), 'PNG');
-    assert.equal(image[25], 6);
+    assert.equal(image.includes(Buffer.from('tRNS')), true);
 });

@@ -40,6 +40,9 @@ test('welcome hero uses a bright illustrated banner without action buttons', asy
     assert.match(componentSource, /from-white/);
     assert.match(componentSource, /sm:h-\[195px\]/);
     assert.match(componentSource, /dashboard-legal-team-hero\.png/);
+    assert.match(componentSource, /dashboard-legal-team-hero-dark\.png/);
+    assert.match(componentSource, /dark:hidden/);
+    assert.match(componentSource, /dark:block/);
     assert.match(componentSource, /dashboard-hero-team/);
     assert.match(componentSource, /w-\[520px\][^"]*overflow-hidden/);
     assert.match(componentSource, /object-cover/);
@@ -53,4 +56,22 @@ test('welcome hero uses a bright illustrated banner without action buttons', asy
     assert.doesNotMatch(componentSource, /dateLabel/);
     assert.doesNotMatch(componentSource, /actions: ReactNode/);
     assert.doesNotMatch(componentSource, /\{actions\}/);
+});
+
+test('welcome hero provides valid light and dark illustration assets', async () => {
+    const lightAsset = await readFile(
+        new URL(
+            '../../public/images/dashboard-legal-team-hero.png',
+            import.meta.url,
+        ),
+    );
+    const darkAsset = await readFile(
+        new URL(
+            '../../public/images/dashboard-legal-team-hero-dark.png',
+            import.meta.url,
+        ),
+    );
+
+    assert.equal(lightAsset.subarray(1, 4).toString(), 'PNG');
+    assert.equal(darkAsset.subarray(1, 4).toString(), 'PNG');
 });
