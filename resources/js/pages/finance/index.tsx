@@ -463,11 +463,11 @@ export default function FinanceIndex({
     }, [accounts]);
 
     const matterExpenses = useMemo(() => {
-        return expenses.filter((e) => e.charge_to === 'client' || !!e.matter);
+        return expenses.filter((e) => e.charge_to === 'client');
     }, [expenses]);
 
     const officeExpenses = useMemo(() => {
-        return expenses.filter((e) => e.charge_to === 'office' || !e.matter);
+        return expenses.filter((e) => e.charge_to === 'office');
     }, [expenses]);
 
     const totalOperationalCashBank = useMemo(() => {

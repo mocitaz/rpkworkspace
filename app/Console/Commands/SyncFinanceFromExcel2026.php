@@ -61,7 +61,16 @@ class SyncFinanceFromExcel2026 extends Command
             $partnerReza = User::query()->where('email', 'like', '%reza%')->orWhere('name', 'like', '%Reza%')->first() ?? $adminUser;
 
             $bianca = User::query()->where('email', 'like', '%bianca%')->orWhere('name', 'like', '%Bianca%')->first() ?? $adminUser;
-            $dafina = User::query()->where('email', 'like', '%dafina%')->orWhere('name', 'like', '%Dafina%')->first() ?? $adminUser;
+            $davina = User::query()
+                ->where('name', 'Davina Putri Felisha')
+                ->orWhere('email', 'like', 'davina%')
+                ->first();
+
+            if (! $davina) {
+                $this->error('Error: User Davina Putri Felisha tidak ditemukan. Sinkronisasi dibatalkan agar payroll tidak salah pemilik.');
+
+                return self::FAILURE;
+            }
 
             // 2. Resolve Financial Accounts
             $kasKantor = FinancialAccount::query()->where('type', 'cash')->first();
@@ -109,8 +118,8 @@ class SyncFinanceFromExcel2026 extends Command
                 $kasFajar->update(['opening_balance' => 0]);
             }
 
-            // Seluruh penerimaan dan pengeluaran kantor mengalir ke Kas Kantor / Bank
-            $primaryAccount = $kasKantor;
+            // Master 2026 menggunakan transfer rekening untuk arus operasional firma.
+            $primaryAccount = $bankOperasional;
 
             // 3. Resolve Matter PT KKG
             $client = Client::query()->where('legal_name', 'like', '%Kembang Kembar%')->orWhere('display_name', 'like', '%KKG%')->first();
@@ -275,13 +284,13 @@ class SyncFinanceFromExcel2026 extends Command
                 ['date' => '2026-08-17', 'cat' => 'software', 'vendor' => 'Domain Registrar', 'desc' => 'Domain Website (EXP-20260817-009)', 'amount' => 51_000],
                 ['date' => '2026-08-17', 'cat' => 'software', 'vendor' => 'Google Workspace', 'desc' => 'Email Domain Kantor (EXP-20260817-010)', 'amount' => 145_188],
                 ['date' => '2026-08-21', 'cat' => 'meals', 'vendor' => 'Resto Rapat', 'desc' => 'Rapat Mingguan (EXP-20260821-011)', 'amount' => 353_320],
-                ['date' => '2026-08-27', 'cat' => 'court_fee', 'vendor' => 'Notaris & Kemenkumham', 'desc' => 'Biaya Pembuatan Akta Firma (EXP-20260827-012)', 'amount' => 1_950_000],
-                ['date' => '2026-08-27', 'cat' => 'other', 'vendor' => 'Marketing Partner', 'desc' => 'Fee Marketing tahap 1 (EXP-20260827-013)', 'amount' => 8_000_000],
+                ['date' => '2026-08-27', 'cat' => 'legal_administration', 'vendor' => 'Notaris & Kemenkumham', 'desc' => 'Biaya Pembuatan Akta Firma (EXP-20260827-012)', 'amount' => 1_950_000],
+                ['date' => '2026-08-27', 'cat' => 'marketing_commission', 'vendor' => 'Marketing Partner', 'desc' => 'Fee Marketing tahap 1 (EXP-20260827-013)', 'amount' => 8_000_000],
             ];
 
             foreach ($expensesData as $exp) {
                 Expense::query()->create([
-                    'matter_id' => $matter->id,
+                    'matter_id' => null,
                     'account_id' => $primaryAccount->id,
                     'category' => $exp['cat'],
                     'vendor' => $exp['vendor'],
@@ -289,7 +298,7 @@ class SyncFinanceFromExcel2026 extends Command
                     'amount' => $exp['amount'],
                     'currency' => 'IDR',
                     'incurred_at' => $exp['date'],
-                    'charge_to' => 'firm',
+                    'charge_to' => 'office',
                     'is_reimbursable' => false,
                     'status' => 'approved',
                     'approved_by' => $adminUser->id,
@@ -322,10 +331,10 @@ class SyncFinanceFromExcel2026 extends Command
                 'created_by' => $adminUser->id,
             ]);
 
-            // PAY-202607-002 (Dafina Rp 500rb via Kas Fajar)
+            // PAY-202607-002 (Davina Rp 500rb via Kas Fajar)
             Payroll::query()->create([
                 'payslip_number' => 'PAY-202607-002',
-                'user_id' => $dafina->id,
+                'user_id' => $davina->id,
                 'period' => '2026-07',
                 'basic_salary' => 500_000,
                 'fixed_allowance' => 0,
@@ -366,10 +375,10 @@ class SyncFinanceFromExcel2026 extends Command
                 'created_by' => $adminUser->id,
             ]);
 
-            // PAY-202608-004 (Dafina Rp 1.500.000 via Kas Kantor)
+            // PAY-202608-004 (Davina Rp 1.500.000 via Bank Operasional)
             Payroll::query()->create([
                 'payslip_number' => 'PAY-202608-004',
-                'user_id' => $dafina->id,
+                'user_id' => $davina->id,
                 'period' => '2026-08',
                 'basic_salary' => 1_500_000,
                 'fixed_allowance' => 0,
@@ -398,11 +407,11 @@ class SyncFinanceFromExcel2026 extends Command
                 'type' => 'advance_incurred',
                 'amount' => 1_000_000,
                 'status' => 'completed',
-                'notes' => 'Talangan dana pribadi Fajar Roni untuk gaji magang Juli (Bianca & Dafina)',
+                'notes' => 'Talangan dana pribadi Fajar Roni untuk gaji magang Juli (Bianca & Davina)',
                 'created_by' => $adminUser->id,
             ]);
 
-            $this->info('✓ 4 Payroll: -Rp 3.000.000 (Kas Kantor) & -Rp 1.000.000 (Talangan Fajar)');
+            $this->info('✓ 4 Payroll: -Rp 3.000.000 (Bank Operasional) & -Rp 1.000.000 (Talangan Fajar)');
 
             // 8. 7 Transaksi Partner dari Excel
             $partnerTxs = [

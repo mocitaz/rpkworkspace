@@ -150,13 +150,13 @@ export function FinancialAnalyticsView({
     );
 
     // Compute Expense Category Breakdown
-    const officeExpenseTotal = expenses
-        ?.filter((e) => e.charge_to === 'office')
-        .reduce((sum, e) => sum + (Number(e.amount) || 0), 0) || summary.total_operational_expense * 0.7;
+    const officeExpenseTotal = (expenses ?? [])
+        .filter((e) => e.charge_to === 'office')
+        .reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
 
-    const clientDisbursementTotal = expenses
-        ?.filter((e) => e.charge_to === 'client')
-        .reduce((sum, e) => sum + (Number(e.amount) || 0), 0) || summary.total_operational_expense * 0.3;
+    const clientDisbursementTotal = (expenses ?? [])
+        .filter((e) => e.charge_to === 'client')
+        .reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
 
     const payrollTotal = summary.total_payroll_expense;
     const totalAllExpenses = Math.max(1, officeExpenseTotal + clientDisbursementTotal + payrollTotal);
