@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FinanceController::upload
-* @see app/Http/Controllers/FinanceController.php:877
+* @see app/Http/Controllers/FinanceController.php:879
 * @route '/finance/{entity}/{id}/proof'
 */
 export const upload = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ upload.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::upload
-* @see app/Http/Controllers/FinanceController.php:877
+* @see app/Http/Controllers/FinanceController.php:879
 * @route '/finance/{entity}/{id}/proof'
 */
 upload.url = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions) => {
@@ -42,7 +42,7 @@ upload.url = (args: { entity: string | number, id: string | number } | [entity: 
 
 /**
 * @see \App\Http\Controllers\FinanceController::upload
-* @see app/Http/Controllers/FinanceController.php:877
+* @see app/Http/Controllers/FinanceController.php:879
 * @route '/finance/{entity}/{id}/proof'
 */
 upload.post = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -52,7 +52,7 @@ upload.post = (args: { entity: string | number, id: string | number } | [entity:
 
 /**
 * @see \App\Http\Controllers\FinanceController::upload
-* @see app/Http/Controllers/FinanceController.php:877
+* @see app/Http/Controllers/FinanceController.php:879
 * @route '/finance/{entity}/{id}/proof'
 */
 const uploadForm = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -62,7 +62,7 @@ const uploadForm = (args: { entity: string | number, id: string | number } | [en
 
 /**
 * @see \App\Http\Controllers\FinanceController::upload
-* @see app/Http/Controllers/FinanceController.php:877
+* @see app/Http/Controllers/FinanceController.php:879
 * @route '/finance/{entity}/{id}/proof'
 */
 uploadForm.post = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -74,7 +74,7 @@ upload.form = uploadForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroy
-* @see app/Http/Controllers/FinanceController.php:904
+* @see app/Http/Controllers/FinanceController.php:906
 * @route '/finance/{entity}/{id}/proof'
 */
 export const destroy = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -89,7 +89,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroy
-* @see app/Http/Controllers/FinanceController.php:904
+* @see app/Http/Controllers/FinanceController.php:906
 * @route '/finance/{entity}/{id}/proof'
 */
 destroy.url = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions) => {
@@ -115,7 +115,7 @@ destroy.url = (args: { entity: string | number, id: string | number } | [entity:
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroy
-* @see app/Http/Controllers/FinanceController.php:904
+* @see app/Http/Controllers/FinanceController.php:906
 * @route '/finance/{entity}/{id}/proof'
 */
 destroy.delete = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -125,7 +125,7 @@ destroy.delete = (args: { entity: string | number, id: string | number } | [enti
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroy
-* @see app/Http/Controllers/FinanceController.php:904
+* @see app/Http/Controllers/FinanceController.php:906
 * @route '/finance/{entity}/{id}/proof'
 */
 const destroyForm = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -140,7 +140,7 @@ const destroyForm = (args: { entity: string | number, id: string | number } | [e
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroy
-* @see app/Http/Controllers/FinanceController.php:904
+* @see app/Http/Controllers/FinanceController.php:906
 * @route '/finance/{entity}/{id}/proof'
 */
 destroyForm.delete = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

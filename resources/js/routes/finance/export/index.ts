@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FinanceController::excel
-* @see app/Http/Controllers/FinanceController.php:856
+* @see app/Http/Controllers/FinanceController.php:858
 * @route '/finance/export/excel'
 */
 export const excel = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ excel.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::excel
-* @see app/Http/Controllers/FinanceController.php:856
+* @see app/Http/Controllers/FinanceController.php:858
 * @route '/finance/export/excel'
 */
 excel.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ excel.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FinanceController::excel
-* @see app/Http/Controllers/FinanceController.php:856
+* @see app/Http/Controllers/FinanceController.php:858
 * @route '/finance/export/excel'
 */
 excel.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ excel.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::excel
-* @see app/Http/Controllers/FinanceController.php:856
+* @see app/Http/Controllers/FinanceController.php:858
 * @route '/finance/export/excel'
 */
 excel.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ excel.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::excel
-* @see app/Http/Controllers/FinanceController.php:856
+* @see app/Http/Controllers/FinanceController.php:858
 * @route '/finance/export/excel'
 */
 const excelForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const excelForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\FinanceController::excel
-* @see app/Http/Controllers/FinanceController.php:856
+* @see app/Http/Controllers/FinanceController.php:858
 * @route '/finance/export/excel'
 */
 excelForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ excelForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::excel
-* @see app/Http/Controllers/FinanceController.php:856
+* @see app/Http/Controllers/FinanceController.php:858
 * @route '/finance/export/excel'
 */
 excelForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
