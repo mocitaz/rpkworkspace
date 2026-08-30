@@ -325,7 +325,7 @@ show.form = showForm
 
 /**
 * @see \App\Http\Controllers\ClientController::edit
-* @see app/Http/Controllers/ClientController.php:111
+* @see app/Http/Controllers/ClientController.php:112
 * @route '/clients/{client}/edit'
 */
 export const edit = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -340,7 +340,7 @@ edit.definition = {
 
 /**
 * @see \App\Http\Controllers\ClientController::edit
-* @see app/Http/Controllers/ClientController.php:111
+* @see app/Http/Controllers/ClientController.php:112
 * @route '/clients/{client}/edit'
 */
 edit.url = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -373,7 +373,7 @@ edit.url = (args: { client: string | { id: string } } | [client: string | { id: 
 
 /**
 * @see \App\Http\Controllers\ClientController::edit
-* @see app/Http/Controllers/ClientController.php:111
+* @see app/Http/Controllers/ClientController.php:112
 * @route '/clients/{client}/edit'
 */
 edit.get = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -383,7 +383,7 @@ edit.get = (args: { client: string | { id: string } } | [client: string | { id: 
 
 /**
 * @see \App\Http\Controllers\ClientController::edit
-* @see app/Http/Controllers/ClientController.php:111
+* @see app/Http/Controllers/ClientController.php:112
 * @route '/clients/{client}/edit'
 */
 edit.head = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -393,7 +393,7 @@ edit.head = (args: { client: string | { id: string } } | [client: string | { id:
 
 /**
 * @see \App\Http\Controllers\ClientController::edit
-* @see app/Http/Controllers/ClientController.php:111
+* @see app/Http/Controllers/ClientController.php:112
 * @route '/clients/{client}/edit'
 */
 const editForm = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -403,7 +403,7 @@ const editForm = (args: { client: string | { id: string } } | [client: string | 
 
 /**
 * @see \App\Http\Controllers\ClientController::edit
-* @see app/Http/Controllers/ClientController.php:111
+* @see app/Http/Controllers/ClientController.php:112
 * @route '/clients/{client}/edit'
 */
 editForm.get = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -413,7 +413,7 @@ editForm.get = (args: { client: string | { id: string } } | [client: string | { 
 
 /**
 * @see \App\Http\Controllers\ClientController::edit
-* @see app/Http/Controllers/ClientController.php:111
+* @see app/Http/Controllers/ClientController.php:112
 * @route '/clients/{client}/edit'
 */
 editForm.head = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -430,7 +430,7 @@ edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\ClientController::update
-* @see app/Http/Controllers/ClientController.php:128
+* @see app/Http/Controllers/ClientController.php:129
 * @route '/clients/{client}'
 */
 export const update = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -445,7 +445,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\ClientController::update
-* @see app/Http/Controllers/ClientController.php:128
+* @see app/Http/Controllers/ClientController.php:129
 * @route '/clients/{client}'
 */
 update.url = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -478,7 +478,7 @@ update.url = (args: { client: string | { id: string } } | [client: string | { id
 
 /**
 * @see \App\Http\Controllers\ClientController::update
-* @see app/Http/Controllers/ClientController.php:128
+* @see app/Http/Controllers/ClientController.php:129
 * @route '/clients/{client}'
 */
 update.put = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -488,7 +488,7 @@ update.put = (args: { client: string | { id: string } } | [client: string | { id
 
 /**
 * @see \App\Http\Controllers\ClientController::update
-* @see app/Http/Controllers/ClientController.php:128
+* @see app/Http/Controllers/ClientController.php:129
 * @route '/clients/{client}'
 */
 update.patch = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -498,7 +498,7 @@ update.patch = (args: { client: string | { id: string } } | [client: string | { 
 
 /**
 * @see \App\Http\Controllers\ClientController::update
-* @see app/Http/Controllers/ClientController.php:128
+* @see app/Http/Controllers/ClientController.php:129
 * @route '/clients/{client}'
 */
 const updateForm = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -513,7 +513,7 @@ const updateForm = (args: { client: string | { id: string } } | [client: string 
 
 /**
 * @see \App\Http\Controllers\ClientController::update
-* @see app/Http/Controllers/ClientController.php:128
+* @see app/Http/Controllers/ClientController.php:129
 * @route '/clients/{client}'
 */
 updateForm.put = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -528,7 +528,7 @@ updateForm.put = (args: { client: string | { id: string } } | [client: string | 
 
 /**
 * @see \App\Http\Controllers\ClientController::update
-* @see app/Http/Controllers/ClientController.php:128
+* @see app/Http/Controllers/ClientController.php:129
 * @route '/clients/{client}'
 */
 updateForm.patch = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

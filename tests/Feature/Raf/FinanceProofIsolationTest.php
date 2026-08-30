@@ -19,7 +19,7 @@ beforeEach(function () {
 });
 
 it('attaches uploaded proof when creating an invoice and isolates it from documents index', function () {
-    $user = rafUser(['matter.view', 'matter.view.all', 'billing.view', 'billing.manage', 'document.view']);
+    $user = rafUser(['matter.view', 'matter.view.all', 'billing.view', 'billing.manage', 'document.view', 'client.view']);
     $client = Client::factory()->recycle($user)->create();
     $matter = Matter::factory()->recycle($user)->create(['client_id' => $client->id]);
 
@@ -55,6 +55,11 @@ it('attaches uploaded proof when creating an invoice and isolates it from docume
     $docsResponse->assertInertia(fn ($page) => $page
         ->where('documents.data', fn ($docs) => collect($docs)->every(fn ($d) => $d['document_type'] !== 'financial_proof'))
     );
+
+    // Financial proofs must not be presented as client legal documents.
+    $clientResponse = $this->actingAs($user)->get(route('clients.show', $client));
+    $clientResponse->assertOk();
+    $clientResponse->assertInertia(fn ($page) => $page->has('documents', 0));
 });
 
 it('attaches uploaded proof when creating and updating payroll', function () {

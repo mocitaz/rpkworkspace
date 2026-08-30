@@ -99,6 +99,7 @@ class ClientController extends Controller
             'activeMatters' => $visibleMatters->whereNotIn('status', ['closed', 'archived'])->values(),
             'closedMatters' => $visibleMatters->whereIn('status', ['closed', 'archived'])->values(),
             'documents' => Document::query()->visibleTo($request->user())->whereBelongsTo($client)
+                ->where('document_type', '!=', 'financial_proof')
                 ->with('currentVersion:id,document_id,version_number,file_size')->latest('updated_at')->limit(8)->get(),
             'partners' => User::query()->where('is_active', true)->orderBy('id')->get(['id', 'name', 'position_title', 'department', 'avatar_path', 'email']),
             'can' => ['update' => $canUpdate],

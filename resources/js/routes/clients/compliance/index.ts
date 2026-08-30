@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ClientController::store
-* @see app/Http/Controllers/ClientController.php:149
+* @see app/Http/Controllers/ClientController.php:150
 * @route '/clients/{client}/compliance-documents'
 */
 export const store = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\ClientController::store
-* @see app/Http/Controllers/ClientController.php:149
+* @see app/Http/Controllers/ClientController.php:150
 * @route '/clients/{client}/compliance-documents'
 */
 store.url = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ store.url = (args: { client: string | { id: string } } | [client: string | { id:
 
 /**
 * @see \App\Http\Controllers\ClientController::store
-* @see app/Http/Controllers/ClientController.php:149
+* @see app/Http/Controllers/ClientController.php:150
 * @route '/clients/{client}/compliance-documents'
 */
 store.post = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ store.post = (args: { client: string | { id: string } } | [client: string | { id
 
 /**
 * @see \App\Http\Controllers\ClientController::store
-* @see app/Http/Controllers/ClientController.php:149
+* @see app/Http/Controllers/ClientController.php:150
 * @route '/clients/{client}/compliance-documents'
 */
 const storeForm = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ const storeForm = (args: { client: string | { id: string } } | [client: string |
 
 /**
 * @see \App\Http\Controllers\ClientController::store
-* @see app/Http/Controllers/ClientController.php:149
+* @see app/Http/Controllers/ClientController.php:150
 * @route '/clients/{client}/compliance-documents'
 */
 storeForm.post = (args: { client: string | { id: string } } | [client: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -81,7 +81,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\ClientController::update
-* @see app/Http/Controllers/ClientController.php:177
+* @see app/Http/Controllers/ClientController.php:178
 * @route '/clients/{client}/compliance-documents/{complianceDocument}'
 */
 export const update = (args: { client: string | { id: string }, complianceDocument: string | { id: string } } | [client: string | { id: string }, complianceDocument: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -96,7 +96,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\ClientController::update
-* @see app/Http/Controllers/ClientController.php:177
+* @see app/Http/Controllers/ClientController.php:178
 * @route '/clients/{client}/compliance-documents/{complianceDocument}'
 */
 update.url = (args: { client: string | { id: string }, complianceDocument: string | { id: string } } | [client: string | { id: string }, complianceDocument: string | { id: string } ], options?: RouteQueryOptions) => {
@@ -126,7 +126,7 @@ update.url = (args: { client: string | { id: string }, complianceDocument: strin
 
 /**
 * @see \App\Http\Controllers\ClientController::update
-* @see app/Http/Controllers/ClientController.php:177
+* @see app/Http/Controllers/ClientController.php:178
 * @route '/clients/{client}/compliance-documents/{complianceDocument}'
 */
 update.put = (args: { client: string | { id: string }, complianceDocument: string | { id: string } } | [client: string | { id: string }, complianceDocument: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -136,7 +136,7 @@ update.put = (args: { client: string | { id: string }, complianceDocument: strin
 
 /**
 * @see \App\Http\Controllers\ClientController::update
-* @see app/Http/Controllers/ClientController.php:177
+* @see app/Http/Controllers/ClientController.php:178
 * @route '/clients/{client}/compliance-documents/{complianceDocument}'
 */
 const updateForm = (args: { client: string | { id: string }, complianceDocument: string | { id: string } } | [client: string | { id: string }, complianceDocument: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -151,7 +151,7 @@ const updateForm = (args: { client: string | { id: string }, complianceDocument:
 
 /**
 * @see \App\Http\Controllers\ClientController::update
-* @see app/Http/Controllers/ClientController.php:177
+* @see app/Http/Controllers/ClientController.php:178
 * @route '/clients/{client}/compliance-documents/{complianceDocument}'
 */
 updateForm.put = (args: { client: string | { id: string }, complianceDocument: string | { id: string } } | [client: string | { id: string }, complianceDocument: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -168,7 +168,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\ClientController::destroy
-* @see app/Http/Controllers/ClientController.php:201
+* @see app/Http/Controllers/ClientController.php:202
 * @route '/clients/{client}/compliance-documents/{complianceDocument}'
 */
 export const destroy = (args: { client: string | { id: string }, complianceDocument: string | { id: string } } | [client: string | { id: string }, complianceDocument: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -183,7 +183,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\ClientController::destroy
-* @see app/Http/Controllers/ClientController.php:201
+* @see app/Http/Controllers/ClientController.php:202
 * @route '/clients/{client}/compliance-documents/{complianceDocument}'
 */
 destroy.url = (args: { client: string | { id: string }, complianceDocument: string | { id: string } } | [client: string | { id: string }, complianceDocument: string | { id: string } ], options?: RouteQueryOptions) => {
@@ -213,7 +213,7 @@ destroy.url = (args: { client: string | { id: string }, complianceDocument: stri
 
 /**
 * @see \App\Http\Controllers\ClientController::destroy
-* @see app/Http/Controllers/ClientController.php:201
+* @see app/Http/Controllers/ClientController.php:202
 * @route '/clients/{client}/compliance-documents/{complianceDocument}'
 */
 destroy.delete = (args: { client: string | { id: string }, complianceDocument: string | { id: string } } | [client: string | { id: string }, complianceDocument: string | { id: string } ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -223,7 +223,7 @@ destroy.delete = (args: { client: string | { id: string }, complianceDocument: s
 
 /**
 * @see \App\Http\Controllers\ClientController::destroy
-* @see app/Http/Controllers/ClientController.php:201
+* @see app/Http/Controllers/ClientController.php:202
 * @route '/clients/{client}/compliance-documents/{complianceDocument}'
 */
 const destroyForm = (args: { client: string | { id: string }, complianceDocument: string | { id: string } } | [client: string | { id: string }, complianceDocument: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -238,7 +238,7 @@ const destroyForm = (args: { client: string | { id: string }, complianceDocument
 
 /**
 * @see \App\Http\Controllers\ClientController::destroy
-* @see app/Http/Controllers/ClientController.php:201
+* @see app/Http/Controllers/ClientController.php:202
 * @route '/clients/{client}/compliance-documents/{complianceDocument}'
 */
 destroyForm.delete = (args: { client: string | { id: string }, complianceDocument: string | { id: string } } | [client: string | { id: string }, complianceDocument: string | { id: string } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
