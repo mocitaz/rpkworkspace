@@ -1632,6 +1632,7 @@ export default function FinanceIndex({
                                         setModal('partner_transaction')
                                     }
                                     onViewDetail={openDetailForPartnerTx}
+                                    onViewProof={setProofTarget}
                                 />
                             )}
                         </div>
