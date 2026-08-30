@@ -1618,6 +1618,7 @@ export default function FinanceIndex({
                                         setModal('payroll')
                                     }
                                     onViewDetail={openDetailForPayroll}
+                                    onViewProof={setProofTarget}
                                 />
                             )}
 

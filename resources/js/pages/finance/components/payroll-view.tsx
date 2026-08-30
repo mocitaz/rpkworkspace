@@ -1,6 +1,6 @@
-import { useState } from 'react';
 import { router } from '@inertiajs/react';
-import { AlertTriangle, Download, FileText, Pencil, Plus } from 'lucide-react';
+import { AlertTriangle, Download, FileText, Paperclip, Pencil, Plus } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { formatMoney } from '@/lib/format';
 import { EditPayrollDialog } from './edit-payroll-dialog';
-import { type ProofDocumentData } from './finance-proof-dialog';
+import type { FinanceEntityProofTarget, ProofDocumentData } from './finance-proof-dialog';
 
 export type PayrollItem = {
     id: string;
@@ -51,11 +51,13 @@ export function PayrollView({
     onOpenPayrollModal,
     accounts = [],
     onViewDetail,
+    onViewProof,
 }: {
     payrolls: PayrollItem[];
     onOpenPayrollModal: () => void;
     accounts?: { id: string; name: string }[];
     onViewDetail?: (payroll: PayrollItem) => void;
+    onViewProof?: (target: FinanceEntityProofTarget) => void;
 }) {
     const [selectedPayrollForEdit, setSelectedPayrollForEdit] = useState<PayrollItem | null>(null);
     const [paidConfirmPayroll, setPaidConfirmPayroll] = useState<PayrollItem | null>(null);
@@ -200,6 +202,32 @@ export function PayrollView({
                                             </td>
                                             <td className="px-3 py-2.5 text-center">
                                                 <div className="flex items-center justify-center gap-1">
+                                                    {onViewProof && (
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => onViewProof({
+                                                                id: p.id,
+                                                                entity: 'payrolls',
+                                                                title: `Bukti Pembayaran Gaji: ${p.payslip_number}`,
+                                                                subtitle: `${p.user?.name || 'Pegawai'} • ${formatMoney(p.net_salary, 'IDR')}`,
+                                                                proof_document: p.proof_document || p.proofDocument,
+                                                            })}
+                                                            className={`size-6.5 rounded-lg ${
+                                                                p.proof_document || p.proofDocument
+                                                                    ? 'text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30'
+                                                                    : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-zinc-500 dark:hover:bg-white/[0.06] dark:hover:text-zinc-200'
+                                                            }`}
+                                                            title={
+                                                                p.proof_document || p.proofDocument
+                                                                    ? 'Lihat Bukti Pembayaran Gaji'
+                                                                    : 'Unggah Bukti Pembayaran Gaji'
+                                                            }
+                                                        >
+                                                            <Paperclip className="size-3.5" />
+                                                        </Button>
+                                                    )}
                                                     {onViewDetail && (
                                                         <Button
                                                             size="sm"
@@ -340,4 +368,3 @@ export function PayrollView({
         </div>
     );
 }
-
