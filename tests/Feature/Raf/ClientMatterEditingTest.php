@@ -75,3 +75,30 @@ it('renders the dedicated matter edit page for authorized users', function () {
             ->has('parentMatters')
         );
 });
+
+it('stores contract terms when a matter is updated', function () {
+    $editor = rafUser(['matter.view', 'matter.update']);
+    $matter = Matter::factory()->recycle($editor)->create([
+        'responsible_partner_id' => $editor->getKey(),
+        'created_by' => $editor->getKey(),
+    ]);
+
+    $this->actingAs($editor)->patch(route('matters.update', $matter), [
+        'title' => $matter->title,
+        'status' => 'active',
+        'priority' => 'normal',
+        'confidentiality_level' => 'standard',
+        'responsible_partner_id' => $editor->getKey(),
+        'member_ids' => [],
+        'budget_amount' => 165_000_000,
+        'currency' => 'IDR',
+        'contract_date' => '2026-08-27',
+        'billing_model' => 'milestone',
+    ])->assertSessionHasNoErrors();
+
+    expect($matter->fresh())
+        ->budget_amount->toBe(165_000_000)
+        ->currency->toBe('IDR')
+        ->contract_date->format('Y-m-d')->toBe('2026-08-27')
+        ->billing_model->toBe('milestone');
+});

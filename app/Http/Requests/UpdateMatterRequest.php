@@ -25,6 +25,10 @@ class UpdateMatterRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'summary' => ['nullable', 'string', 'max:20000'],
+            'budget_amount' => ['nullable', 'integer', 'min:0'],
+            'currency' => ['sometimes', 'string', 'size:3', 'in:IDR,USD,SGD'],
+            'contract_date' => ['nullable', 'date'],
+            'billing_model' => ['nullable', 'string', 'in:fixed_fee,retainer,hourly,milestone,success_fee,hybrid'],
             'practice_area_id' => ['nullable', 'exists:practice_areas,id'],
             'matter_type' => ['nullable', 'string', 'max:100'],
             'status' => ['required', 'in:prospective,active,on_hold,closed,archived'],

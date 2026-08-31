@@ -21,6 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { MoneyInput } from '@/components/ui/money-input';
 import { Spinner } from '@/components/ui/spinner';
 import UserPicker, { type UserOption } from '@/components/user-picker';
 import { useInitials } from '@/hooks/use-initials';
@@ -69,6 +70,10 @@ type Matter = {
     jurisdiction?: string;
     court?: string;
     external_case_number?: string;
+    budget_amount?: number;
+    currency?: string;
+    contract_date?: string;
+    billing_model?: string;
     members: Person[];
 };
 
@@ -119,14 +124,16 @@ export default function MatterEdit({
                                 </span>
                                 <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
                                     <Building2 className="size-3 text-slate-400" />
-                                    {matter.client?.display_name ?? 'Klien Terdaftar'}
+                                    {matter.client?.display_name ??
+                                        'Klien Terdaftar'}
                                 </span>
                             </div>
                             <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
                                 Edit Parameter Perkara &amp; Tim Advokat
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Perubahan status perkara dan penugasan tim dicatat ke dalam log audit firma.
+                                Perubahan status perkara dan penugasan tim
+                                dicatat ke dalam log audit firma.
                             </p>
                         </div>
 
@@ -157,7 +164,8 @@ export default function MatterEdit({
                                     <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-white/[0.05]">
                                         <Briefcase className="size-4 text-blue-600 dark:text-blue-400" />
                                         <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                            1. Identitas Pokok &amp; Klasifikasi Perkara
+                                            1. Identitas Pokok &amp; Klasifikasi
+                                            Perkara
                                         </h2>
                                     </div>
 
@@ -180,7 +188,15 @@ export default function MatterEdit({
                                                 </Label>
                                                 <div className="flex h-8 items-center justify-between rounded-lg border border-slate-200 bg-slate-50/80 px-2.5 text-xs font-medium text-slate-900 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200">
                                                     <span className="truncate">
-                                                        {matter.client?.client_number} - {matter.client?.display_name}
+                                                        {
+                                                            matter.client
+                                                                ?.client_number
+                                                        }{' '}
+                                                        -{' '}
+                                                        {
+                                                            matter.client
+                                                                ?.display_name
+                                                        }
                                                     </span>
                                                     <Lock className="size-3 shrink-0 text-slate-400" />
                                                 </div>
@@ -191,13 +207,18 @@ export default function MatterEdit({
                                             <SelectField
                                                 label="Area Praktik Hukum"
                                                 name="practice_area_id"
-                                                defaultValue={matter.practice_area_id?.toString() ?? ''}
+                                                defaultValue={
+                                                    matter.practice_area_id?.toString() ??
+                                                    ''
+                                                }
                                                 error={errors.practice_area_id}
                                                 optional
-                                                options={practiceAreas.map((item) => ({
-                                                    value: item.id,
-                                                    label: item.name,
-                                                }))}
+                                                options={practiceAreas.map(
+                                                    (item) => ({
+                                                        value: item.id,
+                                                        label: item.name,
+                                                    }),
+                                                )}
                                             />
                                         </div>
 
@@ -205,7 +226,9 @@ export default function MatterEdit({
                                             <Field
                                                 label="Sub-Tipe / Jenis Matter"
                                                 name="matter_type"
-                                                defaultValue={matter.matter_type ?? ''}
+                                                defaultValue={
+                                                    matter.matter_type ?? ''
+                                                }
                                                 error={errors.matter_type}
                                                 placeholder="Contoh: Commercial Dispute, Advisory, Merger"
                                             />
@@ -215,7 +238,10 @@ export default function MatterEdit({
                                             <SelectField
                                                 label="Perkara Induk / Parent Matter"
                                                 name="parent_matter_id"
-                                                defaultValue={matter.parent_matter_id ?? ''}
+                                                defaultValue={
+                                                    matter.parent_matter_id ??
+                                                    ''
+                                                }
                                                 optional
                                                 error={errors.parent_matter_id}
                                                 options={[
@@ -223,10 +249,12 @@ export default function MatterEdit({
                                                         value: '',
                                                         label: '— Bukan Perkara Turunan / Standalone —',
                                                     },
-                                                    ...parentMatters.map((item) => ({
-                                                        value: item.id,
-                                                        label: `${item.matter_number} - ${item.title}`,
-                                                    })),
+                                                    ...parentMatters.map(
+                                                        (item) => ({
+                                                            value: item.id,
+                                                            label: `${item.matter_number} - ${item.title}`,
+                                                        }),
+                                                    ),
                                                 ]}
                                             />
                                         </div>
@@ -235,7 +263,10 @@ export default function MatterEdit({
                                             <SelectField
                                                 label="Tipe Relasi Tingkat Perkara"
                                                 name="relationship_type"
-                                                defaultValue={matter.relationship_type ?? 'related_dispute'}
+                                                defaultValue={
+                                                    matter.relationship_type ??
+                                                    'related_dispute'
+                                                }
                                                 error={errors.relationship_type}
                                                 options={[
                                                     {
@@ -270,7 +301,9 @@ export default function MatterEdit({
                                             <Field
                                                 label="Yurisdiksi Hukum"
                                                 name="jurisdiction"
-                                                defaultValue={matter.jurisdiction ?? ''}
+                                                defaultValue={
+                                                    matter.jurisdiction ?? ''
+                                                }
                                                 placeholder="Contoh: Indonesia / DKI Jakarta"
                                                 error={errors.jurisdiction}
                                             />
@@ -278,12 +311,130 @@ export default function MatterEdit({
                                     </div>
                                 </section>
 
+                                {/* Section 2: Informasi Kontrak & Keuangan */}
+                                <section className="rounded-xl border border-slate-200/70 bg-white p-5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                    <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-white/[0.05]">
+                                        <Building2 className="size-4 text-emerald-600 dark:text-emerald-400" />
+                                        <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                            2. Informasi Kontrak &amp; Keuangan
+                                        </h2>
+                                    </div>
+
+                                    <div className="mt-4 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+                                        <div className="space-y-1.5 sm:col-span-2">
+                                            <Label
+                                                htmlFor="budget_amount"
+                                                className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                            >
+                                                Nilai Kontrak
+                                            </Label>
+                                            <MoneyInput
+                                                id="budget_amount"
+                                                name="budget_amount"
+                                                defaultValue={
+                                                    matter.budget_amount ?? 0
+                                                }
+                                                prefixText={
+                                                    matter.currency ?? 'IDR'
+                                                }
+                                            />
+                                            <InputError
+                                                message={errors.budget_amount}
+                                            />
+                                        </div>
+
+                                        <SelectField
+                                            label="Mata Uang"
+                                            name="currency"
+                                            defaultValue={
+                                                matter.currency ?? 'IDR'
+                                            }
+                                            error={errors.currency}
+                                            options={[
+                                                {
+                                                    value: 'IDR',
+                                                    label: 'IDR — Rupiah',
+                                                },
+                                                {
+                                                    value: 'USD',
+                                                    label: 'USD — US Dollar',
+                                                },
+                                                {
+                                                    value: 'SGD',
+                                                    label: 'SGD — Singapore Dollar',
+                                                },
+                                            ]}
+                                        />
+
+                                        <Field
+                                            label="Tanggal Kontrak"
+                                            name="contract_date"
+                                            type="date"
+                                            defaultValue={
+                                                matter.contract_date?.slice(
+                                                    0,
+                                                    10,
+                                                ) ?? ''
+                                            }
+                                            error={errors.contract_date}
+                                        />
+
+                                        <div className="sm:col-span-2">
+                                            <SelectField
+                                                label="Model Penagihan"
+                                                name="billing_model"
+                                                defaultValue={
+                                                    matter.billing_model ?? ''
+                                                }
+                                                optional
+                                                error={errors.billing_model}
+                                                options={[
+                                                    {
+                                                        value: '',
+                                                        label: '— Belum ditentukan —',
+                                                    },
+                                                    {
+                                                        value: 'fixed_fee',
+                                                        label: 'Fixed Fee',
+                                                    },
+                                                    {
+                                                        value: 'retainer',
+                                                        label: 'Retainer',
+                                                    },
+                                                    {
+                                                        value: 'hourly',
+                                                        label: 'Hourly Rate',
+                                                    },
+                                                    {
+                                                        value: 'milestone',
+                                                        label: 'Per Tahapan / Milestone',
+                                                    },
+                                                    {
+                                                        value: 'success_fee',
+                                                        label: 'Success Fee',
+                                                    },
+                                                    {
+                                                        value: 'hybrid',
+                                                        label: 'Hybrid',
+                                                    },
+                                                ]}
+                                            />
+                                        </div>
+                                    </div>
+                                    <p className="mt-2 text-[10.5px] text-slate-400 dark:text-zinc-500">
+                                        Nilai kontrak menjadi dasar analisis
+                                        profitabilitas dan tetap terpisah dari
+                                        invoice yang diterbitkan.
+                                    </p>
+                                </section>
+
                                 {/* Section 2: Status, Prioritas & Kerahasiaan */}
                                 <section className="rounded-xl border border-slate-200/70 bg-white p-5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-white/[0.05]">
                                         <Scale className="size-4 text-purple-600 dark:text-purple-400" />
                                         <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                            2. Parameter Status, Prioritas &amp; Kerahasiaan
+                                            2. Parameter Status, Prioritas &amp;
+                                            Kerahasiaan
                                         </h2>
                                     </div>
 
@@ -295,11 +446,26 @@ export default function MatterEdit({
                                             required
                                             error={errors.status}
                                             options={[
-                                                { value: 'prospective', label: 'Prospektif' },
-                                                { value: 'active', label: 'Aktif' },
-                                                { value: 'on_hold', label: 'Ditunda' },
-                                                { value: 'closed', label: 'Ditutup' },
-                                                { value: 'archived', label: 'Diarsipkan' },
+                                                {
+                                                    value: 'prospective',
+                                                    label: 'Prospektif',
+                                                },
+                                                {
+                                                    value: 'active',
+                                                    label: 'Aktif',
+                                                },
+                                                {
+                                                    value: 'on_hold',
+                                                    label: 'Ditunda',
+                                                },
+                                                {
+                                                    value: 'closed',
+                                                    label: 'Ditutup',
+                                                },
+                                                {
+                                                    value: 'archived',
+                                                    label: 'Diarsipkan',
+                                                },
                                             ]}
                                         />
 
@@ -310,23 +476,46 @@ export default function MatterEdit({
                                             required
                                             error={errors.priority}
                                             options={[
-                                                { value: 'low', label: 'Rendah' },
-                                                { value: 'normal', label: 'Normal' },
-                                                { value: 'high', label: 'Tinggi' },
-                                                { value: 'critical', label: 'Kritis' },
+                                                {
+                                                    value: 'low',
+                                                    label: 'Rendah',
+                                                },
+                                                {
+                                                    value: 'normal',
+                                                    label: 'Normal',
+                                                },
+                                                {
+                                                    value: 'high',
+                                                    label: 'Tinggi',
+                                                },
+                                                {
+                                                    value: 'critical',
+                                                    label: 'Kritis',
+                                                },
                                             ]}
                                         />
 
                                         <SelectField
                                             label="Tingkat Kerahasiaan"
                                             name="confidentiality_level"
-                                            defaultValue={matter.confidentiality_level}
+                                            defaultValue={
+                                                matter.confidentiality_level
+                                            }
                                             required
                                             error={errors.confidentiality_level}
                                             options={[
-                                                { value: 'standard', label: 'Standar' },
-                                                { value: 'confidential', label: 'Rahasia' },
-                                                { value: 'restricted', label: 'Sangat Terbatas / Restricted' },
+                                                {
+                                                    value: 'standard',
+                                                    label: 'Standar',
+                                                },
+                                                {
+                                                    value: 'confidential',
+                                                    label: 'Rahasia',
+                                                },
+                                                {
+                                                    value: 'restricted',
+                                                    label: 'Sangat Terbatas / Restricted',
+                                                },
                                             ]}
                                         />
                                     </div>
@@ -337,7 +526,8 @@ export default function MatterEdit({
                                     <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-white/[0.05]">
                                         <Gavel className="size-4 text-amber-600 dark:text-amber-400" />
                                         <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                            3. Forum Pengadilan &amp; Register Eksternal
+                                            3. Forum Pengadilan &amp; Register
+                                            Eksternal
                                         </h2>
                                     </div>
 
@@ -353,7 +543,10 @@ export default function MatterEdit({
                                         <Field
                                             label="No. Register Perkara Eksternal"
                                             name="external_case_number"
-                                            defaultValue={matter.external_case_number ?? ''}
+                                            defaultValue={
+                                                matter.external_case_number ??
+                                                ''
+                                            }
                                             placeholder="Contoh: 142/Pdt.G/2026/PN.Jkt.Pst"
                                             error={errors.external_case_number}
                                         />
@@ -362,7 +555,12 @@ export default function MatterEdit({
                                             label="Tanggal Dibuka"
                                             name="opened_at"
                                             type="date"
-                                            defaultValue={matter.opened_at?.slice(0, 10) ?? ''}
+                                            defaultValue={
+                                                matter.opened_at?.slice(
+                                                    0,
+                                                    10,
+                                                ) ?? ''
+                                            }
                                             error={errors.opened_at}
                                         />
 
@@ -370,7 +568,12 @@ export default function MatterEdit({
                                             label="Tanggal Ditutup (Opsional)"
                                             name="closed_at"
                                             type="date"
-                                            defaultValue={matter.closed_at?.slice(0, 10) ?? ''}
+                                            defaultValue={
+                                                matter.closed_at?.slice(
+                                                    0,
+                                                    10,
+                                                ) ?? ''
+                                            }
                                             error={errors.closed_at}
                                         />
                                     </div>
@@ -381,7 +584,8 @@ export default function MatterEdit({
                                     <div className="flex items-center gap-2 border-b border-slate-100 pb-3 dark:border-white/[0.05]">
                                         <UserCheck className="size-4 text-emerald-600 dark:text-emerald-400" />
                                         <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                            4. Kepemimpinan &amp; Advokat Supervisi
+                                            4. Kepemimpinan &amp; Advokat
+                                            Supervisi
                                         </h2>
                                     </div>
 
@@ -392,7 +596,9 @@ export default function MatterEdit({
                                                 className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                                             >
                                                 Partner Penanggung Jawab{' '}
-                                                <span className="text-rose-500">*</span>
+                                                <span className="text-rose-500">
+                                                    *
+                                                </span>
                                             </Label>
                                             <input
                                                 type="hidden"
@@ -402,7 +608,9 @@ export default function MatterEdit({
                                             <UserPicker
                                                 id="responsible_partner_id"
                                                 value={responsiblePartnerId}
-                                                onChange={setResponsiblePartnerId}
+                                                onChange={
+                                                    setResponsiblePartnerId
+                                                }
                                                 users={users as UserOption[]}
                                                 placeholder="Pilih Partner Penanggung Jawab..."
                                                 disabledUserIds={
@@ -428,7 +636,8 @@ export default function MatterEdit({
                                                     htmlFor="supervising_lawyer_id"
                                                     className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                                                 >
-                                                    Supervising Lawyer (Opsional)
+                                                    Supervising Lawyer
+                                                    (Opsional)
                                                 </Label>
                                                 <span className="text-[10px] text-slate-400 dark:text-zinc-500">
                                                     Opsional
@@ -442,7 +651,9 @@ export default function MatterEdit({
                                             <UserPicker
                                                 id="supervising_lawyer_id"
                                                 value={supervisingLawyerId}
-                                                onChange={setSupervisingLawyerId}
+                                                onChange={
+                                                    setSupervisingLawyerId
+                                                }
                                                 users={users as UserOption[]}
                                                 placeholder="Pilih Supervising Lawyer (Opsional)..."
                                                 emptyOptionLabel="-- Tanpa Supervising Lawyer --"
@@ -472,7 +683,8 @@ export default function MatterEdit({
                                         <div className="flex items-center gap-2">
                                             <Users className="size-4 text-blue-600 dark:text-blue-400" />
                                             <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                5. Susunan Tim Advokat &amp; Kuasa Hukum
+                                                5. Susunan Tim Advokat &amp;
+                                                Kuasa Hukum
                                             </h2>
                                         </div>
                                         <span className="rounded-md bg-blue-50 px-2 py-0.5 font-mono text-[10px] font-bold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
@@ -482,16 +694,25 @@ export default function MatterEdit({
 
                                     <div className="mt-4 space-y-2">
                                         <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                            Pilih advokat dan staf hukum yang memiliki hak akses dan penugasan pada perkara ini.
+                                            Pilih advokat dan staf hukum yang
+                                            memiliki hak akses dan penugasan
+                                            pada perkara ini.
                                         </p>
 
                                         <div className="grid gap-2 sm:grid-cols-2">
                                             {users.map((user) => {
-                                                const isChecked = selectedMembers.includes(Number(user.id));
+                                                const isChecked =
+                                                    selectedMembers.includes(
+                                                        Number(user.id),
+                                                    );
                                                 return (
                                                     <label
                                                         key={user.id}
-                                                        onClick={() => toggleMember(user.id)}
+                                                        onClick={() =>
+                                                            toggleMember(
+                                                                user.id,
+                                                            )
+                                                        }
                                                         className={`group flex cursor-pointer items-center justify-between gap-3 rounded-xl border p-2.5 text-xs transition-all ${
                                                             isChecked
                                                                 ? 'border-blue-500/60 bg-blue-50/20 shadow-2xs dark:border-blue-500/40 dark:bg-blue-950/10'
@@ -508,9 +729,16 @@ export default function MatterEdit({
                                                         />
                                                         <div className="flex min-w-0 items-center gap-2.5">
                                                             <Avatar className="size-7 shrink-0 rounded-full border border-slate-200 dark:border-white/10">
-                                                                <AvatarImage src={user.avatar_url ?? undefined} />
+                                                                <AvatarImage
+                                                                    src={
+                                                                        user.avatar_url ??
+                                                                        undefined
+                                                                    }
+                                                                />
                                                                 <AvatarFallback className="text-[9px] font-bold">
-                                                                    {getInitials(user.name)}
+                                                                    {getInitials(
+                                                                        user.name,
+                                                                    )}
                                                                 </AvatarFallback>
                                                             </Avatar>
                                                             <div className="min-w-0">
@@ -518,7 +746,8 @@ export default function MatterEdit({
                                                                     {user.name}
                                                                 </p>
                                                                 <p className="truncate text-[10px] text-slate-400">
-                                                                    {user.position_title ?? 'Advokat'}
+                                                                    {user.position_title ??
+                                                                        'Advokat'}
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -530,13 +759,17 @@ export default function MatterEdit({
                                                                     : 'border-slate-300 bg-white dark:border-zinc-700 dark:bg-zinc-800'
                                                             }`}
                                                         >
-                                                            {isChecked && <Check className="size-3 stroke-[3]" />}
+                                                            {isChecked && (
+                                                                <Check className="size-3 stroke-[3]" />
+                                                            )}
                                                         </div>
                                                     </label>
                                                 );
                                             })}
                                         </div>
-                                        <InputError message={errors.member_ids} />
+                                        <InputError
+                                            message={errors.member_ids}
+                                        />
                                     </div>
                                 </section>
 
@@ -547,7 +780,8 @@ export default function MatterEdit({
                                             htmlFor="summary"
                                             className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                                         >
-                                            6. Ringkasan &amp; Ruang Lingkup Penanganan Perkara
+                                            6. Ringkasan &amp; Ruang Lingkup
+                                            Penanganan Perkara
                                         </Label>
                                         <textarea
                                             id="summary"
@@ -564,7 +798,8 @@ export default function MatterEdit({
                                 {/* Action Buttons */}
                                 <div className="flex flex-col justify-between gap-3 border-t border-slate-200/60 pt-4 sm:flex-row sm:items-center dark:border-white/[0.06]">
                                     <p className="text-[11px] text-slate-400">
-                                        Seluruh perubahan akan dicatat ke dalam audit trail firma secara otomatis.
+                                        Seluruh perubahan akan dicatat ke dalam
+                                        audit trail firma secara otomatis.
                                     </p>
 
                                     <div className="flex items-center gap-2">
@@ -574,7 +809,11 @@ export default function MatterEdit({
                                             className="h-8.5 rounded-lg border-slate-200 bg-white px-3.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
                                             asChild
                                         >
-                                            <Link href={matterRoutes.show.url(matter.id)}>
+                                            <Link
+                                                href={matterRoutes.show.url(
+                                                    matter.id,
+                                                )}
+                                            >
                                                 Batal
                                             </Link>
                                         </Button>
@@ -670,9 +909,12 @@ function SelectField({
                     htmlFor={name}
                     className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                 >
-                    {label} {required && <span className="text-rose-500">*</span>}
+                    {label}{' '}
+                    {required && <span className="text-rose-500">*</span>}
                 </Label>
-                {optional && <span className="text-[10px] text-slate-400">Opsional</span>}
+                {optional && (
+                    <span className="text-[10px] text-slate-400">Opsional</span>
+                )}
             </div>
             <div className="relative">
                 <select

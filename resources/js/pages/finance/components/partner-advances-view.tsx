@@ -1,4 +1,4 @@
-import { AlertTriangle, FileText, Paperclip, Pencil, Plus } from 'lucide-react';
+import { AlertTriangle, Paperclip, Pencil, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,6 +12,7 @@ import {
 import type { UserOption } from '@/components/user-picker';
 import { formatDate, formatMoney } from '@/lib/format';
 import { EditPartnerTransactionDialog } from './edit-partner-transaction-dialog';
+import { financeDialogPanelClass } from './finance-dialog-design';
 import type {
     FinanceEntityProofTarget,
     ProofDocumentData,
@@ -79,38 +80,55 @@ export function PartnerAdvancesView({
         0,
     );
 
-    const typeLabels: Record<string, { label: string; color: string }> = {
+    const partnerComposition = advancesSummary.map((partner, index) => ({
+        ...partner,
+        shortName: partner.partner_name.replace(/,.*$/, ''),
+        amount: Math.abs(partner.net_due_to_partner),
+        color: ['bg-blue-500', 'bg-sky-300', 'bg-amber-400'][index % 3],
+    }));
+    const partnerCompositionTotal = Math.max(
+        partnerComposition.reduce(
+            (total, partner) => total + partner.amount,
+            0,
+        ),
+        1,
+    );
+
+    const typeLabels: Record<string, { label: string; textClass: string }> = {
         advance_incurred: {
             label: 'Talangan Partner (+)',
-            color: 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400',
+            textClass: 'text-amber-600 dark:text-amber-400',
         },
         advance_reimbursed: {
             label: 'Pengembalian Talangan (-)',
-            color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400',
+            textClass: 'text-emerald-600 dark:text-emerald-400',
         },
         profit_distribution: {
             label: 'Pembagian Bagi Hasil',
-            color: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
+            textClass: 'text-blue-600 dark:text-blue-400',
         },
         capital_injection: {
             label: 'Setoran Modal (+)',
-            color: 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400',
+            textClass: 'text-blue-600 dark:text-blue-400',
         },
         draw_prive: {
             label: 'Penarikan Prive (-)',
-            color: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400',
+            textClass: 'text-slate-600 dark:text-zinc-400',
         },
     };
 
     return (
-        <div className="space-y-4">
+        <div
+            data-testid="partner-advances-workspace"
+            className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]"
+        >
             {/* Header & Actions */}
-            <div className="flex flex-col justify-between gap-2.5 sm:flex-row sm:items-center">
+            <div className="flex flex-col justify-between gap-2.5 border-b border-slate-200/70 px-4 py-3 sm:flex-row sm:items-center dark:border-white/[0.06]">
                 <div>
-                    <h2 className="text-sm font-bold text-slate-900 uppercase dark:text-white">
+                    <h2 className="text-sm font-bold text-slate-900 dark:text-white">
                         Talangan &amp; Hak Partner
                     </h2>
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                    <p className="mt-0.5 max-w-4xl text-[11px] text-slate-500 dark:text-zinc-400">
                         Rekapitulasi utang kantor kepada partner atas dana
                         pribadi talangan operasional/perkara, pengembalian
                         talangan, prive, dan bagi hasil.
@@ -119,7 +137,7 @@ export function PartnerAdvancesView({
                 <Button
                     size="sm"
                     onClick={onOpenPartnerModal}
-                    className="h-7.5 rounded-lg bg-amber-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 dark:bg-amber-600 dark:text-white dark:hover:bg-amber-500"
+                    className="h-7.5 rounded-lg bg-slate-950 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-zinc-200"
                 >
                     <Plus className="mr-1 size-3.5" />
                     Catat Transaksi Partner
@@ -127,28 +145,96 @@ export function PartnerAdvancesView({
             </div>
 
             {/* Partner Advances Summary Card & Table (Mirroring Excel Sheet TALANGAN_PARTNER) */}
-            <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                <div className="flex items-center justify-between border-b border-slate-200/60 bg-amber-50/30 px-4 py-2.5 dark:border-white/[0.06] dark:bg-amber-500/5">
+            <div className="grid gap-3 p-4 lg:grid-cols-5">
+                <section className="relative flex min-h-[142px] flex-col justify-between overflow-hidden rounded-xl border border-blue-100 bg-[#eef5ff] p-4 lg:col-span-2 dark:border-blue-400/10 dark:bg-blue-500/[0.06]">
+                    <div className="pointer-events-none absolute -top-12 -right-10 size-32 rounded-full border-[20px] border-white/60 dark:border-white/[0.025]" />
+                    <p className="relative text-[10px] font-bold tracking-[0.14em] text-blue-600 uppercase dark:text-blue-300">
+                        Total Utang Partner Bersih
+                    </p>
+                    <p className="relative mt-1 font-mono text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
+                        {formatMoney(totalDueToPartners, 'IDR')}
+                    </p>
+                    <p className="relative mt-1 text-[10px] text-slate-500 dark:text-zinc-400">
+                        Kewajiban firma setelah pengembalian talangan
+                    </p>
+                    <div className="relative mt-4 flex items-end justify-between border-t border-blue-200/60 pt-3 text-[9.5px] font-medium text-slate-500 dark:border-white/[0.06] dark:text-zinc-400">
+                        <span>Posisi kewajiban tercatat</span>
+                        <span>{advancesSummary.length} partner</span>
+                    </div>
+                </section>
+
+                <section
+                    data-testid="partner-composition-panel"
+                    className="flex min-h-[142px] flex-col rounded-xl border border-slate-200/70 bg-slate-50/60 p-4 lg:col-span-3 dark:border-white/[0.06] dark:bg-white/[0.025]"
+                >
                     <div>
-                        <h3 className="text-xs font-bold text-amber-900 uppercase dark:text-amber-300">
-                            Posisi Talangan &amp; Kewajiban Firma ke Partner
-                        </h3>
-                        <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
-                            Pembayaran pribadi untuk operasional kantor/perkara
-                            tercatat sebagai utang firma ke partner.
+                        <p className="text-[10px] font-bold tracking-[0.12em] text-slate-500 uppercase dark:text-zinc-400">
+                            Komposisi Kewajiban Partner
+                        </p>
+                        <p className="mt-0.5 text-[10px] text-slate-400 dark:text-zinc-500">
+                            Distribusi utang bersih firma per partner
                         </p>
                     </div>
-                    <div className="text-right">
-                        <span className="text-[9.5px] font-semibold text-slate-400 uppercase">
-                            Total Utang Partner Bersih:
-                        </span>
-                        <p className="font-mono text-base font-bold text-amber-600 dark:text-amber-400">
-                            {formatMoney(totalDueToPartners, 'IDR')}
+                    <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-slate-200/80 dark:bg-white/[0.07]">
+                        {partnerComposition.map((partner) => (
+                            <div
+                                key={partner.partner_id || partner.account_id}
+                                className={partner.color}
+                                style={{
+                                    width: `${(partner.amount / partnerCompositionTotal) * 100}%`,
+                                }}
+                            />
+                        ))}
+                    </div>
+                    <div className="mt-3 grid flex-1 divide-y divide-slate-200/70 sm:grid-cols-3 sm:divide-x sm:divide-y-0 dark:divide-white/[0.06]">
+                        {partnerComposition.map((partner) => (
+                            <div
+                                key={partner.partner_id || partner.account_id}
+                                className="py-2 first:pl-0 sm:px-3 sm:py-0"
+                            >
+                                <div className="flex items-center gap-1.5 text-[9.5px] font-semibold text-slate-500 dark:text-zinc-400">
+                                    <span
+                                        className={`size-1.5 shrink-0 rounded-full ${partner.color}`}
+                                    />
+                                    <span className="truncate">
+                                        {partner.shortName}
+                                    </span>
+                                </div>
+                                <p className="mt-1 font-mono text-sm font-bold text-slate-950 dark:text-white">
+                                    {formatMoney(
+                                        partner.net_due_to_partner,
+                                        'IDR',
+                                    )}
+                                </p>
+                                <p className="mt-0.5 text-[9px] text-slate-400 dark:text-zinc-500">
+                                    Kontribusi{' '}
+                                    {(
+                                        (partner.amount /
+                                            partnerCompositionTotal) *
+                                        100
+                                    ).toFixed(1)}
+                                    %
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            </div>
+
+            <div className="border-t border-slate-200/70 px-4 py-3 dark:border-white/[0.06]">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                            Rincian Posisi Talangan
+                        </h3>
+                        <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                            Rekonsiliasi saldo awal, talangan, pengembalian,
+                            bagi hasil, dan prive.
                         </p>
                     </div>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="mt-3 overflow-x-auto rounded-xl border border-slate-200/70 dark:border-white/[0.06]">
                     <table className="w-full text-left text-xs">
                         <thead className="border-b border-slate-200/70 bg-slate-50/70 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:border-white/[0.06] dark:bg-[#121418] dark:text-zinc-400">
                             <tr>
@@ -189,7 +275,7 @@ export function PartnerAdvancesView({
                                                 {partner.partner_name}
                                             </span>
                                             {partner.account_name && (
-                                                <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-500 dark:bg-white/5 dark:text-zinc-400">
+                                                <span className="border-l border-slate-200 pl-2 font-mono text-[10px] text-slate-500 dark:border-white/10 dark:text-zinc-400">
                                                     {partner.account_name}
                                                 </span>
                                             )}
@@ -201,31 +287,31 @@ export function PartnerAdvancesView({
                                             'IDR',
                                         )}
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono font-semibold whitespace-nowrap text-rose-600 dark:text-rose-400">
+                                    <td className="px-3 py-2.5 text-right font-mono font-semibold whitespace-nowrap text-slate-800 dark:text-zinc-200">
                                         {formatMoney(
                                             partner.advances_incurred,
                                             'IDR',
                                         )}
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono font-semibold whitespace-nowrap text-emerald-600 dark:text-emerald-400">
+                                    <td className="px-3 py-2.5 text-right font-mono font-semibold whitespace-nowrap text-slate-800 dark:text-zinc-200">
                                         {formatMoney(
                                             partner.advances_reimbursed,
                                             'IDR',
                                         )}
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono font-bold whitespace-nowrap text-amber-600 dark:text-amber-400">
+                                    <td className="px-3 py-2.5 text-right font-mono font-bold whitespace-nowrap text-slate-950 dark:text-white">
                                         {formatMoney(
                                             partner.net_due_to_partner,
                                             'IDR',
                                         )}
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono whitespace-nowrap text-blue-600 dark:text-blue-400">
+                                    <td className="px-3 py-2.5 text-right font-mono whitespace-nowrap text-slate-800 dark:text-zinc-200">
                                         {formatMoney(
                                             partner.profit_distributed,
                                             'IDR',
                                         )}
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono whitespace-nowrap text-purple-600 dark:text-purple-400">
+                                    <td className="px-3 py-2.5 text-right font-mono whitespace-nowrap text-slate-800 dark:text-zinc-200">
                                         {formatMoney(
                                             partner.prive_drawn,
                                             'IDR',
@@ -239,19 +325,19 @@ export function PartnerAdvancesView({
             </div>
 
             {/* Partner Transactions Table (Mirroring Excel Sheet PARTNER) */}
-            <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                <div className="border-b border-slate-200/60 px-4 py-2.5 dark:border-white/[0.06]">
+            <div className="border-t border-slate-200/70 dark:border-white/[0.06]">
+                <div className="px-4 py-3">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-xs font-bold text-slate-900 uppercase dark:text-white">
+                            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                                 Register Transaksi &amp; Mutasi Partner
                             </h3>
-                            <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
+                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                 Log lengkap pencatatan talangan, reimbursement,
                                 penarikan prive, dan pembagian laba.
                             </p>
                         </div>
-                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-white/10 dark:text-zinc-300">
+                        <span className="font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
                             {transactions.length} Transaksi
                         </span>
                     </div>
@@ -262,8 +348,8 @@ export function PartnerAdvancesView({
                         Belum ada riwayat transaksi partner.
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs">
+                    <div className="mx-4 mb-4 overflow-x-auto rounded-xl border border-slate-200/70 dark:border-white/[0.06]">
+                        <table className="w-full min-w-[1120px] text-left text-xs">
                             <thead className="border-b border-slate-200/70 bg-slate-50/70 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:border-white/[0.06] dark:bg-[#121418] dark:text-zinc-400">
                                 <tr>
                                     <th className="px-3.5 py-2.5 whitespace-nowrap">
@@ -294,7 +380,8 @@ export function PartnerAdvancesView({
                                 {transactions.map((t) => {
                                     const typeInfo = typeLabels[t.type] || {
                                         label: t.type,
-                                        color: 'bg-slate-100 text-slate-700',
+                                        textClass:
+                                            'text-slate-600 dark:text-zinc-400',
                                     };
 
                                     return (
@@ -303,16 +390,15 @@ export function PartnerAdvancesView({
                                             className="transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]"
                                         >
                                             <td className="px-3.5 py-2.5 whitespace-nowrap">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
+                                                <div>
+                                                    <span className="font-mono text-xs font-bold text-slate-950 dark:text-white">
                                                         {t.transaction_number}
                                                     </span>
-                                                    <span className="text-[11px] text-slate-400 dark:text-zinc-500">
-                                                        •{' '}
+                                                    <p className="mt-0.5 text-[10px] text-slate-400 dark:text-zinc-500">
                                                         {formatDate(
                                                             t.transaction_date,
                                                         )}
-                                                    </span>
+                                                    </p>
                                                 </div>
                                             </td>
                                             <td className="px-3 py-2.5 font-bold whitespace-nowrap text-slate-900 dark:text-white">
@@ -320,14 +406,14 @@ export function PartnerAdvancesView({
                                             </td>
                                             <td className="px-3 py-2.5 whitespace-nowrap">
                                                 <span
-                                                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold whitespace-nowrap ${typeInfo.color}`}
+                                                    className={`text-[10px] font-bold whitespace-nowrap ${typeInfo.textClass}`}
                                                 >
                                                     {typeInfo.label}
                                                 </span>
                                             </td>
                                             <td className="px-3 py-2.5 whitespace-nowrap">
                                                 {t.matter ? (
-                                                    <span className="font-mono text-xs font-semibold text-blue-600 dark:text-blue-400">
+                                                    <span className="font-mono text-xs font-semibold text-slate-700 dark:text-zinc-300">
                                                         {t.matter.matter_number}
                                                     </span>
                                                 ) : t.account ? (
@@ -350,8 +436,7 @@ export function PartnerAdvancesView({
                                                 {t.notes || '-'}
                                             </td>
                                             <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
-                                                    <span className="size-1.5 rounded-full bg-emerald-500"></span>
+                                                <span className="text-[10px] font-bold text-emerald-600 uppercase dark:text-emerald-400">
                                                     Disetujui
                                                 </span>
                                             </td>
@@ -399,7 +484,6 @@ export function PartnerAdvancesView({
                                                             className="h-7 rounded-lg px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/10"
                                                             title="Lihat Rincian Transaksi Partner"
                                                         >
-                                                            <FileText className="mr-1 size-3" />
                                                             Detail
                                                         </Button>
                                                     )}
@@ -432,7 +516,7 @@ export function PartnerAdvancesView({
                 open={Boolean(confirmTransForEdit)}
                 onOpenChange={(open) => !open && setConfirmTransForEdit(null)}
             >
-                <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                <DialogContent className={financeDialogPanelClass('compact')}>
                     <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                         <div className="flex items-center gap-2.5">
                             <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
@@ -451,7 +535,7 @@ export function PartnerAdvancesView({
                     </DialogHeader>
 
                     {confirmTransForEdit && (
-                        <div className="space-y-3 pt-2 text-xs">
+                        <div className="space-y-3 px-5 py-4 text-xs sm:px-6">
                             <div className="rounded-xl border border-amber-200/80 bg-amber-50/50 p-3 dark:border-amber-900/40 dark:bg-amber-950/20">
                                 <p className="font-semibold text-amber-900 dark:text-amber-200">
                                     Perhatian Penyesuaian Saldo:
@@ -466,7 +550,7 @@ export function PartnerAdvancesView({
                         </div>
                     )}
 
-                    <DialogFooter className="gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                    <DialogFooter className="gap-2 border-t border-slate-100 px-5 py-3.5 sm:px-6 dark:border-white/[0.06]">
                         <Button
                             variant="outline"
                             size="sm"

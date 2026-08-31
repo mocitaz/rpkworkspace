@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input';
 import { MoneyInput } from '@/components/ui/money-input';
 import { Label } from '@/components/ui/label';
 import UserPicker, { type UserOption } from '@/components/user-picker';
+import { financeDialogPanelClass } from './finance-dialog-design';
 
 const TYPE_IMPACTS: Record<string, { label: string; impact: string }> = {
     advance_incurred: {
@@ -82,7 +83,7 @@ export function CreatePartnerTransactionDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className={financeDialogPanelClass('default')}>
                 {/* Header */}
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
@@ -90,11 +91,12 @@ export function CreatePartnerTransactionDialog({
                             <HandCoins className="size-4.5" />
                         </div>
                         <div>
-                            <DialogTitle className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                            <DialogTitle className="text-sm font-bold text-slate-900 sm:text-base dark:text-white">
                                 Catat Transaksi &amp; Talangan Partner
                             </DialogTitle>
                             <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Catat talangan pribadi partner, pengembalian, atau pembagian deviden.
+                                Catat talangan pribadi partner, pengembalian,
+                                atau pembagian deviden.
                             </DialogDescription>
                         </div>
                     </div>
@@ -106,13 +108,16 @@ export function CreatePartnerTransactionDialog({
                         <div className="grid gap-2.5 sm:grid-cols-2">
                             <div>
                                 <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                    Partner Terkait <span className="text-rose-500">*</span>
+                                    Partner Terkait{' '}
+                                    <span className="text-rose-500">*</span>
                                 </Label>
                                 <div className="mt-1">
                                     <UserPicker
                                         id="partner_id"
                                         value={form.data.partner_id}
-                                        onChange={(val) => form.setData('partner_id', val)}
+                                        onChange={(val) =>
+                                            form.setData('partner_id', val)
+                                        }
                                         users={partners}
                                         placeholder="Pilih Partner..."
                                     />
@@ -121,20 +126,33 @@ export function CreatePartnerTransactionDialog({
 
                             <div>
                                 <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                    Jenis Transaksi <span className="text-rose-500">*</span>
+                                    Jenis Transaksi{' '}
+                                    <span className="text-rose-500">*</span>
                                 </Label>
                                 <div className="relative mt-1">
                                     <select
                                         value={form.data.type}
-                                        onChange={(e) => form.setData('type', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('type', e.target.value)
+                                        }
                                         required
                                         className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                     >
-                                        <option value="advance_incurred">Talangan Pribadi (+ Utang Kantor)</option>
-                                        <option value="advance_reimbursed">Pengembalian Talangan (- Utang)</option>
-                                        <option value="profit_distribution">Pembagian Keuntungan / Deviden</option>
-                                        <option value="capital_injection">Setoran Modal Partner</option>
-                                        <option value="draw_prive">Penarikan Prive / Modal</option>
+                                        <option value="advance_incurred">
+                                            Talangan Pribadi (+ Utang Kantor)
+                                        </option>
+                                        <option value="advance_reimbursed">
+                                            Pengembalian Talangan (- Utang)
+                                        </option>
+                                        <option value="profit_distribution">
+                                            Pembagian Keuntungan / Deviden
+                                        </option>
+                                        <option value="capital_injection">
+                                            Setoran Modal Partner
+                                        </option>
+                                        <option value="draw_prive">
+                                            Penarikan Prive / Modal
+                                        </option>
                                     </select>
                                     <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                                 </div>
@@ -144,10 +162,14 @@ export function CreatePartnerTransactionDialog({
                         {/* Live Accounting Impact Banner */}
                         {TYPE_IMPACTS[form.data.type] && (
                             <div className="flex items-start gap-2 rounded-lg border border-amber-200/80 bg-amber-50/70 p-2 text-[11px] text-amber-900 dark:border-amber-900/30 dark:bg-amber-950/20 dark:text-amber-300">
-                                <Info className="size-3.5 shrink-0 mt-0.5 text-amber-600 dark:text-amber-400" />
+                                <Info className="mt-0.5 size-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
                                 <div>
-                                    <span className="font-semibold">{TYPE_IMPACTS[form.data.type].label}:</span>{' '}
-                                    <span>{TYPE_IMPACTS[form.data.type].impact}</span>
+                                    <span className="font-semibold">
+                                        {TYPE_IMPACTS[form.data.type].label}:
+                                    </span>{' '}
+                                    <span>
+                                        {TYPE_IMPACTS[form.data.type].impact}
+                                    </span>
                                 </div>
                             </div>
                         )}
@@ -157,12 +179,15 @@ export function CreatePartnerTransactionDialog({
                     <div className="grid gap-2.5 sm:grid-cols-2">
                         <div>
                             <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                Nominal Transaksi (IDR) <span className="text-rose-500">*</span>
+                                Nominal Transaksi (IDR){' '}
+                                <span className="text-rose-500">*</span>
                             </Label>
                             <MoneyInput
                                 required
                                 value={form.data.amount}
-                                onValueChange={(val) => form.setData('amount', val)}
+                                onValueChange={(val) =>
+                                    form.setData('amount', val)
+                                }
                                 placeholder="0"
                                 className="mt-1 h-8.5 rounded-lg border-slate-200 bg-white font-mono text-xs font-semibold text-slate-900 dark:border-white/10 dark:bg-[#121418] dark:text-white"
                             />
@@ -170,13 +195,19 @@ export function CreatePartnerTransactionDialog({
 
                         <div>
                             <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                Tanggal Transaksi <span className="text-rose-500">*</span>
+                                Tanggal Transaksi{' '}
+                                <span className="text-rose-500">*</span>
                             </Label>
                             <Input
                                 type="date"
                                 required
                                 value={form.data.transaction_date}
-                                onChange={(e) => form.setData('transaction_date', e.target.value)}
+                                onChange={(e) =>
+                                    form.setData(
+                                        'transaction_date',
+                                        e.target.value,
+                                    )
+                                }
                                 className="mt-1 h-8.5 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-[#121418]"
                             />
                         </div>
@@ -192,10 +223,17 @@ export function CreatePartnerTransactionDialog({
                                 <div className="relative mt-1">
                                     <select
                                         value={form.data.matter_id}
-                                        onChange={(e) => form.setData('matter_id', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'matter_id',
+                                                e.target.value,
+                                            )
+                                        }
                                         className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs text-slate-900 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                     >
-                                        <option value="">-- Non-Perkara / Umum --</option>
+                                        <option value="">
+                                            -- Non-Perkara / Umum --
+                                        </option>
                                         {matters.map((m) => (
                                             <option key={m.id} value={m.id}>
                                                 {m.matter_number} — {m.title}
@@ -213,10 +251,17 @@ export function CreatePartnerTransactionDialog({
                                 <div className="relative mt-1">
                                     <select
                                         value={form.data.account_id}
-                                        onChange={(e) => form.setData('account_id', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'account_id',
+                                                e.target.value,
+                                            )
+                                        }
                                         className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs text-slate-900 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                     >
-                                        <option value="">-- Tanpa Kas / Talangan Langsung --</option>
+                                        <option value="">
+                                            -- Tanpa Kas / Talangan Langsung --
+                                        </option>
                                         {accounts.map((a) => (
                                             <option key={a.id} value={a.id}>
                                                 {a.name}
@@ -235,7 +280,9 @@ export function CreatePartnerTransactionDialog({
                             <Input
                                 type="text"
                                 value={form.data.notes}
-                                onChange={(e) => form.setData('notes', e.target.value)}
+                                onChange={(e) =>
+                                    form.setData('notes', e.target.value)
+                                }
                                 placeholder="cth: Talangan akomodasi persidangan PN Surabaya..."
                                 className="mt-1 h-8.5 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-[#121418]"
                             />
@@ -251,7 +298,9 @@ export function CreatePartnerTransactionDialog({
                                     accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf"
                                     buttonText="Pilih Berkas"
                                     placeholder="Unggah berkas bukti transaksi / kuitansi..."
-                                    onFileSelect={(file) => form.setData('proof', file)}
+                                    onFileSelect={(file) =>
+                                        form.setData('proof', file)
+                                    }
                                 />
                             </div>
                         </div>
@@ -284,7 +333,7 @@ export function CreatePartnerTransactionDialog({
                         <Button
                             type="submit"
                             disabled={form.processing}
-                            className="h-8.5 rounded-lg bg-amber-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-amber-700 dark:bg-amber-600 dark:hover:bg-amber-700 gap-1.5"
+                            className="h-8.5 gap-1.5 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
                         >
                             {form.processing ? (
                                 <>

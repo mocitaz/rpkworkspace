@@ -29,6 +29,7 @@ use App\Http\Requests\StoreQuotationRequest;
 use App\Http\Requests\TransitionInvoiceRequest;
 use App\Http\Requests\UpdateExpenseRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
+use App\Http\Requests\UpdateMatterContractRequest;
 use App\Http\Requests\UpdatePartnerTransactionRequest;
 use App\Http\Requests\UpdatePayrollRequest;
 use App\Http\Requests\UpdateQuotationRequest;
@@ -63,6 +64,19 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class FinanceController extends Controller
 {
+    public function updateMatterContract(UpdateMatterContractRequest $request, Matter $matter, AuditService $audit): RedirectResponse
+    {
+        $before = $matter->only(['budget_amount', 'currency', 'contract_date', 'billing_model']);
+        $matter->update($request->validated());
+
+        $audit->record($matter, 'finance.matter_contract.updated', [
+            'before' => $before,
+            'after' => $matter->only(['budget_amount', 'currency', 'contract_date', 'billing_model']),
+        ], $request->user(), $request);
+
+        return back()->with('success', 'Informasi kontrak perkara berhasil diperbarui.');
+    }
+
     public function index(Request $request, MatterFinancialOverview $overview, FirmFinancialStatementService $statementService): Response
     {
         Gate::authorize('viewAny', Matter::class);
@@ -157,6 +171,7 @@ class FinanceController extends Controller
                 'expense' => $request->user()->hasPermission('expense.manage'),
                 'payment' => $request->user()->hasPermission('payment.manage'),
                 'invoiceTransition' => $request->user()->hasPermission('billing.manage'),
+                'matterContract' => $request->user()->hasPermission('billing.manage'),
             ],
         ]);
     }

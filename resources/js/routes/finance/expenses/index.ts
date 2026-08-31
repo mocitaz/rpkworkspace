@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:230
+* @see app/Http/Controllers/FinanceController.php:245
 * @route '/finance/expenses'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:230
+* @see app/Http/Controllers/FinanceController.php:245
 * @route '/finance/expenses'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:230
+* @see app/Http/Controllers/FinanceController.php:245
 * @route '/finance/expenses'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:230
+* @see app/Http/Controllers/FinanceController.php:245
 * @route '/finance/expenses'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:230
+* @see app/Http/Controllers/FinanceController.php:245
 * @route '/finance/expenses'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -57,7 +57,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroy
-* @see app/Http/Controllers/FinanceController.php:267
+* @see app/Http/Controllers/FinanceController.php:282
 * @route '/finance/expenses/{expense}'
 */
 export const destroy = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -72,7 +72,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroy
-* @see app/Http/Controllers/FinanceController.php:267
+* @see app/Http/Controllers/FinanceController.php:282
 * @route '/finance/expenses/{expense}'
 */
 destroy.url = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -105,7 +105,7 @@ destroy.url = (args: { expense: string | { id: string } } | [expense: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroy
-* @see app/Http/Controllers/FinanceController.php:267
+* @see app/Http/Controllers/FinanceController.php:282
 * @route '/finance/expenses/{expense}'
 */
 destroy.delete = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -115,7 +115,7 @@ destroy.delete = (args: { expense: string | { id: string } } | [expense: string 
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroy
-* @see app/Http/Controllers/FinanceController.php:267
+* @see app/Http/Controllers/FinanceController.php:282
 * @route '/finance/expenses/{expense}'
 */
 const destroyForm = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -130,7 +130,7 @@ const destroyForm = (args: { expense: string | { id: string } } | [expense: stri
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroy
-* @see app/Http/Controllers/FinanceController.php:267
+* @see app/Http/Controllers/FinanceController.php:282
 * @route '/finance/expenses/{expense}'
 */
 destroyForm.delete = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -147,7 +147,7 @@ destroy.form = destroyForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:293
+* @see app/Http/Controllers/FinanceController.php:308
 * @route '/finance/expenses/{expense}'
 */
 export const update = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -162,7 +162,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:293
+* @see app/Http/Controllers/FinanceController.php:308
 * @route '/finance/expenses/{expense}'
 */
 update.url = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -195,7 +195,7 @@ update.url = (args: { expense: string | { id: string } } | [expense: string | { 
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:293
+* @see app/Http/Controllers/FinanceController.php:308
 * @route '/finance/expenses/{expense}'
 */
 update.put = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -205,7 +205,7 @@ update.put = (args: { expense: string | { id: string } } | [expense: string | { 
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:293
+* @see app/Http/Controllers/FinanceController.php:308
 * @route '/finance/expenses/{expense}'
 */
 const updateForm = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -220,7 +220,7 @@ const updateForm = (args: { expense: string | { id: string } } | [expense: strin
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:293
+* @see app/Http/Controllers/FinanceController.php:308
 * @route '/finance/expenses/{expense}'
 */
 updateForm.put = (args: { expense: string | { id: string } } | [expense: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

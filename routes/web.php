@@ -104,6 +104,7 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::get('calendar/export/ics', [CalendarController::class, 'exportIcs'])->name('calendar.export.ics');
     Route::post('calendar/feed/rotate', [CalendarController::class, 'rotateToken'])->name('calendar.feed.rotate');
     Route::get('finance', [FinanceController::class, 'index'])->name('finance.index');
+    Route::patch('finance/matters/{matter}/contract', [FinanceController::class, 'updateMatterContract'])->name('finance.matters.contract.update');
     Route::get('finance/export/excel', [FinanceController::class, 'exportExcel'])->name('finance.export.excel');
     Route::get('finance/invoices/{invoice}', [FinanceDetailController::class, 'invoice'])->name('finance.invoices.show');
     Route::get('finance/payments/{payment}', [FinanceDetailController::class, 'payment'])->name('finance.payments.show');

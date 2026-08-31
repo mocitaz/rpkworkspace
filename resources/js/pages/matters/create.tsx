@@ -20,6 +20,7 @@ import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { MoneyInput } from '@/components/ui/money-input';
 import { Spinner } from '@/components/ui/spinner';
 import UserPicker, { type UserOption } from '@/components/user-picker';
 import * as matterRoutes from '@/routes/matters';
@@ -86,8 +87,14 @@ export default function MatterCreate({
     } | null>(null);
 
     const [selectedClientId, setSelectedClientId] = useState<string>('');
-    const [adverseNames, setAdverseNames] = useState<string[]>(['', '', '', '']);
-    const [responsiblePartnerId, setResponsiblePartnerId] = useState<string>('');
+    const [adverseNames, setAdverseNames] = useState<string[]>([
+        '',
+        '',
+        '',
+        '',
+    ]);
+    const [responsiblePartnerId, setResponsiblePartnerId] =
+        useState<string>('');
     const [supervisingLawyerId, setSupervisingLawyerId] = useState<string>('');
 
     const isConflictCleared =
@@ -96,7 +103,9 @@ export default function MatterCreate({
             conflictCheck.decision === 'waived');
 
     const runLiveScan = async () => {
-        const activeNames = adverseNames.map((n) => n.trim()).filter((n) => n.length > 0);
+        const activeNames = adverseNames
+            .map((n) => n.trim())
+            .filter((n) => n.length > 0);
         if (activeNames.length === 0 && !selectedClientId) return;
 
         setPreviewLoading(true);
@@ -107,7 +116,11 @@ export default function MatterCreate({
                     'Content-Type': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-TOKEN':
-                        (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content || '',
+                        (
+                            document.querySelector(
+                                'meta[name="csrf-token"]',
+                            ) as HTMLMetaElement
+                        )?.content || '',
                 },
                 body: JSON.stringify({
                     client_id: selectedClientId || undefined,
@@ -206,7 +219,7 @@ export default function MatterCreate({
                                                 </p>
                                                 {conflictCheck.decision ===
                                                     'waived' && (
-                                                    <span className="py-0.2 rounded bg-amber-500/20 px-1.5 font-mono text-[9px] font-bold uppercase text-amber-800 dark:text-amber-300">
+                                                    <span className="py-0.2 rounded bg-amber-500/20 px-1.5 font-mono text-[9px] font-bold text-amber-800 uppercase dark:text-amber-300">
                                                         Waiver Disetujui Partner
                                                     </span>
                                                 )}
@@ -247,10 +260,17 @@ export default function MatterCreate({
                                         )}
 
                                         {conflictCheck.matches &&
-                                            conflictCheck.matches.length > 0 && (
+                                            conflictCheck.matches.length >
+                                                0 && (
                                                 <div className="mt-2 space-y-1 rounded-lg border border-slate-200/60 bg-white/70 p-2 dark:border-white/10 dark:bg-black/20">
                                                     <p className="text-[10.5px] font-bold text-slate-700 dark:text-zinc-300">
-                                                        Daftar Entitas yang Cocok ({conflictCheck.matches.length}):
+                                                        Daftar Entitas yang
+                                                        Cocok (
+                                                        {
+                                                            conflictCheck
+                                                                .matches.length
+                                                        }
+                                                        ):
                                                     </p>
                                                     <div className="max-h-28 space-y-1 overflow-y-auto">
                                                         {conflictCheck.matches.map(
@@ -260,14 +280,19 @@ export default function MatterCreate({
                                                                     className="flex items-center justify-between text-[10px]"
                                                                 >
                                                                     <span className="font-medium">
-                                                                        • {m.name} (
+                                                                        •{' '}
+                                                                        {m.name}{' '}
+                                                                        (
                                                                         {m.role_label ??
                                                                             m.type}
                                                                         )
                                                                     </span>
                                                                     {m.similarity && (
                                                                         <span className="font-mono font-bold text-slate-500">
-                                                                            {m.similarity}%
+                                                                            {
+                                                                                m.similarity
+                                                                            }
+                                                                            %
                                                                         </span>
                                                                     )}
                                                                 </div>
@@ -300,25 +325,38 @@ export default function MatterCreate({
                                                         <select
                                                             id="conflict_client_id"
                                                             name="client_id"
-                                                            value={selectedClientId}
+                                                            value={
+                                                                selectedClientId
+                                                            }
                                                             onChange={(e) =>
                                                                 setSelectedClientId(
-                                                                    e.target.value,
+                                                                    e.target
+                                                                        .value,
                                                                 )
                                                             }
                                                             className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-8 pl-2.5 text-xs text-slate-900 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                                         >
                                                             <option value="">
-                                                                -- Pilih Klien --
+                                                                -- Pilih Klien
+                                                                --
                                                             </option>
                                                             {clients.map(
                                                                 (item) => (
                                                                     <option
-                                                                        key={item.id}
-                                                                        value={item.id}
+                                                                        key={
+                                                                            item.id
+                                                                        }
+                                                                        value={
+                                                                            item.id
+                                                                        }
                                                                     >
-                                                                        {item.client_number} -{' '}
-                                                                        {item.display_name}
+                                                                        {
+                                                                            item.client_number
+                                                                        }{' '}
+                                                                        -{' '}
+                                                                        {
+                                                                            item.display_name
+                                                                        }
                                                                     </option>
                                                                 ),
                                                             )}
@@ -326,7 +364,9 @@ export default function MatterCreate({
                                                         <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                                                     </div>
                                                     <InputError
-                                                        message={errors.client_id}
+                                                        message={
+                                                            errors.client_id
+                                                        }
                                                     />
                                                 </div>
                                             </div>
@@ -343,13 +383,20 @@ export default function MatterCreate({
                                                                 key={index}
                                                                 name={`names[${index}]`}
                                                                 value={
-                                                                    adverseNames[index]
+                                                                    adverseNames[
+                                                                        index
+                                                                    ]
                                                                 }
-                                                                onChange={(e) => {
-                                                                    const updated = [
-                                                                        ...adverseNames,
-                                                                    ];
-                                                                    updated[index] =
+                                                                onChange={(
+                                                                    e,
+                                                                ) => {
+                                                                    const updated =
+                                                                        [
+                                                                            ...adverseNames,
+                                                                        ];
+                                                                    updated[
+                                                                        index
+                                                                    ] =
                                                                         e.target.value;
                                                                     setAdverseNames(
                                                                         updated,
@@ -377,7 +424,8 @@ export default function MatterCreate({
                                                 <div className="flex items-center gap-2 text-slate-600 dark:text-zinc-400">
                                                     <Scale className="size-3.5 text-slate-500 dark:text-zinc-400" />
                                                     <span className="font-medium text-slate-700 dark:text-zinc-300">
-                                                        Pemeriksaan Benturan Kepentingan
+                                                        Pemeriksaan Benturan
+                                                        Kepentingan
                                                     </span>
                                                 </div>
                                                 <Button
@@ -389,7 +437,8 @@ export default function MatterCreate({
                                                         (!selectedClientId &&
                                                             !adverseNames.some(
                                                                 (n) =>
-                                                                    n.trim().length >
+                                                                    n.trim()
+                                                                        .length >
                                                                     0,
                                                             ))
                                                     }
@@ -399,7 +448,8 @@ export default function MatterCreate({
                                                     {previewLoading ? (
                                                         <>
                                                             <Spinner className="mr-1.5 size-3" />
-                                                            Memeriksa database...
+                                                            Memeriksa
+                                                            database...
                                                         </>
                                                     ) : (
                                                         <>
@@ -412,59 +462,87 @@ export default function MatterCreate({
 
                                             {previewResult && (
                                                 <div className="rounded-lg border border-slate-200 bg-white p-3 text-xs dark:border-white/10 dark:bg-[#121418]">
-                                                    {previewResult.matches.length > 0 ? (
+                                                    {previewResult.matches
+                                                        .length > 0 ? (
                                                         <div className="space-y-2">
                                                             <div className="flex items-center justify-between">
                                                                 <span className="font-semibold text-slate-900 dark:text-white">
-                                                                    Ditemukan {previewResult.match_count} entitas serupa di database:
+                                                                    Ditemukan{' '}
+                                                                    {
+                                                                        previewResult.match_count
+                                                                    }{' '}
+                                                                    entitas
+                                                                    serupa di
+                                                                    database:
                                                                 </span>
                                                                 <span
                                                                     className={`rounded px-1.5 py-0.5 font-mono text-[9.5px] font-bold uppercase ${
-                                                                        previewResult.status === 'blocked'
-                                                                            ? 'bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/60 dark:text-rose-300'
-                                                                            : 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300'
+                                                                        previewResult.status ===
+                                                                        'blocked'
+                                                                            ? 'border border-rose-200 bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300'
+                                                                            : 'border border-amber-200 bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300'
                                                                     }`}
                                                                 >
-                                                                    {previewResult.status === 'blocked'
+                                                                    {previewResult.status ===
+                                                                    'blocked'
                                                                         ? 'Benturan Langsung'
                                                                         : 'Potensi Benturan'}
                                                                 </span>
                                                             </div>
                                                             <div className="max-h-28 space-y-1 overflow-y-auto pr-1">
-                                                                {previewResult.matches.map((m, i) => (
-                                                                    <div
-                                                                        key={i}
-                                                                        className="flex items-start justify-between gap-2 rounded border border-slate-100 bg-slate-50/70 p-1.5 text-[10.5px] dark:border-white/5 dark:bg-zinc-800/60"
-                                                                    >
-                                                                        <div className="min-w-0 flex-1">
-                                                                            <div className="flex items-center gap-1.5">
-                                                                                <span className="font-bold text-slate-900 dark:text-white">
-                                                                                    {m.name}
-                                                                                </span>
-                                                                                <span className="rounded bg-slate-200/70 px-1 py-0.2 text-[9px] font-semibold text-slate-600 dark:bg-zinc-700 dark:text-zinc-300">
-                                                                                    {m.role_label ?? m.type}
-                                                                                </span>
+                                                                {previewResult.matches.map(
+                                                                    (m, i) => (
+                                                                        <div
+                                                                            key={
+                                                                                i
+                                                                            }
+                                                                            className="flex items-start justify-between gap-2 rounded border border-slate-100 bg-slate-50/70 p-1.5 text-[10.5px] dark:border-white/5 dark:bg-zinc-800/60"
+                                                                        >
+                                                                            <div className="min-w-0 flex-1">
+                                                                                <div className="flex items-center gap-1.5">
+                                                                                    <span className="font-bold text-slate-900 dark:text-white">
+                                                                                        {
+                                                                                            m.name
+                                                                                        }
+                                                                                    </span>
+                                                                                    <span className="py-0.2 rounded bg-slate-200/70 px-1 text-[9px] font-semibold text-slate-600 dark:bg-zinc-700 dark:text-zinc-300">
+                                                                                        {m.role_label ??
+                                                                                            m.type}
+                                                                                    </span>
+                                                                                </div>
+                                                                                {m.details && (
+                                                                                    <p className="mt-0.5 text-[9.5px] text-slate-500 dark:text-zinc-400">
+                                                                                        {
+                                                                                            m.details
+                                                                                        }
+                                                                                    </p>
+                                                                                )}
                                                                             </div>
-                                                                            {m.details && (
-                                                                                <p className="mt-0.5 text-[9.5px] text-slate-500 dark:text-zinc-400">
-                                                                                    {m.details}
-                                                                                </p>
-                                                                            )}
+                                                                            <span className="shrink-0 font-mono text-[9.5px] font-bold text-slate-700 dark:text-zinc-300">
+                                                                                {
+                                                                                    m.similarity
+                                                                                }
+                                                                                %
+                                                                            </span>
                                                                         </div>
-                                                                        <span className="shrink-0 font-mono text-[9.5px] font-bold text-slate-700 dark:text-zinc-300">
-                                                                            {m.similarity}%
-                                                                        </span>
-                                                                    </div>
-                                                                ))}
+                                                                    ),
+                                                                )}
                                                             </div>
                                                         </div>
                                                     ) : (
                                                         <div className="flex items-center justify-between text-xs">
                                                             <div className="flex items-center gap-1.5 font-medium text-slate-800 dark:text-zinc-200">
                                                                 <CheckCircle2 className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                                                <span>Hasil pemeriksaan bersih (Nihil benturan kepentingan)</span>
+                                                                <span>
+                                                                    Hasil
+                                                                    pemeriksaan
+                                                                    bersih
+                                                                    (Nihil
+                                                                    benturan
+                                                                    kepentingan)
+                                                                </span>
                                                             </div>
-                                                            <span className="font-mono text-[10px] font-bold text-emerald-700 dark:text-emerald-400 uppercase">
+                                                            <span className="font-mono text-[10px] font-bold text-emerald-700 uppercase dark:text-emerald-400">
                                                                 Clear
                                                             </span>
                                                         </div>
@@ -700,6 +778,107 @@ export default function MatterCreate({
                                         </div>
                                     </div>
 
+                                    {/* Subsection B: Informasi Kontrak */}
+                                    <div className="border-t border-slate-100 pt-3.5 dark:border-white/[0.04]">
+                                        <h3 className="mb-2.5 text-[11px] font-bold text-slate-500 uppercase dark:text-zinc-400">
+                                            B. Informasi Kontrak &amp; Keuangan
+                                        </h3>
+                                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                                            <div className="space-y-1.5 sm:col-span-2">
+                                                <Label
+                                                    htmlFor="budget_amount"
+                                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                                >
+                                                    Nilai Kontrak
+                                                </Label>
+                                                <MoneyInput
+                                                    id="budget_amount"
+                                                    name="budget_amount"
+                                                    prefixText="Rp"
+                                                    placeholder="0"
+                                                />
+                                                <InputError
+                                                    message={
+                                                        errors.budget_amount
+                                                    }
+                                                />
+                                            </div>
+
+                                            <SelectField
+                                                label="Mata Uang"
+                                                name="currency"
+                                                defaultValue="IDR"
+                                                error={errors.currency}
+                                                options={[
+                                                    {
+                                                        value: 'IDR',
+                                                        label: 'IDR — Rupiah',
+                                                    },
+                                                    {
+                                                        value: 'USD',
+                                                        label: 'USD — US Dollar',
+                                                    },
+                                                    {
+                                                        value: 'SGD',
+                                                        label: 'SGD — Singapore Dollar',
+                                                    },
+                                                ]}
+                                            />
+
+                                            <Field
+                                                label="Tanggal Kontrak"
+                                                name="contract_date"
+                                                type="date"
+                                                error={errors.contract_date}
+                                            />
+
+                                            <div className="sm:col-span-2 lg:col-span-2">
+                                                <SelectField
+                                                    label="Model Penagihan"
+                                                    name="billing_model"
+                                                    defaultValue=""
+                                                    optional
+                                                    error={errors.billing_model}
+                                                    options={[
+                                                        {
+                                                            value: '',
+                                                            label: '— Belum ditentukan —',
+                                                        },
+                                                        {
+                                                            value: 'fixed_fee',
+                                                            label: 'Fixed Fee',
+                                                        },
+                                                        {
+                                                            value: 'retainer',
+                                                            label: 'Retainer',
+                                                        },
+                                                        {
+                                                            value: 'hourly',
+                                                            label: 'Hourly Rate',
+                                                        },
+                                                        {
+                                                            value: 'milestone',
+                                                            label: 'Per Tahapan / Milestone',
+                                                        },
+                                                        {
+                                                            value: 'success_fee',
+                                                            label: 'Success Fee',
+                                                        },
+                                                        {
+                                                            value: 'hybrid',
+                                                            label: 'Hybrid',
+                                                        },
+                                                    ]}
+                                                />
+                                            </div>
+                                        </div>
+                                        <p className="mt-2 text-[10.5px] text-slate-400 dark:text-zinc-500">
+                                            Nilai kontrak menjadi dasar analisis
+                                            profitabilitas dan tidak dihitung
+                                            dari total invoice.
+                                        </p>
+                                    </div>
+
                                     {/* Subsection B: Penugasan Advokat */}
                                     <div className="border-t border-slate-100 pt-3.5 dark:border-white/[0.04]">
                                         <h3 className="mb-2.5 text-[11px] font-bold text-slate-500 uppercase dark:text-zinc-400">
@@ -712,7 +891,9 @@ export default function MatterCreate({
                                                     className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                                                 >
                                                     Partner Penanggung Jawab{' '}
-                                                    <span className="text-rose-500">*</span>
+                                                    <span className="text-rose-500">
+                                                        *
+                                                    </span>
                                                 </Label>
                                                 <input
                                                     type="hidden"
@@ -722,12 +903,18 @@ export default function MatterCreate({
                                                 <UserPicker
                                                     id="responsible_partner_id"
                                                     value={responsiblePartnerId}
-                                                    onChange={setResponsiblePartnerId}
-                                                    users={users as UserOption[]}
+                                                    onChange={
+                                                        setResponsiblePartnerId
+                                                    }
+                                                    users={
+                                                        users as UserOption[]
+                                                    }
                                                     placeholder="Pilih Partner Penanggung Jawab..."
                                                     disabledUserIds={
                                                         supervisingLawyerId
-                                                            ? [supervisingLawyerId]
+                                                            ? [
+                                                                  supervisingLawyerId,
+                                                              ]
                                                             : []
                                                     }
                                                     disabledReason="Dipilih sebagai Supervising Lawyer"
@@ -748,7 +935,8 @@ export default function MatterCreate({
                                                         htmlFor="supervising_lawyer_id"
                                                         className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                                                     >
-                                                        Supervising Lawyer (Opsional)
+                                                        Supervising Lawyer
+                                                        (Opsional)
                                                     </Label>
                                                     <span className="text-[10px] text-slate-400 dark:text-zinc-500">
                                                         Opsional
@@ -762,14 +950,20 @@ export default function MatterCreate({
                                                 <UserPicker
                                                     id="supervising_lawyer_id"
                                                     value={supervisingLawyerId}
-                                                    onChange={setSupervisingLawyerId}
-                                                    users={users as UserOption[]}
+                                                    onChange={
+                                                        setSupervisingLawyerId
+                                                    }
+                                                    users={
+                                                        users as UserOption[]
+                                                    }
                                                     placeholder="Pilih Supervising Lawyer (Opsional)..."
                                                     emptyOptionLabel="-- Tanpa Supervising Lawyer --"
                                                     allowClear
                                                     disabledUserIds={
                                                         responsiblePartnerId
-                                                            ? [responsiblePartnerId]
+                                                            ? [
+                                                                  responsiblePartnerId,
+                                                              ]
                                                             : []
                                                     }
                                                     disabledReason="Dipilih sebagai Partner Penanggung Jawab"

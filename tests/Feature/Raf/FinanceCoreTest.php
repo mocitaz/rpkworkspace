@@ -21,6 +21,24 @@ use App\Services\MatterFinancialOverview;
 use App\WorkflowStatus;
 use Illuminate\Support\Carbon;
 
+it('allows finance managers to update matter contract terms', function () {
+    $actor = rafUser(['billing.view', 'billing.manage']);
+    $matter = Matter::factory()->recycle($actor)->create();
+
+    $this->actingAs($actor)->patch(route('finance.matters.contract.update', $matter), [
+        'budget_amount' => 225_000_000,
+        'currency' => 'IDR',
+        'contract_date' => '2026-09-01',
+        'billing_model' => 'retainer',
+    ])->assertSessionHasNoErrors();
+
+    expect($matter->fresh())
+        ->budget_amount->toBe(225_000_000)
+        ->currency->toBe('IDR')
+        ->contract_date->format('Y-m-d')->toBe('2026-09-01')
+        ->billing_model->toBe('retainer');
+});
+
 it('calculates quotation and invoice totals on the server', function () {
     $actor = rafUser();
     $client = Client::factory()->recycle($actor)->create();

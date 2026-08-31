@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/react';
-import { AlertTriangle, Download, FileText, Paperclip, Pencil, Plus } from 'lucide-react';
+import { AlertTriangle, Download, Paperclip, Pencil, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,7 +12,11 @@ import {
 } from '@/components/ui/dialog';
 import { formatMoney } from '@/lib/format';
 import { EditPayrollDialog } from './edit-payroll-dialog';
-import type { FinanceEntityProofTarget, ProofDocumentData } from './finance-proof-dialog';
+import { financeDialogPanelClass } from './finance-dialog-design';
+import type {
+    FinanceEntityProofTarget,
+    ProofDocumentData,
+} from './finance-proof-dialog';
 
 export type PayrollItem = {
     id: string;
@@ -59,18 +63,56 @@ export function PayrollView({
     onViewDetail?: (payroll: PayrollItem) => void;
     onViewProof?: (target: FinanceEntityProofTarget) => void;
 }) {
-    const [selectedPayrollForEdit, setSelectedPayrollForEdit] = useState<PayrollItem | null>(null);
-    const [paidConfirmPayroll, setPaidConfirmPayroll] = useState<PayrollItem | null>(null);
+    const [selectedPayrollForEdit, setSelectedPayrollForEdit] =
+        useState<PayrollItem | null>(null);
+    const [paidConfirmPayroll, setPaidConfirmPayroll] =
+        useState<PayrollItem | null>(null);
 
     const totalNet = payrolls.reduce((acc, p) => acc + p.net_salary, 0);
     const totalBasic = payrolls.reduce((acc, p) => acc + p.basic_salary, 0);
-    const totalAllowances = payrolls.reduce((acc, p) => acc + p.fixed_allowance + p.transport_meal_allowance + p.overtime_amount + p.bonus_amount, 0);
-    const totalDeductions = payrolls.reduce((acc, p) => acc + p.deductions_amount + p.tax_deduction_amount, 0);
+    const totalAllowances = payrolls.reduce(
+        (acc, p) =>
+            acc +
+            p.fixed_allowance +
+            p.transport_meal_allowance +
+            p.overtime_amount +
+            p.bonus_amount,
+        0,
+    );
+    const totalDeductions = payrolls.reduce(
+        (acc, p) => acc + p.deductions_amount + p.tax_deduction_amount,
+        0,
+    );
+    const totalGross = totalBasic + totalAllowances;
+    const payrollComposition = [
+        { label: 'Gaji Pokok', amount: totalBasic, color: 'bg-blue-500' },
+        {
+            label: 'Tunjangan & Bonus',
+            amount: totalAllowances,
+            color: 'bg-sky-300',
+        },
+        {
+            label: 'Potongan',
+            amount: totalDeductions,
+            color: 'bg-amber-400',
+        },
+    ];
+    const payrollCompositionTotal = Math.max(
+        payrollComposition.reduce((total, item) => total + item.amount, 0),
+        1,
+    );
 
-    const handleUpdateStatus = (payrollId: string, status: 'approved' | 'paid') => {
-        router.patch(`/finance/payrolls/${payrollId}/status`, { status }, {
-            preserveScroll: true,
-        });
+    const handleUpdateStatus = (
+        payrollId: string,
+        status: 'approved' | 'paid',
+    ) => {
+        router.patch(
+            `/finance/payrolls/${payrollId}/status`,
+            { status },
+            {
+                preserveScroll: true,
+            },
+        );
     };
 
     const handleEditClick = (p: PayrollItem) => {
@@ -82,13 +124,17 @@ export function PayrollView({
     };
 
     return (
-        <div className="space-y-4">
+        <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
             {/* Header & Actions */}
-            <div className="flex flex-col justify-between gap-2.5 sm:flex-row sm:items-center">
+            <div className="flex flex-col justify-between gap-2.5 border-b border-slate-200/70 px-4 py-3 sm:flex-row sm:items-center dark:border-white/[0.06]">
                 <div>
-                    <h2 className="text-sm font-bold text-slate-900 uppercase dark:text-white">Penggajian &amp; Honor Tenaga Kerja (Payroll)</h2>
-                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                        Pencatatan gaji pokok, tunjangan jabatan, uang makan/transport, upah lembur, bonus perkara, potongan PPh 21, dan cetak slip gaji digital.
+                    <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                        Penggajian &amp; Honor Tenaga Kerja
+                    </h2>
+                    <p className="mt-0.5 max-w-4xl text-[11px] text-slate-500 dark:text-zinc-400">
+                        Pencatatan gaji pokok, tunjangan jabatan, uang
+                        makan/transport, upah lembur, bonus perkara, potongan
+                        PPh 21, dan cetak slip gaji digital.
                     </p>
                 </div>
                 <Button
@@ -102,37 +148,96 @@ export function PayrollView({
             </div>
 
             {/* KPI Strip */}
-            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-                <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                    <span className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">Total Gaji Pokok</span>
-                    <p className="mt-0.5 font-mono text-sm font-bold text-slate-900 dark:text-white">{formatMoney(totalBasic, 'IDR')}</p>
-                </div>
-                <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                    <span className="text-[10px] font-semibold tracking-wider text-blue-500 uppercase">Tunjangan &amp; Bonus</span>
-                    <p className="mt-0.5 font-mono text-sm font-bold text-blue-600 dark:text-blue-400">{formatMoney(totalAllowances, 'IDR')}</p>
-                </div>
-                <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                    <span className="text-[10px] font-semibold tracking-wider text-rose-500 uppercase">Potongan (PPh21/BPJS)</span>
-                    <p className="mt-0.5 font-mono text-sm font-bold text-rose-600 dark:text-rose-400">{formatMoney(totalDeductions, 'IDR')}</p>
-                </div>
-                <div className="rounded-xl border border-emerald-200/80 bg-gradient-to-br from-emerald-50/70 via-white to-white p-3.5 shadow-2xs dark:border-emerald-500/20 dark:from-emerald-950/20 dark:to-[#14161b]">
-                    <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold tracking-wider text-emerald-700 uppercase dark:text-emerald-400">Total Take Home Pay</span>
-                        <span className="inline-flex items-center rounded-full bg-emerald-100 px-1.5 py-0.5 text-[9.5px] font-bold text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300">Netto</span>
+            <div className="grid gap-3 p-4 lg:grid-cols-5">
+                <section className="relative flex min-h-[142px] flex-col justify-between overflow-hidden rounded-xl border border-blue-100 bg-[#eef5ff] p-4 lg:col-span-2 dark:border-blue-400/10 dark:bg-blue-500/[0.06]">
+                    <div className="pointer-events-none absolute -top-12 -right-10 size-32 rounded-full border-[20px] border-white/60 dark:border-white/[0.025]" />
+                    <p className="relative text-[10px] font-bold tracking-[0.14em] text-blue-600 uppercase dark:text-blue-300">
+                        Total Take Home Pay
+                    </p>
+                    <p className="relative mt-1 font-mono text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
+                        {formatMoney(totalNet, 'IDR')}
+                    </p>
+                    <p className="relative mt-1 text-[10px] text-slate-500 dark:text-zinc-400">
+                        Nilai bersih seluruh slip pada periode tercatat
+                    </p>
+                    <div className="relative mt-4 flex items-end justify-between border-t border-blue-200/60 pt-3 text-[9.5px] font-medium text-slate-500 dark:border-white/[0.06] dark:text-zinc-400">
+                        <span>Payroll tercatat</span>
+                        <span>{payrolls.length} slip</span>
                     </div>
-                    <p className="mt-0.5 font-mono text-sm font-bold text-emerald-700 dark:text-emerald-300">{formatMoney(totalNet, 'IDR')}</p>
-                </div>
+                </section>
+
+                <section
+                    data-testid="payroll-composition-panel"
+                    className="flex min-h-[142px] flex-col rounded-xl border border-slate-200/70 bg-slate-50/60 p-4 lg:col-span-3 dark:border-white/[0.06] dark:bg-white/[0.025]"
+                >
+                    <div className="flex items-start justify-between gap-4">
+                        <div>
+                            <p className="text-[10px] font-bold tracking-[0.12em] text-slate-500 uppercase dark:text-zinc-400">
+                                Komposisi Payroll
+                            </p>
+                            <p className="mt-0.5 text-[10px] text-slate-400 dark:text-zinc-500">
+                                Struktur nilai bruto dan pengurang gaji
+                            </p>
+                        </div>
+                        <p className="font-mono text-xs font-bold text-slate-700 dark:text-zinc-200">
+                            Bruto {formatMoney(totalGross, 'IDR')}
+                        </p>
+                    </div>
+                    <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-slate-200/80 dark:bg-white/[0.07]">
+                        {payrollComposition.map((item) => (
+                            <div
+                                key={item.label}
+                                className={item.color}
+                                style={{
+                                    width: `${(item.amount / payrollCompositionTotal) * 100}%`,
+                                }}
+                            />
+                        ))}
+                    </div>
+                    <div className="mt-3 grid flex-1 divide-y divide-slate-200/70 sm:grid-cols-3 sm:divide-x sm:divide-y-0 dark:divide-white/[0.06]">
+                        {payrollComposition.map((item) => (
+                            <div
+                                key={item.label}
+                                className="py-2 first:pl-0 sm:px-3 sm:py-0"
+                            >
+                                <div className="flex items-center gap-1.5 text-[9.5px] font-semibold text-slate-500 dark:text-zinc-400">
+                                    <span
+                                        className={`size-1.5 rounded-full ${item.color}`}
+                                    />
+                                    {item.label}
+                                </div>
+                                <p className="mt-1 font-mono text-sm font-bold text-slate-950 dark:text-white">
+                                    {formatMoney(item.amount, 'IDR')}
+                                </p>
+                                <p className="mt-0.5 text-[9px] text-slate-400 dark:text-zinc-500">
+                                    Kontribusi{' '}
+                                    {(
+                                        (item.amount /
+                                            payrollCompositionTotal) *
+                                        100
+                                    ).toFixed(1)}
+                                    %
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
             </div>
 
             {/* Payroll Table */}
-            <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                <div className="border-b border-slate-200/60 px-4 py-2.5 dark:border-white/[0.06]">
+            <div className="border-t border-slate-200/70 dark:border-white/[0.06]">
+                <div className="px-4 py-3">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h3 className="text-xs font-bold text-slate-900 uppercase dark:text-white">Daftar Payroll Pegawai &amp; Advokat</h3>
-                            <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">Rincian slip penghasilan per personel per periode.</p>
+                            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                Daftar Payroll Pegawai &amp; Advokat
+                            </h3>
+                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                Rincian slip penghasilan per personel per
+                                periode.
+                            </p>
                         </div>
-                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-white/10 dark:text-zinc-300">
+                        <span className="font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
                             {payrolls.length} Slip
                         </span>
                     </div>
@@ -140,87 +245,141 @@ export function PayrollView({
 
                 {payrolls.length === 0 ? (
                     <div className="p-8 text-center text-xs text-slate-400 dark:text-zinc-500">
-                        Belum ada slip gaji tercatat. Klik "Input Gaji Pegawai" untuk membuat payroll baru.
+                        Belum ada slip gaji tercatat. Klik "Input Gaji Pegawai"
+                        untuk membuat payroll baru.
                     </div>
                 ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-xs">
-                            <thead className="border-b border-slate-200/70 bg-slate-50/70 text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:border-white/[0.06] dark:bg-[#121418] dark:text-zinc-400">
+                    <div className="mx-4 mb-4 overflow-x-auto rounded-xl border border-slate-200/70 dark:border-white/[0.06]">
+                        <table className="w-full min-w-[920px] text-left text-xs">
+                            <thead className="border-b border-slate-200/70 bg-slate-50/70 text-[9.5px] font-bold tracking-wider text-slate-400 uppercase dark:border-white/[0.06] dark:bg-white/[0.025] dark:text-zinc-500">
                                 <tr>
-                                    <th className="px-3.5 py-2.5">Pegawai &amp; Periode</th>
-                                    <th className="px-3 py-2.5 text-right">Gaji Pokok</th>
-                                    <th className="px-3 py-2.5 text-right">Tunjangan &amp; Lembur</th>
-                                    <th className="px-3 py-2.5 text-right">Bonus</th>
-                                    <th className="px-3 py-2.5 text-right">Potongan</th>
-                                    <th className="px-3 py-2.5 text-right">Gaji Bersih</th>
-                                    <th className="px-3 py-2.5 text-center">Status</th>
-                                    <th className="px-3 py-2.5 text-center">Aksi</th>
+                                    <th className="px-3.5 py-2.5">Personel</th>
+                                    <th className="px-3 py-2.5">
+                                        Periode &amp; Slip
+                                    </th>
+                                    <th className="px-3 py-2.5 text-right">
+                                        Gaji Pokok
+                                    </th>
+                                    <th className="px-3 py-2.5 text-right">
+                                        Penyesuaian
+                                    </th>
+                                    <th className="px-3 py-2.5 text-right">
+                                        Take Home Pay
+                                    </th>
+                                    <th className="px-3 py-2.5 text-center">
+                                        Status
+                                    </th>
+                                    <th className="px-3 py-2.5 text-right">
+                                        Aksi
+                                    </th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-200/60 font-medium text-slate-700 dark:divide-white/[0.04] dark:text-zinc-300">
+                            <tbody className="divide-y divide-slate-200/60 dark:divide-white/[0.05]">
                                 {payrolls.map((p) => {
-                                    const totalAllowance = p.fixed_allowance + p.transport_meal_allowance + p.overtime_amount;
-                                    const totalDeduct = p.deductions_amount + p.tax_deduction_amount;
-
-                                    const statusBadges: Record<string, { label: string; color: string }> = {
-                                        draft: { label: 'Draft', color: 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-zinc-300' },
-                                        approved: { label: 'Disetujui', color: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400' },
-                                        paid: { label: 'Dibayarkan', color: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' },
-                                    };
-
-                                    const badge = statusBadges[p.status] || { label: p.status, color: 'bg-slate-100 text-slate-700' };
+                                    const totalAllowance =
+                                        p.fixed_allowance +
+                                        p.transport_meal_allowance +
+                                        p.overtime_amount;
+                                    const totalDeduct =
+                                        p.deductions_amount +
+                                        p.tax_deduction_amount;
+                                    const statusLabel = {
+                                        draft: 'Draf',
+                                        approved: 'Disetujui',
+                                        paid: 'Dibayarkan',
+                                    }[p.status];
+                                    const statusClass =
+                                        p.status === 'paid'
+                                            ? 'text-emerald-600 dark:text-emerald-400'
+                                            : p.status === 'approved'
+                                              ? 'text-blue-600 dark:text-blue-400'
+                                              : 'text-amber-600 dark:text-amber-400';
 
                                     return (
-                                        <tr key={p.id} className="transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
-                                             <td className="px-3.5 py-2.5">
-                                                <div className="font-bold text-slate-900 dark:text-white">{p.user?.name || 'Pegawai'}</div>
-                                                <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
-                                                    <span className="font-mono text-blue-600 dark:text-blue-400">{p.period}</span>
-                                                    <span>&bull;</span>
-                                                    <span>{p.user?.position_title || 'Staf'}</span>
-                                                </div>
+                                        <tr
+                                            key={p.id}
+                                            className="transition-colors hover:bg-slate-50/70 dark:hover:bg-white/[0.02]"
+                                        >
+                                            <td className="px-3.5 py-2.5">
+                                                <p className="font-bold text-slate-950 dark:text-white">
+                                                    {p.user?.name || 'Pegawai'}
+                                                </p>
+                                                <p className="mt-0.5 text-[10px] text-slate-500 dark:text-zinc-400">
+                                                    {p.user?.position_title ||
+                                                        'Staf'}
+                                                </p>
                                             </td>
-                                            <td className="px-3 py-2.5 text-right font-mono text-slate-700 dark:text-zinc-300">
-                                                {formatMoney(p.basic_salary, 'IDR')}
+                                            <td className="px-3 py-2.5">
+                                                <p className="font-mono font-semibold text-slate-800 dark:text-zinc-200">
+                                                    {p.period}
+                                                </p>
+                                                <p className="mt-0.5 font-mono text-[9.5px] text-slate-400 dark:text-zinc-500">
+                                                    {p.payslip_number}
+                                                </p>
                                             </td>
-                                            <td className="px-3 py-2.5 text-right font-mono text-slate-700 dark:text-zinc-300">
-                                                {formatMoney(totalAllowance, 'IDR')}
+                                            <td className="px-3 py-2.5 text-right font-mono font-semibold text-slate-800 dark:text-zinc-200">
+                                                {formatMoney(
+                                                    p.basic_salary,
+                                                    'IDR',
+                                                )}
                                             </td>
-                                            <td className="px-3 py-2.5 text-right font-mono text-blue-600 dark:text-blue-400">
-                                                {formatMoney(p.bonus_amount, 'IDR')}
+                                            <td className="px-3 py-2.5 text-right">
+                                                <p className="font-mono text-[10.5px] font-semibold text-slate-700 dark:text-zinc-300">
+                                                    +{' '}
+                                                    {formatMoney(
+                                                        totalAllowance +
+                                                            p.bonus_amount,
+                                                        'IDR',
+                                                    )}
+                                                </p>
+                                                <p className="mt-0.5 font-mono text-[9.5px] text-slate-400 dark:text-zinc-500">
+                                                    −{' '}
+                                                    {formatMoney(
+                                                        totalDeduct,
+                                                        'IDR',
+                                                    )}
+                                                </p>
                                             </td>
-                                            <td className="px-3 py-2.5 text-right font-mono text-rose-600 dark:text-rose-400">
-                                                {formatMoney(totalDeduct, 'IDR')}
-                                            </td>
-                                            <td className="px-3 py-2.5 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                                                {formatMoney(p.net_salary, 'IDR')}
+                                            <td className="px-3 py-2.5 text-right font-mono font-bold text-slate-950 dark:text-white">
+                                                {formatMoney(
+                                                    p.net_salary,
+                                                    'IDR',
+                                                )}
                                             </td>
                                             <td className="px-3 py-2.5 text-center">
-                                                <span className={`rounded-full px-2 py-0.5 text-[9.5px] font-bold ${badge.color}`}>
-                                                    {badge.label}
+                                                <span
+                                                    className={`text-[9.5px] font-bold uppercase ${statusClass}`}
+                                                >
+                                                    {statusLabel}
                                                 </span>
                                             </td>
-                                            <td className="px-3 py-2.5 text-center">
-                                                <div className="flex items-center justify-center gap-1">
+                                            <td className="px-3 py-2.5">
+                                                <div className="flex items-center justify-end gap-1">
                                                     {onViewProof && (
                                                         <Button
                                                             type="button"
                                                             variant="ghost"
                                                             size="icon"
-                                                            onClick={() => onViewProof({
-                                                                id: p.id,
-                                                                entity: 'payrolls',
-                                                                title: `Bukti Pembayaran Gaji: ${p.payslip_number}`,
-                                                                subtitle: `${p.user?.name || 'Pegawai'} • ${formatMoney(p.net_salary, 'IDR')}`,
-                                                                proof_document: p.proof_document || p.proofDocument,
-                                                            })}
+                                                            onClick={() =>
+                                                                onViewProof({
+                                                                    id: p.id,
+                                                                    entity: 'payrolls',
+                                                                    title: `Bukti Pembayaran Gaji: ${p.payslip_number}`,
+                                                                    subtitle: `${p.user?.name || 'Pegawai'} • ${formatMoney(p.net_salary, 'IDR')}`,
+                                                                    proof_document:
+                                                                        p.proof_document ||
+                                                                        p.proofDocument,
+                                                                })
+                                                            }
                                                             className={`size-6.5 rounded-lg ${
-                                                                p.proof_document || p.proofDocument
+                                                                p.proof_document ||
+                                                                p.proofDocument
                                                                     ? 'text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/30'
                                                                     : 'text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-zinc-500 dark:hover:bg-white/[0.06] dark:hover:text-zinc-200'
                                                             }`}
                                                             title={
-                                                                p.proof_document || p.proofDocument
+                                                                p.proof_document ||
+                                                                p.proofDocument
                                                                     ? 'Lihat Bukti Pembayaran Gaji'
                                                                     : 'Unggah Bukti Pembayaran Gaji'
                                                             }
@@ -232,11 +391,12 @@ export function PayrollView({
                                                         <Button
                                                             size="sm"
                                                             variant="ghost"
-                                                            onClick={() => onViewDetail(p)}
+                                                            onClick={() =>
+                                                                onViewDetail(p)
+                                                            }
                                                             className="h-6 rounded px-1.5 text-[10px] font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-300 dark:hover:bg-white/10"
                                                             title="Lihat Rincian Slip Gaji"
                                                         >
-                                                            <FileText className="mr-0.5 size-2.5" />
                                                             Detail
                                                         </Button>
                                                     )}
@@ -244,7 +404,9 @@ export function PayrollView({
                                                     <Button
                                                         size="sm"
                                                         variant="outline"
-                                                        onClick={() => handleEditClick(p)}
+                                                        onClick={() =>
+                                                            handleEditClick(p)
+                                                        }
                                                         className="h-6 rounded border-slate-200 bg-white px-1.5 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                                     >
                                                         <Pencil className="mr-0.5 size-2.5" />
@@ -255,16 +417,27 @@ export function PayrollView({
                                                         <Button
                                                             size="sm"
                                                             variant="outline"
-                                                            onClick={() => handleUpdateStatus(p.id, 'approved')}
+                                                            onClick={() =>
+                                                                handleUpdateStatus(
+                                                                    p.id,
+                                                                    'approved',
+                                                                )
+                                                            }
                                                             className="h-6 rounded px-1.5 text-[10px] font-semibold"
                                                         >
                                                             Setujui
                                                         </Button>
                                                     )}
-                                                    {p.status === 'approved' && (
+                                                    {p.status ===
+                                                        'approved' && (
                                                         <Button
                                                             size="sm"
-                                                            onClick={() => handleUpdateStatus(p.id, 'paid')}
+                                                            onClick={() =>
+                                                                handleUpdateStatus(
+                                                                    p.id,
+                                                                    'paid',
+                                                                )
+                                                            }
                                                             className="h-6 rounded bg-emerald-600 px-1.5 text-[10px] font-semibold text-white hover:bg-emerald-500"
                                                         >
                                                             Bayar
@@ -291,8 +464,11 @@ export function PayrollView({
             </div>
 
             {/* Modal Konfirmasi Slip Gaji yang Sudah Dibayarkan */}
-            <Dialog open={!!paidConfirmPayroll} onOpenChange={(open) => !open && setPaidConfirmPayroll(null)}>
-                <DialogContent className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+            <Dialog
+                open={!!paidConfirmPayroll}
+                onOpenChange={(open) => !open && setPaidConfirmPayroll(null)}
+            >
+                <DialogContent className={financeDialogPanelClass('compact')}>
                     <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                         <div className="flex items-center gap-2.5">
                             <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
@@ -303,37 +479,58 @@ export function PayrollView({
                                     Konfirmasi Edit Slip Gaji Lunas
                                 </DialogTitle>
                                 <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Peringatan status pembayaran &amp; penyesuaian kas.
+                                    Peringatan status pembayaran &amp;
+                                    penyesuaian kas.
                                 </DialogDescription>
                             </div>
                         </div>
                     </DialogHeader>
 
                     {paidConfirmPayroll && (
-                        <div className="space-y-2.5 py-1 text-xs">
+                        <div className="space-y-2.5 px-5 py-4 text-xs sm:px-6">
                             <div className="rounded-xl border border-amber-200/80 bg-amber-50/70 p-3 text-amber-900 dark:border-amber-500/20 dark:bg-amber-950/20 dark:text-amber-200">
-                                <p className="text-xs font-semibold leading-relaxed">
-                                    Slip gaji untuk <strong>{paidConfirmPayroll.user?.name}</strong> (Periode: <strong>{paidConfirmPayroll.period}</strong>) sudah berstatus <span className="font-bold text-amber-700 dark:text-amber-300">DIBAYARKAN (LUNAS)</span>.
+                                <p className="text-xs leading-relaxed font-semibold">
+                                    Slip gaji untuk{' '}
+                                    <strong>
+                                        {paidConfirmPayroll.user?.name}
+                                    </strong>{' '}
+                                    (Periode:{' '}
+                                    <strong>{paidConfirmPayroll.period}</strong>
+                                    ) sudah berstatus{' '}
+                                    <span className="font-bold text-amber-700 dark:text-amber-300">
+                                        DIBAYARKAN (LUNAS)
+                                    </span>
+                                    .
                                 </p>
                                 <p className="mt-1 text-[11px] text-amber-800/90 dark:text-amber-300/80">
-                                    Apakah Anda yakin ingin tetap mengedit komponen gaji ini? Perubahan nominal take home pay dapat mempengaruhi mutasi pembukuan.
+                                    Apakah Anda yakin ingin tetap mengedit
+                                    komponen gaji ini? Perubahan nominal take
+                                    home pay dapat mempengaruhi mutasi
+                                    pembukuan.
                                 </p>
                             </div>
 
                             <div className="rounded-lg border border-slate-200/80 bg-slate-50/70 p-2.5 font-mono text-[11px] text-slate-600 dark:border-white/10 dark:bg-white/[0.02] dark:text-zinc-400">
                                 <div className="flex justify-between">
                                     <span>No. Slip:</span>
-                                    <span className="font-bold text-slate-900 dark:text-white">{paidConfirmPayroll.payslip_number}</span>
+                                    <span className="font-bold text-slate-900 dark:text-white">
+                                        {paidConfirmPayroll.payslip_number}
+                                    </span>
                                 </div>
                                 <div className="mt-1 flex justify-between">
                                     <span>Take Home Pay:</span>
-                                    <span className="font-bold text-emerald-600 dark:text-emerald-400">{formatMoney(paidConfirmPayroll.net_salary, 'IDR')}</span>
+                                    <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                                        {formatMoney(
+                                            paidConfirmPayroll.net_salary,
+                                            'IDR',
+                                        )}
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    <DialogFooter className="gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                    <DialogFooter className="gap-2 border-t border-slate-100 px-5 py-3.5 sm:px-6 dark:border-white/[0.06]">
                         <Button
                             variant="outline"
                             size="sm"
@@ -346,7 +543,9 @@ export function PayrollView({
                             size="sm"
                             onClick={() => {
                                 if (paidConfirmPayroll) {
-                                    setSelectedPayrollForEdit(paidConfirmPayroll);
+                                    setSelectedPayrollForEdit(
+                                        paidConfirmPayroll,
+                                    );
                                     setPaidConfirmPayroll(null);
                                 }
                             }}
@@ -361,7 +560,9 @@ export function PayrollView({
             {/* Modal Form Edit Payroll */}
             <EditPayrollDialog
                 open={!!selectedPayrollForEdit}
-                onOpenChange={(open) => !open && setSelectedPayrollForEdit(null)}
+                onOpenChange={(open) =>
+                    !open && setSelectedPayrollForEdit(null)
+                }
                 payroll={selectedPayrollForEdit}
                 accounts={accounts}
             />

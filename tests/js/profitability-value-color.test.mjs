@@ -12,6 +12,16 @@ test('profitability amounts and percentages use neutral solid text', async () =>
     );
 
     assert.doesNotMatch(source, /font-mono[^\n]+text-(?:blue|emerald|rose)-/);
-    assert.match(source, /bg-slate-100[^\n]+text-slate-900/);
-    assert.match(source, /font-semibold text-slate-900 dark:text-white/);
+    assert.match(
+        source,
+        /font-mono text-base font-bold text-slate-950 dark:text-white/,
+    );
+    assert.match(source, /Realisasi penagihan/);
+    assert.match(source, /Kas diterima terhadap kontrak/);
+    assert.match(source, /bg-emerald-400/);
+    assert.match(source, /bg-\[#eef5ff\]/);
+    assert.doesNotMatch(source, /bg-slate-950/);
+    assert.match(source, /function ProgressRing/);
+    assert.match(source, /Kolektibilitas tagihan/);
+    assert.match(source, /Rasio biaya/);
 });

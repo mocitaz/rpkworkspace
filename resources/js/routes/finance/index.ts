@@ -1,4 +1,5 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
+import matters from './matters'
 import exportMethod from './export'
 import invoices from './invoices'
 import payments from './payments'
@@ -12,7 +13,7 @@ import payrolls from './payrolls'
 import proof from './proof'
 /**
 * @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:66
+* @see app/Http/Controllers/FinanceController.php:80
 * @route '/finance'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -27,7 +28,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:66
+* @see app/Http/Controllers/FinanceController.php:80
 * @route '/finance'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -36,7 +37,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:66
+* @see app/Http/Controllers/FinanceController.php:80
 * @route '/finance'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -46,7 +47,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:66
+* @see app/Http/Controllers/FinanceController.php:80
 * @route '/finance'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -56,7 +57,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:66
+* @see app/Http/Controllers/FinanceController.php:80
 * @route '/finance'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -66,7 +67,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:66
+* @see app/Http/Controllers/FinanceController.php:80
 * @route '/finance'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -76,7 +77,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::index
-* @see app/Http/Controllers/FinanceController.php:66
+* @see app/Http/Controllers/FinanceController.php:80
 * @route '/finance'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -93,6 +94,7 @@ index.form = indexForm
 
 const finance = {
     index: Object.assign(index, index),
+    matters: Object.assign(matters, matters),
     export: Object.assign(exportMethod, exportMethod),
     invoices: Object.assign(invoices, invoices),
     payments: Object.assign(payments, payments),

@@ -19,7 +19,7 @@ class Matter extends Model
     use HasFactory, HasUlids;
 
     protected $fillable = [
-        'matter_number', 'title', 'client_id', 'parent_matter_id', 'relationship_type', 'summary', 'budget_amount', 'currency', 'practice_area_id', 'matter_type',
+        'matter_number', 'title', 'client_id', 'parent_matter_id', 'relationship_type', 'summary', 'budget_amount', 'currency', 'contract_date', 'billing_model', 'practice_area_id', 'matter_type',
         'status', 'priority', 'confidentiality_level', 'responsible_partner_id',
         'supervising_lawyer_id', 'opened_at', 'closed_at', 'jurisdiction', 'court',
         'external_case_number', 'archived_at', 'archived_by', 'legal_hold_at', 'legal_hold_by',
@@ -36,7 +36,7 @@ class Matter extends Model
 
     protected function casts(): array
     {
-        return ['opened_at' => 'date', 'closed_at' => 'date', 'archived_at' => 'datetime', 'legal_hold_at' => 'datetime'];
+        return ['opened_at' => 'date', 'closed_at' => 'date', 'contract_date' => 'date', 'archived_at' => 'datetime', 'legal_hold_at' => 'datetime'];
     }
 
     protected static function booted(): void

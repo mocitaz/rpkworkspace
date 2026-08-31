@@ -33,6 +33,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import { formatBytes, formatDate } from '@/lib/format';
+import { financeDialogPanelClass } from './finance-dialog-design';
 
 export type DocumentVersionData = {
     id: string;
@@ -55,7 +56,14 @@ export type ProofDocumentData = {
 
 export type FinanceEntityProofTarget = {
     id: string;
-    entity: 'expenses' | 'payments' | 'invoices' | 'payrolls' | 'partner-transactions' | 'transfers' | 'client-trust-funds';
+    entity:
+        | 'expenses'
+        | 'payments'
+        | 'invoices'
+        | 'payrolls'
+        | 'partner-transactions'
+        | 'transfers'
+        | 'client-trust-funds';
     title: string;
     subtitle?: string;
     proof_document?: ProofDocumentData | null;
@@ -73,7 +81,9 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
     const [zoomLevel, setZoomLevel] = useState(1);
     const [rotation, setRotation] = useState(0);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [selectedFilePreview, setSelectedFilePreview] = useState<string | null>(null);
+    const [selectedFilePreview, setSelectedFilePreview] = useState<
+        string | null
+    >(null);
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -89,12 +99,14 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
     const isImage = mimeType.startsWith('image/');
     const isPdf = mimeType === 'application/pdf' || mimeType.includes('pdf');
 
-    const previewUrl = hasProof && version
-        ? `/documents/${proofDoc!.id}/versions/${version.id}/preview`
-        : '';
-    const downloadUrl = hasProof && version
-        ? `/documents/${proofDoc!.id}/versions/${version.id}/download`
-        : '';
+    const previewUrl =
+        hasProof && version
+            ? `/documents/${proofDoc!.id}/versions/${version.id}/preview`
+            : '';
+    const downloadUrl =
+        hasProof && version
+            ? `/documents/${proofDoc!.id}/versions/${version.id}/download`
+            : '';
 
     const handleClose = () => {
         setIsUploadingNew(false);
@@ -127,7 +139,10 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
         }
     };
 
-    const entityLabels: Record<string, { label: string; bg: string; text: string; iconBg: string }> = {
+    const entityLabels: Record<
+        string,
+        { label: string; bg: string; text: string; iconBg: string }
+    > = {
         invoices: {
             label: 'Invoice Klien',
             bg: 'bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/40 text-blue-700 dark:text-blue-300',
@@ -184,38 +199,46 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
             <DialogContent
-                className={`max-h-[92vh] flex flex-col p-0 gap-0 overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl dark:border-white/10 dark:bg-[#14161b] ${
-                    showUploader ? 'sm:max-w-md' : 'sm:max-w-3xl'
-                }`}
+                className={financeDialogPanelClass(
+                    showUploader ? 'compact' : 'wide',
+                )}
             >
                 {/* Header */}
-                <DialogHeader className="border-b border-slate-100 px-5 py-3.5 dark:border-white/[0.06] bg-slate-50/40 dark:bg-[#16181f]/40">
+                <DialogHeader className="border-b border-slate-100 bg-slate-50/40 px-5 py-3.5 dark:border-white/[0.06] dark:bg-[#16181f]/40">
                     <div className="flex items-start gap-3">
-                        <div className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${entityMeta.iconBg}`}>
+                        <div
+                            className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${entityMeta.iconBg}`}
+                        >
                             {hasProof ? (
-                                isImage ? <FileImage className="size-4.5" /> : <FileText className="size-4.5" />
+                                isImage ? (
+                                    <FileImage className="size-4.5" />
+                                ) : (
+                                    <FileText className="size-4.5" />
+                                )
                             ) : (
                                 <Paperclip className="size-4.5" />
                             )}
                         </div>
                         <div className="min-w-0 flex-1 pr-6">
-                            <div className="flex flex-wrap items-center gap-1.5 mb-1">
-                                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md ${entityMeta.bg}`}>
+                            <div className="mb-1 flex flex-wrap items-center gap-1.5">
+                                <span
+                                    className={`rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase ${entityMeta.bg}`}
+                                >
                                     {entityMeta.label}
                                 </span>
                                 {hasProof ? (
-                                    <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/70 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40">
+                                    <span className="inline-flex items-center gap-1 rounded-md border border-emerald-200/70 bg-emerald-50 px-2 py-0.5 text-[10.5px] font-semibold text-emerald-700 dark:border-emerald-800/40 dark:bg-emerald-950/40 dark:text-emerald-300">
                                         <FileCheck className="size-3 text-emerald-600 dark:text-emerald-400" />
                                         Bukti Terlampir
                                     </span>
                                 ) : (
-                                    <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200/70 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/40">
+                                    <span className="inline-flex items-center gap-1 rounded-md border border-amber-200/70 bg-amber-50 px-2 py-0.5 text-[10.5px] font-semibold text-amber-700 dark:border-amber-800/40 dark:bg-amber-950/40 dark:text-amber-300">
                                         <Clock className="size-3 text-amber-600 dark:text-amber-400" />
                                         Belum Ada Bukti
                                     </span>
                                 )}
                             </div>
-                            <DialogTitle className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-tight">
+                            <DialogTitle className="text-sm leading-tight font-bold text-slate-900 sm:text-base dark:text-white">
                                 {target.title}
                             </DialogTitle>
                             {target.subtitle && (
@@ -233,10 +256,12 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                         action={`/finance/${target.entity}/${target.id}/proof`}
                         method="post"
                         encType="multipart/form-data"
-                        className="flex flex-col flex-1"
+                        className="flex flex-1 flex-col"
                         onSuccess={() => {
                             setIsUploadingNew(false);
-                            toast.success('Berkas bukti transaksi berhasil diunggah!');
+                            toast.success(
+                                'Berkas bukti transaksi berhasil diunggah!',
+                            );
                             handleClose();
                         }}
                         onError={() => {
@@ -245,7 +270,7 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                     >
                         {({ processing }) => (
                             <>
-                                <div className="p-5 space-y-4 flex-1">
+                                <div className="flex-1 space-y-4 p-5">
                                     {/* Dropzone Area */}
                                     <div
                                         onDragOver={(e) => {
@@ -256,16 +281,27 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                         onDrop={(e) => {
                                             e.preventDefault();
                                             setIsDragging(false);
-                                            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                                                handleFileSelect(e.dataTransfer.files[0]);
+                                            if (
+                                                e.dataTransfer.files &&
+                                                e.dataTransfer.files[0]
+                                            ) {
+                                                handleFileSelect(
+                                                    e.dataTransfer.files[0],
+                                                );
                                                 if (fileInputRef.current) {
-                                                    const dt = new DataTransfer();
-                                                    dt.items.add(e.dataTransfer.files[0]);
-                                                    fileInputRef.current.files = dt.files;
+                                                    const dt =
+                                                        new DataTransfer();
+                                                    dt.items.add(
+                                                        e.dataTransfer.files[0],
+                                                    );
+                                                    fileInputRef.current.files =
+                                                        dt.files;
                                                 }
                                             }
                                         }}
-                                        onClick={() => fileInputRef.current?.click()}
+                                        onClick={() =>
+                                            fileInputRef.current?.click()
+                                        }
                                         className={`group relative cursor-pointer rounded-xl border-2 border-dashed p-6 text-center transition-all duration-150 ${
                                             isDragging
                                                 ? 'border-blue-500 bg-blue-50/50 dark:border-blue-400 dark:bg-blue-950/20'
@@ -282,8 +318,13 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                             required
                                             className="hidden"
                                             onChange={(e) => {
-                                                if (e.target.files && e.target.files[0]) {
-                                                    handleFileSelect(e.target.files[0]);
+                                                if (
+                                                    e.target.files &&
+                                                    e.target.files[0]
+                                                ) {
+                                                    handleFileSelect(
+                                                        e.target.files[0],
+                                                    );
                                                 }
                                             }}
                                         />
@@ -317,8 +358,16 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                             </div>
 
                                             <div className="flex items-center gap-1.5 pt-1">
-                                                {['PDF', 'JPG', 'PNG', 'WEBP'].map((fmt) => (
-                                                    <span key={fmt} className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-slate-600 dark:bg-white/10 dark:text-zinc-300">
+                                                {[
+                                                    'PDF',
+                                                    'JPG',
+                                                    'PNG',
+                                                    'WEBP',
+                                                ].map((fmt) => (
+                                                    <span
+                                                        key={fmt}
+                                                        className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-slate-600 dark:bg-white/10 dark:text-zinc-300"
+                                                    >
                                                         {fmt}
                                                     </span>
                                                 ))}
@@ -328,11 +377,11 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
 
                                     {/* Preview selected image if any */}
                                     {selectedFilePreview && (
-                                        <div className="relative rounded-xl border border-slate-200/80 dark:border-white/10 overflow-hidden bg-slate-900/5 dark:bg-black/30 p-1 flex items-center justify-center h-28">
+                                        <div className="relative flex h-28 items-center justify-center overflow-hidden rounded-xl border border-slate-200/80 bg-slate-900/5 p-1 dark:border-white/10 dark:bg-black/30">
                                             <img
                                                 src={selectedFilePreview}
                                                 alt="Preview"
-                                                className="max-h-24 w-auto max-w-full object-contain rounded-lg shadow-xs"
+                                                className="max-h-24 w-auto max-w-full rounded-lg object-contain shadow-xs"
                                             />
                                             <button
                                                 type="button"
@@ -340,7 +389,7 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                                     e.stopPropagation();
                                                     handleFileSelect(null);
                                                 }}
-                                                className="absolute top-2 right-2 flex size-5.5 items-center justify-center rounded-full bg-slate-900/70 text-white hover:bg-rose-600 transition-colors"
+                                                className="absolute top-2 right-2 flex size-5.5 items-center justify-center rounded-full bg-slate-900/70 text-white transition-colors hover:bg-rose-600"
                                                 title="Hapus pilihan berkas"
                                             >
                                                 <X className="size-3" />
@@ -349,10 +398,12 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                     )}
                                 </div>
 
-                                <DialogFooter className="border-t border-slate-100 px-5 py-3 dark:border-white/[0.06] bg-slate-50/50 dark:bg-[#16181f]/60 flex flex-row items-center justify-between sm:justify-between">
+                                <DialogFooter className="flex flex-row items-center justify-between border-t border-slate-100 bg-slate-50/50 px-5 py-3 sm:justify-between dark:border-white/[0.06] dark:bg-[#16181f]/60">
                                     <div className="flex items-center gap-1 text-[10.5px] text-slate-400">
                                         <ShieldCheck className="size-3 text-emerald-500" />
-                                        <span>Terisolasi dari berkas perkara</span>
+                                        <span>
+                                            Terisolasi dari berkas perkara
+                                        </span>
                                     </div>
 
                                     <div className="flex items-center gap-2">
@@ -377,8 +428,10 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                         <Button
                                             type="submit"
                                             size="sm"
-                                            disabled={processing || !selectedFile}
-                                            className="h-8.5 px-4 rounded-lg bg-blue-600 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 gap-1.5 disabled:opacity-50"
+                                            disabled={
+                                                processing || !selectedFile
+                                            }
+                                            className="h-8.5 gap-1.5 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700"
                                         >
                                             {processing ? (
                                                 <>
@@ -398,18 +451,22 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                         )}
                     </Form>
                 ) : (
-                    <div className="flex flex-col flex-1">
-                        <div className="p-4 sm:p-5 space-y-3">
+                    <div className="flex flex-1 flex-col">
+                        <div className="space-y-3 p-4 sm:p-5">
                             {/* Toolbar for Image */}
                             {isImage && (
                                 <div className="flex items-center justify-center">
-                                    <div className="flex items-center gap-1 p-1 rounded-lg bg-slate-100/90 dark:bg-[#16181f]/90 border border-slate-200/80 dark:border-white/10 shadow-2xs">
+                                    <div className="flex items-center gap-1 rounded-lg border border-slate-200/80 bg-slate-100/90 p-1 shadow-2xs dark:border-white/10 dark:bg-[#16181f]/90">
                                         <Button
                                             type="button"
                                             variant="ghost"
                                             size="icon"
                                             className="size-7 rounded-md text-slate-600 hover:bg-white dark:text-zinc-300 dark:hover:bg-white/10"
-                                            onClick={() => setZoomLevel((z) => Math.min(z + 0.25, 3))}
+                                            onClick={() =>
+                                                setZoomLevel((z) =>
+                                                    Math.min(z + 0.25, 3),
+                                                )
+                                            }
                                             title="Zoom In"
                                         >
                                             <ZoomIn className="size-3.5" />
@@ -419,7 +476,11 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                             variant="ghost"
                                             size="icon"
                                             className="size-7 rounded-md text-slate-600 hover:bg-white dark:text-zinc-300 dark:hover:bg-white/10"
-                                            onClick={() => setZoomLevel((z) => Math.max(z - 0.25, 0.5))}
+                                            onClick={() =>
+                                                setZoomLevel((z) =>
+                                                    Math.max(z - 0.25, 0.5),
+                                                )
+                                            }
                                             title="Zoom Out"
                                         >
                                             <ZoomOut className="size-3.5" />
@@ -429,7 +490,11 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                             variant="ghost"
                                             size="icon"
                                             className="size-7 rounded-md text-slate-600 hover:bg-white dark:text-zinc-300 dark:hover:bg-white/10"
-                                            onClick={() => setRotation((r) => (r + 90) % 360)}
+                                            onClick={() =>
+                                                setRotation(
+                                                    (r) => (r + 90) % 360,
+                                                )
+                                            }
                                             title="Putar 90 Derajat"
                                         >
                                             <RotateCw className="size-3.5" />
@@ -452,33 +517,36 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                             )}
 
                             {/* Viewer Frame */}
-                            <div className="relative w-full h-[50vh] sm:h-[54vh] overflow-hidden flex items-center justify-center rounded-xl bg-slate-900/5 dark:bg-black/30 border border-slate-200/80 dark:border-white/10 p-1">
+                            <div className="relative flex h-[50vh] w-full items-center justify-center overflow-hidden rounded-xl border border-slate-200/80 bg-slate-900/5 p-1 sm:h-[54vh] dark:border-white/10 dark:bg-black/30">
                                 {isImage ? (
-                                    <div className="w-full h-full flex items-center justify-center overflow-auto p-2">
+                                    <div className="flex h-full w-full items-center justify-center overflow-auto p-2">
                                         <img
                                             src={previewUrl}
                                             alt={target.title}
                                             style={{
                                                 transform: `scale(${zoomLevel}) rotate(${rotation}deg)`,
-                                                transition: 'transform 0.15s ease-out',
+                                                transition:
+                                                    'transform 0.15s ease-out',
                                             }}
-                                            className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
+                                            className="max-h-full max-w-full rounded-lg object-contain shadow-sm"
                                         />
                                     </div>
                                 ) : isPdf ? (
                                     <iframe
                                         src={`${previewUrl}#toolbar=1&navpanes=0`}
                                         title={target.title}
-                                        className="w-full h-full rounded-lg border-0 bg-white shadow-xs"
+                                        className="h-full w-full rounded-lg border-0 bg-white shadow-xs"
                                     />
                                 ) : (
-                                    <div className="text-center p-6 space-y-2">
-                                        <FileText className="size-12 mx-auto text-slate-400" />
+                                    <div className="space-y-2 p-6 text-center">
+                                        <FileText className="mx-auto size-12 text-slate-400" />
                                         <p className="text-xs font-semibold text-slate-800 dark:text-white">
-                                            {version?.original_filename || 'Dokumen Bukti'}
+                                            {version?.original_filename ||
+                                                'Dokumen Bukti'}
                                         </p>
                                         <p className="text-[11px] text-slate-500">
-                                            Format berkas tidak mendukung pratinjau langsung.
+                                            Format berkas tidak mendukung
+                                            pratinjau langsung.
                                         </p>
                                         <Button
                                             size="sm"
@@ -487,7 +555,7 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                             asChild
                                         >
                                             <a href={downloadUrl} download>
-                                                <Download className="size-3 mr-1" />
+                                                <Download className="mr-1 size-3" />
                                                 Unduh untuk Membuka
                                             </a>
                                         </Button>
@@ -499,19 +567,28 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                             <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2 text-[11px] text-slate-600 dark:bg-white/[0.02] dark:text-zinc-400">
                                 <div className="flex items-center gap-2">
                                     <HardDrive className="size-3.5 text-purple-500" />
-                                    <span className="font-medium text-slate-800 dark:text-zinc-200 truncate max-w-xs">
-                                        {version?.original_filename || 'Dokumen'}
+                                    <span className="max-w-xs truncate font-medium text-slate-800 dark:text-zinc-200">
+                                        {version?.original_filename ||
+                                            'Dokumen'}
                                     </span>
                                     <span>•</span>
-                                    <span>{version?.file_size ? formatBytes(version.file_size) : 'File'}</span>
+                                    <span>
+                                        {version?.file_size
+                                            ? formatBytes(version.file_size)
+                                            : 'File'}
+                                    </span>
                                     <span>•</span>
-                                    <span>{version?.created_at ? formatDate(version.created_at) : ''}</span>
+                                    <span>
+                                        {version?.created_at
+                                            ? formatDate(version.created_at)
+                                            : ''}
+                                    </span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Footer */}
-                        <DialogFooter className="border-t border-slate-100 px-5 py-3 dark:border-white/[0.06] bg-slate-50/50 dark:bg-[#16181f]/60 flex flex-row items-center justify-between sm:justify-between">
+                        <DialogFooter className="flex flex-row items-center justify-between border-t border-slate-100 bg-slate-50/50 px-5 py-3 sm:justify-between dark:border-white/[0.06] dark:bg-[#16181f]/60">
                             <div className="flex items-center gap-1.5">
                                 <Button
                                     type="button"
@@ -520,7 +597,7 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                     onClick={() => setIsUploadingNew(true)}
                                     className="h-8.5 rounded-lg text-xs font-semibold"
                                 >
-                                    <UploadCloud className="size-3.5 mr-1" />
+                                    <UploadCloud className="mr-1 size-3.5" />
                                     Ganti Bukti Baru
                                 </Button>
                             </div>
@@ -533,7 +610,7 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                     asChild
                                 >
                                     <a href={downloadUrl} download>
-                                        <Download className="size-3.5 mr-1" />
+                                        <Download className="mr-1 size-3.5" />
                                         Unduh
                                     </a>
                                 </Button>
@@ -544,8 +621,12 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                     className="h-8.5 rounded-lg text-xs font-semibold"
                                     asChild
                                 >
-                                    <a href={previewUrl} target="_blank" rel="noreferrer">
-                                        <ExternalLink className="size-3.5 mr-1" />
+                                    <a
+                                        href={previewUrl}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                    >
+                                        <ExternalLink className="mr-1 size-3.5" />
                                         Fullscreen
                                     </a>
                                 </Button>
@@ -555,7 +636,7 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
                                     variant="default"
                                     size="sm"
                                     onClick={handleClose}
-                                    className="h-8.5 rounded-lg bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-100 text-xs font-semibold px-4"
+                                    className="h-8.5 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-100"
                                 >
                                     Tutup
                                 </Button>

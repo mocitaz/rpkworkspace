@@ -27,6 +27,7 @@ import { MoneyInput } from '@/components/ui/money-input';
 import { Label } from '@/components/ui/label';
 import UserPicker, { type UserOption } from '@/components/user-picker';
 import { formatMoney, terbilang } from '@/lib/format';
+import { financeDialogPanelClass } from './finance-dialog-design';
 
 export function CreatePayrollDialog({
     open,
@@ -131,7 +132,7 @@ export function CreatePayrollDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className={financeDialogPanelClass('wide')}>
                 {/* Header */}
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
@@ -139,11 +140,12 @@ export function CreatePayrollDialog({
                             <Receipt className="size-4.5" />
                         </div>
                         <div>
-                            <DialogTitle className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                            <DialogTitle className="text-sm font-bold text-slate-900 sm:text-base dark:text-white">
                                 Input Slip Penghasilan (Payroll)
                             </DialogTitle>
                             <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Pilih pegawai dan susun rincian gaji serta potongan secara otomatis.
+                                Pilih pegawai dan susun rincian gaji serta
+                                potongan secara otomatis.
                             </DialogDescription>
                         </div>
                     </div>
@@ -155,13 +157,16 @@ export function CreatePayrollDialog({
                         <div className="grid gap-2.5 sm:grid-cols-2">
                             <div>
                                 <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                    Pegawai / Advokat Penerima Gaji <span className="text-rose-500">*</span>
+                                    Pegawai / Advokat Penerima Gaji{' '}
+                                    <span className="text-rose-500">*</span>
                                 </Label>
                                 <div className="mt-1">
                                     <UserPicker
                                         id="payroll_user_id"
                                         value={form.data.user_id}
-                                        onChange={(val) => form.setData('user_id', val)}
+                                        onChange={(val) =>
+                                            form.setData('user_id', val)
+                                        }
                                         users={staffUsers}
                                         placeholder="-- Pilih Pegawai / Staf --"
                                     />
@@ -170,7 +175,8 @@ export function CreatePayrollDialog({
 
                             <div>
                                 <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
-                                    Periode Penggajian (Bulan) <span className="text-rose-500">*</span>
+                                    Periode Penggajian (Bulan){' '}
+                                    <span className="text-rose-500">*</span>
                                 </Label>
                                 <div className="relative mt-1">
                                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2.5 text-indigo-600 dark:text-indigo-400">
@@ -179,9 +185,14 @@ export function CreatePayrollDialog({
                                     <input
                                         type="month"
                                         value={form.data.period}
-                                        onChange={(e) => form.setData('period', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'period',
+                                                e.target.value,
+                                            )
+                                        }
                                         required
-                                        className="h-8.5 w-full cursor-pointer rounded-lg border border-slate-200 bg-white pl-8 pr-2.5 text-xs font-semibold text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                        className="h-8.5 w-full cursor-pointer rounded-lg border border-slate-200 bg-white pr-2.5 pl-8 text-xs font-semibold text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                     />
                                 </div>
                             </div>
@@ -189,7 +200,7 @@ export function CreatePayrollDialog({
 
                         {/* Selected User Info Inline Badges */}
                         {selectedUser && (
-                            <div className="flex flex-wrap items-center gap-1.5 border-t border-slate-200/60 pt-2 dark:border-white/[0.06] text-[11px]">
+                            <div className="flex flex-wrap items-center gap-1.5 border-t border-slate-200/60 pt-2 text-[11px] dark:border-white/[0.06]">
                                 {selectedUser.department && (
                                     <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-0.5 font-medium text-slate-700 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-300">
                                         <Building2 className="size-3 text-indigo-500" />
@@ -198,18 +209,28 @@ export function CreatePayrollDialog({
                                 )}
                                 {selectedUser.employee_code && (
                                     <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-0.5 font-mono text-slate-700 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-300">
-                                        NIK: <strong>{selectedUser.employee_code}</strong>
+                                        NIK:{' '}
+                                        <strong>
+                                            {selectedUser.employee_code}
+                                        </strong>
                                     </span>
                                 )}
-                                {selectedUser.bank_name && selectedUser.bank_account_number ? (
+                                {selectedUser.bank_name &&
+                                selectedUser.bank_account_number ? (
                                     <span className="inline-flex items-center gap-1 rounded-md border border-emerald-200 bg-emerald-50/60 px-2 py-0.5 text-emerald-800 dark:border-emerald-900/30 dark:bg-emerald-950/30 dark:text-emerald-300">
                                         <CreditCard className="size-3 text-emerald-600" />
-                                        <span>{selectedUser.bank_name} - {selectedUser.bank_account_number}</span>
+                                        <span>
+                                            {selectedUser.bank_name} -{' '}
+                                            {selectedUser.bank_account_number}
+                                        </span>
                                     </span>
                                 ) : (
                                     <span className="inline-flex items-center gap-1 text-[10.5px] text-amber-600 dark:text-amber-400">
                                         <AlertCircle className="size-3" />
-                                        <span>Rekening belum terdaftar di profil staf</span>
+                                        <span>
+                                            Rekening belum terdaftar di profil
+                                            staf
+                                        </span>
                                     </span>
                                 )}
                             </div>
@@ -224,7 +245,7 @@ export function CreatePayrollDialog({
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-2 dark:border-white/[0.06]">
                                     <div className="flex items-center gap-1.5">
                                         <TrendingUp className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                        <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-zinc-100">
+                                        <span className="text-xs font-bold tracking-wider text-slate-800 uppercase dark:text-zinc-100">
                                             Penerimaan &amp; Tunjangan
                                         </span>
                                     </div>
@@ -237,7 +258,12 @@ export function CreatePayrollDialog({
                                         </Label>
                                         <MoneyInput
                                             value={form.data.basic_salary}
-                                            onValueChange={(val) => form.setData('basic_salary', val)}
+                                            onValueChange={(val) =>
+                                                form.setData(
+                                                    'basic_salary',
+                                                    val,
+                                                )
+                                            }
                                             placeholder="0"
                                             className="mt-1 h-8 rounded-lg font-mono text-xs"
                                         />
@@ -249,7 +275,12 @@ export function CreatePayrollDialog({
                                         </Label>
                                         <MoneyInput
                                             value={form.data.fixed_allowance}
-                                            onValueChange={(val) => form.setData('fixed_allowance', val)}
+                                            onValueChange={(val) =>
+                                                form.setData(
+                                                    'fixed_allowance',
+                                                    val,
+                                                )
+                                            }
                                             placeholder="0"
                                             className="mt-1 h-8 rounded-lg font-mono text-xs"
                                         />
@@ -260,8 +291,16 @@ export function CreatePayrollDialog({
                                             Tunjangan Transport &amp; Makan
                                         </Label>
                                         <MoneyInput
-                                            value={form.data.transport_meal_allowance}
-                                            onValueChange={(val) => form.setData('transport_meal_allowance', val)}
+                                            value={
+                                                form.data
+                                                    .transport_meal_allowance
+                                            }
+                                            onValueChange={(val) =>
+                                                form.setData(
+                                                    'transport_meal_allowance',
+                                                    val,
+                                                )
+                                            }
                                             placeholder="0"
                                             className="mt-1 h-8 rounded-lg font-mono text-xs"
                                         />
@@ -273,7 +312,12 @@ export function CreatePayrollDialog({
                                         </Label>
                                         <MoneyInput
                                             value={form.data.overtime_amount}
-                                            onValueChange={(val) => form.setData('overtime_amount', val)}
+                                            onValueChange={(val) =>
+                                                form.setData(
+                                                    'overtime_amount',
+                                                    val,
+                                                )
+                                            }
                                             placeholder="0"
                                             className="mt-1 h-8 rounded-lg font-mono text-xs"
                                         />
@@ -285,7 +329,12 @@ export function CreatePayrollDialog({
                                         </Label>
                                         <MoneyInput
                                             value={form.data.bonus_amount}
-                                            onValueChange={(val) => form.setData('bonus_amount', val)}
+                                            onValueChange={(val) =>
+                                                form.setData(
+                                                    'bonus_amount',
+                                                    val,
+                                                )
+                                            }
                                             placeholder="0"
                                             className="mt-1 h-8 rounded-lg font-mono text-xs"
                                         />
@@ -310,7 +359,7 @@ export function CreatePayrollDialog({
                                 <div className="flex items-center justify-between border-b border-slate-100 pb-2 dark:border-white/[0.06]">
                                     <div className="flex items-center gap-1.5">
                                         <TrendingDown className="size-3.5 text-rose-600 dark:text-rose-400" />
-                                        <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-zinc-100">
+                                        <span className="text-xs font-bold tracking-wider text-slate-800 uppercase dark:text-zinc-100">
                                             Potongan &amp; Pencairan
                                         </span>
                                     </div>
@@ -322,8 +371,15 @@ export function CreatePayrollDialog({
                                             Potongan Pajak PPh 21
                                         </Label>
                                         <MoneyInput
-                                            value={form.data.tax_deduction_amount}
-                                            onValueChange={(val) => form.setData('tax_deduction_amount', val)}
+                                            value={
+                                                form.data.tax_deduction_amount
+                                            }
+                                            onValueChange={(val) =>
+                                                form.setData(
+                                                    'tax_deduction_amount',
+                                                    val,
+                                                )
+                                            }
                                             placeholder="0"
                                             className="mt-1 h-8 rounded-lg font-mono text-xs"
                                         />
@@ -335,7 +391,12 @@ export function CreatePayrollDialog({
                                         </Label>
                                         <MoneyInput
                                             value={form.data.deductions_amount}
-                                            onValueChange={(val) => form.setData('deductions_amount', val)}
+                                            onValueChange={(val) =>
+                                                form.setData(
+                                                    'deductions_amount',
+                                                    val,
+                                                )
+                                            }
                                             placeholder="0"
                                             className="mt-1 h-8 rounded-lg font-mono text-xs"
                                         />
@@ -349,12 +410,23 @@ export function CreatePayrollDialog({
                                             <div className="relative mt-1">
                                                 <select
                                                     value={form.data.status}
-                                                    onChange={(e) => form.setData('status', e.target.value)}
+                                                    onChange={(e) =>
+                                                        form.setData(
+                                                            'status',
+                                                            e.target.value,
+                                                        )
+                                                    }
                                                     className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2 text-xs font-medium text-slate-800 shadow-2xs outline-hidden focus:border-indigo-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                                 >
-                                                    <option value="draft">Draft (Konsep)</option>
-                                                    <option value="approved">Disetujui</option>
-                                                    <option value="paid">Sudah Dibayar</option>
+                                                    <option value="draft">
+                                                        Draft (Konsep)
+                                                    </option>
+                                                    <option value="approved">
+                                                        Disetujui
+                                                    </option>
+                                                    <option value="paid">
+                                                        Sudah Dibayar
+                                                    </option>
                                                 </select>
                                                 <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3.5 -translate-y-1/2 text-slate-400" />
                                             </div>
@@ -366,13 +438,26 @@ export function CreatePayrollDialog({
                                             </Label>
                                             <div className="relative mt-1">
                                                 <select
-                                                    value={form.data.payment_account_id}
-                                                    onChange={(e) => form.setData('payment_account_id', e.target.value)}
+                                                    value={
+                                                        form.data
+                                                            .payment_account_id
+                                                    }
+                                                    onChange={(e) =>
+                                                        form.setData(
+                                                            'payment_account_id',
+                                                            e.target.value,
+                                                        )
+                                                    }
                                                     className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-7 pl-2 text-xs font-medium text-slate-800 shadow-2xs outline-hidden focus:border-indigo-500 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                                 >
-                                                    <option value="">-- Rekening --</option>
+                                                    <option value="">
+                                                        -- Rekening --
+                                                    </option>
                                                     {accounts.map((a) => (
-                                                        <option key={a.id} value={a.id}>
+                                                        <option
+                                                            key={a.id}
+                                                            value={a.id}
+                                                        >
                                                             {a.name}
                                                         </option>
                                                     ))}
@@ -389,7 +474,12 @@ export function CreatePayrollDialog({
                                         <Input
                                             type="text"
                                             value={form.data.notes}
-                                            onChange={(e) => form.setData('notes', e.target.value)}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'notes',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="cth: Pembayaran honorarium periode berjalan..."
                                             className="mt-1 h-8 rounded-lg text-xs"
                                         />
@@ -405,7 +495,9 @@ export function CreatePayrollDialog({
                                                 accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf"
                                                 buttonText="Pilih Berkas"
                                                 placeholder="Unggah berkas bukti transfer..."
-                                                onFileSelect={(file) => form.setData('proof', file)}
+                                                onFileSelect={(file) =>
+                                                    form.setData('proof', file)
+                                                }
                                             />
                                         </div>
                                     </div>
@@ -435,19 +527,31 @@ export function CreatePayrollDialog({
                                     TAKE HOME PAY (PENGHASILAN BERSIH)
                                 </div>
                                 <div className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-zinc-400">
-                                    <span>Bruto: <strong className="font-mono text-emerald-600">{formatMoney(totalEarnings)}</strong></span>
+                                    <span>
+                                        Bruto:{' '}
+                                        <strong className="font-mono text-emerald-600">
+                                            {formatMoney(totalEarnings)}
+                                        </strong>
+                                    </span>
                                     <span>•</span>
-                                    <span>Potongan: <strong className="font-mono text-rose-600">{formatMoney(totalDeductions)}</strong></span>
+                                    <span>
+                                        Potongan:{' '}
+                                        <strong className="font-mono text-rose-600">
+                                            {formatMoney(totalDeductions)}
+                                        </strong>
+                                    </span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="text-right">
-                            <div className="font-mono text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
+                            <div className="font-mono text-lg font-extrabold text-slate-900 sm:text-xl dark:text-white">
                                 {formatMoney(netSalary)}
                             </div>
                             <div className="text-[10px] font-medium text-slate-400 italic">
-                                {netSalary > 0 ? `${terbilang(netSalary)} Rupiah` : 'Nol Rupiah'}
+                                {netSalary > 0
+                                    ? `${terbilang(netSalary)} Rupiah`
+                                    : 'Nol Rupiah'}
                             </div>
                         </div>
                     </div>
@@ -479,7 +583,7 @@ export function CreatePayrollDialog({
                         <Button
                             type="submit"
                             disabled={form.processing}
-                            className="h-8.5 rounded-lg bg-indigo-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-700 gap-1.5"
+                            className="h-8.5 gap-1.5 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700"
                         >
                             {form.processing ? (
                                 <>

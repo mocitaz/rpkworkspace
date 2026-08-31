@@ -17,11 +17,9 @@ import {
     Eye,
     FileDown,
     FilePlus2,
-    FileSpreadsheet,
     FileText,
     FolderKanban,
     HandCoins,
-    Layers,
     Lock,
     Paperclip,
     Pencil,
@@ -110,6 +108,9 @@ import { CreatePayrollDialog } from './components/create-payroll-dialog';
 import { EditExpenseDialog } from './components/edit-expense-dialog';
 import { EditInvoiceDialog } from './components/edit-invoice-dialog';
 import { EditQuotationDialog } from './components/edit-quotation-dialog';
+import { ExportExcelConfirmButton } from './components/export-excel-confirm-button';
+import { financeDialogPanelClass } from './components/finance-dialog-design';
+import { FinanceDialogHeader } from './components/finance-dialog-ui';
 
 type Matter = {
     id: string;
@@ -183,6 +184,42 @@ const agingBracketLabels: Record<string, string> = {
     over_90: '> 90 hari',
 };
 
+const invoiceStatusLabels: Record<string, string> = {
+    draft: 'Draf',
+    sent: 'Terkirim',
+    paid: 'Lunas',
+    overdue: 'Jatuh Tempo',
+    cancelled: 'Dibatalkan',
+};
+
+const financeStatusLabels: Record<string, string> = {
+    ...invoiceStatusLabels,
+    accepted: 'Diterima',
+    approved: 'Disetujui',
+    pending: 'Menunggu',
+    rejected: 'Ditolak',
+};
+
+function invoiceStatusTextClass(status: string): string {
+    if (['paid', 'accepted', 'approved'].includes(status)) {
+        return 'text-emerald-600 dark:text-emerald-400';
+    }
+
+    if (['overdue', 'rejected', 'cancelled'].includes(status)) {
+        return 'text-rose-600 dark:text-rose-400';
+    }
+
+    if (status === 'sent') {
+        return 'text-blue-600 dark:text-blue-400';
+    }
+
+    if (['draft', 'pending'].includes(status)) {
+        return 'text-amber-600 dark:text-amber-400';
+    }
+
+    return 'text-slate-500 dark:text-zinc-400';
+}
+
 export default function FinanceIndex({
     matters,
     clients,
@@ -236,6 +273,7 @@ export default function FinanceIndex({
         expense: boolean;
         payment: boolean;
         invoiceTransition: boolean;
+        matterContract: boolean;
     };
 }) {
     const [modal, setModal] = useState<
@@ -437,20 +475,33 @@ export default function FinanceIndex({
         | 'analytics_insights'
     >('client_matters');
     const [matterTab, setMatterTab] = useState<
-        | 'all'
         | 'profitability'
         | 'invoices'
         | 'quotations'
         | 'trust_funds'
         | 'disbursements'
         | 'payments'
-    >('all');
+    >('profitability');
     const [officeTab, setOfficeTab] = useState<
         'accounts' | 'office_expenses' | 'payroll' | 'partner_advances'
     >('accounts');
     const [showDetailedAnalytics, setShowDetailedAnalytics] = useState(false);
 
     const currency = overview?.currency ?? 'IDR';
+    const matterTabClass = (tab: string): string =>
+        `relative shrink-0 border-b-2 px-1 pb-2 pt-1 text-[11px] font-semibold transition-colors ${
+            matterTab === tab
+                ? 'border-slate-950 text-slate-950 dark:border-white dark:text-white'
+                : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white'
+        }`;
+    const officeTabClass = (
+        tab: 'accounts' | 'office_expenses' | 'payroll' | 'partner_advances',
+    ): string =>
+        `relative shrink-0 border-b-2 px-1 pb-2 pt-1 text-[11px] font-semibold transition-colors ${
+            officeTab === tab
+                ? 'border-slate-950 text-slate-950 dark:border-white dark:text-white'
+                : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white'
+        }`;
 
     const partnersList = useMemo(() => {
         return staffUsers.filter(
@@ -470,32 +521,36 @@ export default function FinanceIndex({
         return expenses.filter((e) => e.charge_to === 'office');
     }, [expenses]);
 
-    const totalOperationalCashBank = useMemo(() => {
-        return accounts
-            .filter((a) => a.type !== 'client_trust')
-            .reduce((sum, a) => sum + (a.current_balance || 0), 0);
-    }, [accounts]);
-
-    const totalClientTrustBank = useMemo(() => {
-        return accounts
-            .filter((a) => a.type === 'client_trust')
-            .reduce((sum, a) => sum + (a.current_balance || 0), 0);
-    }, [accounts]);
-
     const totalOfficeExpenseSum = useMemo(() => {
         return officeExpenses.reduce((sum, e) => sum + (e.amount || 0), 0);
     }, [officeExpenses]);
 
-    const totalPayrollSum = useMemo(() => {
-        return payrolls.reduce((sum, p) => sum + (p.net_salary || 0), 0);
-    }, [payrolls]);
+    const officeExpenseCategories = useMemo(() => {
+        const totals = officeExpenses.reduce<Record<string, number>>(
+            (summary, expense) => {
+                const category = expense.category || 'general';
+                summary[category] =
+                    (summary[category] || 0) + (expense.amount || 0);
 
-    const totalPartnerAdvDue = useMemo(() => {
-        return partnerAdvances.reduce(
-            (sum, p) => sum + (p.net_due_to_partner || 0),
-            0,
+                return summary;
+            },
+            {},
         );
-    }, [partnerAdvances]);
+
+        return Object.entries(totals)
+            .map(([category, amount]) => ({
+                category,
+                label: humanizeCategory(category),
+                amount,
+            }))
+            .sort((left, right) => right.amount - left.amount);
+    }, [officeExpenses]);
+
+    const averageOfficeExpense =
+        officeExpenses.length > 0
+            ? totalOfficeExpenseSum / officeExpenses.length
+            : 0;
+    const largestOfficeExpenseCategory = officeExpenseCategories[0];
 
     return (
         <>
@@ -623,14 +678,10 @@ export default function FinanceIndex({
 
                             {(scope === 'financial_reports' ||
                                 scope === 'analytics_insights') && (
-                                <a
-                                    href="/finance/export/excel"
+                                <ExportExcelConfirmButton
+                                    label="Export Audit (.xlsx)"
                                     className="inline-flex h-7.5 shrink-0 items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3 text-xs font-bold whitespace-nowrap text-emerald-800 shadow-2xs transition-colors hover:bg-emerald-100 active:scale-95 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
-                                    title="Download Laporan Keuangan Lengkap 11 Sheet Excel (.xlsx) untuk Kesiapan Audit"
-                                >
-                                    <FileSpreadsheet className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                    Export Audit (.xlsx)
-                                </a>
+                                />
                             )}
                         </div>
                     </div>
@@ -852,6 +903,9 @@ export default function FinanceIndex({
                                     <select
                                         name="matter_id"
                                         defaultValue={selectedMatterId}
+                                        onChange={(event) =>
+                                            event.currentTarget.form?.requestSubmit()
+                                        }
                                         className="h-7.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/70 pr-7 pl-2.5 text-xs font-medium text-slate-800 outline-hidden transition-colors hover:bg-slate-100 focus:border-blue-600 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                     >
                                         <option value="">
@@ -869,13 +923,6 @@ export default function FinanceIndex({
                                     </select>
                                     <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
                                 </div>
-                                <Button
-                                    type="submit"
-                                    size="sm"
-                                    className="h-7.5 w-full shrink-0 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white hover:bg-blue-700 sm:w-auto"
-                                >
-                                    Tampilkan Data Perkara
-                                </Button>
                             </Form>
 
                             {!selectedMatterId ? (
@@ -900,8 +947,8 @@ export default function FinanceIndex({
                                     {/* Client Matters Bento KPI Cards */}
                                     {overview && (
                                         <div className="space-y-2.5">
-                                            <section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
-                                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                            <section className="grid overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs sm:grid-cols-2 lg:grid-cols-4 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                                <div className="group border-b border-slate-200/70 p-3.5 transition-colors hover:bg-slate-50/70 sm:border-r lg:border-b-0 dark:border-white/[0.06] dark:hover:bg-white/[0.025]">
                                                     <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
                                                         <span className="text-[10px] font-bold tracking-wider uppercase">
                                                             TOTAL TAGIHAN KLIEN
@@ -926,7 +973,7 @@ export default function FinanceIndex({
                                                     </div>
                                                 </div>
 
-                                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                                <div className="group border-b border-slate-200/70 p-3.5 transition-colors hover:bg-slate-50/70 lg:border-r lg:border-b-0 dark:border-white/[0.06] dark:hover:bg-white/[0.025]">
                                                     <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
                                                         <span className="text-[10px] font-bold tracking-wider uppercase">
                                                             TERTAGIH RIIL
@@ -935,7 +982,7 @@ export default function FinanceIndex({
                                                         <Banknote className="size-3.5 text-emerald-600 dark:text-emerald-400" />
                                                     </div>
                                                     <div className="mt-1.5 flex items-baseline justify-between">
-                                                        <span className="font-mono text-lg font-bold tracking-tight text-emerald-600 sm:text-xl dark:text-emerald-400">
+                                                        <span className="font-mono text-lg font-bold tracking-tight text-slate-950 sm:text-xl dark:text-white">
                                                             {formatMoney(
                                                                 overview.total_cash_inflow ??
                                                                     overview.payment_received_amount,
@@ -953,7 +1000,7 @@ export default function FinanceIndex({
                                                     </div>
                                                 </div>
 
-                                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                                <div className="group border-b border-slate-200/70 p-3.5 transition-colors hover:bg-slate-50/70 sm:border-r sm:border-b-0 dark:border-white/[0.06] dark:hover:bg-white/[0.025]">
                                                     <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
                                                         <span className="text-[10px] font-bold tracking-wider uppercase">
                                                             SISA PIUTANG
@@ -962,7 +1009,7 @@ export default function FinanceIndex({
                                                         <CalendarClock className="size-3.5 text-amber-500 dark:text-amber-400" />
                                                     </div>
                                                     <div className="mt-1.5 flex items-baseline justify-between">
-                                                        <span className="font-mono text-lg font-bold tracking-tight text-amber-600 sm:text-xl dark:text-amber-400">
+                                                        <span className="font-mono text-lg font-bold tracking-tight text-slate-950 sm:text-xl dark:text-white">
                                                             {formatMoney(
                                                                 overview.receivable_amount,
                                                                 currency,
@@ -979,7 +1026,7 @@ export default function FinanceIndex({
                                                     </div>
                                                 </div>
 
-                                                <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.06] dark:bg-[#14161b]">
+                                                <div className="group p-3.5 transition-colors hover:bg-slate-50/70 dark:hover:bg-white/[0.025]">
                                                     <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
                                                         <span className="text-[10px] font-bold tracking-wider uppercase">
                                                             MARGIN LABA PERKARA
@@ -1006,8 +1053,8 @@ export default function FinanceIndex({
                                                 </div>
                                             </section>
 
-                                            {/* Toggle Button for Aging Report */}
-                                            <div className="flex items-center justify-between pt-0.5">
+                                            {/* Aging disclosure */}
+                                            <div className="border-b border-slate-200/70 dark:border-white/[0.06]">
                                                 <button
                                                     type="button"
                                                     onClick={() =>
@@ -1015,41 +1062,45 @@ export default function FinanceIndex({
                                                             (prev) => !prev,
                                                         )
                                                     }
-                                                    className="group inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300 dark:hover:bg-zinc-800/60"
+                                                    className="flex w-full cursor-pointer items-center justify-between py-2 text-left transition-colors hover:text-slate-950 dark:hover:text-white"
                                                 >
-                                                    <span className="flex size-4 items-center justify-center rounded bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
-                                                        {showDetailedAnalytics ? (
-                                                            <ChevronUp className="size-3" />
-                                                        ) : (
-                                                            <ChevronDown className="size-3" />
-                                                        )}
-                                                    </span>
                                                     <span>
-                                                        {showDetailedAnalytics
-                                                            ? 'Sembunyikan Analisis Umur Piutang'
-                                                            : 'Tampilkan Analisis Umur Piutang (Aging Report)'}
+                                                        <span className="block text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                                            Umur Piutang
+                                                        </span>
+                                                        <span className="mt-0.5 block text-[10px] text-slate-400 dark:text-zinc-500">
+                                                            Aging analysis
+                                                            berdasarkan jatuh
+                                                            tempo
+                                                        </span>
+                                                    </span>
+                                                    <span className="text-slate-400 dark:text-zinc-500">
+                                                        {showDetailedAnalytics ? (
+                                                            <ChevronUp className="size-3.5" />
+                                                        ) : (
+                                                            <ChevronDown className="size-3.5" />
+                                                        )}
                                                     </span>
                                                 </button>
                                             </div>
 
                                             {showDetailedAnalytics &&
                                                 overview.aging && (
-                                                    <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-gradient-to-br from-white to-slate-50/70 shadow-2xs dark:border-white/[0.06] dark:from-[#14161b] dark:to-zinc-900/60">
-                                                        <div className="flex items-center gap-2 border-b border-slate-200/60 px-4 py-3 dark:border-white/[0.06]">
-                                                            <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
-                                                                <BarChart3 className="size-3.5" />
-                                                            </span>
+                                                    <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                                        <div className="border-b border-slate-200/60 px-4 py-3 dark:border-white/[0.06]">
                                                             <div>
                                                                 <p className="text-xs font-bold text-slate-900 dark:text-white">
-                                                                    Klasifikasi
-                                                                    Umur Piutang
-                                                                    Klien
+                                                                    Distribusi
+                                                                    Piutang
+                                                                    Berdasarkan
+                                                                    Jatuh Tempo
                                                                 </p>
-                                                                <p className="text-[9px] text-slate-400 dark:text-zinc-500">
-                                                                    Aging
-                                                                    analysis
-                                                                    berdasarkan
-                                                                    jatuh tempo
+                                                                <p className="mt-0.5 text-[10px] text-slate-400 dark:text-zinc-500">
+                                                                    Posisi saldo
+                                                                    tagihan pada
+                                                                    setiap
+                                                                    rentang
+                                                                    keterlambatan.
                                                                 </p>
                                                             </div>
                                                         </div>
@@ -1093,105 +1144,78 @@ export default function FinanceIndex({
                                     )}
 
                                     {/* Sub Tabs for Client Matters */}
-                                    <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto border-b border-slate-200/60 pb-2 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
-                                        <button
-                                            type="button"
-                                            onClick={() => setMatterTab('all')}
-                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                                matterTab === 'all'
-                                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
-                                            }`}
-                                        >
-                                            <Layers className="size-3" />
-                                            Semua Ledger Perkara
-                                        </button>
+                                    <div
+                                        aria-label="Navigasi keuangan perkara"
+                                        role="tablist"
+                                        className="flex [scrollbar-width:none] items-center gap-5 overflow-x-auto border-b border-slate-200/70 [-ms-overflow-style:none] dark:border-white/[0.07] [&::-webkit-scrollbar]:hidden"
+                                    >
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 setMatterTab('profitability')
                                             }
-                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                                matterTab === 'profitability'
-                                                    ? 'bg-blue-600 text-white shadow-2xs'
-                                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
-                                            }`}
+                                            className={matterTabClass(
+                                                'profitability',
+                                            )}
                                         >
-                                            <BarChart3 className="size-3" />
-                                            Profitabilitas Perkara (
-                                            {profitability.length})
+                                            Profitabilitas ·{' '}
+                                            {profitability.length}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 setMatterTab('invoices')
                                             }
-                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                                matterTab === 'invoices'
-                                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
-                                            }`}
+                                            className={matterTabClass(
+                                                'invoices',
+                                            )}
                                         >
-                                            <ReceiptText className="size-3" />
-                                            Invoice Tagihan ({invoices.length})
+                                            Invoice · {invoices.length}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 setMatterTab('quotations')
                                             }
-                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                                matterTab === 'quotations'
-                                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
-                                            }`}
+                                            className={matterTabClass(
+                                                'quotations',
+                                            )}
                                         >
-                                            <FilePlus2 className="size-3" />
-                                            Quotation ({quotations.length})
+                                            Quotation · {quotations.length}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 setMatterTab('trust_funds')
                                             }
-                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                                matterTab === 'trust_funds'
-                                                    ? 'bg-cyan-600 text-white shadow-2xs'
-                                                    : 'border border-slate-200/70 bg-white text-cyan-700 hover:bg-cyan-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-cyan-400'
-                                            }`}
+                                            className={matterTabClass(
+                                                'trust_funds',
+                                            )}
                                         >
-                                            <Lock className="size-3" />
-                                            Dana Titipan Klien (
-                                            {clientTrustFunds.length})
+                                            Dana Titipan ·{' '}
+                                            {clientTrustFunds.length}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 setMatterTab('disbursements')
                                             }
-                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                                matterTab === 'disbursements'
-                                                    ? 'bg-rose-600 text-white shadow-2xs'
-                                                    : 'border border-slate-200/70 bg-white text-rose-700 hover:bg-rose-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-rose-400'
-                                            }`}
+                                            className={matterTabClass(
+                                                'disbursements',
+                                            )}
                                         >
-                                            <WalletCards className="size-3" />
-                                            Biaya Perkara (
-                                            {matterExpenses.length})
+                                            Biaya · {matterExpenses.length}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 setMatterTab('payments')
                                             }
-                                            className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                                matterTab === 'payments'
-                                                    ? 'bg-emerald-600 text-white shadow-2xs'
-                                                    : 'border border-slate-200/70 bg-white text-emerald-700 hover:bg-emerald-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-emerald-400'
-                                            }`}
+                                            className={matterTabClass(
+                                                'payments',
+                                            )}
                                         >
-                                            <Banknote className="size-3" />
-                                            Penerimaan Kas ({payments.length})
+                                            Penerimaan · {payments.length}
                                         </button>
                                     </div>
 
@@ -1199,6 +1223,9 @@ export default function FinanceIndex({
                                     {matterTab === 'profitability' && (
                                         <ProfitabilityTable
                                             items={profitability}
+                                            canManageContract={
+                                                can.matterContract
+                                            }
                                         />
                                     )}
 
@@ -1213,20 +1240,18 @@ export default function FinanceIndex({
                                                 }
                                             }
                                             trustFunds={clientTrustFunds}
-                                            onOpenTrustModal={() =>
+                                            onOpenCreateModal={() =>
                                                 setModal('client_trust')
                                             }
                                         />
                                     )}
 
-                                    {(matterTab === 'all' ||
-                                        matterTab === 'invoices' ||
+                                    {(matterTab === 'invoices' ||
                                         matterTab === 'quotations' ||
                                         matterTab === 'disbursements' ||
                                         matterTab === 'payments') && (
-                                        <div className="grid gap-3 lg:grid-cols-2">
-                                            {(matterTab === 'all' ||
-                                                matterTab === 'invoices') && (
+                                        <div>
+                                            {matterTab === 'invoices' && (
                                                 <div
                                                     className={
                                                         matterTab === 'invoices'
@@ -1241,8 +1266,8 @@ export default function FinanceIndex({
                                                         icon={ReceiptText}
                                                         iconBg="bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400"
                                                         value={(i) =>
-                                                            i.outstanding_amount ??
                                                             i.total_amount ??
+                                                            i.outstanding_amount ??
                                                             0
                                                         }
                                                         date={(i) => i.due_at}
@@ -1277,8 +1302,7 @@ export default function FinanceIndex({
                                                 </div>
                                             )}
 
-                                            {(matterTab === 'all' ||
-                                                matterTab === 'quotations') && (
+                                            {matterTab === 'quotations' && (
                                                 <div
                                                     className={
                                                         matterTab ===
@@ -1328,9 +1352,7 @@ export default function FinanceIndex({
                                                 </div>
                                             )}
 
-                                            {(matterTab === 'all' ||
-                                                matterTab ===
-                                                    'disbursements') && (
+                                            {matterTab === 'disbursements' && (
                                                 <div
                                                     className={
                                                         matterTab ===
@@ -1384,8 +1406,7 @@ export default function FinanceIndex({
                                                 </div>
                                             )}
 
-                                            {(matterTab === 'all' ||
-                                                matterTab === 'payments') && (
+                                            {matterTab === 'payments' && (
                                                 <div
                                                     className={
                                                         matterTab === 'payments'
@@ -1430,134 +1451,43 @@ export default function FinanceIndex({
                     {/* ========================================================================= */}
                     {scope === 'office_operations' && (
                         <div className="space-y-3.5">
-                            {/* Office Operations KPI Banner */}
-                            <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <span className="text-[10px] font-bold text-blue-600 uppercase dark:text-blue-400">
-                                        Kas &amp; Bank Operasional
-                                    </span>
-                                    <p className="mt-1 font-mono text-base font-bold text-slate-900 dark:text-white">
-                                        {formatMoney(
-                                            totalOperationalCashBank,
-                                            'IDR',
-                                        )}
-                                    </p>
-                                    <span className="text-[9.5px] text-slate-400">
-                                        Kas Kantor + Giro Bank
-                                    </span>
-                                </div>
-
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <span className="text-[10px] font-bold text-purple-600 uppercase dark:text-purple-400">
-                                        Titipan Klien di Bank
-                                    </span>
-                                    <p className="mt-1 font-mono text-base font-bold text-purple-600 dark:text-purple-400">
-                                        {formatMoney(
-                                            totalClientTrustBank,
-                                            'IDR',
-                                        )}
-                                    </p>
-                                    <span className="text-[9.5px] text-slate-400">
-                                        Rekening Escrow Panjar
-                                    </span>
-                                </div>
-
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <span className="text-[10px] font-bold text-rose-500 uppercase">
-                                        Biaya Rutin Kantor
-                                    </span>
-                                    <p className="mt-1 font-mono text-base font-bold text-rose-600 dark:text-rose-400">
-                                        {formatMoney(
-                                            totalOfficeExpenseSum,
-                                            'IDR',
-                                        )}
-                                    </p>
-                                    <span className="text-[9.5px] text-slate-400">
-                                        Non-Perkara
-                                    </span>
-                                </div>
-
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <span className="text-[10px] font-bold text-indigo-500 uppercase">
-                                        Total Payroll Gaji
-                                    </span>
-                                    <p className="mt-1 font-mono text-base font-bold text-indigo-600 dark:text-indigo-400">
-                                        {formatMoney(totalPayrollSum, 'IDR')}
-                                    </p>
-                                    <span className="text-[9.5px] text-slate-400">
-                                        Staf &amp; Honor Advokat
-                                    </span>
-                                </div>
-
-                                <div className="rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <span className="text-[10px] font-bold text-amber-500 uppercase">
-                                        Utang Talangan Partner
-                                    </span>
-                                    <p className="mt-1 font-mono text-base font-bold text-amber-600 dark:text-amber-400">
-                                        {formatMoney(totalPartnerAdvDue, 'IDR')}
-                                    </p>
-                                    <span className="text-[9.5px] text-slate-400">
-                                        Kewajiban ke Partner
-                                    </span>
-                                </div>
-                            </section>
-
                             {/* Sub Tabs for Office Operations */}
-                            <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto border-b border-slate-200/60 pb-2 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
+                            <div className="flex [scrollbar-width:none] items-center gap-8 overflow-x-auto border-b border-slate-200/60 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
                                 <button
                                     type="button"
                                     onClick={() => setOfficeTab('accounts')}
-                                    className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                        officeTab === 'accounts'
-                                            ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                            : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
-                                    }`}
+                                    className={officeTabClass('accounts')}
                                 >
-                                    <Building className="size-3" />
-                                    Rekening Kas &amp; Bank ({accounts.length})
+                                    Rekening · {accounts.length}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() =>
                                         setOfficeTab('office_expenses')
                                     }
-                                    className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                        officeTab === 'office_expenses'
-                                            ? 'bg-rose-600 text-white shadow-2xs'
-                                            : 'border border-slate-200/70 bg-white text-rose-700 hover:bg-rose-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-rose-400'
-                                    }`}
+                                    className={officeTabClass(
+                                        'office_expenses',
+                                    )}
                                 >
-                                    <WalletCards className="size-3" />
-                                    Beban Operasional Kantor (
-                                    {officeExpenses.length})
+                                    Beban Operasional · {officeExpenses.length}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => setOfficeTab('payroll')}
-                                    className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                        officeTab === 'payroll'
-                                            ? 'bg-indigo-600 text-white shadow-2xs'
-                                            : 'border border-slate-200/70 bg-white text-indigo-700 hover:bg-indigo-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-indigo-400'
-                                    }`}
+                                    className={officeTabClass('payroll')}
                                 >
-                                    <Users className="size-3" />
-                                    Penggajian &amp; Slip Gaji (
-                                    {payrolls.length})
+                                    Penggajian · {payrolls.length}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() =>
                                         setOfficeTab('partner_advances')
                                     }
-                                    className={`flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                        officeTab === 'partner_advances'
-                                            ? 'bg-amber-600 text-white shadow-2xs'
-                                            : 'border border-slate-200/70 bg-white text-amber-700 hover:bg-amber-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-amber-400'
-                                    }`}
+                                    className={officeTabClass(
+                                        'partner_advances',
+                                    )}
                                 >
-                                    <HandCoins className="size-3" />
-                                    Talangan &amp; Hak Partner (
-                                    {partnerAdvances.length})
+                                    Talangan Partner · {partnerAdvances.length}
                                 </button>
                             </div>
 
@@ -1577,6 +1507,121 @@ export default function FinanceIndex({
 
                             {officeTab === 'office_expenses' && (
                                 <div className="grid gap-3">
+                                    <section
+                                        data-testid="office-expense-summary"
+                                        className="grid gap-3 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs lg:grid-cols-5 dark:border-white/[0.06] dark:bg-[#14161b]"
+                                    >
+                                        <div className="relative flex min-h-[142px] flex-col justify-between overflow-hidden rounded-xl border border-rose-100 bg-rose-50/70 p-4 lg:col-span-2 dark:border-rose-400/10 dark:bg-rose-500/[0.05]">
+                                            <div className="pointer-events-none absolute -top-12 -right-10 size-32 rounded-full border-[20px] border-white/60 dark:border-white/[0.025]" />
+                                            <div>
+                                                <p className="relative text-[10px] font-bold tracking-[0.14em] text-rose-600 uppercase dark:text-rose-300">
+                                                    Total Beban Operasional
+                                                </p>
+                                                <p className="relative mt-1 font-mono text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
+                                                    {formatMoney(
+                                                        totalOfficeExpenseSum,
+                                                        'IDR',
+                                                    )}
+                                                </p>
+                                                <p className="relative mt-1 text-[10px] text-slate-500 dark:text-zinc-400">
+                                                    Pengeluaran rutin kantor
+                                                    non-perkara
+                                                </p>
+                                            </div>
+                                            <div className="relative mt-4 flex justify-between border-t border-rose-200/60 pt-3 text-[9.5px] font-medium text-slate-500 dark:border-white/[0.06] dark:text-zinc-400">
+                                                <span>Transaksi tercatat</span>
+                                                <span>
+                                                    {officeExpenses.length}{' '}
+                                                    transaksi
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex min-h-[142px] flex-col rounded-xl border border-slate-200/70 bg-slate-50/60 p-4 lg:col-span-3 dark:border-white/[0.06] dark:bg-white/[0.025]">
+                                            <div className="flex items-start justify-between gap-4">
+                                                <div>
+                                                    <p className="text-[10px] font-bold tracking-[0.12em] text-slate-500 uppercase dark:text-zinc-400">
+                                                        Komposisi Beban
+                                                    </p>
+                                                    <p className="mt-0.5 text-[10px] text-slate-400 dark:text-zinc-500">
+                                                        Distribusi biaya rutin
+                                                        menurut kategori
+                                                    </p>
+                                                </div>
+                                                <p className="font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                    {
+                                                        officeExpenseCategories.length
+                                                    }{' '}
+                                                    kategori
+                                                </p>
+                                            </div>
+                                            <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-slate-200/80 dark:bg-white/[0.07]">
+                                                {officeExpenseCategories.map(
+                                                    (category, index) => (
+                                                        <div
+                                                            key={
+                                                                category.category
+                                                            }
+                                                            className={
+                                                                [
+                                                                    'bg-rose-500',
+                                                                    'bg-orange-300',
+                                                                    'bg-slate-400',
+                                                                    'bg-blue-300',
+                                                                ][index % 4]
+                                                            }
+                                                            style={{
+                                                                width: `${totalOfficeExpenseSum > 0 ? (category.amount / totalOfficeExpenseSum) * 100 : 0}%`,
+                                                            }}
+                                                        />
+                                                    ),
+                                                )}
+                                            </div>
+                                            <div className="mt-3 grid flex-1 divide-y divide-slate-200/70 sm:grid-cols-3 sm:divide-x sm:divide-y-0 dark:divide-white/[0.06]">
+                                                <div className="py-2 sm:py-0 sm:pr-3">
+                                                    <p className="text-[9px] font-semibold text-slate-400 uppercase dark:text-zinc-500">
+                                                        Jumlah Transaksi
+                                                    </p>
+                                                    <p className="mt-1 font-mono text-sm font-bold text-slate-950 dark:text-white">
+                                                        {officeExpenses.length}
+                                                    </p>
+                                                    <p className="mt-0.5 text-[9px] text-slate-400 dark:text-zinc-500">
+                                                        Pengeluaran tercatat
+                                                    </p>
+                                                </div>
+                                                <div className="py-2 sm:px-3 sm:py-0">
+                                                    <p className="text-[9px] font-semibold text-slate-400 uppercase dark:text-zinc-500">
+                                                        Rata-rata Transaksi
+                                                    </p>
+                                                    <p className="mt-1 font-mono text-sm font-bold text-slate-950 dark:text-white">
+                                                        {formatMoney(
+                                                            averageOfficeExpense,
+                                                            'IDR',
+                                                        )}
+                                                    </p>
+                                                    <p className="mt-0.5 text-[9px] text-slate-400 dark:text-zinc-500">
+                                                        Per pencatatan biaya
+                                                    </p>
+                                                </div>
+                                                <div className="py-2 sm:py-0 sm:pl-3">
+                                                    <p className="text-[9px] font-semibold text-slate-400 uppercase dark:text-zinc-500">
+                                                        Kategori Terbesar
+                                                    </p>
+                                                    <p className="mt-1 truncate text-xs font-bold text-slate-950 dark:text-white">
+                                                        {largestOfficeExpenseCategory?.label ||
+                                                            'Belum ada'}
+                                                    </p>
+                                                    <p className="mt-0.5 font-mono text-[9px] text-slate-400 dark:text-zinc-500">
+                                                        {formatMoney(
+                                                            largestOfficeExpenseCategory?.amount ||
+                                                                0,
+                                                            'IDR',
+                                                        )}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
                                     <Ledger
                                         title="Beban Operasional Rutin Kantor (Non-Perkara)"
                                         items={officeExpenses}
@@ -1815,7 +1860,7 @@ export default function FinanceIndex({
                 open={!!confirmExpenseToEdit}
                 onOpenChange={(open) => !open && setConfirmExpenseToEdit(null)}
             >
-                <DialogContent className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                <DialogContent className={financeDialogPanelClass('compact')}>
                     <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                         <div className="flex items-center gap-2.5">
                             <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
@@ -1833,7 +1878,7 @@ export default function FinanceIndex({
                     </DialogHeader>
 
                     {confirmExpenseToEdit && (
-                        <div className="space-y-2.5 py-1 text-xs">
+                        <div className="space-y-2.5 px-5 py-4 text-xs sm:px-6">
                             <div className="rounded-xl border border-amber-200/80 bg-amber-50/70 p-3 text-amber-900 dark:border-amber-500/20 dark:bg-amber-950/20 dark:text-amber-200">
                                 <p className="text-xs leading-relaxed font-semibold">
                                     Catatan biaya{' '}
@@ -1864,7 +1909,7 @@ export default function FinanceIndex({
                         </div>
                     )}
 
-                    <DialogFooter className="gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                    <DialogFooter className="gap-2 border-t border-slate-100 px-5 py-3.5 sm:px-6 dark:border-white/[0.06]">
                         <Button
                             variant="outline"
                             size="sm"
@@ -2046,22 +2091,17 @@ function Ledger({
             {/* Header */}
             <div className="flex shrink-0 flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
                 <div className="flex items-center gap-2">
-                    <div
-                        className={`flex size-7 shrink-0 items-center justify-center rounded-lg ${iconBg}`}
-                    >
-                        <IconComp className="size-3.5" />
-                    </div>
                     <div>
-                        <h3 className="text-xs font-bold text-slate-900 dark:text-white">
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                             {title}
                         </h3>
-                        <p className="text-[10px] text-slate-400 dark:text-zinc-500">
+                        <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
                             Log transaksi &amp; status pembukuan keuangan
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                    <span className="font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
                         {items.length} entri
                     </span>
                     {canCreate && onCreate && (
@@ -2112,70 +2152,117 @@ function Ledger({
                                 className="group flex flex-col justify-between gap-2.5 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50/20 hover:shadow-xs sm:flex-row sm:items-center sm:p-3 dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-white/10 dark:hover:bg-white/[0.02]"
                             >
                                 <div className="flex min-w-0 flex-1 items-start gap-2.5">
-                                    <div
-                                        className={`mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg border transition-transform group-hover:scale-105 ${iconBg} border-slate-200/60 dark:border-white/10`}
-                                    >
-                                        <IconComp className="size-3.5" />
-                                    </div>
-
-                                    <div className="min-w-0 flex-1 space-y-0.5">
-                                        <div className="flex flex-wrap items-center gap-1 text-[9.5px]">
-                                            {i.matter?.matter_number && (
-                                                <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
-                                                    {i.matter.matter_number}
-                                                </span>
-                                            )}
-                                            <StatusBadge value={i.status} />
-                                            {i.category && (
-                                                <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600 capitalize dark:bg-zinc-800 dark:text-zinc-400">
-                                                    {i.category}
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        <h4 className="line-clamp-1 text-xs font-bold text-slate-900 dark:text-white">
-                                            {i.invoice_number ? (
-                                                <Link
-                                                    href={invoiceRoutes.show.url(
-                                                        i.id,
-                                                    )}
-                                                    className="transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+                                    {i.invoice_number ||
+                                    i.quotation_number ||
+                                    i.amount !== undefined ? (
+                                        <div className="min-w-0 flex-1 border-l-2 border-blue-500 pl-3">
+                                            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
+                                                {i.invoice_number ? (
+                                                    <Link
+                                                        href={invoiceRoutes.show.url(
+                                                            i.id,
+                                                        )}
+                                                        className="font-mono text-xs font-bold text-slate-950 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
+                                                    >
+                                                        {i.invoice_number}
+                                                    </Link>
+                                                ) : (
+                                                    <span className="font-mono text-xs font-bold text-slate-950 dark:text-white">
+                                                        {i.quotation_number ??
+                                                            i.description ??
+                                                            i.title}
+                                                    </span>
+                                                )}
+                                                <span
+                                                    className={`text-[10px] font-bold uppercase ${invoiceStatusTextClass(i.status)}`}
                                                 >
-                                                    {i.invoice_number}
-                                                </Link>
-                                            ) : (
-                                                (i.quotation_number ??
-                                                i.title ??
-                                                i.description)
-                                            )}
-                                        </h4>
-
-                                        <div className="flex flex-wrap items-center gap-x-1.5 text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                            {i.matter?.title && (
-                                                <span className="max-w-[260px] truncate font-medium text-slate-600 dark:text-zinc-300">
-                                                    {i.matter.title}
+                                                    {financeStatusLabels[
+                                                        i.status
+                                                    ] ?? i.status}
                                                 </span>
+                                            </div>
+
+                                            {(i.matter?.title ||
+                                                (i.description &&
+                                                    i.quotation_number)) && (
+                                                <p className="mt-1 line-clamp-1 max-w-2xl text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
+                                                    {i.matter?.title ??
+                                                        i.description}
+                                                </p>
                                             )}
-                                            {date?.(i) && (
-                                                <>
-                                                    <span>·</span>
-                                                    <span className="font-mono text-slate-500 dark:text-zinc-400">
-                                                        Jatuh Tempo:{' '}
+
+                                            <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[10px] text-slate-500 dark:text-zinc-400">
+                                                {i.matter?.matter_number && (
+                                                    <span className="font-mono font-semibold text-slate-600 dark:text-zinc-300">
+                                                        {i.matter.matter_number}
+                                                    </span>
+                                                )}
+                                                {date?.(i) && (
+                                                    <span className="border-l border-slate-200 pl-2 font-mono dark:border-white/10">
+                                                        Jatuh tempo{' '}
                                                         {formatDate(date(i)!)}
                                                     </span>
-                                                </>
-                                            )}
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
+                                    ) : (
+                                        <div className="min-w-0 flex-1 space-y-0.5">
+                                            <div className="flex flex-wrap items-center gap-1 text-[9.5px]">
+                                                {i.matter?.matter_number && (
+                                                    <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
+                                                        {i.matter.matter_number}
+                                                    </span>
+                                                )}
+                                                <StatusBadge value={i.status} />
+                                                {i.category && (
+                                                    <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600 capitalize dark:bg-zinc-800 dark:text-zinc-400">
+                                                        {i.category}
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            <h4 className="line-clamp-1 text-xs font-bold text-slate-900 dark:text-white">
+                                                {i.quotation_number ??
+                                                    i.title ??
+                                                    i.description}
+                                            </h4>
+
+                                            <div className="flex flex-wrap items-center gap-x-1.5 text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                {i.matter?.title && (
+                                                    <span className="max-w-[260px] truncate font-medium text-slate-600 dark:text-zinc-300">
+                                                        {i.matter.title}
+                                                    </span>
+                                                )}
+                                                {date?.(i) && (
+                                                    <>
+                                                        <span>·</span>
+                                                        <span className="font-mono text-slate-500 dark:text-zinc-400">
+                                                            Jatuh Tempo:{' '}
+                                                            {formatDate(
+                                                                date(i)!,
+                                                            )}
+                                                        </span>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="flex shrink-0 items-center justify-between gap-1 border-t border-slate-100 pt-1.5 pl-9.5 sm:flex-col sm:items-end sm:justify-center sm:border-t-0 sm:pt-0 sm:pl-0 dark:border-white/[0.04]">
-                                    <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                        {formatMoney(
-                                            value(i),
-                                            i.currency || currency,
+                                    <div className="text-right">
+                                        {i.invoice_number && (
+                                            <p className="text-[9px] font-semibold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                                Total invoice
+                                            </p>
                                         )}
-                                    </span>
+                                        <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
+                                            {formatMoney(
+                                                value(i),
+                                                i.currency || currency,
+                                            )}
+                                        </span>
+                                    </div>
 
                                     <div className="flex items-center gap-1">
                                         {onViewDetail && (
@@ -2513,21 +2600,18 @@ function PaymentLedger({
             {/* Header */}
             <div className="flex shrink-0 flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
                 <div className="flex items-center gap-2">
-                    <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
-                        <Banknote className="size-3.5" />
-                    </div>
                     <div>
-                        <h3 className="text-xs font-bold text-slate-900 dark:text-white">
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                             Riwayat Penerimaan Pembayaran
                         </h3>
-                        <p className="text-[10px] text-slate-400 dark:text-zinc-500">
+                        <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
                             Log transfer kas masuk, pelunasan invoice &amp;
                             deposit klien
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                    <span className="font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
                         {items.length} pembayaran
                     </span>
                     {canManage && onCreate && (
@@ -2576,21 +2660,9 @@ function PaymentLedger({
                                 className="group flex flex-col justify-between gap-2.5 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs transition-all hover:border-emerald-300 hover:bg-emerald-50/20 hover:shadow-xs sm:flex-row sm:items-center sm:p-3 dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-emerald-800/50 dark:hover:bg-white/[0.02]"
                             >
                                 <div className="flex min-w-0 flex-1 items-start gap-2.5">
-                                    <div className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg border border-emerald-200/60 bg-emerald-50 text-emerald-600 transition-transform group-hover:scale-105 dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-400">
-                                        <Banknote className="size-3.5" />
-                                    </div>
-
-                                    <div className="min-w-0 flex-1 space-y-0.5">
-                                        <div className="flex flex-wrap items-center gap-1 text-[9.5px]">
-                                            {payment.matter?.matter_number && (
-                                                <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
-                                                    {
-                                                        payment.matter
-                                                            .matter_number
-                                                    }
-                                                </span>
-                                            )}
-                                            <span className="inline-flex items-center rounded bg-emerald-50 px-1.5 py-0.5 font-semibold text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
+                                    <div className="min-w-0 flex-1 border-l-2 border-emerald-500 pl-3">
+                                        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 text-[10px]">
+                                            <span className="font-bold text-emerald-600 uppercase dark:text-emerald-400">
                                                 {payment.reversed_at
                                                     ? 'Dikoreksi'
                                                     : payment.refunded_at
@@ -2598,7 +2670,7 @@ function PaymentLedger({
                                                       : 'Tercatat Sah'}
                                             </span>
                                             {payment.received_at && (
-                                                <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                                                <span className="font-mono text-slate-500 dark:text-zinc-400">
                                                     {formatDate(
                                                         payment.received_at,
                                                     )}
@@ -2606,23 +2678,18 @@ function PaymentLedger({
                                             )}
                                         </div>
 
-                                        <h4 className="line-clamp-1 text-xs font-bold text-slate-900 dark:text-white">
+                                        <h4 className="mt-1 line-clamp-1 text-xs font-bold text-slate-900 dark:text-white">
                                             <Link
                                                 href={paymentRoutes.show.url(
                                                     payment.id,
                                                 )}
                                                 className="transition-colors hover:text-emerald-600 dark:hover:text-emerald-400"
                                             >
-                                                Penerimaan:{' '}
-                                                {formatMoney(
-                                                    payment.amount ?? 0,
-                                                    payment.currency ||
-                                                        currency,
-                                                )}
+                                                Penerimaan Kas Klien
                                             </Link>
                                         </h4>
 
-                                        <div className="flex flex-wrap items-center gap-x-1.5 text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                        <div className="mt-1 flex flex-wrap items-center gap-2 text-[10.5px] text-slate-500 dark:text-zinc-400">
                                             <span>
                                                 {payment.matter?.title
                                                     ? payment.matter.title
@@ -2632,9 +2699,9 @@ function PaymentLedger({
                                                 (allocation) => (
                                                     <span
                                                         key={allocation.id}
-                                                        className="font-mono text-slate-600 dark:text-zinc-300"
+                                                        className="border-l border-slate-200 pl-2 font-mono text-slate-600 dark:border-white/10 dark:text-zinc-300"
                                                     >
-                                                        · Alokasi:{' '}
+                                                        Alokasi{' '}
                                                         {allocation.invoice
                                                             ?.invoice_number ??
                                                             'Invoice'}{' '}
@@ -2667,12 +2734,17 @@ function PaymentLedger({
                                 </div>
 
                                 <div className="flex shrink-0 items-center justify-between gap-1 border-t border-slate-100 pt-1.5 pl-9.5 sm:flex-col sm:items-end sm:justify-center sm:border-t-0 sm:pt-0 sm:pl-0 dark:border-white/[0.04]">
-                                    <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                                        {formatMoney(
-                                            payment.amount ?? 0,
-                                            payment.currency || currency,
-                                        )}
-                                    </span>
+                                    <div className="text-right">
+                                        <p className="text-[9px] font-semibold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                            Kas diterima
+                                        </p>
+                                        <span className="font-mono text-xs font-bold text-slate-950 dark:text-white">
+                                            {formatMoney(
+                                                payment.amount ?? 0,
+                                                payment.currency || currency,
+                                            )}
+                                        </span>
+                                    </div>
 
                                     <div className="flex items-center gap-1">
                                         {onViewDetail && (
@@ -2796,7 +2868,7 @@ function ReversePaymentDialog({
 }) {
     return (
         <Dialog open={!!payment} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className={financeDialogPanelClass('compact')}>
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
                         <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
@@ -2881,7 +2953,7 @@ function RefundPaymentDialog({
 }) {
     return (
         <Dialog open={!!payment} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className={financeDialogPanelClass('compact')}>
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
                         <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
@@ -2965,7 +3037,7 @@ function CancelInvoiceDialog({
 }) {
     return (
         <Dialog open={!!invoice} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className={financeDialogPanelClass('compact')}>
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
                         <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
@@ -3159,47 +3231,32 @@ function FinanceDialog({
         payment: Banknote,
     };
 
-    const dialogColors = {
-        invoice:
-            'bg-blue-50 text-blue-600 ring-blue-500/20 dark:bg-blue-950/50 dark:text-blue-400',
-        quotation:
-            'bg-amber-50 text-amber-600 ring-amber-500/20 dark:bg-amber-950/50 dark:text-amber-400',
-        expense:
-            'bg-rose-50 text-rose-600 ring-rose-500/20 dark:bg-rose-950/50 dark:text-rose-400',
-        payment:
-            'bg-emerald-50 text-emerald-600 ring-emerald-500/20 dark:bg-emerald-950/50 dark:text-emerald-400',
-    };
-
     const DialogIcon = (dialogIcons as any)[type] || ReceiptText;
-    const colorClass =
-        (dialogColors as any)[type] ||
-        'bg-blue-50 text-blue-600 ring-blue-500/20';
     const isWide = type === 'invoice' || type === 'quotation';
 
     return (
         <Dialog open onOpenChange={onClose}>
             <DialogContent
-                className={`max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-[#14161b] ${isWide ? 'sm:max-w-3xl' : 'sm:max-w-xl'}`}
+                className={financeDialogPanelClass(isWide ? 'wide' : 'default')}
             >
-                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                    <div className="flex items-center gap-2.5">
-                        <div
-                            className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${colorClass}`}
-                        >
-                            <DialogIcon className="size-4.5" />
-                        </div>
-                        <div>
-                            <DialogTitle className="text-sm font-bold text-slate-900 sm:text-base dark:text-white">
-                                {(dialogTitles as any)[type] ||
-                                    'Transaksi Keuangan'}
-                            </DialogTitle>
-                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                {(dialogDescriptions as any)[type] ||
-                                    'Lengkapi formulir transaksi keuangan berikut.'}
-                            </DialogDescription>
-                        </div>
-                    </div>
-                </DialogHeader>
+                <FinanceDialogHeader
+                    icon={DialogIcon}
+                    eyebrow="Transaksi Keuangan"
+                    title={(dialogTitles as any)[type] || 'Transaksi Keuangan'}
+                    description={
+                        (dialogDescriptions as any)[type] ||
+                        'Lengkapi formulir transaksi keuangan berikut.'
+                    }
+                    tone={
+                        type === 'payment'
+                            ? 'success'
+                            : type === 'expense'
+                              ? 'danger'
+                              : type === 'quotation'
+                                ? 'warning'
+                                : 'primary'
+                    }
+                />
 
                 <Form
                     action={route.url()}
@@ -3824,7 +3881,7 @@ function FinanceDialog({
                                                                 setExpensePartnerId
                                                             }
                                                             users={staffUsers}
-                                                            placeholder="Pilih Partner yang Menalangi (Opsional)..."
+                                                            placeholder="Pilih Partner (Opsional)..."
                                                             emptyOptionLabel="-- Bukan Talangan Partner --"
                                                             allowClear
                                                         />
@@ -4401,15 +4458,7 @@ function FinanceDialog({
                                         processing ||
                                         (isPayment && isAllocationExceeded)
                                     }
-                                    className={`h-8.5 rounded-lg px-4 text-xs font-semibold text-white shadow-2xs ${
-                                        type === 'invoice'
-                                            ? 'bg-blue-600 hover:bg-blue-700'
-                                            : type === 'quotation'
-                                              ? 'bg-amber-600 hover:bg-amber-700'
-                                              : type === 'expense'
-                                                ? 'bg-rose-600 hover:bg-rose-700'
-                                                : 'bg-emerald-600 hover:bg-emerald-700'
-                                    }`}
+                                    className="h-8.5 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
                                 >
                                     {processing
                                         ? 'Menyimpan...'
