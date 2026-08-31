@@ -21,6 +21,7 @@ return [
         'notifications' => env('RAF_QUEUE_NOTIFICATIONS', 'notifications'),
         'generation' => env('RAF_QUEUE_GENERATION', 'generation'),
         'exports' => env('RAF_QUEUE_EXPORTS', 'exports'),
+        'calendar' => env('RAF_QUEUE_CALENDAR', 'notifications'),
     ],
 
     'signature' => [

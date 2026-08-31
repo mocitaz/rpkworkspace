@@ -31,3 +31,9 @@ Schedule::command('raf:mark-overdue-invoices')
     ->timezone(config('raf.timezone'))
     ->withoutOverlapping()
     ->onOneServer();
+
+Schedule::command('raf:sync-google-calendars')
+    ->everyFifteenMinutes()
+    ->timezone(config('raf.timezone'))
+    ->withoutOverlapping()
+    ->onOneServer();

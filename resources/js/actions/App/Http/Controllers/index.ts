@@ -14,6 +14,7 @@ import ClientController from './ClientController'
 import ContactController from './ContactController'
 import TaskController from './TaskController'
 import CommentController from './CommentController'
+import GoogleCalendarController from './GoogleCalendarController'
 import FinanceController from './FinanceController'
 import FinanceDetailController from './FinanceDetailController'
 import GovernanceController from './GovernanceController'
@@ -49,6 +50,7 @@ const Controllers = {
     ContactController: Object.assign(ContactController, ContactController),
     TaskController: Object.assign(TaskController, TaskController),
     CommentController: Object.assign(CommentController, CommentController),
+    GoogleCalendarController: Object.assign(GoogleCalendarController, GoogleCalendarController),
     FinanceController: Object.assign(FinanceController, FinanceController),
     FinanceDetailController: Object.assign(FinanceDetailController, FinanceDetailController),
     GovernanceController: Object.assign(GovernanceController, GovernanceController),

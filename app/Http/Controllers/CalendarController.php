@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Deadline;
+use App\Models\GoogleCalendarConnection;
 use App\Models\Matter;
 use App\Models\MatterEvent;
 use App\Models\Task;
@@ -62,6 +63,13 @@ class CalendarController extends Controller
                 'url' => $feedUrl,
                 'webcal_url' => $webcalUrl,
                 'google_url' => $googleCalendarUrl,
+            ],
+            'googleCalendar' => [
+                'configured' => filled(config('services.google_calendar.client_id')) && filled(config('services.google_calendar.client_secret')),
+                'connection' => GoogleCalendarConnection::query()->where('user_id', $userId)->first()?->only([
+                    'google_account_email', 'calendar_name', 'privacy_mode', 'sync_events', 'sync_deadlines',
+                    'sync_tasks', 'is_active', 'last_synced_at', 'last_error',
+                ]),
             ],
         ]);
     }

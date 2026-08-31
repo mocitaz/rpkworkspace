@@ -117,6 +117,12 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return $this->hasMany(AuditLog::class, 'actor_id');
     }
 
+    /** @return HasMany<GoogleCalendarConnection, $this> */
+    public function googleCalendarConnections(): HasMany
+    {
+        return $this->hasMany(GoogleCalendarConnection::class);
+    }
+
     /** @return HasMany<DirectMessage, $this> */
     public function directMessagesSent(): HasMany
     {

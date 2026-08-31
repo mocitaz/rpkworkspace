@@ -3,8 +3,12 @@
 namespace App\Providers;
 
 use App\Contracts\MalwareScanner;
+use App\Models\Deadline;
+use App\Models\MatterEvent;
+use App\Models\Task;
 use App\Models\User;
 use App\Services\ClamAvMalwareScanner;
+use App\Services\GoogleCalendarSyncDispatcher;
 use App\Services\NotificationAccess;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -45,6 +49,11 @@ class AppServiceProvider extends ServiceProvider
 
             return app(NotificationAccess::class)->allowsNotification($event->notifiable, $event->notification);
         });
+
+        foreach ([MatterEvent::class, Deadline::class, Task::class] as $calendarModel) {
+            $calendarModel::saved(fn () => app(GoogleCalendarSyncDispatcher::class)->dispatchAll());
+            $calendarModel::deleted(fn () => app(GoogleCalendarSyncDispatcher::class)->dispatchAll());
+        }
 
         RateLimiter::for('signature-sign', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
 

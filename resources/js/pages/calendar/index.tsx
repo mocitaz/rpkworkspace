@@ -1,6 +1,5 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import {
-    AlertCircle,
     ArrowUpRight,
     Calendar as CalendarIcon,
     CalendarClock,
@@ -8,7 +7,6 @@ import {
     CheckCircle2,
     ChevronLeft,
     ChevronRight,
-    Clock,
     Copy,
     Download,
     ExternalLink,
@@ -21,31 +19,27 @@ import {
     List,
     ListTodo,
     Lock,
-    MapPin,
     Radio,
     RefreshCw,
-    Scale,
-    ShieldCheck,
     Smartphone,
-    TrendingUp,
-    Users,
+    Trash2,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { EmptyState } from '@/components/empty-state';
 import { CalendarDashboardHero } from '@/components/calendar-dashboard-hero';
+import { EmptyState } from '@/components/empty-state';
 import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { formatDate } from '@/lib/format';
+import { financeDialogPanelClass } from '@/pages/finance/components/finance-dialog-design';
+import {
+    FinanceDialogBody,
+    FinanceDialogHeader,
+} from '@/pages/finance/components/finance-dialog-ui';
 import * as calendarRoutes from '@/routes/calendar';
 import * as calendarExportRoutes from '@/routes/calendar/export';
 import * as calendarFeedRoutes from '@/routes/calendar/feed';
+import * as calendarGoogleRoutes from '@/routes/calendar/google';
 import * as matterRoutes from '@/routes/matters';
 
 type Item = {
@@ -84,6 +78,21 @@ type CalendarFeed = {
     google_url: string;
 };
 
+type GoogleCalendarStatus = {
+    configured: boolean;
+    connection: {
+        google_account_email?: string | null;
+        calendar_name: string;
+        privacy_mode: 'full' | 'limited' | 'private';
+        sync_events: boolean;
+        sync_deadlines: boolean;
+        sync_tasks: boolean;
+        is_active: boolean;
+        last_synced_at?: string | null;
+        last_error?: string | null;
+    } | null;
+};
+
 export default function CalendarIndex({
     deadlines,
     events,
@@ -92,6 +101,7 @@ export default function CalendarIndex({
     month,
     timezone,
     feed,
+    googleCalendar,
 }: {
     deadlines: Item[];
     events: Item[];
@@ -100,6 +110,7 @@ export default function CalendarIndex({
     month: string;
     timezone: string;
     feed?: CalendarFeed;
+    googleCalendar: GoogleCalendarStatus;
 }) {
     const [view, setView] = useState<'month' | 'list'>('month');
     const [selectedCategory, setSelectedCategory] = useState<
@@ -134,9 +145,21 @@ export default function CalendarIndex({
     }, [deadlines, events, tasks]);
 
     const filteredItems = useMemo(() => {
-        if (selectedCategory === 'all') return allItems;
+        if (selectedCategory === 'all') {
+            return allItems;
+        }
+
         return allItems.filter((i) => i.kind === selectedCategory);
     }, [allItems, selectedCategory]);
+
+    const categoryTabClass = (
+        category: 'all' | 'Agenda' | 'Tenggat' | 'Tugas',
+    ): string =>
+        `relative shrink-0 border-b-2 px-1 pt-1 pb-2 text-[11px] font-semibold transition-colors ${
+            selectedCategory === category
+                ? 'border-slate-950 text-slate-950 dark:border-white dark:text-white'
+                : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white'
+        }`;
 
     const days = dateRange(range.from, range.until);
     const [year, monthNumber] = month.split('-').map(Number);
@@ -391,50 +414,46 @@ export default function CalendarIndex({
                     </section>
 
                     {/* 3. Category Filter Tabs */}
-                    <div className="flex flex-wrap items-center gap-1.5">
+                    <div
+                        aria-label="Filter aktivitas kalender"
+                        role="tablist"
+                        className="flex [scrollbar-width:none] items-center gap-5 overflow-x-auto border-b border-slate-200/70 [-ms-overflow-style:none] dark:border-white/[0.07] [&::-webkit-scrollbar]:hidden"
+                    >
                         <button
                             type="button"
+                            role="tab"
+                            aria-selected={selectedCategory === 'all'}
                             onClick={() => setSelectedCategory('all')}
-                            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
-                                selectedCategory === 'all'
-                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-400'
-                            }`}
+                            className={categoryTabClass('all')}
                         >
-                            Semua Aktivitas ({allItems.length})
+                            Semua Aktivitas · {allItems.length}
                         </button>
                         <button
                             type="button"
+                            role="tab"
+                            aria-selected={selectedCategory === 'Agenda'}
                             onClick={() => setSelectedCategory('Agenda')}
-                            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
-                                selectedCategory === 'Agenda'
-                                    ? 'bg-blue-600 text-white shadow-2xs'
-                                    : 'border border-slate-200/70 bg-white text-blue-700 hover:bg-blue-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-blue-400'
-                            }`}
+                            className={categoryTabClass('Agenda')}
                         >
-                            Sidang &amp; Agenda ({events.length})
+                            Sidang &amp; Agenda · {events.length}
                         </button>
                         <button
                             type="button"
+                            role="tab"
+                            aria-selected={selectedCategory === 'Tenggat'}
                             onClick={() => setSelectedCategory('Tenggat')}
-                            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
-                                selectedCategory === 'Tenggat'
-                                    ? 'bg-rose-600 text-white shadow-2xs'
-                                    : 'border border-slate-200/70 bg-white text-rose-700 hover:bg-rose-50/50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-rose-400'
-                            }`}
+                            className={categoryTabClass('Tenggat')}
                         >
-                            Tenggat Waktu ({deadlines.length})
+                            Tenggat Waktu · {deadlines.length}
                         </button>
                         <button
                             type="button"
+                            role="tab"
+                            aria-selected={selectedCategory === 'Tugas'}
                             onClick={() => setSelectedCategory('Tugas')}
-                            className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
-                                selectedCategory === 'Tugas'
-                                    ? 'bg-slate-800 text-white shadow-2xs dark:bg-zinc-200 dark:text-slate-900'
-                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#14161b] dark:text-zinc-300'
-                            }`}
+                            className={categoryTabClass('Tugas')}
                         >
-                            Tugas Terkait ({tasks.length})
+                            Tugas Terkait · {tasks.length}
                         </button>
                     </div>
 
@@ -462,51 +481,63 @@ export default function CalendarIndex({
                 onOpenChange={(open) => !open && setSelectedItem(null)}
             >
                 {selectedItem && (
-                    <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
-                        <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                            <div className="flex items-start justify-between gap-3">
-                                <div className="space-y-1">
-                                    <div className="flex flex-wrap items-center gap-1.5">
-                                        {selectedItem.kind === 'Agenda' && (
-                                            <span className="rounded bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                                Sidang &amp; Agenda
-                                            </span>
-                                        )}
-                                        {selectedItem.kind === 'Tenggat' && (
-                                            <span className="rounded bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
-                                                Batas Waktu Tenggat
-                                            </span>
-                                        )}
-                                        {selectedItem.kind === 'Tugas' && (
-                                            <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                Instruksi Tugas
-                                            </span>
-                                        )}
-                                        {selectedItem.is_critical && (
-                                            <span className="rounded bg-rose-600 px-2 py-0.5 text-[10px] font-semibold text-white uppercase">
-                                                Prioritas Kritis
-                                            </span>
-                                        )}
-                                        {selectedItem.status && (
-                                            <StatusBadge
-                                                value={selectedItem.status}
-                                            />
-                                        )}
-                                    </div>
-                                    <DialogTitle className="pt-0.5 text-sm font-bold text-slate-900 dark:text-white">
-                                        {selectedItem.title}
-                                    </DialogTitle>
-                                </div>
-                            </div>
-                        </DialogHeader>
+                    <DialogContent
+                        className={financeDialogPanelClass('default')}
+                    >
+                        <FinanceDialogHeader
+                            icon={selectedItem.icon}
+                            eyebrow="Detail Aktivitas Kalender"
+                            title={selectedItem.title}
+                            description="Ringkasan jadwal, keterkaitan perkara, dan informasi pelaksanaan aktivitas."
+                        />
 
-                        <div className="space-y-4 pt-1">
+                        <FinanceDialogBody className="space-y-4">
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 border-b border-slate-100 pb-3 text-[10px] font-semibold tracking-[0.08em] uppercase dark:border-white/[0.06]">
+                                <span
+                                    className={
+                                        selectedItem.kind === 'Agenda'
+                                            ? 'text-blue-600 dark:text-blue-400'
+                                            : selectedItem.kind === 'Tenggat'
+                                              ? 'text-rose-600 dark:text-rose-400'
+                                              : 'text-slate-600 dark:text-zinc-300'
+                                    }
+                                >
+                                    {selectedItem.kind === 'Agenda'
+                                        ? 'Sidang & Agenda'
+                                        : selectedItem.kind === 'Tenggat'
+                                          ? 'Batas Waktu Tenggat'
+                                          : 'Instruksi Tugas'}
+                                </span>
+                                {selectedItem.is_critical && (
+                                    <>
+                                        <span className="text-slate-300 dark:text-zinc-700">
+                                            ·
+                                        </span>
+                                        <span className="text-rose-600 dark:text-rose-400">
+                                            Prioritas Kritis
+                                        </span>
+                                    </>
+                                )}
+                                {selectedItem.status && (
+                                    <>
+                                        <span className="text-slate-300 dark:text-zinc-700">
+                                            ·
+                                        </span>
+                                        <span className="text-emerald-600 dark:text-emerald-400">
+                                            {selectedItem.status.replaceAll(
+                                                '_',
+                                                ' ',
+                                            )}
+                                        </span>
+                                    </>
+                                )}
+                            </div>
                             {/* Linked Matter Card */}
                             {selectedItem.matter ? (
-                                <div className="rounded-lg border border-blue-100 bg-blue-50/50 p-3 dark:border-blue-900/30 dark:bg-blue-950/20">
+                                <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.07] dark:bg-white/[0.025]">
                                     <div className="flex items-center justify-between">
                                         <div className="space-y-0.5">
-                                            <span className="text-[10px] font-semibold text-blue-600 uppercase dark:text-blue-400">
+                                            <span className="text-[10px] font-semibold tracking-[0.1em] text-slate-400 uppercase dark:text-zinc-500">
                                                 PERKARA HUKUM TERKAIT
                                             </span>
                                             <p className="text-xs font-semibold text-slate-900 dark:text-white">
@@ -520,7 +551,7 @@ export default function CalendarIndex({
                                         <Button
                                             size="sm"
                                             variant="outline"
-                                            className="h-7 rounded-lg border-blue-200 bg-white px-2.5 text-xs font-semibold text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-300"
+                                            className="h-8 rounded-lg border-slate-200 bg-white px-3 text-[11px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-200"
                                             asChild
                                         >
                                             <Link
@@ -535,7 +566,7 @@ export default function CalendarIndex({
                                     </div>
                                 </div>
                             ) : (
-                                <div className="rounded-lg border border-slate-200/70 bg-slate-50/60 p-2.5 text-xs text-slate-500 dark:border-white/[0.04] dark:bg-[#121418]">
+                                <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 text-xs text-slate-500 dark:border-white/[0.07] dark:bg-white/[0.025]">
                                     Agenda operasional umum kantor firma RPK.
                                 </div>
                             )}
@@ -593,7 +624,7 @@ export default function CalendarIndex({
                             )}
 
                             {/* Schedule & Timing Box */}
-                            <div className="space-y-2 rounded-lg border border-slate-200/70 bg-slate-50/60 p-3 text-xs dark:border-white/[0.04] dark:bg-[#121418]">
+                            <div className="space-y-2.5 rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 text-xs dark:border-white/[0.07] dark:bg-white/[0.025]">
                                 <div className="flex items-center justify-between gap-2 border-b border-slate-200/50 pb-1.5 dark:border-white/[0.04]">
                                     <span className="text-slate-500 dark:text-zinc-400">
                                         Waktu Pelaksanaan
@@ -626,7 +657,7 @@ export default function CalendarIndex({
                                     </span>
                                 </div>
                             </div>
-                        </div>
+                        </FinanceDialogBody>
                     </DialogContent>
                 )}
             </Dialog>
@@ -636,6 +667,7 @@ export default function CalendarIndex({
                 open={liveSyncOpen}
                 onOpenChange={setLiveSyncOpen}
                 feed={feed}
+                googleCalendar={googleCalendar}
                 exportHref={calendarExportRoutes.ics.url()}
             />
         </>
@@ -646,15 +678,21 @@ function LiveCalendarSyncModal({
     open,
     onOpenChange,
     feed,
+    googleCalendar,
     exportHref,
 }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     feed?: CalendarFeed;
+    googleCalendar: GoogleCalendarStatus;
     exportHref: string;
 }) {
     const [copied, setCopied] = useState(false);
-    if (!feed) return null;
+    const connection = googleCalendar.connection;
+
+    if (!feed) {
+        return null;
+    }
 
     const handleCopy = () => {
         navigator.clipboard.writeText(feed.url);
@@ -664,25 +702,240 @@ function LiveCalendarSyncModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-5 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
-                <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
-                    <div className="flex items-center gap-3">
-                        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
-                            <Radio className="size-5" />
-                        </div>
-                        <div>
-                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                Langganan Kalender Otomatis (Live Sync)
-                            </DialogTitle>
-                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Jadwal sidang, mediasi, dan tenggat perkara akan
-                                otomatis tersinkronisasi langsung ke HP Anda.
-                            </DialogDescription>
-                        </div>
-                    </div>
-                </DialogHeader>
+            <DialogContent className={financeDialogPanelClass('default')}>
+                <FinanceDialogHeader
+                    icon={Radio}
+                    eyebrow="Sinkronisasi Kalender"
+                    title="Langganan Kalender Otomatis"
+                    description="Sinkronkan jadwal sidang, mediasi, tenggat, dan tugas secara otomatis ke perangkat Anda."
+                />
 
-                <div className="space-y-3.5 pt-2 text-xs">
+                <FinanceDialogBody className="space-y-4 text-xs">
+                    <section className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.07] dark:bg-white/[0.025]">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="flex min-w-0 items-start gap-3">
+                                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                                    <CalendarIcon className="size-4" />
+                                </div>
+                                <div className="min-w-0">
+                                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                                        <h3 className="font-semibold text-slate-900 dark:text-white">
+                                            Google Calendar
+                                        </h3>
+                                        <span
+                                            className={`text-[10px] font-semibold ${
+                                                connection
+                                                    ? 'text-emerald-600 dark:text-emerald-400'
+                                                    : 'text-slate-400 dark:text-zinc-500'
+                                            }`}
+                                        >
+                                            {connection
+                                                ? 'Terhubung'
+                                                : 'Belum terhubung'}
+                                        </span>
+                                    </div>
+                                    <p className="mt-0.5 truncate text-[11px] text-slate-500 dark:text-zinc-400">
+                                        {connection?.google_account_email ??
+                                            'Buat kalender RPK khusus di akun Google Anda.'}
+                                    </p>
+                                    {connection?.last_synced_at && (
+                                        <p className="mt-1 text-[10px] text-slate-400 dark:text-zinc-500">
+                                            Terakhir sinkron{' '}
+                                            {formatDate(
+                                                connection.last_synced_at,
+                                                true,
+                                            )}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {!connection && googleCalendar.configured && (
+                                <Button
+                                    size="sm"
+                                    className="h-8 shrink-0 rounded-lg bg-blue-600 px-3 text-[11px] font-semibold text-white hover:bg-blue-700"
+                                    asChild
+                                >
+                                    <a
+                                        href={calendarGoogleRoutes.redirect.url()}
+                                    >
+                                        Hubungkan Google
+                                    </a>
+                                </Button>
+                            )}
+                        </div>
+
+                        {!googleCalendar.configured && (
+                            <p className="mt-3 border-t border-slate-200/70 pt-3 text-[11px] leading-4 text-amber-700 dark:border-white/[0.06] dark:text-amber-400">
+                                Integrasi OAuth Google belum dikonfigurasi oleh
+                                administrator.
+                            </p>
+                        )}
+
+                        {connection && (
+                            <>
+                                <Form
+                                    action={calendarGoogleRoutes.update.url()}
+                                    method="put"
+                                    className="mt-4 space-y-4 border-t border-slate-200/70 pt-4 dark:border-white/[0.06]"
+                                >
+                                    {({ processing }) => (
+                                        <>
+                                            <div>
+                                                <label
+                                                    htmlFor="google-calendar-privacy"
+                                                    className="text-[10px] font-semibold tracking-[0.08em] text-slate-400 uppercase dark:text-zinc-500"
+                                                >
+                                                    Privasi Judul Event
+                                                </label>
+                                                <select
+                                                    id="google-calendar-privacy"
+                                                    name="privacy_mode"
+                                                    defaultValue={
+                                                        connection.privacy_mode
+                                                    }
+                                                    className="mt-1.5 h-9 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 outline-none focus:border-blue-400 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                                >
+                                                    <option value="limited">
+                                                        Terbatas — jenis
+                                                        aktivitas saja
+                                                    </option>
+                                                    <option value="full">
+                                                        Lengkap — nomor perkara
+                                                        dan judul
+                                                    </option>
+                                                    <option value="private">
+                                                        Privat — tampil sebagai
+                                                        sibuk
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                            <div className="grid gap-2 sm:grid-cols-3">
+                                                {[
+                                                    [
+                                                        'sync_events',
+                                                        'Sidang & Agenda',
+                                                        connection.sync_events,
+                                                    ],
+                                                    [
+                                                        'sync_deadlines',
+                                                        'Tenggat Perkara',
+                                                        connection.sync_deadlines,
+                                                    ],
+                                                    [
+                                                        'sync_tasks',
+                                                        'Tugas Saya',
+                                                        connection.sync_tasks,
+                                                    ],
+                                                ].map(
+                                                    ([
+                                                        name,
+                                                        label,
+                                                        checked,
+                                                    ]) => (
+                                                        <label
+                                                            key={String(name)}
+                                                            className="flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200/80 bg-white px-3 py-2.5 text-[11px] font-medium text-slate-700 dark:border-white/[0.07] dark:bg-white/[0.03] dark:text-zinc-300"
+                                                        >
+                                                            <input
+                                                                type="hidden"
+                                                                name={String(
+                                                                    name,
+                                                                )}
+                                                                value="0"
+                                                            />
+                                                            <input
+                                                                type="checkbox"
+                                                                name={String(
+                                                                    name,
+                                                                )}
+                                                                value="1"
+                                                                defaultChecked={Boolean(
+                                                                    checked,
+                                                                )}
+                                                                className="size-3.5 rounded border-slate-300 text-blue-600"
+                                                            />
+                                                            {String(label)}
+                                                        </label>
+                                                    ),
+                                                )}
+                                            </div>
+
+                                            <div className="flex justify-end">
+                                                <Button
+                                                    type="submit"
+                                                    size="sm"
+                                                    disabled={processing}
+                                                    className="h-8 rounded-lg bg-blue-600 px-3 text-[11px] font-semibold text-white hover:bg-blue-700"
+                                                >
+                                                    Simpan Pengaturan
+                                                </Button>
+                                            </div>
+                                        </>
+                                    )}
+                                </Form>
+
+                                {connection.last_error && (
+                                    <p className="mt-3 text-[11px] leading-4 text-rose-600 dark:text-rose-400">
+                                        Sinkronisasi terakhir gagal:{' '}
+                                        {connection.last_error}
+                                    </p>
+                                )}
+
+                                <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200/70 pt-3 dark:border-white/[0.06]">
+                                    <Form
+                                        action={calendarGoogleRoutes.destroy.url()}
+                                        method="delete"
+                                        onBefore={() =>
+                                            window.confirm(
+                                                'Putuskan Google Calendar dan hapus kalender RPK dari akun Google Anda?',
+                                            )
+                                        }
+                                    >
+                                        {({ processing }) => (
+                                            <Button
+                                                type="submit"
+                                                variant="ghost"
+                                                size="sm"
+                                                disabled={processing}
+                                                className="h-8 rounded-lg px-2.5 text-[11px] font-semibold text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/25"
+                                            >
+                                                <Trash2 className="mr-1.5 size-3.5" />
+                                                Putuskan
+                                            </Button>
+                                        )}
+                                    </Form>
+                                    <Form
+                                        action={calendarGoogleRoutes.sync.url()}
+                                        method="post"
+                                    >
+                                        {({ processing }) => (
+                                            <Button
+                                                type="submit"
+                                                variant="outline"
+                                                size="sm"
+                                                disabled={processing}
+                                                className="h-8 rounded-lg px-3 text-[11px] font-semibold"
+                                            >
+                                                <RefreshCw className="mr-1.5 size-3.5" />
+                                                Sinkronkan Sekarang
+                                            </Button>
+                                        )}
+                                    </Form>
+                                </div>
+                            </>
+                        )}
+                    </section>
+
+                    <div className="flex items-center gap-3">
+                        <div className="h-px flex-1 bg-slate-100 dark:bg-white/[0.06]" />
+                        <span className="text-[9px] font-semibold tracking-[0.12em] text-slate-400 uppercase dark:text-zinc-500">
+                            Pilihan Langganan Manual
+                        </span>
+                        <div className="h-px flex-1 bg-slate-100 dark:bg-white/[0.06]" />
+                    </div>
+
                     <a
                         href={exportHref}
                         download="RPK-Law-Firm-Calendar.ics"
@@ -692,10 +945,10 @@ function LiveCalendarSyncModal({
                         Unduh kalender manual (.ics)
                     </a>
                     {/* Opsi 1: Apple Calendar (iPhone / Mac / iPad) */}
-                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 transition-all hover:border-slate-400 hover:bg-white dark:border-white/[0.06] dark:bg-[#121418] dark:hover:border-zinc-700">
+                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition-colors hover:border-slate-300 dark:border-white/[0.07] dark:bg-white/[0.025] dark:hover:border-white/15">
                         <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex items-start gap-3">
-                                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-white dark:bg-white dark:text-slate-900">
+                                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
                                     <Laptop className="size-4" />
                                 </div>
                                 <div className="min-w-0 space-y-0.5">
@@ -703,8 +956,8 @@ function LiveCalendarSyncModal({
                                         <span className="font-bold text-slate-900 dark:text-white">
                                             Apple Calendar
                                         </span>
-                                        <span className="rounded bg-slate-200/70 px-1.5 py-0.5 text-[9.5px] font-semibold text-slate-700 dark:bg-white/10 dark:text-zinc-300">
-                                            iOS • Mac
+                                        <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500">
+                                            iOS · macOS
                                         </span>
                                     </div>
                                     <p className="text-[11px] text-slate-500 dark:text-zinc-400">
@@ -727,10 +980,10 @@ function LiveCalendarSyncModal({
                     </div>
 
                     {/* Opsi 2: Google Calendar (Android / Web) */}
-                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 transition-all hover:border-blue-400 hover:bg-white dark:border-white/[0.06] dark:bg-[#121418] dark:hover:border-blue-700">
+                    <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition-colors hover:border-slate-300 dark:border-white/[0.07] dark:bg-white/[0.025] dark:hover:border-white/15">
                         <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex items-start gap-3">
-                                <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400">
+                                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
                                     <Globe className="size-4" />
                                 </div>
                                 <div className="min-w-0 space-y-0.5">
@@ -738,8 +991,8 @@ function LiveCalendarSyncModal({
                                         <span className="font-bold text-slate-900 dark:text-white">
                                             Google Calendar
                                         </span>
-                                        <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[9.5px] font-semibold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                                            Android • Web
+                                        <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500">
+                                            Android · Web
                                         </span>
                                     </div>
                                     <p className="text-[11px] text-slate-500 dark:text-zinc-400">
@@ -804,7 +1057,7 @@ function LiveCalendarSyncModal({
                     </div>
 
                     {/* Panduan Singkat */}
-                    <div className="space-y-1.5 rounded-xl border border-slate-200/60 bg-slate-50/70 p-3 text-[11px] text-slate-600 dark:border-white/[0.04] dark:bg-[#121418] dark:text-zinc-400">
+                    <div className="space-y-1.5 rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 text-[11px] text-slate-600 dark:border-white/[0.07] dark:bg-white/[0.025] dark:text-zinc-400">
                         <div className="flex items-center gap-1.5 font-semibold text-slate-900 dark:text-zinc-200">
                             <Info className="size-3.5 text-blue-600 dark:text-blue-400" />
                             <span>
@@ -857,7 +1110,7 @@ function LiveCalendarSyncModal({
                             )}
                         </Form>
                     </div>
-                </div>
+                </FinanceDialogBody>
             </DialogContent>
         </Dialog>
     );
@@ -914,7 +1167,7 @@ function MonthGrid({
                             return (
                                 <div
                                     key={day}
-                                    className={`flex min-h-[110px] flex-col justify-between p-2 transition-colors ${
+                                    className={`flex min-h-[132px] flex-col p-2.5 transition-colors ${
                                         isCurrentMonth
                                             ? 'bg-white dark:bg-[#14161b]'
                                             : 'bg-slate-50/30 text-slate-400 dark:bg-zinc-900/10 dark:text-zinc-600'
@@ -939,8 +1192,8 @@ function MonthGrid({
                                         )}
 
                                         {dayItems.length > 0 && (
-                                            <span className="py-0.2 rounded bg-slate-100 px-1 font-mono text-[9px] font-medium text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
-                                                {dayItems.length}
+                                            <span className="text-[9px] font-medium text-slate-400 dark:text-zinc-500">
+                                                {dayItems.length} aktivitas
                                             </span>
                                         )}
                                     </div>
@@ -950,10 +1203,16 @@ function MonthGrid({
                                         {dayItems.slice(0, 3).map((item) => {
                                             const chipStyle =
                                                 item.kind === 'Tenggat'
-                                                    ? 'bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900/30'
+                                                    ? 'border-rose-200/80 bg-rose-50/75 text-rose-800 hover:border-rose-300 hover:bg-rose-50 dark:border-rose-900/40 dark:bg-rose-950/25 dark:text-rose-200 dark:hover:border-rose-800/60'
                                                     : item.kind === 'Agenda'
-                                                      ? 'bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900/30'
-                                                      : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-zinc-800/80 dark:text-zinc-300 dark:border-white/10';
+                                                      ? 'border-blue-200/80 bg-blue-50/75 text-blue-800 hover:border-blue-300 hover:bg-blue-50 dark:border-blue-900/40 dark:bg-blue-950/25 dark:text-blue-200 dark:hover:border-blue-800/60'
+                                                      : 'border-slate-200 bg-slate-50/90 text-slate-700 hover:border-slate-300 hover:bg-slate-100/70 dark:border-white/10 dark:bg-white/[0.045] dark:text-zinc-200 dark:hover:border-white/20';
+                                            const dotStyle =
+                                                item.kind === 'Tenggat'
+                                                    ? 'bg-rose-500'
+                                                    : item.kind === 'Agenda'
+                                                      ? 'bg-blue-500'
+                                                      : 'bg-slate-500 dark:bg-zinc-400';
 
                                             return (
                                                 <button
@@ -963,12 +1222,17 @@ function MonthGrid({
                                                         onSelectItem(item)
                                                     }
                                                     title={`${item.kind}: ${item.title}`}
-                                                    className={`group flex w-full cursor-pointer items-center justify-between gap-1 truncate rounded border px-1.5 py-0.5 text-left text-[9.5px] font-medium transition-all hover:shadow-2xs ${chipStyle}`}
+                                                    aria-label={`${item.kind}: ${item.title}, pukul ${formatTime(item.date, timezone)}`}
+                                                    className={`group grid w-full cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1.5 overflow-hidden rounded-md border px-2 py-1.5 text-left shadow-[0_1px_1px_rgba(15,23,42,0.03)] transition-all duration-150 hover:-translate-y-px hover:shadow-sm focus-visible:ring-2 focus-visible:ring-slate-400/40 focus-visible:outline-none ${chipStyle}`}
                                                 >
-                                                    <span className="truncate">
+                                                    <span
+                                                        aria-hidden="true"
+                                                        className={`size-1.5 rounded-full ${dotStyle}`}
+                                                    />
+                                                    <span className="truncate text-[9.5px] leading-3 font-semibold">
                                                         {item.title}
                                                     </span>
-                                                    <span className="shrink-0 font-mono text-[8.5px] opacity-75">
+                                                    <span className="shrink-0 border-l border-current/15 pl-1.5 font-mono text-[8.5px] leading-3 font-semibold tabular-nums opacity-70">
                                                         {formatTime(
                                                             item.date,
                                                             timezone,
@@ -979,7 +1243,7 @@ function MonthGrid({
                                         })}
 
                                         {dayItems.length > 3 && (
-                                            <span className="block text-center text-[9px] font-medium text-slate-400 dark:text-zinc-500">
+                                            <span className="block border-t border-dashed border-slate-200/80 pt-1 text-center text-[9px] font-semibold text-slate-400 dark:border-white/[0.07] dark:text-zinc-500">
                                                 +{dayItems.length - 3} lainnya
                                             </span>
                                         )}
