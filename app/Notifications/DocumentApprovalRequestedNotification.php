@@ -59,6 +59,7 @@ class DocumentApprovalRequestedNotification extends Notification implements Shou
 
         return [
             'kind' => 'document_approval_requested',
+            'document_id' => $this->document->getKey(),
             'category' => 'document',
             'title' => sprintf('Permintaan Review Dokumen: %s', Str::limit($this->document->title, 40)),
             'message' => sprintf('%s mengajukan review untuk dokumen "%s"%s', $this->requester->name, $this->document->title, $this->approval->request_note ? ': "'.$this->approval->request_note.'"' : '.'),

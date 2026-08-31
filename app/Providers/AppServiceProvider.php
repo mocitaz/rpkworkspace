@@ -3,16 +3,20 @@
 namespace App\Providers;
 
 use App\Contracts\MalwareScanner;
+use App\Models\User;
 use App\Services\ClamAvMalwareScanner;
+use App\Services\NotificationAccess;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Events\NotificationSending;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
@@ -33,6 +37,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+
+        Event::listen(NotificationSending::class, function (NotificationSending $event): bool {
+            if (! $event->notifiable instanceof User) {
+                return true;
+            }
+
+            return app(NotificationAccess::class)->allowsNotification($event->notifiable, $event->notification);
+        });
 
         RateLimiter::for('signature-sign', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
 

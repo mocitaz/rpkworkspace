@@ -34,6 +34,7 @@ class DocumentApprovalResolvedNotification extends Notification
 
         return [
             'kind' => 'document_approval_resolved',
+            'document_id' => $this->document->getKey(),
             'category' => 'document',
             'title' => sprintf('Review Dokumen %s: %s', $statusText, Str::limit($this->document->title, 40)),
             'message' => sprintf(

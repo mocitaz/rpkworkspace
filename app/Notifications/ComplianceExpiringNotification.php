@@ -51,6 +51,7 @@ class ComplianceExpiringNotification extends Notification implements ShouldQueue
     {
         return [
             'kind' => 'compliance_expiring',
+            'client_id' => $this->clientId,
             'title' => 'Masa Berlaku Dokumen: '.$this->clientName,
             'message' => 'Dokumen "'.$this->docName.'" akan kedaluwarsa pada '.$this->expiryDate,
             'url' => $this->clientId ? route('clients.show', $this->clientId) : route('clients.index'),

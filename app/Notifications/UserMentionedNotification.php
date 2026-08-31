@@ -57,6 +57,13 @@ class UserMentionedNotification extends Notification implements ShouldQueue
 
         return [
             'kind' => 'user_mentioned',
+            'target_type' => match (true) {
+                $target instanceof Matter => 'matter',
+                $target instanceof Document => 'document',
+                $target instanceof Task => 'task',
+                default => null,
+            },
+            'target_id' => $target?->getKey(),
             'category' => 'mention',
             'title' => sprintf('%s menyebut Anda dalam diskusi %s', $this->sender->name, $targetDesc),
             'message' => Str::limit($this->comment->body, 140),

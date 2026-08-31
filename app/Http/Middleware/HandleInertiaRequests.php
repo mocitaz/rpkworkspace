@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Role;
+use App\Services\NotificationAccess;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -51,14 +52,19 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
                 'permissions' => fn () => $request->user()?->roles()->with('permissions:id,name')->get()
                     ->flatMap(fn (Role $role) => $role->permissions->pluck('name'))->unique()->values() ?? [],
-                'notifications' => fn () => $request->user()?->notifications()->latest()->limit(8)->get()->map(fn ($notification) => [
-                    'id' => $notification->getKey(),
-                    'type' => $notification->type,
-                    'data' => $notification->data,
-                    'read_at' => $notification->read_at?->toIso8601String(),
-                    'created_at' => $notification->created_at?->toIso8601String(),
-                ])->values() ?? [],
-                'unread_notifications_count' => fn () => $request->user()?->unreadNotifications()->count() ?? 0,
+                'notifications' => fn () => $request->user()?->notifications()->latest()->get()
+                    ->filter(fn ($notification) => app(NotificationAccess::class)->allowsDatabaseNotification($request->user(), $notification))
+                    ->take(8)
+                    ->map(fn ($notification) => [
+                        'id' => $notification->getKey(),
+                        'type' => $notification->type,
+                        'data' => $notification->data,
+                        'read_at' => $notification->read_at?->toIso8601String(),
+                        'created_at' => $notification->created_at?->toIso8601String(),
+                    ])->values() ?? [],
+                'unread_notifications_count' => fn () => $request->user()?->unreadNotifications()->get()
+                    ->filter(fn ($notification) => app(NotificationAccess::class)->allowsDatabaseNotification($request->user(), $notification))
+                    ->count() ?? 0,
             ],
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),

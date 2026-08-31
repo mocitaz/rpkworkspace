@@ -379,7 +379,11 @@ class FinanceController extends Controller
             FinancialAccount::query()->where('id', $attributes['account_id'])->increment('current_balance', (int) $attributes['amount']);
         }
 
-        $financeUsers = User::query()->where('is_active', true)->where('id', '!=', $request->user()->getKey())->get();
+        $financeUsers = User::query()
+            ->where('is_active', true)
+            ->where('id', '!=', $request->user()->getKey())
+            ->whereHas('roles.permissions', fn ($query) => $query->where('name', 'payment.manage'))
+            ->get();
         foreach ($financeUsers as $financeUser) {
             $financeUser->notify((new PaymentVerificationRequestedNotification(
                 invoiceNumber: 'PAY-'.($payment->payment_number ?? $payment->id),
