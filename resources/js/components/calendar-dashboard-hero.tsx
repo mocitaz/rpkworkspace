@@ -4,8 +4,8 @@ import {
     ChevronRight,
     Grid3X3,
     List,
-    Smartphone,
 } from 'lucide-react';
+import { GoogleLogo } from '@/components/google-logo';
 
 type CalendarView = 'month' | 'list';
 
@@ -18,6 +18,7 @@ type Props = {
     todayHref: string;
     nextMonthHref: string;
     onOpenSubscription: () => void;
+    googleConnected: boolean;
     events: number;
     deadlines: number;
     tasks: number;
@@ -59,6 +60,7 @@ export function CalendarDashboardHero({
     todayHref,
     nextMonthHref,
     onOpenSubscription,
+    googleConnected,
     events,
     deadlines,
     tasks,
@@ -126,10 +128,19 @@ export function CalendarDashboardHero({
                     <button
                         type="button"
                         onClick={onOpenSubscription}
-                        className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-slate-900 px-3 text-[11px] font-bold text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-900"
+                        aria-label={`Langganan Kalender — ${
+                            googleConnected
+                                ? 'Google terhubung'
+                                : 'Google belum terhubung'
+                        }`}
+                        className="inline-flex h-8 items-center gap-2 rounded-lg bg-slate-900 px-3 text-[11px] font-bold text-white shadow-sm transition hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-900"
                     >
-                        <Smartphone className="size-3.5" />
-                        Langganan Kalender
+                        <span className="flex size-4 items-center justify-center rounded-full bg-white p-0.5">
+                            <GoogleLogo className="size-3" />
+                        </span>
+                        {googleConnected
+                            ? 'Google terhubung'
+                            : 'Google belum terhubung'}
                     </button>
                 </div>
             </div>

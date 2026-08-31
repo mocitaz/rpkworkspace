@@ -9,6 +9,7 @@ use App\Models\MatterEvent;
 use App\Models\Task;
 use App\Models\User;
 use App\Services\IcsCalendarGenerator;
+use App\Services\IndonesiaHolidayService;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Illuminate\Http\RedirectResponse;
@@ -23,7 +24,7 @@ class CalendarController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request): Response
+    public function __invoke(Request $request, IndonesiaHolidayService $holidayService): Response
     {
         $timezone = config('raf.timezone');
         $matterIds = Matter::query()->visibleTo($request->user())->select('id');
@@ -58,6 +59,7 @@ class CalendarController extends Controller
             'range' => ['from' => $from->toDateString(), 'until' => $until->toDateString()],
             'month' => $month->format('Y-m'),
             'timezone' => $timezone,
+            'holidays' => $holidayService->forYear($month->year),
             'feed' => [
                 'token' => $token,
                 'url' => $feedUrl,

@@ -11,10 +11,8 @@ import {
     Download,
     ExternalLink,
     Gavel,
-    Globe,
     Grid3X3,
     Info,
-    Laptop,
     Link2,
     List,
     ListTodo,
@@ -26,7 +24,9 @@ import {
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { CalendarDashboardHero } from '@/components/calendar-dashboard-hero';
+import { AppleLogo } from '@/components/apple-logo';
 import { EmptyState } from '@/components/empty-state';
+import { GoogleLogo } from '@/components/google-logo';
 import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -71,6 +71,13 @@ type CalendarItem = Item & {
     icon: typeof Gavel;
 };
 
+type Holiday = {
+    date: string;
+    name: string;
+    type: string;
+    is_joint_leave: boolean;
+};
+
 type CalendarFeed = {
     token: string;
     url: string;
@@ -100,6 +107,7 @@ export default function CalendarIndex({
     range,
     month,
     timezone,
+    holidays,
     feed,
     googleCalendar,
 }: {
@@ -109,6 +117,7 @@ export default function CalendarIndex({
     range: { from: string; until: string };
     month: string;
     timezone: string;
+    holidays: Holiday[];
     feed?: CalendarFeed;
     googleCalendar: GoogleCalendarStatus;
 }) {
@@ -188,6 +197,7 @@ export default function CalendarIndex({
                             query: { month: shiftMonth(month, 1) },
                         })}
                         onOpenSubscription={() => setLiveSyncOpen(true)}
+                        googleConnected={Boolean(googleCalendar.connection)}
                         events={events.length}
                         deadlines={deadlines.length}
                         tasks={tasks.length}
@@ -463,6 +473,7 @@ export default function CalendarIndex({
                             days={days}
                             month={month}
                             items={filteredItems}
+                            holidays={holidays}
                             timezone={timezone}
                             onSelectItem={setSelectedItem}
                         />
@@ -714,8 +725,8 @@ function LiveCalendarSyncModal({
                     <section className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-white/[0.07] dark:bg-white/[0.025]">
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex min-w-0 items-start gap-3">
-                                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
-                                    <CalendarIcon className="size-4" />
+                                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white shadow-xs dark:border-white/10 dark:bg-white/[0.06]">
+                                    <GoogleLogo className="size-5" />
                                 </div>
                                 <div className="min-w-0">
                                     <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
@@ -948,8 +959,8 @@ function LiveCalendarSyncModal({
                     <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition-colors hover:border-slate-300 dark:border-white/[0.07] dark:bg-white/[0.025] dark:hover:border-white/15">
                         <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex items-start gap-3">
-                                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
-                                    <Laptop className="size-4" />
+                                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-950 shadow-xs dark:border-white/10 dark:bg-white/[0.06] dark:text-white">
+                                    <AppleLogo className="size-5" />
                                 </div>
                                 <div className="min-w-0 space-y-0.5">
                                     <div className="flex items-center gap-1.5">
@@ -983,8 +994,8 @@ function LiveCalendarSyncModal({
                     <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition-colors hover:border-slate-300 dark:border-white/[0.07] dark:bg-white/[0.025] dark:hover:border-white/15">
                         <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                             <div className="flex items-start gap-3">
-                                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
-                                    <Globe className="size-4" />
+                                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white shadow-xs dark:border-white/10 dark:bg-white/[0.06]">
+                                    <GoogleLogo className="size-5" />
                                 </div>
                                 <div className="min-w-0 space-y-0.5">
                                     <div className="flex items-center gap-1.5">
@@ -1120,16 +1131,22 @@ function MonthGrid({
     days,
     month,
     items,
+    holidays,
     timezone,
     onSelectItem,
 }: {
     days: string[];
     month: string;
     items: CalendarItem[];
+    holidays: Holiday[];
     timezone: string;
     onSelectItem: (item: CalendarItem) => void;
 }) {
     const todayKey = dateKey(new Date().toISOString(), timezone);
+    const holidayByDate = useMemo(
+        () => new Map(holidays.map((holiday) => [holiday.date, holiday])),
+        [holidays],
+    );
 
     return (
         <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
@@ -1145,10 +1162,14 @@ function MonthGrid({
                             'Jumat',
                             'Sabtu',
                             'Minggu',
-                        ].map((day) => (
+                        ].map((day, index) => (
                             <div
                                 key={day}
-                                className="py-2 text-[10px] font-semibold text-slate-500 uppercase dark:text-zinc-400"
+                                className={`py-2 text-[10px] font-semibold uppercase ${
+                                    index >= 5
+                                        ? 'text-rose-600 dark:text-rose-400'
+                                        : 'text-slate-500 dark:text-zinc-400'
+                                }`}
                             >
                                 {day}
                             </div>
@@ -1163,27 +1184,45 @@ function MonthGrid({
                             );
                             const isCurrentMonth = day.startsWith(month);
                             const isToday = day === todayKey;
+                            const dayOfWeek = new Date(
+                                `${day}T00:00:00Z`,
+                            ).getUTCDay();
+                            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                            const holiday = holidayByDate.get(day);
+                            const isDayOff = isWeekend || Boolean(holiday);
 
                             return (
                                 <div
                                     key={day}
                                     className={`flex min-h-[132px] flex-col p-2.5 transition-colors ${
                                         isCurrentMonth
-                                            ? 'bg-white dark:bg-[#14161b]'
+                                            ? holiday
+                                                ? 'bg-rose-50/70 dark:bg-rose-950/15'
+                                                : isWeekend
+                                                  ? 'bg-rose-50/30 dark:bg-rose-950/[0.07]'
+                                                  : 'bg-white dark:bg-[#14161b]'
                                             : 'bg-slate-50/30 text-slate-400 dark:bg-zinc-900/10 dark:text-zinc-600'
                                     }`}
                                 >
                                     {/* Top: Date Number */}
                                     <div className="flex items-center justify-between">
                                         {isToday ? (
-                                            <span className="flex size-5 items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold text-white dark:bg-white dark:text-slate-900">
+                                            <span
+                                                className={`flex size-5 items-center justify-center rounded-full text-[10px] font-bold text-white ${
+                                                    isDayOff
+                                                        ? 'bg-rose-600 dark:bg-rose-500'
+                                                        : 'bg-slate-900 dark:bg-white dark:text-slate-900'
+                                                }`}
+                                            >
                                                 {Number(day.slice(-2))}
                                             </span>
                                         ) : (
                                             <span
                                                 className={`text-xs font-semibold ${
                                                     isCurrentMonth
-                                                        ? 'text-slate-900 dark:text-white'
+                                                        ? isDayOff
+                                                            ? 'text-rose-600 dark:text-rose-400'
+                                                            : 'text-slate-900 dark:text-white'
                                                         : 'text-slate-400 dark:text-zinc-600'
                                                 }`}
                                             >
@@ -1198,6 +1237,15 @@ function MonthGrid({
                                         )}
                                     </div>
 
+                                    {holiday && (
+                                        <p
+                                            className="mt-1 line-clamp-2 text-[8.5px] leading-3 font-semibold text-rose-600 dark:text-rose-400"
+                                            title={holiday.name}
+                                        >
+                                            {holiday.name}
+                                        </p>
+                                    )}
+
                                     {/* Events Chip Container */}
                                     <div className="mt-1.5 flex-1 space-y-1">
                                         {dayItems.slice(0, 3).map((item) => {
@@ -1207,13 +1255,6 @@ function MonthGrid({
                                                     : item.kind === 'Agenda'
                                                       ? 'border-blue-200/80 bg-blue-50/75 text-blue-800 hover:border-blue-300 hover:bg-blue-50 dark:border-blue-900/40 dark:bg-blue-950/25 dark:text-blue-200 dark:hover:border-blue-800/60'
                                                       : 'border-slate-200 bg-slate-50/90 text-slate-700 hover:border-slate-300 hover:bg-slate-100/70 dark:border-white/10 dark:bg-white/[0.045] dark:text-zinc-200 dark:hover:border-white/20';
-                                            const dotStyle =
-                                                item.kind === 'Tenggat'
-                                                    ? 'bg-rose-500'
-                                                    : item.kind === 'Agenda'
-                                                      ? 'bg-blue-500'
-                                                      : 'bg-slate-500 dark:bg-zinc-400';
-
                                             return (
                                                 <button
                                                     type="button"
@@ -1223,12 +1264,8 @@ function MonthGrid({
                                                     }
                                                     title={`${item.kind}: ${item.title}`}
                                                     aria-label={`${item.kind}: ${item.title}, pukul ${formatTime(item.date, timezone)}`}
-                                                    className={`group grid w-full cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-1.5 overflow-hidden rounded-md border px-2 py-1.5 text-left shadow-[0_1px_1px_rgba(15,23,42,0.03)] transition-all duration-150 hover:-translate-y-px hover:shadow-sm focus-visible:ring-2 focus-visible:ring-slate-400/40 focus-visible:outline-none ${chipStyle}`}
+                                                    className={`group grid w-full cursor-pointer grid-cols-[minmax(0,1fr)_auto] items-center gap-1.5 overflow-hidden rounded-md border px-2 py-1.5 text-left shadow-[0_1px_1px_rgba(15,23,42,0.03)] transition-all duration-150 hover:-translate-y-px hover:shadow-sm focus-visible:ring-2 focus-visible:ring-slate-400/40 focus-visible:outline-none ${chipStyle}`}
                                                 >
-                                                    <span
-                                                        aria-hidden="true"
-                                                        className={`size-1.5 rounded-full ${dotStyle}`}
-                                                    />
                                                     <span className="truncate text-[9.5px] leading-3 font-semibold">
                                                         {item.title}
                                                     </span>

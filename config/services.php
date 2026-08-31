@@ -41,4 +41,9 @@ return [
         'redirect_uri' => env('GOOGLE_CALENDAR_REDIRECT_URI'),
     ],
 
+    'indonesia_holidays' => [
+        'url' => env('INDONESIA_HOLIDAY_API_URL', 'https://use.apiindonesia.id/api/v1/libur'),
+        'key' => env('INDONESIA_HOLIDAY_API_KEY'),
+    ],
+
 ];
