@@ -192,14 +192,9 @@ export function PartnerAdvancesView({
                                 key={partner.partner_id || partner.account_id}
                                 className="py-2 first:pl-0 sm:px-3 sm:py-0"
                             >
-                                <div className="flex items-center gap-1.5 text-[9.5px] font-semibold text-slate-500 dark:text-zinc-400">
-                                    <span
-                                        className={`size-1.5 shrink-0 rounded-full ${partner.color}`}
-                                    />
-                                    <span className="truncate">
-                                        {partner.shortName}
-                                    </span>
-                                </div>
+                                <p className="truncate text-[9px] font-semibold text-slate-400 uppercase dark:text-zinc-500">
+                                    {partner.shortName}
+                                </p>
                                 <p className="mt-1 font-mono text-sm font-bold text-slate-950 dark:text-white">
                                     {formatMoney(
                                         partner.net_due_to_partner,

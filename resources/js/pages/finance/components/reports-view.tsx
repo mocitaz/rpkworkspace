@@ -249,12 +249,9 @@ export function ReportsView({
                                         key={item.label}
                                         className="py-2 sm:px-3 sm:py-0"
                                     >
-                                        <div className="flex items-center gap-1.5 text-[9px] font-semibold text-slate-500 dark:text-zinc-400">
-                                            <span
-                                                className={`size-1.5 rounded-full ${item.color}`}
-                                            />
+                                        <p className="text-[9px] font-semibold text-slate-400 uppercase dark:text-zinc-500">
                                             {item.label}
-                                        </div>
+                                        </p>
                                         <p className="mt-1 font-mono text-sm font-bold text-slate-950 dark:text-white">
                                             {formatMoney(
                                                 item.displayAmount ??
@@ -579,28 +576,17 @@ export function ReportsView({
                             </div>
                             <div className="mt-3 grid flex-1 divide-y divide-slate-200/70 sm:grid-cols-3 sm:divide-x sm:divide-y-0 dark:divide-white/[0.06]">
                                 {[
-                                    ['Kas Masuk', totalCashIn, 'bg-blue-500'],
-                                    [
-                                        'Kas Keluar',
-                                        totalCashOut,
-                                        'bg-amber-400',
-                                    ],
-                                    [
-                                        'Arus Kas Bersih',
-                                        netCashFlow,
-                                        'bg-slate-500',
-                                    ],
-                                ].map(([label, amount, color]) => (
+                                    ['Kas Masuk', totalCashIn],
+                                    ['Kas Keluar', totalCashOut],
+                                    ['Arus Kas Bersih', netCashFlow],
+                                ].map(([label, amount]) => (
                                     <div
                                         key={label}
                                         className="py-2 sm:px-3 sm:py-0"
                                     >
-                                        <div className="flex items-center gap-1.5 text-[9px] font-semibold text-slate-500 dark:text-zinc-400">
-                                            <span
-                                                className={`size-1.5 rounded-full ${color}`}
-                                            />
+                                        <p className="text-[9px] font-semibold text-slate-400 uppercase dark:text-zinc-500">
                                             {label}
-                                        </div>
+                                        </p>
                                         <p className="mt-1 font-mono text-sm font-bold text-slate-950 dark:text-white">
                                             {formatMoney(Number(amount), 'IDR')}
                                         </p>

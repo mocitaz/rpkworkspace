@@ -180,14 +180,9 @@ export function AccountsView({
                     <div className="mt-3 grid flex-1 grid-cols-2 divide-x divide-y divide-slate-200/70 sm:grid-cols-4 sm:divide-y-0 dark:divide-white/[0.06]">
                         {accountComposition.map((item) => (
                             <div key={item.label} className="px-3 first:pl-0">
-                                <div className="flex items-center gap-1.5 text-[9px] font-semibold text-slate-500 dark:text-zinc-400">
-                                    <span
-                                        className={`size-1.5 shrink-0 rounded-full ${item.color}`}
-                                    />
-                                    <span className="truncate">
-                                        {item.label}
-                                    </span>
-                                </div>
+                                <p className="truncate text-[9px] font-semibold text-slate-400 uppercase dark:text-zinc-500">
+                                    {item.label}
+                                </p>
                                 <p className="mt-1 font-mono text-xs font-bold text-slate-950 dark:text-white">
                                     {formatMoney(
                                         item.displayAmount ?? item.amount,

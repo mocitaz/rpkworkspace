@@ -152,6 +152,36 @@ test('office expenses expose a compact operational expense summary', async () =>
     assert.match(source, /Kategori Terbesar/);
 });
 
+test('finance composition statistics use text labels without colored dots', async () => {
+    const sources = await Promise.all(
+        [
+            'accounts-view.tsx',
+            'payroll-view.tsx',
+            'partner-advances-view.tsx',
+            'reports-view.tsx',
+        ].map((file) =>
+            readFile(
+                new URL(
+                    `../../resources/js/pages/finance/components/${file}`,
+                    import.meta.url,
+                ),
+                'utf8',
+            ),
+        ),
+    );
+    const source = sources.join('\n');
+
+    assert.doesNotMatch(
+        source,
+        /size-1\.5[^\n]*rounded-full[^\n]*\$\{(?:item|partner)\.color\}/,
+    );
+    assert.doesNotMatch(
+        source,
+        /size-1\.5[^\n]*rounded-full[^\n]*\$\{color\}/,
+    );
+    assert.match(source, /text-\[9px\] font-semibold text-slate-400 uppercase/);
+});
+
 test('payroll uses a compact compensation workspace and ledger rows', async () => {
     const source = await readFile(
         new URL(

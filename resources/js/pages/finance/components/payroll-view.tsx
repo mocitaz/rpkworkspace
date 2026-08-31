@@ -200,12 +200,9 @@ export function PayrollView({
                                 key={item.label}
                                 className="py-2 first:pl-0 sm:px-3 sm:py-0"
                             >
-                                <div className="flex items-center gap-1.5 text-[9.5px] font-semibold text-slate-500 dark:text-zinc-400">
-                                    <span
-                                        className={`size-1.5 rounded-full ${item.color}`}
-                                    />
+                                <p className="text-[9px] font-semibold text-slate-400 uppercase dark:text-zinc-500">
                                     {item.label}
-                                </div>
+                                </p>
                                 <p className="mt-1 font-mono text-sm font-bold text-slate-950 dark:text-white">
                                     {formatMoney(item.amount, 'IDR')}
                                 </p>
