@@ -32,3 +32,19 @@ test('dashboard bento statuses render as plain colored text', async () => {
     assert.doesNotMatch(dashboardSource, /const badgeColorClass/);
     assert.doesNotMatch(dashboardSource, /size-1\.5 shrink-0 rounded-full/);
 });
+
+test('dashboard agenda rows have a spacious three-column hierarchy', async () => {
+    const dashboardPath = new URL(
+        '../../resources/js/pages/dashboard.tsx',
+        import.meta.url,
+    );
+    const dashboardSource = await readFile(dashboardPath, 'utf8');
+
+    assert.match(
+        dashboardSource,
+        /grid-cols-\[3\.25rem_minmax\(0,1fr\)_auto\]/,
+    );
+    assert.match(dashboardSource, /aria-label=\{`Agenda \$\{ev\.time\}/);
+    assert.match(dashboardSource, /rounded-lg bg-slate-50\/70/);
+    assert.match(dashboardSource, /flex-1 space-y-1\.5 overflow-hidden/);
+});

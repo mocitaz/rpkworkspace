@@ -543,7 +543,7 @@ export default function Dashboard({
                                 </div>
                             </div>
 
-                            <div className="flex flex-1 flex-col overflow-hidden py-1">
+                            <div className="flex flex-1 flex-col overflow-hidden pt-2">
                                 {currentQueueItems.length === 0 ? (
                                     <div className="flex flex-1 flex-col items-center justify-center px-4 py-4 text-center">
                                         <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-400 dark:bg-white/[0.04] dark:text-zinc-500">
@@ -756,31 +756,30 @@ export default function Dashboard({
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="flex-1 divide-y divide-slate-100 overflow-hidden py-1 dark:divide-white/[0.04]">
+                                    <div className="flex-1 space-y-1.5 overflow-hidden">
                                         {filteredDayEvents
                                             .slice(0, 4)
                                             .map((ev, idx) => (
                                                 <div
                                                     key={ev.id || idx}
-                                                    className="flex items-center justify-between gap-2 text-xs"
+                                                    aria-label={`Agenda ${ev.time}: ${ev.title}`}
+                                                    className="group/agenda grid grid-cols-[3.25rem_minmax(0,1fr)_auto] items-center gap-2.5 rounded-lg bg-slate-50/70 px-2.5 py-2 text-xs transition-colors hover:bg-slate-100/80 dark:bg-white/[0.025] dark:hover:bg-white/[0.05]"
                                                 >
-                                                    <div className="flex min-w-0 items-center gap-2">
-                                                        <span className="font-mono text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
-                                                            {ev.time}
-                                                        </span>
-                                                        <div className="min-w-0 truncate">
-                                                            <p
-                                                                className="truncate font-medium text-slate-900 dark:text-white"
-                                                                title={ev.title}
-                                                            >
-                                                                {ev.title}
-                                                            </p>
-                                                            <p className="truncate text-[10px] text-slate-400">
-                                                                {ev.subtitle}
-                                                            </p>
-                                                        </div>
+                                                    <time className="font-mono text-[11px] font-bold tracking-tight text-slate-800 dark:text-zinc-200">
+                                                        {ev.time}
+                                                    </time>
+                                                    <div className="min-w-0">
+                                                        <p
+                                                            className="truncate font-semibold text-slate-900 dark:text-white"
+                                                            title={ev.title}
+                                                        >
+                                                            {ev.title}
+                                                        </p>
+                                                        <p className="mt-0.5 truncate text-[10px] leading-none text-slate-400 dark:text-zinc-500">
+                                                            {ev.subtitle}
+                                                        </p>
                                                     </div>
-                                                    <span className="shrink-0 text-[9px] font-semibold text-blue-600 dark:text-blue-400">
+                                                    <span className="max-w-24 shrink-0 truncate text-right text-[9px] leading-tight font-semibold text-blue-600 dark:text-blue-400">
                                                         {ev.category}
                                                     </span>
                                                 </div>
