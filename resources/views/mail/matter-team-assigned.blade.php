@@ -7,7 +7,7 @@
     'badgeBorder' => '#ddd6fe',
     'heading' => 'Penugasan Perkara Baru',
     'recipientName' => $recipientName ?? 'Rekan Advokat',
-    'actionText' => 'Buka Berkas Perkara di Workspace',
+    'actionText' => 'Buka Detail Perkara',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/matters/' . $matter->id),
 ])
 

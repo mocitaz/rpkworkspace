@@ -1,110 +1,5 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
-* @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:19
-* @route '/finance/invoices/{invoice}'
-*/
-export const show = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: show.url(args, options),
-    method: 'get',
-})
-
-show.definition = {
-    methods: ["get","head"],
-    url: '/finance/invoices/{invoice}',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:19
-* @route '/finance/invoices/{invoice}'
-*/
-show.url = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { invoice: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-        args = { invoice: args.id }
-    }
-
-    if (Array.isArray(args)) {
-        args = {
-            invoice: args[0],
-        }
-    }
-
-    args = applyUrlDefaults(args)
-
-    const parsedArgs = {
-        invoice: typeof args.invoice === 'object'
-        ? args.invoice.id
-        : args.invoice,
-    }
-
-    return show.definition.url
-            .replace('{invoice}', parsedArgs.invoice.toString())
-            .replace(/\/+$/, '') + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:19
-* @route '/finance/invoices/{invoice}'
-*/
-show.get = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:19
-* @route '/finance/invoices/{invoice}'
-*/
-show.head = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: show.url(args, options),
-    method: 'head',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:19
-* @route '/finance/invoices/{invoice}'
-*/
-const showForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:19
-* @route '/finance/invoices/{invoice}'
-*/
-showForm.get = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:19
-* @route '/finance/invoices/{invoice}'
-*/
-showForm.head = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-show.form = showForm
-
-/**
 * @see \App\Http\Controllers\FinanceController::store
 * @see app/Http/Controllers/FinanceController.php:179
 * @route '/finance/invoices'
@@ -446,7 +341,6 @@ pdfForm.head = (args: { invoice: string | { id: string } } | [invoice: string | 
 pdf.form = pdfForm
 
 const invoices = {
-    show: Object.assign(show, show),
     store: Object.assign(store, store),
     update: Object.assign(update, update),
     transition: Object.assign(transition, transition),

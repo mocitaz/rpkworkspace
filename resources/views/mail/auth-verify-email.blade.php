@@ -3,7 +3,7 @@
     'preheader' => 'Verifikasi alamat email dinas Anda untuk mengaktifkan akses penuh ke RPK Law Firm Workspace.',
     'heading' => 'Verifikasi Alamat Email',
     'recipientName' => $recipientName ?? 'Rekan Pengguna',
-    'actionText' => 'Verifikasi Alamat Email Saya',
+    'actionText' => 'Verifikasi Email',
     'actionUrl' => $verificationUrl,
 ])
 

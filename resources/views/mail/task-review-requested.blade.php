@@ -7,7 +7,7 @@
     'badgeBorder' => '#d8b4fe',
     'heading' => 'Pengajuan Review Tugas',
     'recipientName' => $recipientName ?? 'Bapak/Ibu Partner',
-    'actionText' => 'Buka Halaman Tugas & Berikan Review',
+    'actionText' => 'Review Tugas',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/tasks/' . $task->id),
 ])
 

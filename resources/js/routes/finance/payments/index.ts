@@ -1,112 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
-* @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:39
-* @route '/finance/payments/{payment}'
-*/
-export const show = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: show.url(args, options),
-    method: 'get',
-})
-
-show.definition = {
-    methods: ["get","head"],
-    url: '/finance/payments/{payment}',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:39
-* @route '/finance/payments/{payment}'
-*/
-show.url = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
-    if (typeof args === 'string' || typeof args === 'number') {
-        args = { payment: args }
-    }
-
-    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
-        args = { payment: args.id }
-    }
-
-    if (Array.isArray(args)) {
-        args = {
-            payment: args[0],
-        }
-    }
-
-    args = applyUrlDefaults(args)
-
-    const parsedArgs = {
-        payment: typeof args.payment === 'object'
-        ? args.payment.id
-        : args.payment,
-    }
-
-    return show.definition.url
-            .replace('{payment}', parsedArgs.payment.toString())
-            .replace(/\/+$/, '') + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:39
-* @route '/finance/payments/{payment}'
-*/
-show.get = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:39
-* @route '/finance/payments/{payment}'
-*/
-show.head = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: show.url(args, options),
-    method: 'head',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:39
-* @route '/finance/payments/{payment}'
-*/
-const showForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:39
-* @route '/finance/payments/{payment}'
-*/
-showForm.get = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\FinanceDetailController::show
-* @see app/Http/Controllers/FinanceDetailController.php:39
-* @route '/finance/payments/{payment}'
-*/
-showForm.head = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-show.form = showForm
-
-/**
 * @see \App\Http\Controllers\FinanceDetailController::receipt
-* @see app/Http/Controllers/FinanceDetailController.php:51
+* @see app/Http/Controllers/FinanceDetailController.php:14
 * @route '/finance/payments/{payment}/receipt'
 */
 export const receipt = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -121,7 +16,7 @@ receipt.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::receipt
-* @see app/Http/Controllers/FinanceDetailController.php:51
+* @see app/Http/Controllers/FinanceDetailController.php:14
 * @route '/finance/payments/{payment}/receipt'
 */
 receipt.url = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -154,7 +49,7 @@ receipt.url = (args: { payment: string | { id: string } } | [payment: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::receipt
-* @see app/Http/Controllers/FinanceDetailController.php:51
+* @see app/Http/Controllers/FinanceDetailController.php:14
 * @route '/finance/payments/{payment}/receipt'
 */
 receipt.get = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -164,7 +59,7 @@ receipt.get = (args: { payment: string | { id: string } } | [payment: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::receipt
-* @see app/Http/Controllers/FinanceDetailController.php:51
+* @see app/Http/Controllers/FinanceDetailController.php:14
 * @route '/finance/payments/{payment}/receipt'
 */
 receipt.head = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -174,7 +69,7 @@ receipt.head = (args: { payment: string | { id: string } } | [payment: string | 
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::receipt
-* @see app/Http/Controllers/FinanceDetailController.php:51
+* @see app/Http/Controllers/FinanceDetailController.php:14
 * @route '/finance/payments/{payment}/receipt'
 */
 const receiptForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -184,7 +79,7 @@ const receiptForm = (args: { payment: string | { id: string } } | [payment: stri
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::receipt
-* @see app/Http/Controllers/FinanceDetailController.php:51
+* @see app/Http/Controllers/FinanceDetailController.php:14
 * @route '/finance/payments/{payment}/receipt'
 */
 receiptForm.get = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -194,7 +89,7 @@ receiptForm.get = (args: { payment: string | { id: string } } | [payment: string
 
 /**
 * @see \App\Http\Controllers\FinanceDetailController::receipt
-* @see app/Http/Controllers/FinanceDetailController.php:51
+* @see app/Http/Controllers/FinanceDetailController.php:14
 * @route '/finance/payments/{payment}/receipt'
 */
 receiptForm.head = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -426,7 +321,6 @@ refundForm.post = (args: { payment: string | { id: string } } | [payment: string
 refund.form = refundForm
 
 const payments = {
-    show: Object.assign(show, show),
     receipt: Object.assign(receipt, receipt),
     store: Object.assign(store, store),
     reverse: Object.assign(reverse, reverse),

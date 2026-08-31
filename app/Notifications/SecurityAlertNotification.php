@@ -41,7 +41,7 @@ class SecurityAlertNotification extends Notification implements ShouldQueue
                 'userAgent' => $this->userAgent ?? 'Web Browser',
                 'eventTime' => $this->eventTime,
                 'recipientName' => $notifiable->name ?? 'Rekan Pengguna',
-                'actionUrl' => 'https://app.rpklawoffice.com/settings/security',
+                'actionUrl' => rtrim((string) config('app.url'), '/').route('security.edit', absolute: false),
             ]);
     }
 

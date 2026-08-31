@@ -7,7 +7,7 @@
     'badgeBorder' => '#bbf7d0',
     'heading' => 'Verifikasi Pembayaran Klien Masuk',
     'recipientName' => $recipientName ?? 'Tim Finance & Billing',
-    'actionText' => 'Tinjau Bukti & Terbitkan Kwitansi',
+    'actionText' => 'Tinjau Bukti Pembayaran',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/finance'),
 ])
 

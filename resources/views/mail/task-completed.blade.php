@@ -7,7 +7,7 @@
     'badgeBorder' => '#a7f3d0',
     'heading' => 'Laporan Penyelesaian Tugas',
     'recipientName' => $recipientName ?? 'Bapak/Ibu Partner',
-    'actionText' => 'Tinjau Hasil Tugas di Workspace',
+    'actionText' => 'Tinjau Hasil Tugas',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/tasks'),
 ])
 

@@ -3,8 +3,8 @@
     'preheader' => 'Disposisi surat / pesan masuk resmi: ' . $correspondence->subject,
     'heading' => 'Disposisi Surat Masuk Resmi',
     'recipientName' => $recipientName ?? 'Rekan Advokat',
-    'actionText' => 'Buka Berkas di Workspace',
-    'actionUrl' => $actionUrl ?? ('https://app.rpklawoffice.com/correspondences/' . $correspondence->id),
+    'actionText' => 'Buka Korespondensi',
+    'actionUrl' => $actionUrl ?? (rtrim((string) config('app.url'), '/') . route('governance.correspondences.show', $correspondence, false)),
 ])
 
 @section('content')

@@ -7,7 +7,7 @@
     'badgeBorder' => '#a7f3d0',
     'heading' => 'Hasil Persidangan Dicatat',
     'recipientName' => $recipientName ?? 'Managing Partner & Tim',
-    'actionText' => 'Baca Berita Acara & Catatan Sidang',
+    'actionText' => 'Buka Hasil Sidang',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/calendar'),
 ])
 

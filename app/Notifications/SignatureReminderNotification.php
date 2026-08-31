@@ -33,11 +33,11 @@ class SignatureReminderNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Pengingat tanda tangan dokumen RPK Law Firm Workspace')
-            ->greeting('Halo '.$this->signer->name.',')
-            ->line('Terdapat dokumen RPK Law Firm Workspace yang menunggu tanda tangan Anda.')
-            ->action('Buka dokumen', route('signature.sign.show', $this->signer->signing_token))
-            ->line('Jika Anda tidak mengenali permintaan ini, silakan hubungi RPK Law Firm.');
+            ->subject('[Pengingat Tanda Tangan] Dokumen Menunggu Persetujuan Anda')
+            ->view('mail.signature-reminder', [
+                'signer' => $this->signer->loadMissing('signatureRequest.document'),
+                'actionUrl' => rtrim((string) config('app.url'), '/').route('signature.sign.show', $this->signer->signing_token, false),
+            ]);
     }
 
     /**

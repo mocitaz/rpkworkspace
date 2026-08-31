@@ -33,7 +33,7 @@ class NewStaffWelcomeNotification extends Notification implements ShouldQueue
             ->view('mail.new-staff-welcome', [
                 'user' => $this->user,
                 'initialPassword' => $this->initialPassword,
-                'actionUrl' => 'https://app.rpklawoffice.com/login',
+                'actionUrl' => rtrim((string) config('app.url'), '/').route('login', absolute: false),
             ]);
     }
 }

@@ -7,7 +7,7 @@
     'badgeBorder' => '#fca5a5',
     'heading' => 'Pengingat Jadwal Sidang Pengadilan',
     'recipientName' => $recipientName ?? 'Tim Kuasa Hukum',
-    'actionText' => 'Buka Detail Jadwal Sidang',
+    'actionText' => 'Buka Jadwal Sidang',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/calendar'),
 ])
 

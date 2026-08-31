@@ -4,7 +4,7 @@
     'heading' => 'Selamat Datang di RPK Law Firm',
     'recipientName' => $user->name,
     'actionText' => 'Masuk ke Workspace',
-    'actionUrl' => $actionUrl ?? ('https://app.rpklawoffice.com/login'),
+    'actionUrl' => $actionUrl ?? (rtrim((string) config('app.url'), '/') . route('login', absolute: false)),
 ])
 
 @section('content')

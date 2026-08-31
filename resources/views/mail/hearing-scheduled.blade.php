@@ -7,7 +7,7 @@
     'badgeBorder' => '#fecaca',
     'heading' => 'Jadwal Sidang Pengadilan Baru',
     'recipientName' => $recipientName ?? 'Tim Litigasi Advokat',
-    'actionText' => 'Buka Detail Agenda Sidang',
+    'actionText' => 'Buka Agenda Sidang',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/calendar'),
 ])
 

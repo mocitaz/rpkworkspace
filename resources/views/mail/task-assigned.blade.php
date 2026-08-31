@@ -3,8 +3,8 @@
     'preheader' => 'Anda telah ditugaskan pada tugas baru: ' . $task->title,
     'heading' => 'Pemberitahuan Tugas Baru',
     'recipientName' => $recipientName ?? 'Rekan Kerja',
-    'actionText' => 'Buka Tugas di Workspace',
-    'actionUrl' => $actionUrl ?? ('https://app.rpklawoffice.com/tasks?view=mine'),
+    'actionText' => 'Buka Detail Tugas',
+    'actionUrl' => $actionUrl ?? (rtrim((string) config('app.url'), '/') . route('tasks.index', ['view' => 'mine'], false)),
 ])
 
 @section('content')

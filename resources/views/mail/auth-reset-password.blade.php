@@ -3,7 +3,7 @@
     'preheader' => 'Gunakan tautan aman berikut untuk mengatur ulang password akun RPK Workspace Anda.',
     'heading' => 'Permintaan Reset Password',
     'recipientName' => $recipientName ?? 'Rekan Pengguna',
-    'actionText' => 'Atur Ulang Password Saya',
+    'actionText' => 'Atur Ulang Password',
     'actionUrl' => $resetUrl,
 ])
 

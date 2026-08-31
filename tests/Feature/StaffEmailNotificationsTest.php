@@ -6,7 +6,10 @@ use App\Models\Client;
 use App\Models\Correspondence;
 use App\Models\Document;
 use App\Models\DocumentApproval;
+use App\Models\DocumentVersion;
 use App\Models\Matter;
+use App\Models\SignatureRequest;
+use App\Models\SignatureSigner;
 use App\Models\Task;
 use App\Models\User;
 use App\Notifications\ClientPartnerAssignedNotification;
@@ -23,10 +26,14 @@ use App\Notifications\MatterStageChangedNotification;
 use App\Notifications\NewStaffWelcomeNotification;
 use App\Notifications\PaymentVerificationRequestedNotification;
 use App\Notifications\SecurityAlertNotification;
+use App\Notifications\SignatureReminderNotification;
+use App\Notifications\TaskApprovedNotification;
 use App\Notifications\TaskAssignedNotification;
 use App\Notifications\TaskCompletedNotification;
 use App\Notifications\TaskDueReminderNotification;
 use App\Notifications\TaskOverdueNotification;
+use App\Notifications\TaskReviewRequestedNotification;
+use App\Notifications\TaskRevisionRequestedNotification;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -36,7 +43,87 @@ class StaffEmailNotificationsTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_renders_all_15_staff_email_notifications_without_errors(): void
+    public function test_branded_layout_renders_the_optional_template_badge(): void
+    {
+        $user = User::factory()->create();
+        $client = Client::factory()->create(['relationship_partner_id' => $user->id]);
+
+        $html = (string) (new ClientPartnerAssignedNotification($client))->toMail($user)->render();
+
+        $this->assertStringContainsString('Penugasan Klien Baru', $html);
+    }
+
+    public function test_correspondence_cta_uses_the_registered_governance_route_and_application_url(): void
+    {
+        config()->set('app.url', 'https://staging.rpk.test');
+
+        $user = User::factory()->create();
+        $correspondence = Correspondence::factory()->create();
+
+        $html = (string) (new CorrespondenceDispatchedNotification($correspondence))->toMail($user)->render();
+
+        $this->assertStringContainsString(
+            'https://staging.rpk.test/governance/correspondences/'.$correspondence->id,
+            $html,
+        );
+        $this->assertStringNotContainsString('https://app.rpklawoffice.com/correspondences/', $html);
+    }
+
+    public function test_account_email_ctas_follow_the_configured_application_url(): void
+    {
+        config()->set('app.url', 'https://staging.rpk.test');
+
+        $user = User::factory()->create();
+        $welcomeHtml = (string) (new NewStaffWelcomeNotification($user, 'TemporaryPassword!'))->toMail($user)->render();
+        $securityHtml = (string) (new SecurityAlertNotification('Password diubah'))->toMail($user)->render();
+
+        $this->assertStringContainsString('https://staging.rpk.test/login', $welcomeHtml);
+        $this->assertStringContainsString('https://staging.rpk.test/settings/security', $securityHtml);
+    }
+
+    public function test_signature_reminder_uses_the_branded_rpk_email_layout(): void
+    {
+        config()->set('app.url', 'https://staging.rpk.test');
+
+        $user = User::factory()->create();
+        $document = Document::factory()->create(['created_by' => $user->id]);
+        $documentVersion = DocumentVersion::factory()->create(['document_id' => $document->id]);
+        $signatureRequest = SignatureRequest::create([
+            'document_id' => $document->id,
+            'document_version_id' => $documentVersion->id,
+            'verification_code' => 'SIG-REMINDER-TEST',
+            'document_checksum' => $documentVersion->checksum,
+            'created_by' => $user->id,
+        ]);
+        $signer = SignatureSigner::create([
+            'signature_request_id' => $signatureRequest->id,
+            'name' => 'Budi Santoso',
+            'email' => 'budi.santoso@example.com',
+            'signing_token' => 'signature-reminder-token',
+        ]);
+
+        $html = (string) (new SignatureReminderNotification($signer))->toMail($user)->render();
+
+        $this->assertStringContainsString('Pengingat Tanda Tangan Dokumen', $html);
+        $this->assertStringContainsString('CONFIDENTIALITY NOTICE', $html);
+        $this->assertStringContainsString('https://staging.rpk.test/sign/signature-reminder-token', $html);
+    }
+
+    public function test_branded_layout_keeps_actions_and_information_grids_mobile_safe(): void
+    {
+        $user = User::factory()->create();
+        $task = Task::factory()->create(['assignee_id' => $user->id]);
+
+        $html = (string) (new TaskOverdueNotification($task, 7, true))->toMail($user)->render();
+
+        $this->assertStringContainsString('box-sizing: border-box', $html);
+        $this->assertStringContainsString('.email-container td[width="50%"]', $html);
+        $this->assertStringContainsString('Buka Detail Tugas', $html);
+        $this->assertStringContainsString('Buka tautan alternatif', $html);
+        $this->assertStringNotContainsString('Tindak Lanjuti Tugas Sekarang →', $html);
+    }
+
+    public function test_renders_all_23_staff_email_notifications_without_errors(): void
     {
         $user = User::factory()->create([
             'name' => 'Muhamad Fajar Roni, S.H.',
@@ -234,5 +321,20 @@ class StaffEmailNotificationsTest extends TestCase
         $notif20 = new NewStaffWelcomeNotification($user, 'SecretTempPass2026!');
         $mail20 = $notif20->toMail($user);
         $this->assertStringContainsString('Selamat Datang di RPK Law Firm', (string) $mail20->render());
+
+        // 21. Task Review Requested
+        $notif21 = new TaskReviewRequestedNotification($task, $user, 'Mohon review hasil pekerjaan ini.');
+        $mail21 = $notif21->toMail($user);
+        $this->assertStringContainsString('Permintaan Review Tugas', (string) $mail21->render());
+
+        // 22. Task Revision Requested
+        $notif22 = new TaskRevisionRequestedNotification($task, $user, 'Perbaiki bagian analisis dan kesimpulan.');
+        $mail22 = $notif22->toMail($user);
+        $this->assertStringContainsString('Permintaan Revisi Tugas', (string) $mail22->render());
+
+        // 23. Task Approved
+        $notif23 = new TaskApprovedNotification($task, $user, 'Hasil pekerjaan telah sesuai.');
+        $mail23 = $notif23->toMail($user);
+        $this->assertStringContainsString('Tugas Telah Disetujui', (string) $mail23->render());
     }
 }

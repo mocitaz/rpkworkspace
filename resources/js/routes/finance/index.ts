@@ -1,8 +1,8 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
 import matters from './matters'
 import exportMethod from './export'
-import invoices from './invoices'
 import payments from './payments'
+import invoices from './invoices'
 import quotations from './quotations'
 import expenses from './expenses'
 import accounts from './accounts'
@@ -96,8 +96,8 @@ const finance = {
     index: Object.assign(index, index),
     matters: Object.assign(matters, matters),
     export: Object.assign(exportMethod, exportMethod),
-    invoices: Object.assign(invoices, invoices),
     payments: Object.assign(payments, payments),
+    invoices: Object.assign(invoices, invoices),
     quotations: Object.assign(quotations, quotations),
     expenses: Object.assign(expenses, expenses),
     accounts: Object.assign(accounts, accounts),

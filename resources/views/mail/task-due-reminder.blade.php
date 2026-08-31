@@ -7,7 +7,7 @@
     'badgeBorder' => '#fde68a',
     'heading' => 'Pengingat Batas Waktu Tugas',
     'recipientName' => $recipientName ?? 'Rekan Kerja',
-    'actionText' => 'Periksa Progres Tugas',
+    'actionText' => 'Buka Progres Tugas',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/tasks?view=mine'),
 ])
 

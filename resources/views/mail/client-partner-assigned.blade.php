@@ -7,7 +7,7 @@
     'badgeBorder' => '#bbf7d0',
     'heading' => 'Penunjukan Relationship Partner',
     'recipientName' => $recipientName ?? 'Bapak/Ibu Partner',
-    'actionText' => 'Buka Profil Klien di Workspace',
+    'actionText' => 'Buka Profil Klien',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/clients/' . $client->id),
 ])
 

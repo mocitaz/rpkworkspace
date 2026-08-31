@@ -2157,18 +2157,21 @@ function Ledger({
                                     i.amount !== undefined ? (
                                         <div className="min-w-0 flex-1 border-l-2 border-blue-500 pl-3">
                                             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5">
-                                                {i.invoice_number ? (
-                                                    <Link
-                                                        href={invoiceRoutes.show.url(
-                                                            i.id,
-                                                        )}
+                                                {i.invoice_number &&
+                                                onViewDetail ? (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() =>
+                                                            onViewDetail(i)
+                                                        }
                                                         className="font-mono text-xs font-bold text-slate-950 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
                                                     >
                                                         {i.invoice_number}
-                                                    </Link>
+                                                    </button>
                                                 ) : (
                                                     <span className="font-mono text-xs font-bold text-slate-950 dark:text-white">
-                                                        {i.quotation_number ??
+                                                        {i.invoice_number ??
+                                                            i.quotation_number ??
                                                             i.description ??
                                                             i.title}
                                                     </span>
@@ -2679,14 +2682,19 @@ function PaymentLedger({
                                         </div>
 
                                         <h4 className="mt-1 line-clamp-1 text-xs font-bold text-slate-900 dark:text-white">
-                                            <Link
-                                                href={paymentRoutes.show.url(
-                                                    payment.id,
-                                                )}
-                                                className="transition-colors hover:text-emerald-600 dark:hover:text-emerald-400"
-                                            >
-                                                Penerimaan Kas Klien
-                                            </Link>
+                                            {onViewDetail ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        onViewDetail(payment)
+                                                    }
+                                                    className="transition-colors hover:text-emerald-600 dark:hover:text-emerald-400"
+                                                >
+                                                    Penerimaan Kas Klien
+                                                </button>
+                                            ) : (
+                                                'Penerimaan Kas Klien'
+                                            )}
                                         </h4>
 
                                         <div className="mt-1 flex flex-wrap items-center gap-2 text-[10.5px] text-slate-500 dark:text-zinc-400">

@@ -249,7 +249,7 @@ class DashboardController extends Controller
                         $detail = 'Faktur tagihan jasa hukum '.($invNum ? "#{$invNum}" : '');
                     }
 
-                    $url = $subjectId ? route('finance.invoices.show', $subjectId) : route('finance.index');
+                    $url = route('finance.index');
                 } elseif (str_contains($evt, 'quotation') || str_contains($cat, 'quotation')) {
                     $badge = 'Penawaran';
                     $badgeColor = 'blue';
@@ -274,7 +274,7 @@ class DashboardController extends Controller
                     $iconType = 'payment';
                     $title = 'Penerimaan Pembayaran';
                     $detail = 'Pencatatan kuitansi & penerimaan dana klien';
-                    $url = $subjectId ? route('finance.payments.show', $subjectId) : route('finance.index');
+                    $url = route('finance.index');
                 } elseif (str_contains($evt, 'task') || str_contains($cat, 'task')) {
                     $badge = 'Tugas';
                     $badgeColor = 'teal';

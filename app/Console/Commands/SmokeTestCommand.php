@@ -5,9 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Client;
 use App\Models\Correspondence;
 use App\Models\Document;
-use App\Models\Invoice;
 use App\Models\Matter;
-use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Http\Request;
@@ -59,8 +57,6 @@ class SmokeTestCommand extends Command
         $matter = Matter::query()->first();
         $document = Document::query()->first();
         $correspondence = Correspondence::query()->first();
-        $invoice = Invoice::query()->first();
-        $payment = Payment::query()->first();
 
         $routes = [
             ['Dashboard', '/dashboard'],
@@ -78,8 +74,6 @@ class SmokeTestCommand extends Command
             ['Tata Kelola & Legal Hold', '/governance'],
             ['Korespondensi (Detail)', $correspondence ? "/governance/correspondences/{$correspondence->getKey()}" : null],
             ['Keuangan & Ledger', '/finance'],
-            ['Invoice (Detail)', $invoice ? "/finance/invoices/{$invoice->getKey()}" : null],
-            ['Pembayaran (Detail)', $payment ? "/finance/payments/{$payment->getKey()}" : null],
             ['Kalender & Agenda', '/calendar'],
             ['Chat Internal', '/chat'],
             ['Admin User', '/admin/users'],

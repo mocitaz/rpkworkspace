@@ -7,7 +7,7 @@
     'badgeBorder' => '#fde68a',
     'heading' => 'Permintaan Revisi Tugas',
     'recipientName' => $recipientName ?? 'Rekan Advokat',
-    'actionText' => 'Lihat Catatan Revisi di Workspace',
+    'actionText' => 'Lihat Catatan Revisi',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/tasks/' . $task->id),
 ])
 

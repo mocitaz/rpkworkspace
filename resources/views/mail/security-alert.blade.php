@@ -3,8 +3,8 @@
     'preheader' => 'Peringatan keamanan: ' . $activityType . ' pada akun RPK Workspace Anda.',
     'heading' => 'Pemberitahuan Keamanan Akun',
     'recipientName' => $recipientName ?? 'Rekan Pengguna',
-    'actionText' => 'Periksa Pengaturan Keamanan',
-    'actionUrl' => $actionUrl ?? ('https://app.rpklawoffice.com/settings/security'),
+    'actionText' => 'Periksa Keamanan Akun',
+    'actionUrl' => $actionUrl ?? (rtrim((string) config('app.url'), '/') . route('security.edit', absolute: false)),
 ])
 
 @section('content')

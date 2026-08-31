@@ -37,7 +37,7 @@ class CorrespondenceDispatchedNotification extends Notification implements Shoul
                 'correspondence' => $this->correspondence,
                 'dispositionNote' => $this->dispositionNote,
                 'recipientName' => $notifiable->name ?? 'Rekan Advokat',
-                'actionUrl' => 'https://app.rpklawoffice.com/correspondences/'.$this->correspondence->id,
+                'actionUrl' => rtrim((string) config('app.url'), '/').route('governance.correspondences.show', $this->correspondence, false),
             ]);
     }
 

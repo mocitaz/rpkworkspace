@@ -460,8 +460,8 @@ test('allows authorized user to edit invoice details and line items via put rout
         ->and($invoice->lineItems)->toHaveCount(2);
 });
 
-test('renders invoice show page with clients and matters props for editing', function () {
-    $user = rafUser(['matter.view', 'billing.view']);
+test('does not expose standalone invoice and payment detail pages', function () {
+    $user = rafUser(['matter.view', 'billing.view', 'payment.view']);
     $user->forceFill(['email_verified_at' => now()])->save();
 
     $matter = Matter::factory()->create(['responsible_partner_id' => $user->id]);
@@ -469,16 +469,17 @@ test('renders invoice show page with clients and matters props for editing', fun
         'client_id' => $matter->client_id,
         'matter_id' => $matter->id,
     ]);
-    InvoiceLineItem::factory()->create(['invoice_id' => $invoice->id]);
+    $payment = Payment::factory()->create([
+        'client_id' => $matter->client_id,
+        'matter_id' => $matter->id,
+    ]);
 
-    $response = $this->actingAs($user)->get(route('finance.invoices.show', $invoice));
-
-    $response->assertSuccessful()->assertInertia(fn (Assert $page) => $page
-        ->component('finance/invoice-show')
-        ->has('invoice')
-        ->has('clients')
-        ->has('matters')
-    );
+    $this->actingAs($user)
+        ->get("/finance/invoices/{$invoice->getKey()}")
+        ->assertNotFound();
+    $this->actingAs($user)
+        ->get("/finance/payments/{$payment->getKey()}")
+        ->assertNotFound();
 });
 
 test('allows authorized user to edit quotation details and line items via put route', function () {

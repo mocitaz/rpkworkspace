@@ -7,7 +7,7 @@
     'badgeBorder' => '#a7f3d0',
     'heading' => 'Dokumen Telah Sah Ditandatangani',
     'recipientName' => $recipientName ?? 'Tim Perkara & Partner',
-    'actionText' => 'Unduh Berkas PDF Final & Sertifikat',
+    'actionText' => 'Unduh Dokumen Final',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/documents/' . $document->id),
 ])
 

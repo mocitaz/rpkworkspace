@@ -3,9 +3,7 @@
 use App\Models\Client;
 use App\Models\Correspondence;
 use App\Models\Document;
-use App\Models\Invoice;
 use App\Models\Matter;
-use App\Models\Payment;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Database\Seeders\RafWorkspaceDemoSeeder;
@@ -34,8 +32,6 @@ dataset('all_app_routes', function () {
         'governance_index' => fn () => '/governance',
         'governance_correspondence_show' => fn () => '/governance/correspondences/'.Correspondence::first()->getKey(),
         'finance_index' => fn () => '/finance',
-        'finance_invoice_show' => fn () => '/finance/invoices/'.Invoice::first()->getKey(),
-        'finance_payment_show' => fn () => '/finance/payments/'.Payment::first()->getKey(),
         'calendar_index' => fn () => '/calendar',
         'chat_index' => fn () => '/chat',
         'admin_users_index' => fn () => '/admin/users',

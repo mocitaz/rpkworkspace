@@ -7,7 +7,7 @@
     'badgeBorder' => '#cbd5e1',
     'heading' => 'Catatan Baru pada Dokumen',
     'recipientName' => $recipientName ?? 'Rekan Kerja',
-    'actionText' => 'Balas Catatan di Workspace',
+    'actionText' => 'Buka Diskusi Dokumen',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/documents/' . $document->id),
 ])
 

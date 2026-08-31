@@ -28,17 +28,10 @@ class ResetPasswordNotification extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $resetUrl = url(route('password.reset', [
+        $resetUrl = rtrim((string) config('app.url'), '/').route('password.reset', [
             'token' => $this->token,
             'email' => $notifiable->getEmailForPasswordReset(),
-        ], false));
-
-        if (app()->environment('production') || str_starts_with(config('app.url'), 'https://app.rpklawoffice.com')) {
-            $resetUrl = 'https://app.rpklawoffice.com'.route('password.reset', [
-                'token' => $this->token,
-                'email' => $notifiable->getEmailForPasswordReset(),
-            ], false);
-        }
+        ], false);
 
         return (new MailMessage)
             ->subject('[Keamanan Akun] Permintaan Reset Password RPK Workspace')

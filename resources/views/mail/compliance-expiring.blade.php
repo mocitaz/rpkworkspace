@@ -7,7 +7,7 @@
     'badgeBorder' => '#fde68a',
     'heading' => 'Peringatan Masa Berlaku Dokumen',
     'recipientName' => $recipientName ?? 'Tim Legal & Admin',
-    'actionText' => 'Periksa Berkas di Profil Klien',
+    'actionText' => 'Periksa Berkas Klien',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/clients'),
 ])
 

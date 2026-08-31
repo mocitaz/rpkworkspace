@@ -14,6 +14,12 @@ Schedule::command('raf:send-deadline-reminders')
     ->withoutOverlapping()
     ->onOneServer();
 
+Schedule::command('raf:send-task-overdue-reminders')
+    ->hourly()
+    ->timezone(config('raf.timezone'))
+    ->withoutOverlapping()
+    ->onOneServer();
+
 Schedule::command('raf:send-signature-reminders')
     ->hourly()
     ->timezone(config('raf.timezone'))

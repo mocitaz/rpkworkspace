@@ -37,17 +37,10 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('signature-sign', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
 
         ResetPassword::toMailUsing(function (object $notifiable, string $token) {
-            $resetUrl = url(route('password.reset', [
+            $resetUrl = rtrim((string) config('app.url'), '/').route('password.reset', [
                 'token' => $token,
                 'email' => $notifiable->getEmailForPasswordReset(),
-            ], false));
-
-            if (app()->environment('production') || str_starts_with((string) config('app.url'), 'https://app.rpklawoffice.com')) {
-                $resetUrl = 'https://app.rpklawoffice.com'.route('password.reset', [
-                    'token' => $token,
-                    'email' => $notifiable->getEmailForPasswordReset(),
-                ], false);
-            }
+            ], false);
 
             return (new MailMessage)
                 ->subject('[Keamanan Akun] Permintaan Reset Password RPK Workspace')

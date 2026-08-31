@@ -106,8 +106,8 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::get('finance', [FinanceController::class, 'index'])->name('finance.index');
     Route::patch('finance/matters/{matter}/contract', [FinanceController::class, 'updateMatterContract'])->name('finance.matters.contract.update');
     Route::get('finance/export/excel', [FinanceController::class, 'exportExcel'])->name('finance.export.excel');
-    Route::get('finance/invoices/{invoice}', [FinanceDetailController::class, 'invoice'])->name('finance.invoices.show');
-    Route::get('finance/payments/{payment}', [FinanceDetailController::class, 'payment'])->name('finance.payments.show');
+    Route::get('finance/invoices/{invoice}', fn () => abort(404));
+    Route::get('finance/payments/{payment}', fn () => abort(404));
     Route::get('finance/payments/{payment}/receipt', [FinanceDetailController::class, 'paymentReceipt'])->name('finance.payments.receipt');
     Route::post('finance/invoices', [FinanceController::class, 'storeInvoice'])->name('finance.invoices.store');
     Route::put('finance/invoices/{invoice}', [FinanceController::class, 'updateInvoice'])->name('finance.invoices.update');

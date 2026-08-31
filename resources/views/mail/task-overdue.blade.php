@@ -1,20 +1,26 @@
 @extends('mail.layouts.rpk', [
     'subject' => '[PERINGATAN TENGGAT MELEBIHI WAKTU] ' . $task->title,
-    'preheader' => 'Pemberitahuan: Tugas telah melewati batas waktu pengerjaan.',
-    'badgeText' => 'Tugas Melewati Batas Waktu',
+    'preheader' => 'Pemberitahuan: Tugas telah melewati batas waktu' . ($overdueDays ? ' selama ' . $overdueDays . ' hari.' : '.'),
+    'badgeText' => $overdueDays ? 'Terlambat H+' . $overdueDays : 'Tugas Melewati Batas Waktu',
     'badgeBg' => '#fef2f2',
     'badgeColor' => '#b91c1c',
     'badgeBorder' => '#fecaca',
     'heading' => 'Peringatan Tugas Terlambat',
     'recipientName' => $recipientName ?? 'Rekan Kerja',
-    'actionText' => 'Tindak Lanjuti Tugas Sekarang',
-    'actionUrl' => $actionUrl ?? (config('app.url') . '/tasks?view=mine'),
+    'actionText' => 'Buka Detail Tugas',
+    'actionUrl' => $actionUrl ?? (rtrim((string) config('app.url'), '/') . route('tasks.show', $task, false)),
 ])
 
 @section('content')
 <p style="margin: 0 0 16px 0; font-size: 14px; line-height: 22px; color: #475569;">
     Sistem mendeteksi bahwa tugas berikut telah <strong style="color: #b91c1c;">melewati batas waktu (overdue)</strong> dan masih berstatus belum selesai:
 </p>
+
+@if($escalated ?? false)
+<div style="margin-bottom: 20px; padding: 12px 16px; border-left: 3px solid #b91c1c; border-radius: 0 8px 8px 0; background-color: #fff7ed; color: #9a3412; font-size: 12px; line-height: 18px;">
+    <strong>Eskalasi kepada penanggung jawab:</strong> Tugas telah terlambat {{ $overdueDays }} hari dan belum diselesaikan oleh assignee.
+</div>
+@endif
 
 <!-- Information Matrix Card -->
 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 12px; margin-bottom: 20px; overflow: hidden;">

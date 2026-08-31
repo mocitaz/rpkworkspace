@@ -7,7 +7,7 @@
     'badgeBorder' => '#fde68a',
     'heading' => 'Permintaan Telaah & Review Dokumen',
     'recipientName' => $recipientName ?? 'Bapak/Ibu Reviewer',
-    'actionText' => 'Buka Dokumen untuk Direview',
+    'actionText' => 'Review Dokumen',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/documents/' . $document->id),
 ])
 

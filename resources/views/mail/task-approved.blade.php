@@ -7,7 +7,7 @@
     'badgeBorder' => '#a7f3d0',
     'heading' => 'Persetujuan & Penyelesaian Tugas',
     'recipientName' => $recipientName ?? 'Rekan Advokat',
-    'actionText' => 'Lihat Detail Tugas di Workspace',
+    'actionText' => 'Buka Detail Tugas',
     'actionUrl' => $actionUrl ?? (config('app.url') . '/tasks/' . $task->id),
 ])
 
