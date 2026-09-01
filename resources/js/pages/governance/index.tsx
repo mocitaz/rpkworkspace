@@ -1,11 +1,9 @@
 import { Form, Head, Link } from '@inertiajs/react';
 import {
-    AlertCircle,
     AlertTriangle,
     Archive,
     ArrowDownLeft,
     ArrowUpRight,
-    CheckCircle2,
     ChevronDown,
     ChevronRight,
     ChevronUp,
@@ -14,28 +12,24 @@ import {
     ExternalLink,
     FileCheck,
     FileText,
-    FolderKanban,
-    Inbox,
-    Layers,
     Mail,
     MessageSquare,
     Package,
-    Paperclip,
     Plus,
     RotateCcw,
     Scale,
     Search,
-    Send,
     ShieldAlert,
     ShieldCheck,
     Trash2,
     Users,
     Zap,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { EmptyState } from '@/components/empty-state';
 import { GovernanceComplianceHero } from '@/components/governance-compliance-hero';
-import { StatusBadge } from '@/components/status-badge';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -125,6 +119,50 @@ type Export = {
     completed_at?: string;
 };
 
+const governanceCompactButtonClass =
+    'h-6.5 gap-1 rounded-md px-2 text-[10px] font-semibold';
+const governanceDialogPanelClass =
+    'max-h-[90dvh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]';
+const governanceDialogFooterClass =
+    'sticky bottom-0 z-10 -mx-5 -mb-5 mt-5 flex items-center justify-end gap-2.5 border-t border-slate-100 bg-white/95 px-5 py-3.5 backdrop-blur-sm sm:-mx-6 sm:px-6 dark:border-white/[0.06] dark:bg-[#14161b]/95';
+const governanceDialogCancelButtonClass =
+    'h-9 rounded-lg border-slate-200 px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200';
+const governanceDialogPrimaryButtonClass =
+    'h-9 rounded-lg px-4 text-xs font-semibold text-white shadow-xs';
+
+function GovernanceDialogHeader({
+    icon: Icon,
+    eyebrow,
+    title,
+    description,
+}: {
+    icon: LucideIcon;
+    eyebrow: ReactNode;
+    title: ReactNode;
+    description: ReactNode;
+}) {
+    return (
+        <DialogHeader className="border-b border-slate-100 bg-slate-50/60 px-5 py-3.5 text-left sm:px-6 dark:border-white/[0.06] dark:bg-white/[0.025]">
+            <div className="grid grid-cols-[40px_minmax(0,1fr)] items-start gap-x-3.5 pr-6">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                    <Icon className="size-[18px]" />
+                </div>
+                <div className="grid min-w-0 grid-rows-[13px_auto_auto] content-start">
+                    <div className="truncate text-[10px] leading-[14px] font-semibold tracking-[0.14em] text-slate-400 uppercase dark:text-zinc-500">
+                        {eyebrow}
+                    </div>
+                    <DialogTitle className="mt-0.5 text-sm leading-[18px] font-semibold text-slate-950 dark:text-white">
+                        {title}
+                    </DialogTitle>
+                    <DialogDescription className="mt-0.5 max-w-3xl text-[11px] leading-[18px] text-slate-500 dark:text-zinc-400">
+                        {description}
+                    </DialogDescription>
+                </div>
+            </div>
+        </DialogHeader>
+    );
+}
+
 export default function GovernanceIndex({
     matters,
     metrics,
@@ -162,9 +200,20 @@ export default function GovernanceIndex({
     const [conflictSearch, setConflictSearch] = useState('');
     const [conflictStatusFilter, setConflictStatusFilter] = useState('');
     const [conflictMatterFilter, setConflictMatterFilter] = useState('');
+    const [matterSearch, setMatterSearch] = useState('');
+    const [matterStatusFilter, setMatterStatusFilter] = useState('');
     const [activeTab, setActiveTab] = useState<
-        'all' | 'correspondence' | 'conflicts' | 'hold'
-    >('all');
+        'correspondence' | 'conflicts' | 'hold'
+    >('correspondence');
+
+    const governanceTabClass = (
+        tab: 'correspondence' | 'conflicts' | 'hold',
+    ): string =>
+        `relative shrink-0 border-b-2 px-1 pt-1 pb-2 text-[11px] font-semibold transition-colors ${
+            activeTab === tab
+                ? 'border-slate-950 text-slate-950 dark:border-white dark:text-white'
+                : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white'
+        }`;
 
     const filteredConflictChecks = conflictChecks.filter((item) => {
         if (conflictSearch) {
@@ -195,6 +244,25 @@ export default function GovernanceIndex({
             return false;
         }
         return true;
+    });
+
+    const filteredMatters = matters.filter((matter) => {
+        const query = matterSearch.trim().toLowerCase();
+        const matchesSearch =
+            !query ||
+            matter.matter_number.toLowerCase().includes(query) ||
+            matter.title.toLowerCase().includes(query) ||
+            matter.client?.display_name.toLowerCase().includes(query);
+
+        const matchesStatus =
+            !matterStatusFilter ||
+            (matterStatusFilter === 'legal_hold' && matter.legal_hold_at) ||
+            (matterStatusFilter === 'archived' && matter.archived_at) ||
+            (matterStatusFilter === 'active' &&
+                !matter.legal_hold_at &&
+                !matter.archived_at);
+
+        return matchesSearch && matchesStatus;
     });
 
     return (
@@ -360,78 +428,38 @@ export default function GovernanceIndex({
                         </div>
                     </section>
 
-                    {/* 3. Segmented Tab Navigation for Governance */}
-                    <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto border-b border-slate-200/60 pb-2 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
-                        <button
-                            type="button"
-                            onClick={() => setActiveTab('all')}
-                            className={`flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                activeTab === 'all'
-                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-950'
-                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-400'
-                            }`}
-                        >
-                            <Layers className="size-3" />
-                            Semua Modul
-                        </button>
+                    {/* 3. Governance workspace tabs */}
+                    <div className="flex [scrollbar-width:none] items-center gap-8 overflow-x-auto border-b border-slate-200/60 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
                         <button
                             type="button"
                             onClick={() => setActiveTab('correspondence')}
-                            className={`flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                activeTab === 'correspondence'
-                                    ? 'bg-blue-600 text-white shadow-2xs'
-                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-blue-50/50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-400'
-                            }`}
+                            className={governanceTabClass('correspondence')}
                         >
-                            <Mail className="size-3" />
-                            Korespondensi ({correspondences.length})
+                            Korespondensi · {correspondences.length}
                         </button>
                         <button
                             type="button"
                             onClick={() => setActiveTab('conflicts')}
-                            className={`flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                activeTab === 'conflicts'
-                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-400'
-                            }`}
+                            className={governanceTabClass('conflicts')}
                         >
-                            <Scale className="size-3" />
-                            Conflict Checks ({conflictChecks.length})
+                            Conflict Checks · {conflictChecks.length}
                         </button>
                         <button
                             type="button"
                             onClick={() => setActiveTab('hold')}
-                            className={`flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                                activeTab === 'hold'
-                                    ? 'bg-emerald-600 text-white shadow-2xs'
-                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-emerald-50/50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-400'
-                            }`}
+                            className={governanceTabClass('hold')}
                         >
-                            <ShieldCheck className="size-3" />
-                            Legal Hold &amp; Handover ({matters.length})
+                            Legal Hold &amp; Handover · {matters.length}
                         </button>
                     </div>
-                    {/* 4. Main 2-Column Grid */}
-                    <div className="grid items-stretch gap-4 lg:grid-cols-2">
+                    {/* 4. Active governance workspace */}
+                    <div>
                         {/* Section 1: Korespondensi Terbaru */}
-                        {(activeTab === 'all' ||
-                            activeTab === 'correspondence') && (
-                            <div
-                                className={
-                                    activeTab === 'correspondence'
-                                        ? 'lg:col-span-2'
-                                        : ''
-                                }
-                            >
-                                <div
-                                    className={`flex flex-col rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b] ${
-                                        activeTab === 'all'
-                                            ? 'h-[560px]'
-                                            : 'min-h-[500px]'
-                                    }`}
-                                >
+                        {activeTab === 'correspondence' && (
+                            <div>
+                                <div className="flex min-h-[500px] flex-col overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     {/* Header */}
-                                    <div className="flex shrink-0 flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
+                                    <div className="flex shrink-0 flex-col justify-between gap-2.5 border-b border-slate-100 px-4 py-3.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
                                         <div className="flex items-center gap-2">
                                             <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
                                                 <Mail className="size-3.5" />
@@ -447,7 +475,7 @@ export default function GovernanceIndex({
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                                            <span className="font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
                                                 {correspondences.length} entri
                                             </span>
                                             {can.correspondence && (
@@ -471,7 +499,7 @@ export default function GovernanceIndex({
                                     <Form
                                         action={governanceRoutes.index.url()}
                                         method="get"
-                                        className="my-2.5 space-y-1.5 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2 dark:border-white/[0.04] dark:bg-[#121418]"
+                                        className="mx-4 my-3 space-y-1.5 rounded-lg border border-slate-200/60 bg-slate-50/50 p-2 dark:border-white/[0.04] dark:bg-[#121418]"
                                     >
                                         {/* Row 1: Search Input & Action Buttons */}
                                         <div className="flex gap-1.5">
@@ -559,9 +587,18 @@ export default function GovernanceIndex({
                                     </Form>
 
                                     {/* List Data / Empty State */}
-                                    <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+                                    <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
                                         {correspondences.length ? (
-                                            <div className="space-y-1.5">
+                                            <div className="overflow-hidden rounded-lg border border-slate-200/70 dark:border-white/[0.06]">
+                                                <div className="hidden grid-cols-[minmax(0,1fr)_7rem] gap-4 border-b border-slate-200/70 bg-slate-50/80 px-3 py-2 text-[9px] font-semibold tracking-[0.1em] text-slate-400 uppercase sm:grid dark:border-white/[0.06] dark:bg-white/[0.025] dark:text-zinc-500">
+                                                    <span>
+                                                        Korespondensi &amp;
+                                                        Perkara
+                                                    </span>
+                                                    <span className="text-right">
+                                                        Tanggal
+                                                    </span>
+                                                </div>
                                                 {correspondences.map((item) => {
                                                     const isInbound =
                                                         item.direction ===
@@ -572,46 +609,36 @@ export default function GovernanceIndex({
                                                             href={correspondenceRoutes.show.url(
                                                                 item.id,
                                                             )}
-                                                            className="group flex flex-col justify-between gap-2.5 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs transition-all hover:border-blue-300 hover:bg-blue-50/20 hover:shadow-xs sm:flex-row sm:items-center sm:p-3 dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-blue-800/50 dark:hover:bg-white/[0.02]"
+                                                            className="group flex flex-col justify-between gap-2.5 border-b border-slate-100 bg-white px-3 py-3 transition-colors last:border-b-0 hover:bg-slate-50/70 sm:flex-row sm:items-center dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:bg-white/[0.025]"
                                                         >
-                                                            <div className="flex min-w-0 flex-1 items-start gap-2.5">
-                                                                {/* Direction Icon Badge */}
-                                                                <div
-                                                                    className={`mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg border transition-transform group-hover:scale-105 ${
-                                                                        isInbound
-                                                                            ? 'border-blue-200/80 bg-blue-50 text-blue-600 dark:border-blue-900/40 dark:bg-blue-950/60 dark:text-blue-400'
-                                                                            : 'border-emerald-200/80 bg-emerald-50 text-emerald-600 dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-400'
-                                                                    }`}
-                                                                >
-                                                                    {isInbound ? (
-                                                                        <Inbox className="size-3.5" />
-                                                                    ) : (
-                                                                        <Send className="size-3.5" />
-                                                                    )}
-                                                                </div>
-
-                                                                {/* Text & Meta Details */}
+                                                            <div className="min-w-0 flex-1 border-l-2 border-blue-500 pl-3">
                                                                 <div className="min-w-0 flex-1 space-y-0.5">
                                                                     <div className="flex flex-wrap items-center gap-1 text-[9.5px]">
-                                                                        <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
+                                                                        <span className="font-mono font-semibold text-slate-500 dark:text-zinc-400">
                                                                             {
                                                                                 item
                                                                                     .matter
                                                                                     .matter_number
                                                                             }
                                                                         </span>
+                                                                        <span className="text-slate-300 dark:text-zinc-700">
+                                                                            ·
+                                                                        </span>
                                                                         <span
-                                                                            className={`inline-flex items-center rounded px-1.5 py-0.5 font-semibold ${
+                                                                            className={`font-semibold ${
                                                                                 isInbound
-                                                                                    ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300'
-                                                                                    : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                                                                                    ? 'text-blue-600 dark:text-blue-400'
+                                                                                    : 'text-emerald-600 dark:text-emerald-400'
                                                                             }`}
                                                                         >
                                                                             {isInbound
                                                                                 ? 'Surat Masuk'
                                                                                 : 'Surat Keluar'}
                                                                         </span>
-                                                                        <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600 capitalize dark:bg-zinc-800 dark:text-zinc-400">
+                                                                        <span className="text-slate-300 dark:text-zinc-700">
+                                                                            ·
+                                                                        </span>
+                                                                        <span className="font-medium text-slate-500 capitalize dark:text-zinc-400">
                                                                             {
                                                                                 item.source
                                                                             }
@@ -619,8 +646,8 @@ export default function GovernanceIndex({
                                                                         {item.documents_count &&
                                                                         item.documents_count >
                                                                             0 ? (
-                                                                            <span className="inline-flex items-center gap-1 rounded bg-purple-50 px-1.5 py-0.5 font-semibold text-purple-700 dark:bg-purple-950/50 dark:text-purple-300">
-                                                                                <Paperclip className="size-2.5" />
+                                                                            <span className="font-semibold text-violet-600 dark:text-violet-400">
+                                                                                ·{' '}
                                                                                 {
                                                                                     item.documents_count
                                                                                 }{' '}
@@ -716,23 +743,11 @@ export default function GovernanceIndex({
                         )}
 
                         {/* Section 2: Conflict Checks */}
-                        {(activeTab === 'all' || activeTab === 'conflicts') && (
-                            <div
-                                className={
-                                    activeTab === 'conflicts'
-                                        ? 'lg:col-span-2'
-                                        : ''
-                                }
-                            >
-                                <div
-                                    className={`flex flex-col rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b] ${
-                                        activeTab === 'all'
-                                            ? 'h-[560px]'
-                                            : 'min-h-[500px]'
-                                    }`}
-                                >
+                        {activeTab === 'conflicts' && (
+                            <div>
+                                <div className="flex min-h-[500px] flex-col overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                                     {/* Header */}
-                                    <div className="flex shrink-0 flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
+                                    <div className="flex shrink-0 flex-col justify-between gap-2.5 border-b border-slate-100 px-4 py-3.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
                                         <div className="flex items-center gap-2">
                                             <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
                                                 <Scale className="size-3.5" />
@@ -750,7 +765,7 @@ export default function GovernanceIndex({
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <span className="rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                                            <span className="font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
                                                 {conflictChecks.length} entri
                                             </span>
                                             {can.conflict && (
@@ -759,9 +774,9 @@ export default function GovernanceIndex({
                                                     onClick={() =>
                                                         setConflictModal(true)
                                                     }
-                                                    className="h-7 rounded-lg bg-slate-900 px-2.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                                    className={`${governanceCompactButtonClass} bg-slate-900 text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900`}
                                                 >
-                                                    <Plus className="mr-1 size-3" />
+                                                    <Plus className="size-3" />
                                                     Uji Baru
                                                 </Button>
                                             )}
@@ -769,7 +784,7 @@ export default function GovernanceIndex({
                                     </div>
 
                                     {/* Matching Filter Toolbar */}
-                                    <div className="my-2.5 shrink-0 space-y-1.5 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2 dark:border-white/[0.04] dark:bg-[#121418]">
+                                    <div className="mx-4 my-3 shrink-0 space-y-1.5 rounded-lg border border-slate-200/60 bg-slate-50/50 p-2 dark:border-white/[0.04] dark:bg-[#121418]">
                                         {/* Row 1: Search Input & Action/Reset Buttons */}
                                         <div className="flex gap-1.5">
                                             <div className="relative flex-1">
@@ -805,26 +820,26 @@ export default function GovernanceIndex({
                                                     <RotateCcw className="size-3 text-slate-400" />
                                                 </button>
                                             )}
-                                            <div className="flex shrink-0 items-center gap-1">
-                                                <span className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-1.5 py-0.5 text-[11px] font-semibold text-slate-700 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
-                                                    <CheckCircle2 className="size-3 text-emerald-600" />
+                                            <div className="flex shrink-0 items-center gap-3 text-[10px] font-semibold">
+                                                <span className="text-emerald-600 dark:text-emerald-400">
                                                     {
                                                         conflictChecks.filter(
                                                             (c) =>
                                                                 c.status ===
                                                                 'clear',
                                                         ).length
-                                                    }
+                                                    }{' '}
+                                                    clear
                                                 </span>
-                                                <span className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-1.5 py-0.5 text-[11px] font-semibold text-slate-700 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
-                                                    <AlertCircle className="size-3 text-amber-600" />
+                                                <span className="text-amber-600 dark:text-amber-400">
                                                     {
                                                         conflictChecks.filter(
                                                             (c) =>
                                                                 c.status !==
                                                                 'clear',
                                                         ).length
-                                                    }
+                                                    }{' '}
+                                                    perlu tinjauan
                                                 </span>
                                             </div>
                                         </div>
@@ -890,9 +905,18 @@ export default function GovernanceIndex({
                                     </div>
 
                                     {/* List Data / Empty State */}
-                                    <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+                                    <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
                                         {filteredConflictChecks.length ? (
-                                            <div className="space-y-1.5">
+                                            <div className="overflow-hidden rounded-lg border border-slate-200/70 dark:border-white/[0.06]">
+                                                <div className="hidden grid-cols-[minmax(0,1fr)_auto] gap-4 border-b border-slate-200/70 bg-slate-50/80 px-3 py-2 text-[9px] font-semibold tracking-[0.1em] text-slate-400 uppercase sm:grid dark:border-white/[0.06] dark:bg-white/[0.025] dark:text-zinc-500">
+                                                    <span>
+                                                        Pihak &amp; Hasil
+                                                        Pemeriksaan
+                                                    </span>
+                                                    <span className="text-right">
+                                                        Tindakan
+                                                    </span>
+                                                </div>
                                                 {filteredConflictChecks.map(
                                                     (item) => (
                                                         <ConflictCheckRow
@@ -933,9 +957,9 @@ export default function GovernanceIndex({
                                                                 true,
                                                             )
                                                         }
-                                                        className="mt-3 h-7.5 rounded-lg border-slate-200 text-xs font-semibold text-slate-900 hover:bg-slate-50 dark:border-white/10 dark:text-white dark:hover:bg-zinc-800"
+                                                        className={`${governanceCompactButtonClass} mt-3 border-slate-200 text-slate-900 hover:bg-slate-50 dark:border-white/10 dark:text-white dark:hover:bg-zinc-800`}
                                                     >
-                                                        <Scale className="mr-1 size-3" />{' '}
+                                                        <Scale className="size-3" />{' '}
                                                         Jalankan Conflict Check
                                                     </Button>
                                                 )}
@@ -948,10 +972,10 @@ export default function GovernanceIndex({
                     </div>
 
                     {/* Section 3: Arsip, Legal Hold & Handover Perkara */}
-                    {(activeTab === 'all' || activeTab === 'hold') && (
-                        <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                    {activeTab === 'hold' && (
+                        <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                             {/* Header */}
-                            <div className="flex shrink-0 flex-col justify-between gap-2.5 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
+                            <div className="flex shrink-0 flex-col justify-between gap-2.5 border-b border-slate-100 px-4 py-3.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
                                 <div className="flex items-center gap-2">
                                     <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
                                         <ShieldCheck className="size-3.5" />
@@ -980,176 +1004,198 @@ export default function GovernanceIndex({
                                             onClick={() =>
                                                 setShowExportsModal(true)
                                             }
-                                            className="h-7 rounded-lg border-blue-200 bg-blue-50 px-2 text-xs font-semibold text-blue-700 hover:bg-blue-100 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-300"
+                                            className={`${governanceCompactButtonClass} border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-300`}
                                         >
-                                            <Package className="mr-1.5 size-3" />
+                                            <Package className="size-3" />
                                             Bundel Handover ({exports.length})
                                         </Button>
                                     )}
                                     <Button
                                         asChild
                                         size="sm"
-                                        className="h-7 rounded-lg bg-slate-900 px-2.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                        className={`${governanceCompactButtonClass} bg-slate-900 text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900`}
                                     >
                                         <Link href={matterRoutes.create.url()}>
-                                            <Plus className="mr-1 size-3" />
+                                            <Plus className="size-3" />
                                             Perkara Baru
                                         </Link>
                                     </Button>
                                 </div>
                             </div>
 
-                            {/* Matching Info Summary Toolbar */}
-                            <div className="my-2.5 space-y-1.5 rounded-xl border border-slate-200/60 bg-slate-50/50 p-2 dark:border-white/[0.04] dark:bg-[#121418]">
-                                <div className="flex flex-wrap items-center gap-1.5 text-[10px]">
-                                    <span className="inline-flex items-center gap-1 rounded-md bg-rose-50 px-1.5 py-0.5 font-semibold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
-                                        <ShieldAlert className="size-2.5 text-rose-600" />
-                                        {
-                                            matters.filter(
-                                                (m) => m.legal_hold_at,
-                                            ).length
-                                        }{' '}
-                                        Legal Hold Aktif
-                                    </span>
-                                    <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                        <Archive className="size-2.5 text-slate-500" />
-                                        {
-                                            matters.filter((m) => m.archived_at)
-                                                .length
-                                        }{' '}
-                                        Diarsipkan
-                                    </span>
-                                    <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-1.5 py-0.5 font-semibold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
-                                        <Download className="size-2.5 text-blue-600" />
-                                        {exports.length} Bundel Handover Siap
-                                        Unduh
-                                    </span>
+                            {/* Matter Search & Status Filter */}
+                            <div className="mx-4 my-3 flex flex-col gap-1.5 rounded-lg border border-slate-200/60 bg-slate-50/50 p-2 sm:flex-row dark:border-white/[0.04] dark:bg-[#121418]">
+                                <div className="relative min-w-0 flex-1">
+                                    <Search className="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                    <Input
+                                        value={matterSearch}
+                                        onChange={(event) =>
+                                            setMatterSearch(event.target.value)
+                                        }
+                                        placeholder="Cari nomor perkara, judul, atau klien..."
+                                        className="h-7.5 rounded-lg border-slate-200/80 bg-white pl-8 text-xs text-slate-900 focus:border-emerald-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-100"
+                                    />
                                 </div>
-                                <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-zinc-400">
-                                    <span className="truncate">
-                                        Status Legal Hold melindungi seluruh
-                                        berkas dan komunikasi perkara dari
-                                        penghapusan selama proses litigasi.
-                                    </span>
+                                <div className="relative sm:w-44">
+                                    <select
+                                        value={matterStatusFilter}
+                                        onChange={(event) =>
+                                            setMatterStatusFilter(
+                                                event.target.value,
+                                            )
+                                        }
+                                        className="h-7.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200/80 bg-white pr-7 pl-2 text-xs text-slate-900 outline-none hover:bg-slate-50 focus:border-emerald-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                    >
+                                        <option value="">Semua Status</option>
+                                        <option value="legal_hold">
+                                            Legal Hold Aktif
+                                        </option>
+                                        <option value="archived">
+                                            Diarsipkan
+                                        </option>
+                                        <option value="active">Aktif</option>
+                                    </select>
+                                    <ChevronDown className="pointer-events-none absolute top-1/2 right-2 size-3 -translate-y-1/2 text-slate-400" />
                                 </div>
                             </div>
 
                             {/* Matters List Cards */}
-                            <div className="mt-0.5">
-                                {matters.length ? (
-                                    <div className="max-h-[440px] space-y-1.5 overflow-y-auto pr-1">
-                                        {matters.map((matter) => (
-                                            <div
-                                                key={matter.id}
-                                                className="group flex flex-col justify-between gap-2.5 rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs transition-all hover:border-emerald-300 hover:bg-emerald-50/10 hover:shadow-xs sm:flex-row sm:items-center sm:p-3 dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-emerald-800/40"
-                                            >
-                                                <div className="flex min-w-0 flex-1 items-start gap-2.5">
+                            <div className="px-4 pb-4">
+                                {filteredMatters.length ? (
+                                    <div className="max-h-[440px] overflow-y-auto rounded-lg border border-slate-200/70 dark:border-white/[0.06]">
+                                        <div className="sticky top-0 z-10 hidden grid-cols-[minmax(0,1fr)_auto] gap-4 border-b border-slate-200/70 bg-slate-50 px-3 py-2 text-[9px] font-semibold tracking-[0.1em] text-slate-400 uppercase sm:grid dark:border-white/[0.06] dark:bg-[#181a20] dark:text-zinc-500">
+                                            <span>Perkara &amp; Status</span>
+                                            <span className="text-right">
+                                                Tindakan
+                                            </span>
+                                        </div>
+                                        {filteredMatters.map((matter) => {
+                                            const matterAccentClass =
+                                                matter.legal_hold_at
+                                                    ? 'border-rose-500'
+                                                    : matter.archived_at
+                                                      ? 'border-slate-400'
+                                                      : 'border-emerald-500';
+
+                                            return (
+                                                <div
+                                                    key={matter.id}
+                                                    className="group flex flex-col justify-between gap-2.5 border-b border-slate-100 bg-white px-3 py-3 transition-colors last:border-b-0 hover:bg-slate-50/70 sm:flex-row sm:items-center dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:bg-white/[0.025]"
+                                                >
                                                     <div
-                                                        className={`mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg border transition-transform group-hover:scale-105 ${
-                                                            matter.legal_hold_at
-                                                                ? 'border-rose-200/80 bg-rose-50 text-rose-600 dark:border-rose-900/40 dark:bg-rose-950/60 dark:text-rose-400'
-                                                                : matter.archived_at
-                                                                  ? 'border-slate-200 bg-slate-100 text-slate-600 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
-                                                                  : 'border-emerald-200/80 bg-emerald-50 text-emerald-600 dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-400'
-                                                        }`}
+                                                        className={`min-w-0 flex-1 border-l-2 pl-3 ${matterAccentClass}`}
                                                     >
-                                                        {matter.legal_hold_at ? (
-                                                            <ShieldAlert className="size-3.5" />
-                                                        ) : matter.archived_at ? (
-                                                            <Archive className="size-3.5" />
-                                                        ) : (
-                                                            <FolderKanban className="size-3.5" />
-                                                        )}
-                                                    </div>
-
-                                                    <div className="min-w-0 flex-1 space-y-0.5">
-                                                        <div className="flex flex-wrap items-center gap-1 text-[9.5px]">
-                                                            <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
-                                                                {
-                                                                    matter.matter_number
-                                                                }
-                                                            </span>
-                                                            <StatusBadge
-                                                                value={
-                                                                    matter.status
-                                                                }
-                                                            />
-                                                            {matter.legal_hold_at && (
-                                                                <span className="inline-flex items-center gap-1 rounded bg-rose-50 px-1.5 py-0.5 font-semibold text-rose-700 dark:bg-rose-950/50 dark:text-rose-300">
-                                                                    <ShieldAlert className="size-2.5" />{' '}
-                                                                    Legal Hold
-                                                                    Aktif
+                                                        <div className="min-w-0 flex-1 space-y-0.5">
+                                                            <div className="flex flex-wrap items-center gap-1.5 text-[9.5px] font-semibold">
+                                                                <span className="font-mono text-slate-500 dark:text-zinc-400">
+                                                                    {
+                                                                        matter.matter_number
+                                                                    }
                                                                 </span>
-                                                            )}
-                                                            {matter.archived_at && (
-                                                                <span className="inline-flex items-center gap-1 rounded bg-slate-100 px-1.5 py-0.5 font-semibold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                                                    <Archive className="size-2.5" />{' '}
-                                                                    Diarsipkan
+                                                                <span className="text-slate-300 dark:text-zinc-700">
+                                                                    ·
                                                                 </span>
-                                                            )}
-                                                        </div>
+                                                                <span className="text-emerald-600 capitalize dark:text-emerald-400">
+                                                                    {matter.status.replaceAll(
+                                                                        '_',
+                                                                        ' ',
+                                                                    )}
+                                                                </span>
+                                                                {matter.legal_hold_at && (
+                                                                    <span className="text-rose-600 dark:text-rose-400">
+                                                                        · Legal
+                                                                        Hold
+                                                                        Aktif
+                                                                    </span>
+                                                                )}
+                                                                {matter.archived_at && (
+                                                                    <span className="text-slate-500 dark:text-zinc-400">
+                                                                        ·
+                                                                        Diarsipkan
+                                                                    </span>
+                                                                )}
+                                                            </div>
 
-                                                        <Link
-                                                            href={matterRoutes.show.url(
-                                                                matter.id,
-                                                            )}
-                                                            className="line-clamp-1 block text-xs font-bold text-slate-900 transition-colors hover:text-emerald-600 dark:text-white dark:hover:text-emerald-400"
-                                                        >
-                                                            {matter.title}
-                                                        </Link>
-
-                                                        <div className="flex flex-wrap items-center gap-x-1.5 text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                                            <span>
-                                                                Klien:{' '}
-                                                                {matter.client
-                                                                    ?.display_name ??
-                                                                    '-'}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Action Buttons */}
-                                                <div className="flex shrink-0 flex-wrap items-center gap-1 pl-9.5 sm:pl-0">
-                                                    {can.legalHold && (
-                                                        <Form
-                                                            action={
-                                                                matter.legal_hold_at
-                                                                    ? legalHoldRoutes.destroy.url(
-                                                                          matter.id,
-                                                                      )
-                                                                    : legalHoldRoutes.store.url(
-                                                                          matter.id,
-                                                                      )
-                                                            }
-                                                            method={
-                                                                matter.legal_hold_at
-                                                                    ? 'delete'
-                                                                    : 'post'
-                                                            }
-                                                        >
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline"
-                                                                className={`h-7 rounded-lg px-2 text-xs font-semibold shadow-2xs ${
-                                                                    matter.legal_hold_at
-                                                                        ? 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/40 dark:text-rose-300'
-                                                                        : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200'
-                                                                }`}
+                                                            <Link
+                                                                href={matterRoutes.show.url(
+                                                                    matter.id,
+                                                                )}
+                                                                className="line-clamp-1 block text-xs font-bold text-slate-900 transition-colors hover:text-emerald-600 dark:text-white dark:hover:text-emerald-400"
                                                             >
-                                                                <ShieldCheck className="mr-1 size-3" />
-                                                                {matter.legal_hold_at
-                                                                    ? 'Lepas Hold'
-                                                                    : 'Pasang Hold'}
-                                                            </Button>
-                                                        </Form>
-                                                    )}
+                                                                {matter.title}
+                                                            </Link>
 
-                                                    {can.archive &&
-                                                        matter.status ===
-                                                            'closed' && (
+                                                            <div className="flex flex-wrap items-center gap-x-1.5 text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                                <span>
+                                                                    Klien:{' '}
+                                                                    {matter
+                                                                        .client
+                                                                        ?.display_name ??
+                                                                        '-'}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Action Buttons */}
+                                                    <div className="flex shrink-0 flex-wrap items-center gap-1">
+                                                        {can.legalHold && (
                                                             <Form
-                                                                action={matterGovernanceRoutes.archive.url(
+                                                                action={
+                                                                    matter.legal_hold_at
+                                                                        ? legalHoldRoutes.destroy.url(
+                                                                              matter.id,
+                                                                          )
+                                                                        : legalHoldRoutes.store.url(
+                                                                              matter.id,
+                                                                          )
+                                                                }
+                                                                method={
+                                                                    matter.legal_hold_at
+                                                                        ? 'delete'
+                                                                        : 'post'
+                                                                }
+                                                            >
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                    className={`${governanceCompactButtonClass} shadow-2xs ${
+                                                                        matter.legal_hold_at
+                                                                            ? 'border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/40 dark:text-rose-300'
+                                                                            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200'
+                                                                    }`}
+                                                                >
+                                                                    <ShieldCheck className="size-3" />
+                                                                    {matter.legal_hold_at
+                                                                        ? 'Lepas Hold'
+                                                                        : 'Pasang Hold'}
+                                                                </Button>
+                                                            </Form>
+                                                        )}
+
+                                                        {can.archive &&
+                                                            matter.status ===
+                                                                'closed' && (
+                                                                <Form
+                                                                    action={matterGovernanceRoutes.archive.url(
+                                                                        matter.id,
+                                                                    )}
+                                                                    method="post"
+                                                                >
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="outline"
+                                                                        className={`${governanceCompactButtonClass} border-slate-200 bg-white text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200`}
+                                                                    >
+                                                                        <Archive className="size-3" />
+                                                                        Arsipkan
+                                                                    </Button>
+                                                                </Form>
+                                                            )}
+
+                                                        {can.archive && (
+                                                            <Form
+                                                                action={matterExportRoutes.store.url(
                                                                     matter.id,
                                                                 )}
                                                                 method="post"
@@ -1157,34 +1203,17 @@ export default function GovernanceIndex({
                                                                 <Button
                                                                     size="sm"
                                                                     variant="outline"
-                                                                    className="h-7 rounded-lg border-slate-200 bg-white px-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                                    className={`${governanceCompactButtonClass} border-emerald-200 bg-emerald-50 text-emerald-700 shadow-2xs hover:bg-emerald-100 dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-300`}
                                                                 >
-                                                                    <Archive className="mr-1 size-3" />
-                                                                    Arsipkan
+                                                                    <Download className="size-3" />
+                                                                    Handover
                                                                 </Button>
                                                             </Form>
                                                         )}
-
-                                                    {can.archive && (
-                                                        <Form
-                                                            action={matterExportRoutes.store.url(
-                                                                matter.id,
-                                                            )}
-                                                            method="post"
-                                                        >
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline"
-                                                                className="h-7 rounded-lg border-emerald-200 bg-emerald-50 px-2 text-xs font-semibold text-emerald-700 shadow-2xs hover:bg-emerald-100 dark:border-emerald-900/40 dark:bg-emerald-950/40 dark:text-emerald-300"
-                                                            >
-                                                                <Download className="mr-1 size-3" />
-                                                                Handover
-                                                            </Button>
-                                                        </Form>
-                                                    )}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 ) : (
                                     <div className="flex flex-col items-center justify-center px-4 py-10 text-center">
@@ -1226,28 +1255,20 @@ export default function GovernanceIndex({
                 open={correspondenceModal}
                 onOpenChange={setCorrespondenceModal}
             >
-                <DialogContent className="max-h-[92vh] overflow-y-auto rounded-3xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-2xl lg:max-w-3xl dark:border-white/10 dark:bg-[#14161b]">
-                    <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
-                        <div className="flex items-center gap-3">
-                            <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                                <Mail className="size-4.5" />
-                            </div>
-                            <div>
-                                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
-                                    Catat Korespondensi Resmi
-                                </DialogTitle>
-                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Dokumentasikan surat masuk/keluar, memo
-                                    internal, atau email perkara.
-                                </DialogDescription>
-                            </div>
-                        </div>
-                    </DialogHeader>
+                <DialogContent
+                    className={`${governanceDialogPanelClass} sm:max-w-2xl lg:max-w-3xl`}
+                >
+                    <GovernanceDialogHeader
+                        icon={Mail}
+                        eyebrow="Korespondensi Perkara"
+                        title="Catat Korespondensi Resmi"
+                        description="Dokumentasikan surat masuk/keluar, memo internal, atau email perkara."
+                    />
 
                     <Form
                         action={correspondenceRoutes.store.url()}
                         method="post"
-                        className="space-y-4 pt-1"
+                        className="space-y-4 px-5 py-5 sm:px-6"
                         onSuccess={() => setCorrespondenceModal(false)}
                     >
                         {({ processing, errors }) => (
@@ -1384,7 +1405,7 @@ export default function GovernanceIndex({
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-end gap-2.5 border-t border-slate-100 pt-3.5 dark:border-white/[0.06]">
+                                <div className={governanceDialogFooterClass}>
                                     <Button
                                         type="button"
                                         variant="outline"
@@ -1392,14 +1413,16 @@ export default function GovernanceIndex({
                                         onClick={() =>
                                             setCorrespondenceModal(false)
                                         }
-                                        className="h-8.5 rounded-xl border-slate-200 px-3.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200"
+                                        className={
+                                            governanceDialogCancelButtonClass
+                                        }
                                     >
                                         Batal
                                     </Button>
                                     <Button
                                         size="sm"
                                         disabled={processing}
-                                        className="h-8.5 rounded-xl bg-blue-600 px-4.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
+                                        className={`${governanceDialogPrimaryButtonClass} bg-blue-600 hover:bg-blue-700`}
                                     >
                                         {processing ? (
                                             <>
@@ -1426,25 +1449,17 @@ export default function GovernanceIndex({
 
             {/* Handover Export Bundles Modal */}
             <Dialog open={showExportsModal} onOpenChange={setShowExportsModal}>
-                <DialogContent className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
-                    <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                        <div className="flex items-center gap-2.5">
-                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                                <Package className="size-4" />
-                            </div>
-                            <div>
-                                <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                    Bundel Handover Perkara (ZIP Export)
-                                </DialogTitle>
-                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Daftar arsip paket berkas perkara yang siap
-                                    diunduh untuk serah terima klien.
-                                </DialogDescription>
-                            </div>
-                        </div>
-                    </DialogHeader>
+                <DialogContent
+                    className={`${governanceDialogPanelClass} sm:max-w-lg`}
+                >
+                    <GovernanceDialogHeader
+                        icon={Package}
+                        eyebrow="Arsip & Serah Terima"
+                        title="Bundel Handover Perkara"
+                        description="Daftar arsip ZIP perkara yang siap diunduh untuk proses serah terima klien."
+                    />
 
-                    <div className="max-h-[380px] space-y-2 overflow-y-auto pt-2 pr-1">
+                    <div className="max-h-[380px] space-y-2 overflow-y-auto px-5 py-5 sm:px-6">
                         {exports.length ? (
                             exports.map((item) => (
                                 <div
@@ -1566,29 +1581,20 @@ function ConflictCheckModal({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-h-[90vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-xl dark:border-white/10 dark:bg-[#14161b]">
-                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                    <div className="flex items-center gap-2.5">
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
-                            <Scale className="size-4" />
-                        </div>
-                        <div>
-                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                Conflict of Interest Checker (Pemeriksaan
-                                Benturan Kepentingan)
-                            </DialogTitle>
-                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Pindai silang seluruh basis data klien, mantan
-                                klien, pihak lawan, dan saksi perkara firma.
-                            </DialogDescription>
-                        </div>
-                    </div>
-                </DialogHeader>
+            <DialogContent
+                className={`${governanceDialogPanelClass} sm:max-w-xl`}
+            >
+                <GovernanceDialogHeader
+                    icon={Scale}
+                    eyebrow="Kepatuhan & Etik"
+                    title="Conflict of Interest Checker"
+                    description="Pindai silang basis data klien, mantan klien, pihak lawan, dan saksi perkara firma."
+                />
 
                 <Form
                     action={conflictRoutes.store.url()}
                     method="post"
-                    className="space-y-4 pt-1"
+                    className="space-y-4 px-5 py-5 sm:px-6"
                     onSuccess={() => {
                         onOpenChange(false);
                         setPreviewResult(null);
@@ -1809,20 +1815,22 @@ function ConflictCheckModal({
                                 berlaku 30 hari kalender.
                             </div>
 
-                            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                            <div className={governanceDialogFooterClass}>
                                 <Button
                                     type="button"
                                     variant="outline"
                                     size="sm"
                                     onClick={() => onOpenChange(false)}
-                                    className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300"
+                                    className={
+                                        governanceDialogCancelButtonClass
+                                    }
                                 >
                                     Batal
                                 </Button>
                                 <Button
                                     size="sm"
                                     disabled={processing}
-                                    className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                                    className={`${governanceDialogPrimaryButtonClass} bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900`}
                                 >
                                     {processing ? (
                                         <>
@@ -1855,56 +1863,55 @@ function ConflictCheckRow({
         item.status === 'clear' ||
         item.decision === 'cleared' ||
         item.decision === 'approved';
-    const isWaived = item.decision === 'waived';
     const isBlocked = item.status === 'blocked' && item.decision !== 'waived';
     const requiresDecision =
         item.status !== 'clear' && item.decision === 'pending';
     const matchesCount = item.matches?.length ?? 0;
+    const conflictAccentClass = isClear
+        ? 'border-emerald-500'
+        : isBlocked
+          ? 'border-rose-500'
+          : 'border-amber-500';
 
     return (
-        <div className="group rounded-xl border border-slate-200/70 bg-white p-2.5 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50/20 hover:shadow-xs sm:p-3 dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:border-white/10 dark:hover:bg-white/[0.02]">
+        <div className="group border-b border-slate-100 bg-white px-3 py-3 transition-colors last:border-b-0 hover:bg-slate-50/70 dark:border-white/[0.05] dark:bg-[#14161b] dark:hover:bg-white/[0.025]">
             <div className="flex flex-col justify-between gap-2.5 sm:flex-row sm:items-center">
-                <div className="flex min-w-0 flex-1 items-start gap-2.5">
-                    {/* Status Icon Badge */}
-                    <div
-                        className={`mt-0.5 flex size-7.5 shrink-0 items-center justify-center rounded-lg border transition-transform group-hover:scale-105 ${
-                            isClear
-                                ? 'border-emerald-200/80 bg-emerald-50 text-emerald-600 dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-400'
-                                : isWaived
-                                  ? 'border-blue-200/80 bg-blue-50 text-blue-600 dark:border-blue-900/40 dark:bg-blue-950/60 dark:text-blue-400'
-                                  : 'border-amber-200/80 bg-amber-50 text-amber-600 dark:border-amber-900/40 dark:bg-amber-950/60 dark:text-amber-400'
-                        }`}
-                    >
-                        {isClear ? (
-                            <CheckCircle2 className="size-4" />
-                        ) : isWaived ? (
-                            <ShieldCheck className="size-4" />
-                        ) : (
-                            <Scale className="size-4" />
-                        )}
-                    </div>
-
-                    {/* Text & Meta Details */}
+                <div
+                    className={`min-w-0 flex-1 border-l-2 pl-3 ${conflictAccentClass}`}
+                >
                     <div className="min-w-0 flex-1 space-y-0.5">
                         <div className="flex flex-wrap items-center gap-1.5 text-[9.5px]">
-                            <span className="inline-flex items-center rounded bg-slate-100 px-1.5 py-0.5 font-mono font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
+                            <span className="font-mono font-semibold text-slate-500 dark:text-zinc-400">
                                 {item.matter?.matter_number ??
                                     'Pra-Matter / Calon Klien'}
                             </span>
-                            <StatusBadge value={item.status} />
+                            <span className="text-slate-300 dark:text-zinc-700">
+                                ·
+                            </span>
                             <span
-                                className={`inline-flex items-center rounded px-1.5 py-0.5 font-semibold uppercase ${
-                                    item.decision === 'approved' ||
-                                    item.decision === 'cleared'
-                                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
-                                        : item.decision === 'waived'
-                                          ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300'
-                                          : item.decision === 'blocked'
-                                            ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
-                                            : 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300'
+                                className={`font-semibold uppercase ${
+                                    isClear
+                                        ? 'text-emerald-600 dark:text-emerald-400'
+                                        : isBlocked
+                                          ? 'text-rose-600 dark:text-rose-400'
+                                          : 'text-amber-600 dark:text-amber-400'
                                 }`}
                             >
-                                Keputusan: {item.decision}
+                                {item.status.replaceAll('_', ' ')}
+                            </span>
+                            <span
+                                className={`font-semibold uppercase ${
+                                    item.decision === 'approved' ||
+                                    item.decision === 'cleared'
+                                        ? 'text-emerald-600 dark:text-emerald-400'
+                                        : item.decision === 'waived'
+                                          ? 'text-blue-600 dark:text-blue-400'
+                                          : item.decision === 'blocked'
+                                            ? 'text-rose-600 dark:text-rose-400'
+                                            : 'text-amber-600 dark:text-amber-400'
+                                }`}
+                            >
+                                · {item.decision.replaceAll('_', ' ')}
                             </span>
                             {item.reviewer && (
                                 <span className="text-slate-400 dark:text-zinc-500">
@@ -1938,23 +1945,27 @@ function ConflictCheckRow({
                         </div>
 
                         {item.decision_note && (
-                            <p className="mt-1 rounded-md bg-slate-50 p-2 text-[10.5px] text-slate-700 dark:bg-zinc-800/80 dark:text-zinc-200">
-                                <MessageSquare className="mr-1 inline size-3 text-slate-500" />
-                                <strong>Catatan Justifikasi Partner:</strong>{' '}
-                                {item.decision_note}
+                            <p className="mt-1 inline-flex w-fit max-w-full items-start rounded-md bg-slate-50 px-2 py-1.5 text-[10.5px] text-slate-700 dark:bg-zinc-800/80 dark:text-zinc-200">
+                                <MessageSquare className="mt-0.5 mr-1 size-3 shrink-0 text-slate-500" />
+                                <span className="min-w-0 break-words whitespace-normal">
+                                    <strong>
+                                        Catatan Justifikasi Partner:
+                                    </strong>{' '}
+                                    {item.decision_note}
+                                </span>
                             </p>
                         )}
                     </div>
                 </div>
 
                 {/* Right Action Toolbar */}
-                <div className="flex flex-wrap items-center gap-1.5 pl-10 sm:pl-0">
+                <div className="flex flex-wrap items-center gap-1.5">
                     {matchesCount > 0 && (
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => setShowMatches(!showMatches)}
-                            className="h-7 px-2 text-xs text-slate-600 hover:bg-slate-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                            className={`${governanceCompactButtonClass} text-slate-600 hover:bg-slate-100 dark:text-zinc-300 dark:hover:bg-zinc-800`}
                         >
                             {matchesCount} Temuan
                             {showMatches ? (
@@ -1969,7 +1980,7 @@ function ConflictCheckRow({
                     <Button
                         variant="outline"
                         size="sm"
-                        className="h-7 rounded-lg border-slate-200 px-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                        className={`${governanceCompactButtonClass} border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-zinc-800`}
                         asChild
                     >
                         <Link href={conflictRoutes.certificate.url(item.id)}>
@@ -1983,7 +1994,7 @@ function ConflictCheckRow({
                         <Button
                             size="sm"
                             onClick={() => setOpenDecisionModal(true)}
-                            className={`h-7 rounded-lg px-2.5 text-xs font-semibold text-white shadow-2xs ${
+                            className={`${governanceCompactButtonClass} text-white shadow-2xs ${
                                 requiresDecision
                                     ? 'bg-amber-600 hover:bg-amber-700'
                                     : 'bg-slate-700 hover:bg-slate-800 dark:bg-zinc-700'
@@ -2057,21 +2068,20 @@ function ConflictCheckRow({
                 open={openDecisionModal}
                 onOpenChange={setOpenDecisionModal}
             >
-                <DialogContent className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
-                    <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                        <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                            Keputusan Etik Partner — Conflict Check
-                        </DialogTitle>
-                        <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                            Tetapkan persetujuan penanganan perkara (Waiver /
-                            Clearance) atau penolakan kuasa (Blocked).
-                        </DialogDescription>
-                    </DialogHeader>
+                <DialogContent
+                    className={`${governanceDialogPanelClass} sm:max-w-md`}
+                >
+                    <GovernanceDialogHeader
+                        icon={ShieldCheck}
+                        eyebrow="Review Conflict Check"
+                        title="Keputusan Etik Partner"
+                        description="Tetapkan clearance, waiver, atau penolakan penanganan perkara berdasarkan hasil pemeriksaan."
+                    />
 
                     <Form
                         action={conflictRoutes.resolve.url(item.id)}
                         method="patch"
-                        className="space-y-3.5 pt-1"
+                        className="space-y-3.5 px-5 py-5 sm:px-6"
                         onSuccess={() => setOpenDecisionModal(false)}
                     >
                         {({ processing, errors }) => (
@@ -2138,7 +2148,7 @@ function ConflictCheckRow({
                                     )}
                                 </div>
 
-                                <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                                <div className={governanceDialogFooterClass}>
                                     <Button
                                         type="button"
                                         variant="outline"
@@ -2146,14 +2156,16 @@ function ConflictCheckRow({
                                         onClick={() =>
                                             setOpenDecisionModal(false)
                                         }
-                                        className="h-8 rounded-lg px-3 text-xs font-semibold"
+                                        className={
+                                            governanceDialogCancelButtonClass
+                                        }
                                     >
                                         Batal
                                     </Button>
                                     <Button
                                         size="sm"
                                         disabled={processing}
-                                        className="h-8 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                        className={`${governanceDialogPrimaryButtonClass} bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900`}
                                     >
                                         Simpan Keputusan
                                     </Button>
