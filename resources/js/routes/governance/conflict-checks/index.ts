@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:160
+* @see app/Http/Controllers/GovernanceController.php:165
 * @route '/governance/conflict-checks'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:160
+* @see app/Http/Controllers/GovernanceController.php:165
 * @route '/governance/conflict-checks'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:160
+* @see app/Http/Controllers/GovernanceController.php:165
 * @route '/governance/conflict-checks'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:160
+* @see app/Http/Controllers/GovernanceController.php:165
 * @route '/governance/conflict-checks'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:160
+* @see app/Http/Controllers/GovernanceController.php:165
 * @route '/governance/conflict-checks'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -57,7 +57,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::preview
-* @see app/Http/Controllers/GovernanceController.php:186
+* @see app/Http/Controllers/GovernanceController.php:191
 * @route '/governance/conflict-checks/preview'
 */
 export const preview = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -72,7 +72,7 @@ preview.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::preview
-* @see app/Http/Controllers/GovernanceController.php:186
+* @see app/Http/Controllers/GovernanceController.php:191
 * @route '/governance/conflict-checks/preview'
 */
 preview.url = (options?: RouteQueryOptions) => {
@@ -81,7 +81,7 @@ preview.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::preview
-* @see app/Http/Controllers/GovernanceController.php:186
+* @see app/Http/Controllers/GovernanceController.php:191
 * @route '/governance/conflict-checks/preview'
 */
 preview.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -91,7 +91,7 @@ preview.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\GovernanceController::preview
-* @see app/Http/Controllers/GovernanceController.php:186
+* @see app/Http/Controllers/GovernanceController.php:191
 * @route '/governance/conflict-checks/preview'
 */
 const previewForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -101,7 +101,7 @@ const previewForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> =
 
 /**
 * @see \App\Http\Controllers\GovernanceController::preview
-* @see app/Http/Controllers/GovernanceController.php:186
+* @see app/Http/Controllers/GovernanceController.php:191
 * @route '/governance/conflict-checks/preview'
 */
 previewForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -113,7 +113,7 @@ preview.form = previewForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::resolve
-* @see app/Http/Controllers/GovernanceController.php:176
+* @see app/Http/Controllers/GovernanceController.php:181
 * @route '/governance/conflict-checks/{conflictCheck}'
 */
 export const resolve = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -128,7 +128,7 @@ resolve.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::resolve
-* @see app/Http/Controllers/GovernanceController.php:176
+* @see app/Http/Controllers/GovernanceController.php:181
 * @route '/governance/conflict-checks/{conflictCheck}'
 */
 resolve.url = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -161,7 +161,7 @@ resolve.url = (args: { conflictCheck: string | { id: string } } | [conflictCheck
 
 /**
 * @see \App\Http\Controllers\GovernanceController::resolve
-* @see app/Http/Controllers/GovernanceController.php:176
+* @see app/Http/Controllers/GovernanceController.php:181
 * @route '/governance/conflict-checks/{conflictCheck}'
 */
 resolve.patch = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -171,7 +171,7 @@ resolve.patch = (args: { conflictCheck: string | { id: string } } | [conflictChe
 
 /**
 * @see \App\Http\Controllers\GovernanceController::resolve
-* @see app/Http/Controllers/GovernanceController.php:176
+* @see app/Http/Controllers/GovernanceController.php:181
 * @route '/governance/conflict-checks/{conflictCheck}'
 */
 const resolveForm = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -186,7 +186,7 @@ const resolveForm = (args: { conflictCheck: string | { id: string } } | [conflic
 
 /**
 * @see \App\Http\Controllers\GovernanceController::resolve
-* @see app/Http/Controllers/GovernanceController.php:176
+* @see app/Http/Controllers/GovernanceController.php:181
 * @route '/governance/conflict-checks/{conflictCheck}'
 */
 resolveForm.patch = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -203,7 +203,7 @@ resolve.form = resolveForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::certificate
-* @see app/Http/Controllers/GovernanceController.php:211
+* @see app/Http/Controllers/GovernanceController.php:216
 * @route '/governance/conflict-checks/{conflictCheck}/certificate'
 */
 export const certificate = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -218,7 +218,7 @@ certificate.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::certificate
-* @see app/Http/Controllers/GovernanceController.php:211
+* @see app/Http/Controllers/GovernanceController.php:216
 * @route '/governance/conflict-checks/{conflictCheck}/certificate'
 */
 certificate.url = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -251,7 +251,7 @@ certificate.url = (args: { conflictCheck: string | { id: string } } | [conflictC
 
 /**
 * @see \App\Http\Controllers\GovernanceController::certificate
-* @see app/Http/Controllers/GovernanceController.php:211
+* @see app/Http/Controllers/GovernanceController.php:216
 * @route '/governance/conflict-checks/{conflictCheck}/certificate'
 */
 certificate.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -261,7 +261,7 @@ certificate.get = (args: { conflictCheck: string | { id: string } } | [conflictC
 
 /**
 * @see \App\Http\Controllers\GovernanceController::certificate
-* @see app/Http/Controllers/GovernanceController.php:211
+* @see app/Http/Controllers/GovernanceController.php:216
 * @route '/governance/conflict-checks/{conflictCheck}/certificate'
 */
 certificate.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -271,7 +271,7 @@ certificate.head = (args: { conflictCheck: string | { id: string } } | [conflict
 
 /**
 * @see \App\Http\Controllers\GovernanceController::certificate
-* @see app/Http/Controllers/GovernanceController.php:211
+* @see app/Http/Controllers/GovernanceController.php:216
 * @route '/governance/conflict-checks/{conflictCheck}/certificate'
 */
 const certificateForm = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -281,7 +281,7 @@ const certificateForm = (args: { conflictCheck: string | { id: string } } | [con
 
 /**
 * @see \App\Http\Controllers\GovernanceController::certificate
-* @see app/Http/Controllers/GovernanceController.php:211
+* @see app/Http/Controllers/GovernanceController.php:216
 * @route '/governance/conflict-checks/{conflictCheck}/certificate'
 */
 certificateForm.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -291,7 +291,7 @@ certificateForm.get = (args: { conflictCheck: string | { id: string } } | [confl
 
 /**
 * @see \App\Http\Controllers\GovernanceController::certificate
-* @see app/Http/Controllers/GovernanceController.php:211
+* @see app/Http/Controllers/GovernanceController.php:216
 * @route '/governance/conflict-checks/{conflictCheck}/certificate'
 */
 certificateForm.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -308,7 +308,7 @@ certificate.form = certificateForm
 
 /**
 * @see \App\Http\Controllers\GovernanceController::pdf
-* @see app/Http/Controllers/GovernanceController.php:231
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/conflict-checks/{conflictCheck}/pdf'
 */
 export const pdf = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -323,7 +323,7 @@ pdf.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::pdf
-* @see app/Http/Controllers/GovernanceController.php:231
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/conflict-checks/{conflictCheck}/pdf'
 */
 pdf.url = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -356,7 +356,7 @@ pdf.url = (args: { conflictCheck: string | { id: string } } | [conflictCheck: st
 
 /**
 * @see \App\Http\Controllers\GovernanceController::pdf
-* @see app/Http/Controllers/GovernanceController.php:231
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/conflict-checks/{conflictCheck}/pdf'
 */
 pdf.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -366,7 +366,7 @@ pdf.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck: st
 
 /**
 * @see \App\Http\Controllers\GovernanceController::pdf
-* @see app/Http/Controllers/GovernanceController.php:231
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/conflict-checks/{conflictCheck}/pdf'
 */
 pdf.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -376,7 +376,7 @@ pdf.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: s
 
 /**
 * @see \App\Http\Controllers\GovernanceController::pdf
-* @see app/Http/Controllers/GovernanceController.php:231
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/conflict-checks/{conflictCheck}/pdf'
 */
 const pdfForm = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -386,7 +386,7 @@ const pdfForm = (args: { conflictCheck: string | { id: string } } | [conflictChe
 
 /**
 * @see \App\Http\Controllers\GovernanceController::pdf
-* @see app/Http/Controllers/GovernanceController.php:231
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/conflict-checks/{conflictCheck}/pdf'
 */
 pdfForm.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -396,7 +396,7 @@ pdfForm.get = (args: { conflictCheck: string | { id: string } } | [conflictCheck
 
 /**
 * @see \App\Http\Controllers\GovernanceController::pdf
-* @see app/Http/Controllers/GovernanceController.php:231
+* @see app/Http/Controllers/GovernanceController.php:236
 * @route '/governance/conflict-checks/{conflictCheck}/pdf'
 */
 pdfForm.head = (args: { conflictCheck: string | { id: string } } | [conflictCheck: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

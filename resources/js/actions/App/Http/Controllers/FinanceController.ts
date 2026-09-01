@@ -172,7 +172,7 @@ updateMatterContract.form = updateMatterContractForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::exportExcel
-* @see app/Http/Controllers/FinanceController.php:873
+* @see app/Http/Controllers/FinanceController.php:877
 * @route '/finance/export/excel'
 */
 export const exportExcel = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -187,7 +187,7 @@ exportExcel.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::exportExcel
-* @see app/Http/Controllers/FinanceController.php:873
+* @see app/Http/Controllers/FinanceController.php:877
 * @route '/finance/export/excel'
 */
 exportExcel.url = (options?: RouteQueryOptions) => {
@@ -196,7 +196,7 @@ exportExcel.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FinanceController::exportExcel
-* @see app/Http/Controllers/FinanceController.php:873
+* @see app/Http/Controllers/FinanceController.php:877
 * @route '/finance/export/excel'
 */
 exportExcel.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -206,7 +206,7 @@ exportExcel.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::exportExcel
-* @see app/Http/Controllers/FinanceController.php:873
+* @see app/Http/Controllers/FinanceController.php:877
 * @route '/finance/export/excel'
 */
 exportExcel.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -216,7 +216,7 @@ exportExcel.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::exportExcel
-* @see app/Http/Controllers/FinanceController.php:873
+* @see app/Http/Controllers/FinanceController.php:877
 * @route '/finance/export/excel'
 */
 const exportExcelForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -226,7 +226,7 @@ const exportExcelForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'
 
 /**
 * @see \App\Http\Controllers\FinanceController::exportExcel
-* @see app/Http/Controllers/FinanceController.php:873
+* @see app/Http/Controllers/FinanceController.php:877
 * @route '/finance/export/excel'
 */
 exportExcelForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -236,7 +236,7 @@ exportExcelForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> 
 
 /**
 * @see \App\Http\Controllers\FinanceController::exportExcel
-* @see app/Http/Controllers/FinanceController.php:873
+* @see app/Http/Controllers/FinanceController.php:877
 * @route '/finance/export/excel'
 */
 exportExcelForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1007,7 +1007,7 @@ storePayment.form = storePaymentForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::reversePayment
-* @see app/Http/Controllers/FinanceController.php:396
+* @see app/Http/Controllers/FinanceController.php:400
 * @route '/finance/payments/{payment}/reverse'
 */
 export const reversePayment = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1022,7 +1022,7 @@ reversePayment.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::reversePayment
-* @see app/Http/Controllers/FinanceController.php:396
+* @see app/Http/Controllers/FinanceController.php:400
 * @route '/finance/payments/{payment}/reverse'
 */
 reversePayment.url = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -1055,7 +1055,7 @@ reversePayment.url = (args: { payment: string | { id: string } } | [payment: str
 
 /**
 * @see \App\Http\Controllers\FinanceController::reversePayment
-* @see app/Http/Controllers/FinanceController.php:396
+* @see app/Http/Controllers/FinanceController.php:400
 * @route '/finance/payments/{payment}/reverse'
 */
 reversePayment.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1065,7 +1065,7 @@ reversePayment.post = (args: { payment: string | { id: string } } | [payment: st
 
 /**
 * @see \App\Http\Controllers\FinanceController::reversePayment
-* @see app/Http/Controllers/FinanceController.php:396
+* @see app/Http/Controllers/FinanceController.php:400
 * @route '/finance/payments/{payment}/reverse'
 */
 const reversePaymentForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1075,7 +1075,7 @@ const reversePaymentForm = (args: { payment: string | { id: string } } | [paymen
 
 /**
 * @see \App\Http\Controllers\FinanceController::reversePayment
-* @see app/Http/Controllers/FinanceController.php:396
+* @see app/Http/Controllers/FinanceController.php:400
 * @route '/finance/payments/{payment}/reverse'
 */
 reversePaymentForm.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1087,7 +1087,7 @@ reversePayment.form = reversePaymentForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::refundPayment
-* @see app/Http/Controllers/FinanceController.php:408
+* @see app/Http/Controllers/FinanceController.php:412
 * @route '/finance/payments/{payment}/refund'
 */
 export const refundPayment = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1102,7 +1102,7 @@ refundPayment.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::refundPayment
-* @see app/Http/Controllers/FinanceController.php:408
+* @see app/Http/Controllers/FinanceController.php:412
 * @route '/finance/payments/{payment}/refund'
 */
 refundPayment.url = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -1135,7 +1135,7 @@ refundPayment.url = (args: { payment: string | { id: string } } | [payment: stri
 
 /**
 * @see \App\Http\Controllers\FinanceController::refundPayment
-* @see app/Http/Controllers/FinanceController.php:408
+* @see app/Http/Controllers/FinanceController.php:412
 * @route '/finance/payments/{payment}/refund'
 */
 refundPayment.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1145,7 +1145,7 @@ refundPayment.post = (args: { payment: string | { id: string } } | [payment: str
 
 /**
 * @see \App\Http\Controllers\FinanceController::refundPayment
-* @see app/Http/Controllers/FinanceController.php:408
+* @see app/Http/Controllers/FinanceController.php:412
 * @route '/finance/payments/{payment}/refund'
 */
 const refundPaymentForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1155,7 +1155,7 @@ const refundPaymentForm = (args: { payment: string | { id: string } } | [payment
 
 /**
 * @see \App\Http\Controllers\FinanceController::refundPayment
-* @see app/Http/Controllers/FinanceController.php:408
+* @see app/Http/Controllers/FinanceController.php:412
 * @route '/finance/payments/{payment}/refund'
 */
 refundPaymentForm.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1167,7 +1167,7 @@ refundPayment.form = refundPaymentForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadInvoice
-* @see app/Http/Controllers/FinanceController.php:847
+* @see app/Http/Controllers/FinanceController.php:851
 * @route '/finance/invoices/{invoice}/pdf'
 */
 export const downloadInvoice = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1182,7 +1182,7 @@ downloadInvoice.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadInvoice
-* @see app/Http/Controllers/FinanceController.php:847
+* @see app/Http/Controllers/FinanceController.php:851
 * @route '/finance/invoices/{invoice}/pdf'
 */
 downloadInvoice.url = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -1215,7 +1215,7 @@ downloadInvoice.url = (args: { invoice: string | { id: string } } | [invoice: st
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadInvoice
-* @see app/Http/Controllers/FinanceController.php:847
+* @see app/Http/Controllers/FinanceController.php:851
 * @route '/finance/invoices/{invoice}/pdf'
 */
 downloadInvoice.get = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1225,7 +1225,7 @@ downloadInvoice.get = (args: { invoice: string | { id: string } } | [invoice: st
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadInvoice
-* @see app/Http/Controllers/FinanceController.php:847
+* @see app/Http/Controllers/FinanceController.php:851
 * @route '/finance/invoices/{invoice}/pdf'
 */
 downloadInvoice.head = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -1235,7 +1235,7 @@ downloadInvoice.head = (args: { invoice: string | { id: string } } | [invoice: s
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadInvoice
-* @see app/Http/Controllers/FinanceController.php:847
+* @see app/Http/Controllers/FinanceController.php:851
 * @route '/finance/invoices/{invoice}/pdf'
 */
 const downloadInvoiceForm = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1245,7 +1245,7 @@ const downloadInvoiceForm = (args: { invoice: string | { id: string } } | [invoi
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadInvoice
-* @see app/Http/Controllers/FinanceController.php:847
+* @see app/Http/Controllers/FinanceController.php:851
 * @route '/finance/invoices/{invoice}/pdf'
 */
 downloadInvoiceForm.get = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1255,7 +1255,7 @@ downloadInvoiceForm.get = (args: { invoice: string | { id: string } } | [invoice
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadInvoice
-* @see app/Http/Controllers/FinanceController.php:847
+* @see app/Http/Controllers/FinanceController.php:851
 * @route '/finance/invoices/{invoice}/pdf'
 */
 downloadInvoiceForm.head = (args: { invoice: string | { id: string } } | [invoice: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1272,7 +1272,7 @@ downloadInvoice.form = downloadInvoiceForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadQuotation
-* @see app/Http/Controllers/FinanceController.php:860
+* @see app/Http/Controllers/FinanceController.php:864
 * @route '/finance/quotations/{quotation}/pdf'
 */
 export const downloadQuotation = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1287,7 +1287,7 @@ downloadQuotation.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadQuotation
-* @see app/Http/Controllers/FinanceController.php:860
+* @see app/Http/Controllers/FinanceController.php:864
 * @route '/finance/quotations/{quotation}/pdf'
 */
 downloadQuotation.url = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -1320,7 +1320,7 @@ downloadQuotation.url = (args: { quotation: string | { id: string } } | [quotati
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadQuotation
-* @see app/Http/Controllers/FinanceController.php:860
+* @see app/Http/Controllers/FinanceController.php:864
 * @route '/finance/quotations/{quotation}/pdf'
 */
 downloadQuotation.get = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -1330,7 +1330,7 @@ downloadQuotation.get = (args: { quotation: string | { id: string } } | [quotati
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadQuotation
-* @see app/Http/Controllers/FinanceController.php:860
+* @see app/Http/Controllers/FinanceController.php:864
 * @route '/finance/quotations/{quotation}/pdf'
 */
 downloadQuotation.head = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -1340,7 +1340,7 @@ downloadQuotation.head = (args: { quotation: string | { id: string } } | [quotat
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadQuotation
-* @see app/Http/Controllers/FinanceController.php:860
+* @see app/Http/Controllers/FinanceController.php:864
 * @route '/finance/quotations/{quotation}/pdf'
 */
 const downloadQuotationForm = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1350,7 +1350,7 @@ const downloadQuotationForm = (args: { quotation: string | { id: string } } | [q
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadQuotation
-* @see app/Http/Controllers/FinanceController.php:860
+* @see app/Http/Controllers/FinanceController.php:864
 * @route '/finance/quotations/{quotation}/pdf'
 */
 downloadQuotationForm.get = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1360,7 +1360,7 @@ downloadQuotationForm.get = (args: { quotation: string | { id: string } } | [quo
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadQuotation
-* @see app/Http/Controllers/FinanceController.php:860
+* @see app/Http/Controllers/FinanceController.php:864
 * @route '/finance/quotations/{quotation}/pdf'
 */
 downloadQuotationForm.head = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -1377,7 +1377,7 @@ downloadQuotation.form = downloadQuotationForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeAccount
-* @see app/Http/Controllers/FinanceController.php:420
+* @see app/Http/Controllers/FinanceController.php:424
 * @route '/finance/accounts'
 */
 export const storeAccount = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1392,7 +1392,7 @@ storeAccount.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeAccount
-* @see app/Http/Controllers/FinanceController.php:420
+* @see app/Http/Controllers/FinanceController.php:424
 * @route '/finance/accounts'
 */
 storeAccount.url = (options?: RouteQueryOptions) => {
@@ -1401,7 +1401,7 @@ storeAccount.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeAccount
-* @see app/Http/Controllers/FinanceController.php:420
+* @see app/Http/Controllers/FinanceController.php:424
 * @route '/finance/accounts'
 */
 storeAccount.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1411,7 +1411,7 @@ storeAccount.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeAccount
-* @see app/Http/Controllers/FinanceController.php:420
+* @see app/Http/Controllers/FinanceController.php:424
 * @route '/finance/accounts'
 */
 const storeAccountForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1421,7 +1421,7 @@ const storeAccountForm = (options?: RouteQueryOptions): RouteFormDefinition<'pos
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeAccount
-* @see app/Http/Controllers/FinanceController.php:420
+* @see app/Http/Controllers/FinanceController.php:424
 * @route '/finance/accounts'
 */
 storeAccountForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1433,7 +1433,7 @@ storeAccount.form = storeAccountForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeTransfer
-* @see app/Http/Controllers/FinanceController.php:434
+* @see app/Http/Controllers/FinanceController.php:438
 * @route '/finance/transfers'
 */
 export const storeTransfer = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1448,7 +1448,7 @@ storeTransfer.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeTransfer
-* @see app/Http/Controllers/FinanceController.php:434
+* @see app/Http/Controllers/FinanceController.php:438
 * @route '/finance/transfers'
 */
 storeTransfer.url = (options?: RouteQueryOptions) => {
@@ -1457,7 +1457,7 @@ storeTransfer.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeTransfer
-* @see app/Http/Controllers/FinanceController.php:434
+* @see app/Http/Controllers/FinanceController.php:438
 * @route '/finance/transfers'
 */
 storeTransfer.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1467,7 +1467,7 @@ storeTransfer.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => (
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeTransfer
-* @see app/Http/Controllers/FinanceController.php:434
+* @see app/Http/Controllers/FinanceController.php:438
 * @route '/finance/transfers'
 */
 const storeTransferForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1477,7 +1477,7 @@ const storeTransferForm = (options?: RouteQueryOptions): RouteFormDefinition<'po
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeTransfer
-* @see app/Http/Controllers/FinanceController.php:434
+* @see app/Http/Controllers/FinanceController.php:438
 * @route '/finance/transfers'
 */
 storeTransferForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1489,7 +1489,7 @@ storeTransfer.form = storeTransferForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::storePartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:474
+* @see app/Http/Controllers/FinanceController.php:478
 * @route '/finance/partner-transactions'
 */
 export const storePartnerTransaction = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1504,7 +1504,7 @@ storePartnerTransaction.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::storePartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:474
+* @see app/Http/Controllers/FinanceController.php:478
 * @route '/finance/partner-transactions'
 */
 storePartnerTransaction.url = (options?: RouteQueryOptions) => {
@@ -1513,7 +1513,7 @@ storePartnerTransaction.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FinanceController::storePartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:474
+* @see app/Http/Controllers/FinanceController.php:478
 * @route '/finance/partner-transactions'
 */
 storePartnerTransaction.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1523,7 +1523,7 @@ storePartnerTransaction.post = (options?: RouteQueryOptions): RouteDefinition<'p
 
 /**
 * @see \App\Http\Controllers\FinanceController::storePartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:474
+* @see app/Http/Controllers/FinanceController.php:478
 * @route '/finance/partner-transactions'
 */
 const storePartnerTransactionForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1533,7 +1533,7 @@ const storePartnerTransactionForm = (options?: RouteQueryOptions): RouteFormDefi
 
 /**
 * @see \App\Http\Controllers\FinanceController::storePartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:474
+* @see app/Http/Controllers/FinanceController.php:478
 * @route '/finance/partner-transactions'
 */
 storePartnerTransactionForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1545,7 +1545,7 @@ storePartnerTransaction.form = storePartnerTransactionForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:537
+* @see app/Http/Controllers/FinanceController.php:541
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 export const updatePartnerTransaction = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -1560,7 +1560,7 @@ updatePartnerTransaction.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:537
+* @see app/Http/Controllers/FinanceController.php:541
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 updatePartnerTransaction.url = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -1593,7 +1593,7 @@ updatePartnerTransaction.url = (args: { partnerTransaction: string | { id: strin
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:537
+* @see app/Http/Controllers/FinanceController.php:541
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 updatePartnerTransaction.put = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -1603,7 +1603,7 @@ updatePartnerTransaction.put = (args: { partnerTransaction: string | { id: strin
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:537
+* @see app/Http/Controllers/FinanceController.php:541
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 const updatePartnerTransactionForm = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1618,7 +1618,7 @@ const updatePartnerTransactionForm = (args: { partnerTransaction: string | { id:
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:537
+* @see app/Http/Controllers/FinanceController.php:541
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 updatePartnerTransactionForm.put = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1635,7 +1635,7 @@ updatePartnerTransaction.form = updatePartnerTransactionForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroyPartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:620
+* @see app/Http/Controllers/FinanceController.php:624
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 export const destroyPartnerTransaction = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -1650,7 +1650,7 @@ destroyPartnerTransaction.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroyPartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:620
+* @see app/Http/Controllers/FinanceController.php:624
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 destroyPartnerTransaction.url = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -1683,7 +1683,7 @@ destroyPartnerTransaction.url = (args: { partnerTransaction: string | { id: stri
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroyPartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:620
+* @see app/Http/Controllers/FinanceController.php:624
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 destroyPartnerTransaction.delete = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -1693,7 +1693,7 @@ destroyPartnerTransaction.delete = (args: { partnerTransaction: string | { id: s
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroyPartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:620
+* @see app/Http/Controllers/FinanceController.php:624
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 const destroyPartnerTransactionForm = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1708,7 +1708,7 @@ const destroyPartnerTransactionForm = (args: { partnerTransaction: string | { id
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroyPartnerTransaction
-* @see app/Http/Controllers/FinanceController.php:620
+* @see app/Http/Controllers/FinanceController.php:624
 * @route '/finance/partner-transactions/{partnerTransaction}'
 */
 destroyPartnerTransactionForm.delete = (args: { partnerTransaction: string | { id: string } } | [partnerTransaction: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1725,7 +1725,7 @@ destroyPartnerTransaction.form = destroyPartnerTransactionForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeClientTrustFund
-* @see app/Http/Controllers/FinanceController.php:642
+* @see app/Http/Controllers/FinanceController.php:646
 * @route '/finance/client-trust-funds'
 */
 export const storeClientTrustFund = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1740,7 +1740,7 @@ storeClientTrustFund.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeClientTrustFund
-* @see app/Http/Controllers/FinanceController.php:642
+* @see app/Http/Controllers/FinanceController.php:646
 * @route '/finance/client-trust-funds'
 */
 storeClientTrustFund.url = (options?: RouteQueryOptions) => {
@@ -1749,7 +1749,7 @@ storeClientTrustFund.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeClientTrustFund
-* @see app/Http/Controllers/FinanceController.php:642
+* @see app/Http/Controllers/FinanceController.php:646
 * @route '/finance/client-trust-funds'
 */
 storeClientTrustFund.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1759,7 +1759,7 @@ storeClientTrustFund.post = (options?: RouteQueryOptions): RouteDefinition<'post
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeClientTrustFund
-* @see app/Http/Controllers/FinanceController.php:642
+* @see app/Http/Controllers/FinanceController.php:646
 * @route '/finance/client-trust-funds'
 */
 const storeClientTrustFundForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1769,7 +1769,7 @@ const storeClientTrustFundForm = (options?: RouteQueryOptions): RouteFormDefinit
 
 /**
 * @see \App\Http\Controllers\FinanceController::storeClientTrustFund
-* @see app/Http/Controllers/FinanceController.php:642
+* @see app/Http/Controllers/FinanceController.php:646
 * @route '/finance/client-trust-funds'
 */
 storeClientTrustFundForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1781,7 +1781,7 @@ storeClientTrustFund.form = storeClientTrustFundForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::storePayroll
-* @see app/Http/Controllers/FinanceController.php:688
+* @see app/Http/Controllers/FinanceController.php:692
 * @route '/finance/payrolls'
 */
 export const storePayroll = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1796,7 +1796,7 @@ storePayroll.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::storePayroll
-* @see app/Http/Controllers/FinanceController.php:688
+* @see app/Http/Controllers/FinanceController.php:692
 * @route '/finance/payrolls'
 */
 storePayroll.url = (options?: RouteQueryOptions) => {
@@ -1805,7 +1805,7 @@ storePayroll.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FinanceController::storePayroll
-* @see app/Http/Controllers/FinanceController.php:688
+* @see app/Http/Controllers/FinanceController.php:692
 * @route '/finance/payrolls'
 */
 storePayroll.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1815,7 +1815,7 @@ storePayroll.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::storePayroll
-* @see app/Http/Controllers/FinanceController.php:688
+* @see app/Http/Controllers/FinanceController.php:692
 * @route '/finance/payrolls'
 */
 const storePayrollForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1825,7 +1825,7 @@ const storePayrollForm = (options?: RouteQueryOptions): RouteFormDefinition<'pos
 
 /**
 * @see \App\Http\Controllers\FinanceController::storePayroll
-* @see app/Http/Controllers/FinanceController.php:688
+* @see app/Http/Controllers/FinanceController.php:692
 * @route '/finance/payrolls'
 */
 storePayrollForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1837,7 +1837,7 @@ storePayroll.form = storePayrollForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePayroll
-* @see app/Http/Controllers/FinanceController.php:739
+* @see app/Http/Controllers/FinanceController.php:743
 * @route '/finance/payrolls/{payroll}'
 */
 export const updatePayroll = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -1852,7 +1852,7 @@ updatePayroll.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePayroll
-* @see app/Http/Controllers/FinanceController.php:739
+* @see app/Http/Controllers/FinanceController.php:743
 * @route '/finance/payrolls/{payroll}'
 */
 updatePayroll.url = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -1885,7 +1885,7 @@ updatePayroll.url = (args: { payroll: string | { id: string } } | [payroll: stri
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePayroll
-* @see app/Http/Controllers/FinanceController.php:739
+* @see app/Http/Controllers/FinanceController.php:743
 * @route '/finance/payrolls/{payroll}'
 */
 updatePayroll.put = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -1895,7 +1895,7 @@ updatePayroll.put = (args: { payroll: string | { id: string } } | [payroll: stri
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePayroll
-* @see app/Http/Controllers/FinanceController.php:739
+* @see app/Http/Controllers/FinanceController.php:743
 * @route '/finance/payrolls/{payroll}'
 */
 const updatePayrollForm = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1910,7 +1910,7 @@ const updatePayrollForm = (args: { payroll: string | { id: string } } | [payroll
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePayroll
-* @see app/Http/Controllers/FinanceController.php:739
+* @see app/Http/Controllers/FinanceController.php:743
 * @route '/finance/payrolls/{payroll}'
 */
 updatePayrollForm.put = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1927,7 +1927,7 @@ updatePayroll.form = updatePayrollForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePayrollStatus
-* @see app/Http/Controllers/FinanceController.php:810
+* @see app/Http/Controllers/FinanceController.php:814
 * @route '/finance/payrolls/{payroll}/status'
 */
 export const updatePayrollStatus = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -1942,7 +1942,7 @@ updatePayrollStatus.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePayrollStatus
-* @see app/Http/Controllers/FinanceController.php:810
+* @see app/Http/Controllers/FinanceController.php:814
 * @route '/finance/payrolls/{payroll}/status'
 */
 updatePayrollStatus.url = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -1975,7 +1975,7 @@ updatePayrollStatus.url = (args: { payroll: string | { id: string } } | [payroll
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePayrollStatus
-* @see app/Http/Controllers/FinanceController.php:810
+* @see app/Http/Controllers/FinanceController.php:814
 * @route '/finance/payrolls/{payroll}/status'
 */
 updatePayrollStatus.patch = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -1985,7 +1985,7 @@ updatePayrollStatus.patch = (args: { payroll: string | { id: string } } | [payro
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePayrollStatus
-* @see app/Http/Controllers/FinanceController.php:810
+* @see app/Http/Controllers/FinanceController.php:814
 * @route '/finance/payrolls/{payroll}/status'
 */
 const updatePayrollStatusForm = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -2000,7 +2000,7 @@ const updatePayrollStatusForm = (args: { payroll: string | { id: string } } | [p
 
 /**
 * @see \App\Http\Controllers\FinanceController::updatePayrollStatus
-* @see app/Http/Controllers/FinanceController.php:810
+* @see app/Http/Controllers/FinanceController.php:814
 * @route '/finance/payrolls/{payroll}/status'
 */
 updatePayrollStatusForm.patch = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -2017,7 +2017,7 @@ updatePayrollStatus.form = updatePayrollStatusForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadPayslip
-* @see app/Http/Controllers/FinanceController.php:832
+* @see app/Http/Controllers/FinanceController.php:836
 * @route '/finance/payrolls/{payroll}/slip'
 */
 export const downloadPayslip = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -2032,7 +2032,7 @@ downloadPayslip.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadPayslip
-* @see app/Http/Controllers/FinanceController.php:832
+* @see app/Http/Controllers/FinanceController.php:836
 * @route '/finance/payrolls/{payroll}/slip'
 */
 downloadPayslip.url = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -2065,7 +2065,7 @@ downloadPayslip.url = (args: { payroll: string | { id: string } } | [payroll: st
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadPayslip
-* @see app/Http/Controllers/FinanceController.php:832
+* @see app/Http/Controllers/FinanceController.php:836
 * @route '/finance/payrolls/{payroll}/slip'
 */
 downloadPayslip.get = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -2075,7 +2075,7 @@ downloadPayslip.get = (args: { payroll: string | { id: string } } | [payroll: st
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadPayslip
-* @see app/Http/Controllers/FinanceController.php:832
+* @see app/Http/Controllers/FinanceController.php:836
 * @route '/finance/payrolls/{payroll}/slip'
 */
 downloadPayslip.head = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -2085,7 +2085,7 @@ downloadPayslip.head = (args: { payroll: string | { id: string } } | [payroll: s
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadPayslip
-* @see app/Http/Controllers/FinanceController.php:832
+* @see app/Http/Controllers/FinanceController.php:836
 * @route '/finance/payrolls/{payroll}/slip'
 */
 const downloadPayslipForm = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -2095,7 +2095,7 @@ const downloadPayslipForm = (args: { payroll: string | { id: string } } | [payro
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadPayslip
-* @see app/Http/Controllers/FinanceController.php:832
+* @see app/Http/Controllers/FinanceController.php:836
 * @route '/finance/payrolls/{payroll}/slip'
 */
 downloadPayslipForm.get = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -2105,7 +2105,7 @@ downloadPayslipForm.get = (args: { payroll: string | { id: string } } | [payroll
 
 /**
 * @see \App\Http\Controllers\FinanceController::downloadPayslip
-* @see app/Http/Controllers/FinanceController.php:832
+* @see app/Http/Controllers/FinanceController.php:836
 * @route '/finance/payrolls/{payroll}/slip'
 */
 downloadPayslipForm.head = (args: { payroll: string | { id: string } } | [payroll: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -2122,7 +2122,7 @@ downloadPayslip.form = downloadPayslipForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::uploadProof
-* @see app/Http/Controllers/FinanceController.php:894
+* @see app/Http/Controllers/FinanceController.php:898
 * @route '/finance/{entity}/{id}/proof'
 */
 export const uploadProof = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -2137,7 +2137,7 @@ uploadProof.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::uploadProof
-* @see app/Http/Controllers/FinanceController.php:894
+* @see app/Http/Controllers/FinanceController.php:898
 * @route '/finance/{entity}/{id}/proof'
 */
 uploadProof.url = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions) => {
@@ -2163,7 +2163,7 @@ uploadProof.url = (args: { entity: string | number, id: string | number } | [ent
 
 /**
 * @see \App\Http\Controllers\FinanceController::uploadProof
-* @see app/Http/Controllers/FinanceController.php:894
+* @see app/Http/Controllers/FinanceController.php:898
 * @route '/finance/{entity}/{id}/proof'
 */
 uploadProof.post = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -2173,7 +2173,7 @@ uploadProof.post = (args: { entity: string | number, id: string | number } | [en
 
 /**
 * @see \App\Http\Controllers\FinanceController::uploadProof
-* @see app/Http/Controllers/FinanceController.php:894
+* @see app/Http/Controllers/FinanceController.php:898
 * @route '/finance/{entity}/{id}/proof'
 */
 const uploadProofForm = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -2183,7 +2183,7 @@ const uploadProofForm = (args: { entity: string | number, id: string | number } 
 
 /**
 * @see \App\Http\Controllers\FinanceController::uploadProof
-* @see app/Http/Controllers/FinanceController.php:894
+* @see app/Http/Controllers/FinanceController.php:898
 * @route '/finance/{entity}/{id}/proof'
 */
 uploadProofForm.post = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -2195,7 +2195,7 @@ uploadProof.form = uploadProofForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroyProof
-* @see app/Http/Controllers/FinanceController.php:921
+* @see app/Http/Controllers/FinanceController.php:925
 * @route '/finance/{entity}/{id}/proof'
 */
 export const destroyProof = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -2210,7 +2210,7 @@ destroyProof.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroyProof
-* @see app/Http/Controllers/FinanceController.php:921
+* @see app/Http/Controllers/FinanceController.php:925
 * @route '/finance/{entity}/{id}/proof'
 */
 destroyProof.url = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions) => {
@@ -2236,7 +2236,7 @@ destroyProof.url = (args: { entity: string | number, id: string | number } | [en
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroyProof
-* @see app/Http/Controllers/FinanceController.php:921
+* @see app/Http/Controllers/FinanceController.php:925
 * @route '/finance/{entity}/{id}/proof'
 */
 destroyProof.delete = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -2246,7 +2246,7 @@ destroyProof.delete = (args: { entity: string | number, id: string | number } | 
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroyProof
-* @see app/Http/Controllers/FinanceController.php:921
+* @see app/Http/Controllers/FinanceController.php:925
 * @route '/finance/{entity}/{id}/proof'
 */
 const destroyProofForm = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -2261,7 +2261,7 @@ const destroyProofForm = (args: { entity: string | number, id: string | number }
 
 /**
 * @see \App\Http\Controllers\FinanceController::destroyProof
-* @see app/Http/Controllers/FinanceController.php:921
+* @see app/Http/Controllers/FinanceController.php:925
 * @route '/finance/{entity}/{id}/proof'
 */
 destroyProofForm.delete = (args: { entity: string | number, id: string | number } | [entity: string | number, id: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

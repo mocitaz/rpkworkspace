@@ -3,7 +3,7 @@ import legalHold from './legal-hold'
 import exports from './exports'
 /**
 * @see \App\Http\Controllers\GovernanceController::archive
-* @see app/Http/Controllers/GovernanceController.php:273
+* @see app/Http/Controllers/GovernanceController.php:278
 * @route '/governance/matters/{matter}/archive'
 */
 export const archive = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -18,7 +18,7 @@ archive.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::archive
-* @see app/Http/Controllers/GovernanceController.php:273
+* @see app/Http/Controllers/GovernanceController.php:278
 * @route '/governance/matters/{matter}/archive'
 */
 archive.url = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -51,7 +51,7 @@ archive.url = (args: { matter: string | { id: string } } | [matter: string | { i
 
 /**
 * @see \App\Http\Controllers\GovernanceController::archive
-* @see app/Http/Controllers/GovernanceController.php:273
+* @see app/Http/Controllers/GovernanceController.php:278
 * @route '/governance/matters/{matter}/archive'
 */
 archive.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -61,7 +61,7 @@ archive.post = (args: { matter: string | { id: string } } | [matter: string | { 
 
 /**
 * @see \App\Http\Controllers\GovernanceController::archive
-* @see app/Http/Controllers/GovernanceController.php:273
+* @see app/Http/Controllers/GovernanceController.php:278
 * @route '/governance/matters/{matter}/archive'
 */
 const archiveForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -71,7 +71,7 @@ const archiveForm = (args: { matter: string | { id: string } } | [matter: string
 
 /**
 * @see \App\Http\Controllers\GovernanceController::archive
-* @see app/Http/Controllers/GovernanceController.php:273
+* @see app/Http/Controllers/GovernanceController.php:278
 * @route '/governance/matters/{matter}/archive'
 */
 archiveForm.post = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

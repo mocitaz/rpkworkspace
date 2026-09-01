@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:123
+* @see app/Http/Controllers/GovernanceController.php:128
 * @route '/governance/correspondences/{correspondence}/attachments'
 */
 export const store = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:123
+* @see app/Http/Controllers/GovernanceController.php:128
 * @route '/governance/correspondences/{correspondence}/attachments'
 */
 store.url = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ store.url = (args: { correspondence: string | { id: string } } | [correspondence
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:123
+* @see app/Http/Controllers/GovernanceController.php:128
 * @route '/governance/correspondences/{correspondence}/attachments'
 */
 store.post = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,7 +59,7 @@ store.post = (args: { correspondence: string | { id: string } } | [correspondenc
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:123
+* @see app/Http/Controllers/GovernanceController.php:128
 * @route '/governance/correspondences/{correspondence}/attachments'
 */
 const storeForm = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -69,7 +69,7 @@ const storeForm = (args: { correspondence: string | { id: string } } | [correspo
 
 /**
 * @see \App\Http\Controllers\GovernanceController::store
-* @see app/Http/Controllers/GovernanceController.php:123
+* @see app/Http/Controllers/GovernanceController.php:128
 * @route '/governance/correspondences/{correspondence}/attachments'
 */
 storeForm.post = (args: { correspondence: string | { id: string } } | [correspondence: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

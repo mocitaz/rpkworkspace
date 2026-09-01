@@ -62,6 +62,38 @@ it('attaches uploaded proof when creating an invoice and isolates it from docume
     $clientResponse->assertInertia(fn ($page) => $page->has('documents', 0));
 });
 
+it('excludes financial proofs from governance correspondence attachment options', function () {
+    $user = rafUser([
+        'matter.view',
+        'matter.view.all',
+        'correspondence.view',
+        'document.view',
+    ]);
+    $matter = Matter::factory()->recycle($user)->create();
+    $legalDocument = Document::factory()->recycle($user)->create([
+        'matter_id' => $matter->id,
+        'title' => 'Surat Kuasa Khusus',
+        'document_type' => 'correspondence',
+    ]);
+    $financialProof = Document::factory()->recycle($user)->create([
+        'matter_id' => $matter->id,
+        'title' => 'Bukti pembayaran 33500000',
+        'document_type' => 'financial_proof',
+    ]);
+
+    $response = $this->actingAs($user)->get(route('governance.index'));
+
+    $response->assertOk();
+    $response->assertInertia(fn ($page) => $page
+        ->has('documents', 1)
+        ->where('documents.0.id', $legalDocument->id)
+        ->where('documents.0.title', 'Surat Kuasa Khusus')
+        ->missing('documents.1')
+    );
+
+    expect($financialProof->exists)->toBeTrue();
+});
+
 it('attaches uploaded proof when creating and updating payroll', function () {
     $user = rafUser(['matter.view', 'matter.view.all', 'billing.view', 'billing.manage']);
     $employee = User::factory()->create(['name' => 'Staff Finance']);

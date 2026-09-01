@@ -227,7 +227,7 @@ approve.form = approveForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:860
+* @see app/Http/Controllers/FinanceController.php:864
 * @route '/finance/quotations/{quotation}/pdf'
 */
 export const pdf = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -242,7 +242,7 @@ pdf.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:860
+* @see app/Http/Controllers/FinanceController.php:864
 * @route '/finance/quotations/{quotation}/pdf'
 */
 pdf.url = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -275,7 +275,7 @@ pdf.url = (args: { quotation: string | { id: string } } | [quotation: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:860
+* @see app/Http/Controllers/FinanceController.php:864
 * @route '/finance/quotations/{quotation}/pdf'
 */
 pdf.get = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -285,7 +285,7 @@ pdf.get = (args: { quotation: string | { id: string } } | [quotation: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:860
+* @see app/Http/Controllers/FinanceController.php:864
 * @route '/finance/quotations/{quotation}/pdf'
 */
 pdf.head = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -295,7 +295,7 @@ pdf.head = (args: { quotation: string | { id: string } } | [quotation: string | 
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:860
+* @see app/Http/Controllers/FinanceController.php:864
 * @route '/finance/quotations/{quotation}/pdf'
 */
 const pdfForm = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -305,7 +305,7 @@ const pdfForm = (args: { quotation: string | { id: string } } | [quotation: stri
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:860
+* @see app/Http/Controllers/FinanceController.php:864
 * @route '/finance/quotations/{quotation}/pdf'
 */
 pdfForm.get = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -315,7 +315,7 @@ pdfForm.get = (args: { quotation: string | { id: string } } | [quotation: string
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:860
+* @see app/Http/Controllers/FinanceController.php:864
 * @route '/finance/quotations/{quotation}/pdf'
 */
 pdfForm.head = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

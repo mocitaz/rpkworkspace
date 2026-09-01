@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\CalendarController::rotate
-* @see app/Http/Controllers/CalendarController.php:132
+* @see app/Http/Controllers/CalendarController.php:142
 * @route '/calendar/feed/rotate'
 */
 export const rotate = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ rotate.definition = {
 
 /**
 * @see \App\Http\Controllers\CalendarController::rotate
-* @see app/Http/Controllers/CalendarController.php:132
+* @see app/Http/Controllers/CalendarController.php:142
 * @route '/calendar/feed/rotate'
 */
 rotate.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ rotate.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\CalendarController::rotate
-* @see app/Http/Controllers/CalendarController.php:132
+* @see app/Http/Controllers/CalendarController.php:142
 * @route '/calendar/feed/rotate'
 */
 rotate.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ rotate.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\CalendarController::rotate
-* @see app/Http/Controllers/CalendarController.php:132
+* @see app/Http/Controllers/CalendarController.php:142
 * @route '/calendar/feed/rotate'
 */
 const rotateForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ const rotateForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> =>
 
 /**
 * @see \App\Http\Controllers\CalendarController::rotate
-* @see app/Http/Controllers/CalendarController.php:132
+* @see app/Http/Controllers/CalendarController.php:142
 * @route '/calendar/feed/rotate'
 */
 rotateForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

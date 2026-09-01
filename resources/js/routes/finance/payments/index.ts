@@ -162,7 +162,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::reverse
-* @see app/Http/Controllers/FinanceController.php:396
+* @see app/Http/Controllers/FinanceController.php:400
 * @route '/finance/payments/{payment}/reverse'
 */
 export const reverse = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -177,7 +177,7 @@ reverse.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::reverse
-* @see app/Http/Controllers/FinanceController.php:396
+* @see app/Http/Controllers/FinanceController.php:400
 * @route '/finance/payments/{payment}/reverse'
 */
 reverse.url = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -210,7 +210,7 @@ reverse.url = (args: { payment: string | { id: string } } | [payment: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceController::reverse
-* @see app/Http/Controllers/FinanceController.php:396
+* @see app/Http/Controllers/FinanceController.php:400
 * @route '/finance/payments/{payment}/reverse'
 */
 reverse.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -220,7 +220,7 @@ reverse.post = (args: { payment: string | { id: string } } | [payment: string | 
 
 /**
 * @see \App\Http\Controllers\FinanceController::reverse
-* @see app/Http/Controllers/FinanceController.php:396
+* @see app/Http/Controllers/FinanceController.php:400
 * @route '/finance/payments/{payment}/reverse'
 */
 const reverseForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -230,7 +230,7 @@ const reverseForm = (args: { payment: string | { id: string } } | [payment: stri
 
 /**
 * @see \App\Http\Controllers\FinanceController::reverse
-* @see app/Http/Controllers/FinanceController.php:396
+* @see app/Http/Controllers/FinanceController.php:400
 * @route '/finance/payments/{payment}/reverse'
 */
 reverseForm.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -242,7 +242,7 @@ reverse.form = reverseForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::refund
-* @see app/Http/Controllers/FinanceController.php:408
+* @see app/Http/Controllers/FinanceController.php:412
 * @route '/finance/payments/{payment}/refund'
 */
 export const refund = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -257,7 +257,7 @@ refund.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::refund
-* @see app/Http/Controllers/FinanceController.php:408
+* @see app/Http/Controllers/FinanceController.php:412
 * @route '/finance/payments/{payment}/refund'
 */
 refund.url = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -290,7 +290,7 @@ refund.url = (args: { payment: string | { id: string } } | [payment: string | { 
 
 /**
 * @see \App\Http\Controllers\FinanceController::refund
-* @see app/Http/Controllers/FinanceController.php:408
+* @see app/Http/Controllers/FinanceController.php:412
 * @route '/finance/payments/{payment}/refund'
 */
 refund.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -300,7 +300,7 @@ refund.post = (args: { payment: string | { id: string } } | [payment: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceController::refund
-* @see app/Http/Controllers/FinanceController.php:408
+* @see app/Http/Controllers/FinanceController.php:412
 * @route '/finance/payments/{payment}/refund'
 */
 const refundForm = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -310,7 +310,7 @@ const refundForm = (args: { payment: string | { id: string } } | [payment: strin
 
 /**
 * @see \App\Http\Controllers\FinanceController::refund
-* @see app/Http/Controllers/FinanceController.php:408
+* @see app/Http/Controllers/FinanceController.php:412
 * @route '/finance/payments/{payment}/refund'
 */
 refundForm.post = (args: { payment: string | { id: string } } | [payment: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

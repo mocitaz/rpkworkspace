@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\CalendarController::feed
-* @see app/Http/Controllers/CalendarController.php:72
+* @see app/Http/Controllers/CalendarController.php:82
 * @route '/calendar/feed/{token}.ics'
 */
 export const feed = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ feed.definition = {
 
 /**
 * @see \App\Http\Controllers\CalendarController::feed
-* @see app/Http/Controllers/CalendarController.php:72
+* @see app/Http/Controllers/CalendarController.php:82
 * @route '/calendar/feed/{token}.ics'
 */
 feed.url = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -43,7 +43,7 @@ feed.url = (args: { token: string | number } | [token: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\CalendarController::feed
-* @see app/Http/Controllers/CalendarController.php:72
+* @see app/Http/Controllers/CalendarController.php:82
 * @route '/calendar/feed/{token}.ics'
 */
 feed.get = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -53,7 +53,7 @@ feed.get = (args: { token: string | number } | [token: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\CalendarController::feed
-* @see app/Http/Controllers/CalendarController.php:72
+* @see app/Http/Controllers/CalendarController.php:82
 * @route '/calendar/feed/{token}.ics'
 */
 feed.head = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -63,7 +63,7 @@ feed.head = (args: { token: string | number } | [token: string | number ] | stri
 
 /**
 * @see \App\Http\Controllers\CalendarController::feed
-* @see app/Http/Controllers/CalendarController.php:72
+* @see app/Http/Controllers/CalendarController.php:82
 * @route '/calendar/feed/{token}.ics'
 */
 const feedForm = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -73,7 +73,7 @@ const feedForm = (args: { token: string | number } | [token: string | number ] |
 
 /**
 * @see \App\Http\Controllers\CalendarController::feed
-* @see app/Http/Controllers/CalendarController.php:72
+* @see app/Http/Controllers/CalendarController.php:82
 * @route '/calendar/feed/{token}.ics'
 */
 feedForm.get = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -83,7 +83,7 @@ feedForm.get = (args: { token: string | number } | [token: string | number ] | s
 
 /**
 * @see \App\Http\Controllers\CalendarController::feed
-* @see app/Http/Controllers/CalendarController.php:72
+* @see app/Http/Controllers/CalendarController.php:82
 * @route '/calendar/feed/{token}.ics'
 */
 feedForm.head = (args: { token: string | number } | [token: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -100,7 +100,7 @@ feed.form = feedForm
 
 /**
 * @see \App\Http\Controllers\CalendarController::__invoke
-* @see app/Http/Controllers/CalendarController.php:25
+* @see app/Http/Controllers/CalendarController.php:27
 * @route '/calendar'
 */
 const CalendarController = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -115,7 +115,7 @@ CalendarController.definition = {
 
 /**
 * @see \App\Http\Controllers\CalendarController::__invoke
-* @see app/Http/Controllers/CalendarController.php:25
+* @see app/Http/Controllers/CalendarController.php:27
 * @route '/calendar'
 */
 CalendarController.url = (options?: RouteQueryOptions) => {
@@ -124,7 +124,7 @@ CalendarController.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\CalendarController::__invoke
-* @see app/Http/Controllers/CalendarController.php:25
+* @see app/Http/Controllers/CalendarController.php:27
 * @route '/calendar'
 */
 CalendarController.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -134,7 +134,7 @@ CalendarController.get = (options?: RouteQueryOptions): RouteDefinition<'get'> =
 
 /**
 * @see \App\Http\Controllers\CalendarController::__invoke
-* @see app/Http/Controllers/CalendarController.php:25
+* @see app/Http/Controllers/CalendarController.php:27
 * @route '/calendar'
 */
 CalendarController.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -144,7 +144,7 @@ CalendarController.head = (options?: RouteQueryOptions): RouteDefinition<'head'>
 
 /**
 * @see \App\Http\Controllers\CalendarController::__invoke
-* @see app/Http/Controllers/CalendarController.php:25
+* @see app/Http/Controllers/CalendarController.php:27
 * @route '/calendar'
 */
 const CalendarControllerForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -154,7 +154,7 @@ const CalendarControllerForm = (options?: RouteQueryOptions): RouteFormDefinitio
 
 /**
 * @see \App\Http\Controllers\CalendarController::__invoke
-* @see app/Http/Controllers/CalendarController.php:25
+* @see app/Http/Controllers/CalendarController.php:27
 * @route '/calendar'
 */
 CalendarControllerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -164,7 +164,7 @@ CalendarControllerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<
 
 /**
 * @see \App\Http\Controllers\CalendarController::__invoke
-* @see app/Http/Controllers/CalendarController.php:25
+* @see app/Http/Controllers/CalendarController.php:27
 * @route '/calendar'
 */
 CalendarControllerForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -181,7 +181,7 @@ CalendarController.form = CalendarControllerForm
 
 /**
 * @see \App\Http\Controllers\CalendarController::exportIcs
-* @see app/Http/Controllers/CalendarController.php:142
+* @see app/Http/Controllers/CalendarController.php:152
 * @route '/calendar/export/ics'
 */
 export const exportIcs = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -196,7 +196,7 @@ exportIcs.definition = {
 
 /**
 * @see \App\Http\Controllers\CalendarController::exportIcs
-* @see app/Http/Controllers/CalendarController.php:142
+* @see app/Http/Controllers/CalendarController.php:152
 * @route '/calendar/export/ics'
 */
 exportIcs.url = (options?: RouteQueryOptions) => {
@@ -205,7 +205,7 @@ exportIcs.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\CalendarController::exportIcs
-* @see app/Http/Controllers/CalendarController.php:142
+* @see app/Http/Controllers/CalendarController.php:152
 * @route '/calendar/export/ics'
 */
 exportIcs.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -215,7 +215,7 @@ exportIcs.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\CalendarController::exportIcs
-* @see app/Http/Controllers/CalendarController.php:142
+* @see app/Http/Controllers/CalendarController.php:152
 * @route '/calendar/export/ics'
 */
 exportIcs.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -225,7 +225,7 @@ exportIcs.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\CalendarController::exportIcs
-* @see app/Http/Controllers/CalendarController.php:142
+* @see app/Http/Controllers/CalendarController.php:152
 * @route '/calendar/export/ics'
 */
 const exportIcsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -235,7 +235,7 @@ const exportIcsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> 
 
 /**
 * @see \App\Http\Controllers\CalendarController::exportIcs
-* @see app/Http/Controllers/CalendarController.php:142
+* @see app/Http/Controllers/CalendarController.php:152
 * @route '/calendar/export/ics'
 */
 exportIcsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -245,7 +245,7 @@ exportIcsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> =>
 
 /**
 * @see \App\Http\Controllers\CalendarController::exportIcs
-* @see app/Http/Controllers/CalendarController.php:142
+* @see app/Http/Controllers/CalendarController.php:152
 * @route '/calendar/export/ics'
 */
 exportIcsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -262,7 +262,7 @@ exportIcs.form = exportIcsForm
 
 /**
 * @see \App\Http\Controllers\CalendarController::rotateToken
-* @see app/Http/Controllers/CalendarController.php:132
+* @see app/Http/Controllers/CalendarController.php:142
 * @route '/calendar/feed/rotate'
 */
 export const rotateToken = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -277,7 +277,7 @@ rotateToken.definition = {
 
 /**
 * @see \App\Http\Controllers\CalendarController::rotateToken
-* @see app/Http/Controllers/CalendarController.php:132
+* @see app/Http/Controllers/CalendarController.php:142
 * @route '/calendar/feed/rotate'
 */
 rotateToken.url = (options?: RouteQueryOptions) => {
@@ -286,7 +286,7 @@ rotateToken.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\CalendarController::rotateToken
-* @see app/Http/Controllers/CalendarController.php:132
+* @see app/Http/Controllers/CalendarController.php:142
 * @route '/calendar/feed/rotate'
 */
 rotateToken.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -296,7 +296,7 @@ rotateToken.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\CalendarController::rotateToken
-* @see app/Http/Controllers/CalendarController.php:132
+* @see app/Http/Controllers/CalendarController.php:142
 * @route '/calendar/feed/rotate'
 */
 const rotateTokenForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -306,7 +306,7 @@ const rotateTokenForm = (options?: RouteQueryOptions): RouteFormDefinition<'post
 
 /**
 * @see \App\Http\Controllers\CalendarController::rotateToken
-* @see app/Http/Controllers/CalendarController.php:132
+* @see app/Http/Controllers/CalendarController.php:142
 * @route '/calendar/feed/rotate'
 */
 rotateTokenForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

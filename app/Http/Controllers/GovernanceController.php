@@ -80,7 +80,12 @@ class GovernanceController extends Controller
                 : [],
             'exports' => MatterExport::query()->whereIn('matter_id', $matterIds)->with('matter:id,matter_number,title')->latest()->limit(20)->get(),
             'documents' => $request->user()->hasPermission('document.view')
-                ? Document::query()->whereIn('matter_id', $matterIds)->orderBy('title')->get(['id', 'matter_id', 'title'])
+                ? Document::query()
+                    ->visibleTo($request->user())
+                    ->whereIn('matter_id', $matterIds)
+                    ->where('document_type', '!=', 'financial_proof')
+                    ->orderBy('title')
+                    ->get(['id', 'matter_id', 'title'])
                 : [],
             'filters' => $request->only(['matter_id', 'direction', 'source', 'search', 'from', 'to']),
             'can' => [

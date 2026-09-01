@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\CalendarController::ics
-* @see app/Http/Controllers/CalendarController.php:142
+* @see app/Http/Controllers/CalendarController.php:152
 * @route '/calendar/export/ics'
 */
 export const ics = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ ics.definition = {
 
 /**
 * @see \App\Http\Controllers\CalendarController::ics
-* @see app/Http/Controllers/CalendarController.php:142
+* @see app/Http/Controllers/CalendarController.php:152
 * @route '/calendar/export/ics'
 */
 ics.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ ics.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\CalendarController::ics
-* @see app/Http/Controllers/CalendarController.php:142
+* @see app/Http/Controllers/CalendarController.php:152
 * @route '/calendar/export/ics'
 */
 ics.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ ics.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\CalendarController::ics
-* @see app/Http/Controllers/CalendarController.php:142
+* @see app/Http/Controllers/CalendarController.php:152
 * @route '/calendar/export/ics'
 */
 ics.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ ics.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\CalendarController::ics
-* @see app/Http/Controllers/CalendarController.php:142
+* @see app/Http/Controllers/CalendarController.php:152
 * @route '/calendar/export/ics'
 */
 const icsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const icsForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\CalendarController::ics
-* @see app/Http/Controllers/CalendarController.php:142
+* @see app/Http/Controllers/CalendarController.php:152
 * @route '/calendar/export/ics'
 */
 icsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ icsForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\CalendarController::ics
-* @see app/Http/Controllers/CalendarController.php:142
+* @see app/Http/Controllers/CalendarController.php:152
 * @route '/calendar/export/ics'
 */
 icsForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
