@@ -47,7 +47,6 @@ import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -1862,17 +1861,13 @@ export default function FinanceIndex({
             >
                 <DialogContent className={financeDialogPanelClass('compact')}>
                     <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                        <div className="flex items-center gap-2.5">
-                            <div className="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
-                                <AlertTriangle className="size-4.5" />
+                        <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3">
+                            <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                                <AlertTriangle className="size-4.5" strokeWidth={1.8} />
                             </div>
-                            <div>
-                                <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                    Konfirmasi Edit Pengeluaran
-                                </DialogTitle>
-                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Peringatan mutasi kas dan pencatatan biaya.
-                                </DialogDescription>
+                            <div className="min-w-0 self-center">
+                                <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">Konfirmasi Edit Pengeluaran</DialogTitle>
+                                <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Pastikan sebelum mengubah pengeluaran.</p>
                             </div>
                         </div>
                     </DialogHeader>
@@ -2878,18 +2873,13 @@ function ReversePaymentDialog({
         <Dialog open={!!payment} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className={financeDialogPanelClass('compact')}>
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                    <div className="flex items-center gap-2.5">
-                        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
-                            <Undo2 className="size-4.5" />
+                    <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3">
+                        <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                            <Undo2 className="size-4.5" strokeWidth={1.8} />
                         </div>
-                        <div>
-                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                Koreksi &amp; Batalkan Pembayaran
-                            </DialogTitle>
-                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Alokasi invoice akan dibuka kembali dan dicatat
-                                dalam audit.
-                            </DialogDescription>
+                        <div className="min-w-0 self-center">
+                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">Koreksi &amp; Batalkan Pembayaran</DialogTitle>
+                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Batalkan pencatatan pembayaran yang keliru.</p>
                         </div>
                     </div>
                 </DialogHeader>
@@ -2963,18 +2953,13 @@ function RefundPaymentDialog({
         <Dialog open={!!payment} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className={financeDialogPanelClass('compact')}>
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                    <div className="flex items-center gap-2.5">
-                        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
-                            <Undo2 className="size-4.5" />
+                    <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3">
+                        <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                            <Undo2 className="size-4.5" strokeWidth={1.8} />
                         </div>
-                        <div>
-                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                Refund Dana ke Klien
-                            </DialogTitle>
-                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Gunakan jika dana telah ditransfer balik ke
-                                rekening klien.
-                            </DialogDescription>
+                        <div className="min-w-0 self-center">
+                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">Refund Dana ke Klien</DialogTitle>
+                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Catat pengembalian dana kepada klien.</p>
                         </div>
                     </div>
                 </DialogHeader>
@@ -3047,18 +3032,13 @@ function CancelInvoiceDialog({
         <Dialog open={!!invoice} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className={financeDialogPanelClass('compact')}>
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                    <div className="flex items-center gap-2.5">
-                        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
-                            <Trash2 className="size-4.5" />
+                    <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3">
+                        <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                            <Trash2 className="size-4.5" strokeWidth={1.8} />
                         </div>
-                        <div>
-                            <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
-                                Batalkan Invoice
-                            </DialogTitle>
-                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Invoice {invoice?.invoice_number} akan
-                                dibatalkan secara permanen.
-                            </DialogDescription>
+                        <div className="min-w-0 self-center">
+                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">Batalkan Invoice</DialogTitle>
+                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Konfirmasi pembatalan invoice tagihan.</p>
                         </div>
                     </div>
                 </DialogHeader>

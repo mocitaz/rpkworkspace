@@ -46,7 +46,7 @@ class UserController extends Controller
                 ->orWhere('department', 'like', "%{$search}%")
             ))
             ->when($roleId, fn ($query) => $query->whereHas('roles', fn ($r) => $r->where('roles.id', $roleId)))
-            ->orderBy('name')
+            ->orderBy('id')
             ->paginate(24)
             ->withQueryString();
 

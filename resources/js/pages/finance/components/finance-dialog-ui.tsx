@@ -2,7 +2,6 @@ import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import {
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -15,7 +14,6 @@ export function FinanceDialogHeader({
     icon: Icon,
     title,
     description,
-    eyebrow,
     actions,
 }: {
     icon: LucideIcon;
@@ -27,28 +25,20 @@ export function FinanceDialogHeader({
 }) {
     return (
         <DialogHeader className="shrink-0 border-b border-slate-100 bg-slate-50/60 px-5 py-3.5 text-left sm:px-6 dark:border-white/[0.06] dark:bg-white/[0.025]">
-            <div className="grid grid-cols-[40px_minmax(0,1fr)_auto] items-start gap-x-3.5">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
-                    <Icon className="size-[18px]" />
+            <div className="grid min-h-9 grid-cols-[36px_minmax(0,1fr)_auto] items-center gap-3 pr-6">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                    <Icon className="size-4.5" strokeWidth={1.8} />
                 </div>
-                <div
-                    data-finance-dialog-copy
-                    className="grid min-w-0 grid-rows-[13px_auto_auto] content-start pr-4"
-                >
-                    {eyebrow && (
-                        <div className="truncate text-[10px] leading-[14px] font-semibold tracking-[0.14em] text-slate-400 uppercase dark:text-zinc-500">
-                            {eyebrow}
-                        </div>
-                    )}
-                    <DialogTitle className="mt-0.5 text-sm leading-[18px] font-semibold text-slate-950 dark:text-white">
+                <div className="min-w-0 self-center">
+                    <DialogTitle className="text-sm leading-5 font-semibold text-slate-950 sm:text-base dark:text-white">
                         {title}
                     </DialogTitle>
-                    <DialogDescription className="mt-0.5 max-w-3xl text-[11px] leading-[18px] text-slate-500 dark:text-zinc-400">
+                    <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
                         {description}
-                    </DialogDescription>
+                    </p>
                 </div>
                 {actions && (
-                    <div className="mr-6 flex shrink-0 items-center gap-2 self-center">
+                    <div className="flex shrink-0 items-center gap-2">
                         {actions}
                     </div>
                 )}

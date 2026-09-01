@@ -36,7 +36,6 @@ import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
@@ -1215,18 +1214,17 @@ export default function ContactsIndex({
             <Dialog open={openCreate} onOpenChange={setOpenCreate}>
                 <DialogContent className="max-h-[88vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-lg sm:p-6 dark:border-white/10 dark:bg-[#14161b]">
                     <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
-                        <div className="flex items-center gap-2.5">
-                            <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                                <UserPlus className="size-4" />
+                        <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3">
+                            <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                                <UserPlus className="size-4.5" strokeWidth={1.8} />
                             </div>
-                            <div>
-                                <DialogTitle className="text-sm font-bold text-slate-900 sm:text-base dark:text-white">
+                            <div className="min-w-0 self-center">
+                                <DialogTitle className="text-sm leading-5 font-bold text-slate-900 sm:text-base dark:text-white">
                                     Tambah Kontak Baru
                                 </DialogTitle>
-                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                    Daftarkan representasi klien, saksi ahli,
-                                    pengacara rekanan, atau stakeholder.
-                                </DialogDescription>
+                                <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
+                                    Daftarkan kontak dan informasi perwakilan.
+                                </p>
                             </div>
                         </div>
                     </DialogHeader>
@@ -1381,18 +1379,17 @@ export default function ContactsIndex({
                 {editingContact && (
                     <DialogContent className="max-h-[88vh] overflow-y-auto rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-lg sm:p-6 dark:border-white/10 dark:bg-[#14161b]">
                         <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
-                            <div className="flex items-center gap-2.5">
-                                <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                                    <Pencil className="size-4" />
+                            <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3">
+                                <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                                    <Pencil className="size-4.5" strokeWidth={1.8} />
                                 </div>
-                                <div>
-                                    <DialogTitle className="text-sm font-bold text-slate-900 sm:text-base dark:text-white">
+                                <div className="min-w-0 self-center">
+                                    <DialogTitle className="text-sm leading-5 font-bold text-slate-900 sm:text-base dark:text-white">
                                         Edit Data Kontak
                                     </DialogTitle>
-                                    <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                        Perbarui foto profil, identitas, dan
-                                        detail perwakilan.
-                                    </DialogDescription>
+                                    <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
+                                        Perbarui identitas dan detail kontak.
+                                    </p>
                                 </div>
                             </div>
                         </DialogHeader>

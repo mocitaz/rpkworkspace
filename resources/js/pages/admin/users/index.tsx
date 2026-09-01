@@ -1,28 +1,17 @@
 import { Form, Head, Link, router } from '@inertiajs/react';
-import { Can } from '@/components/can';
 import {
     AlertTriangle,
-    Award,
     Banknote,
     Briefcase,
-    Building2,
-    Calendar,
     Check,
-    CheckCheck,
     CheckCircle2,
     ChevronDown,
-    ChevronRight,
-    ChevronUp,
     Contact,
     Copy,
     CreditCard,
-    ExternalLink,
     FileText,
-    GraduationCap,
     KeyRound,
-    Layers,
     Mail,
-    MapPin,
     MessageSquare,
     Pencil,
     Phone,
@@ -32,8 +21,6 @@ import {
     Shield,
     ShieldAlert,
     ShieldCheck,
-    Smartphone,
-    Sparkles,
     Trash2,
     User as UserIcon,
     UserCheck,
@@ -41,13 +28,12 @@ import {
     Users,
 } from 'lucide-react';
 import { useState } from 'react';
+import { Can } from '@/components/can';
 import InputError from '@/components/input-error';
 import { Pagination } from '@/components/pagination';
 import { PersonnelAccessHero } from '@/components/personnel-access-hero';
-import { StatusBadge } from '@/components/status-badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { useInitials } from '@/hooks/use-initials';
 import {
     Dialog,
     DialogContent,
@@ -58,6 +44,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
+import { useInitials } from '@/hooks/use-initials';
 import * as roleRoutes from '@/routes/admin/roles';
 import * as userRoutes from '@/routes/admin/users';
 
@@ -145,6 +132,12 @@ export default function UsersIndex({
         password: string;
     } | null>(null);
     const [copied, setCopied] = useState(false);
+    const userTabClass = (value: 'cards' | 'users' | 'roles'): string =>
+        `relative shrink-0 border-b-2 px-1 pt-1 pb-2 text-[11px] font-semibold transition-colors ${
+            tab === value
+                ? 'border-slate-950 text-slate-950 dark:border-white dark:text-white'
+                : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white'
+        }`;
 
     return (
         <>
@@ -288,42 +281,27 @@ export default function UsersIndex({
                     </section>
 
                     {/* 3. Segmented View Switcher (Horizontal Swipeable on Mobile) */}
-                    <div className="flex [scrollbar-width:none] items-center gap-1.5 overflow-x-auto border-b border-slate-200/60 pb-2 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
+                    <div className="flex [scrollbar-width:none] items-center gap-8 overflow-x-auto border-b border-slate-200/60 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
                         <button
                             type="button"
                             onClick={() => setTab('cards')}
-                            className={`flex h-7.5 shrink-0 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold whitespace-nowrap transition-all ${
-                                tab === 'cards'
-                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300'
-                            }`}
+                            className={userTabClass('cards')}
                         >
-                            <Contact className="size-3.5" />
-                            Kartu Pegawai ({users.total})
+                            Kartu Pegawai · {users.total}
                         </button>
                         <button
                             type="button"
                             onClick={() => setTab('users')}
-                            className={`flex h-7.5 shrink-0 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold whitespace-nowrap transition-all ${
-                                tab === 'users'
-                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                    : 'border border-slate-200/70 bg-white text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300'
-                            }`}
+                            className={userTabClass('users')}
                         >
-                            <Users className="size-3.5" />
-                            Tabel Pengguna ({users.total})
+                            Tabel Pengguna · {users.total}
                         </button>
                         <button
                             type="button"
                             onClick={() => setTab('roles')}
-                            className={`flex h-7.5 shrink-0 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold whitespace-nowrap transition-all ${
-                                tab === 'roles'
-                                    ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                    : 'border border-slate-200/70 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300'
-                            }`}
+                            className={userTabClass('roles')}
                         >
-                            <KeyRound className="size-3.5" />
-                            Role &amp; Matriks Permission ({roles.length})
+                            Role &amp; Permission · {roles.length}
                         </button>
                     </div>
 
@@ -407,7 +385,7 @@ export default function UsersIndex({
                             {tab === 'cards' && (
                                 <div>
                                     {users.data.length > 0 ? (
-                                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                                             {users.data.map((user) => (
                                                 <StaffCard
                                                     key={user.id}
@@ -476,15 +454,15 @@ export default function UsersIndex({
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-left text-xs">
                                             <thead>
-                                                <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
+                                                <tr className="border-b border-slate-200/70 bg-slate-50/70 text-[10px] font-bold tracking-[0.08em] text-slate-500 uppercase dark:border-white/[0.06] dark:bg-[#121418]">
                                                     <th className="py-2.5 pr-3 pl-4">
-                                                        Pengguna / Identitas
+                                                        Pengguna
                                                     </th>
                                                     <th className="px-3 py-2.5">
-                                                        Departemen &amp; NIP
+                                                        ID &amp; Departemen
                                                     </th>
                                                     <th className="px-3 py-2.5">
-                                                        Role Kewenangan
+                                                        Role
                                                     </th>
                                                     <th className="px-3 py-2.5 text-center">
                                                         Status
@@ -498,12 +476,12 @@ export default function UsersIndex({
                                                 {users.data.map((user) => (
                                                     <tr
                                                         key={user.id}
-                                                        className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                        className="group transition-colors hover:bg-slate-50/70 dark:hover:bg-white/[0.025]"
                                                     >
                                                         {/* Avatar & User Info */}
-                                                        <td className="py-2.5 pr-3 pl-4">
-                                                            <div className="flex items-center gap-2.5">
-                                                                <Avatar className="size-8.5 shrink-0 rounded-lg border border-slate-200 shadow-2xs dark:border-white/10">
+                                                        <td className="py-3 pr-3 pl-4">
+                                                            <div className="flex items-center gap-3">
+                                                                <Avatar className="size-9 shrink-0 rounded-lg border border-slate-200 shadow-2xs dark:border-white/10">
                                                                     <AvatarImage
                                                                         src={
                                                                             user.avatar_url ??
@@ -534,13 +512,14 @@ export default function UsersIndex({
                                                                             user.name
                                                                         }
                                                                     </Link>
-                                                                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                                    <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400">
+                                                                        {user.position_title ||
+                                                                            'Staf Kantor Hukum'}
+                                                                    </p>
+                                                                    <p className="truncate text-[10px] text-slate-400 dark:text-zinc-500">
                                                                         {
                                                                             user.email
                                                                         }
-                                                                        {user.position_title
-                                                                            ? ` · ${user.position_title}`
-                                                                            : ''}
                                                                     </p>
                                                                 </div>
                                                             </div>
@@ -562,7 +541,7 @@ export default function UsersIndex({
 
                                                         {/* Roles */}
                                                         <td className="px-3 py-2.5 whitespace-nowrap">
-                                                            <div className="flex flex-wrap gap-1">
+                                                            <div className="flex flex-wrap gap-x-2 gap-y-0.5">
                                                                 {user.roles
                                                                     .length >
                                                                 0 ? (
@@ -572,7 +551,7 @@ export default function UsersIndex({
                                                                                 key={
                                                                                     r.id
                                                                                 }
-                                                                                className="rounded border border-slate-200/60 bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-700 dark:border-white/5 dark:bg-zinc-800 dark:text-zinc-300"
+                                                                                className="text-[10.5px] font-semibold text-slate-700 dark:text-zinc-300"
                                                                             >
                                                                                 {
                                                                                     r.name
@@ -591,13 +570,13 @@ export default function UsersIndex({
 
                                                         {/* Status */}
                                                         <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                            <StatusBadge
-                                                                value={
-                                                                    user.is_active
-                                                                        ? 'active'
-                                                                        : 'inactive'
-                                                                }
-                                                            />
+                                                            <span
+                                                                className={`text-[10.5px] font-semibold ${user.is_active ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}
+                                                            >
+                                                                {user.is_active
+                                                                    ? 'Aktif'
+                                                                    : 'Nonaktif'}
+                                                            </span>
                                                         </td>
 
                                                         {/* Actions */}
@@ -607,7 +586,7 @@ export default function UsersIndex({
                                                                     asChild
                                                                     variant="outline"
                                                                     size="sm"
-                                                                    className="h-7 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                                    className="h-7 rounded-md border-slate-200 bg-white px-2 text-[10.5px] font-semibold text-slate-700 shadow-none hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                                                     title="Lihat Profil Staf & CV"
                                                                 >
                                                                     <Link
@@ -630,7 +609,7 @@ export default function UsersIndex({
                                                                         variant="outline"
                                                                         size="sm"
                                                                         asChild
-                                                                        className="h-7 rounded-lg border-slate-200 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                                        className="h-7 rounded-md border-slate-200 bg-white px-2 text-[10.5px] font-semibold text-slate-700 shadow-none hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                                                         title="Edit Profil & Hak Akses"
                                                                     >
                                                                         <Link
@@ -838,8 +817,6 @@ export default function UsersIndex({
 function StaffCard({ user }: { user: User }) {
     const getInitials = useInitials();
     const [copied, setCopied] = useState(false);
-    const displayId =
-        user.employee_code || `RPK-${user.id.toString().padStart(3, '0')}`;
 
     const handleCopyEmail = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -872,97 +849,100 @@ function StaffCard({ user }: { user: User }) {
                         : `/admin/users/${user.id}`,
                 )
             }
-            className="group relative flex cursor-pointer flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md dark:border-white/[0.06] dark:bg-[#14161b] dark:hover:border-white/[0.12] dark:hover:shadow-none"
+            className="group relative flex min-h-[390px] cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_12px_40px_-26px_rgba(15,23,42,0.5)] transition-all duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_20px_46px_-26px_rgba(15,23,42,0.55)] dark:border-white/[0.07] dark:bg-[#14161b] dark:hover:border-white/[0.14]"
         >
-            <div className="space-y-3">
-                {/* Header: Employee ID & Status */}
-                <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                        {displayId}
-                    </span>
-
-                    <span
-                        className={`inline-flex items-center gap-1.5 text-[11px] font-medium ${
-                            user.is_active
-                                ? 'text-emerald-600 dark:text-emerald-400'
-                                : 'text-slate-400 dark:text-zinc-500'
-                        }`}
-                    >
-                        <span
-                            className={`size-1.5 rounded-full ${
-                                user.is_active
-                                    ? 'bg-emerald-500'
-                                    : 'bg-slate-400 dark:bg-zinc-600'
-                            }`}
-                        />
-                        <span>{user.is_active ? 'Aktif' : 'Nonaktif'}</span>
+            {!user.is_active && (
+                <div className="absolute inset-x-0 top-0 z-20 h-0.5 bg-rose-500" />
+            )}
+            <div className="pointer-events-none absolute inset-x-0 top-12 h-52 overflow-hidden">
+                <div className="absolute top-2 left-1/2 size-64 -translate-x-1/2 rounded-full border border-slate-200/45 dark:border-white/[0.035]" />
+                <div className="absolute top-8 left-1/2 size-52 -translate-x-1/2 rounded-full border border-amber-300/20 dark:border-amber-300/10" />
+                <div className="absolute top-1/2 left-0 h-px w-20 bg-linear-to-r from-slate-200/70 to-transparent dark:from-white/[0.05]" />
+                <div className="absolute top-1/2 right-0 h-px w-20 bg-linear-to-l from-slate-200/70 to-transparent dark:from-white/[0.05]" />
+            </div>
+            <div className="relative flex flex-1 flex-col">
+                <div className="relative flex items-center justify-between gap-3 overflow-hidden bg-[#080d1d] px-4 py-3 text-white dark:bg-black/40">
+                    <div className="absolute inset-x-0 bottom-0 h-px bg-linear-to-r from-transparent via-amber-300/80 to-transparent" />
+                    <div className="flex min-w-0 items-center gap-2.5">
+                        <span className="h-3 w-0.5 shrink-0 rounded-full bg-amber-300/80" />
+                        <span className="truncate text-[10px] font-bold tracking-[0.16em] text-slate-100 uppercase">
+                            RPK Law Firm
+                        </span>
+                    </div>
+                    <span className="shrink-0 text-[9px] font-bold tracking-[0.2em] text-slate-400 uppercase">
+                        Personnel
                     </span>
                 </div>
 
-                {/* Profile Identity: Clean Circular Avatar & Info */}
-                <div className="flex items-center gap-3">
-                    <Avatar className="size-11 shrink-0 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10 dark:bg-zinc-800">
-                        <AvatarImage
-                            src={user.avatar_url ?? undefined}
-                            className="rounded-full object-cover"
-                        />
-                        <AvatarFallback className="rounded-full bg-slate-900 text-xs font-bold text-white dark:bg-zinc-800 dark:text-zinc-200">
-                            {getInitials(user.name)}
-                        </AvatarFallback>
-                    </Avatar>
+                <div className="flex flex-1 flex-col items-center px-5 pt-6 text-center">
+                    <div className="relative shrink-0">
+                        <div className="absolute -inset-1.5 rounded-full border border-amber-300/40" />
+                        <div className="absolute -inset-3 rounded-full border border-slate-200/70 dark:border-white/[0.07]" />
+                        <Avatar className="size-24 rounded-full border-4 border-white shadow-[0_10px_28px_-12px_rgba(15,23,42,0.55)] ring-1 ring-slate-200 dark:border-[#14161b] dark:bg-zinc-800 dark:ring-white/10">
+                            <AvatarImage
+                                src={user.avatar_url ?? undefined}
+                                className="rounded-full object-cover object-top"
+                            />
+                            <AvatarFallback className="rounded-full bg-linear-to-br from-slate-700 via-slate-800 to-slate-950 text-xl font-bold text-white dark:bg-zinc-800 dark:text-zinc-200">
+                                {getInitials(user.name)}
+                            </AvatarFallback>
+                        </Avatar>
+                    </div>
 
-                    <div className="min-w-0 flex-1 space-y-0.5">
-                        <h4 className="truncate text-xs font-bold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                    <div className="mt-5 w-full min-w-0">
+                        <div className="mx-auto mb-3 h-0.5 w-8 rounded-full bg-amber-400/80" />
+                        <h4 className="line-clamp-2 min-h-11 text-[17px] leading-[22px] font-bold text-slate-950 transition-colors group-hover:text-blue-700 dark:text-white dark:group-hover:text-blue-400">
                             {user.name}
                         </h4>
-                        <p className="truncate text-[11px] font-medium text-slate-600 dark:text-zinc-300">
+                        <p className="mt-1 truncate text-xs font-semibold text-slate-600 dark:text-zinc-300">
                             {user.position_title || 'Staf Kantor Hukum'}
                         </p>
-                        <div className="flex items-center gap-1.5 truncate text-[10.5px] text-slate-400 dark:text-zinc-500">
-                            {user.department && (
-                                <span className="truncate">
-                                    {user.department}
-                                </span>
-                            )}
-                            {user.department && user.practice_areas && (
-                                <span>·</span>
-                            )}
-                            {user.practice_areas && (
-                                <span className="truncate">
-                                    {user.practice_areas}
-                                </span>
+                        {user.department && (
+                            <p className="mt-1 truncate text-[10px] font-medium tracking-[0.04em] text-slate-400 uppercase dark:text-zinc-500">
+                                {user.department}
+                            </p>
+                        )}
+                    </div>
+
+                    <div className="mt-auto w-full pt-5 pb-4">
+                        <div
+                            className={`grid overflow-hidden rounded-xl border border-slate-100 bg-slate-50/80 ${user.phone ? 'grid-cols-[minmax(0,1fr)_auto]' : 'grid-cols-1'} dark:border-white/[0.04] dark:bg-white/[0.03]`}
+                        >
+                            <div
+                                onClick={handleCopyEmail}
+                                title="Salin alamat email"
+                                className="flex min-w-0 items-center justify-between gap-2 px-3 py-2.5 text-[11px] text-slate-600 transition-colors hover:bg-slate-100 dark:text-zinc-300 dark:hover:bg-white/[0.04]"
+                            >
+                                <div className="flex min-w-0 items-center gap-2">
+                                    <Mail className="size-3.5 shrink-0 text-slate-400 dark:text-zinc-500" />
+                                    <span className="truncate text-[10.5px] font-medium">
+                                        {user.email}
+                                    </span>
+                                </div>
+                                {copied ? (
+                                    <Check className="size-3.5 shrink-0 text-emerald-600" />
+                                ) : (
+                                    <Copy className="size-3.5 shrink-0 text-slate-300" />
+                                )}
+                            </div>
+                            {user.phone && (
+                                <a
+                                    href={`https://wa.me/${user.phone.replace(/[^0-9]/g, '')}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(event) => event.stopPropagation()}
+                                    title={user.phone}
+                                    className="flex items-center justify-center border-l border-slate-100 px-3 text-slate-400 transition-colors hover:bg-slate-100 hover:text-emerald-600 dark:border-white/[0.04] dark:text-zinc-500 dark:hover:bg-white/[0.04] dark:hover:text-emerald-400"
+                                >
+                                    <Phone className="size-3.5" />
+                                </a>
                             )}
                         </div>
                     </div>
                 </div>
-
-                {/* Email Pill with Copy Action */}
-                <div
-                    onClick={handleCopyEmail}
-                    title="Klik untuk menyalin email"
-                    className="flex items-center justify-between gap-2 rounded-lg border border-slate-100 bg-slate-50/70 px-2.5 py-1.5 text-[11px] text-slate-600 transition-colors hover:border-slate-200 hover:bg-slate-100/70 dark:border-white/[0.04] dark:bg-white/[0.02] dark:text-zinc-300 dark:hover:border-white/[0.08] dark:hover:bg-white/[0.05]"
-                >
-                    <div className="flex items-center gap-2 truncate">
-                        <Mail className="size-3.5 shrink-0 text-slate-400 dark:text-zinc-500" />
-                        <span className="truncate font-mono text-[10.5px] text-slate-600 dark:text-zinc-300">
-                            {user.email}
-                        </span>
-                    </div>
-                    <span className="flex shrink-0 items-center text-[10px] text-slate-400 dark:text-zinc-500">
-                        {copied ? (
-                            <span className="flex items-center gap-1 font-medium text-emerald-600 dark:text-emerald-400">
-                                <Check className="size-3" />
-                                Disalin
-                            </span>
-                        ) : (
-                            <Copy className="size-3 opacity-60 transition-opacity hover:opacity-100" />
-                        )}
-                    </span>
-                </div>
             </div>
 
-            {/* Footer Action Bar */}
-            <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2.5 dark:border-white/[0.04]">
+            <div className="relative grid grid-cols-3 divide-x divide-slate-100 border-t border-slate-100 bg-slate-50/35 dark:divide-white/[0.04] dark:border-white/[0.04] dark:bg-white/[0.015]">
                 <Link
                     href={
                         userRoutes.show?.url
@@ -970,42 +950,38 @@ function StaffCard({ user }: { user: User }) {
                             : `/admin/users/${user.id}`
                     }
                     onClick={(e) => e.stopPropagation()}
-                    className="flex items-center gap-1 text-[11px] font-semibold text-slate-700 transition-colors group-hover:text-blue-600 dark:text-zinc-300 dark:group-hover:text-blue-400"
+                    title="Buka profil dan CV"
+                    className="flex h-11 items-center justify-center gap-1.5 text-[10.5px] font-semibold text-slate-600 transition-colors hover:bg-slate-100 hover:text-blue-700 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-blue-400"
                 >
-                    <span>Lihat Profil &amp; CV</span>
-                    <ChevronRight className="size-3 transition-transform duration-150 group-hover:translate-x-0.5" />
+                    <UserIcon className="size-3.5" />
+                    <span>Profil</span>
                 </Link>
-
-                <div className="flex items-center gap-1">
-                    {user.phone && (
-                        <a
-                            href={`https://wa.me/${user.phone.replace(/[^0-9]/g, '')}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            title={`Chat WhatsApp: ${user.phone}`}
-                            className="flex size-7 items-center justify-center rounded-lg text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950/40"
-                        >
-                            <Smartphone className="size-3.5" />
-                        </a>
-                    )}
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleOpenChat}
-                        title="Kirim pesan langsung"
-                        className="size-7 rounded-lg p-0 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-zinc-500 dark:hover:bg-white/[0.06] dark:hover:text-zinc-200"
+                <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={handleOpenChat}
+                    title="Kirim pesan langsung"
+                    className="h-11 rounded-none px-0 text-[10.5px] font-semibold text-slate-600 hover:bg-slate-100 hover:text-blue-700 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-blue-400"
+                >
+                    <MessageSquare className="mr-1.5 size-3.5" />
+                    Pesan
+                </Button>
+                <div className="flex h-11 items-center justify-center">
+                    <Can
+                        permission="admin.users.manage"
+                        fallback={
+                            <span className="text-[10px] text-slate-300">
+                                —
+                            </span>
+                        }
                     >
-                        <MessageSquare className="size-3.5" />
-                    </Button>
-                    <Can permission="admin.users.manage">
                         <Button
                             type="button"
                             variant="ghost"
                             size="sm"
                             asChild
-                            className="h-7 rounded-lg px-2 text-[11px] font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                            title="Edit data pegawai"
+                            className="h-11 w-full rounded-none px-0 text-[10.5px] font-semibold text-slate-600 hover:bg-slate-100 hover:text-blue-700 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-blue-400"
                         >
                             <Link
                                 href={
@@ -1015,7 +991,7 @@ function StaffCard({ user }: { user: User }) {
                                 }
                                 onClick={(e) => e.stopPropagation()}
                             >
-                                <Pencil className="mr-1 size-3" />
+                                <Pencil className="mr-1.5 size-3.5" />
                                 Edit
                             </Link>
                         </Button>
@@ -1042,7 +1018,9 @@ function EditUserDialog({
         'account' | 'advocate' | 'contact' | 'billing'
     >('account');
 
-    if (!user) return null;
+    if (!user) {
+        return null;
+    }
 
     const assignedRoleIds = new Set(user.roles.map((role) => role.id));
 
@@ -1223,6 +1201,7 @@ function EditUserDialog({
                                                         assignedRoleIds.has(
                                                             role.id,
                                                         );
+
                                                     return (
                                                         <label
                                                             key={role.id}
@@ -1511,7 +1490,10 @@ function DeleteUserDialog({
     onOpenChange: (open: boolean) => void;
 }) {
     const getInitials = useInitials();
-    if (!user) return null;
+
+    if (!user) {
+        return null;
+    }
 
     return (
         <Dialog open={!!user} onOpenChange={onOpenChange}>
@@ -1799,34 +1781,34 @@ function RolePermissions({
     return (
         <div className="space-y-4">
             {/* 1. Selector Peran / Role Tabs */}
-            <div className="rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+            <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                <div className="mb-3 flex flex-wrap items-end justify-between gap-2 border-b border-slate-100 pb-3 dark:border-white/[0.04]">
                     <div>
-                        <h3 className="text-xs font-bold tracking-wider text-slate-800 uppercase dark:text-zinc-200">
-                            Pilih Peran (Role) untuk Dikonfigurasi
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                            Pilih Role
                         </h3>
                         <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                            Klik salah satu peran di bawah untuk mengelola izin
-                            akses dan otorisasi secara terfokus.
+                            Pilih kewenangan untuk mengatur akses fiturnya.
                         </p>
                     </div>
-                    <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10.5px] font-bold text-slate-700 dark:bg-white/[0.06] dark:text-zinc-300">
-                        {roles.length} Peran Tersedia
+                    <span className="text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
+                        {roles.length} role · {permissions.length} permission
                     </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
                     {roles.map((role) => {
                         const isSelected = role.id === selectedRole.id;
+
                         return (
                             <button
                                 key={role.id}
                                 type="button"
                                 onClick={() => setSelectedRoleId(role.id)}
-                                className={`flex flex-col items-start justify-between rounded-xl border p-2.5 text-left transition-all ${
+                                className={`flex min-h-20 flex-col items-start justify-between rounded-xl border p-3 text-left transition-all ${
                                     isSelected
-                                        ? 'border-slate-900 bg-slate-900 text-white shadow-sm dark:border-white dark:bg-white dark:text-slate-900'
-                                        : 'border-slate-200/70 bg-slate-50/50 text-slate-800 hover:border-slate-300 hover:bg-white dark:border-white/[0.04] dark:bg-[#101216] dark:text-zinc-200 dark:hover:bg-zinc-800/60'
+                                        ? 'border-slate-900 bg-slate-950 text-white shadow-sm dark:border-white dark:bg-white dark:text-slate-900'
+                                        : 'border-slate-200/70 bg-white text-slate-800 hover:border-slate-400 hover:bg-slate-50 dark:border-white/[0.06] dark:bg-[#101216] dark:text-zinc-200 dark:hover:bg-zinc-800/60'
                                 }`}
                             >
                                 <div className="w-full min-w-0">
@@ -1843,10 +1825,12 @@ function RolePermissions({
                                         {role.slug}
                                     </span>
                                 </div>
-                                <div className="mt-2 flex w-full items-center justify-between border-t border-current/10 pt-1.5 text-[10px]">
-                                    <span className="opacity-80">Izin:</span>
-                                    <span className="font-mono font-bold">
-                                        {role.permissions.length}/
+                                <div className="mt-2 flex w-full items-center justify-between border-t border-current/10 pt-2 text-[10px]">
+                                    <span className="opacity-70">
+                                        Permission
+                                    </span>
+                                    <span className="font-semibold">
+                                        {role.permissions.length} dari{' '}
                                         {permissions.length}
                                     </span>
                                 </div>
@@ -1862,21 +1846,21 @@ function RolePermissions({
                 className="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]"
             >
                 {/* Header Role Terpilih */}
-                <div className="flex flex-col gap-2 border-b border-slate-100 bg-slate-50/50 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.04] dark:bg-white/[0.02]">
+                <div className="flex flex-col gap-2 border-b border-slate-200/70 bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-between dark:border-white/[0.06] dark:bg-white/[0.02]">
                     <div className="space-y-1">
                         <div className="flex flex-wrap items-center gap-2">
-                            <span className="text-[11px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
-                                Konfigurasi Matriks:
+                            <span className="text-[10px] font-bold tracking-[0.12em] text-slate-400 uppercase dark:text-zinc-500">
+                                Matriks Permission
                             </span>
                             <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                                 {selectedRole.name}
                             </h3>
-                            <span className="rounded-md bg-slate-200/70 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                            <span className="font-mono text-[10px] text-slate-400 dark:text-zinc-500">
                                 {selectedRole.slug}
                             </span>
-                            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
-                                · {selectedRole.permissions.length} dari{' '}
-                                {permissions.length} izin aktif
+                            <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                {selectedRole.permissions.length} dari{' '}
+                                {permissions.length} aktif
                             </span>
                         </div>
                         {selectedRole.description && (
@@ -1899,8 +1883,10 @@ function RolePermissions({
                                     const groupPermissions = permissions.filter(
                                         (p) => group.match(p.name),
                                     );
-                                    if (groupPermissions.length === 0)
+
+                                    if (groupPermissions.length === 0) {
                                         return null;
+                                    }
 
                                     const activeInGroup =
                                         groupPermissions.filter((p) =>
@@ -1913,14 +1899,12 @@ function RolePermissions({
                                     return (
                                         <div
                                             key={group.id}
-                                            className="rounded-xl border border-slate-200/60 bg-slate-50/30 p-3.5 dark:border-white/[0.04] dark:bg-[#101216]"
+                                            className="overflow-hidden rounded-xl border border-slate-200/70 bg-white dark:border-white/[0.06] dark:bg-[#101216]"
                                         >
                                             {/* Group Header */}
-                                            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/50 pb-2.5 dark:border-white/[0.04]">
+                                            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/60 bg-slate-50/60 px-3.5 py-3 dark:border-white/[0.05] dark:bg-white/[0.02]">
                                                 <div className="flex items-center gap-2.5">
-                                                    <div
-                                                        className={`flex size-7 shrink-0 items-center justify-center rounded-lg border shadow-2xs ${group.color}`}
-                                                    >
+                                                    <div className="flex size-7 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-400">
                                                         <IconComp className="size-3.5" />
                                                     </div>
                                                     <div>
@@ -1932,15 +1916,15 @@ function RolePermissions({
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10.5px] font-semibold text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300">
-                                                    {activeInGroup} /{' '}
+                                                <span className="text-[10.5px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                    {activeInGroup} dari{' '}
                                                     {groupPermissions.length}{' '}
-                                                    Aktif
+                                                    aktif
                                                 </span>
                                             </div>
 
                                             {/* Permission Checkbox Grid */}
-                                            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                                            <div className="grid grid-cols-1 gap-px bg-slate-100 p-px sm:grid-cols-2 lg:grid-cols-3 dark:bg-white/[0.04]">
                                                 {groupPermissions.map(
                                                     (permission) => {
                                                         const isAssigned =
@@ -1955,10 +1939,10 @@ function RolePermissions({
                                                                 key={
                                                                     permission.id
                                                                 }
-                                                                className={`group flex cursor-pointer items-start gap-2.5 rounded-lg border p-2.5 text-xs transition-all ${
+                                                                className={`group flex cursor-pointer items-start gap-2.5 border-0 p-3 text-xs transition-colors ${
                                                                     isAssigned
-                                                                        ? 'border-slate-300/90 bg-white shadow-2xs dark:border-white/10 dark:bg-[#16181e]'
-                                                                        : 'border-slate-200/60 bg-white/50 opacity-75 hover:border-slate-300 hover:bg-white hover:opacity-100 dark:border-white/[0.03] dark:bg-zinc-900/30 dark:hover:bg-zinc-900'
+                                                                        ? 'bg-white dark:bg-[#16181e]'
+                                                                        : 'bg-slate-50/70 opacity-65 hover:bg-white hover:opacity-100 dark:bg-zinc-900/30 dark:hover:bg-zinc-900'
                                                                 }`}
                                                             >
                                                                 <input
@@ -2045,6 +2029,7 @@ function InviteUserDialog({
                     setEmail('');
                     setPassword('');
                 }
+
                 onOpenChange(nextOpen);
             }}
         >

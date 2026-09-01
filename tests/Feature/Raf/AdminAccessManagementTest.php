@@ -164,3 +164,25 @@ it('can render dedicated admin.users.create and admin.users.edit pages', functio
             ->has('departments')
         );
 });
+
+it('lists users from the oldest id to the newest id', function () {
+    $administrator = rafUser(['admin.users.manage']);
+    $oldest = User::factory()->create([
+        'name' => 'Zeta OrderTest',
+        'email' => 'zeta-order@example.test',
+    ]);
+    $newest = User::factory()->create([
+        'name' => 'Alpha OrderTest',
+        'email' => 'alpha-order@example.test',
+    ]);
+
+    $this->actingAs($administrator)
+        ->get(route('admin.users.index', ['search' => 'OrderTest']))
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('admin/users/index')
+            ->has('users.data', 2)
+            ->where('users.data.0.id', $oldest->getKey())
+            ->where('users.data.1.id', $newest->getKey())
+        );
+});

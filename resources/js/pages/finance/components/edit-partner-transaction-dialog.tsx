@@ -3,8 +3,8 @@ import { router } from '@inertiajs/react';
 import {
     AlertCircle,
     ChevronDown,
-    HandCoins,
     Info,
+    HandCoins,
     Loader2,
     Save,
     Trash2,
@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -158,23 +157,13 @@ export function EditPartnerTransactionDialog({
             <DialogContent className={financeDialogPanelClass('default')}>
                 {/* Header */}
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                    <div className="flex items-center gap-2.5">
-                        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400">
-                            <HandCoins className="size-4.5" />
+                    <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3">
+                        <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                            <HandCoins className="size-4.5" strokeWidth={1.8} />
                         </div>
-                        <div>
-                            <div className="flex items-center gap-2">
-                                <DialogTitle className="text-sm font-bold text-slate-900 sm:text-base dark:text-white">
-                                    Edit Transaksi &amp; Talangan Partner
-                                </DialogTitle>
-                                <span className="rounded-md border border-slate-200 bg-slate-100 px-1.5 py-0.5 font-mono text-[10.5px] font-semibold text-slate-700 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300">
-                                    {transaction.transaction_number}
-                                </span>
-                            </div>
-                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Perbarui rincian nominal talangan, rekening kas,
-                                atau perkaranya.
-                            </DialogDescription>
+                        <div className="min-w-0 self-center">
+                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 sm:text-base dark:text-white">Edit Transaksi &amp; Talangan Partner</DialogTitle>
+                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Perbarui transaksi dan talangan partner.</p>
                         </div>
                     </div>
                 </DialogHeader>

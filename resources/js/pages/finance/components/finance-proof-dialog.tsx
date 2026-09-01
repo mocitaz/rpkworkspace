@@ -1,21 +1,14 @@
-import { Form, router } from '@inertiajs/react';
+import { Form } from '@inertiajs/react';
 import {
-    CheckCircle2,
-    Clock,
     Download,
     ExternalLink,
     FileCheck,
-    FileImage,
     FileText,
-    HardDrive,
     Loader2,
-    Maximize2,
     Paperclip,
-    Receipt,
     RefreshCw,
     RotateCw,
     ShieldCheck,
-    Trash2,
     UploadCloud,
     X,
     ZoomIn,
@@ -27,7 +20,6 @@ import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -139,61 +131,6 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
         }
     };
 
-    const entityLabels: Record<
-        string,
-        { label: string; bg: string; text: string; iconBg: string }
-    > = {
-        invoices: {
-            label: 'Invoice Klien',
-            bg: 'bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/40 text-blue-700 dark:text-blue-300',
-            text: 'text-blue-600 dark:text-blue-400',
-            iconBg: 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400',
-        },
-        payments: {
-            label: 'Pembayaran Kas',
-            bg: 'bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-800/40 text-emerald-700 dark:text-emerald-300',
-            text: 'text-emerald-600 dark:text-emerald-400',
-            iconBg: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400',
-        },
-        expenses: {
-            label: 'Beban Biaya',
-            bg: 'bg-rose-50/80 dark:bg-rose-950/40 border border-rose-200/60 dark:border-rose-800/40 text-rose-700 dark:text-rose-300',
-            text: 'text-rose-600 dark:text-rose-400',
-            iconBg: 'bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400',
-        },
-        payrolls: {
-            label: 'Gaji / Slip',
-            bg: 'bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200/60 dark:border-indigo-800/40 text-indigo-700 dark:text-indigo-300',
-            text: 'text-indigo-600 dark:text-indigo-400',
-            iconBg: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400',
-        },
-        transfers: {
-            label: 'Mutasi Bank',
-            bg: 'bg-purple-50/80 dark:bg-purple-950/40 border border-purple-200/60 dark:border-purple-800/40 text-purple-700 dark:text-purple-300',
-            text: 'text-purple-600 dark:text-purple-400',
-            iconBg: 'bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400',
-        },
-        'partner-transactions': {
-            label: 'Talangan Partner',
-            bg: 'bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-800/40 text-amber-700 dark:text-amber-300',
-            text: 'text-amber-600 dark:text-amber-400',
-            iconBg: 'bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400',
-        },
-        'client-trust-funds': {
-            label: 'Dana Titipan',
-            bg: 'bg-cyan-50/80 dark:bg-cyan-950/40 border border-cyan-200/60 dark:border-cyan-800/40 text-cyan-700 dark:text-cyan-300',
-            text: 'text-cyan-600 dark:text-cyan-400',
-            iconBg: 'bg-cyan-50 text-cyan-600 dark:bg-cyan-950/40 dark:text-cyan-400',
-        },
-    };
-
-    const entityMeta = entityLabels[target.entity] || {
-        label: 'Transaksi',
-        bg: 'bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300',
-        text: 'text-slate-600 dark:text-slate-400',
-        iconBg: 'bg-slate-100 text-slate-700 dark:bg-zinc-800 dark:text-zinc-300',
-    };
-
     const showUploader = !hasProof || isUploadingNew;
 
     return (
@@ -205,47 +142,13 @@ export function FinanceProofDialog({ target, isOpen, onClose }: Props) {
             >
                 {/* Header */}
                 <DialogHeader className="border-b border-slate-100 bg-slate-50/40 px-5 py-3.5 dark:border-white/[0.06] dark:bg-[#16181f]/40">
-                    <div className="flex items-start gap-3">
-                        <div
-                            className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${entityMeta.iconBg}`}
-                        >
-                            {hasProof ? (
-                                isImage ? (
-                                    <FileImage className="size-4.5" />
-                                ) : (
-                                    <FileText className="size-4.5" />
-                                )
-                            ) : (
-                                <Paperclip className="size-4.5" />
-                            )}
+                    <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3 pr-6">
+                        <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                            <Paperclip className="size-4.5" strokeWidth={1.8} />
                         </div>
-                        <div className="min-w-0 flex-1 pr-6">
-                            <div className="mb-1 flex flex-wrap items-center gap-1.5">
-                                <span
-                                    className={`rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase ${entityMeta.bg}`}
-                                >
-                                    {entityMeta.label}
-                                </span>
-                                {hasProof ? (
-                                    <span className="inline-flex items-center gap-1 rounded-md border border-emerald-200/70 bg-emerald-50 px-2 py-0.5 text-[10.5px] font-semibold text-emerald-700 dark:border-emerald-800/40 dark:bg-emerald-950/40 dark:text-emerald-300">
-                                        <FileCheck className="size-3 text-emerald-600 dark:text-emerald-400" />
-                                        Bukti Terlampir
-                                    </span>
-                                ) : (
-                                    <span className="inline-flex items-center gap-1 rounded-md border border-amber-200/70 bg-amber-50 px-2 py-0.5 text-[10.5px] font-semibold text-amber-700 dark:border-amber-800/40 dark:bg-amber-950/40 dark:text-amber-300">
-                                        <Clock className="size-3 text-amber-600 dark:text-amber-400" />
-                                        Belum Ada Bukti
-                                    </span>
-                                )}
-                            </div>
-                            <DialogTitle className="text-sm leading-tight font-bold text-slate-900 sm:text-base dark:text-white">
-                                {target.title}
-                            </DialogTitle>
-                            {target.subtitle && (
-                                <DialogDescription className="mt-0.5 text-xs text-slate-500 dark:text-zinc-400">
-                                    {target.subtitle}
-                                </DialogDescription>
-                            )}
+                        <div className="min-w-0 self-center">
+                            <DialogTitle className="truncate text-sm leading-5 font-bold text-slate-900 sm:text-base dark:text-white">{target.title}</DialogTitle>
+                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Pratinjau dan kelola bukti keuangan.</p>
                         </div>
                     </div>
                 </DialogHeader>

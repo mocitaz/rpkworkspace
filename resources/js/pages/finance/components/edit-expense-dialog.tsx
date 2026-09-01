@@ -14,7 +14,6 @@ import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -165,18 +164,13 @@ export function EditExpenseDialog({
             <DialogContent className={financeDialogPanelClass('default')}>
                 {/* Header */}
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                    <div className="flex items-center gap-2.5">
-                        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
-                            <WalletCards className="size-4.5" />
+                    <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3">
+                        <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                            <WalletCards className="size-4.5" strokeWidth={1.8} />
                         </div>
-                        <div>
-                            <DialogTitle className="text-sm font-bold text-slate-900 sm:text-base dark:text-white">
-                                Edit Biaya &amp; Pengeluaran
-                            </DialogTitle>
-                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Perbarui rincian beban operasional atau
-                                reimbursement perkara.
-                            </DialogDescription>
+                        <div className="min-w-0 self-center">
+                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 sm:text-base dark:text-white">Edit Biaya &amp; Pengeluaran</DialogTitle>
+                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Perbarui rincian biaya dan pengeluaran.</p>
                         </div>
                     </div>
                 </DialogHeader>

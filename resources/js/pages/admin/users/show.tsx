@@ -5,22 +5,14 @@ import {
     ArrowLeft,
     Briefcase,
     Building2,
-    Calendar,
     Check,
     CheckCircle2,
     Copy,
     CreditCard,
-    ExternalLink,
-    FileBadge,
-    FileCheck,
-    FileText,
-    GraduationCap,
     Mail,
-    MapPin,
     MessageSquare,
     Pencil,
     Phone,
-    Plus,
     Scale,
     Shield,
     ShieldCheck,
@@ -29,6 +21,7 @@ import {
     Trash2,
     UserCheck,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import InputError from '@/components/input-error';
 import { StatusBadge } from '@/components/status-badge';
@@ -44,12 +37,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { useInitials } from '@/hooks/use-initials';
 import { formatDate } from '@/lib/format';
 import * as matterRoutes from '@/routes/matters';
@@ -112,6 +100,37 @@ const tabs = [
     { id: 'Akses', label: 'Hak Akses & Peran', icon: ShieldCheck },
 ] as const;
 
+function DossierMetric({
+    icon: Icon,
+    label,
+    value,
+    detail,
+}: {
+    icon: LucideIcon;
+    label: string;
+    value: string;
+    detail: string;
+}) {
+    return (
+        <div className="flex min-h-24 items-center gap-3 px-4 py-3.5 sm:px-5">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-2xs dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-400">
+                <Icon className="size-4" strokeWidth={1.8} />
+            </div>
+            <div className="min-w-0">
+                <p className="text-[9px] font-bold tracking-[0.12em] text-slate-400 uppercase dark:text-zinc-500">
+                    {label}
+                </p>
+                <p className="mt-0.5 truncate text-xs font-bold text-slate-900 dark:text-white">
+                    {value}
+                </p>
+                <p className="mt-0.5 truncate text-[10px] text-slate-500 dark:text-zinc-400">
+                    {detail}
+                </p>
+            </div>
+        </div>
+    );
+}
+
 export default function UserShow({
     staff,
     roles,
@@ -127,7 +146,7 @@ export default function UserShow({
     const getInitials = useInitials();
     const [tab, setTab] = useState<(typeof tabs)[number]['id']>('Overview');
     const [isEditing, setIsEditing] = useState(false);
-    const [initialEditTab, setInitialEditTab] = useState<
+    const [initialEditTab] = useState<
         'account' | 'advocate' | 'contact' | 'billing'
     >('account');
     const [isDeleting, setIsDeleting] = useState(false);
@@ -154,13 +173,6 @@ export default function UserShow({
                 },
             }),
         );
-    };
-
-    const openEditWithTab = (
-        editTab: 'account' | 'advocate' | 'contact' | 'billing',
-    ) => {
-        setInitialEditTab(editTab);
-        setIsEditing(true);
     };
 
     // Practice areas list
@@ -205,82 +217,134 @@ export default function UserShow({
 
             <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-10 dark:bg-[#0c0d10]">
                 <main className="w-full space-y-4 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
-                    {/* 1. Executive Dossier Header Card (Unified 2-Tier Concept) */}
-                    <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs sm:p-5 dark:border-white/[0.08] dark:bg-[#14161b]">
-                        {/* Subtle Luxury Ambient Glow */}
-                        <div className="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full bg-linear-to-br from-blue-500/8 via-indigo-500/5 to-purple-500/5 blur-3xl dark:from-blue-500/10 dark:to-indigo-500/5" />
+                    {/* Executive Personnel Dossier */}
+                    <section className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs dark:border-white/[0.08] dark:bg-[#14161b]">
+                        <div className="pointer-events-none absolute top-12 -left-24 size-80 rounded-full border border-slate-200/40 dark:border-white/[0.03]" />
+                        <div className="pointer-events-none absolute top-20 -left-16 size-64 rounded-full border border-amber-300/20 dark:border-amber-300/10" />
 
-                        {/* Top Tier: Utility Row, Identity & Actions */}
-                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 dark:border-white/[0.04]">
-                            <div className="flex flex-wrap items-center gap-2 text-xs">
-                                <Button
-                                    asChild
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-7.5 -ml-1.5 rounded-lg px-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
-                                >
-                                    <Link
-                                        href={
-                                            userRoutes.index?.url
-                                                ? userRoutes.index.url()
-                                                : '/admin/users'
-                                        }
-                                    >
-                                        <ArrowLeft className="mr-1.5 size-3.5" />
-                                        Direktori Tim &amp; Staf
-                                    </Link>
-                                </Button>
-
-                                <span className="h-3.5 w-px bg-slate-200 dark:bg-white/10" />
-
-                                <span className="inline-flex items-center rounded-md border border-slate-200/80 bg-slate-50 px-2 py-0.5 font-mono text-[11px] font-bold text-slate-700 shadow-2xs dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-200">
+                        <div className="relative flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-4 py-2.5 sm:px-5 dark:border-white/[0.05]">
+                            <Link
+                                href={userRoutes.index.url()}
+                                className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 transition-colors hover:text-slate-950 dark:text-zinc-400 dark:hover:text-white"
+                            >
+                                <ArrowLeft className="size-3.5" />
+                                Direktori Tim &amp; Staf
+                            </Link>
+                            <div className="flex items-center gap-3 text-[10.5px] font-semibold">
+                                <span className="font-mono text-slate-400 dark:text-zinc-500">
                                     {displayId}
                                 </span>
-
                                 <span
-                                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                                    className={
                                         staff.is_active
-                                            ? 'border border-emerald-200/80 bg-emerald-50 text-emerald-700 dark:border-emerald-800/60 dark:bg-emerald-950/50 dark:text-emerald-300'
-                                            : 'border border-slate-200/80 bg-slate-100 text-slate-600 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-400'
-                                    }`}
+                                            ? 'text-emerald-600 dark:text-emerald-400'
+                                            : 'text-rose-600 dark:text-rose-400'
+                                    }
                                 >
-                                    <span
-                                        className={`size-1.5 rounded-full ${
-                                            staff.is_active
-                                                ? 'bg-emerald-500'
-                                                : 'bg-slate-400'
-                                        }`}
-                                    />
-                                    {staff.is_active ? 'Aktif' : 'Non-aktif'}
+                                    {staff.is_active
+                                        ? 'Akun aktif'
+                                        : 'Akun nonaktif'}
                                 </span>
+                                <span
+                                    className={
+                                        staff.email_verified_at
+                                            ? 'text-slate-600 dark:text-zinc-300'
+                                            : 'text-amber-600 dark:text-amber-400'
+                                    }
+                                >
+                                    {staff.email_verified_at
+                                        ? 'Email terverifikasi'
+                                        : 'Belum terverifikasi'}
+                                </span>
+                            </div>
+                        </div>
 
-                                {staff.email_verified_at && (
-                                    <span className="hidden items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[10.5px] font-semibold text-blue-700 sm:inline-flex dark:bg-blue-950/50 dark:text-blue-300">
-                                        <UserCheck className="size-3 text-blue-600 dark:text-blue-400" />
-                                        Terverifikasi
-                                    </span>
-                                )}
+                        <div className="relative grid gap-5 px-4 py-5 sm:px-5 lg:grid-cols-[120px_minmax(0,1fr)_auto] lg:items-center lg:gap-6 lg:py-6">
+                            <div className="relative mx-auto lg:mx-0">
+                                <div className="absolute -inset-2 rounded-3xl border border-amber-300/30" />
+                                <Avatar className="size-28 rounded-2xl border-4 border-white shadow-lg ring-1 ring-slate-200 dark:border-[#14161b] dark:ring-white/10">
+                                    <AvatarImage
+                                        src={staff.avatar_url ?? undefined}
+                                        className="rounded-2xl object-cover object-top"
+                                        alt={staff.name}
+                                    />
+                                    <AvatarFallback className="rounded-2xl bg-linear-to-br from-slate-700 via-slate-900 to-[#080d1d] text-2xl font-bold text-white">
+                                        {getInitials(staff.name)}
+                                    </AvatarFallback>
+                                </Avatar>
                             </div>
 
-                            {/* Right: Quick Action Buttons */}
-                            <div className="flex shrink-0 flex-wrap items-center gap-2">
+                            <div className="min-w-0 text-center lg:text-left">
+                                <div className="mx-auto mb-3 h-0.5 w-9 rounded-full bg-amber-400 lg:mx-0" />
+                                <h1 className="text-2xl leading-tight font-bold tracking-tight text-slate-950 sm:text-[28px] dark:text-white">
+                                    {staff.name}
+                                </h1>
+                                <p className="mt-1.5 text-sm font-semibold text-slate-600 dark:text-zinc-300">
+                                    {staff.position_title ||
+                                        'Staf Kantor Hukum'}
+                                    {staff.department
+                                        ? ` · ${staff.department}`
+                                        : ''}
+                                </p>
+                                <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1.5 text-[11px] text-slate-500 lg:justify-start dark:text-zinc-400">
+                                    <a
+                                        href={`mailto:${staff.email}`}
+                                        className="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400"
+                                    >
+                                        <Mail className="size-3.5" />
+                                        {staff.email}
+                                    </a>
+                                    {staff.phone && (
+                                        <span className="inline-flex items-center gap-1.5">
+                                            <Phone className="size-3.5" />
+                                            {staff.phone}
+                                        </span>
+                                    )}
+                                    {staff.advocate_license_no && (
+                                        <span className="inline-flex items-center gap-1.5">
+                                            <Scale className="size-3.5" />
+                                            NIA {staff.advocate_license_no}
+                                        </span>
+                                    )}
+                                    <span className="inline-flex items-center gap-1.5">
+                                        <ShieldCheck className="size-3.5" />
+                                        {staff.roles[0]?.name ??
+                                            'Staf Internal'}
+                                        {staff.roles.length > 1
+                                            ? ` +${staff.roles.length - 1}`
+                                            : ''}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:w-40 lg:grid-cols-1">
                                 <Button
                                     type="button"
                                     variant="outline"
                                     size="sm"
                                     onClick={handleOpenChat}
-                                    className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
+                                    className="h-8 justify-center rounded-lg border-slate-200 text-[11px] font-semibold shadow-none dark:border-white/10"
                                 >
-                                    <MessageSquare className="mr-1.5 size-3.5 text-blue-500" />
-                                    Kirim Pesan
+                                    <MessageSquare className="mr-1.5 size-3.5" />
+                                    Pesan
                                 </Button>
-
+                                <Button
+                                    asChild
+                                    variant="outline"
+                                    size="sm"
+                                    className="h-8 justify-center rounded-lg border-slate-200 text-[11px] font-semibold shadow-none dark:border-white/10"
+                                >
+                                    <a href={`mailto:${staff.email}`}>
+                                        <Mail className="mr-1.5 size-3.5" />
+                                        Email
+                                    </a>
+                                </Button>
                                 {staff.phone && (
                                     <Button
                                         asChild
                                         variant="outline"
                                         size="sm"
-                                        className="h-7.5 rounded-lg border-emerald-200/80 bg-emerald-50/70 px-2.5 text-xs font-semibold text-emerald-700 shadow-2xs hover:bg-emerald-100 dark:border-emerald-900/40 dark:bg-emerald-950/50 dark:text-emerald-300"
+                                        className="h-8 justify-center rounded-lg border-slate-200 text-[11px] font-semibold shadow-none dark:border-white/10"
                                     >
                                         <a
                                             href={`https://wa.me/${staff.phone.replace(/[^0-9]/g, '')}`}
@@ -292,244 +356,65 @@ export default function UserShow({
                                         </a>
                                     </Button>
                                 )}
-
-                                <Button
-                                    asChild
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
-                                >
-                                    <a href={`mailto:${staff.email}`}>
-                                        <Mail className="mr-1.5 size-3.5 text-slate-400" />
-                                        Email
-                                    </a>
-                                </Button>
-
                                 <Can permission="admin.users.manage">
                                     <Button
                                         asChild
                                         size="sm"
-                                        className="h-7.5 cursor-pointer rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                                        className="h-8 justify-center rounded-lg bg-slate-950 text-[11px] font-semibold text-white dark:bg-white dark:text-slate-950"
                                     >
                                         <Link
-                                            href={
-                                                userRoutes.edit?.url
-                                                    ? userRoutes.edit.url(
-                                                          staff.id,
-                                                      )
-                                                    : `/admin/users/${staff.id}/edit`
-                                            }
+                                            href={userRoutes.edit.url(staff.id)}
                                         >
-                                            <Pencil className="mr-1.5 size-3" />
-                                            Edit Profil &amp; Akses
+                                            <Pencil className="mr-1.5 size-3.5" />
+                                            Edit Profil
                                         </Link>
                                     </Button>
                                 </Can>
                             </div>
                         </div>
 
-                        {/* Bottom Tier: Full-Width Executive Profile Title & Metadata */}
-                        <div className="flex flex-col gap-4 pt-1 sm:flex-row sm:items-center sm:gap-5">
-                            {/* Profile Avatar with luxury border */}
-                            <div className="relative shrink-0">
-                                <Avatar className="size-16 rounded-2xl border-2 border-slate-200/80 shadow-xs sm:size-18 dark:border-white/10">
-                                    <AvatarImage
-                                        src={staff.avatar_url ?? undefined}
-                                        className="rounded-2xl object-cover"
-                                        alt={staff.name}
-                                    />
-                                    <AvatarFallback className="rounded-2xl bg-linear-to-br from-slate-900 via-slate-800 to-indigo-950 font-mono text-xl font-bold text-white shadow-inner sm:text-2xl">
-                                        {getInitials(staff.name)}
-                                    </AvatarFallback>
-                                </Avatar>
-                            </div>
-
-                            {/* Identity, Titles & Metadata */}
-                            <div className="min-w-0 flex-1 space-y-1.5">
-                                <div className="flex flex-wrap items-center gap-2.5">
-                                    <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-[26px] lg:leading-snug dark:text-white">
-                                        {staff.name}
-                                    </h1>
-                                    {staff.position_title && (
-                                        <span className="inline-flex items-center gap-1 rounded-md border border-blue-200/70 bg-blue-50/80 px-2 py-0.5 text-[11px] font-semibold text-blue-700 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-300">
-                                            <Scale className="size-3 text-blue-600 dark:text-blue-400" />
-                                            {staff.position_title}
-                                        </span>
-                                    )}
-                                    {staff.department && (
-                                        <span className="inline-flex items-center gap-1 rounded-md border border-slate-200/80 bg-slate-50 px-2 py-0.5 text-[11px] font-medium text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300">
-                                            <Building2 className="size-3 text-slate-400 dark:text-zinc-500" />
-                                            {staff.department}
-                                        </span>
-                                    )}
-                                    {staff.education && (
-                                        <span className="hidden items-center gap-1 rounded-md border border-purple-200/70 bg-purple-50/80 px-2 py-0.5 text-[11px] font-medium text-purple-700 sm:inline-flex dark:border-purple-900/40 dark:bg-purple-950/40 dark:text-purple-300">
-                                            <GraduationCap className="size-3 text-purple-600 dark:text-purple-400" />
-                                            {staff.education}
-                                        </span>
-                                    )}
-                                </div>
-
-                                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-500 dark:text-zinc-400">
-                                    <a
-                                        href={`mailto:${staff.email}`}
-                                        className="inline-flex items-center gap-1 text-slate-600 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
-                                    >
-                                        <Mail className="size-3 text-slate-400" />
-                                        <span>{staff.email}</span>
-                                    </a>
-                                    {staff.phone && (
-                                        <>
-                                            <span className="text-slate-300 dark:text-zinc-700">
-                                                •
-                                            </span>
-                                            <span className="inline-flex items-center gap-1 text-slate-600 dark:text-zinc-300">
-                                                <Phone className="size-3 text-slate-400" />
-                                                <span>{staff.phone}</span>
-                                            </span>
-                                        </>
-                                    )}
-                                    {staff.advocate_license_no && (
-                                        <>
-                                            <span className="text-slate-300 dark:text-zinc-700">
-                                                •
-                                            </span>
-                                            <span className="inline-flex items-center gap-1">
-                                                <Scale className="size-3 text-slate-400" />
-                                                <span>
-                                                    NIA:{' '}
-                                                    <strong className="font-mono text-slate-700 dark:text-zinc-300">
-                                                        {
-                                                            staff.advocate_license_no
-                                                        }
-                                                    </strong>
-                                                </span>
-                                            </span>
-                                        </>
-                                    )}
-                                    {staff.roles.length > 0 && (
-                                        <>
-                                            <span className="text-slate-300 dark:text-zinc-700">
-                                                •
-                                            </span>
-                                            <span className="inline-flex items-center gap-1">
-                                                <ShieldCheck className="size-3 text-slate-400" />
-                                                <span>
-                                                    Akses:{' '}
-                                                    {staff.roles
-                                                        .map((r) => r.name)
-                                                        .join(', ')}
-                                                </span>
-                                            </span>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 2. Top 4 Compact Bento KPI Stat Cards */}
-                    <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
-                        {/* 1. Hak Akses & Peran */}
-                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                    HAK AKSES UTAMA
-                                </span>
-                                <div className="flex size-6 items-center justify-center rounded-md bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
-                                    <ShieldCheck className="size-3.5" />
-                                </div>
-                            </div>
-                            <div className="mt-2 space-y-0.5">
-                                <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                                    {staff.roles[0]?.name ?? 'Staf Internal'}
-                                </p>
-                                <p className="truncate text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                    {staff.position_title ?? 'Personel Firma'}
-                                </p>
-                            </div>
-                            <div className="mt-2.5 border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 dark:border-white/[0.04]">
-                                <span>{staff.roles.length} Peran Sistem Aktif</span>
-                            </div>
-                        </div>
-
-                        {/* 2. Perkara Ditangani */}
-                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                    PORTOFOLIO PERKARA
-                                </span>
-                                <div className="flex size-6 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
-                                    <Briefcase className="size-3.5" />
-                                </div>
-                            </div>
-                            <div className="mt-2 flex items-baseline gap-1.5">
-                                <span className="font-mono text-xl font-bold tracking-tight text-emerald-600 sm:text-2xl dark:text-emerald-400">
-                                    {metrics.active_matters_count}
-                                </span>
-                                <span className="text-xs text-slate-500 dark:text-zinc-400">
-                                    perkara aktif
-                                </span>
-                            </div>
-                            <div className="mt-2.5 border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Total {metrics.total_matters_count} perkara terhubung</span>
-                            </div>
-                        </div>
-
-                        {/* 3. Status Advokat & Kredensial */}
-                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                    STATUS ADVOKAT
-                                </span>
-                                <div className="flex size-6 items-center justify-center rounded-md bg-purple-50 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400">
-                                    <Scale className="size-3.5" />
-                                </div>
-                            </div>
-                            <div className="mt-2 space-y-0.5">
-                                <p className="truncate font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                    {staff.advocate_license_no || 'Non-Litigasi'}
-                                </p>
-                                <p className="truncate text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                    {ktaStatus ? ktaStatus.label : 'Staf Internal'}
-                                </p>
-                            </div>
-                            <div className="mt-2.5 border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 dark:border-white/[0.04]">
-                                <span>{staff.advocate_license_no ? 'Izin Advokat Resmi' : 'Kredensial Non-Advokat'}</span>
-                            </div>
-                        </div>
-
-                        {/* 4. Status Akun & Keamanan */}
-                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                    STATUS SISTEM
-                                </span>
-                                <div className="flex size-6 items-center justify-center rounded-md bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
-                                    <UserCheck className="size-3.5" />
-                                </div>
-                            </div>
-                            <div className="mt-2 space-y-0.5">
-                                <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                                    {staff.is_active ? 'Akun Aktif' : 'Non-aktif'}
-                                </p>
-                                <p className="truncate text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                    {staff.last_seen_at
+                        <div className="relative grid grid-cols-2 divide-x divide-y divide-slate-100 border-t border-slate-100 bg-slate-50/45 lg:grid-cols-4 lg:divide-y-0 dark:divide-white/[0.05] dark:border-white/[0.05] dark:bg-white/[0.015]">
+                            <DossierMetric
+                                icon={ShieldCheck}
+                                label="Akses Utama"
+                                value={staff.roles[0]?.name ?? 'Staf Internal'}
+                                detail={`${staff.roles.length} peran sistem`}
+                            />
+                            <DossierMetric
+                                icon={Briefcase}
+                                label="Perkara Aktif"
+                                value={`${metrics.active_matters_count}`}
+                                detail={`${metrics.total_matters_count} perkara terhubung`}
+                            />
+                            <DossierMetric
+                                icon={Scale}
+                                label="Status Advokat"
+                                value={
+                                    staff.advocate_license_no || 'Non-Litigasi'
+                                }
+                                detail={
+                                    ktaStatus?.label || 'Kredensial internal'
+                                }
+                            />
+                            <DossierMetric
+                                icon={UserCheck}
+                                label="Status Sistem"
+                                value={
+                                    staff.is_active ? 'Akun Aktif' : 'Nonaktif'
+                                }
+                                detail={
+                                    staff.last_seen_at
                                         ? `Aktif ${formatDate(staff.last_seen_at, true)}`
-                                        : 'Terdaftar di Sistem'}
-                                </p>
-                            </div>
-                            <div className="mt-2.5 border-t border-slate-100 pt-2 text-[10.5px] text-slate-500 dark:border-white/[0.04]">
-                                <span>{staff.email_verified_at ? 'Email Terverifikasi' : 'Belum Verifikasi'}</span>
-                            </div>
+                                        : 'Belum ada aktivitas'
+                                }
+                            />
                         </div>
                     </section>
 
-                    {/* 3. Segmented Navigation Tabs (Horizontal Swipeable on Mobile) */}
-                    <div className="flex items-center gap-1 overflow-x-auto rounded-xl border border-slate-200/70 bg-slate-100/70 p-1 shadow-2xs [scrollbar-width:none] [-ms-overflow-style:none] dark:border-white/[0.06] dark:bg-[#14161b] [&::-webkit-scrollbar]:hidden">
+                    {/* 3. Finance-style navigation tabs */}
+                    <div className="flex [scrollbar-width:none] items-center gap-8 overflow-x-auto border-b border-slate-200/60 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
                         {tabs.map((item) => {
                             const isActive = tab === item.id;
-                            const Icon = item.icon;
                             const count =
                                 item.id === 'Matters'
                                     ? metrics.total_matters_count
@@ -542,31 +427,14 @@ export default function UserShow({
                                     key={item.id}
                                     type="button"
                                     onClick={() => setTab(item.id)}
-                                    className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
+                                    className={`relative shrink-0 border-b-2 px-1 pt-1 pb-2 text-[11px] font-semibold whitespace-nowrap transition-colors ${
                                         isActive
-                                            ? 'bg-white text-slate-900 shadow-2xs dark:bg-[#20232a] dark:text-white'
-                                            : 'text-slate-600 hover:bg-white/60 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
+                                            ? 'border-slate-950 text-slate-950 dark:border-white dark:text-white'
+                                            : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white'
                                     }`}
                                 >
-                                    <Icon
-                                        className={`size-3.5 shrink-0 ${
-                                            isActive
-                                                ? 'text-blue-600 dark:text-blue-400'
-                                                : 'text-slate-400 dark:text-zinc-500'
-                                        }`}
-                                    />
-                                    <span>{item.label}</span>
-                                    {count !== null && count > 0 && (
-                                        <span
-                                            className={`rounded-full px-1.5 py-0.2 font-mono text-[10px] font-bold ${
-                                                isActive
-                                                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                                                    : 'bg-slate-200/80 text-slate-700 dark:bg-zinc-800 dark:text-zinc-400'
-                                            }`}
-                                        >
-                                            {count}
-                                        </span>
-                                    )}
+                                    {item.label}
+                                    {count !== null ? ` · ${count}` : ''}
                                 </button>
                             );
                         })}
@@ -590,7 +458,13 @@ export default function UserShow({
                                                 </span>
                                             </div>
                                             <Link
-                                                href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}
+                                                href={
+                                                    userRoutes.edit?.url
+                                                        ? userRoutes.edit.url(
+                                                              staff.id,
+                                                          )
+                                                        : `/admin/users/${staff.id}/edit`
+                                                }
                                                 className="cursor-pointer text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                             >
                                                 Edit Kredensial →
@@ -690,7 +564,14 @@ export default function UserShow({
                                                     {practiceAreasList.length ===
                                                         0 && (
                                                         <Link
-                                                            href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}
+                                                            href={
+                                                                userRoutes.edit
+                                                                    ?.url
+                                                                    ? userRoutes.edit.url(
+                                                                          staff.id,
+                                                                      )
+                                                                    : `/admin/users/${staff.id}/edit`
+                                                            }
                                                             className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                                         >
                                                             + Tambah
@@ -832,7 +713,15 @@ export default function UserShow({
                                             asChild
                                             className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
-                                            <Link href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}>
+                                            <Link
+                                                href={
+                                                    userRoutes.edit?.url
+                                                        ? userRoutes.edit.url(
+                                                              staff.id,
+                                                          )
+                                                        : `/admin/users/${staff.id}/edit`
+                                                }
+                                            >
                                                 <Pencil className="mr-1 size-3" />
                                                 Edit Kredensial
                                             </Link>
@@ -1016,7 +905,15 @@ export default function UserShow({
                                             asChild
                                             className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
-                                            <Link href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}>
+                                            <Link
+                                                href={
+                                                    userRoutes.edit?.url
+                                                        ? userRoutes.edit.url(
+                                                              staff.id,
+                                                          )
+                                                        : `/admin/users/${staff.id}/edit`
+                                                }
+                                            >
                                                 <Pencil className="mr-1 size-3" />
                                                 Edit Kontak
                                             </Link>
@@ -1092,7 +989,15 @@ export default function UserShow({
                                             asChild
                                             className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
-                                            <Link href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}>
+                                            <Link
+                                                href={
+                                                    userRoutes.edit?.url
+                                                        ? userRoutes.edit.url(
+                                                              staff.id,
+                                                          )
+                                                        : `/admin/users/${staff.id}/edit`
+                                                }
+                                            >
                                                 <Pencil className="mr-1 size-3" />
                                                 Edit Keuangan
                                             </Link>
@@ -1157,7 +1062,15 @@ export default function UserShow({
                                             asChild
                                             className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
-                                            <Link href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}>
+                                            <Link
+                                                href={
+                                                    userRoutes.edit?.url
+                                                        ? userRoutes.edit.url(
+                                                              staff.id,
+                                                          )
+                                                        : `/admin/users/${staff.id}/edit`
+                                                }
+                                            >
                                                 <Pencil className="mr-1 size-3" />
                                                 Kelola Role
                                             </Link>
@@ -1205,7 +1118,11 @@ export default function UserShow({
                                         </span>
                                     </div>
                                     <Link
-                                        href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}
+                                        href={
+                                            userRoutes.edit?.url
+                                                ? userRoutes.edit.url(staff.id)
+                                                : `/admin/users/${staff.id}/edit`
+                                        }
                                         className="cursor-pointer text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                     >
                                         Edit
@@ -1292,7 +1209,11 @@ export default function UserShow({
                                         </span>
                                     </div>
                                     <Link
-                                        href={userRoutes.edit?.url ? userRoutes.edit.url(staff.id) : `/admin/users/${staff.id}/edit`}
+                                        href={
+                                            userRoutes.edit?.url
+                                                ? userRoutes.edit.url(staff.id)
+                                                : `/admin/users/${staff.id}/edit`
+                                        }
                                         className="cursor-pointer text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                     >
                                         Edit
@@ -1416,7 +1337,11 @@ export default function UserShow({
                 open={isDeleting}
                 onOpenChange={setIsDeleting}
                 onDeleted={() => {
-                    router.visit(userRoutes.index?.url ? userRoutes.index.url() : '/admin/users');
+                    router.visit(
+                        userRoutes.index?.url
+                            ? userRoutes.index.url()
+                            : '/admin/users',
+                    );
                 }}
             />
         </TooltipProvider>
@@ -1453,9 +1378,9 @@ function EditUserDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="flex max-h-[90vh] max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 gap-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className="flex max-h-[90vh] max-w-2xl flex-col gap-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
                 {/* 1. Modal Cockpit Header */}
-                <div className="shrink-0 border-b border-slate-100 bg-slate-50/70 px-6 pt-5 pb-3.5 pr-12 dark:border-white/[0.06] dark:bg-[#121418]">
+                <div className="shrink-0 border-b border-slate-100 bg-slate-50/70 px-6 pt-5 pr-12 pb-3.5 dark:border-white/[0.06] dark:bg-[#121418]">
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
                             <div className="relative size-10 shrink-0 rounded-full bg-linear-to-b from-slate-200 via-slate-100 to-slate-300 p-0.5 shadow-xs dark:from-white/20 dark:via-white/5 dark:to-white/15">
@@ -1593,7 +1518,9 @@ function EditUserDialog({
                                             <Field
                                                 name="department"
                                                 label="Departemen / Divisi"
-                                                defaultValue={user.department ?? ''}
+                                                defaultValue={
+                                                    user.department ?? ''
+                                                }
                                                 placeholder="Litigasi & Arbitrase"
                                             />
                                             <Field
@@ -1610,11 +1537,13 @@ function EditUserDialog({
                                                 <div className="flex items-center gap-1.5">
                                                     <Shield className="size-3.5 text-purple-600 dark:text-purple-400" />
                                                     <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                                        Hak Akses &amp; Role Sistem
+                                                        Hak Akses &amp; Role
+                                                        Sistem
                                                     </span>
                                                 </div>
                                                 <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                                    Pilih satu atau beberapa role
+                                                    Pilih satu atau beberapa
+                                                    role
                                                 </span>
                                             </div>
 
@@ -1633,7 +1562,9 @@ function EditUserDialog({
                                                                 <input
                                                                     type="checkbox"
                                                                     name="role_ids[]"
-                                                                    value={role.id}
+                                                                    value={
+                                                                        role.id
+                                                                    }
                                                                     defaultChecked={
                                                                         isChecked
                                                                     }
@@ -1650,7 +1581,9 @@ function EditUserDialog({
                                                     );
                                                 })}
                                             </div>
-                                            <InputError message={errors.role_ids} />
+                                            <InputError
+                                                message={errors.role_ids}
+                                            />
                                         </div>
 
                                         {/* Status Card */}
@@ -1688,7 +1621,8 @@ function EditUserDialog({
                                                 name="advocate_license_no"
                                                 label="Nomor Induk Advokat (NIA)"
                                                 defaultValue={
-                                                    user.advocate_license_no ?? ''
+                                                    user.advocate_license_no ??
+                                                    ''
                                                 }
                                                 placeholder="Contoh: 18.01234/PERADI"
                                             />
@@ -1700,7 +1634,7 @@ function EditUserDialog({
                                                     user.kta_expiry_date
                                                         ? user.kta_expiry_date.split(
                                                               'T',
-                                                           )[0]
+                                                          )[0]
                                                         : ''
                                                 }
                                             />
@@ -1710,7 +1644,9 @@ function EditUserDialog({
                                             <Field
                                                 name="bas_number"
                                                 label="Nomor Berita Acara Sumpah (BAS)"
-                                                defaultValue={user.bas_number ?? ''}
+                                                defaultValue={
+                                                    user.bas_number ?? ''
+                                                }
                                                 placeholder="No. Surat Pengadilan Tinggi"
                                             />
                                             <Field
@@ -1721,7 +1657,7 @@ function EditUserDialog({
                                                     user.bas_date
                                                         ? user.bas_date.split(
                                                               'T',
-                                                           )[0]
+                                                          )[0]
                                                         : ''
                                                 }
                                             />
@@ -1737,7 +1673,9 @@ function EditUserDialog({
                                         <TextareaField
                                             name="practice_areas"
                                             label="Bidang Keahlian / Spesialisasi Hukum (Practice Areas)"
-                                            defaultValue={user.practice_areas ?? ''}
+                                            defaultValue={
+                                                user.practice_areas ?? ''
+                                            }
                                             placeholder="Contoh: Corporate M&A, Commercial Litigation, Dispute Resolution, IPR, Employment Law"
                                             rows={2}
                                             helperText="Pisahkan beberapa keahlian dengan koma"
@@ -1763,7 +1701,7 @@ function EditUserDialog({
                                                     user.birth_date
                                                         ? user.birth_date.split(
                                                               'T',
-                                                           )[0]
+                                                          )[0]
                                                         : ''
                                                 }
                                             />
@@ -1773,7 +1711,9 @@ function EditUserDialog({
                                             <TextareaField
                                                 name="address"
                                                 label="Alamat Domisili Saat Ini"
-                                                defaultValue={user.address ?? ''}
+                                                defaultValue={
+                                                    user.address ?? ''
+                                                }
                                                 placeholder="Alamat tempat tinggal lengkap saat ini..."
                                                 rows={3}
                                             />
@@ -1806,7 +1746,8 @@ function EditUserDialog({
                                             <div className="flex items-center gap-1.5">
                                                 <CreditCard className="size-3.5 text-slate-600 dark:text-zinc-400" />
                                                 <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Informasi Rekening Bank (Payroll &amp; Fee Sharing)
+                                                    Informasi Rekening Bank
+                                                    (Payroll &amp; Fee Sharing)
                                                 </span>
                                             </div>
 
@@ -2088,7 +2029,12 @@ function TextareaField({
 
 UserShow.layout = {
     breadcrumbs: [
-        { title: 'Pengguna & Akses', href: userRoutes.index?.url ? userRoutes.index.url() : '/admin/users' },
+        {
+            title: 'Pengguna & Akses',
+            href: userRoutes.index?.url
+                ? userRoutes.index.url()
+                : '/admin/users',
+        },
         { title: 'Profil Staf', href: '' },
     ],
 };

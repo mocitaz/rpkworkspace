@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -67,18 +66,17 @@ export function CreateTransferDialog({
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className={financeDialogPanelClass('default')}>
                 <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                    <div className="flex items-center gap-2.5">
-                        <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400">
-                            <ArrowRightLeft className="size-4.5" />
+                    <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3">
+                        <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                            <ArrowRightLeft className="size-4.5" strokeWidth={1.8} />
                         </div>
-                        <div>
-                            <DialogTitle className="text-sm font-bold text-slate-900 sm:text-base dark:text-white">
+                        <div className="min-w-0 self-center">
+                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 sm:text-base dark:text-white">
                                 Transfer Antar Rekening Kas / Bank
                             </DialogTitle>
-                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                Catat pemindahan dana internal antar pos
-                                rekening atau kas kecil.
-                            </DialogDescription>
+                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
+                                Pindahkan dana antar rekening internal.
+                            </p>
                         </div>
                     </div>
                 </DialogHeader>
