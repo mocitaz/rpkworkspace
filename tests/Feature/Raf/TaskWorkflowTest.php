@@ -85,6 +85,9 @@ it('can render tasks.create and tasks.show pages', function () {
         ->assertInertia(fn ($page) => $page
             ->component('tasks/show')
             ->has('documents', 1)
+            ->where('documents.0.document_type', $document->document_type)
+            ->missing('documents.0.document_number')
+            ->missing('documents.0.category')
         );
 });
 

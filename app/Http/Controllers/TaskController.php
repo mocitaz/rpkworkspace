@@ -178,7 +178,7 @@ class TaskController extends Controller
                 ->with('currentVersion')
                 ->latest()
                 ->take(10)
-                ->get(['id', 'document_number', 'title', 'category', 'status', 'created_at', 'current_version_id']);
+                ->get(['id', 'title', 'document_type', 'status', 'created_at', 'current_version_id']);
         }
 
         $auditLogs = AuditLog::query()

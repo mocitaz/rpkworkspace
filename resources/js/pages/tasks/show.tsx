@@ -119,9 +119,8 @@ type TaskDetail = {
 
 type RelatedDocument = {
     id: string;
-    document_number: string;
     title: string;
-    category: string;
+    document_type?: string | null;
     status: string;
     created_at: string;
     latest_version?: {
@@ -943,7 +942,9 @@ export default function TaskShow({
                                                                 {doc.title}
                                                             </p>
                                                             <div className="flex items-center gap-2 text-[10px] text-slate-500 dark:text-zinc-400">
-                                                                <span className="font-mono">{doc.document_number}</span>
+                                                                <span className="capitalize">
+                                                                    {doc.document_type?.replaceAll('_', ' ') || 'Dokumen umum'}
+                                                                </span>
                                                                 <span>•</span>
                                                                 <span>{formatDate(doc.created_at)}</span>
                                                             </div>
