@@ -2,7 +2,6 @@ import { Head } from '@inertiajs/react';
 import { CheckCircle2, Monitor, Moon, Sun } from 'lucide-react';
 import { useAppearance } from '@/hooks/use-appearance';
 import type { Appearance as AppearanceType } from '@/hooks/use-appearance';
-import SettingsLayout from '@/layouts/settings/layout';
 import { edit as editAppearance } from '@/routes/appearance';
 
 export default function Appearance() {

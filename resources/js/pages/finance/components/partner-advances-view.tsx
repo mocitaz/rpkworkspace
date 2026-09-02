@@ -1,4 +1,10 @@
-import { AlertTriangle, Paperclip, Pencil, Plus } from 'lucide-react';
+import {
+    AlertTriangle,
+    HandCoins,
+    Paperclip,
+    Pencil,
+    Plus,
+} from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -50,6 +56,13 @@ export type PartnerTransactionItem = {
     proofDocument?: ProofDocumentData | null;
 };
 
+type ManagedAggregate = {
+    partnerId: number;
+    partnerName: string;
+    type: PartnerTransactionItem['type'];
+    label: string;
+};
+
 export function PartnerAdvancesView({
     advancesSummary,
     transactions,
@@ -73,6 +86,16 @@ export function PartnerAdvancesView({
         useState<PartnerTransactionItem | null>(null);
     const [confirmTransForEdit, setConfirmTransForEdit] =
         useState<PartnerTransactionItem | null>(null);
+    const [managedAggregate, setManagedAggregate] =
+        useState<ManagedAggregate | null>(null);
+
+    const managedTransactions = managedAggregate
+        ? transactions.filter(
+              (transaction) =>
+                  transaction.partner?.id === managedAggregate.partnerId &&
+                  transaction.type === managedAggregate.type,
+          )
+        : [];
 
     const totalDueToPartners = advancesSummary.reduce(
         (acc, p) => acc + p.net_due_to_partner,
@@ -281,17 +304,49 @@ export function PartnerAdvancesView({
                                             'IDR',
                                         )}
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono font-semibold whitespace-nowrap text-slate-800 dark:text-zinc-200">
-                                        {formatMoney(
-                                            partner.advances_incurred,
-                                            'IDR',
-                                        )}
+                                    <td className="px-3 py-2.5 text-right whitespace-nowrap">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setManagedAggregate({
+                                                    partnerId:
+                                                        partner.partner_id,
+                                                    partnerName:
+                                                        partner.partner_name,
+                                                    type: 'advance_incurred',
+                                                    label: 'Talangan Berjalan',
+                                                })
+                                            }
+                                            className="group/amount inline-flex items-center gap-1 font-mono font-semibold text-slate-800 hover:text-blue-700 dark:text-zinc-200 dark:hover:text-blue-400"
+                                        >
+                                            {formatMoney(
+                                                partner.advances_incurred,
+                                                'IDR',
+                                            )}
+                                            <Pencil className="size-2.5 opacity-0 transition-opacity group-hover/amount:opacity-100" />
+                                        </button>
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono font-semibold whitespace-nowrap text-slate-800 dark:text-zinc-200">
-                                        {formatMoney(
-                                            partner.advances_reimbursed,
-                                            'IDR',
-                                        )}
+                                    <td className="px-3 py-2.5 text-right whitespace-nowrap">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setManagedAggregate({
+                                                    partnerId:
+                                                        partner.partner_id,
+                                                    partnerName:
+                                                        partner.partner_name,
+                                                    type: 'advance_reimbursed',
+                                                    label: 'Pengembalian Talangan',
+                                                })
+                                            }
+                                            className="group/amount inline-flex items-center gap-1 font-mono font-semibold text-slate-800 hover:text-blue-700 dark:text-zinc-200 dark:hover:text-blue-400"
+                                        >
+                                            {formatMoney(
+                                                partner.advances_reimbursed,
+                                                'IDR',
+                                            )}
+                                            <Pencil className="size-2.5 opacity-0 transition-opacity group-hover/amount:opacity-100" />
+                                        </button>
                                     </td>
                                     <td className="px-3 py-2.5 text-right font-mono font-bold whitespace-nowrap text-slate-950 dark:text-white">
                                         {formatMoney(
@@ -299,17 +354,49 @@ export function PartnerAdvancesView({
                                             'IDR',
                                         )}
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono whitespace-nowrap text-slate-800 dark:text-zinc-200">
-                                        {formatMoney(
-                                            partner.profit_distributed,
-                                            'IDR',
-                                        )}
+                                    <td className="px-3 py-2.5 text-right whitespace-nowrap">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setManagedAggregate({
+                                                    partnerId:
+                                                        partner.partner_id,
+                                                    partnerName:
+                                                        partner.partner_name,
+                                                    type: 'profit_distribution',
+                                                    label: 'Bagi Hasil',
+                                                })
+                                            }
+                                            className="group/amount inline-flex items-center gap-1 font-mono font-semibold text-blue-700 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                                        >
+                                            {formatMoney(
+                                                partner.profit_distributed,
+                                                'IDR',
+                                            )}
+                                            <Pencil className="size-2.5 opacity-0 transition-opacity group-hover/amount:opacity-100" />
+                                        </button>
                                     </td>
-                                    <td className="px-3 py-2.5 text-right font-mono whitespace-nowrap text-slate-800 dark:text-zinc-200">
-                                        {formatMoney(
-                                            partner.prive_drawn,
-                                            'IDR',
-                                        )}
+                                    <td className="px-3 py-2.5 text-right whitespace-nowrap">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setManagedAggregate({
+                                                    partnerId:
+                                                        partner.partner_id,
+                                                    partnerName:
+                                                        partner.partner_name,
+                                                    type: 'draw_prive',
+                                                    label: 'Prive',
+                                                })
+                                            }
+                                            className="group/amount inline-flex items-center gap-1 font-mono font-semibold text-slate-800 hover:text-blue-700 dark:text-zinc-200 dark:hover:text-blue-400"
+                                        >
+                                            {formatMoney(
+                                                partner.prive_drawn,
+                                                'IDR',
+                                            )}
+                                            <Pencil className="size-2.5 opacity-0 transition-opacity group-hover/amount:opacity-100" />
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -505,6 +592,148 @@ export function PartnerAdvancesView({
                 )}
             </div>
 
+            <Dialog
+                open={Boolean(managedAggregate)}
+                onOpenChange={(open) => !open && setManagedAggregate(null)}
+            >
+                <DialogContent className={financeDialogPanelClass('default')}>
+                    <DialogHeader className="border-b border-slate-100 px-5 py-4 sm:px-6 dark:border-white/[0.06]">
+                        <div className="grid grid-cols-[40px_minmax(0,1fr)] items-center gap-3.5 pr-7">
+                            <div className="flex size-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                                <HandCoins
+                                    className="size-4.5"
+                                    strokeWidth={1.8}
+                                />
+                            </div>
+                            <div className="min-w-0">
+                                <DialogTitle className="text-[15px] leading-5 font-bold tracking-[-0.015em] text-slate-900 dark:text-white">
+                                    Kelola {managedAggregate?.label}
+                                </DialogTitle>
+                                <p className="mt-0.5 line-clamp-1 text-[11px] leading-[17px] text-slate-500 dark:text-zinc-400">
+                                    {managedAggregate?.partnerName} · Transaksi
+                                    pembentuk total tercatat
+                                </p>
+                            </div>
+                        </div>
+                    </DialogHeader>
+
+                    <div className="min-h-0 space-y-3 overflow-y-auto px-5 py-4 sm:px-6 sm:py-5">
+                        <div className="grid grid-cols-2 divide-x divide-slate-200/70 rounded-xl border border-slate-200/70 bg-slate-50/60 px-4 py-3 dark:divide-white/[0.07] dark:border-white/[0.07] dark:bg-white/[0.025]">
+                            <div className="pr-4">
+                                <p className="text-[9px] font-bold tracking-[0.11em] text-slate-400 uppercase dark:text-zinc-500">
+                                    Jumlah transaksi
+                                </p>
+                                <p className="mt-1 text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                    {managedTransactions.length} pencatatan
+                                </p>
+                            </div>
+                            <div className="pl-4 text-right">
+                                <p className="text-[9px] font-bold tracking-[0.11em] text-slate-400 uppercase dark:text-zinc-500">
+                                    Total tercatat
+                                </p>
+                                <p className="mt-1 font-mono text-sm font-bold tracking-tight text-slate-950 dark:text-white">
+                                    {formatMoney(
+                                        managedTransactions.reduce(
+                                            (total, transaction) =>
+                                                total + transaction.amount,
+                                            0,
+                                        ),
+                                        'IDR',
+                                    )}
+                                </p>
+                            </div>
+                        </div>
+
+                        {managedTransactions.length > 0 ? (
+                            <div className="overflow-hidden rounded-xl border border-slate-200/70 bg-white dark:border-white/[0.07] dark:bg-[#14161b]">
+                                {managedTransactions.map((transaction) => (
+                                    <div
+                                        key={transaction.id}
+                                        className="grid min-h-[68px] gap-3 border-b border-slate-100 px-4 py-3 transition-colors last:border-b-0 hover:bg-slate-50/70 sm:grid-cols-[minmax(0,1fr)_132px_76px] sm:items-center dark:border-white/[0.05] dark:hover:bg-white/[0.025]"
+                                    >
+                                        <div className="min-w-0">
+                                            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                                                <span className="font-mono text-[11px] font-bold text-slate-900 dark:text-white">
+                                                    {
+                                                        transaction.transaction_number
+                                                    }
+                                                </span>
+                                                <span className="text-[10px] text-slate-400 dark:text-zinc-500">
+                                                    {formatDate(
+                                                        transaction.transaction_date,
+                                                    )}
+                                                </span>
+                                            </div>
+                                            <p className="mt-1 truncate text-[10.5px] leading-4 text-slate-500 dark:text-zinc-400">
+                                                {transaction.notes ||
+                                                    transaction.account?.name ||
+                                                    'Tanpa keterangan'}
+                                            </p>
+                                        </div>
+                                        <span className="text-left font-mono text-xs font-bold whitespace-nowrap text-slate-950 sm:text-right dark:text-white">
+                                            {formatMoney(
+                                                transaction.amount,
+                                                'IDR',
+                                            )}
+                                        </span>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => {
+                                                setManagedAggregate(null);
+                                                setConfirmTransForEdit(
+                                                    transaction,
+                                                );
+                                            }}
+                                            className="h-8 w-full rounded-lg border-slate-200 bg-white px-2.5 text-[10.5px] font-semibold shadow-none hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.025] dark:hover:bg-white/[0.06]"
+                                        >
+                                            <Pencil className="mr-1 size-3" />
+                                            Edit
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="rounded-xl border border-dashed border-slate-200 px-4 py-8 text-center dark:border-white/10">
+                                <p className="text-xs font-semibold text-slate-700 dark:text-zinc-200">
+                                    Belum ada transaksi{' '}
+                                    {managedAggregate?.label.toLowerCase()}
+                                </p>
+                                <p className="mt-1 text-[10.5px] text-slate-400 dark:text-zinc-500">
+                                    Buat transaksi baru untuk partner ini
+                                    melalui formulir pencatatan.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    <DialogFooter className="flex-row items-center justify-end gap-2 border-t border-slate-100 px-5 py-3.5 sm:px-6 dark:border-white/[0.06]">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setManagedAggregate(null)}
+                            className="h-9 rounded-lg border-slate-200 bg-white px-4 text-xs font-semibold shadow-none hover:bg-slate-50 dark:border-white/10 dark:bg-white/[0.025] dark:hover:bg-white/[0.06]"
+                        >
+                            Tutup
+                        </Button>
+                        <Button
+                            type="button"
+                            size="sm"
+                            onClick={() => {
+                                setManagedAggregate(null);
+                                onOpenPartnerModal();
+                            }}
+                            className="h-9 rounded-lg bg-slate-950 px-4 text-xs font-semibold text-white shadow-none hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-zinc-100"
+                        >
+                            <Plus className="mr-1 size-3.5" />
+                            Tambah Transaksi
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
             {/* Modal Konfirmasi Edit Transaksi Disetujui */}
             <Dialog
                 open={Boolean(confirmTransForEdit)}
@@ -514,11 +743,18 @@ export function PartnerAdvancesView({
                     <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                         <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3">
                             <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
-                                <AlertTriangle className="size-4.5" strokeWidth={1.8} />
+                                <AlertTriangle
+                                    className="size-4.5"
+                                    strokeWidth={1.8}
+                                />
                             </div>
                             <div className="min-w-0 self-center">
-                                <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">Edit Transaksi Rekonsiliasi</DialogTitle>
-                                <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Konfirmasi sebelum mengubah transaksi.</p>
+                                <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">
+                                    Edit Transaksi Rekonsiliasi
+                                </DialogTitle>
+                                <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
+                                    Konfirmasi sebelum mengubah transaksi.
+                                </p>
                             </div>
                         </div>
                     </DialogHeader>
