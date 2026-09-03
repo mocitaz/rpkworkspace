@@ -28,6 +28,12 @@ const sidebarNavItems = [
     },
 ];
 
+const settingsHeroItems = [
+    ['Profil & Identitas', '01', 'data akun'],
+    ['Keamanan & Autentikasi', '02', 'proteksi akun'],
+    ['Tema & Tampilan', '03', 'preferensi visual'],
+] as const;
+
 export default function SettingsLayout({ children }: PropsWithChildren) {
     const { isCurrentOrParentUrl } = useCurrentUrl();
 
@@ -66,26 +72,24 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
                         </div>
 
                         <div className="mt-5 grid grid-cols-3 border-t border-slate-200/70 pt-3 dark:border-white/[0.07]">
-                            {sidebarNavItems.map((item, index) => {
-                                const Icon = item.icon;
-
-                                return (
-                                    <div
-                                        key={item.title}
-                                        className="flex min-w-0 items-center gap-2 border-r border-slate-200/70 px-2.5 first:pl-0 last:border-r-0 dark:border-white/[0.07]"
-                                    >
-                                        <Icon className="hidden size-3.5 shrink-0 text-blue-500 sm:block" />
-                                        <div className="min-w-0">
-                                            <p className="text-[9px] font-bold tracking-[0.1em] text-slate-400 uppercase">
-                                                0{index + 1}
-                                            </p>
-                                            <p className="truncate text-[10px] font-semibold text-slate-700 sm:text-[11px] dark:text-zinc-200">
-                                                {item.title}
-                                            </p>
-                                        </div>
+                            {settingsHeroItems.map(([label, value, detail]) => (
+                                <div
+                                    key={label}
+                                    className="min-w-0 border-r border-slate-200/70 px-3 py-1 first:pl-0 last:border-r-0 dark:border-white/[0.07]"
+                                >
+                                    <p className="truncate text-[9px] font-bold tracking-[0.11em] text-slate-400 uppercase">
+                                        {label}
+                                    </p>
+                                    <div className="mt-0.5 flex items-baseline gap-1.5">
+                                        <strong className="font-mono text-xl font-bold text-slate-950 dark:text-white">
+                                            {value}
+                                        </strong>
+                                        <span className="truncate text-[9px] text-slate-500 dark:text-zinc-400">
+                                            {detail}
+                                        </span>
                                     </div>
-                                );
-                            })}
+                                </div>
+                            ))}
                         </div>
                     </div>
 
