@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\EmailController::index
 * @see app/Http/Controllers/EmailController.php:18
@@ -136,9 +136,6 @@ storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => (
 
 store.form = storeForm
 
-const email = {
-    index: Object.assign(index, index),
-    store: Object.assign(store, store),
-}
+const EmailController = { index, store }
 
-export default email
+export default EmailController
