@@ -13,6 +13,7 @@ use App\Http\Controllers\DocumentApprovalController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\DocumentPreviewController;
 use App\Http\Controllers\DocumentVersionController;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\FinanceDetailController;
 use App\Http\Controllers\GoogleCalendarController;
@@ -170,6 +171,8 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::post('documents/{document}/versions/{version}/process', [DocumentPreviewController::class, 'process'])->name('documents.versions.process');
     Route::get('search', SearchController::class)->name('search');
     Route::get('chat', [DirectMessageController::class, 'index'])->name('chat.index');
+    Route::get('email', [EmailController::class, 'index'])->name('email.index');
+    Route::post('email', [EmailController::class, 'store'])->name('email.store');
     Route::get('api/chat/contacts', [DirectMessageController::class, 'contacts'])->name('chat.contacts');
     Route::get('api/chat/messages/{user}', [DirectMessageController::class, 'messages'])->name('chat.messages');
     Route::post('api/chat/messages/{message}/reaction', [DirectMessageController::class, 'toggleReaction'])->name('chat.reaction');

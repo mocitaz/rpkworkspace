@@ -24,6 +24,9 @@ class RafPermissionSeeder extends Seeder
             'client.manage' => 'Menambah, mengedit, & mengelola kepatuhan klien',
             'contact.view' => 'Melihat buku kontak eksternal & pengadilan',
             'contact.manage' => 'Menambah, mengubah, dan menghapus kontak',
+            'email.view' => 'Melihat riwayat email workspace',
+            'email.send' => 'Mengirim email ke pihak internal atau eksternal',
+            'email.manage' => 'Mengelola seluruh email firma dan template',
 
             'task.view' => 'Melihat daftar tugas dan agenda kerja',
             'task.create' => 'Membuat tugas baru untuk diri sendiri atau rekan',
@@ -91,7 +94,7 @@ class RafPermissionSeeder extends Seeder
                 'name' => 'Associate',
                 'description' => 'Advokat dan staf hukum pelaksana tugas, riset, dan penyusunan dokumen perkara.',
                 'permissions' => array_values(array_filter($permissions, fn ($id, $name) => in_array($name, [
-                    'matter.view', 'matter.create', 'matter.update',
+                    'matter.view', 'matter.create', 'matter.update', 'email.view', 'email.send',
                     'client.view', 'contact.view', 'contact.manage',
                     'task.view', 'task.create', 'task.manage',
                     'document.view', 'document.upload', 'document.download',
@@ -116,7 +119,7 @@ class RafPermissionSeeder extends Seeder
                 'name' => 'Magang (Legal Intern)',
                 'description' => 'Mahasiswa atau staf magang pelaksana riset yuridis, telaah pustaka, dan draf awal berkas.',
                 'permissions' => array_values(array_filter($permissions, fn ($id, $name) => in_array($name, [
-                    'matter.view',
+                    'matter.view', 'email.view', 'email.send',
                     'client.view', 'contact.view',
                     'task.view', 'task.manage',
                     'document.view', 'document.upload', 'document.download',

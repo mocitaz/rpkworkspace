@@ -13,6 +13,7 @@ import {
     Settings,
     ShieldCheck,
     UsersRound,
+    Mail,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
@@ -76,6 +77,10 @@ export function AppSidebar() {
             href: contacts.index.url(),
             icon: ContactRound,
         });
+    }
+
+    if (can('email.view')) {
+        workspaceItems.push({ title: 'Email', href: '/email', icon: Mail });
     }
 
     // 2. Manajemen Perkara & Operasional

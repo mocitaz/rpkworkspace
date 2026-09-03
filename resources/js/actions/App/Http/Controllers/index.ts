@@ -27,6 +27,7 @@ import DocumentVersionController from './DocumentVersionController'
 import DocumentPreviewController from './DocumentPreviewController'
 import SearchController from './SearchController'
 import DirectMessageController from './DirectMessageController'
+import EmailController from './EmailController'
 import NotificationController from './NotificationController'
 import AuditLogController from './AuditLogController'
 import SystemReadinessController from './SystemReadinessController'
@@ -63,6 +64,7 @@ const Controllers = {
     DocumentPreviewController: Object.assign(DocumentPreviewController, DocumentPreviewController),
     SearchController: Object.assign(SearchController, SearchController),
     DirectMessageController: Object.assign(DirectMessageController, DirectMessageController),
+    EmailController: Object.assign(EmailController, EmailController),
     NotificationController: Object.assign(NotificationController, NotificationController),
     AuditLogController: Object.assign(AuditLogController, AuditLogController),
     SystemReadinessController: Object.assign(SystemReadinessController, SystemReadinessController),
