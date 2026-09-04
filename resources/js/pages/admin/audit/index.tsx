@@ -35,14 +35,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useInitials } from '@/hooks/use-initials';
-import { formatDate } from '@/lib/format';
+import { formatDate, formatTime } from '@/lib/format';
 import * as auditRoutes from '@/routes/admin/audit';
 
 type Log = {
     id: string;
     event: string;
     category?: string;
-    actor?: { id: number; name: string; email: string };
+    actor?: { id: number; name: string; email: string; avatar_url?: string | null };
     subject_type?: string;
     subject_id?: string;
     subject?: Record<string, unknown> | null;
@@ -625,6 +625,12 @@ export default function AuditIndex({
                                                         </p>
                                                         <div className="mt-2 flex items-center gap-2">
                                                             <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                {log.actor?.avatar_url && (
+                                                                    <AvatarImage
+                                                                        src={log.actor.avatar_url}
+                                                                        alt={log.actor.name}
+                                                                    />
+                                                                )}
                                                                 <AvatarFallback className="text-[7px] font-bold">
                                                                     {getInitials(log.actor?.name ?? 'Sistem')}
                                                                 </AvatarFallback>
@@ -658,22 +664,22 @@ export default function AuditIndex({
                                     <table className="w-full table-fixed text-left text-xs">
                                         <thead>
                                             <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                                <th className="w-[13%] py-2.5 pr-3 pl-4 font-semibold">
+                                                <th className="w-[12%] py-3 pr-3 pl-4 font-semibold">
                                                     Waktu
                                                 </th>
-                                                <th className="w-[12%] px-3 py-2.5 font-semibold">
+                                                <th className="w-[11%] px-3 py-3 font-semibold">
                                                     Aktivitas
                                                 </th>
-                                                <th className="w-[19%] px-3 py-2.5 font-semibold">
+                                                <th className="w-[21%] px-3 py-3 font-semibold">
                                                     Objek &amp; Target
                                                 </th>
-                                                <th className="w-[16%] px-3 py-2.5 font-semibold">
+                                                <th className="w-[18%] px-3 py-3 font-semibold">
                                                     Pelaku
                                                 </th>
-                                                <th className="w-[37%] px-3 py-2.5 font-semibold">
+                                                <th className="w-[35%] px-3 py-3 font-semibold">
                                                     Detail Perubahan
                                                 </th>
-                                                <th className="w-[3%] py-2.5 pr-4 pl-1 text-right font-semibold"></th>
+                                                <th className="w-[3%] py-3 pr-4 pl-1 text-right font-semibold"></th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
@@ -699,19 +705,26 @@ export default function AuditIndex({
                                                         className="group cursor-pointer transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
                                                     >
                                                         {/* 1. Waktu */}
-                                                        <td className="py-2.5 pr-3 pl-4 font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
-                                                            {formatDate(log.created_at, true)}
+                                                        <td className="py-3 pr-3 pl-4 whitespace-nowrap">
+                                                            <div className="font-mono text-xs leading-tight">
+                                                                <p className="font-medium text-slate-800 dark:text-zinc-200">
+                                                                    {formatDate(log.created_at)}
+                                                                </p>
+                                                                <p className="mt-0.5 text-[10px] text-slate-400 dark:text-zinc-500">
+                                                                    {formatTime(log.created_at)}
+                                                                </p>
+                                                            </div>
                                                         </td>
 
                                                         {/* 2. Aktivitas (Text Only, Solid Color) */}
-                                                        <td className="px-3 py-2.5 whitespace-nowrap">
+                                                        <td className="px-3 py-3 whitespace-nowrap">
                                                             <span className={`text-xs font-semibold ${theme.textSolid}`}>
                                                                 {theme.label}
                                                             </span>
                                                         </td>
 
                                                         {/* 3. Objek & Target */}
-                                                        <td className="px-3 py-2.5">
+                                                        <td className="px-3 py-3">
                                                             <div className="min-w-0 space-y-0.5">
                                                                 <p
                                                                     title={realSubjectName}
@@ -719,16 +732,22 @@ export default function AuditIndex({
                                                                 >
                                                                     {realSubjectName}
                                                                 </p>
-                                                                <span className="block truncate font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                                <span className="block truncate font-mono text-[10px] font-medium text-slate-400 dark:text-zinc-500">
                                                                     {friendlySubjectType}
                                                                 </span>
                                                             </div>
                                                         </td>
 
                                                         {/* 4. Pelaku / Aktor with Avatar */}
-                                                        <td className="px-3 py-2.5 font-medium whitespace-nowrap">
-                                                            <div className="flex items-center gap-2 min-w-0">
+                                                        <td className="px-3 py-3 whitespace-nowrap">
+                                                            <div className="flex items-center gap-2.5 min-w-0">
                                                                 <Avatar className="size-6 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                    {log.actor?.avatar_url && (
+                                                                        <AvatarImage
+                                                                            src={log.actor.avatar_url}
+                                                                            alt={log.actor.name}
+                                                                        />
+                                                                    )}
                                                                     <AvatarFallback className="text-[8px] font-bold">
                                                                         {getInitials(log.actor?.name ?? 'Sistem')}
                                                                     </AvatarFallback>
@@ -740,7 +759,7 @@ export default function AuditIndex({
                                                                     >
                                                                         {log.actor?.name ?? 'Sistem Otomatis'}
                                                                     </p>
-                                                                    <p className="truncate text-[10px] text-slate-400 dark:text-zinc-500">
+                                                                    <p className="truncate font-mono text-[10px] text-slate-400 dark:text-zinc-500">
                                                                         {log.ip_address ?? '127.0.0.1'}
                                                                     </p>
                                                                 </div>
@@ -748,9 +767,9 @@ export default function AuditIndex({
                                                         </td>
 
                                                         {/* 5. Detail Perubahan (Paragraph Only) */}
-                                                        <td className="px-3 py-2.5">
+                                                        <td className="px-3 py-3">
                                                             <p
-                                                                className="line-clamp-2 text-xs leading-relaxed text-slate-700 dark:text-zinc-300"
+                                                                className="line-clamp-2 text-xs leading-relaxed text-slate-600 dark:text-zinc-300"
                                                                 title={narrative}
                                                             >
                                                                 {narrative}
@@ -758,7 +777,7 @@ export default function AuditIndex({
                                                         </td>
 
                                                         {/* 6. Action Arrow */}
-                                                        <td className="py-2.5 pr-4 pl-1 text-right whitespace-nowrap">
+                                                        <td className="py-3 pr-4 pl-1 text-right whitespace-nowrap">
                                                             <button
                                                                 type="button"
                                                                 onClick={(e) => {
@@ -1060,28 +1079,35 @@ function RawLogDetailDialog({
     return (
         <Dialog open={!!log} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="flex max-h-[90vh] w-[95vw] sm:max-w-2xl flex-col gap-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
-                {/* 1. Header Matching Finance / Email Dialogs */}
-                <DialogHeader className="shrink-0 border-b border-slate-100 bg-slate-50/60 px-5 py-4 text-left sm:px-6 dark:border-white/[0.06] dark:bg-white/[0.025]">
-                    <div className="flex items-start justify-between gap-3 pr-6">
-                        <div className="flex items-start gap-3.5 min-w-0 flex-1">
-                            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-600 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
-                                <ShieldCheck className="size-5" />
+                {/* 1. Header: Sleek, Compact & Proportional */}
+                <DialogHeader className="shrink-0 border-b border-slate-100 bg-slate-50/50 px-5 py-3 text-left sm:px-6 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                    <div className="flex items-center justify-between gap-3 pr-6">
+                        <div className="flex min-w-0 flex-1 items-center gap-3">
+                            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-2xs dark:border-white/10 dark:bg-[#1a1d26] dark:text-zinc-300">
+                                <ShieldCheck className="size-4.5" />
                             </div>
-                            <div className="min-w-0 flex-1 space-y-1">
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <span className={`text-xs font-semibold ${theme.textSolid}`}>
+                            <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+                                    <span className={`font-semibold ${theme.textSolid}`}>
                                         {theme.label}
                                     </span>
-                                    <span className="text-slate-300 dark:text-zinc-600">&bull;</span>
-                                    <span className="font-mono text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                    <span className="text-slate-300 dark:text-zinc-700">•</span>
+                                    <span className="font-mono text-slate-500 dark:text-zinc-400">
                                         Log #{log.id}
                                     </span>
+                                    <span className="text-slate-300 dark:text-zinc-700">•</span>
+                                    <span className="font-mono text-slate-400 dark:text-zinc-500">
+                                        {formatDate(log.created_at, true)} WIB
+                                    </span>
                                 </div>
-                                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white truncate">
-                                    {realSubjectName}
+                                <DialogTitle className="mt-0.5 truncate text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                                    {realSubjectName}{' '}
+                                    <span className="font-normal text-xs text-slate-400 dark:text-zinc-500">
+                                        ({friendlySubjectType})
+                                    </span>
                                 </DialogTitle>
-                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                    {friendlySubjectType} &bull; Tercatat pada {formatDate(log.created_at, true)} WIB
+                                <DialogDescription className="sr-only">
+                                    Rincian rekaman audit trail untuk objek {realSubjectName}
                                 </DialogDescription>
                             </div>
                         </div>
@@ -1090,74 +1116,69 @@ function RawLogDetailDialog({
 
                 {/* 2. Scrollable Body Content */}
                 <div className="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
-                    {/* Meta Summary Card */}
-                    <div className="grid grid-cols-1 gap-2.5 rounded-xl border border-slate-200/80 bg-slate-50/60 p-3.5 text-xs sm:grid-cols-2 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                    {/* Meta Summary Card (Compact & Non-redundant) */}
+                    <div className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 text-xs sm:grid-cols-2 dark:border-white/[0.06] dark:bg-white/[0.02]">
                         {/* Actor */}
-                        <div className="flex items-center gap-2.5">
-                            <Avatar className="size-8 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                            <Avatar className="size-9 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                {log.actor?.avatar_url && (
+                                    <AvatarImage
+                                        src={log.actor.avatar_url}
+                                        alt={log.actor.name}
+                                    />
+                                )}
                                 <AvatarFallback className="text-xs font-bold">
                                     {getInitials(log.actor?.name ?? 'Sistem')}
                                 </AvatarFallback>
                             </Avatar>
-                            <div className="min-w-0 flex-1">
+                            <div className="min-w-0 flex-1 truncate">
                                 <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-500">
-                                    Pelaku / Aktor
+                                    Pelaksana / Aktor
                                 </span>
-                                <p className="truncate font-semibold text-slate-900 dark:text-white">
+                                <p className="truncate font-semibold text-slate-900 dark:text-white" title={log.actor?.name ?? 'Sistem Otomatis'}>
                                     {log.actor?.name ?? 'Sistem Otomatis'}
                                 </p>
-                                <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400">
+                                <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400" title={log.actor?.email ?? 'system@internal'}>
                                     {log.actor?.email ?? 'system@internal'}
                                 </p>
                             </div>
                         </div>
 
-                        {/* Waktu & IP */}
-                        <div>
-                            <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-500">
-                                Waktu &amp; IP Jaringan
-                            </span>
-                            <p className="font-semibold text-slate-900 dark:text-white">
-                                {formatDate(log.created_at, true)} WIB
-                            </p>
-                            <p className="font-mono text-[11px] text-slate-500 dark:text-zinc-400">
-                                IP: {log.ip_address ?? '127.0.0.1'}
-                            </p>
-                        </div>
-
-                        {/* Subject Target */}
-                        <div className="border-t border-slate-200/60 pt-2 dark:border-white/5">
-                            <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-500">
-                                Objek Sasaran
-                            </span>
-                            <p className="truncate font-semibold text-slate-900 dark:text-white">
-                                {realSubjectName}
-                            </p>
-                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                {friendlySubjectType} {log.subject_id ? `(#${log.subject_id})` : ''}
-                            </p>
-                        </div>
-
-                        {/* Event Code */}
-                        <div className="border-t border-slate-200/60 pt-2 dark:border-white/5">
-                            <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-500">
-                                Kode Event &amp; Kategori
-                            </span>
-                            <p className="font-mono font-semibold text-slate-900 dark:text-white truncate">
-                                {log.event}
-                            </p>
-                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                Kategori: {log.category ?? 'Audit Trail'}
-                            </p>
+                        {/* Network & Event */}
+                        <div className="flex flex-col justify-center border-t border-slate-200/60 pt-2 text-[11px] sm:border-t-0 sm:border-l sm:pt-0 sm:pl-3.5 dark:border-white/5">
+                            <div className="flex items-center justify-between gap-2">
+                                <span className="text-[10px] font-medium text-slate-400 dark:text-zinc-500">
+                                    Alamat IP:
+                                </span>
+                                <span className="font-mono text-slate-700 dark:text-zinc-300">
+                                    {log.ip_address ?? '127.0.0.1'}
+                                </span>
+                            </div>
+                            <div className="mt-1 flex items-center justify-between gap-2">
+                                <span className="text-[10px] font-medium text-slate-400 dark:text-zinc-500">
+                                    Event:
+                                </span>
+                                <span className="font-mono font-semibold text-slate-800 dark:text-zinc-200 truncate" title={log.event}>
+                                    {log.event}
+                                </span>
+                            </div>
+                            <div className="mt-1 flex items-center justify-between gap-2">
+                                <span className="text-[10px] font-medium text-slate-400 dark:text-zinc-500">
+                                    Kategori:
+                                </span>
+                                <span className="text-slate-600 dark:text-zinc-400">
+                                    {log.category ?? 'Audit Trail'}
+                                </span>
+                            </div>
                         </div>
                     </div>
 
                     {/* Detail Perubahan (Narasi Utama) */}
                     <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs dark:border-white/10 dark:bg-[#12141a]">
-                        <div className="border-b border-slate-100 pb-2 mb-2.5 text-[10.5px] font-bold tracking-wider text-slate-400 uppercase dark:border-white/5 dark:text-zinc-500">
-                            Detail Perubahan &amp; Narasi Aktivitas
+                        <div className="mb-2 border-b border-slate-100 pb-1.5 text-[10.5px] font-bold tracking-wider text-slate-400 uppercase dark:border-white/5 dark:text-zinc-500">
+                            Detail Perubahan
                         </div>
-                        <p className="text-xs leading-relaxed font-medium text-slate-800 dark:text-zinc-200">
+                        <p className="text-xs sm:text-[13px] leading-relaxed text-slate-700 dark:text-zinc-300 font-normal">
                             {narrative}
                         </p>
 
@@ -1172,10 +1193,10 @@ function RawLogDetailDialog({
                                             <th className="px-3 py-2 font-semibold">Sesudah</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                                    <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono text-[11px]">
                                         {changeKeys.map((k) => (
                                             <tr key={k}>
-                                                <td className="px-3 py-2 font-semibold text-slate-700 dark:text-zinc-300">
+                                                <td className="px-3 py-2 font-sans font-semibold text-slate-700 dark:text-zinc-300">
                                                     {formatFieldKey(k)}
                                                 </td>
                                                 <td className="px-3 py-2 text-slate-400 line-through dark:text-zinc-500">
