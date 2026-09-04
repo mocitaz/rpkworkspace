@@ -21,6 +21,8 @@ import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
@@ -31,11 +33,23 @@ type Status = 'draft' | 'queued' | 'sent' | 'failed';
 type Message = {
     id: string;
     subject: string;
+    from_address: string;
     to_addresses: string[];
+    cc_addresses?: string[] | null;
+    bcc_addresses?: string[] | null;
+    body: string;
     status: Status;
     created_at: string;
     sent_at?: string | null;
-    matter?: { matter_number: string; title: string } | null;
+    failed_at?: string | null;
+    error_message?: string | null;
+    sender?: {
+        id: string;
+        name: string;
+        email: string;
+        position_title?: string | null;
+    } | null;
+    matter?: { id?: string; matter_number: string; title: string } | null;
 };
 type Matter = { id: string; matter_number: string; title: string };
 type Client = { id: string; display_name: string };
@@ -121,28 +135,55 @@ const generateSignatureText = (name: string, title: string, address: string) => 
 
 const meta: Record<
     Status,
-    { label: string; color: string; icon: typeof Mail }
+    {
+        label: string;
+        borderClass: string;
+        badgeClass: string;
+        icon: typeof CheckCircle2;
+    }
 > = {
     sent: {
         label: 'Terkirim',
-        color: 'text-emerald-600 dark:text-emerald-400',
+        borderClass: 'border-l-emerald-500',
+        badgeClass:
+            'bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40',
         icon: CheckCircle2,
     },
     queued: {
         label: 'Dalam antrean',
-        color: 'text-blue-600 dark:text-blue-400',
+        borderClass: 'border-l-blue-500',
+        badgeClass:
+            'bg-blue-50 text-blue-700 border-blue-200/80 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/40',
         icon: Clock3,
     },
     draft: {
         label: 'Draft',
-        color: 'text-amber-600 dark:text-amber-400',
+        borderClass: 'border-l-slate-400 dark:border-l-zinc-500',
+        badgeClass:
+            'bg-slate-100 text-slate-700 border-slate-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700',
         icon: FileText,
     },
     failed: {
         label: 'Gagal',
-        color: 'text-rose-600 dark:text-rose-400',
+        borderClass: 'border-l-rose-500',
+        badgeClass:
+            'bg-rose-50 text-rose-700 border-rose-200/80 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/40',
         icon: XCircle,
     },
+};
+
+const parseMessageBody = (rawBody: string) => {
+    const parts = rawBody.split(/--SIGNATURE--/i);
+    const mainBody = parts[0]?.trim() ?? rawBody;
+    let sigName = '';
+    let sigTitle = '';
+    if (parts[1]) {
+        const nameMatch = parts[1].match(/name:\s*(.+)/i);
+        const titleMatch = parts[1].match(/title:\s*(.+)/i);
+        if (nameMatch) sigName = nameMatch[1].trim();
+        if (titleMatch) sigTitle = titleMatch[1].trim();
+    }
+    return { mainBody, sigName, sigTitle, hasSignature: Boolean(parts[1]) };
 };
 
 const formatDate = (value: string) =>
@@ -175,6 +216,7 @@ export default function EmailIndex({
     const [tab, setTab] = useState<'all' | Status>('all');
     const [search, setSearch] = useState('');
     const [composerOpen, setComposerOpen] = useState(false);
+    const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
 
     // Form field states
     const [toText, setToText] = useState('');
@@ -433,60 +475,76 @@ export default function EmailIndex({
                             </div>
                         ) : (
                             <div className="divide-y divide-slate-100 dark:divide-white/[0.06]">
+                                {/* Table Header for Desktop */}
+                                <div className="hidden grid-cols-[minmax(0,1.8fr)_minmax(0,1.1fr)_120px_130px_70px] items-center gap-4 border-b border-slate-100 bg-slate-50/70 px-5 py-2.5 text-[10px] font-semibold tracking-wider text-slate-400 uppercase sm:grid dark:border-white/[0.06] dark:bg-white/[0.02] dark:text-zinc-500">
+                                    <span>Subjek &amp; Penerima</span>
+                                    <span>Pengirim</span>
+                                    <span>Status</span>
+                                    <span>Waktu</span>
+                                    <span className="text-right">Aksi</span>
+                                </div>
+
                                 {visible.map((message) => {
                                     const status = meta[message.status];
                                     const StatusIcon = status.icon;
                                     return (
                                         <article
                                             key={message.id}
-                                            className="group grid gap-3 px-5 py-3.5 transition-colors hover:bg-slate-50/70 sm:grid-cols-[minmax(0,1fr)_180px_165px] sm:items-center sm:px-6 dark:hover:bg-white/[0.025]"
+                                            className="group grid grid-cols-1 items-start gap-3 px-5 py-3.5 transition-colors hover:bg-slate-50/70 sm:grid-cols-[minmax(0,1.8fr)_minmax(0,1.1fr)_120px_130px_70px] sm:items-center sm:px-6 dark:hover:bg-white/[0.025]"
                                         >
-                                            <div className="flex min-w-0 items-start gap-3.5">
-                                                <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 dark:border-white/10 dark:bg-white/[0.04]">
-                                                    <Mail className="size-3.5" />
-                                                </div>
-                                                <div className="min-w-0">
-                                                    <h3 className="truncate text-[12px] font-semibold text-slate-950 dark:text-white">
-                                                        {message.subject}
-                                                    </h3>
-                                                    <p className="mt-1 truncate text-[10.5px] text-slate-500">
-                                                        Kepada{' '}
-                                                        {message.to_addresses.join(
-                                                            ', ',
-                                                        )}
+                                            {/* Col 1: Subjek & Penerima with Status Left Accent Line */}
+                                            <div className={`min-w-0 border-l-2 ${status.borderClass} pl-3 space-y-0.5`}>
+                                                <h3 className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                                    {message.subject}
+                                                </h3>
+                                                <p className="truncate text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                    <span className="text-slate-400">Kepada:</span> {message.to_addresses.join(', ')}
+                                                </p>
+                                                {message.matter && (
+                                                    <p className="truncate text-[10px] text-slate-400 dark:text-zinc-500">
+                                                        <span className="font-mono font-medium text-slate-500 dark:text-zinc-400">{message.matter.matter_number}</span> &bull; {message.matter.title}
                                                     </p>
-                                                    {message.matter && (
-                                                        <p className="mt-1 truncate text-[9.5px] text-slate-400">
-                                                            {
-                                                                message.matter
-                                                                    .matter_number
-                                                            }{' '}
-                                                            ·{' '}
-                                                            {
-                                                                message.matter
-                                                                    .title
-                                                            }
-                                                        </p>
-                                                    )}
-                                                </div>
+                                                )}
                                             </div>
-                                            <div className="flex items-center gap-1.5">
-                                                <StatusIcon
-                                                    className={`size-3.5 ${status.color}`}
-                                                />
-                                                <span
-                                                    className={`text-[10px] font-semibold ${status.color}`}
-                                                >
+
+                                            {/* Col 2: Pengirim */}
+                                            <div className="min-w-0">
+                                                <p className="truncate text-xs font-semibold text-slate-900 dark:text-white">
+                                                    {message.sender?.name ?? 'Tim Advokat'}
+                                                </p>
+                                                <p className="truncate text-[10px] text-slate-400 dark:text-zinc-500">
+                                                    {message.sender?.position_title ?? message.from_address}
+                                                </p>
+                                            </div>
+
+                                            {/* Col 3: Status */}
+                                            <div className="flex items-center">
+                                                <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${status.badgeClass}`}>
+                                                    <StatusIcon className="size-3" />
                                                     {status.label}
                                                 </span>
                                             </div>
-                                            <time className="text-[10px] text-slate-400 sm:text-right">
-                                                {formatDate(
-                                                    message.sent_at ??
-                                                        message.created_at,
-                                                )}{' '}
+
+                                            {/* Col 4: Waktu */}
+                                            <time className="text-[10.5px] text-slate-500 dark:text-zinc-400">
+                                                <span className="font-medium text-slate-700 dark:text-zinc-300">
+                                                    {formatDate(message.sent_at ?? message.created_at)}
+                                                </span>{' '}
                                                 WIB
                                             </time>
+
+                                            {/* Col 5: Aksi */}
+                                            <div className="flex sm:justify-end">
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => setSelectedMessage(message)}
+                                                    className="h-7 cursor-pointer rounded-lg border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 dark:border-white/10 dark:bg-transparent dark:text-zinc-300 dark:hover:bg-white/10"
+                                                >
+                                                    Detail
+                                                </Button>
+                                            </div>
                                         </article>
                                     );
                                 })}
@@ -1146,6 +1204,177 @@ export default function EmailIndex({
                     </div>
                 </div>
             </ConfirmDialog>
+
+            {/* Modal Detail Isi Email */}
+            <Dialog
+                open={!!selectedMessage}
+                onOpenChange={(open) => !open && setSelectedMessage(null)}
+            >
+                <DialogContent className="flex max-h-[90vh] w-[95vw] sm:max-w-2xl flex-col gap-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
+                    {selectedMessage && (() => {
+                        const status = meta[selectedMessage.status];
+                        const StatusIcon = status.icon;
+                        const { mainBody, sigName, sigTitle, hasSignature } = parseMessageBody(selectedMessage.body);
+
+                        return (
+                            <>
+                                {/* Header */}
+                                <DialogHeader className="shrink-0 border-b border-slate-100 bg-slate-50/70 px-5 py-4 text-left sm:px-6 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                                    <div className="flex items-start justify-between gap-3 pr-6">
+                                        <div className="space-y-1">
+                                            <div className="flex items-center gap-2">
+                                                <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${status.badgeClass}`}>
+                                                    <StatusIcon className="size-3" />
+                                                    {status.label}
+                                                </span>
+                                                {selectedMessage.matter && (
+                                                    <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-medium text-slate-600 dark:bg-white/10 dark:text-zinc-300">
+                                                        {selectedMessage.matter.matter_number}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                                {selectedMessage.subject}
+                                            </DialogTitle>
+                                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                                ID: <span className="font-mono text-[11px]">{selectedMessage.id}</span> &bull; Tercatat pada register korespondensi
+                                            </DialogDescription>
+                                        </div>
+                                    </div>
+                                </DialogHeader>
+
+                                {/* Scrollable Content */}
+                                <div className="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+                                    {/* Meta summary card */}
+                                    <div className="grid grid-cols-1 gap-2.5 rounded-xl border border-slate-200/80 bg-slate-50/60 p-3.5 text-xs sm:grid-cols-2 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                                        <div>
+                                            <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
+                                                Pengirim
+                                            </span>
+                                            <p className="font-semibold text-slate-900 dark:text-white">
+                                                {selectedMessage.sender?.name ?? 'Tim Advokat'}
+                                            </p>
+                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                {selectedMessage.from_address}
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
+                                                Penerima (To)
+                                            </span>
+                                            <p className="font-semibold text-slate-900 dark:text-white break-words">
+                                                {selectedMessage.to_addresses.join(', ')}
+                                            </p>
+                                            {selectedMessage.cc_addresses && selectedMessage.cc_addresses.length > 0 && (
+                                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                    <span className="font-medium">Cc:</span> {selectedMessage.cc_addresses.join(', ')}
+                                                </p>
+                                            )}
+                                            {selectedMessage.bcc_addresses && selectedMessage.bcc_addresses.length > 0 && (
+                                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                    <span className="font-medium">Bcc:</span> {selectedMessage.bcc_addresses.join(', ')}
+                                                </p>
+                                            )}
+                                        </div>
+
+                                        {selectedMessage.matter && (
+                                            <div className="sm:col-span-2 border-t border-slate-200/60 pt-2 dark:border-white/5">
+                                                <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
+                                                    Perkara Terkait
+                                                </span>
+                                                <p className="font-semibold text-slate-900 dark:text-white">
+                                                    {selectedMessage.matter.matter_number} &bull; {selectedMessage.matter.title}
+                                                </p>
+                                            </div>
+                                        )}
+
+                                        <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200/60 pt-2 text-[11px] text-slate-500 dark:border-white/5 dark:text-zinc-400">
+                                            <span>
+                                                Dibuat: <strong className="text-slate-700 dark:text-zinc-300">{formatDate(selectedMessage.created_at)} WIB</strong>
+                                            </span>
+                                            {selectedMessage.sent_at && (
+                                                <span>
+                                                    Terkirim: <strong className="text-emerald-700 dark:text-emerald-400">{formatDate(selectedMessage.sent_at)} WIB</strong>
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {selectedMessage.error_message && (
+                                        <div className="rounded-xl border border-rose-200 bg-rose-50/80 p-3 text-xs text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
+                                            <p className="font-bold">Pemberitahuan Kendala Pengiriman:</p>
+                                            <p className="mt-0.5 text-[11px] leading-relaxed font-mono">{selectedMessage.error_message}</p>
+                                        </div>
+                                    )}
+
+                                    {/* Email Body Card */}
+                                    <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs dark:border-white/10 dark:bg-[#12141a]">
+                                        <div className="border-b border-slate-100 pb-2 mb-3 text-[10.5px] font-bold tracking-wider text-slate-400 uppercase dark:border-white/5 dark:text-zinc-500">
+                                            Isi Pesan Resmi
+                                        </div>
+                                        <div className="whitespace-pre-wrap text-xs leading-relaxed text-slate-800 dark:text-zinc-200">
+                                            {mainBody}
+                                        </div>
+
+                                        {/* Letterhead Signature if included */}
+                                        {hasSignature && (
+                                            <div className="mt-5 border-t border-slate-200/80 pt-4 dark:border-white/10">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="flex h-9 w-20 shrink-0 items-center justify-center rounded border border-slate-200 bg-white p-1 dark:border-white/10 dark:bg-zinc-900">
+                                                        <img
+                                                            src="/logo/raf-law-firm-transparent.png"
+                                                            alt="RPK Law Firm"
+                                                            className="max-h-full max-w-full object-contain"
+                                                        />
+                                                    </div>
+                                                    <div className="min-w-0 border-l border-slate-200 pl-3 dark:border-white/10">
+                                                        <p className="text-xs font-bold text-slate-900 dark:text-white">
+                                                            {sigName || selectedMessage.sender?.name || 'Tim Advokat & Konsultan Hukum'}
+                                                        </p>
+                                                        <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                                            {sigTitle || selectedMessage.sender?.position_title || 'Advokat & Konsultan Hukum'}
+                                                        </p>
+                                                        <p className="text-[10px] font-semibold text-slate-700 dark:text-zinc-300">
+                                                            RONI, PUTRA &amp; KUSUMAH LAW FIRM
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div className="mt-2 text-[10.5px] leading-relaxed text-slate-500 dark:text-zinc-400">
+                                                    <span className="font-medium text-slate-700 dark:text-zinc-300">Tel/WA:</span> 0852 9560 1417 &bull;{' '}
+                                                    <span className="font-medium text-slate-700 dark:text-zinc-300">Email:</span> {selectedMessage.from_address} &bull;{' '}
+                                                    <span className="font-medium text-slate-700 dark:text-zinc-300">Web:</span> rpklawoffice.com
+                                                    <p className="text-[10px] text-slate-400 dark:text-zinc-500">
+                                                        Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi, Bandung Barat
+                                                    </p>
+                                                </div>
+                                                <p className="mt-2.5 border-t border-dashed border-slate-200 pt-2 text-[9.5px] leading-normal text-slate-400 dark:border-white/5 dark:text-zinc-500">
+                                                    <strong className="font-medium text-slate-500 dark:text-zinc-400">
+                                                        KERAHASIAAN PROFESI ADVOKAT (ATTORNEY-CLIENT PRIVILEGE):
+                                                    </strong>{' '}
+                                                    Surat elektronik ini bersifat rahasia dan dilindungi hak istimewa hukum kerahasiaan profesi advokat (Pasal 19 UU No. 18/2003).
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Footer */}
+                                <div className="flex shrink-0 items-center justify-end border-t border-slate-100 bg-slate-50/60 px-5 py-3 sm:px-6 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={() => setSelectedMessage(null)}
+                                        className="h-8.5 rounded-lg border-slate-200 bg-white px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-transparent dark:text-zinc-200 dark:hover:bg-white/10"
+                                    >
+                                        Tutup
+                                    </Button>
+                                </div>
+                            </>
+                        );
+                    })()}
+                </DialogContent>
+            </Dialog>
         </>
     );
 }

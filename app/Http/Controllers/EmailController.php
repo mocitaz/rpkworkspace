@@ -19,7 +19,25 @@ class EmailController extends Controller
     {
         abort_unless($request->user()->hasPermission('email.view'), 403);
 
-        return Inertia::render('email/index', ['messages' => EmailMessage::query()->where('sender_id', $request->user()->id)->with('matter:id,matter_number,title')->latest()->limit(100)->get(), 'matters' => Matter::query()->visibleTo($request->user())->orderBy('matter_number')->get(['id', 'matter_number', 'title']), 'clients' => Client::query()->orderBy('display_name')->get(['id', 'display_name']), 'fromAddress' => (string) config('mail.from.address'), 'canSend' => $request->user()->hasPermission('email.send')]);
+        $query = EmailMessage::query()
+            ->with([
+                'matter:id,matter_number,title',
+                'sender:id,name,email,position_title',
+            ])
+            ->latest()
+            ->limit(100);
+
+        if (! $request->user()->hasPermission('email.manage')) {
+            $query->where('sender_id', $request->user()->id);
+        }
+
+        return Inertia::render('email/index', [
+            'messages' => $query->get(),
+            'matters' => Matter::query()->visibleTo($request->user())->orderBy('matter_number')->get(['id', 'matter_number', 'title']),
+            'clients' => Client::query()->orderBy('display_name')->get(['id', 'display_name']),
+            'fromAddress' => (string) config('mail.from.address'),
+            'canSend' => $request->user()->hasPermission('email.send'),
+        ]);
     }
 
     public function store(Request $request, LogCorrespondence $logCorrespondence): RedirectResponse
