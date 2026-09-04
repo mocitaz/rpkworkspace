@@ -9,11 +9,12 @@ import {
     Landmark,
     LayoutGrid,
     ListTodo,
+    Mail,
     ScrollText,
     Settings,
     ShieldCheck,
+    UserCheck,
     UsersRound,
-    Mail,
 } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavMain } from '@/components/nav-main';
@@ -48,7 +49,7 @@ export function AppSidebar() {
     const { isMobile, setOpenMobile } = useSidebar();
 
     // 1. Menu Utama
-    const workspaceItems: NavItem[] = [
+    const mainMenu: NavItem[] = [
         {
             title: 'Dashboard',
             href: dashboard.url(),
@@ -56,43 +57,19 @@ export function AppSidebar() {
         },
     ];
 
+    // 2. Manajemen Perkara
+    const matterManagement: NavItem[] = [];
+
     if (canAny(['matter.view', 'matter.view.all'])) {
-        workspaceItems.push({
+        matterManagement.push({
             title: 'Perkara',
             href: matters.index.url(),
             icon: FolderKanban,
         });
     }
 
-    if (can('client.view')) {
-        workspaceItems.push({
-            title: 'Klien',
-            href: clients.index.url(),
-            icon: UsersRound,
-        });
-    }
-
-    if (can('contact.view')) {
-        workspaceItems.push({
-            title: 'Kontak',
-            href: contacts.index.url(),
-            icon: ContactRound,
-        });
-    }
-
-    if (can('email.view')) {
-        workspaceItems.push({
-            title: 'Email',
-            href: email.index.url(),
-            icon: Mail,
-        });
-    }
-
-    // 2. Manajemen Perkara & Operasional
-    const operationalItems: NavItem[] = [];
-
     if (can('task.view')) {
-        operationalItems.push({
+        matterManagement.push({
             title: 'Tugas',
             href: tasks.index.url(),
             icon: ListTodo,
@@ -100,15 +77,53 @@ export function AppSidebar() {
     }
 
     if (canAny(['matter.view', 'matter.view.all', 'task.view'])) {
-        operationalItems.push({
+        matterManagement.push({
             title: 'Kalender',
             href: calendar.index.url(),
             icon: CalendarDays,
         });
     }
 
+    if (can('document.view')) {
+        matterManagement.push({
+            title: 'Dokumen',
+            href: documents.index.url(),
+            icon: Files,
+        });
+    }
+
+    // 3. Klien & Komunikasi
+    const clientCommunication: NavItem[] = [];
+
+    if (can('client.view')) {
+        clientCommunication.push({
+            title: 'Klien',
+            href: clients.index.url(),
+            icon: UsersRound,
+        });
+    }
+
+    if (can('contact.view')) {
+        clientCommunication.push({
+            title: 'Kontak',
+            href: contacts.index.url(),
+            icon: ContactRound,
+        });
+    }
+
+    if (can('email.view')) {
+        clientCommunication.push({
+            title: 'Email',
+            href: email.index.url(),
+            icon: Mail,
+        });
+    }
+
+    // 4. Operasional Firma
+    const firmOperations: NavItem[] = [];
+
     if (can('billing.view')) {
-        operationalItems.push({
+        firmOperations.push({
             title: 'Keuangan',
             href: finance.index.url(),
             icon: Landmark,
@@ -116,26 +131,15 @@ export function AppSidebar() {
     }
 
     if (canAny(['correspondence.view', 'conflict.view', 'archive.view'])) {
-        operationalItems.push({
+        firmOperations.push({
             title: 'Tata Kelola',
             href: governance.index.url(),
             icon: ShieldCheck,
         });
     }
 
-    // 3. Pengetahuan & Berkas
-    const knowledgeNavigationItems: NavItem[] = [];
-
-    if (can('document.view')) {
-        knowledgeNavigationItems.push({
-            title: 'Dokumen',
-            href: documents.index.url(),
-            icon: Files,
-        });
-    }
-
-    // 4. Pengaturan & Administrasi
-    const adminItems: NavItem[] = [
+    // 5. Administrasi
+    const administration: NavItem[] = [
         {
             title: 'Pengaturan',
             href: profile.edit.url(),
@@ -144,15 +148,15 @@ export function AppSidebar() {
     ];
 
     if (can('admin.users.manage')) {
-        adminItems.push({
+        administration.push({
             title: 'Pengguna & Akses',
             href: adminUsers.index.url(),
-            icon: ShieldCheck,
+            icon: UserCheck,
         });
     }
 
     if (can('audit.view')) {
-        adminItems.push({
+        administration.push({
             title: 'Audit Log',
             href: adminAudit.index.url(),
             icon: ScrollText,
@@ -182,13 +186,14 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent className="space-y-0.5 px-1 py-1.5 group-data-[collapsible=icon]:px-0">
-                <NavMain label="MENU UTAMA" items={workspaceItems} />
-                <NavMain label="MANAJEMEN PERKARA" items={operationalItems} />
+                <NavMain label="MENU UTAMA" items={mainMenu} />
+                <NavMain label="MANAJEMEN PERKARA" items={matterManagement} />
                 <NavMain
-                    label="PENGETAHUAN & BERKAS"
-                    items={knowledgeNavigationItems}
+                    label="KLIEN & KOMUNIKASI"
+                    items={clientCommunication}
                 />
-                <NavMain label="PENGATURAN" items={adminItems} />
+                <NavMain label="OPERASIONAL FIRMA" items={firmOperations} />
+                <NavMain label="ADMINISTRASI" items={administration} />
             </SidebarContent>
 
             <SidebarFooter className="space-y-1 border-t border-slate-100 p-2 group-data-[collapsible=icon]:p-1.5 dark:border-white/[0.06]">
