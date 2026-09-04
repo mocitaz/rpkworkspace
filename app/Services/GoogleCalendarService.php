@@ -41,7 +41,7 @@ class GoogleCalendarService
     public function connect(User $user, string $code): GoogleCalendarConnection
     {
         $this->ensureConfigured();
-        $token = Http::asForm()->post(self::TOKEN_URL, [
+        $token = Http::connectTimeout(5)->timeout(10)->asForm()->post(self::TOKEN_URL, [
             'client_id' => config('services.google_calendar.client_id'),
             'client_secret' => config('services.google_calendar.client_secret'),
             'redirect_uri' => $this->redirectUri(),
@@ -49,7 +49,7 @@ class GoogleCalendarService
             'code' => $code,
         ])->throw()->json();
 
-        $profile = Http::withToken($token['access_token'])
+        $profile = Http::connectTimeout(5)->timeout(10)->withToken($token['access_token'])
             ->get('https://openidconnect.googleapis.com/v1/userinfo')
             ->throw()
             ->json();
@@ -265,7 +265,7 @@ class GoogleCalendarService
             $this->refreshAccessToken($connection);
         }
 
-        return Http::acceptJson()->withToken($connection->access_token);
+        return Http::connectTimeout(5)->timeout(10)->acceptJson()->withToken($connection->access_token);
     }
 
     private function refreshAccessToken(GoogleCalendarConnection $connection): void
@@ -274,7 +274,7 @@ class GoogleCalendarService
             throw new \RuntimeException('Sesi Google Calendar telah berakhir. Hubungkan ulang akun Google Anda.');
         }
 
-        $token = Http::asForm()->post(self::TOKEN_URL, [
+        $token = Http::connectTimeout(5)->timeout(10)->asForm()->post(self::TOKEN_URL, [
             'client_id' => config('services.google_calendar.client_id'),
             'client_secret' => config('services.google_calendar.client_secret'),
             'grant_type' => 'refresh_token',

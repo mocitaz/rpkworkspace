@@ -10,6 +10,10 @@ export type AppPermission =
     | 'client.manage'
     | 'contact.view'
     | 'contact.manage'
+    // Email
+    | 'email.view'
+    | 'email.send'
+    | 'email.manage'
     // Tasks
     | 'task.view'
     | 'task.create'

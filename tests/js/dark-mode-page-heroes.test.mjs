@@ -11,6 +11,7 @@ const heroes = [
     ['governance-compliance-hero.tsx', 'governance-compliance-hero'],
     ['documents-vault-hero.tsx', 'documents-vault-hero'],
     ['audit-log-hero.tsx', 'audit-log-hero'],
+    ['email-correspondence-hero.tsx', 'email-correspondence-hero'],
 ];
 
 function hasPngTransparency(asset) {

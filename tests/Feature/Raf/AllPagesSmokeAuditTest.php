@@ -34,6 +34,7 @@ dataset('all_app_routes', function () {
         'finance_index' => fn () => '/finance',
         'calendar_index' => fn () => '/calendar',
         'chat_index' => fn () => '/chat',
+        'email_index' => fn () => '/email',
         'admin_users_index' => fn () => '/admin/users',
         'admin_audit_index' => fn () => '/admin/audit',
         'admin_system_readiness' => fn () => '/admin/system-readiness',

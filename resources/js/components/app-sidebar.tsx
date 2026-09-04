@@ -35,6 +35,7 @@ import * as calendar from '@/routes/calendar';
 import * as clients from '@/routes/clients';
 import * as contacts from '@/routes/contacts';
 import * as documents from '@/routes/documents';
+import * as email from '@/routes/email';
 import * as finance from '@/routes/finance';
 import * as governance from '@/routes/governance';
 import * as matters from '@/routes/matters';
@@ -80,7 +81,11 @@ export function AppSidebar() {
     }
 
     if (can('email.view')) {
-        workspaceItems.push({ title: 'Email', href: '/email', icon: Mail });
+        workspaceItems.push({
+            title: 'Email',
+            href: email.index.url(),
+            icon: Mail,
+        });
     }
 
     // 2. Manajemen Perkara & Operasional

@@ -15,7 +15,12 @@ class SendEmailMessage implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public string $emailMessageId)
+    public function __construct(public string $emailMessageId) {}
+
+    /**
+     * Execute the job.
+     */
+    public function handle(): void
     {
         $email = EmailMessage::query()->findOrFail($this->emailMessageId);
         if ($email->status === 'sent') {
@@ -36,13 +41,5 @@ class SendEmailMessage implements ShouldQueue
             $email->forceFill(['status' => 'failed', 'failed_at' => now(), 'error_message' => $exception->getMessage()])->save();
             throw $exception;
         }
-    }
-
-    /**
-     * Execute the job.
-     */
-    public function handle(): void
-    {
-        //
     }
 }

@@ -13,6 +13,7 @@ const heroFiles = [
     'personnel-access-hero.tsx',
     'audit-log-hero.tsx',
     'finance-dashboard-hero.tsx',
+    'email-correspondence-hero.tsx',
 ];
 
 test('header statistic values use a neutral black color', async () => {

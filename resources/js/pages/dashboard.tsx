@@ -1,29 +1,10 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
-    AlertCircle,
-    ArrowRight,
     Calendar as CalendarIcon,
     CheckCircle2,
-    CheckSquare,
-    ChevronLeft,
-    ChevronRight,
-    CreditCard,
-    FileCheck2,
-    FileEdit,
-    FilePlus2,
-    FolderKanban,
-    Gavel,
     Plus,
-    Receipt,
     Scale,
-    ShieldAlert,
     ShieldCheck,
-    Sparkles,
-    TrendingUp,
-    UploadCloud,
-    User,
-    UserPlus,
-    Users,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import {
@@ -37,21 +18,11 @@ import {
 import { DashboardWelcomeHero } from '@/components/dashboard-welcome-hero';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { WelcomeModal } from '@/components/welcome-modal';
 import { useInitials } from '@/hooks/use-initials';
-import { formatBytes, formatDate } from '@/lib/format';
-import { dashboard } from '@/routes';
-import * as auditRoutes from '@/routes/admin/audit';
+import { formatDate } from '@/lib/format';
 import * as calendarRoutes from '@/routes/calendar';
-import * as clientsRoutes from '@/routes/clients';
 import * as documentsRoutes from '@/routes/documents';
-import * as financeRoutes from '@/routes/finance';
 import * as mattersRoutes from '@/routes/matters';
 import * as tasksRoutes from '@/routes/tasks';
 
@@ -302,7 +273,9 @@ export default function Dashboard({
 
     // Interactive State
     const [queueTab, setQueueTab] = useState<WorkQueueTabs>('pending');
-    const [selectedDateIndex, setSelectedDateIndex] = useState<number>(6); // Default: today
+    const [selectedDateIndex, setSelectedDateIndex] = useState<number>(
+        () => (new Date().getDay() + 6) % 7,
+    );
     const [weekOffset, setWeekOffset] = useState<number>(0);
 
     // Dynamic 7-day strip
@@ -593,7 +566,7 @@ export default function Dashboard({
                                                 const taskUrl = tasksRoutes.show
                                                     ?.url
                                                     ? tasksRoutes.show.url(
-                                                          item.id,
+                                                          String(item.id),
                                                       )
                                                     : `/tasks/${item.id}`;
 
@@ -835,7 +808,7 @@ export default function Dashboard({
                                                 const actionUrl = tasksRoutes
                                                     .show?.url
                                                     ? tasksRoutes.show.url(
-                                                          action.id,
+                                                          String(action.id),
                                                       )
                                                     : `/tasks/${action.id}`;
 
