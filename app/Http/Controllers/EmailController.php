@@ -22,7 +22,7 @@ class EmailController extends Controller
         $query = EmailMessage::query()
             ->with([
                 'matter:id,matter_number,title',
-                'sender:id,name,email,position_title',
+                'sender:id,name,email,position_title,avatar_path',
             ])
             ->latest()
             ->limit(100);
