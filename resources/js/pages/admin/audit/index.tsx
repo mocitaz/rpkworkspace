@@ -6,9 +6,11 @@ import {
     Check,
     CheckCircle2,
     ChevronDown,
+    ChevronRight,
     Code2,
     Copy,
     Download,
+    Eye,
     Filter,
     Layers,
     RotateCcw,
@@ -20,16 +22,19 @@ import { useMemo, useState } from 'react';
 import { AuditLogHero } from '@/components/audit-log-hero';
 import { EmptyState } from '@/components/empty-state';
 import { Pagination } from '@/components/pagination';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
     DialogDescription,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useInitials } from '@/hooks/use-initials';
 import { formatDate } from '@/lib/format';
 import * as auditRoutes from '@/routes/admin/audit';
 
@@ -74,82 +79,58 @@ const subjectTypeLabels: Record<string, string> = {
     System: 'Sistem',
 };
 
-// Event labels and color themes
+// Event labels and solid text color themes (No badges, text-only solid colors)
 const eventThemeMap: Record<
     string,
-    { label: string; bg: string; text: string; border: string }
+    { label: string; textSolid: string }
 > = {
     created: {
         label: 'Data Baru',
-        bg: 'bg-emerald-50 dark:bg-emerald-950/40',
-        text: 'text-emerald-700 dark:text-emerald-300',
-        border: 'border-emerald-200 dark:border-emerald-800/50',
+        textSolid: 'text-emerald-600 dark:text-emerald-400',
     },
     store: {
         label: 'Data Baru',
-        bg: 'bg-emerald-50 dark:bg-emerald-950/40',
-        text: 'text-emerald-700 dark:text-emerald-300',
-        border: 'border-emerald-200 dark:border-emerald-800/50',
+        textSolid: 'text-emerald-600 dark:text-emerald-400',
     },
     updated: {
         label: 'Pembaruan',
-        bg: 'bg-blue-50 dark:bg-blue-950/40',
-        text: 'text-blue-700 dark:text-blue-300',
-        border: 'border-blue-200 dark:border-blue-800/50',
+        textSolid: 'text-blue-600 dark:text-blue-400',
     },
     update: {
         label: 'Pembaruan',
-        bg: 'bg-blue-50 dark:bg-blue-950/40',
-        text: 'text-blue-700 dark:text-blue-300',
-        border: 'border-blue-200 dark:border-blue-800/50',
+        textSolid: 'text-blue-600 dark:text-blue-400',
     },
     deleted: {
         label: 'Penghapusan',
-        bg: 'bg-rose-50 dark:bg-rose-950/40',
-        text: 'text-rose-700 dark:text-rose-300',
-        border: 'border-rose-200 dark:border-rose-800/50',
+        textSolid: 'text-rose-600 dark:text-rose-400',
     },
     destroy: {
         label: 'Penghapusan',
-        bg: 'bg-rose-50 dark:bg-rose-950/40',
-        text: 'text-rose-700 dark:text-rose-300',
-        border: 'border-rose-200 dark:border-rose-800/50',
+        textSolid: 'text-rose-600 dark:text-rose-400',
     },
     workflow_transition: {
         label: 'Ubah Status',
-        bg: 'bg-indigo-50 dark:bg-indigo-950/40',
-        text: 'text-indigo-700 dark:text-indigo-300',
-        border: 'border-indigo-200 dark:border-indigo-800/50',
+        textSolid: 'text-indigo-600 dark:text-indigo-400',
     },
     monetary_change: {
         label: 'Nilai Keuangan',
-        bg: 'bg-amber-50 dark:bg-amber-950/40',
-        text: 'text-amber-700 dark:text-amber-300',
-        border: 'border-amber-200 dark:border-amber-800/50',
+        textSolid: 'text-amber-600 dark:text-amber-400',
     },
     signed: {
         label: 'Tanda Tangan',
-        bg: 'bg-purple-50 dark:bg-purple-950/40',
-        text: 'text-purple-700 dark:text-purple-300',
-        border: 'border-purple-200 dark:border-purple-800/50',
+        textSolid: 'text-purple-600 dark:text-purple-400',
     },
     dispatched: {
         label: 'Terkirim',
-        bg: 'bg-cyan-50 dark:bg-cyan-950/40',
-        text: 'text-cyan-700 dark:text-cyan-300',
-        border: 'border-cyan-200 dark:border-cyan-800/50',
+        textSolid: 'text-cyan-600 dark:text-cyan-400',
     },
     verified: {
         label: 'Terverifikasi',
-        bg: 'bg-emerald-50 dark:bg-emerald-950/40',
-        text: 'text-emerald-700 dark:text-emerald-300',
-        border: 'border-emerald-200 dark:border-emerald-800/50',
+        textSolid: 'text-emerald-600 dark:text-emerald-400',
     },
     pruned: {
         label: 'Pembersihan Log',
-        bg: 'bg-slate-100 dark:bg-zinc-800',
-        text: 'text-slate-700 dark:text-zinc-300',
-        border: 'border-slate-200 dark:border-white/10',
+        textSolid: 'text-slate-600 dark:text-zinc-400',
     },
 };
 
@@ -315,6 +296,7 @@ export default function AuditIndex({
     const { flash } = usePage<{
         flash?: { success?: string; error?: string };
     }>().props;
+    const getInitials = useInitials();
     const [cleanOpen, setCleanOpen] = useState(false);
     const [selectedLogForRaw, setSelectedLogForRaw] = useState<Log | null>(
         null,
@@ -602,198 +584,199 @@ export default function AuditIndex({
                                 />
                             </div>
                         ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left text-xs">
-                                    <thead>
-                                        <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
-                                            <th className="py-3 pr-3 pl-4">
-                                                Waktu (WIB)
-                                            </th>
-                                            <th className="min-w-[160px] px-3 py-3">
-                                                Aktivitas &amp; Objek
-                                            </th>
-                                            <th className="min-w-[160px] px-3 py-3">
-                                                Pelaku / Aktor
-                                            </th>
-                                            <th className="min-w-[340px] px-3 py-3">
-                                                Detail Perubahan
-                                            </th>
-                                            <th className="py-3 pr-4 pl-3 text-right">
-                                                IP &amp; Audit
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
-                                        {auditLogs.data.map((log) => {
-                                            const rawSubjectType =
-                                                log.subject_type
-                                                    ? (log.subject_type
-                                                          .split('\\')
-                                                          .pop() ?? 'System')
+                            <>
+                                {/* Mobile Cards (sm:hidden) */}
+                                <div className="divide-y divide-slate-100 sm:hidden dark:divide-white/[0.04]">
+                                    {auditLogs.data.map((log) => {
+                                        const rawSubjectType = log.subject_type
+                                            ? (log.subject_type.split('\\').pop() ?? 'System')
+                                            : 'System';
+                                        const friendlySubjectType =
+                                            subjectTypeLabels[rawSubjectType] || rawSubjectType;
+                                        const eventKey =
+                                            log.event.split('.').pop() || log.event;
+                                        const theme = eventThemeMap[eventKey] || {
+                                            label: eventKey.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+                                            textSolid: 'text-slate-600 dark:text-zinc-400',
+                                        };
+                                        const realSubjectName = getRealSubjectName(log, friendlySubjectType);
+                                        const narrative = getAuditNarrative(log);
+
+                                        return (
+                                            <div
+                                                key={log.id}
+                                                onClick={() => setSelectedLogForRaw(log)}
+                                                className="block cursor-pointer p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
+                                            >
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className="flex items-center gap-1.5 font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                            <span className={`font-semibold ${theme.textSolid}`}>
+                                                                {theme.label}
+                                                            </span>
+                                                            <span>·</span>
+                                                            <span>{friendlySubjectType}</span>
+                                                        </div>
+                                                        <p className="mt-0.5 line-clamp-1 text-xs font-bold text-slate-900 dark:text-white">
+                                                            {realSubjectName}
+                                                        </p>
+                                                        <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-600 dark:text-zinc-300">
+                                                            {narrative}
+                                                        </p>
+                                                        <div className="mt-2 flex items-center gap-2">
+                                                            <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                <AvatarFallback className="text-[7px] font-bold">
+                                                                    {getInitials(log.actor?.name ?? 'Sistem')}
+                                                                </AvatarFallback>
+                                                            </Avatar>
+                                                            <span className="truncate text-[11px] font-medium text-slate-700 dark:text-zinc-200">
+                                                                {log.actor?.name ?? 'Sistem Otomatis'}
+                                                            </span>
+                                                            <span className="text-[10px] text-slate-400">&bull;</span>
+                                                            <span className="font-mono text-[10px] text-slate-400">
+                                                                {log.ip_address ?? '127.0.0.1'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <ChevronRight className="mt-1 size-4 shrink-0 text-slate-400" />
+                                                </div>
+                                                <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] dark:border-white/[0.04]">
+                                                    <span className="font-mono text-slate-400">
+                                                        Log #{log.id}
+                                                    </span>
+                                                    <span className="font-mono text-slate-500 dark:text-zinc-400">
+                                                        {formatDate(log.created_at, true)} WIB
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Desktop Data Table (hidden sm:block) */}
+                                <div className="hidden overflow-x-auto sm:block">
+                                    <table className="w-full table-fixed text-left text-xs">
+                                        <thead>
+                                            <tr className="border-b border-slate-100 bg-slate-50/60 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/[0.04] dark:bg-[#121418]">
+                                                <th className="w-[13%] py-2.5 pr-3 pl-4 font-semibold">
+                                                    Waktu
+                                                </th>
+                                                <th className="w-[12%] px-3 py-2.5 font-semibold">
+                                                    Aktivitas
+                                                </th>
+                                                <th className="w-[19%] px-3 py-2.5 font-semibold">
+                                                    Objek &amp; Target
+                                                </th>
+                                                <th className="w-[16%] px-3 py-2.5 font-semibold">
+                                                    Pelaku
+                                                </th>
+                                                <th className="w-[37%] px-3 py-2.5 font-semibold">
+                                                    Detail Perubahan
+                                                </th>
+                                                <th className="w-[3%] py-2.5 pr-4 pl-1 text-right font-semibold"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
+                                            {auditLogs.data.map((log) => {
+                                                const rawSubjectType = log.subject_type
+                                                    ? (log.subject_type.split('\\').pop() ?? 'System')
                                                     : 'System';
-                                            const friendlySubjectType =
-                                                subjectTypeLabels[
-                                                    rawSubjectType
-                                                ] || rawSubjectType;
-                                            const eventKey =
-                                                log.event.split('.').pop() ||
-                                                log.event;
-                                            const theme = eventThemeMap[
-                                                eventKey
-                                            ] || {
-                                                label: eventKey.replace(
-                                                    /_/g,
-                                                    ' ',
-                                                ),
-                                                bg: 'bg-slate-100 dark:bg-zinc-800',
-                                                text: 'text-slate-700 dark:text-zinc-300',
-                                                border: 'border-slate-200 dark:border-white/10',
-                                            };
+                                                const friendlySubjectType =
+                                                    subjectTypeLabels[rawSubjectType] || rawSubjectType;
+                                                const eventKey =
+                                                    log.event.split('.').pop() || log.event;
+                                                const theme = eventThemeMap[eventKey] || {
+                                                    label: eventKey.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+                                                    textSolid: 'text-slate-600 dark:text-zinc-400',
+                                                };
+                                                const realSubjectName = getRealSubjectName(log, friendlySubjectType);
+                                                const narrative = getAuditNarrative(log);
 
-                                            // Determine real readable subject name
-                                            let realSubjectName =
-                                                friendlySubjectType;
-                                            if (log.event === 'audit.pruned') {
-                                                realSubjectName =
-                                                    'Sistem Log Audit';
-                                            } else if (log.subject) {
-                                                const s = log.subject as Record<
-                                                    string,
-                                                    unknown
-                                                >;
-                                                if (
-                                                    s.name &&
-                                                    typeof s.name === 'string'
-                                                ) {
-                                                    realSubjectName = s.name;
-                                                } else if (
-                                                    s.title &&
-                                                    typeof s.title === 'string'
-                                                ) {
-                                                    realSubjectName = s.title;
-                                                } else if (s.invoice_number) {
-                                                    realSubjectName = `Invoice #${s.invoice_number}`;
-                                                } else if (s.payment_number) {
-                                                    realSubjectName = `Pembayaran #${s.payment_number}`;
-                                                } else if (s.reference_number) {
-                                                    realSubjectName = `Surat #${s.reference_number}`;
-                                                } else if (s.court_name) {
-                                                    realSubjectName = String(
-                                                        s.court_name,
-                                                    );
-                                                }
-                                            } else if (
-                                                rawSubjectType === 'User' &&
-                                                log.actor?.name
-                                            ) {
-                                                realSubjectName =
-                                                    log.actor.name;
-                                            }
+                                                return (
+                                                    <tr
+                                                        key={log.id}
+                                                        onClick={() => setSelectedLogForRaw(log)}
+                                                        className="group cursor-pointer transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
+                                                    >
+                                                        {/* 1. Waktu */}
+                                                        <td className="py-2.5 pr-3 pl-4 font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
+                                                            {formatDate(log.created_at, true)}
+                                                        </td>
 
-                                            return (
-                                                <tr
-                                                    key={log.id}
-                                                    className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
-                                                >
-                                                    {/* Timestamp */}
-                                                    <td className="py-3 pr-3 pl-4 align-top font-mono text-xs font-semibold whitespace-nowrap text-slate-600 dark:text-zinc-400">
-                                                        {formatDate(
-                                                            log.created_at,
-                                                            true,
-                                                        )}
-                                                    </td>
-
-                                                    {/* Event & Target Object */}
-                                                    <td className="px-3 py-3 align-top">
-                                                        <div className="space-y-1">
-                                                            <div>
-                                                                <span
-                                                                    className={`inline-block rounded-md border px-2 py-0.5 text-[10px] font-bold tracking-tight ${theme.bg} ${theme.text} ${theme.border}`}
-                                                                >
-                                                                    {
-                                                                        theme.label
-                                                                    }
-                                                                </span>
-                                                            </div>
-                                                            <div>
-                                                                <span
-                                                                    className="line-clamp-1 block font-semibold text-slate-900 dark:text-white"
-                                                                    title={
-                                                                        realSubjectName
-                                                                    }
-                                                                >
-                                                                    {
-                                                                        realSubjectName
-                                                                    }
-                                                                </span>
-                                                                {log.event !==
-                                                                    'audit.pruned' && (
-                                                                    <span className="block text-[10.5px] text-slate-400 dark:text-zinc-500">
-                                                                        {
-                                                                            friendlySubjectType
-                                                                        }
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    </td>
-
-                                                    {/* Actor */}
-                                                    <td className="px-3 py-3 align-top whitespace-nowrap">
-                                                        <div className="space-y-0.5">
-                                                            <span className="block font-semibold text-slate-900 dark:text-white">
-                                                                {log.actor
-                                                                    ?.name ??
-                                                                    'Sistem Otomatis'}
+                                                        {/* 2. Aktivitas (Text Only, Solid Color) */}
+                                                        <td className="px-3 py-2.5 whitespace-nowrap">
+                                                            <span className={`text-xs font-semibold ${theme.textSolid}`}>
+                                                                {theme.label}
                                                             </span>
-                                                            <p className="text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                                                {log.actor
-                                                                    ?.email ??
-                                                                    'system@internal'}
+                                                        </td>
+
+                                                        {/* 3. Objek & Target */}
+                                                        <td className="px-3 py-2.5">
+                                                            <div className="min-w-0 space-y-0.5">
+                                                                <p
+                                                                    title={realSubjectName}
+                                                                    className="truncate text-xs font-bold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
+                                                                >
+                                                                    {realSubjectName}
+                                                                </p>
+                                                                <span className="block truncate font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                                                    {friendlySubjectType}
+                                                                </span>
+                                                            </div>
+                                                        </td>
+
+                                                        {/* 4. Pelaku / Aktor with Avatar */}
+                                                        <td className="px-3 py-2.5 font-medium whitespace-nowrap">
+                                                            <div className="flex items-center gap-2 min-w-0">
+                                                                <Avatar className="size-6 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                                    <AvatarFallback className="text-[8px] font-bold">
+                                                                        {getInitials(log.actor?.name ?? 'Sistem')}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+                                                                <div className="min-w-0 flex-1 truncate">
+                                                                    <p
+                                                                        className="truncate text-xs font-semibold text-slate-900 dark:text-white"
+                                                                        title={log.actor?.name ?? 'Sistem Otomatis'}
+                                                                    >
+                                                                        {log.actor?.name ?? 'Sistem Otomatis'}
+                                                                    </p>
+                                                                    <p className="truncate text-[10px] text-slate-400 dark:text-zinc-500">
+                                                                        {log.ip_address ?? '127.0.0.1'}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+
+                                                        {/* 5. Detail Perubahan (Paragraph Only) */}
+                                                        <td className="px-3 py-2.5">
+                                                            <p
+                                                                className="line-clamp-2 text-xs leading-relaxed text-slate-700 dark:text-zinc-300"
+                                                                title={narrative}
+                                                            >
+                                                                {narrative}
                                                             </p>
-                                                        </div>
-                                                    </td>
+                                                        </td>
 
-                                                    {/* Simple Human-Readable Narrative Detail */}
-                                                    <td className="px-3 py-3 align-top">
-                                                        <AuditDetailCell
-                                                            log={log}
-                                                        />
-                                                    </td>
-
-                                                    {/* IP Address & Raw Modal Trigger */}
-                                                    <td className="py-3 pr-4 pl-3 text-right align-top whitespace-nowrap">
-                                                        <div className="space-y-1">
-                                                            <span className="font-mono text-xs font-semibold text-slate-600 dark:text-zinc-400">
-                                                                {log.ip_address ??
-                                                                    '-'}
-                                                            </span>
-                                                            <div>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() =>
-                                                                        setSelectedLogForRaw(
-                                                                            log,
-                                                                        )
-                                                                    }
-                                                                    className="inline-flex items-center gap-1 text-[10.5px] font-medium text-slate-400 transition-colors hover:text-blue-600 dark:text-zinc-500 dark:hover:text-blue-400"
-                                                                    title="Lihat Rincian Teknis / JSON"
-                                                                >
-                                                                    <Code2 className="size-3" />
-                                                                    <span>
-                                                                        Data
-                                                                        Teknis
-                                                                    </span>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                        {/* 6. Action Arrow */}
+                                                        <td className="py-2.5 pr-4 pl-1 text-right whitespace-nowrap">
+                                                            <button
+                                                                type="button"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setSelectedLogForRaw(log);
+                                                                }}
+                                                                className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                                                            >
+                                                                <ChevronRight className="size-4" />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </>
                         )}
 
                         <div className="flex flex-col justify-between gap-2.5 border-t border-slate-100 bg-slate-50/60 px-4 py-3 sm:flex-row sm:items-center dark:border-white/[0.04] dark:bg-[#121418]">
@@ -830,10 +813,81 @@ export default function AuditIndex({
     );
 }
 
+// Helper to derive readable subject title
+function getRealSubjectName(log: Log, friendlySubjectType: string): string {
+    if (log.event === 'audit.pruned') {
+        return 'Sistem Log Audit';
+    }
+    if (log.subject) {
+        const s = log.subject as Record<string, unknown>;
+        if (s.name && typeof s.name === 'string') return s.name;
+        if (s.title && typeof s.title === 'string') return s.title;
+        if (s.invoice_number) return `Invoice #${s.invoice_number}`;
+        if (s.payment_number) return `Pembayaran #${s.payment_number}`;
+        if (s.reference_number) return `Surat #${s.reference_number}`;
+        if (s.court_name) return String(s.court_name);
+        if (s.matter_number) return `Perkara #${s.matter_number}`;
+    }
+    const rawSubjectType = log.subject_type
+        ? (log.subject_type.split('\\').pop() ?? 'System')
+        : 'System';
+    if (rawSubjectType === 'User' && log.actor?.name) {
+        return log.actor.name;
+    }
+    return friendlySubjectType;
+}
+
+const namedEvents: Record<string, string> = {
+    'client.created': 'Mendaftarkan data profil klien baru.',
+    'client.updated': 'Memperbarui rincian informasi klien.',
+    'client.compliance_added': 'Menambahkan dokumen kepatuhan / izin berusaha klien.',
+    'client.compliance_updated': 'Memperbarui dokumen kepatuhan klien.',
+    'client.compliance_deleted': 'Menghapus dokumen kepatuhan klien.',
+    'matter.created': 'Membuka berkas perkara hukum baru.',
+    'matter.archived': 'Menutup dan mengarsipkan berkas perkara.',
+    'matter.party_added': 'Menambahkan pihak terkait pada perkara.',
+    'matter.deadline_added': 'Menambahkan tenggat waktu proses perkara.',
+    'matter.event_added': 'Menambahkan agenda kegiatan perkara.',
+    'matter.note_added': 'Menambahkan catatan hukum pada perkara.',
+    'matter.evidence_added': 'Menambahkan alat bukti berkas perkara.',
+    'matter.evidence_updated': 'Memperbarui data alat bukti perkara.',
+    'matter.evidence_deleted': 'Menghapus alat bukti berkas perkara.',
+    'matter.chronology_added': 'Menambahkan kronologi peristiwa hukum perkara.',
+    'matter.chronology_deleted': 'Menghapus catatan kronologi perkara.',
+    'matter.legal_hold_placed': 'Menerapkan status Legal Hold pada berkas perkara.',
+    'matter.legal_hold_released': 'Mencabut status Legal Hold pada berkas perkara.',
+    'document.uploaded': 'Mengunggah berkas dokumen baru ke brankas.',
+    'document.downloaded': 'Mengunduh salinan berkas dokumen.',
+    'document.approved': 'Menyetujui draf dokumen hukum.',
+    'document.revision_requested': 'Mengajukan permintaan revisi pada draf dokumen.',
+    'document.approval_requested': 'Mengajukan permohonan persetujuan draf dokumen.',
+    'signature.request_sent': 'Mengirimkan permohonan tanda tangan digital kepada pihak terkait.',
+    'signature.signer_completed': 'Penandatangan telah menyelesaikan proses tanda tangan digital.',
+    'signature.signed_final_processed': 'Menghasilkan berkas final bertanda tangan digital tersertifikasi.',
+    'signature.reminder_resent': 'Mengirimkan ulang notifikasi pengingat tanda tangan.',
+    'invoice.generated': 'Menerbitkan tagihan invoice baru kepada klien.',
+    'invoice.cancelled': 'Membatalkan tagihan invoice.',
+    'payment.recorded': 'Mencatat penerimaan pembayaran tagihan klien.',
+    'payment.verified': 'Memverifikasi bukti transfer pembayaran klien.',
+    'payment.refunded': 'Melakukan pengembalian pembayaran klien (refund).',
+    'payment.reversed': 'Membatalkan pencatatan pembayaran (reversal).',
+    'correspondence.logged': 'Mencatat surat korespondensi resmi baru.',
+    'correspondence.dispatched': 'Mendistribusikan surat korespondensi keluar.',
+    'staff.created': 'Mendaftarkan akun staf / advokat baru.',
+    'staff.updated': 'Memperbarui data akun staf / advokat.',
+    'user.invited': 'Mengundang pengguna baru ke dalam workspace.',
+    'user.deleted': 'Menghapus akun pengguna dari workspace.',
+    'conflict.checked': 'Menjalankan pemeriksaan potensi konflik kepentingan.',
+    'conflict.resolved': 'Menyelesaikan pemeriksaan konflik kepentingan.',
+    'template.created': 'Membuat template draf hukum baru.',
+    'template.duplicated': 'Menduplikasi template draf hukum.',
+    'template.document_generated': 'Menghasilkan draf dokumen otomatis dari template.',
+};
+
 /**
- * Human-Readable Narrative & Visual Diff Component (Clean, No Emojis)
+ * Pure Paragraph Narrative Generator for Audit Details
  */
-function AuditDetailCell({ log }: { log: Log }) {
+function getAuditNarrative(log: Log): string {
     const metadata = log.metadata ?? {};
 
     // 1. Audit Log Pruned Event
@@ -843,13 +897,7 @@ function AuditDetailCell({ log }: { log: Log }) {
         const optLabel =
             valueLabels[opt] ||
             (opt === 'all' ? 'Semua Riwayat' : `Lebih dari ${opt} Hari`);
-
-        return (
-            <p className="text-xs leading-relaxed text-slate-800 dark:text-zinc-200">
-                Membersihkan <strong>{String(deleted)}</strong> rekaman log
-                audit lama (Opsi: {optLabel}).
-            </p>
-        );
+        return `Pembersihan log audit: ${String(deleted)} rekaman log lama dihapus dari sistem (opsi: ${optLabel}).`;
     }
 
     // 2. Workflow Transition (from -> to)
@@ -857,21 +905,7 @@ function AuditDetailCell({ log }: { log: Log }) {
         const wf = metadata.workflow as { from?: string; to?: string };
         const fromLabel = wf.from ? valueLabels[wf.from] || wf.from : 'Awal';
         const toLabel = wf.to ? valueLabels[wf.to] || wf.to : 'Tujuan';
-
-        return (
-            <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-800 dark:text-zinc-200">
-                <span>Mengubah status alur kerja:</span>
-                <div className="inline-flex items-center gap-1.5 rounded-md border border-slate-200/80 bg-slate-50/90 px-2 py-0.5 dark:border-white/10 dark:bg-white/[0.03]">
-                    <span className="font-semibold text-slate-600 dark:text-zinc-400">
-                        {fromLabel}
-                    </span>
-                    <ArrowRight className="size-3 shrink-0 text-blue-600 dark:text-blue-400" />
-                    <span className="font-bold text-slate-900 dark:text-white">
-                        {toLabel}
-                    </span>
-                </div>
-            </div>
-        );
+        return `Mengubah status alur kerja dari "${fromLabel}" menjadi "${toLabel}".`;
     }
 
     // 3. Monetary Change (before -> after, currency)
@@ -882,21 +916,9 @@ function AuditDetailCell({ log }: { log: Log }) {
             currency?: string;
         };
         const curr = amt.currency || 'IDR';
-
-        return (
-            <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-800 dark:text-zinc-200">
-                <span>Menyesuaikan nilai nominal:</span>
-                <div className="inline-flex items-center gap-1.5 rounded-md border border-slate-200/80 bg-slate-50/90 px-2 py-0.5 dark:border-white/10 dark:bg-white/[0.03]">
-                    <span className="font-medium text-slate-500 dark:text-zinc-400">
-                        {formatCurrency(amt.before, curr)}
-                    </span>
-                    <ArrowRight className="size-3 shrink-0 text-blue-600 dark:text-blue-400" />
-                    <span className="font-bold text-emerald-700 dark:text-emerald-400">
-                        {formatCurrency(amt.after, curr)}
-                    </span>
-                </div>
-            </div>
-        );
+        const beforeStr = formatCurrency(amt.before, curr);
+        const afterStr = formatCurrency(amt.after, curr);
+        return `Menyesuaikan nilai nominal transaksi dari ${beforeStr} menjadi ${afterStr}.`;
     }
 
     // 4. Field Changes (before -> after)
@@ -913,136 +935,43 @@ function AuditDetailCell({ log }: { log: Log }) {
         ).filter((k) => {
             if (
                 ['updated_at', 'created_at', 'id', 'remember_token'].includes(k)
-            )
+            ) {
                 return false;
+            }
             return JSON.stringify(beforeObj[k]) !== JSON.stringify(afterObj[k]);
         });
 
         if (allKeys.length === 1) {
             const k = allKeys[0];
-            return (
-                <p className="text-xs leading-relaxed text-slate-800 dark:text-zinc-200">
-                    Memperbarui <strong>{formatFieldKey(k)}</strong> dari{' '}
-                    <em>"{formatValue(beforeObj[k])}"</em> menjadi{' '}
-                    <strong>"{formatValue(afterObj[k])}"</strong>.
-                </p>
-            );
+            const beforeVal = formatValue(beforeObj[k]);
+            const afterVal = formatValue(afterObj[k]);
+            if (beforeVal === 'Kosong') {
+                return `Menetapkan nilai ${formatFieldKey(k)} menjadi "${afterVal}".`;
+            }
+            return `Memperbarui ${formatFieldKey(k)} dari "${beforeVal}" menjadi "${afterVal}".`;
         }
 
         if (allKeys.length > 1) {
-            return (
-                <div className="space-y-1">
-                    <p className="text-[11px] font-semibold text-slate-500 dark:text-zinc-400">
-                        Memperbarui {allKeys.length} rincian:
-                    </p>
-                    <div className="space-y-0.5">
-                        {allKeys.slice(0, 3).map((k) => (
-                            <div
-                                key={k}
-                                className="flex flex-wrap items-center gap-1.5 text-xs"
-                            >
-                                <span className="font-semibold text-slate-700 dark:text-zinc-300">
-                                    {formatFieldKey(k)}:
-                                </span>
-                                <span className="text-slate-400 line-through dark:text-zinc-500">
-                                    {formatValue(beforeObj[k])}
-                                </span>
-                                <ArrowRight className="size-3 shrink-0 text-blue-600 dark:text-blue-400" />
-                                <span className="font-semibold text-slate-900 dark:text-white">
-                                    {formatValue(afterObj[k])}
-                                </span>
-                            </div>
-                        ))}
-                        {allKeys.length > 3 && (
-                            <span className="block text-[10.5px] text-slate-400 italic dark:text-zinc-500">
-                                + {allKeys.length - 3} rincian perubahan lainnya
-                            </span>
-                        )}
-                    </div>
-                </div>
-            );
+            const phrases = allKeys.map((k) => {
+                const b = formatValue(beforeObj[k]);
+                const a = formatValue(afterObj[k]);
+                return `${formatFieldKey(k)} ("${b}" → "${a}")`;
+            });
+            return `Memperbarui ${allKeys.length} rincian: ${phrases.join(', ')}.`;
         }
     }
 
     // 5. Named Common System Events
-    const namedEvents: Record<string, string> = {
-        'client.created': 'Mendaftarkan data profil klien baru.',
-        'client.updated': 'Memperbarui rincian informasi klien.',
-        'client.compliance_added':
-            'Menambahkan dokumen kepatuhan / izin berusaha klien.',
-        'client.compliance_updated': 'Memperbarui dokumen kepatuhan klien.',
-        'client.compliance_deleted': 'Menghapus dokumen kepatuhan klien.',
-        'matter.created': 'Membuka berkas perkara hukum baru.',
-        'matter.archived': 'Menutup dan mengarsipkan berkas perkara.',
-        'matter.party_added': 'Menambahkan pihak terkait pada perkara.',
-        'matter.deadline_added': 'Menambahkan tenggat waktu proses perkara.',
-        'matter.event_added': 'Menambahkan agenda kegiatan perkara.',
-        'matter.note_added': 'Menambahkan catatan hukum pada perkara.',
-        'matter.evidence_added': 'Menambahkan alat bukti berkas perkara.',
-        'matter.evidence_updated': 'Memperbarui data alat bukti perkara.',
-        'matter.evidence_deleted': 'Menghapus alat bukti berkas perkara.',
-        'matter.chronology_added':
-            'Menambahkan kronologi peristiwa hukum perkara.',
-        'matter.chronology_deleted': 'Menghapus catatan kronologi perkara.',
-        'matter.legal_hold_placed':
-            'Menerapkan status Legal Hold pada berkas perkara.',
-        'matter.legal_hold_released':
-            'Mencabut status Legal Hold pada berkas perkara.',
-        'document.uploaded': 'Mengunggah berkas dokumen baru.',
-        'document.downloaded': 'Mengunduh salinan berkas dokumen.',
-        'document.approved': 'Menyetujui draf dokumen hukum.',
-        'document.revision_requested':
-            'Mengajukan permintaan revisi pada draf dokumen.',
-        'document.approval_requested':
-            'Mengajukan permohonan persetujuan draf dokumen.',
-        'signature.request_sent':
-            'Mengirimkan permohonan tanda tangan digital kepada pihak terkait.',
-        'signature.signer_completed':
-            'Penandatangan telah menyelesaikan proses tanda tangan digital.',
-        'signature.signed_final_processed':
-            'Menghasilkan berkas final bertanda tangan digital tersertifikasi.',
-        'signature.reminder_resent':
-            'Mengirimkan ulang notifikasi pengingat tanda tangan.',
-        'invoice.generated': 'Menerbitkan tagihan invoice baru kepada klien.',
-        'invoice.cancelled': 'Membatalkan tagihan invoice.',
-        'payment.recorded': 'Mencatat penerimaan pembayaran tagihan klien.',
-        'payment.verified': 'Memverifikasi bukti transfer pembayaran klien.',
-        'payment.refunded': 'Melakukan pengembalian pembayaran klien (refund).',
-        'payment.reversed': 'Membatalkan pencatatan pembayaran (reversal).',
-        'correspondence.logged': 'Mencatat surat korespondensi resmi baru.',
-        'correspondence.dispatched':
-            'Mendistribusikan surat korespondensi keluar.',
-        'staff.created': 'Mendaftarkan akun staf / advokat baru.',
-        'staff.updated': 'Memperbarui data akun staf / advokat.',
-        'user.invited': 'Mengundang pengguna baru ke dalam workspace.',
-        'user.deleted': 'Menghapus akun pengguna dari workspace.',
-        'conflict.checked':
-            'Menjalankan pemeriksaan potensi konflik kepentingan.',
-        'conflict.resolved': 'Menyelesaikan pemeriksaan konflik kepentingan.',
-        'template.created': 'Membuat template draf hukum baru.',
-        'template.duplicated': 'Menduplikasi template draf hukum.',
-        'template.document_generated':
-            'Menghasilkan draf dokumen otomatis dari template.',
-    };
-
     if (namedEvents[log.event]) {
-        let extraNote = '';
-        if (metadata.title) extraNote = ` (${metadata.title})`;
-        else if (metadata.client_number)
-            extraNote = ` (No. ${metadata.client_number})`;
-        else if (metadata.version_number)
-            extraNote = ` (Versi ${metadata.version_number})`;
-        else if (metadata.reason) extraNote = ` (Alasan: ${metadata.reason})`;
-
-        return (
-            <p className="text-xs leading-relaxed font-medium text-slate-800 dark:text-zinc-200">
-                {namedEvents[log.event]}
-                {extraNote}
-            </p>
-        );
+        let extra = '';
+        if (metadata.title) extra = ` (${metadata.title})`;
+        else if (metadata.client_number) extra = ` (No. ${metadata.client_number})`;
+        else if (metadata.version_number) extra = ` (Versi ${metadata.version_number})`;
+        else if (metadata.reason) extra = ` dengan alasan: ${metadata.reason}`;
+        return `${namedEvents[log.event]}${extra}`;
     }
 
-    // 6. Direct narrative strings (message, reason, note, description)
+    // 6. Direct narrative strings
     if (
         metadata.message ||
         metadata.reason ||
@@ -1050,53 +979,31 @@ function AuditDetailCell({ log }: { log: Log }) {
         metadata.note ||
         metadata.action
     ) {
-        const text = String(
+        return String(
             metadata.message ||
                 metadata.reason ||
                 metadata.description ||
                 metadata.note ||
                 metadata.action,
         );
-        return (
-            <p className="text-xs leading-relaxed font-medium text-slate-800 dark:text-zinc-200">
-                {text}
-            </p>
-        );
     }
 
-    // 7. Arbitrary Key-Value Badges (clean pairs)
+    // 7. Arbitrary Key-Value Pairs
     const rawKeys = Object.keys(metadata).filter(
         (k) => !['ip', 'user_agent', 'browser', 'pruned_at'].includes(k),
     );
-
     if (rawKeys.length > 0) {
-        return (
-            <div className="flex flex-wrap gap-1.5">
-                {rawKeys.map((k) => (
-                    <span
-                        key={k}
-                        className="inline-flex items-center gap-1 rounded-md border border-slate-200/80 bg-slate-50/80 px-2 py-0.5 text-[11px] text-slate-700 dark:border-white/10 dark:bg-white/[0.03] dark:text-zinc-300"
-                    >
-                        <span className="font-semibold text-slate-900 dark:text-white">
-                            {formatFieldKey(k)}:
-                        </span>
-                        <span>{formatValue(metadata[k])}</span>
-                    </span>
-                ))}
-            </div>
+        const items = rawKeys.map(
+            (k) => `${formatFieldKey(k)}: ${formatValue(metadata[k])}`,
         );
+        return `Rincian atribut: ${items.join(', ')}.`;
     }
 
-    // Default Fallback
-    return (
-        <span className="text-xs text-slate-400 italic dark:text-zinc-500">
-            Aktivitas tercatat tanpa rincian atribut khusus.
-        </span>
-    );
+    return 'Aktivitas sistem tercatat dalam ledger tanpa rincian atribut khusus.';
 }
 
 /**
- * Technical Raw Data Modal Dialog
+ * Executive Audit Log Detail Modal (Matching Finance & Governance Detail Modals)
  */
 function RawLogDetailDialog({
     log,
@@ -1105,123 +1012,225 @@ function RawLogDetailDialog({
     log: Log | null;
     onClose: () => void;
 }) {
-    const [copied, setCopied] = useState(false);
+    const [copiedJson, setCopiedJson] = useState(false);
+    const [copiedHash, setCopiedHash] = useState(false);
+    const getInitials = useInitials();
 
     if (!log) return null;
 
+    const rawSubjectType = log.subject_type
+        ? (log.subject_type.split('\\').pop() ?? 'System')
+        : 'System';
+    const friendlySubjectType = subjectTypeLabels[rawSubjectType] || rawSubjectType;
+    const eventKey = log.event.split('.').pop() || log.event;
+    const theme = eventThemeMap[eventKey] || {
+        label: eventKey.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+        textSolid: 'text-slate-600 dark:text-zinc-400',
+    };
+    const realSubjectName = getRealSubjectName(log, friendlySubjectType);
+    const narrative = getAuditNarrative(log);
+
     const copyJson = () => {
         navigator.clipboard.writeText(JSON.stringify(log, null, 2));
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        setCopiedJson(true);
+        setTimeout(() => setCopiedJson(false), 2000);
     };
+
+    const copyHash = (hash: string) => {
+        navigator.clipboard.writeText(hash);
+        setCopiedHash(true);
+        setTimeout(() => setCopiedHash(false), 2000);
+    };
+
+    // Extract changes table if available
+    const metadata = log.metadata ?? {};
+    const changes = metadata.changes as {
+        before?: Record<string, unknown>;
+        after?: Record<string, unknown>;
+    } | undefined;
+    const beforeObj = changes?.before ?? {};
+    const afterObj = changes?.after ?? {};
+    const changeKeys = Array.from(
+        new Set([...Object.keys(beforeObj), ...Object.keys(afterObj)]),
+    ).filter((k) => {
+        if (['updated_at', 'created_at', 'id', 'remember_token'].includes(k)) return false;
+        return JSON.stringify(beforeObj[k]) !== JSON.stringify(afterObj[k]);
+    });
 
     return (
         <Dialog open={!!log} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-2xl overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
-                <div className="border-b border-slate-100 bg-slate-50/60 p-5 dark:border-white/5 dark:bg-zinc-900/40">
-                    <DialogHeader>
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2.5">
-                                <div className="flex size-9 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-blue-600 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-400">
-                                    <Code2 className="size-4.5" />
-                                </div>
-                                <div>
-                                    <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
-                                        Rincian Teknis &amp; Integritas Ledger
-                                    </DialogTitle>
-                                    <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                        Log #{log.id} ·{' '}
-                                        {formatDate(log.created_at, true)}
-                                    </DialogDescription>
-                                </div>
+            <DialogContent className="flex max-h-[90vh] w-[95vw] sm:max-w-2xl flex-col gap-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
+                {/* 1. Header Matching Finance / Email Dialogs */}
+                <DialogHeader className="shrink-0 border-b border-slate-100 bg-slate-50/60 px-5 py-4 text-left sm:px-6 dark:border-white/[0.06] dark:bg-white/[0.025]">
+                    <div className="flex items-start justify-between gap-3 pr-6">
+                        <div className="flex items-start gap-3.5 min-w-0 flex-1">
+                            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-600 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
+                                <ShieldCheck className="size-5" />
                             </div>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={copyJson}
-                                className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800"
-                            >
-                                {copied ? (
-                                    <>
-                                        <Check className="mr-1.5 size-3.5 text-emerald-600" />
-                                        Tersalin
-                                    </>
-                                ) : (
-                                    <>
-                                        <Copy className="mr-1.5 size-3.5 text-slate-500" />
-                                        Salin JSON
-                                    </>
-                                )}
-                            </Button>
+                            <div className="min-w-0 flex-1 space-y-1">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <span className={`text-xs font-semibold ${theme.textSolid}`}>
+                                        {theme.label}
+                                    </span>
+                                    <span className="text-slate-300 dark:text-zinc-600">&bull;</span>
+                                    <span className="font-mono text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                        Log #{log.id}
+                                    </span>
+                                </div>
+                                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white truncate">
+                                    {realSubjectName}
+                                </DialogTitle>
+                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                    {friendlySubjectType} &bull; Tercatat pada {formatDate(log.created_at, true)} WIB
+                                </DialogDescription>
+                            </div>
                         </div>
-                    </DialogHeader>
-                </div>
+                    </div>
+                </DialogHeader>
 
-                <div className="max-h-[70vh] space-y-4 overflow-y-auto p-5">
-                    {/* Meta Grid */}
-                    <div className="grid grid-cols-2 gap-3 text-xs">
-                        <div className="space-y-1 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 dark:border-white/5 dark:bg-white/[0.02]">
-                            <span className="text-[10.5px] font-semibold tracking-wider text-slate-500 uppercase">
-                                Event &amp; Kategori
-                            </span>
-                            <p className="font-mono font-bold text-slate-900 dark:text-white">
-                                {log.event}{' '}
-                                {log.category ? `(${log.category})` : ''}
-                            </p>
-                        </div>
-                        <div className="space-y-1 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 dark:border-white/5 dark:bg-white/[0.02]">
-                            <span className="text-[10.5px] font-semibold tracking-wider text-slate-500 uppercase">
-                                Pelaku / Aktor
-                            </span>
-                            <p className="font-medium text-slate-900 dark:text-white">
-                                {log.actor?.name ?? 'Sistem Otomatis'}{' '}
-                                <span className="font-mono text-slate-400">
-                                    ({log.actor?.email ?? 'system'})
+                {/* 2. Scrollable Body Content */}
+                <div className="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+                    {/* Meta Summary Card */}
+                    <div className="grid grid-cols-1 gap-2.5 rounded-xl border border-slate-200/80 bg-slate-50/60 p-3.5 text-xs sm:grid-cols-2 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                        {/* Actor */}
+                        <div className="flex items-center gap-2.5">
+                            <Avatar className="size-8 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                <AvatarFallback className="text-xs font-bold">
+                                    {getInitials(log.actor?.name ?? 'Sistem')}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0 flex-1">
+                                <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-500">
+                                    Pelaku / Aktor
                                 </span>
+                                <p className="truncate font-semibold text-slate-900 dark:text-white">
+                                    {log.actor?.name ?? 'Sistem Otomatis'}
+                                </p>
+                                <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400">
+                                    {log.actor?.email ?? 'system@internal'}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Waktu & IP */}
+                        <div>
+                            <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-500">
+                                Waktu &amp; IP Jaringan
+                            </span>
+                            <p className="font-semibold text-slate-900 dark:text-white">
+                                {formatDate(log.created_at, true)} WIB
+                            </p>
+                            <p className="font-mono text-[11px] text-slate-500 dark:text-zinc-400">
+                                IP: {log.ip_address ?? '127.0.0.1'}
                             </p>
                         </div>
-                        <div className="space-y-1 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 dark:border-white/5 dark:bg-white/[0.02]">
-                            <span className="text-[10.5px] font-semibold tracking-wider text-slate-500 uppercase">
-                                IP Address &amp; Jaringan
+
+                        {/* Subject Target */}
+                        <div className="border-t border-slate-200/60 pt-2 dark:border-white/5">
+                            <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-500">
+                                Objek Sasaran
                             </span>
-                            <p className="font-mono font-medium text-slate-900 dark:text-white">
-                                {log.ip_address ?? '127.0.0.1'}
+                            <p className="truncate font-semibold text-slate-900 dark:text-white">
+                                {realSubjectName}
+                            </p>
+                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                {friendlySubjectType} {log.subject_id ? `(#${log.subject_id})` : ''}
                             </p>
                         </div>
-                        <div className="space-y-1 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 dark:border-white/5 dark:bg-white/[0.02]">
-                            <span className="text-[10.5px] font-semibold tracking-wider text-slate-500 uppercase">
-                                Target Objek Model
+
+                        {/* Event Code */}
+                        <div className="border-t border-slate-200/60 pt-2 dark:border-white/5">
+                            <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-500">
+                                Kode Event &amp; Kategori
                             </span>
-                            <p className="truncate font-mono font-medium text-slate-900 dark:text-white">
-                                {log.subject_type ?? '-'} (#
-                                {log.subject_id ?? '-'})
+                            <p className="font-mono font-semibold text-slate-900 dark:text-white truncate">
+                                {log.event}
+                            </p>
+                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                Kategori: {log.category ?? 'Audit Trail'}
                             </p>
                         </div>
                     </div>
 
-                    {/* Cryptographic SHA256 Ledger Hashes */}
+                    {/* Detail Perubahan (Narasi Utama) */}
+                    <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs dark:border-white/10 dark:bg-[#12141a]">
+                        <div className="border-b border-slate-100 pb-2 mb-2.5 text-[10.5px] font-bold tracking-wider text-slate-400 uppercase dark:border-white/5 dark:text-zinc-500">
+                            Detail Perubahan &amp; Narasi Aktivitas
+                        </div>
+                        <p className="text-xs leading-relaxed font-medium text-slate-800 dark:text-zinc-200">
+                            {narrative}
+                        </p>
+
+                        {/* If specific field changes exist, show a clean comparison table */}
+                        {changeKeys.length > 0 && (
+                            <div className="mt-3.5 overflow-hidden rounded-lg border border-slate-200/80 dark:border-white/10">
+                                <table className="w-full text-left text-xs">
+                                    <thead>
+                                        <tr className="border-b border-slate-200/80 bg-slate-50 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/10 dark:bg-white/[0.04]">
+                                            <th className="px-3 py-2 font-semibold">Atribut</th>
+                                            <th className="px-3 py-2 font-semibold">Sebelum</th>
+                                            <th className="px-3 py-2 font-semibold">Sesudah</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                                        {changeKeys.map((k) => (
+                                            <tr key={k}>
+                                                <td className="px-3 py-2 font-semibold text-slate-700 dark:text-zinc-300">
+                                                    {formatFieldKey(k)}
+                                                </td>
+                                                <td className="px-3 py-2 text-slate-400 line-through dark:text-zinc-500">
+                                                    {formatValue(beforeObj[k])}
+                                                </td>
+                                                <td className="px-3 py-2 font-bold text-slate-900 dark:text-white">
+                                                    {formatValue(afterObj[k])}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Cryptographic Ledger Hashes */}
                     {(log.entry_hash || log.previous_hash) && (
-                        <div className="space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/50 p-3 text-xs dark:border-white/5 dark:bg-white/[0.02]">
-                            <span className="text-[10.5px] font-semibold tracking-wider text-slate-500 uppercase">
-                                Cryptographic Ledger Hashes (SHA-256)
-                            </span>
+                        <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-3.5 text-xs dark:border-white/[0.06] dark:bg-white/[0.02]">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                    Integritas Ledger Kriptografi (SHA-256)
+                                </span>
+                                {log.entry_hash && (
+                                    <button
+                                        type="button"
+                                        onClick={() => copyHash(log.entry_hash!)}
+                                        className="inline-flex items-center gap-1 text-[10.5px] font-medium text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                    >
+                                        {copiedHash ? (
+                                            <>
+                                                <Check className="size-3 text-emerald-600" />
+                                                <span className="text-emerald-600 font-semibold">Tersalin</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy className="size-3" />
+                                                <span>Salin Hash</span>
+                                            </>
+                                        )}
+                                    </button>
+                                )}
+                            </div>
                             {log.entry_hash && (
-                                <div>
-                                    <span className="block text-[10px] text-slate-400">
-                                        Entry Hash:
-                                    </span>
-                                    <p className="font-mono text-[11px] break-all text-slate-800 select-all dark:text-zinc-200">
+                                <div className="space-y-0.5 mb-2">
+                                    <span className="block text-[9.5px] text-slate-400 dark:text-zinc-500">Entry Hash:</span>
+                                    <p className="font-mono text-[10.5px] break-all text-slate-800 dark:text-zinc-200 select-all">
                                         {log.entry_hash}
                                     </p>
                                 </div>
                             )}
                             {log.previous_hash && (
-                                <div>
-                                    <span className="block text-[10px] text-slate-400">
-                                        Previous Hash:
-                                    </span>
-                                    <p className="font-mono text-[11px] break-all text-slate-500 select-all dark:text-zinc-400">
+                                <div className="space-y-0.5">
+                                    <span className="block text-[9.5px] text-slate-400 dark:text-zinc-500">Previous Hash (Chained):</span>
+                                    <p className="font-mono text-[10.5px] break-all text-slate-500 dark:text-zinc-400 select-all">
                                         {log.previous_hash}
                                     </p>
                                 </div>
@@ -1229,28 +1238,50 @@ function RawLogDetailDialog({
                         </div>
                     )}
 
-                    {/* Raw JSON Payload */}
-                    <div className="space-y-1.5">
-                        <span className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                            Raw Metadata Payload
-                        </span>
-                        <pre className="max-h-56 overflow-auto rounded-xl border border-slate-200 bg-slate-900 p-3.5 font-mono text-[11px] leading-relaxed text-emerald-400 dark:border-white/10 dark:bg-black/80">
-                            {JSON.stringify(log.metadata ?? {}, null, 2)}
-                        </pre>
-                    </div>
+                    {/* Collapsible Raw Metadata JSON */}
+                    <details className="group rounded-xl border border-slate-200/80 bg-white dark:border-white/10 dark:bg-[#12141a]">
+                        <summary className="flex cursor-pointer items-center justify-between px-4 py-2.5 text-xs font-semibold text-slate-700 select-none hover:bg-slate-50 dark:text-zinc-300 dark:hover:bg-white/[0.02]">
+                            <span>Lihat Metadata Teknis Lengkap (JSON)</span>
+                            <ChevronDown className="size-3.5 text-slate-400 transition-transform group-open:rotate-180" />
+                        </summary>
+                        <div className="border-t border-slate-100 p-3 dark:border-white/5">
+                            <pre className="max-h-52 overflow-auto rounded-lg border border-slate-200 bg-slate-900 p-3 font-mono text-[10.5px] leading-relaxed text-emerald-400 dark:border-white/10 dark:bg-black/90">
+                                {JSON.stringify(log.metadata ?? {}, null, 2)}
+                            </pre>
+                        </div>
+                    </details>
                 </div>
 
-                <div className="flex justify-end border-t border-slate-100 bg-slate-50/60 p-4 dark:border-white/5 dark:bg-zinc-900/40">
+                {/* 3. Footer Matching Finance Dialogs */}
+                <DialogFooter className="flex shrink-0 items-center justify-between border-t border-slate-100 bg-slate-50/60 px-5 py-3 sm:px-6 dark:border-white/[0.06] dark:bg-white/[0.02]">
                     <Button
                         type="button"
                         variant="outline"
                         size="sm"
+                        onClick={copyJson}
+                        className="h-8.5 rounded-lg border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-transparent dark:text-zinc-300 dark:hover:bg-white/10"
+                    >
+                        {copiedJson ? (
+                            <>
+                                <Check className="mr-1.5 size-3.5 text-emerald-600" />
+                                Tersalin
+                            </>
+                        ) : (
+                            <>
+                                <Copy className="mr-1.5 size-3.5 text-slate-500" />
+                                Salin JSON
+                            </>
+                        )}
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outline"
                         onClick={onClose}
-                        className="h-8 rounded-lg border-slate-200 text-xs font-semibold hover:bg-slate-50 dark:border-white/10"
+                        className="h-8.5 rounded-lg border-slate-200 bg-white px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-transparent dark:text-zinc-200 dark:hover:bg-white/10"
                     >
                         Tutup
                     </Button>
-                </div>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );
