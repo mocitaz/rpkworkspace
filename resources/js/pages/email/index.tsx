@@ -379,28 +379,32 @@ export default function EmailIndex({
                         onCompose={() => setComposerOpen(true)}
                     />
 
-                    <section className="min-h-[430px] overflow-hidden rounded-[18px] border border-slate-200/80 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.035)] dark:border-white/[0.08] dark:bg-[#14161b]">
-                        <div className="border-b border-slate-100 px-5 pt-4 sm:px-6 dark:border-white/[0.06]">
-                            <div className="flex gap-5 overflow-x-auto">
-                                {tabs.map(([key, label]) => (
-                                    <button
-                                        key={key}
-                                        type="button"
-                                        onClick={() => setTab(key)}
-                                        className={`shrink-0 border-b-2 px-0.5 pb-3 text-[11px] font-semibold transition-colors ${tab === key ? 'border-slate-950 text-slate-950 dark:border-white dark:text-white' : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-zinc-400'}`}
-                                    >
-                                        {label} · {counts[key]}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                    {/* Email workspace tabs outside container (matching Tata Kelola) */}
+                    <div className="flex [scrollbar-width:none] items-center gap-8 overflow-x-auto border-b border-slate-200/60 [-ms-overflow-style:none] dark:border-white/[0.06] [&::-webkit-scrollbar]:hidden">
+                        {tabs.map(([key, label]) => (
+                            <button
+                                key={key}
+                                type="button"
+                                onClick={() => setTab(key)}
+                                className={`relative shrink-0 border-b-2 px-1 pt-1 pb-2 text-[11px] font-semibold transition-colors ${
+                                    tab === key
+                                        ? 'border-slate-950 text-slate-950 dark:border-white dark:text-white'
+                                        : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white'
+                                }`}
+                            >
+                                {label} · {counts[key]}
+                            </button>
+                        ))}
+                    </div>
+
+                    <section className="min-h-[430px] overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                         <div className="flex flex-col gap-3 border-b border-slate-100 px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-6 dark:border-white/[0.06]">
                             <div>
-                                <h2 className="text-sm font-semibold text-slate-950 dark:text-white">
-                                    Register Email
+                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                    Register Korespondensi Email
                                 </h2>
-                                <p className="mt-0.5 text-[10px] text-slate-400">
-                                    Riwayat komunikasi yang dibuat melalui workspace.
+                                <p className="text-[10px] text-slate-400 dark:text-zinc-500">
+                                    Riwayat komunikasi resmi, status antrean pengiriman, dan perkara terkait.
                                 </p>
                             </div>
                             <div className="relative w-full sm:w-64">
@@ -410,7 +414,7 @@ export default function EmailIndex({
                                     onChange={(event) =>
                                         setSearch(event.target.value)
                                     }
-                                    placeholder="Cari subjek atau penerima"
+                                    placeholder="Cari subjek, penerima, atau perkara..."
                                     className="h-8 w-full rounded-lg border border-slate-200 bg-slate-50/70 pl-8 pr-3 text-[11px] text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none dark:border-white/10 dark:bg-white/[0.04] dark:text-white"
                                 />
                             </div>
