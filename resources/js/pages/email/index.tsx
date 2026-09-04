@@ -948,21 +948,40 @@ export default function EmailIndex({
 
                                             {/* Understated Law Firm Signature Preview */}
                                             {includeSignature && (
-                                                <div className="mt-2.5 border-l-2 border-slate-300 py-0.5 pl-3.5 text-xs text-slate-600 dark:border-zinc-700 dark:text-zinc-400">
-                                                    <p className="font-semibold text-slate-900 dark:text-white">
-                                                        {signerName}
-                                                    </p>
-                                                    <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                        {signerTitle} &bull; RPK Law Office &amp; Partners
-                                                    </p>
-                                                    <p className="mt-0.5 text-[10.5px] text-slate-400 dark:text-zinc-500">
-                                                        Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi, Bandung Barat &bull; Tel: 0852 9560 1417 &bull; {fromAddress}
-                                                    </p>
-                                                    <p className="mt-1.5 text-[10px] leading-relaxed text-slate-400/90 dark:text-zinc-500">
+                                                <div className="mt-3 border-t border-slate-200/80 pt-3 dark:border-white/10">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="flex h-9 w-20 shrink-0 items-center justify-center rounded border border-slate-200 bg-white p-1 dark:border-white/10 dark:bg-zinc-900">
+                                                            <img
+                                                                src="/logo/raf-law-firm-transparent.png"
+                                                                alt="RPK Law Firm"
+                                                                className="max-h-full max-w-full object-contain"
+                                                            />
+                                                        </div>
+                                                        <div className="min-w-0 border-l border-slate-200 pl-3 dark:border-white/10">
+                                                            <p className="text-xs font-bold text-slate-900 dark:text-white">
+                                                                {signerName}
+                                                            </p>
+                                                            <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                                                {signerTitle}
+                                                            </p>
+                                                            <p className="text-[10px] font-semibold text-slate-700 dark:text-zinc-300">
+                                                                RONI, PUTRA &amp; KUSUMAH LAW FIRM
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-2 text-[10.5px] leading-relaxed text-slate-500 dark:text-zinc-400">
+                                                        <span className="font-medium text-slate-700 dark:text-zinc-300">Tel/WA:</span> 0852 9560 1417 &bull;{' '}
+                                                        <span className="font-medium text-slate-700 dark:text-zinc-300">Email:</span> {fromAddress} &bull;{' '}
+                                                        <span className="font-medium text-slate-700 dark:text-zinc-300">Web:</span> rpklawoffice.com
+                                                        <p className="text-[10px] text-slate-400 dark:text-zinc-500">
+                                                            Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi, Bandung Barat
+                                                        </p>
+                                                    </div>
+                                                    <p className="mt-2 border-t border-dashed border-slate-200 pt-1.5 text-[9.5px] leading-normal text-slate-400 dark:border-white/5 dark:text-zinc-500">
                                                         <strong className="font-medium text-slate-500 dark:text-zinc-400">
-                                                            CONFIDENTIALITY NOTICE:
+                                                            KERAHASIAAN PROFESI ADVOKAT (ATTORNEY-CLIENT PRIVILEGE):
                                                         </strong>{' '}
-                                                        Transmisi email ini bersifat rahasia dan dilindungi hak istimewa hukum kerahasiaan profesi advokat (Attorney-Client Privilege - UU No. 18/2003). Jika Anda bukan penerima yang sah, mohon beritahukan pengirim dan hapus pesan ini.
+                                                        Surat elektronik ini bersifat rahasia dan dilindungi hak istimewa hukum kerahasiaan profesi advokat (Pasal 19 UU No. 18/2003).
                                                     </p>
                                                 </div>
                                             )}
