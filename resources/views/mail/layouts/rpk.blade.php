@@ -75,10 +75,12 @@
                             </h1>
                             @endif
 
+                            @if(isset($recipientName) && filled($recipientName))
                             <!-- Greeting -->
                             <p style="margin: 0 0 16px 0; font-size: 14px; line-height: 22px; color: #334155;">
-                                Yth. <strong>{{ $recipientName ?? 'Rekan Kerja' }}</strong>,
+                                Yth. <strong>{{ $recipientName }}</strong>,
                             </p>
+                            @endif
 
                             <!-- Custom Main Content -->
                             @yield('content')
@@ -111,6 +113,7 @@
                         </td>
                     </tr>
 
+                    @if(!($hideFooter ?? false))
                     <!-- Footer Section -->
                     <tr>
                         <td class="mobile-padding" style="padding: 24px 36px; background-color: #fafbfc; border-top: 1px solid #f1f5f9;">
@@ -136,6 +139,7 @@
                             </table>
                         </td>
                     </tr>
+                    @endif
 
                 </table>
                 <!-- End Main Container -->

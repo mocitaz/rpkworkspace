@@ -21,4 +21,9 @@ class EmailMessage extends Model
     {
         return $this->belongsTo(Matter::class);
     }
+
+    public function sender(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'sender_id');
+    }
 }

@@ -296,14 +296,8 @@ export default function EmailIndex({
         if (!includeSignature) {
             return bodyText;
         }
-        if (
-            bodyText.includes('CONFIDENTIALITY NOTICE') ||
-            bodyText.includes('ATTORNEY-CLIENT PRIVILEGE')
-        ) {
-            return bodyText;
-        }
-        return `${bodyText.trim()}${generateSignatureText(signerName, signerTitle, fromAddress)}`;
-    }, [bodyText, includeSignature, signerName, signerTitle, fromAddress]);
+        return `${bodyText.trim()}\n\n--SIGNATURE--\nname: ${signerName}\ntitle: ${signerTitle}`;
+    }, [bodyText, includeSignature, signerName, signerTitle]);
 
     const wordCount = useMemo(() => {
         const words = bodyText.trim().split(/\s+/).filter(Boolean);
@@ -491,7 +485,7 @@ export default function EmailIndex({
                                     Tulis Pesan Baru
                                 </DialogTitle>
                                 <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
-                                    Dari {fromAddress} &bull; Tercatat pada register korespondensi
+                                    Dari: {signerName ? `${signerName} (${fromAddress})` : fromAddress} &bull; Tercatat pada register korespondensi
                                 </p>
                             </div>
                         </div>
