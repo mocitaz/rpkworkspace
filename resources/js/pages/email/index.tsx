@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { EmailCorrespondenceHero } from '@/components/email-correspondence-hero';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -195,7 +196,11 @@ export default function EmailIndex({
     );
     const [isEditingSigner, setIsEditingSigner] = useState(false);
 
+    // Confirmation dialog state
+    const [confirmSendOpen, setConfirmSendOpen] = useState(false);
+
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const submitButtonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
         if (currentUser?.name && signerName === 'Tim Advokat & Konsultan Hukum') {
@@ -219,6 +224,22 @@ export default function EmailIndex({
         setClientId('');
         setShowCcBcc(false);
         setIsEditingSigner(false);
+        setConfirmSendOpen(false);
+    };
+
+    const handleInitiateSend = (e: React.MouseEvent) => {
+        e.preventDefault();
+
+        const form = submitButtonRef.current?.form;
+        if (form && !form.reportValidity()) {
+            return;
+        }
+
+        if (!toText.trim() || !subjectText.trim() || !bodyText.trim()) {
+            return;
+        }
+
+        setConfirmSendOpen(true);
     };
 
     const applyTemplate = (tpl: { subject: string; body: string }) => {
@@ -958,8 +979,17 @@ export default function EmailIndex({
                                     {/* Pinned Bottom Action Bar (Gmail Style) */}
                                     <div className="flex shrink-0 items-center justify-between border-t border-slate-100 bg-white px-5 py-3 sm:px-6 dark:border-white/[0.06] dark:bg-[#14161b]">
                                         <div className="flex items-center gap-2">
-                                            <Button
+                                            {/* Hidden native submit button for programmatic submission */}
+                                            <button
+                                                ref={submitButtonRef}
                                                 type="submit"
+                                                className="hidden"
+                                                tabIndex={-1}
+                                                aria-hidden="true"
+                                            />
+                                            <Button
+                                                type="button"
+                                                onClick={handleInitiateSend}
                                                 disabled={processing}
                                                 className="h-9 min-w-28 cursor-pointer gap-1.5 rounded-lg bg-slate-900 px-4 text-xs font-semibold text-white shadow-xs hover:bg-slate-800 active:scale-[0.98] dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
                                             >
@@ -1003,6 +1033,96 @@ export default function EmailIndex({
                     </Form>
                 </DialogContent>
             </Dialog>
+
+            {/* Modal Konfirmasi Sebelum Pengiriman Email */}
+            <ConfirmDialog
+                open={confirmSendOpen}
+                onOpenChange={setConfirmSendOpen}
+                title="Kirim Korespondensi Resmi?"
+                description="Pastikan tujuan dan rincian pesan resmi di bawah ini telah sesuai sebelum dikirimkan ke server antrean kantor hukum."
+                confirmLabel="Ya, Kirim Sekarang"
+                cancelLabel="Periksa Kembali"
+                variant="info"
+                onConfirm={() => {
+                    setConfirmSendOpen(false);
+                    setTimeout(() => {
+                        submitButtonRef.current?.click();
+                    }, 50);
+                }}
+            >
+                <div className="space-y-2.5 rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 text-xs dark:border-white/10 dark:bg-white/[0.02]">
+                    <div className="flex items-start justify-between gap-2 border-b border-slate-200/60 pb-2 dark:border-white/5">
+                        <span className="shrink-0 text-slate-500 dark:text-zinc-400">
+                            Pengirim
+                        </span>
+                        <span className="text-right font-medium text-slate-900 dark:text-white">
+                            {signerName
+                                ? `${signerName} (${fromAddress})`
+                                : fromAddress}
+                        </span>
+                    </div>
+                    <div className="flex items-start justify-between gap-2 border-b border-slate-200/60 pb-2 dark:border-white/5">
+                        <span className="shrink-0 text-slate-500 dark:text-zinc-400">
+                            Penerima (To)
+                        </span>
+                        <span
+                            className="max-w-[220px] truncate text-right font-medium text-slate-900 dark:text-white"
+                            title={toText}
+                        >
+                            {toText}
+                        </span>
+                    </div>
+                    {(ccText || bccText) && (
+                        <div className="flex items-start justify-between gap-2 border-b border-slate-200/60 pb-2 dark:border-white/5">
+                            <span className="shrink-0 text-slate-500 dark:text-zinc-400">
+                                Cc / Bcc
+                            </span>
+                            <span className="max-w-[220px] truncate text-right text-slate-700 dark:text-zinc-300">
+                                {[
+                                    ccText && `Cc: ${ccText}`,
+                                    bccText && `Bcc: ${bccText}`,
+                                ]
+                                    .filter(Boolean)
+                                    .join(' | ')}
+                            </span>
+                        </div>
+                    )}
+                    <div className="flex items-start justify-between gap-2 border-b border-slate-200/60 pb-2 dark:border-white/5">
+                        <span className="shrink-0 text-slate-500 dark:text-zinc-400">
+                            Subjek
+                        </span>
+                        <span
+                            className="max-w-[220px] truncate text-right font-semibold text-slate-900 dark:text-white"
+                            title={subjectText}
+                        >
+                            {subjectText}
+                        </span>
+                    </div>
+                    {matterId && (
+                        <div className="flex items-start justify-between gap-2 border-b border-slate-200/60 pb-2 dark:border-white/5">
+                            <span className="shrink-0 text-slate-500 dark:text-zinc-400">
+                                Perkara
+                            </span>
+                            <span className="max-w-[220px] truncate text-right text-slate-700 dark:text-zinc-300">
+                                {matters.find((m) => m.id === matterId)
+                                    ?.matter_number}{' '}
+                                &bull;{' '}
+                                {matters.find((m) => m.id === matterId)?.title}
+                            </span>
+                        </div>
+                    )}
+                    <div className="flex items-center justify-between gap-2 pt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                        <span>Tanda Tangan &amp; Disclaimer:</span>
+                        <span
+                            className={`font-semibold ${includeSignature ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-zinc-500'}`}
+                        >
+                            {includeSignature
+                                ? 'Disertakan Resmi'
+                                : 'Tidak Disertakan'}
+                        </span>
+                    </div>
+                </div>
+            </ConfirmDialog>
         </>
     );
 }
