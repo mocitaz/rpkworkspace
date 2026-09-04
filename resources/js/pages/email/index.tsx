@@ -1,10 +1,7 @@
 import { Form, Head, usePage } from '@inertiajs/react';
 import {
     Bold,
-    CheckCircle2,
     ChevronRight,
-    Clock3,
-    FileText,
     Inbox,
     Italic,
     List,
@@ -12,7 +9,6 @@ import {
     Quote,
     Search,
     Send,
-    XCircle,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { EmailCorrespondenceHero } from '@/components/email-correspondence-hero';
@@ -141,38 +137,29 @@ const meta: Record<
     Status,
     {
         label: string;
+        colorClass: string;
         borderClass: string;
-        badgeClass: string;
-        icon: typeof CheckCircle2;
     }
 > = {
     sent: {
         label: 'Terkirim',
+        colorClass: 'text-emerald-600 dark:text-emerald-400',
         borderClass: 'border-l-emerald-500',
-        badgeClass:
-            'bg-emerald-50 text-emerald-700 border-emerald-200/80 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40',
-        icon: CheckCircle2,
     },
     queued: {
         label: 'Dalam antrean',
+        colorClass: 'text-blue-600 dark:text-blue-400',
         borderClass: 'border-l-blue-500',
-        badgeClass:
-            'bg-blue-50 text-blue-700 border-blue-200/80 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/40',
-        icon: Clock3,
     },
     draft: {
         label: 'Draft',
+        colorClass: 'text-slate-600 dark:text-zinc-400',
         borderClass: 'border-l-slate-400 dark:border-l-zinc-500',
-        badgeClass:
-            'bg-slate-100 text-slate-700 border-slate-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700',
-        icon: FileText,
     },
     failed: {
         label: 'Gagal',
+        colorClass: 'text-rose-600 dark:text-rose-400',
         borderClass: 'border-l-rose-500',
-        badgeClass:
-            'bg-rose-50 text-rose-700 border-rose-200/80 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/40',
-        icon: XCircle,
     },
 };
 
@@ -484,7 +471,6 @@ export default function EmailIndex({
                                 <div className="divide-y divide-slate-100 sm:hidden dark:divide-white/[0.04]">
                                     {visible.map((message) => {
                                         const status = meta[message.status];
-                                        const StatusIcon = status.icon;
                                         return (
                                             <div
                                                 key={message.id}
@@ -526,12 +512,11 @@ export default function EmailIndex({
                                                     </div>
                                                     <ChevronRight className="mt-1 size-4 shrink-0 text-slate-400" />
                                                 </div>
-                                                <div className="mt-2.5 flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-2 text-[10px] dark:border-white/[0.04]">
-                                                    <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${status.badgeClass}`}>
-                                                        <StatusIcon className="size-3" />
+                                                <div className="mt-2.5 flex flex-wrap items-center justify-between gap-1.5 border-t border-slate-100 pt-2 text-[11px] dark:border-white/[0.04]">
+                                                    <span className={`font-semibold ${status.colorClass}`}>
                                                         {status.label}
                                                     </span>
-                                                    <span className="ml-auto font-mono text-slate-500 dark:text-zinc-400">
+                                                    <span className="font-mono text-[10.5px] text-slate-500 dark:text-zinc-400">
                                                         {formatDate(message.sent_at ?? message.created_at)} WIB
                                                     </span>
                                                 </div>
@@ -566,7 +551,6 @@ export default function EmailIndex({
                                         <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                                             {visible.map((message) => {
                                                 const status = meta[message.status];
-                                                const StatusIcon = status.icon;
                                                 return (
                                                     <tr
                                                         key={message.id}
@@ -624,10 +608,9 @@ export default function EmailIndex({
                                                             </div>
                                                         </td>
 
-                                                        {/* 4. Status */}
+                                                        {/* 4. Status (text only, solid color) */}
                                                         <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                            <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${status.badgeClass}`}>
-                                                                <StatusIcon className="size-3" />
+                                                            <span className={`text-xs font-semibold ${status.colorClass}`}>
                                                                 {status.label}
                                                             </span>
                                                         </td>
@@ -1321,7 +1304,6 @@ export default function EmailIndex({
                 <DialogContent className="flex max-h-[90vh] w-[95vw] sm:max-w-2xl flex-col gap-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
                     {selectedMessage && (() => {
                         const status = meta[selectedMessage.status];
-                        const StatusIcon = status.icon;
                         const { mainBody, sigName, sigTitle, hasSignature } = parseMessageBody(selectedMessage.body);
 
                         return (
@@ -1331,8 +1313,7 @@ export default function EmailIndex({
                                     <div className="flex items-start justify-between gap-3 pr-6">
                                         <div className="space-y-1">
                                             <div className="flex items-center gap-2">
-                                                <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${status.badgeClass}`}>
-                                                    <StatusIcon className="size-3" />
+                                                <span className={`text-xs font-semibold ${status.colorClass}`}>
                                                     {status.label}
                                                 </span>
                                                 {selectedMessage.matter && (
