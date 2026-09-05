@@ -2202,6 +2202,7 @@ function AvatarPicker({
     onChange: (url: string) => void;
     contactName?: string;
 }) {
+    const getInitials = useInitials();
     const [isOpen, setIsOpen] = useState(false);
 
     return (
