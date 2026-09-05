@@ -461,4 +461,20 @@ it('auto-resolves client_id and validates allocations in storePayment endpoint',
         ->and($payment->matter_id)->toBe($matter->getKey())
         ->and($payment->amount)->toBe(5_000_000)
         ->and($payment->allocations)->toHaveCount(1);
+
+    // Test 3: Success when both client_id and matter_id are null (penambahan kas umum / tanpa perkara & klien)
+    $generalCashResponse = $this->actingAs($user)->post(route('finance.payments.store'), [
+        'account_id' => $account->getKey(),
+        'amount' => 2_500_000,
+        'method' => 'Setor Tunai',
+        'received_at' => now()->toDateTimeLocalString(),
+    ]);
+
+    $generalCashResponse->assertRedirect()->assertSessionHas('success');
+
+    $generalPayment = Payment::query()->where('amount', 2_500_000)->first();
+    expect($generalPayment)->not->toBeNull()
+        ->and($generalPayment->client_id)->toBeNull()
+        ->and($generalPayment->matter_id)->toBeNull()
+        ->and($generalPayment->amount)->toBe(2_500_000);
 });

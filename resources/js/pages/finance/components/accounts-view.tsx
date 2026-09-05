@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRightLeft, Pencil, Plus, Trash2 } from 'lucide-react';
+import { ArrowRightLeft, Banknote, Pencil, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { UserOption } from '@/components/user-picker';
 import { formatDate, formatMoney } from '@/lib/format';
@@ -53,6 +53,7 @@ export function AccountsView({
     canManage = false,
     onOpenTransferModal,
     onOpenAccountModal,
+    onOpenPaymentModal,
     onViewDetail,
 }: {
     accounts: FinancialAccountItem[];
@@ -61,6 +62,7 @@ export function AccountsView({
     canManage?: boolean;
     onOpenTransferModal?: () => void;
     onOpenAccountModal?: () => void;
+    onOpenPaymentModal?: () => void;
     onViewDetail?: (item: AccountTransferItem) => void;
 }) {
     const [accountToDelete, setAccountToDelete] = useState<FinancialAccountItem | null>(null);
@@ -140,6 +142,17 @@ export function AccountsView({
                         >
                             <ArrowRightLeft className="size-3.5" />
                             Transfer Antar Rekening
+                        </Button>
+                    )}
+                    {onOpenPaymentModal && (
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={onOpenPaymentModal}
+                            className="h-8 gap-1.5 rounded-lg border-slate-200 bg-white text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181f] dark:text-zinc-200 dark:hover:bg-white/10"
+                        >
+                            <Banknote className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                            Penambahan Kas
                         </Button>
                     )}
                     {onOpenAccountModal && (
@@ -469,6 +482,11 @@ export function AccountsView({
                 onTransfer={(acc) => {
                     if (onOpenTransferModal) {
                         onOpenTransferModal();
+                    }
+                }}
+                onPayment={(acc) => {
+                    if (onOpenPaymentModal) {
+                        onOpenPaymentModal();
                     }
                 }}
                 onDelete={(acc) => {

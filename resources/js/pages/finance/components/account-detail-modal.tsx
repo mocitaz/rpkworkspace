@@ -66,6 +66,7 @@ export function AccountDetailModal({
     open,
     onOpenChange,
     onTransfer,
+    onPayment,
     onDelete,
     onEdit,
     canManage = false,
@@ -74,6 +75,7 @@ export function AccountDetailModal({
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onTransfer?: (account: FinancialAccountItem) => void;
+    onPayment?: (account: FinancialAccountItem) => void;
     onDelete?: (account: FinancialAccountItem) => void;
     onEdit?: (account: FinancialAccountItem) => void;
     canManage?: boolean;
@@ -378,6 +380,21 @@ export function AccountDetailModal({
                             >
                                 <Pencil className="size-3.5 text-slate-500" />
                                 Edit Rekening
+                            </Button>
+                        )}
+                        {onPayment && (
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                    onOpenChange(false);
+                                    onPayment(account);
+                                }}
+                                className="h-8 gap-1.5 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                            >
+                                <Banknote className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                Penambahan Kas
                             </Button>
                         )}
                         {onTransfer && (

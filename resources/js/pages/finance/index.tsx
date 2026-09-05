@@ -140,6 +140,7 @@ type LedgerItem = {
     incurred_at?: string;
     received_at?: string;
     matter?: Matter;
+    client?: { id: string; display_name: string };
     account?: { id: string; name: string };
     partner?: { id: number; name: string };
     reversed_at?: string;
@@ -632,13 +633,23 @@ export default function FinanceIndex({
 
                             {scope === 'office_operations' && (
                                 <>
+                                    {can.payment && (
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setModal('payment')}
+                                            className="h-7.5 shrink-0 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold whitespace-nowrap text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
+                                        >
+                                            <Banknote className="mr-1 size-3.5 text-emerald-600 dark:text-emerald-400" />
+                                            Penambahan Kas
+                                        </Button>
+                                    )}
                                     <Button
                                         variant="outline"
                                         onClick={() => setModal('account')}
                                         className="h-7.5 shrink-0 rounded-lg border-slate-200/70 bg-white px-2.5 text-xs font-semibold whitespace-nowrap text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-200"
                                     >
                                         <Building className="mr-1 size-3.5 text-blue-600 dark:text-blue-400" />
-                                        Tambah Akun
+                                        Tambah Rekening
                                     </Button>
                                     <Button
                                         variant="outline"
@@ -1503,6 +1514,11 @@ export default function FinanceIndex({
                                     }
                                     onOpenTransferModal={() =>
                                         setModal('transfer')
+                                    }
+                                    onOpenPaymentModal={
+                                        can.payment
+                                            ? () => setModal('payment')
+                                            : undefined
                                     }
                                 />
                             )}
@@ -2688,10 +2704,14 @@ function PaymentLedger({
                                                     }
                                                     className="transition-colors hover:text-emerald-600 dark:hover:text-emerald-400"
                                                 >
-                                                    Penerimaan Kas Klien
+                                                    {payment.client?.display_name
+                                                        ? `Penerimaan Kas - ${payment.client.display_name}`
+                                                        : 'Penerimaan Kas (Umum / Kantor)'}
                                                 </button>
                                             ) : (
-                                                'Penerimaan Kas Klien'
+                                                payment.client?.display_name
+                                                    ? `Penerimaan Kas - ${payment.client.display_name}`
+                                                    : 'Penerimaan Kas (Umum / Kantor)'
                                             )}
                                         </h4>
 
@@ -2699,7 +2719,9 @@ function PaymentLedger({
                                             <span>
                                                 {payment.matter?.title
                                                     ? payment.matter.title
-                                                    : 'Tanpa Terikat Perkara Khusus'}
+                                                    : payment.client?.display_name
+                                                      ? 'Pembayaran Langsung Klien'
+                                                      : 'Kas Umum / Non-Perkara'}
                                             </span>
                                             {payment.allocations?.map(
                                                 (allocation) => (
@@ -3201,7 +3223,7 @@ function FinanceDialog({
         invoice: 'Buat Invoice Tagihan Baru',
         quotation: 'Buat Penawaran Tarif (Quotation)',
         expense: 'Catat Pengeluaran & Biaya Perkara',
-        payment: 'Catat Penerimaan Pembayaran Klien',
+        payment: 'Catat Penerimaan Kas & Pembayaran',
     };
 
     const dialogDescriptions = {
@@ -3212,7 +3234,7 @@ function FinanceDialog({
         expense:
             'Catat pengeluaran biaya perkara (disbursement), operasional kantor, atau talangan dana pribadi partner.',
         payment:
-            'Catat penerimaan pembayaran dari klien ke rekening kantor dan alokasikan ke invoice tagihan terkait.',
+            'Catat penerimaan kas kantor, penambahan saldo kas, atau pembayaran dari klien ke rekening bank kantor.',
     };
 
     const dialogIcons = {
@@ -3943,9 +3965,7 @@ function FinanceDialog({
                                                         className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                                     >
                                                         <option value="">
-                                                            -- Tanpa Perkara
-                                                            (Pembayaran Langsung
-                                                            Klien) --
+                                                            -- Tanpa Terikat Perkara --
                                                         </option>
                                                         {matters.map((m) => (
                                                             <option
@@ -3968,10 +3988,7 @@ function FinanceDialog({
                                                     htmlFor="pay_client_id"
                                                     className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
                                                 >
-                                                    Klien Pembayar (Client){' '}
-                                                    <span className="text-red-500">
-                                                        *
-                                                    </span>
+                                                    Klien Pembayar (Opsional)
                                                 </Label>
                                                 <div className="relative mt-1">
                                                     <select
@@ -3983,15 +4000,10 @@ function FinanceDialog({
                                                                 e.target.value,
                                                             )
                                                         }
-                                                        required
                                                         className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                                     >
-                                                        <option
-                                                            value=""
-                                                            disabled
-                                                        >
-                                                            -- Pilih Klien
-                                                            Pembayar --
+                                                        <option value="">
+                                                            -- Tanpa Klien / Kas Umum --
                                                         </option>
                                                         {clients.map((c) => (
                                                             <option
@@ -4147,7 +4159,13 @@ function FinanceDialog({
                                                         paymentMatterId
                                                     );
                                                 }
-                                                return true;
+                                                if (paymentClientId) {
+                                                    return (
+                                                        (inv as any).client_id === paymentClientId ||
+                                                        (inv as any).client?.id === paymentClientId
+                                                    );
+                                                }
+                                                return false;
                                             });
 
                                         const draftInvoices = invoices.filter(

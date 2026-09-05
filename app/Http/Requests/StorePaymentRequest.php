@@ -59,7 +59,8 @@ class StorePaymentRequest extends FormRequest
         $cleanAmount = is_numeric($rawAmount) ? (int) $rawAmount : (int) preg_replace('/[^\d]/', '', (string) $rawAmount);
 
         $this->merge([
-            'client_id' => $clientId,
+            'client_id' => $clientId ?: null,
+            'matter_id' => $matterId ?: null,
             'currency' => $this->input('currency', 'IDR') ?: 'IDR',
             'amount' => $cleanAmount,
             'allocations' => $cleanAllocations,
@@ -74,7 +75,7 @@ class StorePaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'client_id' => ['required', 'exists:clients,id'],
+            'client_id' => ['nullable', 'exists:clients,id'],
             'matter_id' => ['nullable', 'exists:matters,id'],
             'account_id' => ['required', 'exists:financial_accounts,id'],
             'currency' => ['required', 'string', 'size:3'],
@@ -123,7 +124,6 @@ class StorePaymentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'client_id.required' => 'Klien pembayar wajib dipilih atau ditentukan dari perkara.',
             'client_id.exists' => 'Data klien pembayar tidak ditemukan di sistem.',
             'account_id.required' => 'Rekening kas/bank penerima wajib dipilih.',
             'account_id.exists' => 'Rekening kas/bank yang dipilih tidak valid.',

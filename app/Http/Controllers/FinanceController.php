@@ -137,7 +137,7 @@ class FinanceController extends Controller
             'invoices' => $invoiceQuery->with(['matter:id,matter_number,title', 'lineItems', 'proofDocument.currentVersion'])->latest()->limit(50)->get(),
             'quotations' => $quotationQuery->with(['matter:id,matter_number,title', 'lineItems'])->latest()->limit(50)->get(),
             'expenses' => $expenseQuery->with(['matter:id,matter_number,title', 'account:id,name', 'partner:id,name', 'proofDocument.currentVersion'])->latest('incurred_at')->limit(50)->get(),
-            'payments' => $paymentQuery->with(['matter:id,matter_number,title', 'account:id,name', 'allocations.invoice:id,invoice_number,outstanding_amount,currency', 'proofDocument.currentVersion'])->latest('received_at')->limit(50)->get(),
+            'payments' => $paymentQuery->with(['client:id,display_name', 'matter:id,matter_number,title', 'account:id,name', 'allocations.invoice:id,invoice_number,outstanding_amount,currency', 'proofDocument.currentVersion'])->latest('received_at')->limit(50)->get(),
 
             // Multi-Kas & Accounts
             'accounts' => FinancialAccount::query()
@@ -379,8 +379,8 @@ class FinanceController extends Controller
     {
         $this->authorizeMatter($request, $request->validated('matter_id'));
         $attributes = $request->safe()->except('proof');
-        $matter = isset($attributes['matter_id']) ? Matter::query()->whereKey($attributes['matter_id'])->sole() : null;
-        $client = Client::query()->whereKey($attributes['client_id'])->sole();
+        $matter = ! empty($attributes['matter_id']) ? Matter::query()->whereKey($attributes['matter_id'])->first() : null;
+        $client = ! empty($attributes['client_id']) ? Client::query()->whereKey($attributes['client_id'])->first() : null;
         if ($request->hasFile('proof')) {
             $proof = $createProof->handle($request->file('proof'), $request->user(), 'Bukti pembayaran '.$attributes['amount'], $matter, $client);
             $attributes['proof_document_id'] = $proof->getKey();
@@ -405,7 +405,7 @@ class FinanceController extends Controller
         foreach ($financeUsers as $financeUser) {
             $financeUser->notify((new PaymentVerificationRequestedNotification(
                 invoiceNumber: 'PAY-'.($payment->payment_number ?? $payment->id),
-                clientName: $client->display_name,
+                clientName: $client?->display_name ?? 'Umum / Kas Kantor',
                 amountPaid: 'Rp '.number_format((float) ($attributes['amount'] ?? 0), 0, ',', '.'),
                 paymentMethod: ucfirst(str_replace('_', ' ', $attributes['payment_method'] ?? 'Transfer Bank')),
                 paymentDate: now()->translatedFormat('d F Y')
