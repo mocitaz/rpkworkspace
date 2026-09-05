@@ -1,6 +1,11 @@
-import { ArrowRightLeft, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRightLeft, Pencil, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import type { UserOption } from '@/components/user-picker';
 import { formatDate, formatMoney } from '@/lib/format';
+import { AccountDetailModal } from './account-detail-modal';
+import { DeleteAccountDialog } from './delete-account-dialog';
+import { EditAccountDialog } from './edit-account-dialog';
 import type { ProofDocumentData } from './finance-proof-dialog';
 
 export type FinancialAccountItem = {
@@ -9,11 +14,20 @@ export type FinancialAccountItem = {
     type: 'cash' | 'bank' | 'partner_advance' | 'client_trust';
     account_number?: string;
     bank_name?: string;
-    partner?: { id: number; name: string };
+    partner?: { id: number; name: string; position_title?: string; department?: string };
+    creator?: { id: number; name: string };
     opening_balance: number;
     current_balance: number;
     description?: string;
     is_active: boolean;
+    created_at?: string;
+    expenses_count?: number;
+    payments_count?: number;
+    outgoing_transfers_count?: number;
+    incoming_transfers_count?: number;
+    partner_transactions_count?: number;
+    client_trust_funds_count?: number;
+    payrolls_count?: number;
 };
 
 export type AccountTransferItem = {
@@ -35,16 +49,23 @@ export type AccountTransferItem = {
 export function AccountsView({
     accounts,
     transfers,
+    partners = [],
+    canManage = false,
     onOpenTransferModal,
     onOpenAccountModal,
     onViewDetail,
 }: {
     accounts: FinancialAccountItem[];
     transfers: AccountTransferItem[];
+    partners?: UserOption[];
+    canManage?: boolean;
     onOpenTransferModal?: () => void;
     onOpenAccountModal?: () => void;
     onViewDetail?: (item: AccountTransferItem) => void;
 }) {
+    const [accountToDelete, setAccountToDelete] = useState<FinancialAccountItem | null>(null);
+    const [accountToEdit, setAccountToEdit] = useState<FinancialAccountItem | null>(null);
+    const [selectedAccountForDetail, setSelectedAccountForDetail] = useState<FinancialAccountItem | null>(null);
     const totalCash = accounts
         .filter((a) => a.type === 'cash')
         .reduce((sum, a) => sum + a.current_balance, 0);
@@ -223,13 +244,14 @@ export function AccountsView({
                     return (
                         <div
                             key={acc.id}
-                            className="flex flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3.5 transition-colors hover:border-slate-300 dark:border-white/[0.06] dark:bg-white/[0.02] dark:hover:border-white/15"
+                            onClick={() => setSelectedAccountForDetail(acc)}
+                            className="group flex cursor-pointer flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3.5 transition-all hover:border-slate-300 hover:shadow-2xs dark:border-white/[0.06] dark:bg-white/[0.02] dark:hover:border-white/15"
                         >
                             <div>
                                 <div className="flex items-start justify-between gap-2">
                                     <div className="min-w-0">
                                         <div className="flex flex-wrap items-center gap-x-2">
-                                            <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                                            <h4 className="text-xs font-bold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
                                                 {acc.name}
                                             </h4>
                                             <span className="text-[9px] font-bold text-blue-600 uppercase dark:text-blue-400">
@@ -247,15 +269,36 @@ export function AccountsView({
                                                 : ''}
                                         </p>
                                     </div>
-                                    <span
-                                        className={`text-[9px] font-bold uppercase ${
-                                            acc.is_active
-                                                ? 'text-emerald-600 dark:text-emerald-400'
-                                                : 'text-slate-400 dark:text-zinc-500'
-                                        }`}
-                                    >
-                                        {acc.is_active ? 'Aktif' : 'Non-Aktif'}
-                                    </span>
+                                    <div className="flex items-center gap-1 shrink-0">
+                                        {canManage && (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setAccountToEdit(acc);
+                                                    }}
+                                                    title="Edit Rekening"
+                                                    aria-label={`Edit Rekening ${acc.name}`}
+                                                    className="flex size-6 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:text-zinc-500 dark:hover:bg-blue-950/40 dark:hover:text-blue-400"
+                                                >
+                                                    <Pencil className="size-3.5" />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setAccountToDelete(acc);
+                                                    }}
+                                                    title="Hapus Rekening"
+                                                    aria-label={`Hapus Rekening ${acc.name}`}
+                                                    className="flex size-6 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-600 dark:text-zinc-500 dark:hover:bg-rose-950/40 dark:hover:text-rose-400"
+                                                >
+                                                    <Trash2 className="size-3.5" />
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {acc.description && (
@@ -388,6 +431,50 @@ export function AccountsView({
                     </div>
                 )}
             </div>
+
+            <DeleteAccountDialog
+                account={accountToDelete}
+                allAccounts={accounts}
+                open={Boolean(accountToDelete)}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setAccountToDelete(null);
+                    }
+                }}
+            />
+
+            <EditAccountDialog
+                account={accountToEdit}
+                open={Boolean(accountToEdit)}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setAccountToEdit(null);
+                    }
+                }}
+                partners={partners}
+            />
+
+            <AccountDetailModal
+                account={selectedAccountForDetail}
+                open={Boolean(selectedAccountForDetail)}
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setSelectedAccountForDetail(null);
+                    }
+                }}
+                canManage={canManage}
+                onEdit={(acc) => {
+                    setAccountToEdit(acc);
+                }}
+                onTransfer={(acc) => {
+                    if (onOpenTransferModal) {
+                        onOpenTransferModal();
+                    }
+                }}
+                onDelete={(acc) => {
+                    setAccountToDelete(acc);
+                }}
+            />
         </div>
     );
 }

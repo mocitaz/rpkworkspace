@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:211
+* @see app/Http/Controllers/FinanceController.php:229
 * @route '/finance/quotations'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:211
+* @see app/Http/Controllers/FinanceController.php:229
 * @route '/finance/quotations'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:211
+* @see app/Http/Controllers/FinanceController.php:229
 * @route '/finance/quotations'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:211
+* @see app/Http/Controllers/FinanceController.php:229
 * @route '/finance/quotations'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\FinanceController::store
-* @see app/Http/Controllers/FinanceController.php:211
+* @see app/Http/Controllers/FinanceController.php:229
 * @route '/finance/quotations'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -57,7 +57,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:220
+* @see app/Http/Controllers/FinanceController.php:238
 * @route '/finance/quotations/{quotation}'
 */
 export const update = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -72,7 +72,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:220
+* @see app/Http/Controllers/FinanceController.php:238
 * @route '/finance/quotations/{quotation}'
 */
 update.url = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -105,7 +105,7 @@ update.url = (args: { quotation: string | { id: string } } | [quotation: string 
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:220
+* @see app/Http/Controllers/FinanceController.php:238
 * @route '/finance/quotations/{quotation}'
 */
 update.put = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -115,7 +115,7 @@ update.put = (args: { quotation: string | { id: string } } | [quotation: string 
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:220
+* @see app/Http/Controllers/FinanceController.php:238
 * @route '/finance/quotations/{quotation}'
 */
 const updateForm = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -130,7 +130,7 @@ const updateForm = (args: { quotation: string | { id: string } } | [quotation: s
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:220
+* @see app/Http/Controllers/FinanceController.php:238
 * @route '/finance/quotations/{quotation}'
 */
 updateForm.put = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -147,7 +147,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::approve
-* @see app/Http/Controllers/FinanceController.php:237
+* @see app/Http/Controllers/FinanceController.php:255
 * @route '/finance/quotations/{quotation}/approve'
 */
 export const approve = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -162,7 +162,7 @@ approve.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::approve
-* @see app/Http/Controllers/FinanceController.php:237
+* @see app/Http/Controllers/FinanceController.php:255
 * @route '/finance/quotations/{quotation}/approve'
 */
 approve.url = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -195,7 +195,7 @@ approve.url = (args: { quotation: string | { id: string } } | [quotation: string
 
 /**
 * @see \App\Http\Controllers\FinanceController::approve
-* @see app/Http/Controllers/FinanceController.php:237
+* @see app/Http/Controllers/FinanceController.php:255
 * @route '/finance/quotations/{quotation}/approve'
 */
 approve.post = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -205,7 +205,7 @@ approve.post = (args: { quotation: string | { id: string } } | [quotation: strin
 
 /**
 * @see \App\Http\Controllers\FinanceController::approve
-* @see app/Http/Controllers/FinanceController.php:237
+* @see app/Http/Controllers/FinanceController.php:255
 * @route '/finance/quotations/{quotation}/approve'
 */
 const approveForm = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -215,7 +215,7 @@ const approveForm = (args: { quotation: string | { id: string } } | [quotation: 
 
 /**
 * @see \App\Http\Controllers\FinanceController::approve
-* @see app/Http/Controllers/FinanceController.php:237
+* @see app/Http/Controllers/FinanceController.php:255
 * @route '/finance/quotations/{quotation}/approve'
 */
 approveForm.post = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -227,7 +227,7 @@ approve.form = approveForm
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:864
+* @see app/Http/Controllers/FinanceController.php:1020
 * @route '/finance/quotations/{quotation}/pdf'
 */
 export const pdf = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -242,7 +242,7 @@ pdf.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:864
+* @see app/Http/Controllers/FinanceController.php:1020
 * @route '/finance/quotations/{quotation}/pdf'
 */
 pdf.url = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -275,7 +275,7 @@ pdf.url = (args: { quotation: string | { id: string } } | [quotation: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:864
+* @see app/Http/Controllers/FinanceController.php:1020
 * @route '/finance/quotations/{quotation}/pdf'
 */
 pdf.get = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -285,7 +285,7 @@ pdf.get = (args: { quotation: string | { id: string } } | [quotation: string | {
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:864
+* @see app/Http/Controllers/FinanceController.php:1020
 * @route '/finance/quotations/{quotation}/pdf'
 */
 pdf.head = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -295,7 +295,7 @@ pdf.head = (args: { quotation: string | { id: string } } | [quotation: string | 
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:864
+* @see app/Http/Controllers/FinanceController.php:1020
 * @route '/finance/quotations/{quotation}/pdf'
 */
 const pdfForm = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -305,7 +305,7 @@ const pdfForm = (args: { quotation: string | { id: string } } | [quotation: stri
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:864
+* @see app/Http/Controllers/FinanceController.php:1020
 * @route '/finance/quotations/{quotation}/pdf'
 */
 pdfForm.get = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -315,7 +315,7 @@ pdfForm.get = (args: { quotation: string | { id: string } } | [quotation: string
 
 /**
 * @see \App\Http\Controllers\FinanceController::pdf
-* @see app/Http/Controllers/FinanceController.php:864
+* @see app/Http/Controllers/FinanceController.php:1020
 * @route '/finance/quotations/{quotation}/pdf'
 */
 pdfForm.head = (args: { quotation: string | { id: string } } | [quotation: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

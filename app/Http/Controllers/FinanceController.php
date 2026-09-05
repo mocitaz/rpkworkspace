@@ -28,6 +28,7 @@ use App\Http\Requests\StorePayrollRequest;
 use App\Http\Requests\StoreQuotationRequest;
 use App\Http\Requests\TransitionInvoiceRequest;
 use App\Http\Requests\UpdateExpenseRequest;
+use App\Http\Requests\UpdateFinancialAccountRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Http\Requests\UpdateMatterContractRequest;
 use App\Http\Requests\UpdatePartnerTransactionRequest;
@@ -58,6 +59,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
@@ -138,7 +140,22 @@ class FinanceController extends Controller
             'payments' => $paymentQuery->with(['matter:id,matter_number,title', 'account:id,name', 'allocations.invoice:id,invoice_number,outstanding_amount,currency', 'proofDocument.currentVersion'])->latest('received_at')->limit(50)->get(),
 
             // Multi-Kas & Accounts
-            'accounts' => FinancialAccount::query()->with('partner:id,name,email,avatar_path,position_title,department')->orderBy('type')->get(),
+            'accounts' => FinancialAccount::query()
+                ->with([
+                    'partner:id,name,email,avatar_path,position_title,department',
+                    'creator:id,name',
+                ])
+                ->withCount([
+                    'expenses',
+                    'payments',
+                    'outgoingTransfers',
+                    'incomingTransfers',
+                    'partnerTransactions',
+                    'clientTrustFunds',
+                    'payrolls',
+                ])
+                ->orderBy('type')
+                ->get(),
             'transfers' => AccountTransfer::query()->with(['fromAccount:id,name', 'toAccount:id,name', 'creator:id,name', 'proofDocument.currentVersion'])->latest('transferred_at')->limit(50)->get(),
 
             // Partner Advances & Transactions
@@ -172,6 +189,7 @@ class FinanceController extends Controller
                 'payment' => $request->user()->hasPermission('payment.manage'),
                 'invoiceTransition' => $request->user()->hasPermission('billing.manage'),
                 'matterContract' => $request->user()->hasPermission('billing.manage'),
+                'account' => $request->user()->hasPermission('billing.manage'),
             ],
         ]);
     }
@@ -433,6 +451,144 @@ class FinanceController extends Controller
         $audit->record($account, 'financial_account.created', [], $request->user(), $request);
 
         return back()->with('success', 'Akun Kas/Bank "'.$account->name.'" berhasil dibuat.');
+    }
+
+    public function updateAccount(UpdateFinancialAccountRequest $request, FinancialAccount $account, AuditService $audit): RedirectResponse
+    {
+        $data = $request->validated();
+        $oldAttributes = [
+            'name' => $account->name,
+            'bank_name' => $account->bank_name,
+            'account_number' => $account->account_number,
+            'partner_id' => $account->partner_id,
+            'description' => $account->description,
+        ];
+
+        $account->update([
+            'name' => $data['name'],
+            'bank_name' => $data['bank_name'] ?? null,
+            'account_number' => $data['account_number'] ?? null,
+            'partner_id' => $data['partner_id'] ?? null,
+            'description' => $data['description'] ?? null,
+        ]);
+
+        $audit->record($account, 'financial_account.updated', [
+            'old' => $oldAttributes,
+            'new' => $data,
+        ], $request->user(), $request);
+
+        return back()->with('success', 'Akun Kas/Bank "'.$account->name.'" berhasil diperbarui.');
+    }
+
+    public function destroyAccount(Request $request, FinancialAccount $account, AuditService $audit): RedirectResponse
+    {
+        abort_unless($request->user()->hasPermission('billing.manage'), 403);
+
+        $data = $request->validate([
+            'mode' => ['required', 'string', 'in:transfer,direct_delete'],
+            'target_account_id' => [
+                'nullable',
+                Rule::requiredIf($request->input('mode') === 'transfer'),
+                Rule::exists('financial_accounts', 'id')->whereNot('id', $account->getKey()),
+            ],
+        ], [
+            'mode.required' => 'Metode penghapusan wajib dipilih.',
+            'mode.in' => 'Metode penghapusan tidak valid.',
+            'target_account_id.required' => 'Rekening tujuan wajib dipilih untuk pengalihan saldo & transaksi.',
+            'target_account_id.exists' => 'Rekening tujuan tidak valid atau tidak boleh sama dengan rekening yang akan dihapus.',
+        ]);
+
+        $accountName = $account->name;
+        $mode = $data['mode'];
+
+        DB::transaction(function () use ($account, $accountName, $mode, $data, $request, $audit) {
+            if ($mode === 'transfer') {
+                $targetAccount = FinancialAccount::query()->lockForUpdate()->findOrFail($data['target_account_id']);
+
+                Expense::query()->where('account_id', $account->getKey())->update([
+                    'account_id' => $targetAccount->getKey(),
+                ]);
+
+                Payment::query()->where('account_id', $account->getKey())->update([
+                    'account_id' => $targetAccount->getKey(),
+                ]);
+
+                Payroll::query()->where('payment_account_id', $account->getKey())->update([
+                    'payment_account_id' => $targetAccount->getKey(),
+                ]);
+
+                PartnerTransaction::query()->where('account_id', $account->getKey())->update([
+                    'account_id' => $targetAccount->getKey(),
+                ]);
+
+                ClientTrustFund::query()->where('account_id', $account->getKey())->update([
+                    'account_id' => $targetAccount->getKey(),
+                ]);
+
+                AccountTransfer::query()
+                    ->where(function ($q) use ($account, $targetAccount) {
+                        $q->where('from_account_id', $account->getKey())
+                            ->where('to_account_id', $targetAccount->getKey());
+                    })
+                    ->orWhere(function ($q) use ($account, $targetAccount) {
+                        $q->where('from_account_id', $targetAccount->getKey())
+                            ->where('to_account_id', $account->getKey());
+                    })
+                    ->delete();
+
+                AccountTransfer::query()->where('from_account_id', $account->getKey())->update([
+                    'from_account_id' => $targetAccount->getKey(),
+                ]);
+                AccountTransfer::query()->where('to_account_id', $account->getKey())->update([
+                    'to_account_id' => $targetAccount->getKey(),
+                ]);
+
+                $targetAccount->increment('opening_balance', (int) $account->opening_balance);
+
+                $audit->record($account, 'financial_account.deleted', [
+                    'name' => $accountName,
+                    'mode' => 'transfer',
+                    'target_account_id' => $targetAccount->getKey(),
+                    'target_account_name' => $targetAccount->name,
+                    'transferred_balance' => (int) $account->current_balance,
+                ], $request->user(), $request);
+
+                $account->delete();
+
+                $targetAccount->recalculateBalance();
+                FinancialAccount::syncAllBalances();
+            } else {
+                AccountTransfer::query()
+                    ->where('from_account_id', $account->getKey())
+                    ->orWhere('to_account_id', $account->getKey())
+                    ->delete();
+
+                ClientTrustFund::query()
+                    ->where('account_id', $account->getKey())
+                    ->delete();
+
+                Expense::query()->where('account_id', $account->getKey())->update(['account_id' => null]);
+                Payment::query()->where('account_id', $account->getKey())->update(['account_id' => null]);
+                Payroll::query()->where('payment_account_id', $account->getKey())->update(['payment_account_id' => null]);
+                PartnerTransaction::query()->where('account_id', $account->getKey())->update(['account_id' => null]);
+
+                $audit->record($account, 'financial_account.deleted', [
+                    'name' => $accountName,
+                    'mode' => 'direct_delete',
+                    'cleared_balance' => (int) $account->current_balance,
+                ], $request->user(), $request);
+
+                $account->delete();
+
+                FinancialAccount::syncAllBalances();
+            }
+        });
+
+        $message = $mode === 'transfer'
+            ? 'Rekening "'.$accountName.'" berhasil dihapus dan seluruh saldo serta data transaksi telah dialihkan.'
+            : 'Rekening "'.$accountName.'" beserta seluruh saldonya berhasil dihapus.';
+
+        return back()->with('success', $message);
     }
 
     public function storeTransfer(StoreAccountTransferRequest $request, CreateFinanceProofDocument $createProof, AuditService $audit): RedirectResponse

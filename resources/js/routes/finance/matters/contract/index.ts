@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:67
+* @see app/Http/Controllers/FinanceController.php:69
 * @route '/finance/matters/{matter}/contract'
 */
 export const update = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -16,7 +16,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:67
+* @see app/Http/Controllers/FinanceController.php:69
 * @route '/finance/matters/{matter}/contract'
 */
 update.url = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions) => {
@@ -49,7 +49,7 @@ update.url = (args: { matter: string | { id: string } } | [matter: string | { id
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:67
+* @see app/Http/Controllers/FinanceController.php:69
 * @route '/finance/matters/{matter}/contract'
 */
 update.patch = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -59,7 +59,7 @@ update.patch = (args: { matter: string | { id: string } } | [matter: string | { 
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:67
+* @see app/Http/Controllers/FinanceController.php:69
 * @route '/finance/matters/{matter}/contract'
 */
 const updateForm = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -74,7 +74,7 @@ const updateForm = (args: { matter: string | { id: string } } | [matter: string 
 
 /**
 * @see \App\Http\Controllers\FinanceController::update
-* @see app/Http/Controllers/FinanceController.php:67
+* @see app/Http/Controllers/FinanceController.php:69
 * @route '/finance/matters/{matter}/contract'
 */
 updateForm.patch = (args: { matter: string | { id: string } } | [matter: string | { id: string } ] | string | { id: string }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

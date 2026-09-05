@@ -131,6 +131,8 @@ Route::middleware(['auth', EnsureUserIsActive::class, 'verified'])->group(functi
     Route::get('finance/invoices/{invoice}/pdf', [FinanceController::class, 'downloadInvoice'])->name('finance.invoices.pdf');
     Route::get('finance/quotations/{quotation}/pdf', [FinanceController::class, 'downloadQuotation'])->name('finance.quotations.pdf');
     Route::post('finance/accounts', [FinanceController::class, 'storeAccount'])->name('finance.accounts.store');
+    Route::put('finance/accounts/{account}', [FinanceController::class, 'updateAccount'])->name('finance.accounts.update');
+    Route::delete('finance/accounts/{account}', [FinanceController::class, 'destroyAccount'])->name('finance.accounts.destroy');
     Route::post('finance/transfers', [FinanceController::class, 'storeTransfer'])->name('finance.transfers.store');
     Route::post('finance/partner-transactions', [FinanceController::class, 'storePartnerTransaction'])->name('finance.partner-transactions.store');
     Route::put('finance/partner-transactions/{partnerTransaction}', [FinanceController::class, 'updatePartnerTransaction'])->name('finance.partner-transactions.update');

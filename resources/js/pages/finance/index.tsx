@@ -273,6 +273,7 @@ export default function FinanceIndex({
         payment: boolean;
         invoiceTransition: boolean;
         matterContract: boolean;
+        account?: boolean;
     };
 }) {
     const [modal, setModal] = useState<
@@ -1495,6 +1496,8 @@ export default function FinanceIndex({
                                 <AccountsView
                                     accounts={accounts}
                                     transfers={transfers}
+                                    partners={partnersList}
+                                    canManage={can.account ?? can.invoice}
                                     onOpenAccountModal={() =>
                                         setModal('account')
                                     }
