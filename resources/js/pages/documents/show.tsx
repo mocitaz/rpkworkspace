@@ -21,6 +21,7 @@ import {
     Plus,
     QrCode,
     RefreshCw,
+    RotateCcw,
     ScanText,
     ShieldAlert,
     ShieldCheck,
@@ -646,7 +647,7 @@ export default function DocumentShow({
                                                     />
                                                 </div>
 
-                                                <div className="space-y-1.5 rounded-lg bg-slate-50/80 p-2.5 dark:bg-zinc-800/40">
+                                                <div className="space-y-2 rounded-xl border border-slate-200/70 bg-slate-50/70 p-2.5 dark:border-white/5 dark:bg-zinc-800/30">
                                                     <div className="flex items-center gap-2">
                                                         <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
                                                             <AvatarImage
@@ -671,63 +672,64 @@ export default function DocumentShow({
                                                         </p>
                                                     </div>
                                                     {approval.request_note && (
-                                                        <p className="pl-7 text-[11.5px] leading-relaxed italic text-slate-600 dark:text-zinc-400">
+                                                        <p className="rounded-lg border border-slate-200/50 bg-white/70 p-2 text-[11.5px] leading-relaxed italic text-slate-600 dark:border-white/5 dark:bg-black/20 dark:text-zinc-400">
                                                             &ldquo;{approval.request_note}&rdquo;
                                                         </p>
                                                     )}
                                                     {approval.resolution_note && (
-                                                        <p className="border-t border-slate-200/50 pl-7 pt-1 text-[11px] font-medium text-slate-700 dark:text-zinc-300">
+                                                        <p className="border-t border-slate-200/50 pt-1.5 text-[11px] font-medium text-slate-700 dark:text-zinc-300">
                                                             Catatan: {approval.resolution_note}
                                                         </p>
                                                     )}
-                                                </div>
 
-                                                {approval.status === 'pending' && (
-                                                    isAssignedReviewer && can.approve ? (
-                                                        <div className="flex items-center gap-2 pt-0.5">
-                                                            <Button
-                                                                size="sm"
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    setApprovingApproval({
-                                                                        id: approval.id,
-                                                                        requesterName:
-                                                                            approval.requester?.name ||
-                                                                            'Pemohon',
-                                                                    });
-                                                                    setApprovalNote('');
-                                                                }}
-                                                                className="h-7 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white shadow-2xs transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-600 dark:hover:bg-emerald-500"
-                                                            >
-                                                                <Check className="mr-1 size-3.5" />
-                                                                Setujui
-                                                            </Button>
-                                                            <Button
-                                                                size="sm"
-                                                                type="button"
-                                                                variant="outline"
-                                                                onClick={() => {
-                                                                    setRevisingApproval({
-                                                                        id: approval.id,
-                                                                        requesterName:
-                                                                            approval.requester?.name ||
-                                                                            'Pemohon',
-                                                                    });
-                                                                    setRevisionNote('');
-                                                                }}
-                                                                className="h-7 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-zinc-800"
-                                                            >
-                                                                Minta Revisi
-                                                            </Button>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="pt-0.5">
-                                                            <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                                                Menunggu keputusan dari {approval.reviewer.name}
-                                                            </span>
-                                                        </div>
-                                                    )
-                                                )}
+                                                    {approval.status === 'pending' && (
+                                                        isAssignedReviewer && can.approve ? (
+                                                            <div className="flex items-center justify-end gap-2 border-t border-slate-200/60 pt-2 dark:border-white/5">
+                                                                <Button
+                                                                    size="sm"
+                                                                    type="button"
+                                                                    variant="outline"
+                                                                    onClick={() => {
+                                                                        setRevisingApproval({
+                                                                            id: approval.id,
+                                                                            requesterName:
+                                                                                approval.requester?.name ||
+                                                                                'Pemohon',
+                                                                        });
+                                                                        setRevisionNote('');
+                                                                    }}
+                                                                    className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs transition-colors hover:border-amber-300 hover:bg-amber-50/70 hover:text-amber-800 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:border-amber-500/40 dark:hover:bg-amber-950/30 dark:hover:text-amber-300"
+                                                                >
+                                                                    <RotateCcw className="mr-1.5 size-3 text-amber-600 dark:text-amber-400" />
+                                                                    Minta Revisi
+                                                                </Button>
+                                                                <Button
+                                                                    size="sm"
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setApprovingApproval({
+                                                                            id: approval.id,
+                                                                            requesterName:
+                                                                                approval.requester?.name ||
+                                                                                'Pemohon',
+                                                                        });
+                                                                        setApprovalNote('');
+                                                                    }}
+                                                                    className="h-7.5 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white shadow-2xs transition-all hover:bg-emerald-700 active:scale-[0.98] dark:bg-emerald-600 dark:hover:bg-emerald-500"
+                                                                >
+                                                                    <Check className="mr-1.5 size-3.5" />
+                                                                    Setujui
+                                                                </Button>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="border-t border-slate-200/60 pt-1.5 text-right dark:border-white/5">
+                                                                <span className="text-[10.5px] font-medium text-slate-500 dark:text-zinc-400">
+                                                                    Menunggu keputusan dari {approval.reviewer.name}
+                                                                </span>
+                                                            </div>
+                                                        )
+                                                    )}
+                                                </div>
                                             </div>
                                         );
                                     })
