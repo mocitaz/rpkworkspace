@@ -1,5 +1,4 @@
 import { usePage } from '@inertiajs/react';
-import { Breadcrumbs } from '@/components/breadcrumbs';
 import { CommandPalette } from '@/components/command-palette';
 import { NotificationMenu } from '@/components/notification-menu';
 import { QuickAppsMenu } from '@/components/quick-apps-menu';
@@ -16,7 +15,7 @@ import { useInitials } from '@/hooks/use-initials';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
 export function AppSidebarHeader({
-    breadcrumbs = [],
+    breadcrumbs: _breadcrumbs = [],
 }: {
     breadcrumbs?: BreadcrumbItemType[];
 }) {
@@ -26,19 +25,12 @@ export function AppSidebarHeader({
 
     return (
         <header className="sticky top-0 z-30 flex h-12 w-full shrink-0 items-center justify-between border-b border-slate-200/80 bg-white/85 px-4 backdrop-blur-md transition-all sm:h-13 sm:px-6 lg:px-8 dark:border-white/[0.08] dark:bg-[#111317]/85">
-            {/* 1. Left Section: Sidebar Trigger, Breadcrumbs & Search Bar */}
+            {/* 1. Left Section: Sidebar Trigger & Search Bar */}
             <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
                 <SidebarTrigger className="size-8 shrink-0 rounded-lg text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 active:scale-95 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white" />
 
-                {breadcrumbs && breadcrumbs.length > 0 && (
-                    <div className="hidden min-w-0 items-center gap-2.5 lg:flex">
-                        <div className="h-4 w-px bg-slate-200/80 dark:bg-white/10" />
-                        <Breadcrumbs breadcrumbs={breadcrumbs} />
-                    </div>
-                )}
-
                 {/* Compact Search Bar */}
-                <div className="w-full max-w-[190px] sm:max-w-[240px] md:max-w-[300px]">
+                <div className="w-full max-w-[200px] sm:max-w-[260px] md:max-w-[320px]">
                     <CommandPalette />
                 </div>
             </div>
