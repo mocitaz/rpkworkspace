@@ -1275,6 +1275,7 @@ export default function DocumentShow({
                             submitLabel="Setujui Dokumen"
                             processingLabel="Menyetujui..."
                             tone="primary"
+                            className="-mx-5 -mb-4 sm:-mx-6 sm:px-6"
                         />
                     </form>
                 </DialogContent>
@@ -1344,6 +1345,7 @@ export default function DocumentShow({
                             submitLabel="Kirim Permintaan Revisi"
                             processingLabel="Mengirim..."
                             tone="primary"
+                            className="-mx-5 -mb-4 sm:-mx-6 sm:px-6"
                         />
                     </form>
                 </DialogContent>

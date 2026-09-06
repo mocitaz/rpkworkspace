@@ -110,6 +110,7 @@ export function FinanceDialogFooter({
     processingLabel = 'Menyimpan...',
     tone = 'primary',
     disabled = false,
+    className,
     children,
 }: {
     onCancel: () => void;
@@ -118,10 +119,16 @@ export function FinanceDialogFooter({
     processingLabel?: string;
     tone?: FinanceDialogToneName;
     disabled?: boolean;
+    className?: string;
     children?: ReactNode;
 }) {
     return (
-        <DialogFooter className="sticky bottom-0 z-10 flex shrink-0 flex-row items-center justify-between gap-3 border-t border-slate-100 bg-white/95 px-5 py-3.5 backdrop-blur-sm sm:px-6 dark:border-white/[0.06] dark:bg-[#14161b]/95">
+        <DialogFooter
+            className={cn(
+                'sticky bottom-0 z-10 flex shrink-0 flex-row items-center justify-between gap-3 border-t border-slate-100 bg-white/95 px-5 py-3.5 backdrop-blur-sm sm:px-6 dark:border-white/[0.06] dark:bg-[#14161b]/95',
+                className,
+            )}
+        >
             <div>{children}</div>
             <div className="ml-auto flex items-center gap-2.5">
                 <Button
