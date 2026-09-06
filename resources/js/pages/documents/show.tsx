@@ -183,13 +183,20 @@ export default function DocumentShow({
         'review' | 'signature' | null
     >(null);
     const [selectedReviewerId, setSelectedReviewerId] = useState<string>('');
-    const [approvalAction, setApprovalAction] = useState<{
+    const [approvingApproval, setApprovingApproval] = useState<{
         id: string;
-        type: 'approve' | 'reject';
-        requesterName?: string;
+        requesterName: string;
     } | null>(null);
     const [approvalNote, setApprovalNote] = useState('');
-    const [isSubmittingApproval, setIsSubmittingApproval] = useState(false);
+    const [isApproving, setIsApproving] = useState(false);
+
+    const [revisingApproval, setRevisingApproval] = useState<{
+        id: string;
+        requesterName: string;
+    } | null>(null);
+    const [revisionNote, setRevisionNote] = useState('');
+    const [isRevising, setIsRevising] = useState(false);
+
     const [selectedVersionId, setSelectedVersionId] = useState(
         document.versions[0]?.id,
     );
@@ -199,6 +206,48 @@ export default function DocumentShow({
     const [signers, setSigners] = useState([{ name: '', email: '' }]);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+
+    const handleApproveSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!approvingApproval) return;
+        setIsApproving(true);
+        router.patch(
+            approvalRoutes.resolve.url(approvingApproval.id),
+            {
+                approved: 1,
+                note: approvalNote.trim() || null,
+            },
+            {
+                preserveScroll: true,
+                onFinish: () => {
+                    setIsApproving(false);
+                    setApprovingApproval(null);
+                    setApprovalNote('');
+                },
+            },
+        );
+    };
+
+    const handleRevisionSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!revisingApproval || !revisionNote.trim()) return;
+        setIsRevising(true);
+        router.patch(
+            approvalRoutes.resolve.url(revisingApproval.id),
+            {
+                approved: 0,
+                note: revisionNote.trim(),
+            },
+            {
+                preserveScroll: true,
+                onFinish: () => {
+                    setIsRevising(false);
+                    setRevisingApproval(null);
+                    setRevisionNote('');
+                },
+            },
+        );
+    };
 
     const selectedVersion =
         document.versions.find((version) => version.id === selectedVersionId) ??
@@ -640,16 +689,15 @@ export default function DocumentShow({
                                                                 size="sm"
                                                                 type="button"
                                                                 onClick={() => {
-                                                                    setApprovalAction({
+                                                                    setApprovingApproval({
                                                                         id: approval.id,
-                                                                        type: 'approve',
                                                                         requesterName:
                                                                             approval.requester?.name ||
                                                                             'Pemohon',
                                                                     });
                                                                     setApprovalNote('');
                                                                 }}
-                                                                className="h-7 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                                                className="h-7 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white shadow-2xs transition-all hover:bg-emerald-700 active:scale-95 dark:bg-emerald-600 dark:hover:bg-emerald-500"
                                                             >
                                                                 <Check className="mr-1 size-3.5" />
                                                                 Setujui
@@ -659,14 +707,13 @@ export default function DocumentShow({
                                                                 type="button"
                                                                 variant="outline"
                                                                 onClick={() => {
-                                                                    setApprovalAction({
+                                                                    setRevisingApproval({
                                                                         id: approval.id,
-                                                                        type: 'reject',
                                                                         requesterName:
                                                                             approval.requester?.name ||
                                                                             'Pemohon',
                                                                     });
-                                                                    setApprovalNote('');
+                                                                    setRevisionNote('');
                                                                 }}
                                                                 className="h-7 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-zinc-800"
                                                             >
@@ -1158,165 +1205,202 @@ export default function DocumentShow({
                 </DialogContent>
             </Dialog>
 
-            {/* Modal Konfirmasi Persetujuan / Permintaan Revisi */}
+            {/* Modal: Setujui Dokumen */}
             <Dialog
-                open={approvalAction !== null}
-                onOpenChange={(open) => {
-                    if (!open && !isSubmittingApproval) {
-                        setApprovalAction(null);
+                open={approvingApproval !== null}
+                onOpenChange={(isOpen) => {
+                    if (!isOpen && !isApproving) {
+                        setApprovingApproval(null);
                         setApprovalNote('');
                     }
                 }}
             >
-                <DialogContent className="max-h-[85vh] w-full min-w-0 max-w-[calc(100%-2rem)] overflow-y-auto overflow-x-hidden rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
-                    <DialogHeader className="min-w-0 border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                        <div className="flex items-center gap-2.5 min-w-0">
-                            <div
-                                className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${
-                                    approvalAction?.type === 'approve'
-                                        ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400'
-                                        : 'bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400'
-                                }`}
-                            >
-                                {approvalAction?.type === 'approve' ? (
-                                    <CheckCircle2 className="size-4.5" />
-                                ) : (
-                                    <AlertTriangle className="size-4.5" />
-                                )}
+                <DialogContent className="w-full min-w-0 max-w-[calc(100%-2rem)] overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                    <div className="border-b border-slate-100 bg-slate-50/60 p-5 dark:border-white/5 dark:bg-zinc-900/40 min-w-0">
+                        <DialogHeader className="min-w-0">
+                            <div className="flex items-start gap-3.5 min-w-0">
+                                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-emerald-200/80 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-950/50 dark:text-emerald-400">
+                                    <CheckCircle2 className="size-5" />
+                                </div>
+                                <div className="min-w-0 flex-1 space-y-1 text-left">
+                                    <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                        Setujui Dokumen
+                                    </DialogTitle>
+                                    <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed">
+                                        Konfirmasi persetujuan dokumen yang diajukan oleh{' '}
+                                        <strong className="text-slate-800 dark:text-zinc-200 font-semibold">
+                                            {approvingApproval?.requesterName}
+                                        </strong>.
+                                    </DialogDescription>
+                                </div>
                             </div>
-                            <div className="min-w-0 flex-1">
-                                <DialogTitle className="truncate text-base font-bold text-slate-900 dark:text-white">
-                                    {approvalAction?.type === 'approve'
-                                        ? 'Konfirmasi Persetujuan Dokumen'
-                                        : 'Permintaan Revisi Dokumen'}
-                                </DialogTitle>
-                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                    {approvalAction?.type === 'approve'
-                                        ? `Menyetujui pengajuan review dari ${approvalAction?.requesterName}.`
-                                        : `Kembalikan berkas ke ${approvalAction?.requesterName} dengan catatan perbaikan.`}
-                                </DialogDescription>
+                        </DialogHeader>
+                    </div>
+
+                    <form onSubmit={handleApproveSubmit} className="min-w-0 w-full">
+                        <div className="p-5 space-y-4">
+                            {/* Pratinjau Dokumen */}
+                            <div className="flex items-start gap-2.5 rounded-xl border border-slate-200/80 bg-slate-50/70 p-3 text-xs dark:border-white/10 dark:bg-zinc-900/40 min-w-0">
+                                <FileCheck className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
+                                <div className="min-w-0 flex-1">
+                                    <p className="font-semibold text-slate-900 dark:text-white truncate" title={document.title}>
+                                        {document.title}
+                                    </p>
+                                    <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                        Status berkas akan diperbarui menjadi disetujui (Approved).
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="grid gap-1.5 min-w-0 w-full">
+                                <Label
+                                    htmlFor="approve-note"
+                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                >
+                                    Catatan Persetujuan (Opsional)
+                                </Label>
+                                <textarea
+                                    id="approve-note"
+                                    rows={3}
+                                    value={approvalNote}
+                                    onChange={(e) => setApprovalNote(e.target.value)}
+                                    placeholder="Tambahkan catatan persetujuan jika diperlukan (opsional)..."
+                                    className="w-full min-w-0 max-w-full rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                />
                             </div>
                         </div>
-                    </DialogHeader>
 
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            if (!approvalAction) return;
-                            if (
-                                approvalAction.type === 'reject' &&
-                                !approvalNote.trim()
-                            ) {
-                                return;
-                            }
-                            setIsSubmittingApproval(true);
-                            router.patch(
-                                approvalRoutes.resolve.url(approvalAction.id),
-                                {
-                                    approved:
-                                        approvalAction.type === 'approve'
-                                            ? 1
-                                            : 0,
-                                    note: approvalNote.trim() || null,
-                                },
-                                {
-                                    preserveScroll: true,
-                                    onFinish: () => {
-                                        setIsSubmittingApproval(false);
-                                        setApprovalAction(null);
-                                        setApprovalNote('');
-                                    },
-                                },
-                            );
-                        }}
-                        className="w-full min-w-0 space-y-4 pt-1"
-                    >
-                        <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-3 text-xs dark:border-white/10 dark:bg-zinc-800/40">
-                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                Judul Dokumen:
-                            </p>
-                            <p
-                                className="truncate font-semibold text-slate-900 dark:text-white"
-                                title={document.title}
-                            >
-                                {document.title}
-                            </p>
-                            <p className="mt-1 text-[11px] text-slate-500 dark:text-zinc-400">
-                                Diajukan oleh:{' '}
-                                <span className="font-medium text-slate-800 dark:text-zinc-200">
-                                    {approvalAction?.requesterName}
-                                </span>
-                            </p>
-                        </div>
-
-                        <div className="grid gap-1.5 min-w-0 w-full">
-                            <Label
-                                htmlFor="approval-note"
-                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
-                            >
-                                {approvalAction?.type === 'approve' ? (
-                                    'Catatan Persetujuan (Opsional)'
-                                ) : (
-                                    <>
-                                        Catatan / Poin Revisi{' '}
-                                        <span className="text-rose-500">*</span>
-                                    </>
-                                )}
-                            </Label>
-                            <textarea
-                                id="approval-note"
-                                rows={3}
-                                required={approvalAction?.type === 'reject'}
-                                value={approvalNote}
-                                onChange={(e) =>
-                                    setApprovalNote(e.target.value)
-                                }
-                                placeholder={
-                                    approvalAction?.type === 'approve'
-                                        ? 'Tambahkan catatan persetujuan jika diperlukan (opsional)...'
-                                        : 'Jelaskan bagian klausul atau halaman yang perlu direvisi oleh pemohon...'
-                                }
-                                className="w-full min-w-0 max-w-full rounded-xl border border-slate-200 bg-white p-2.5 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
-                            />
-                        </div>
-
-                        <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+                        <div className="flex items-center justify-end gap-2.5 border-t border-slate-100 bg-slate-50/50 p-4 dark:border-white/5 dark:bg-zinc-900/30">
                             <Button
                                 type="button"
                                 variant="outline"
                                 size="sm"
-                                disabled={isSubmittingApproval}
+                                disabled={isApproving}
                                 onClick={() => {
-                                    setApprovalAction(null);
+                                    setApprovingApproval(null);
                                     setApprovalNote('');
                                 }}
-                                className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                                className="h-9 rounded-xl border-slate-200 bg-white px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
                             >
                                 Batal
                             </Button>
                             <Button
                                 type="submit"
                                 size="sm"
-                                disabled={
-                                    isSubmittingApproval ||
-                                    (approvalAction?.type === 'reject' &&
-                                        !approvalNote.trim())
-                                }
-                                className={`h-8 rounded-lg px-4 text-xs font-semibold text-white shadow-2xs transition-all active:scale-95 ${
-                                    approvalAction?.type === 'approve'
-                                        ? 'bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900'
-                                        : 'bg-rose-600 hover:bg-rose-700 dark:bg-rose-600 dark:hover:bg-rose-500'
-                                }`}
+                                disabled={isApproving}
+                                className="h-9 rounded-xl bg-emerald-600 px-4 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-[0.98] transition-all dark:bg-emerald-600 dark:hover:bg-emerald-500"
                             >
-                                {isSubmittingApproval ? (
+                                {isApproving ? (
                                     <>
                                         <Spinner className="mr-1.5 size-3.5" />
-                                        Memproses...
+                                        Menyetujui...
                                     </>
-                                ) : approvalAction?.type === 'approve' ? (
+                                ) : (
                                     <>
                                         <Check className="mr-1.5 size-3.5" />
                                         Setujui Dokumen
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* Modal: Minta Revisi Dokumen */}
+            <Dialog
+                open={revisingApproval !== null}
+                onOpenChange={(isOpen) => {
+                    if (!isOpen && !isRevising) {
+                        setRevisingApproval(null);
+                        setRevisionNote('');
+                    }
+                }}
+            >
+                <DialogContent className="w-full min-w-0 max-w-[calc(100%-2rem)] overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                    <div className="border-b border-slate-100 bg-slate-50/60 p-5 dark:border-white/5 dark:bg-zinc-900/40 min-w-0">
+                        <DialogHeader className="min-w-0">
+                            <div className="flex items-start gap-3.5 min-w-0">
+                                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-amber-200/80 bg-amber-50 text-amber-600 dark:border-amber-900/50 dark:bg-amber-950/50 dark:text-amber-400">
+                                    <AlertTriangle className="size-5" />
+                                </div>
+                                <div className="min-w-0 flex-1 space-y-1 text-left">
+                                    <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                        Permintaan Revisi Dokumen
+                                    </DialogTitle>
+                                    <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed">
+                                        Kembalikan berkas ke{' '}
+                                        <strong className="text-slate-800 dark:text-zinc-200 font-semibold">
+                                            {revisingApproval?.requesterName}
+                                        </strong>{' '}
+                                        disertai instruksi atau poin klausul yang perlu direvisi.
+                                    </DialogDescription>
+                                </div>
+                            </div>
+                        </DialogHeader>
+                    </div>
+
+                    <form onSubmit={handleRevisionSubmit} className="min-w-0 w-full">
+                        <div className="p-5 space-y-4">
+                            {/* Pratinjau Dokumen */}
+                            <div className="flex items-start gap-2.5 rounded-xl border border-amber-200/60 bg-amber-50/50 p-3 text-xs dark:border-amber-900/30 dark:bg-amber-950/20 min-w-0">
+                                <FileClock className="size-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+                                <div className="min-w-0 flex-1">
+                                    <p className="font-semibold text-slate-900 dark:text-white truncate" title={document.title}>
+                                        {document.title}
+                                    </p>
+                                    <p className="mt-0.5 text-[11px] text-amber-800 dark:text-amber-300">
+                                        Status berkas akan menjadi Perlu Revisi (Revision Requested).
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="grid gap-1.5 min-w-0 w-full">
+                                <Label
+                                    htmlFor="revision-note"
+                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                >
+                                    Catatan / Poin Revisi <span className="text-rose-500">*</span>
+                                </Label>
+                                <textarea
+                                    id="revision-note"
+                                    rows={3}
+                                    required
+                                    value={revisionNote}
+                                    onChange={(e) => setRevisionNote(e.target.value)}
+                                    placeholder="Jelaskan pasal, klausul, atau halaman yang memerlukan perbaikan dari pemohon..."
+                                    className="w-full min-w-0 max-w-full rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                />
+                                <span className="text-[10px] text-slate-400 dark:text-zinc-500">
+                                    Catatan ini akan dikirimkan langsung ke pemohon review.
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-2.5 border-t border-slate-100 bg-slate-50/50 p-4 dark:border-white/5 dark:bg-zinc-900/30">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                disabled={isRevising}
+                                onClick={() => {
+                                    setRevisingApproval(null);
+                                    setRevisionNote('');
+                                }}
+                                className="h-9 rounded-xl border-slate-200 bg-white px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                            >
+                                Batal
+                            </Button>
+                            <Button
+                                type="submit"
+                                size="sm"
+                                disabled={isRevising || !revisionNote.trim()}
+                                className="h-9 rounded-xl bg-amber-600 px-4 text-xs font-bold text-white shadow-2xs hover:bg-amber-700 active:scale-[0.98] transition-all disabled:opacity-50 dark:bg-amber-600 dark:hover:bg-amber-500"
+                            >
+                                {isRevising ? (
+                                    <>
+                                        <Spinner className="mr-1.5 size-3.5" />
+                                        Mengirim...
                                     </>
                                 ) : (
                                     'Kirim Permintaan Revisi'
