@@ -601,7 +601,7 @@ export default function DocumentShow({
                                 </span>
                             </div>
 
-                            <div className="custom-scroll min-h-0 flex-1 space-y-3 overflow-y-auto pt-1 pr-1">
+                            <div className="custom-scroll min-h-0 flex-1 divide-y divide-slate-100 overflow-y-auto pr-1 dark:divide-white/[0.04]">
                                 {document.approvals.length ? (
                                     document.approvals.map((approval) => {
                                         const isAssignedReviewer = Boolean(
@@ -614,131 +614,132 @@ export default function DocumentShow({
                                         return (
                                             <div
                                                 key={approval.id}
-                                                className="space-y-2.5 rounded-lg border border-slate-200/80 bg-slate-50/50 p-3 text-xs dark:border-white/10 dark:bg-zinc-900/40"
+                                                className="space-y-1.5 py-3 text-xs first:pt-1"
                                             >
-                                                {/* Header Row: Reviewer + Status */}
-                                                <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-slate-200/60 pb-2 dark:border-white/5">
-                                                    <div className="flex flex-wrap items-center gap-1.5">
-                                                        <span className="font-mono text-[10.5px] font-semibold uppercase text-slate-500 dark:text-zinc-400">
-                                                            Reviewer
-                                                        </span>
-                                                        <span className="text-slate-300 dark:text-zinc-600">
-                                                            ·
-                                                        </span>
-                                                        <span className="font-mono text-[11px] font-bold text-slate-900 dark:text-white">
-                                                            {approval.reviewer.name}
-                                                        </span>
+                                                {/* Top Row: Reviewer + Action buttons / Status badge */}
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <div className="flex min-w-0 items-center gap-2">
+                                                        <Avatar className="size-6 shrink-0 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10">
+                                                            <AvatarImage
+                                                                src={
+                                                                    approval.reviewer.avatar_url ??
+                                                                    (approval.reviewer.avatar_path
+                                                                        ? `/storage/${approval.reviewer.avatar_path}`
+                                                                        : undefined)
+                                                                }
+                                                                alt={approval.reviewer.name}
+                                                            />
+                                                            <AvatarFallback className="bg-slate-100 text-[9px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                                                {getInitials(approval.reviewer.name)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="min-w-0">
+                                                            <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                                                Reviewer: {approval.reviewer.name}
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                    <StatusText
-                                                        value={approval.status}
-                                                    />
-                                                </div>
 
-                                                {/* Requester & Review Card (Identik dengan Signer Card di E-Sign) */}
-                                                <div className="space-y-1.5 pt-0.5">
-                                                    <div className="flex items-center gap-2.5 rounded-lg border border-slate-200/80 bg-white p-2 shadow-2xs dark:border-white/10 dark:bg-[#14161b]">
-                                                        <div className="relative shrink-0">
-                                                            <Avatar className="size-6.5 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10">
-                                                                <AvatarImage
-                                                                    src={
-                                                                        approval.requester.avatar_url ??
-                                                                        (approval.requester.avatar_path
-                                                                            ? `/storage/${approval.requester.avatar_path}`
-                                                                            : undefined)
-                                                                    }
-                                                                    alt={approval.requester.name}
-                                                                />
-                                                                <AvatarFallback className="bg-slate-100 text-[9px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                                                    {getInitials(approval.requester.name)}
-                                                                </AvatarFallback>
-                                                            </Avatar>
-                                                        </div>
-                                                        <div className="min-w-0 flex-1 space-y-0.5">
-                                                            <p className="truncate text-[11px] font-bold text-slate-900 dark:text-white">
-                                                                Diajukan oleh {approval.requester.name}
-                                                            </p>
-                                                            <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
-                                                                {approval.reviewer.email ? approval.reviewer.email : `Tujuan: ${approval.reviewer.name}`}
-                                                            </p>
-                                                            <p className="text-[10px]">
-                                                                {approval.status === 'pending' ? (
-                                                                    <span className="font-medium text-amber-600 dark:text-amber-400">
-                                                                        Menunggu review dari {approval.reviewer.name}
-                                                                    </span>
-                                                                ) : approval.status === 'approved' ? (
-                                                                    <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
-                                                                        <Check className="size-2" />
-                                                                        Disetujui
-                                                                    </span>
-                                                                ) : (
-                                                                    <span className="font-medium text-rose-600 dark:text-rose-400">
-                                                                        Perlu Revisi
-                                                                    </span>
-                                                                )}
-                                                            </p>
-                                                        </div>
-
-                                                        {/* Actions */}
+                                                    <div className="flex shrink-0 items-center gap-1.5">
                                                         {approval.status === 'pending' &&
-                                                            isAssignedReviewer &&
-                                                            can.approve && (
-                                                                <div className="flex shrink-0 items-center gap-1">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => {
-                                                                            setRevisingApproval({
-                                                                                id: approval.id,
-                                                                                requesterName:
-                                                                                    approval.requester?.name ||
-                                                                                    'Pemohon',
-                                                                            });
-                                                                            setRevisionNote('');
-                                                                        }}
-                                                                        className="inline-flex h-6 items-center gap-1 rounded border border-slate-200 bg-white px-2 text-[10.5px] font-semibold text-slate-700 shadow-2xs transition-all hover:bg-slate-50 active:scale-95 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
-                                                                        title="Minta Revisi Dokumen"
-                                                                    >
-                                                                        <RotateCcw className="size-2.5 text-amber-600 dark:text-amber-400" />
-                                                                        <span>Minta Revisi</span>
-                                                                    </button>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => {
-                                                                            setApprovingApproval({
-                                                                                id: approval.id,
-                                                                                requesterName:
-                                                                                    approval.requester?.name ||
-                                                                                    'Pemohon',
-                                                                            });
-                                                                            setApprovalNote('');
-                                                                        }}
-                                                                        className="inline-flex h-6 items-center gap-1 rounded bg-slate-900 px-2 text-[10.5px] font-bold text-white shadow-2xs transition-all hover:bg-black active:scale-95 dark:bg-white dark:text-slate-900"
-                                                                        title="Setujui Dokumen"
-                                                                    >
-                                                                        <Check className="size-2.5 text-emerald-400 dark:text-emerald-600" />
-                                                                        <span>Setujui</span>
-                                                                    </button>
-                                                                </div>
-                                                            )}
+                                                        isAssignedReviewer &&
+                                                        can.approve ? (
+                                                            <>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setRevisingApproval({
+                                                                            id: approval.id,
+                                                                            requesterName:
+                                                                                approval.requester?.name ||
+                                                                                'Pemohon',
+                                                                        });
+                                                                        setRevisionNote('');
+                                                                    }}
+                                                                    className="inline-flex h-6 items-center gap-1 rounded border border-slate-200 bg-white px-2 text-[10.5px] font-semibold text-slate-700 shadow-2xs transition-all hover:bg-slate-50 active:scale-95 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                                    title="Minta Revisi Dokumen"
+                                                                >
+                                                                    <RotateCcw className="size-2.5 text-amber-600 dark:text-amber-400" />
+                                                                    <span>Minta Revisi</span>
+                                                                </button>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setApprovingApproval({
+                                                                            id: approval.id,
+                                                                            requesterName:
+                                                                                approval.requester?.name ||
+                                                                                'Pemohon',
+                                                                        });
+                                                                        setApprovalNote('');
+                                                                    }}
+                                                                    className="inline-flex h-6 items-center gap-1 rounded bg-slate-900 px-2 text-[10.5px] font-bold text-white shadow-2xs transition-all hover:bg-black active:scale-95 dark:bg-white dark:text-slate-900"
+                                                                    title="Setujui Dokumen"
+                                                                >
+                                                                    <Check className="size-2.5 text-emerald-400 dark:text-emerald-600" />
+                                                                    <span>Setujui</span>
+                                                                </button>
+                                                            </>
+                                                        ) : (
+                                                            <StatusText value={approval.status} />
+                                                        )}
                                                     </div>
-
-                                                    {approval.request_note && (
-                                                        <p className="rounded border border-slate-200/80 bg-white p-1.5 text-[11px] italic text-slate-600 shadow-2xs dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300">
-                                                            &ldquo;{approval.request_note}&rdquo;
-                                                        </p>
-                                                    )}
-                                                    {approval.resolution_note && (
-                                                        <p className="rounded border border-slate-200/80 bg-white p-1.5 text-[11px] font-medium text-slate-700 shadow-2xs dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300">
-                                                            Catatan: {approval.resolution_note}
-                                                        </p>
-                                                    )}
                                                 </div>
+
+                                                {/* Meta Row: Diajukan oleh + Tanggal */}
+                                                <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                                    <span>Diajukan oleh</span>
+                                                    <Avatar className="size-4 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                        <AvatarImage
+                                                            src={
+                                                                approval.requester.avatar_url ??
+                                                                (approval.requester.avatar_path
+                                                                    ? `/storage/${approval.requester.avatar_path}`
+                                                                    : undefined)
+                                                            }
+                                                            alt={approval.requester.name}
+                                                        />
+                                                        <AvatarFallback className="bg-slate-100 text-[7px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                                            {getInitials(approval.requester.name)}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <strong className="text-slate-700 dark:text-zinc-300">
+                                                        {approval.requester.name}
+                                                    </strong>
+                                                    {approval.created_at && (
+                                                        <>
+                                                            <span className="text-slate-300 dark:text-zinc-700">·</span>
+                                                            <span>{formatDate(approval.created_at, true)}</span>
+                                                        </>
+                                                    )}
+                                                    {approval.status === 'pending' &&
+                                                        (!isAssignedReviewer || !can.approve) && (
+                                                            <>
+                                                                <span className="text-slate-300 dark:text-zinc-700">·</span>
+                                                                <span className="font-medium text-amber-600 dark:text-amber-400">
+                                                                    Menunggu keputusan
+                                                                </span>
+                                                            </>
+                                                        )}
+                                                </div>
+
+                                                {/* Clean Notes (if any) */}
+                                                {approval.request_note && (
+                                                    <p className="rounded bg-slate-50 p-1.5 text-[11px] italic text-slate-600 dark:bg-zinc-800/40 dark:text-zinc-300">
+                                                        &ldquo;{approval.request_note}&rdquo;
+                                                    </p>
+                                                )}
+                                                {approval.resolution_note && (
+                                                    <p className="rounded bg-slate-50 p-1.5 text-[11px] font-medium text-slate-700 dark:bg-zinc-800/40 dark:text-zinc-300">
+                                                        Catatan: {approval.resolution_note}
+                                                    </p>
+                                                )}
                                             </div>
                                         );
                                     })
                                 ) : (
                                     <p className="py-6 text-center text-xs font-medium text-slate-400 dark:text-zinc-500">
-                                        Belum ada pengajuan review pada dokumen
-                                        ini.
+                                        Belum ada pengajuan review pada dokumen ini.
                                     </p>
                                 )}
                             </div>
