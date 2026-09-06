@@ -4,6 +4,7 @@ import {
     ExternalLink,
     FileCheck,
     FileText,
+    HardDrive,
     Loader2,
     Paperclip,
     RefreshCw,

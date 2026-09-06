@@ -1,8 +1,17 @@
 import { useState } from 'react';
-import { ArrowRightLeft, Banknote, Pencil, Plus, Trash2 } from 'lucide-react';
+import {
+    ArrowRightLeft,
+    Banknote,
+    Pencil,
+    Plus,
+    Trash2,
+} from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import type { UserOption } from '@/components/user-picker';
+import { useInitials } from '@/hooks/use-initials';
 import { formatDate, formatMoney } from '@/lib/format';
+import { cn } from '@/lib/utils';
 import { AccountDetailModal } from './account-detail-modal';
 import { DeleteAccountDialog } from './delete-account-dialog';
 import { EditAccountDialog } from './edit-account-dialog';
@@ -14,7 +23,16 @@ export type FinancialAccountItem = {
     type: 'cash' | 'bank' | 'partner_advance' | 'client_trust';
     account_number?: string;
     bank_name?: string;
-    partner?: { id: number; name: string; position_title?: string; department?: string };
+    partner?: {
+        id: number;
+        name: string;
+        email?: string;
+        avatar_path?: string;
+        avatar_url?: string;
+        avatar?: string;
+        position_title?: string;
+        department?: string;
+    };
     creator?: { id: number; name: string };
     opening_balance: number;
     current_balance: number;
@@ -46,6 +64,51 @@ export type AccountTransferItem = {
     proofDocument?: ProofDocumentData | null;
 };
 
+function getAvatarUrl(avatarPath?: string | null): string {
+    if (!avatarPath || avatarPath.trim() === '') return '';
+    if (avatarPath.startsWith('http') || avatarPath.startsWith('/'))
+        return avatarPath;
+    return `/storage/${avatarPath}`;
+}
+
+type AccountStyleConfig = {
+    label: string;
+    cardClass: string;
+    textClass: string;
+    progressBarClass: string;
+};
+
+const accountTypeConfig: Record<FinancialAccountItem['type'], AccountStyleConfig> = {
+    cash: {
+        label: 'Kas Tunai',
+        cardClass:
+            'bg-emerald-50/65 border-emerald-200/80 hover:border-emerald-300 dark:bg-emerald-950/20 dark:border-emerald-500/20 dark:hover:border-emerald-500/35',
+        textClass: 'text-emerald-700 dark:text-emerald-400',
+        progressBarClass: 'bg-emerald-500',
+    },
+    bank: {
+        label: 'Bank Operasional',
+        cardClass:
+            'bg-blue-50/65 border-blue-200/80 hover:border-blue-300 dark:bg-blue-950/20 dark:border-blue-500/20 dark:hover:border-blue-500/35',
+        textClass: 'text-blue-700 dark:text-blue-400',
+        progressBarClass: 'bg-blue-500',
+    },
+    partner_advance: {
+        label: 'Talangan Partner',
+        cardClass:
+            'bg-amber-50/65 border-amber-200/80 hover:border-amber-300 dark:bg-amber-950/20 dark:border-amber-500/20 dark:hover:border-amber-500/35',
+        textClass: 'text-amber-700 dark:text-amber-400',
+        progressBarClass: 'bg-amber-500',
+    },
+    client_trust: {
+        label: 'Dana Titipan',
+        cardClass:
+            'bg-purple-50/65 border-purple-200/80 hover:border-purple-300 dark:bg-purple-950/20 dark:border-purple-500/20 dark:hover:border-purple-500/35',
+        textClass: 'text-purple-700 dark:text-purple-400',
+        progressBarClass: 'bg-purple-500',
+    },
+};
+
 export function AccountsView({
     accounts,
     transfers,
@@ -65,6 +128,7 @@ export function AccountsView({
     onOpenPaymentModal?: () => void;
     onViewDetail?: (item: AccountTransferItem) => void;
 }) {
+    const getInitials = useInitials();
     const [accountToDelete, setAccountToDelete] = useState<FinancialAccountItem | null>(null);
     const [accountToEdit, setAccountToEdit] = useState<FinancialAccountItem | null>(null);
     const [selectedAccountForDetail, setSelectedAccountForDetail] = useState<FinancialAccountItem | null>(null);
@@ -86,22 +150,22 @@ export function AccountsView({
 
     const totalOperationalLiquidity = totalCash + totalBank;
     const accountComposition = [
-        { label: 'Kas Tunai', amount: totalCash, color: 'bg-blue-500' },
+        { label: 'Kas Tunai', amount: totalCash, color: 'bg-emerald-500' },
         {
             label: 'Giro & Tabungan',
             amount: totalBank,
-            color: 'bg-sky-300',
+            color: 'bg-blue-500',
         },
         {
             label: 'Titipan Klien',
             amount: totalTrust,
-            color: 'bg-slate-400',
+            color: 'bg-purple-500',
         },
         {
             label: 'Talangan Partner',
             amount: Math.abs(totalPartner),
             displayAmount: totalPartner,
-            color: 'bg-amber-400',
+            color: 'bg-amber-500',
         },
     ];
     const balanceScale = Math.max(
@@ -254,37 +318,85 @@ export function AccountsView({
             {/* Accounts Bento Grid */}
             <div className="grid gap-2.5 px-4 pb-4 sm:grid-cols-2">
                 {accounts.map((acc) => {
+                    const cfg = accountTypeConfig[acc.type] || accountTypeConfig.bank;
+                    const isPartnerAdvance = acc.type === 'partner_advance';
+                    const partner = acc.partner;
+                    const partnerAvatarSrc = partner
+                        ? getAvatarUrl(partner.avatar_url || partner.avatar_path || partner.avatar)
+                        : '';
+
                     return (
                         <div
                             key={acc.id}
                             onClick={() => setSelectedAccountForDetail(acc)}
-                            className="group flex cursor-pointer flex-col justify-between rounded-xl border border-slate-200/70 bg-white p-3.5 transition-all hover:border-slate-300 hover:shadow-2xs dark:border-white/[0.06] dark:bg-white/[0.02] dark:hover:border-white/15"
+                            className={cn(
+                                'group flex cursor-pointer flex-col justify-between rounded-xl border p-3.5 transition-all hover:shadow-2xs',
+                                cfg.cardClass,
+                            )}
                         >
                             <div>
-                                <div className="flex items-start justify-between gap-2">
+                                <div className="flex items-start justify-between gap-2.5">
                                     <div className="min-w-0">
                                         <div className="flex flex-wrap items-center gap-x-2">
                                             <h4 className="text-xs font-bold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
                                                 {acc.name}
                                             </h4>
-                                            <span className="text-[9px] font-bold text-blue-600 uppercase dark:text-blue-400">
-                                                {typeLabels[acc.type] ??
-                                                    acc.type}
+                                            <span
+                                                className={cn(
+                                                    'text-[9.5px] font-bold uppercase tracking-wider',
+                                                    cfg.textClass,
+                                                )}
+                                            >
+                                                {cfg.label}
                                             </span>
                                         </div>
-                                        <p className="mt-0.5 text-[10px] text-slate-400">
-                                            {acc.bank_name ||
-                                                (acc.type === 'cash'
-                                                    ? 'Brankas Kantor'
-                                                    : 'Rekening')}
-                                            {acc.account_number
-                                                ? ` — ${acc.account_number}`
-                                                : ''}
+
+                                        <p className="mt-0.5 text-[10px] text-slate-500 dark:text-zinc-400 truncate">
+                                            {isPartnerAdvance && partner ? (
+                                                <span className="inline-flex items-center gap-1">
+                                                    <span className="font-semibold text-slate-700 dark:text-zinc-200">
+                                                        {partner.name}
+                                                    </span>
+                                                    {partner.position_title ? (
+                                                        <span>· {partner.position_title}</span>
+                                                    ) : acc.account_number ? (
+                                                        <span>· {acc.account_number}</span>
+                                                    ) : null}
+                                                </span>
+                                            ) : (
+                                                <>
+                                                    {acc.bank_name ||
+                                                        (acc.type === 'cash'
+                                                            ? 'Brankas Kantor'
+                                                            : 'Rekening')}
+                                                    {acc.account_number
+                                                        ? ` — ${acc.account_number}`
+                                                        : ''}
+                                                </>
+                                            )}
                                         </p>
                                     </div>
-                                    <div className="flex items-center gap-1 shrink-0">
+
+                                    {/* Top Right: Partner avatar & actions */}
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        {isPartnerAdvance && partner && (
+                                            <Avatar
+                                                className="size-8 shrink-0 rounded-full border border-amber-300/90 shadow-2xs ring-2 ring-amber-500/20 dark:border-amber-500/40"
+                                                title={`Partner: ${partner.name}`}
+                                            >
+                                                <AvatarImage
+                                                    src={partnerAvatarSrc}
+                                                    alt={partner.name}
+                                                    className="object-cover"
+                                                />
+                                                <AvatarFallback className="bg-amber-500 text-[10px] font-bold text-white">
+                                                    {getInitials(partner.name)}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                        )}
+
                                         {canManage && (
-                                            <>
+                                            <div className="flex items-center gap-0.5">
                                                 <button
                                                     type="button"
                                                     onClick={(e) => {
@@ -293,7 +405,7 @@ export function AccountsView({
                                                     }}
                                                     title="Edit Rekening"
                                                     aria-label={`Edit Rekening ${acc.name}`}
-                                                    className="flex size-6 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:text-zinc-500 dark:hover:bg-blue-950/40 dark:hover:text-blue-400"
+                                                    className="flex size-6 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-black/5 hover:text-slate-700 dark:text-zinc-500 dark:hover:bg-white/10 dark:hover:text-zinc-200"
                                                 >
                                                     <Pencil className="size-3.5" />
                                                 </button>
@@ -309,21 +421,21 @@ export function AccountsView({
                                                 >
                                                     <Trash2 className="size-3.5" />
                                                 </button>
-                                            </>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
 
                                 {acc.description && (
-                                    <p className="mt-2 line-clamp-2 text-[11px] text-slate-500 dark:text-zinc-400">
+                                    <p className="mt-2 line-clamp-2 text-[11px] text-slate-600 dark:text-zinc-400">
                                         {acc.description}
                                     </p>
                                 )}
                             </div>
 
-                            <div className="mt-3.5 border-t border-slate-100 pt-2.5 dark:border-white/5">
+                            <div className="mt-3.5 border-t border-black/[0.06] pt-2.5 dark:border-white/[0.06]">
                                 <div className="flex items-baseline justify-between">
-                                    <span className="text-[10px] font-semibold text-slate-400">
+                                    <span className="text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
                                         Saldo Saat Ini:
                                     </span>
                                     <span className="font-mono text-sm font-extrabold text-slate-900 dark:text-white">
@@ -333,9 +445,9 @@ export function AccountsView({
                                         )}
                                     </span>
                                 </div>
-                                <div className="mt-2 h-1 overflow-hidden rounded-full bg-slate-100 dark:bg-white/[0.06]">
+                                <div className="mt-2 h-1 overflow-hidden rounded-full bg-black/5 dark:bg-white/[0.06]">
                                     <div
-                                        className="h-full rounded-full bg-blue-500"
+                                        className={cn('h-full rounded-full', cfg.progressBarClass)}
                                         style={{
                                             width: `${(Math.abs(acc.current_balance) / largestAccountBalance) * 100}%`,
                                         }}

@@ -223,12 +223,12 @@ export function NotificationMenu() {
             <DropdownMenuTrigger asChild>
                 <button
                     type="button"
-                    className="relative flex size-9 cursor-pointer items-center justify-center rounded-full text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none active:scale-95 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
+                    className="relative flex size-8 cursor-pointer items-center justify-center rounded-lg text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none active:scale-95 dark:text-zinc-400 dark:hover:bg-white/[0.08] dark:hover:text-white"
                     aria-label={`Notifikasi${unreadLocalCount ? `, ${unreadLocalCount} belum dibaca` : ''}`}
                 >
-                    <Bell className="size-4.5" />
+                    <Bell className="size-4" />
                     {unreadLocalCount > 0 && (
-                        <span className="absolute top-0.5 right-0.5 flex size-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow-xs">
+                        <span className="absolute -top-0.5 -right-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-bold text-white shadow-xs">
                             {unreadLocalCount > 9 ? '9+' : unreadLocalCount}
                         </span>
                     )}

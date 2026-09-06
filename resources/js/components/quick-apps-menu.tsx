@@ -79,9 +79,9 @@ export function QuickAppsMenu() {
                     type="button"
                     aria-label="Aplikasi & Modul Cepat"
                     title="Aplikasi & Modul Cepat"
-                    className="flex size-9 cursor-pointer items-center justify-center rounded-full text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900 active:scale-95 dark:text-zinc-300 dark:hover:bg-white/10 dark:hover:text-white"
+                    className="flex size-8 cursor-pointer items-center justify-center rounded-lg text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 active:scale-95 dark:text-zinc-400 dark:hover:bg-white/[0.08] dark:hover:text-white"
                 >
-                    <LayoutGrid className="size-4.5" />
+                    <LayoutGrid className="size-4" />
                 </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent

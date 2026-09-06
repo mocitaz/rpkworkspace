@@ -196,7 +196,15 @@ export function AppSidebar() {
                 <NavMain label="ADMINISTRASI" items={administration} />
             </SidebarContent>
 
-            <SidebarFooter className="space-y-1 border-t border-slate-100 p-2 group-data-[collapsible=icon]:p-1.5 dark:border-white/[0.06]">
+            <SidebarFooter className="space-y-1.5 border-t border-slate-100 p-2 group-data-[collapsible=icon]:p-1.5 dark:border-white/[0.06]">
+                <div className="px-2.5 pt-1 pb-0.5 select-none group-data-[collapsible=icon]:hidden">
+                    <p className="text-[10.5px] font-semibold tracking-tight text-slate-500 dark:text-zinc-400">
+                        RPK Law Firm
+                    </p>
+                    <p className="mt-0.5 text-[9.5px] text-slate-400 dark:text-zinc-500">
+                        &copy; {new Date().getFullYear()} All Rights Reserved.
+                    </p>
+                </div>
                 <SidebarCollapseButton />
             </SidebarFooter>
             <SidebarRail />

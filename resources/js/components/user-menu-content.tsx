@@ -120,39 +120,35 @@ export function UserMenuContent({ user }: Props) {
                 Keluar dari Workspace
             </DropdownMenuItem>
 
-            {/* Symmetrical & Clean Executive Logout Dialog */}
+            {/* Clean, Vertical Portrait Executive Logout Dialog */}
             <Dialog open={showLogoutModal} onOpenChange={setShowLogoutModal}>
-                <DialogContent className="max-w-[380px] rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-[380px] dark:border-white/10 dark:bg-[#14161b]">
+                <DialogContent className="w-[calc(100vw-2.5rem)] max-w-[305px] overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 pt-6 text-center shadow-xl sm:max-w-[315px] dark:border-white/10 dark:bg-[#14161b]">
                     <div className="flex flex-col items-center text-center">
-                        <div className="flex size-12 items-center justify-center rounded-2xl border border-rose-200/80 bg-rose-50/80 text-rose-600 shadow-xs dark:border-rose-900/40 dark:bg-rose-950/50 dark:text-rose-400">
-                            <LogOut className="size-5.5" />
-                        </div>
+                        <Avatar className="size-11 rounded-full border border-slate-200/80 shadow-xs dark:border-white/15">
+                            <AvatarImage
+                                src={user.avatar_url ?? user.avatar}
+                                alt={user.name}
+                            />
+                            <AvatarFallback className="rounded-full bg-slate-100 text-xs font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-200">
+                                {getInitials(user.name)}
+                            </AvatarFallback>
+                        </Avatar>
 
-                        <DialogTitle className="mt-4 text-base font-bold text-slate-900 dark:text-white">
+                        <DialogTitle className="mt-3.5 text-[15px] font-bold tracking-tight text-slate-900 dark:text-white">
                             Keluar dari Workspace?
                         </DialogTitle>
                         <DialogDescription className="mt-1.5 text-xs leading-relaxed text-slate-500 dark:text-zinc-400">
-                            Sesi kerja Anda akan diakhiri. Pastikan seluruh draf
-                            berkas dan catatan Anda telah tersimpan sebelum
-                            keluar.
+                            Sesi Anda sebagai <span className="font-semibold text-slate-700 dark:text-zinc-200">{user.name}</span> akan diakhiri. Pastikan draf pekerjaan Anda telah tersimpan.
                         </DialogDescription>
                     </div>
 
-                    <div className="mt-6 grid grid-cols-2 gap-2.5">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => setShowLogoutModal(false)}
-                            disabled={isLoggingOut}
-                            className="h-9.5 w-full cursor-pointer rounded-xl border-slate-200/80 bg-white text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-transparent dark:text-zinc-300 dark:hover:bg-white/[0.06]"
-                        >
-                            Batal
-                        </Button>
+                    {/* Vertical Stacked Buttons ("kebawah") */}
+                    <div className="mt-5 flex flex-col gap-1.5">
                         <Button
                             type="button"
                             onClick={handleConfirmLogout}
                             disabled={isLoggingOut}
-                            className="h-9.5 w-full cursor-pointer rounded-xl bg-rose-600 text-xs font-bold text-white shadow-xs hover:bg-rose-700 active:scale-98 dark:bg-rose-600 dark:hover:bg-rose-700"
+                            className="h-9 w-full cursor-pointer rounded-xl bg-rose-600 text-xs font-semibold text-white shadow-xs hover:bg-rose-700 active:scale-[0.98] dark:bg-rose-600 dark:hover:bg-rose-700"
                         >
                             {isLoggingOut ? (
                                 <>
@@ -162,9 +158,19 @@ export function UserMenuContent({ user }: Props) {
                             ) : (
                                 <>
                                     <LogOut className="mr-1.5 size-3.5" />
-                                    Ya, Keluar
+                                    Keluar
                                 </>
                             )}
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowLogoutModal(false)}
+                            disabled={isLoggingOut}
+                            className="h-8.5 w-full cursor-pointer rounded-xl text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.06] dark:hover:text-white"
+                        >
+                            Batal
                         </Button>
                     </div>
                 </DialogContent>

@@ -19,12 +19,14 @@ import {
     Users,
     Wallet,
 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { useInitials } from '@/hooks/use-initials';
 import { formatDate, formatMoney, terbilang } from '@/lib/format';
 import { cn } from '@/lib/utils';
 import type { FinancialAccountItem } from './accounts-view';
@@ -61,6 +63,13 @@ const typeBadgeConfig: Record<
     },
 };
 
+function getAvatarUrl(avatarPath?: string | null): string {
+    if (!avatarPath || avatarPath.trim() === '') return '';
+    if (avatarPath.startsWith('http') || avatarPath.startsWith('/'))
+        return avatarPath;
+    return `/storage/${avatarPath}`;
+}
+
 export function AccountDetailModal({
     account,
     open,
@@ -80,6 +89,7 @@ export function AccountDetailModal({
     onEdit?: (account: FinancialAccountItem) => void;
     canManage?: boolean;
 }) {
+    const getInitials = useInitials();
     const [copied, setCopied] = useState(false);
 
     if (!account) {
@@ -210,12 +220,28 @@ export function AccountDetailModal({
                                         {cfg.label}
                                     </p>
                                     {account.partner && (
-                                        <span className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                            Partner:{' '}
-                                            <strong className="font-semibold text-slate-800 dark:text-zinc-200">
-                                                {account.partner.name}
-                                            </strong>
-                                        </span>
+                                        <div className="flex items-center gap-1.5">
+                                            <Avatar className="size-5 shrink-0 rounded-full border border-amber-200/80 shadow-2xs dark:border-amber-500/30 ring-1 ring-amber-500/20">
+                                                <AvatarImage
+                                                    src={getAvatarUrl(
+                                                        account.partner.avatar_url ||
+                                                            account.partner.avatar_path ||
+                                                            account.partner.avatar,
+                                                    )}
+                                                    alt={account.partner.name}
+                                                    className="object-cover"
+                                                />
+                                                <AvatarFallback className="bg-amber-500 text-[9px] font-bold text-white">
+                                                    {getInitials(account.partner.name)}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                Partner:{' '}
+                                                <strong className="font-semibold text-slate-800 dark:text-zinc-200">
+                                                    {account.partner.name}
+                                                </strong>
+                                            </span>
+                                        </div>
                                     )}
                                 </div>
                                 <p className="mt-0.5 text-[10px] text-slate-400 dark:text-zinc-500">

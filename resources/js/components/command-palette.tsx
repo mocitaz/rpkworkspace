@@ -102,25 +102,25 @@ export function CommandPalette({
                     onClick={() => setOpen(true)}
                     title="Pencarian Spotlight (⌘K)"
                     aria-label="Pencarian Spotlight"
-                    className={`flex size-8.5 cursor-pointer items-center justify-center rounded-xl border border-slate-200/80 bg-white text-slate-500 shadow-2xs transition-all hover:bg-slate-100 hover:text-slate-900 active:scale-95 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-400 dark:hover:bg-white/[0.08] dark:hover:text-white ${className ?? ''}`}
+                    className={`flex size-8 cursor-pointer items-center justify-center rounded-lg border border-slate-200/80 bg-white text-slate-500 shadow-2xs transition-all hover:bg-slate-100 hover:text-slate-900 active:scale-95 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-400 dark:hover:bg-white/[0.08] dark:hover:text-white ${className ?? ''}`}
                 >
-                    <Search className="size-4" />
+                    <Search className="size-3.5" />
                 </button>
             ) : (
                 /* Corporate Search Capsule Trigger */
                 <button
                     type="button"
                     onClick={() => setOpen(true)}
-                    className={`group flex h-9 w-full cursor-pointer items-center justify-between gap-2.5 rounded-xl border border-transparent bg-slate-100/70 px-3 text-xs text-slate-500 transition-all hover:bg-slate-100 hover:text-slate-900 active:scale-[0.99] dark:bg-white/[0.05] dark:text-zinc-400 dark:hover:bg-white/[0.09] dark:hover:text-white ${className ?? ''}`}
+                    className={`group flex h-8 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-slate-200/80 bg-slate-100/60 px-2.5 text-xs text-slate-500 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-100/90 hover:text-slate-900 active:scale-[0.99] dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-zinc-400 dark:hover:border-white/15 dark:hover:bg-white/[0.08] dark:hover:text-white ${className ?? ''}`}
                 >
-                    <div className="flex min-w-0 items-center gap-2.5">
-                        <Search className="size-4 shrink-0 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500 dark:group-hover:text-blue-400" />
-                        <span className="truncate text-[13px] font-normal text-slate-400 transition-colors group-hover:text-slate-700 dark:text-zinc-500 dark:group-hover:text-zinc-300">
-                            Search (Ctrl+/)
+                    <div className="flex min-w-0 items-center gap-2">
+                        <Search className="size-3.5 shrink-0 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500 dark:group-hover:text-blue-400" />
+                        <span className="truncate text-[12px] font-normal text-slate-400 transition-colors group-hover:text-slate-700 dark:text-zinc-500 dark:group-hover:text-zinc-300">
+                            Cari apa saja...
                         </span>
                     </div>
-                    <kbd className="hidden shrink-0 items-center gap-0.5 rounded-md border border-slate-200/80 bg-white/80 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-slate-400 shadow-2xs group-hover:text-slate-600 sm:inline-flex dark:border-white/10 dark:bg-zinc-800/80 dark:text-zinc-400 dark:group-hover:text-zinc-200">
-                        <span className="text-[11px]">⌘</span>K
+                    <kbd className="hidden shrink-0 items-center gap-0.5 rounded border border-slate-200/80 bg-white/90 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-slate-400 shadow-2xs group-hover:text-slate-600 sm:inline-flex dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-400 dark:group-hover:text-zinc-200">
+                        <span className="text-[10px]">⌘</span>K
                     </kbd>
                 </button>
             )}

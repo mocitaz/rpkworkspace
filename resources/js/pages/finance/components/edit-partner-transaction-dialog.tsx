@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { router } from '@inertiajs/react';
 import {
     AlertCircle,
@@ -98,7 +98,13 @@ export function EditPartnerTransactionDialog({
         }
     }, [transaction, open]);
 
-    if (!transaction) return null;
+    const lastTransactionRef = useRef<PartnerTransactionItem | null>(null);
+    if (transaction) {
+        lastTransactionRef.current = transaction;
+    }
+    const currentTransaction = transaction || lastTransactionRef.current;
+
+    if (!currentTransaction) return null;
 
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -116,7 +122,7 @@ export function EditPartnerTransactionDialog({
         if (data.proof) formData.append('proof', data.proof);
 
         router.post(
-            `/finance/partner-transactions/${transaction.id}`,
+            `/finance/partner-transactions/${currentTransaction.id}`,
             formData,
             {
                 preserveScroll: true,
@@ -135,11 +141,11 @@ export function EditPartnerTransactionDialog({
     const handleDelete = () => {
         if (
             confirm(
-                `Apakah Anda yakin ingin menghapus transaksi partner ${transaction.transaction_number} (${formatMoney(transaction.amount, 'IDR')})? Saldo kas dan utang partner akan disesuaikan otomatis.`,
+                `Apakah Anda yakin ingin menghapus transaksi partner ${currentTransaction.transaction_number} (${formatMoney(currentTransaction.amount, 'IDR')})? Saldo kas dan utang partner akan disesuaikan otomatis.`,
             )
         ) {
             setProcessing(true);
-            router.delete(`/finance/partner-transactions/${transaction.id}`, {
+            router.delete(`/finance/partner-transactions/${currentTransaction.id}`, {
                 preserveScroll: true,
                 onSuccess: () => {
                     setProcessing(false);

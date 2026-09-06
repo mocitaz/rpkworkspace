@@ -1,6 +1,7 @@
 import { router } from '@inertiajs/react';
 import { AlertTriangle, Download, Paperclip, Pencil, Plus } from 'lucide-react';
 import { useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -9,6 +10,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
+import { useInitials } from '@/hooks/use-initials';
 import { formatMoney } from '@/lib/format';
 import { EditPayrollDialog } from './edit-payroll-dialog';
 import { financeDialogPanelClass } from './finance-dialog-design';
@@ -25,6 +27,8 @@ export type PayrollItem = {
         name: string;
         email?: string;
         avatar_path?: string | null;
+        avatar_url?: string | null;
+        avatar?: string | null;
         position_title?: string;
         department?: string;
         employee_code?: string;
@@ -49,6 +53,13 @@ export type PayrollItem = {
     proofDocument?: ProofDocumentData | null;
 };
 
+function getAvatarUrl(avatarPath?: string | null): string {
+    if (!avatarPath || avatarPath.trim() === '') return '';
+    if (avatarPath.startsWith('http') || avatarPath.startsWith('/'))
+        return avatarPath;
+    return `/storage/${avatarPath}`;
+}
+
 export function PayrollView({
     payrolls,
     onOpenPayrollModal,
@@ -62,6 +73,7 @@ export function PayrollView({
     onViewDetail?: (payroll: PayrollItem) => void;
     onViewProof?: (target: FinanceEntityProofTarget) => void;
 }) {
+    const getInitials = useInitials();
     const [selectedPayrollForEdit, setSelectedPayrollForEdit] =
         useState<PayrollItem | null>(null);
     const [paidConfirmPayroll, setPaidConfirmPayroll] =
@@ -297,13 +309,31 @@ export function PayrollView({
                                             className="transition-colors hover:bg-slate-50/70 dark:hover:bg-white/[0.02]"
                                         >
                                             <td className="px-3.5 py-2.5">
-                                                <p className="font-bold text-slate-950 dark:text-white">
-                                                    {p.user?.name || 'Pegawai'}
-                                                </p>
-                                                <p className="mt-0.5 text-[10px] text-slate-500 dark:text-zinc-400">
-                                                    {p.user?.position_title ||
-                                                        'Staf'}
-                                                </p>
+                                                <div className="flex items-center gap-2.5">
+                                                    <Avatar className="size-7.5 shrink-0 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10">
+                                                        <AvatarImage
+                                                            src={getAvatarUrl(
+                                                                p.user?.avatar_url ||
+                                                                    p.user?.avatar_path ||
+                                                                    p.user?.avatar,
+                                                            )}
+                                                            alt={p.user?.name || 'Pegawai'}
+                                                            className="object-cover"
+                                                        />
+                                                        <AvatarFallback className="bg-slate-100 text-[10px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-200">
+                                                            {getInitials(p.user?.name || 'Pegawai')}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <div className="min-w-0">
+                                                        <p className="font-bold text-slate-950 truncate dark:text-white">
+                                                            {p.user?.name || 'Pegawai'}
+                                                        </p>
+                                                        <p className="mt-0.5 text-[10px] text-slate-500 truncate dark:text-zinc-400">
+                                                            {p.user?.position_title ||
+                                                                'Staf'}
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td className="px-3 py-2.5">
                                                 <p className="font-mono font-semibold text-slate-800 dark:text-zinc-200">
