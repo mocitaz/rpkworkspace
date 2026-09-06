@@ -1048,7 +1048,7 @@ export default function DocumentShow({
                 open={workflowOpen === 'review'}
                 onOpenChange={(value) => !value && setWorkflowOpen(null)}
             >
-                <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                <DialogContent className="max-h-[85vh] w-full min-w-0 max-w-[calc(100%-2rem)] overflow-y-auto overflow-x-hidden rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
                     <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                         <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
                             Ajukan Review Dokumen
@@ -1062,24 +1062,24 @@ export default function DocumentShow({
                     <Form
                         action={approvalRoutes.store.url(document.id)}
                         method="post"
-                        className="space-y-3.5 pt-1"
+                        className="space-y-3.5 pt-1 min-w-0 w-full"
                         onSuccess={() => setWorkflowOpen(null)}
                     >
                         {({ processing, errors }) => (
                             <>
-                                <div className="grid gap-1">
+                                <div className="grid gap-1 min-w-0">
                                     <Label
                                         htmlFor="reviewer_id"
                                         className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
                                     >
                                         Pilih Reviewer *
                                     </Label>
-                                    <div className="relative">
+                                    <div className="relative min-w-0 w-full">
                                         <select
                                             id="reviewer_id"
                                             name="reviewer_id"
                                             required
-                                            className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                            className="h-8 w-full min-w-0 max-w-full cursor-pointer appearance-none truncate rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                         >
                                             <option value="">
                                                 Pilih Reviewer
@@ -1098,7 +1098,7 @@ export default function DocumentShow({
                                     <InputError message={errors.reviewer_id} />
                                 </div>
 
-                                <div className="grid gap-1">
+                                <div className="grid gap-1 min-w-0">
                                     <Label
                                         htmlFor="note"
                                         className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
@@ -1110,7 +1110,7 @@ export default function DocumentShow({
                                         name="note"
                                         rows={2}
                                         placeholder="Poin spesifik yang perlu diperiksa..."
-                                        className="w-full rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                        className="w-full min-w-0 max-w-full rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                     />
                                     <InputError message={errors.note} />
                                 </div>
@@ -1151,14 +1151,14 @@ export default function DocumentShow({
                 open={workflowOpen === 'signature'}
                 onOpenChange={(value) => !value && setWorkflowOpen(null)}
             >
-                <DialogContent className="max-h-[90vh] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-6 pr-10 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
-                    <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
-                        <div className="flex items-center gap-2.5">
+                <DialogContent className="max-h-[90vh] w-full min-w-0 max-w-[calc(100%-2rem)] overflow-y-auto overflow-x-hidden rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
+                    <DialogHeader className="min-w-0 border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
+                        <div className="flex items-center gap-2.5 min-w-0">
                             <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-zinc-100">
                                 <ShieldCheck className="size-4.5" />
                             </div>
-                            <div>
-                                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                            <div className="min-w-0 flex-1">
+                                <DialogTitle className="truncate text-base font-bold text-slate-900 dark:text-white">
                                     Permohonan E-Sign Dokumen
                                 </DialogTitle>
                                 <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
@@ -1172,7 +1172,7 @@ export default function DocumentShow({
                     <Form
                         action={signatureRoutes.store.url(document.id)}
                         method="post"
-                        className="space-y-4 pt-1"
+                        className="w-full min-w-0 space-y-4 pt-1"
                         onSuccess={() => {
                             setWorkflowOpen(null);
                             setSigners([{ name: '', email: '' }]);
@@ -1188,23 +1188,21 @@ export default function DocumentShow({
                                 )}
 
                                 {/* Pilihan Versi Berkas untuk E-Sign */}
-                                <div className="grid gap-2 rounded-xl border border-slate-200/90 bg-slate-50/60 p-3.5 dark:border-white/10 dark:bg-zinc-800/40">
-                                    <div className="flex items-center justify-between">
+                                <div className="grid gap-2 min-w-0 w-full rounded-xl border border-slate-200/90 bg-slate-50/60 p-3.5 dark:border-white/10 dark:bg-zinc-800/40">
+                                    <div className="flex items-center justify-between gap-2 min-w-0">
                                         <Label
                                             htmlFor="document_version_id"
-                                            className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-zinc-100"
+                                            className="flex items-center gap-1.5 text-xs font-bold text-slate-800 truncate dark:text-zinc-100"
                                         >
-                                            <FileText className="size-3.5 text-blue-600 dark:text-blue-400" />
-                                            Pilih Versi Berkas yang
-                                            Ditandatangani *
+                                            <FileText className="size-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
+                                            Pilih Versi Berkas E-Sign *
                                         </Label>
-                                        <span className="font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
+                                        <span className="shrink-0 font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
                                             {document.versions.length} Versi
-                                            Tersedia
                                         </span>
                                     </div>
 
-                                    <div className="relative">
+                                    <div className="relative min-w-0 w-full">
                                         <select
                                             id="document_version_id"
                                             name="document_version_id"
@@ -1214,21 +1212,23 @@ export default function DocumentShow({
                                                     e.target.value,
                                                 )
                                             }
-                                            className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-3 text-xs font-medium text-slate-900 outline-none hover:bg-slate-50 focus:border-slate-900 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                            className="h-9 w-full min-w-0 max-w-full cursor-pointer appearance-none truncate rounded-lg border border-slate-200 bg-white pr-8 pl-3 text-xs font-medium text-slate-900 outline-none hover:bg-slate-50 focus:border-slate-900 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                         >
-                                            {document.versions.map((ver) => (
-                                                <option
-                                                    key={ver.id}
-                                                    value={ver.id}
-                                                >
-                                                    Versi #{ver.version_number}{' '}
-                                                    — {ver.original_filename} (
-                                                    {formatBytes(ver.file_size)}{' '}
-                                                    ·{' '}
-                                                    {formatDate(ver.created_at)}
-                                                    )
-                                                </option>
-                                            ))}
+                                            {document.versions.map((ver) => {
+                                                const shortFilename =
+                                                    ver.original_filename.length > 40
+                                                        ? ver.original_filename.slice(0, 37) + '...'
+                                                        : ver.original_filename;
+                                                return (
+                                                    <option
+                                                        key={ver.id}
+                                                        value={ver.id}
+                                                        title={ver.original_filename}
+                                                    >
+                                                        Versi #{ver.version_number} — {shortFilename} ({formatBytes(ver.file_size)} · {formatDate(ver.created_at)})
+                                                    </option>
+                                                );
+                                            })}
                                         </select>
                                         <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
                                     </div>
@@ -1243,42 +1243,40 @@ export default function DocumentShow({
                                             ) || document.versions[0];
                                         if (!v) return null;
                                         return (
-                                            <div className="flex items-center justify-between gap-2 rounded-lg border border-blue-200/70 bg-blue-50/70 px-3 py-2 text-[11px] text-blue-950 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-200">
-                                                <div className="min-w-0 flex-1 truncate">
-                                                    <div className="flex items-center gap-1.5">
-                                                        <span className="font-mono font-bold text-blue-700 dark:text-blue-300">
-                                                            Versi v
-                                                            {v.version_number}
+                                            <div className="min-w-0 w-full rounded-lg border border-blue-200/70 bg-blue-50/70 p-3 text-[11px] text-blue-950 dark:border-blue-900/40 dark:bg-blue-950/40 dark:text-blue-200">
+                                                <div className="flex items-center justify-between gap-2 min-w-0">
+                                                    <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                                                        <span className="shrink-0 font-mono font-bold text-blue-700 dark:text-blue-300">
+                                                            v{v.version_number}
                                                         </span>
-                                                        <span className="text-blue-400 dark:text-blue-600">
+                                                        <span className="shrink-0 text-blue-400 dark:text-blue-600">
                                                             ·
                                                         </span>
-                                                        <span className="truncate font-semibold text-slate-900 dark:text-white">
-                                                            {
-                                                                v.original_filename
-                                                            }
+                                                        <span
+                                                            className="truncate font-semibold text-slate-900 dark:text-white min-w-0 flex-1"
+                                                            title={v.original_filename}
+                                                        >
+                                                            {v.original_filename}
                                                         </span>
                                                     </div>
-                                                    <p className="mt-0.5 truncate text-[10px] text-slate-500 dark:text-zinc-400">
-                                                        Diunggah oleh{' '}
-                                                        {v.uploader?.name ||
-                                                            'Staf'}{' '}
-                                                        ·{' '}
-                                                        {formatBytes(
-                                                            v.file_size,
-                                                        )}{' '}
-                                                        ·{' '}
-                                                        {formatDate(
-                                                            v.created_at,
-                                                        )}
-                                                        {v.notes
-                                                            ? ` · "${v.notes}"`
-                                                            : ''}
-                                                    </p>
+                                                    <span className="shrink-0 rounded bg-blue-600 px-2 py-0.5 font-mono text-[10px] font-bold text-white">
+                                                        Terpilih
+                                                    </span>
                                                 </div>
-                                                <span className="shrink-0 rounded bg-blue-600 px-2 py-0.5 font-mono text-[10px] font-bold text-white">
-                                                    Terpilih
-                                                </span>
+                                                <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-slate-500 dark:text-zinc-400">
+                                                    <span>Oleh {v.uploader?.name || 'Staf'}</span>
+                                                    <span>·</span>
+                                                    <span>{formatBytes(v.file_size)}</span>
+                                                    <span>·</span>
+                                                    <span>{formatDate(v.created_at)}</span>
+                                                </div>
+                                                {v.notes && (
+                                                    <div className="mt-2 rounded-md bg-white/80 p-2 text-[11px] text-slate-700 border border-blue-100 dark:bg-zinc-900/60 dark:border-white/5 dark:text-zinc-300">
+                                                        <span className="line-clamp-2 break-words text-slate-600 dark:text-zinc-300">
+                                                            "{v.notes}"
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
                                         );
                                     })()}
@@ -1289,18 +1287,18 @@ export default function DocumentShow({
                                     />
                                 </div>
 
-                                <div className="grid gap-1.5">
+                                <div className="grid gap-1.5 min-w-0 w-full">
                                     <Label
                                         htmlFor="mode"
                                         className="text-xs font-bold text-slate-700 dark:text-zinc-200"
                                     >
                                         Alur Penandatanganan
                                     </Label>
-                                    <div className="relative">
+                                    <div className="relative min-w-0 w-full">
                                         <select
                                             id="mode"
                                             name="mode"
-                                            className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-3 text-xs font-medium text-slate-900 outline-none hover:bg-slate-100/70 focus:border-slate-900 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                            className="h-9 w-full min-w-0 max-w-full cursor-pointer appearance-none truncate rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-3 text-xs font-medium text-slate-900 outline-none hover:bg-slate-100/70 focus:border-slate-900 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                         >
                                             <option value="sequential">
                                                 Berurutan (Sequential) — Sesuai
@@ -1315,16 +1313,16 @@ export default function DocumentShow({
                                     </div>
                                 </div>
 
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <Label className="text-xs font-bold text-slate-700 dark:text-zinc-200">
+                                <div className="space-y-3 min-w-0 w-full">
+                                    <div className="flex items-center justify-between gap-2 min-w-0">
+                                        <Label className="text-xs font-bold text-slate-700 truncate dark:text-zinc-200">
                                             Daftar Pihak Penandatangan
                                         </Label>
                                         <Button
                                             type="button"
                                             size="sm"
                                             variant="outline"
-                                            className="h-7 rounded-lg border-slate-200 px-2.5 text-xs font-semibold text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200"
+                                            className="h-7 shrink-0 rounded-lg border-slate-200 px-2.5 text-xs font-semibold text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200"
                                             onClick={() =>
                                                 setSigners((c) => [
                                                     ...c,
@@ -1336,15 +1334,15 @@ export default function DocumentShow({
                                         </Button>
                                     </div>
 
-                                    <div className="space-y-3">
+                                    <div className="space-y-3 min-w-0 w-full">
                                         {signers.map((signer, index) => (
                                             <div
                                                 key={index}
-                                                className="flex flex-col gap-2.5 rounded-xl border border-slate-200/90 bg-slate-50/60 p-3.5 dark:border-white/10 dark:bg-zinc-800/40"
+                                                className="flex flex-col gap-2.5 min-w-0 w-full rounded-xl border border-slate-200/90 bg-slate-50/60 p-3.5 dark:border-white/10 dark:bg-zinc-800/40"
                                             >
-                                                <div className="flex items-center justify-between gap-2 border-b border-slate-200/60 pb-2">
-                                                    <span className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-zinc-100">
-                                                        <span className="flex size-5 items-center justify-center rounded-full bg-slate-900 font-mono text-[10px] font-bold text-white">
+                                                <div className="flex items-center justify-between gap-2 border-b border-slate-200/60 pb-2 min-w-0">
+                                                    <span className="flex items-center gap-1.5 text-xs font-bold text-slate-800 truncate dark:text-zinc-100">
+                                                        <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-slate-900 font-mono text-[10px] font-bold text-white">
                                                             {index + 1}
                                                         </span>
                                                         Pihak #{index + 1}
@@ -1366,7 +1364,7 @@ export default function DocumentShow({
                                                                         ),
                                                                 )
                                                             }
-                                                            className="cursor-pointer text-[11px] font-semibold text-rose-600 hover:text-rose-700 hover:underline"
+                                                            className="cursor-pointer shrink-0 text-[11px] font-semibold text-rose-600 hover:text-rose-700 hover:underline"
                                                         >
                                                             Hapus Pihak Ini
                                                         </button>
@@ -1374,12 +1372,12 @@ export default function DocumentShow({
                                                 </div>
 
                                                 {firmStaff.length > 0 && (
-                                                    <div className="space-y-1">
+                                                    <div className="space-y-1 min-w-0 w-full">
                                                         <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                                             Pilih dari Anggota
                                                             Tim RPK
                                                         </span>
-                                                        <div className="relative">
+                                                        <div className="relative min-w-0 w-full">
                                                             <select
                                                                 onChange={(
                                                                     e,
@@ -1430,7 +1428,7 @@ export default function DocumentShow({
                                                                     }
                                                                 }}
                                                                 defaultValue=""
-                                                                className="h-8 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs text-slate-800 outline-none hover:bg-slate-50 focus:border-slate-900 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
+                                                                className="h-8 w-full min-w-0 max-w-full cursor-pointer appearance-none truncate rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs text-slate-800 outline-none hover:bg-slate-50 focus:border-slate-900 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                                             >
                                                                 <option
                                                                     value=""
@@ -1449,6 +1447,7 @@ export default function DocumentShow({
                                                                             value={
                                                                                 staff.id
                                                                             }
+                                                                            title={`${staff.name} ${(staff as any).email ? `(${ (staff as any).email })` : ''}`}
                                                                         >
                                                                             {
                                                                                 staff.name
@@ -1468,8 +1467,8 @@ export default function DocumentShow({
                                                     </div>
                                                 )}
 
-                                                <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
-                                                    <div className="space-y-1">
+                                                <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 min-w-0 w-full">
+                                                    <div className="space-y-1 min-w-0">
                                                         <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                                             Nama Lengkap *
                                                         </span>
@@ -1498,11 +1497,11 @@ export default function DocumentShow({
                                                                         ),
                                                                 )
                                                             }
-                                                            className="h-8 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-[#121418]"
+                                                            className="h-8 min-w-0 w-full rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-[#121418]"
                                                         />
                                                     </div>
 
-                                                    <div className="space-y-1">
+                                                    <div className="space-y-1 min-w-0">
                                                         <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
                                                             Alamat Email *
                                                         </span>
@@ -1532,7 +1531,7 @@ export default function DocumentShow({
                                                                         ),
                                                                 )
                                                             }
-                                                            className="h-8 rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-[#121418]"
+                                                            className="h-8 min-w-0 w-full rounded-lg border-slate-200 bg-white text-xs dark:border-white/10 dark:bg-[#121418]"
                                                         />
                                                     </div>
                                                 </div>
@@ -1656,9 +1655,9 @@ function UploadVersionModal({
                 }
             }}
         >
-            <DialogContent className="max-h-[85vh] overflow-y-auto rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
-                <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
-                    <DialogTitle className="text-sm font-bold text-slate-900 dark:text-white">
+            <DialogContent className="max-h-[85vh] w-full min-w-0 max-w-[calc(100%-2rem)] overflow-y-auto overflow-x-hidden rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                <DialogHeader className="min-w-0 border-b border-slate-100 pb-3 dark:border-white/[0.06]">
+                    <DialogTitle className="truncate text-sm font-bold text-slate-900 dark:text-white">
                         Unggah Versi Dokumen Baru
                     </DialogTitle>
                     <DialogDescription className="text-xs text-slate-500">
@@ -1667,12 +1666,12 @@ function UploadVersionModal({
                 </DialogHeader>
 
                 {Object.keys(errors).length > 0 && (
-                    <div className="my-2 rounded-xl border border-rose-200 bg-rose-50/80 p-3 text-xs text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
-                        <div className="flex items-center gap-2 font-bold">
+                    <div className="my-2 min-w-0 rounded-xl border border-rose-200 bg-rose-50/80 p-3 text-xs text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
+                        <div className="flex items-center gap-2 font-bold min-w-0">
                             <ShieldAlert className="size-4 shrink-0 text-rose-600" />
-                            <span>Gagal mengunggah versi baru:</span>
+                            <span className="truncate">Gagal mengunggah versi baru:</span>
                         </div>
-                        <ul className="mt-1 list-inside list-disc space-y-0.5 pl-1 text-[11px]">
+                        <ul className="mt-1 list-inside list-disc space-y-0.5 pl-1 text-[11px] break-words">
                             {Object.entries(errors).map(([key, msg]) => (
                                 <li key={key}>{msg}</li>
                             ))}
@@ -1680,8 +1679,8 @@ function UploadVersionModal({
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-3.5 pt-1">
-                    <div className="grid gap-1">
+                <form onSubmit={handleSubmit} className="w-full min-w-0 space-y-3.5 pt-1">
+                    <div className="grid gap-1 min-w-0 w-full">
                         <Label
                             htmlFor="version-file"
                             className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
@@ -1701,7 +1700,7 @@ function UploadVersionModal({
                         <InputError message={errors.file} />
                     </div>
 
-                    <div className="grid gap-1">
+                    <div className="grid gap-1 min-w-0 w-full">
                         <Label
                             htmlFor="version-notes"
                             className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
@@ -1714,7 +1713,7 @@ function UploadVersionModal({
                             onChange={(e) => setData('notes', e.target.value)}
                             rows={2}
                             placeholder="Keterangan perbaikan draf, masukan partner, dll..."
-                            className="w-full rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                            className="w-full min-w-0 max-w-full rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                         />
                         <InputError message={errors.notes} />
                     </div>

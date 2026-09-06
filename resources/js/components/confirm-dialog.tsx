@@ -147,20 +147,20 @@ export function ConfirmDialog({
                 </span>
             )}
             <Dialog open={effectiveOpen} onOpenChange={setEffectiveOpen}>
-                <DialogContent className="max-w-md overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
-                    <div className="border-b border-slate-100 bg-slate-50/60 p-5 dark:border-white/5 dark:bg-zinc-900/40">
-                        <DialogHeader>
-                            <div className="flex items-start gap-3">
+                <DialogContent className="w-full min-w-0 max-w-[calc(100%-2rem)] sm:max-w-md overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
+                    <div className="border-b border-slate-100 bg-slate-50/60 p-5 dark:border-white/5 dark:bg-zinc-900/40 min-w-0">
+                        <DialogHeader className="min-w-0">
+                            <div className="flex items-start gap-3 min-w-0">
                                 <div
                                     className={`flex size-10 shrink-0 items-center justify-center rounded-xl border ${config.iconBorder} ${config.iconBg} ${config.iconText}`}
                                 >
                                     <Icon className="size-5" />
                                 </div>
-                                <div className="space-y-1 text-left">
-                                    <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                <div className="space-y-1 text-left min-w-0 flex-1">
+                                    <DialogTitle className="text-base font-bold text-slate-900 dark:text-white break-words">
                                         {title}
                                     </DialogTitle>
-                                    <DialogDescription className="text-xs leading-relaxed text-slate-500 dark:text-zinc-400">
+                                    <DialogDescription className="text-xs leading-relaxed text-slate-500 dark:text-zinc-400 break-words">
                                         {description}
                                     </DialogDescription>
                                 </div>

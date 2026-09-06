@@ -129,7 +129,7 @@ export const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
                     }
                 }}
                 className={cn(
-                    'group relative flex min-h-[38px] w-full cursor-pointer items-center justify-between gap-2 rounded-xl border border-slate-200/80 bg-slate-50/70 px-2.5 py-1.5 text-xs transition-all hover:border-slate-300 hover:bg-slate-100/70 focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 dark:border-white/10 dark:bg-[#121418] dark:hover:border-white/20 dark:hover:bg-[#16181e]',
+                    'group relative flex min-h-[38px] w-full min-w-0 max-w-full cursor-pointer items-center justify-between gap-2 overflow-hidden rounded-xl border border-slate-200/80 bg-slate-50/70 px-2.5 py-1.5 text-xs transition-all hover:border-slate-300 hover:bg-slate-100/70 focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 dark:border-white/10 dark:bg-[#121418] dark:hover:border-white/20 dark:hover:bg-[#16181e]',
                     isDragOver && 'border-blue-500 bg-blue-50/50 dark:border-blue-400 dark:bg-blue-950/20',
                     disabled && 'pointer-events-none cursor-not-allowed opacity-50',
                     className
@@ -149,15 +149,15 @@ export const FileInput = React.forwardRef<HTMLInputElement, FileInputProps>(
                     {...props}
                 />
 
-                <div className="flex min-w-0 flex-1 items-center gap-2">
+                <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
                     <span className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs transition-colors group-hover:bg-slate-50 dark:border-white/10 dark:bg-[#1c1f26] dark:text-zinc-200 dark:group-hover:bg-[#222731]">
                         <FileUp className="size-3.5 text-blue-600 dark:text-blue-400" />
                         {buttonText}
                     </span>
 
                     {selectedFile ? (
-                        <div className="flex min-w-0 items-center gap-1.5">
-                            <span className="truncate font-medium text-slate-900 dark:text-white">
+                        <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
+                            <span className="min-w-0 flex-1 truncate font-medium text-slate-900 dark:text-white" title={selectedFile.name}>
                                 {selectedFile.name}
                             </span>
                             <span className="shrink-0 rounded bg-slate-200/70 px-1.5 py-0.5 font-mono text-[10px] text-slate-600 dark:bg-white/10 dark:text-zinc-300">
