@@ -134,12 +134,6 @@ class GenerateSignedFinalPdf
                     $im = @imagecreatefromstring($decoded);
                     if ($im !== false) {
                         imagesavealpha($im, true);
-                        $cropped = function_exists('imagecropauto') ? @imagecropauto($im, IMG_CROP_TRANSPARENT) : false;
-                        if ($cropped !== false) {
-                            imagedestroy($im);
-                            $im = $cropped;
-                            imagesavealpha($im, true);
-                        }
                         imagepng($im, $sigPath);
                         imagedestroy($im);
                     } else {
@@ -221,30 +215,88 @@ class GenerateSignedFinalPdf
                     $pdf->Rect($x, $y, $stampW, $stampH, 'DF');
                 }
 
-                $isQrLeft = $layout === 'qr_left';
                 $isNameTop = $namePos === 'top';
 
                 if ($showQr && $layout !== 'sig_only') {
                     $qrSize = min(18.0, min($stampW * 0.36, $stampH * 0.78));
                     $qrMargin = 2.0;
-                    $qrX = $isQrLeft ? $x + $qrMargin : $x + $stampW - $qrSize - $qrMargin;
-                    $qrY = $y + ($stampH - $qrSize) / 2;
 
-                    $contentX = $isQrLeft ? $x + $qrSize + 3.5 : $x + 2.5;
-                    $contentW = $stampW - $qrSize - 6.0;
+                    if ($layout === 'qr_left') {
+                        $qrSize = min(16.0, max(12.0, $stampH * 0.85));
+                        $qrX = max(3.0, $x - $qrSize - 2.5);
+                        $qrY = $y + ($stampH - $qrSize) / 2;
+                        $contentX = $x;
+                        $contentW = $stampW;
+                    } elseif ($layout === 'qr_bottom' || $layout === 'stacked') {
+                        $qrSize = min(14.0, max(10.0, $stampH * 0.7));
+                        $qrX = $x + ($stampW - $qrSize) / 2;
+                        $qrY = $y + $stampH + 2.0;
+                        $contentX = $x;
+                        $contentW = $stampW;
+                    } elseif ($layout === 'qr_top') {
+                        $qrSize = min(14.0, max(10.0, $stampH * 0.7));
+                        $qrX = $x + ($stampW - $qrSize) / 2;
+                        $qrY = max(3.0, $y - $qrSize - 2.0);
+                        $contentX = $x;
+                        $contentW = $stampW;
+                    } elseif ($layout === 'doc_bottom_left') {
+                        $qrSize = 16.0;
+                        $qrX = 15.0;
+                        $qrY = $size['height'] - $qrSize - 12.0;
+                        $contentX = $x;
+                        $contentW = $stampW;
+                    } elseif ($layout === 'doc_bottom_right') {
+                        $qrSize = 16.0;
+                        $qrX = $size['width'] - $qrSize - 15.0;
+                        $qrY = $size['height'] - $qrSize - 12.0;
+                        $contentX = $x;
+                        $contentW = $stampW;
+                    } elseif ($layout === 'doc_top_left') {
+                        $qrSize = 16.0;
+                        $qrX = 15.0;
+                        $qrY = 15.0;
+                        $contentX = $x;
+                        $contentW = $stampW;
+                    } elseif ($layout === 'doc_top_right') {
+                        $qrSize = 16.0;
+                        $qrX = $size['width'] - $qrSize - 15.0;
+                        $qrY = 15.0;
+                        $contentX = $x;
+                        $contentW = $stampW;
+                    } elseif (is_string($layout) && str_starts_with($layout, 'custom_')) {
+                        $parts = explode('_', $layout);
+                        $pX = (float) ($parts[1] ?? 80);
+                        $pY = (float) ($parts[2] ?? 85);
+                        $qrSize = 16.0;
+                        $qrX = max(3.0, min($size['width'] - $qrSize - 3.0, ($pX / 100) * $size['width']));
+                        $qrY = max(3.0, min($size['height'] - $qrSize - 3.0, ($pY / 100) * $size['height']));
+                        $contentX = $x;
+                        $contentW = $stampW;
+                    } else { // sig_left / default: QR on right side of signature
+                        $qrSize = min(16.0, max(12.0, $stampH * 0.85));
+                        $qrX = min($size['width'] - $qrSize - 3.0, $x + $stampW + 2.5);
+                        $qrY = $y + ($stampH - $qrSize) / 2;
+                        $contentX = $x;
+                        $contentW = $stampW;
+                    }
 
-                    // QR Code Container Frame
-                    $pdf->SetFillColor(248, 250, 252);
-                    $pdf->SetDrawColor(226, 232, 240);
-                    $pdf->SetLineWidth(0.15);
-                    $pdf->Rect($qrX, $qrY, $qrSize, $qrSize, 'DF');
+                    if ($showBorder) {
+                        // QR Code Container Frame
+                        $pdf->SetFillColor(248, 250, 252);
+                        $pdf->SetDrawColor(226, 232, 240);
+                        $pdf->SetLineWidth(0.15);
+                        $pdf->Rect($qrX, $qrY, $qrSize, $qrSize, 'DF');
 
-                    // Draw QR Code inside framed container
-                    $pdf->Image($qrPath, $qrX + 0.8, $qrY + 0.8, $qrSize - 1.6, $qrSize - 1.6, 'PNG');
+                        // Draw QR Code inside framed container
+                        $pdf->Image($qrPath, $qrX + 0.8, $qrY + 0.8, $qrSize - 1.6, $qrSize - 1.6, 'PNG');
+                    } else {
+                        // Direct on-paper QR Code without frame
+                        $pdf->Image($qrPath, $qrX, $qrY, $qrSize, $qrSize, 'PNG');
+                    }
                 } else {
                     // Full width signature block without QR
-                    $contentX = $x + 2.5;
-                    $contentW = $stampW - 5.0;
+                    $contentX = $x;
+                    $contentW = $stampW;
                 }
 
                 // Render Name & Title vs Signature
@@ -293,7 +345,7 @@ class GenerateSignedFinalPdf
                         }
                     } else {
                         // Signature on Top, Name on Bottom
-                        $lineY = $y + $stampH - $nameHeight - 1.5;
+                        $lineY = $y + $stampH - $nameHeight - ($showBorder ? 1.5 : 0.5);
 
                         if ($signerItem['sig_path'] && is_file($signerItem['sig_path'])) {
                             $imgInfo = @getimagesize($signerItem['sig_path']);
@@ -308,16 +360,18 @@ class GenerateSignedFinalPdf
                                 $targetH = max(3, $imgH * $scale);
 
                                 $sigX = $contentX + ($maxW - $targetW) / 2;
-                                $sigY = $y + 1.5 + ($maxH - $targetH) / 2;
+                                $sigY = $y + ($showBorder ? 1.5 : 0.0) + ($maxH - $targetH) / 2;
 
                                 $pdf->Image($signerItem['sig_path'], $sigX, $sigY, $targetW, $targetH, 'PNG');
                             }
                         }
 
                         // Divider line above name
-                        $pdf->SetDrawColor(241, 245, 249);
-                        $pdf->SetLineWidth(0.15);
-                        $pdf->Line($contentX, $lineY, $contentX + $contentW, $lineY);
+                        if ($showBorder) {
+                            $pdf->SetDrawColor(241, 245, 249);
+                            $pdf->SetLineWidth(0.15);
+                            $pdf->Line($contentX, $lineY, $contentX + $contentW, $lineY);
+                        }
 
                         // Name on Bottom
                         $pdf->SetTextColor(15, 23, 42);
@@ -340,7 +394,7 @@ class GenerateSignedFinalPdf
                             $imgW = (float) $imgInfo[0];
                             $imgH = (float) $imgInfo[1];
                             $maxW = $contentW;
-                            $maxH = $stampH - 3.0;
+                            $maxH = $showBorder ? max(8.0, $stampH - 3.0) : $stampH;
 
                             $scale = min($maxW / $imgW, $maxH / $imgH);
                             $targetW = max(3, $imgW * $scale);

@@ -48,6 +48,10 @@ const labels: Record<string, string> = {
     no_expiry: 'Tetap / Tidak Berakhir',
     complete: 'Lengkap',
     incomplete: 'Belum Terlampir',
+    pending: 'Menunggu',
+    sent: 'Terkirim',
+    declined: 'Ditolak',
+    voided: 'Dibatalkan',
 };
 
 const criticalStatuses = new Set([
@@ -56,6 +60,8 @@ const criticalStatuses = new Set([
     'cancelled',
     'private',
     'rejected',
+    'declined',
+    'voided',
     'expired',
 ]);
 const warningStatuses = new Set([
@@ -64,6 +70,7 @@ const warningStatuses = new Set([
     'revision_requested',
     'under_review',
     'waiting',
+    'pending',
     'review',
     'todo',
     'postponed',
@@ -88,6 +95,7 @@ const infoStatuses = new Set([
     'open',
     'scheduled',
     'in_review',
+    'sent',
 ]);
 
 function getColorClass(value: string): string {

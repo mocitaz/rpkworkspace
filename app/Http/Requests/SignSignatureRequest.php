@@ -29,7 +29,24 @@ class SignSignatureRequest extends FormRequest
             'page_number' => ['nullable', 'integer', 'min:1'],
             'position_x' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'position_y' => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'stamp_layout' => ['nullable', 'string', 'in:sig_left,qr_left,stacked,sig_only,qr_only'],
+            'stamp_layout' => [
+                'nullable',
+                'string',
+                function ($attribute, $value, $fail) {
+                    if (! $value) {
+                        return;
+                    }
+                    $allowed = [
+                        'sig_left', 'qr_left', 'stacked', 'sig_only', 'qr_only',
+                        'qr_bottom', 'qr_top', 'doc_bottom_left', 'doc_bottom_right',
+                        'doc_top_left', 'doc_top_right',
+                    ];
+                    if (in_array($value, $allowed, true) || preg_match('/^custom_\d+(\.\d+)?_\d+(\.\d+)?$/', (string) $value)) {
+                        return;
+                    }
+                    $fail("Format {$attribute} tidak valid.");
+                },
+            ],
             'name_position' => ['nullable', 'string', 'in:bottom,top,none'],
             'signer_title' => ['nullable', 'string', 'max:255'],
             'stamp_width' => ['nullable', 'numeric', 'min:20', 'max:150'],

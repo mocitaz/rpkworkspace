@@ -1,5 +1,104 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../wayfinder'
 /**
+* @see \App\Http\Controllers\SignatureVerificationController::preview
+* @see app/Http/Controllers/SignatureVerificationController.php:97
+* @route '/verify/signature/{verificationCode}/preview.pdf'
+*/
+export const preview = (args: { verificationCode: string | number } | [verificationCode: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: preview.url(args, options),
+    method: 'get',
+})
+
+preview.definition = {
+    methods: ["get","head"],
+    url: '/verify/signature/{verificationCode}/preview.pdf',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\SignatureVerificationController::preview
+* @see app/Http/Controllers/SignatureVerificationController.php:97
+* @route '/verify/signature/{verificationCode}/preview.pdf'
+*/
+preview.url = (args: { verificationCode: string | number } | [verificationCode: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { verificationCode: args }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            verificationCode: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        verificationCode: args.verificationCode,
+    }
+
+    return preview.definition.url
+            .replace('{verificationCode}', parsedArgs.verificationCode.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\SignatureVerificationController::preview
+* @see app/Http/Controllers/SignatureVerificationController.php:97
+* @route '/verify/signature/{verificationCode}/preview.pdf'
+*/
+preview.get = (args: { verificationCode: string | number } | [verificationCode: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: preview.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\SignatureVerificationController::preview
+* @see app/Http/Controllers/SignatureVerificationController.php:97
+* @route '/verify/signature/{verificationCode}/preview.pdf'
+*/
+preview.head = (args: { verificationCode: string | number } | [verificationCode: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: preview.url(args, options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\SignatureVerificationController::preview
+* @see app/Http/Controllers/SignatureVerificationController.php:97
+* @route '/verify/signature/{verificationCode}/preview.pdf'
+*/
+const previewForm = (args: { verificationCode: string | number } | [verificationCode: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: preview.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\SignatureVerificationController::preview
+* @see app/Http/Controllers/SignatureVerificationController.php:97
+* @route '/verify/signature/{verificationCode}/preview.pdf'
+*/
+previewForm.get = (args: { verificationCode: string | number } | [verificationCode: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: preview.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\SignatureVerificationController::preview
+* @see app/Http/Controllers/SignatureVerificationController.php:97
+* @route '/verify/signature/{verificationCode}/preview.pdf'
+*/
+previewForm.head = (args: { verificationCode: string | number } | [verificationCode: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: preview.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+preview.form = previewForm
+
+/**
 * @see \App\Http\Controllers\SignatureVerificationController::downloadSigned
 * @see app/Http/Controllers/SignatureVerificationController.php:45
 * @route '/verify/signature/{verificationCode}/download-signed'
@@ -198,6 +297,7 @@ downloadCertificateForm.head = (args: { verificationCode: string | number } | [v
 downloadCertificate.form = downloadCertificateForm
 
 const verify = {
+    preview: Object.assign(preview, preview),
     downloadSigned: Object.assign(downloadSigned, downloadSigned),
     downloadCertificate: Object.assign(downloadCertificate, downloadCertificate),
 }

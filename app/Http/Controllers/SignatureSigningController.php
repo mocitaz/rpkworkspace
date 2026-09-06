@@ -12,9 +12,14 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SignatureSigningController extends Controller
 {
-    public function show(string $token): View
+    public function show(string $token): View|RedirectResponse
     {
         $signer = SignatureSigner::query()->with(['signatureRequest.document', 'signatureRequest.documentVersion'])->where('signing_token', $token)->firstOrFail();
+
+        if ($signer->status === 'signed' || $signer->signatureRequest->status === 'completed') {
+            return to_route('signature.verify', $signer->signatureRequest->verification_code)
+                ->with('info', 'Dokumen telah selesai ditandatangani. Berikut adalah lembar verifikasi keabsahan resmi.');
+        }
 
         return view('signature.sign', compact('signer'));
     }

@@ -41,6 +41,7 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', '/dashboard')->name('home');
 
 Route::get('verify/signature/{verificationCode}', [SignatureVerificationController::class, 'show'])->name('signature.verify');
+Route::get('verify/signature/{verificationCode}/preview.pdf', [SignatureVerificationController::class, 'preview'])->name('signature.verify.preview');
 Route::get('verify/signature/{verificationCode}/qr.svg', [SignatureVerificationController::class, 'qr'])->name('signature.qr');
 Route::get('verify/signature/{verificationCode}/download-signed', [SignatureVerificationController::class, 'downloadSigned'])->name('signature.verify.download-signed');
 Route::get('verify/signature/{verificationCode}/download-certificate', [SignatureVerificationController::class, 'downloadCertificate'])->name('signature.verify.download-certificate');

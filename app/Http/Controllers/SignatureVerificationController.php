@@ -93,4 +93,47 @@ class SignatureVerificationController extends Controller
             'X-Content-Type-Options' => 'nosniff',
         ]);
     }
+
+    public function preview(string $verificationCode): StreamedResponse
+    {
+        $signatureRequest = SignatureRequest::query()
+            ->with(['document', 'documentVersion'])
+            ->where('verification_code', $verificationCode)
+            ->firstOrFail();
+
+        $disk = null;
+        $path = null;
+        $filename = 'dokumen.pdf';
+
+        if ($signatureRequest->status === 'completed') {
+            if ($signatureRequest->signed_final_status !== 'completed' || empty($signatureRequest->signed_final_path) || ! Storage::disk((string) $signatureRequest->signed_final_disk)->exists((string) $signatureRequest->signed_final_path)) {
+                app(GenerateSignedFinalPdf::class)->handle($signatureRequest);
+                $signatureRequest->refresh();
+            }
+
+            $disk = (string) $signatureRequest->signed_final_disk;
+            $path = (string) $signatureRequest->signed_final_path;
+            if (empty($path) || ! Storage::disk($disk)->exists($path)) {
+                $disk = (string) $signatureRequest->signed_record_disk;
+                $path = (string) $signatureRequest->signed_record_path;
+            }
+            $filename = Str::slug($signatureRequest->document?->title ?: 'dokumen').'-signed.pdf';
+        }
+
+        if (empty($path) || ! is_string($disk) || ! Storage::disk($disk)->exists($path)) {
+            $version = $signatureRequest->documentVersion;
+            if ($version && Storage::disk((string) $version->storage_disk)->exists((string) $version->storage_path)) {
+                $disk = (string) $version->storage_disk;
+                $path = (string) $version->storage_path;
+                $filename = $version->original_filename;
+            }
+        }
+
+        abort_unless(is_string($disk) && is_string($path) && Storage::disk($disk)->exists($path), 404);
+
+        return Storage::disk($disk)->response($path, $filename, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$filename.'"',
+        ]);
+    }
 }

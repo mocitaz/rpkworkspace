@@ -36,7 +36,8 @@ import {
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { EmptyState } from '@/components/empty-state';
 import InputError from '@/components/input-error';
-import { StatusBadge } from '@/components/status-badge';
+import { StatusText, StatusTextGroup } from '@/components/status-text';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -50,6 +51,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { formatBytes, formatDate } from '@/lib/format';
+import { useInitials } from '@/hooks/use-initials';
 import * as clientRoutes from '@/routes/clients';
 import * as documentRoutes from '@/routes/documents';
 import * as approvalRoutes from '@/routes/documents/approvals';
@@ -69,7 +71,11 @@ type Version = {
     checksum: string;
     notes?: string;
     created_at: string;
-    uploader: { name: string };
+    uploader: {
+        name: string;
+        avatar_url?: string | null;
+        avatar_path?: string | null;
+    };
     scan_status: string;
     scan_message?: string;
     scanned_at?: string;
@@ -92,15 +98,27 @@ type Document = {
         legal_hold_at?: string | null;
     };
     client?: { id: string; client_number: string; display_name: string };
-    creator: { name: string };
+    creator: {
+        name: string;
+        avatar_url?: string | null;
+        avatar_path?: string | null;
+    };
     versions: Version[];
     approvals: {
         id: string;
         status: string;
         request_note?: string;
         resolution_note?: string;
-        reviewer: { name: string };
-        requester: { name: string };
+        reviewer: {
+            name: string;
+            avatar_url?: string | null;
+            avatar_path?: string | null;
+        };
+        requester: {
+            name: string;
+            avatar_url?: string | null;
+            avatar_path?: string | null;
+        };
     }[];
     signature_requests: {
         id: string;
@@ -141,6 +159,10 @@ export default function DocumentShow({
     };
     reviewers: { id: number; name: string }[];
 }) {
+    const getInitials = useInitials();
+    const staffByEmail = new Map(
+        firmStaff.map((s) => [s.email?.toLowerCase(), s]),
+    );
     const [open, setOpen] = useState(false);
     const [workflowOpen, setWorkflowOpen] = useState<
         'review' | 'signature' | null
@@ -165,139 +187,9 @@ export default function DocumentShow({
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
-                    {/* 1. Header Navigation & Document Cockpit Bar */}
-                    <div className="space-y-3 border-b border-slate-200/60 pb-5 dark:border-white/[0.06]">
-                        {/* Top Tier: Breadcrumbs + Action Buttons */}
-                        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                            {/* Left: Breadcrumbs */}
-                            <div className="flex flex-wrap items-center gap-2">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    asChild
-                                    className="-ml-2 h-7 px-2 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
-                                >
-                                    <Link href={documentRoutes.index.url()}>
-                                        <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
-                                        Repositori Dokumen
-                                    </Link>
-                                </Button>
-                            </div>
-
-                            {/* Right: Action Buttons */}
-                            <div className="flex shrink-0 flex-wrap items-center gap-1.5">
-                                {can.uploadVersion &&
-                                    !document.matter?.legal_hold_at && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() =>
-                                                setWorkflowOpen('review')
-                                            }
-                                            className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
-                                        >
-                                            <PenLine className="mr-1 size-3 text-slate-400" />
-                                            Ajukan Review
-                                        </Button>
-                                    )}
-
-                                {can.signature &&
-                                    !document.matter?.legal_hold_at && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() =>
-                                                setWorkflowOpen('signature')
-                                            }
-                                            className="h-7.5 rounded-lg border-purple-200 bg-purple-50/50 px-2.5 text-xs font-semibold text-purple-700 shadow-2xs hover:bg-purple-100/50 dark:border-purple-900/50 dark:bg-purple-950/40 dark:text-purple-300"
-                                        >
-                                            <QrCode className="mr-1 size-3 text-purple-600 dark:text-purple-400" />
-                                            E-Sign Internal
-                                        </Button>
-                                    )}
-
-                                {can.uploadVersion &&
-                                    !document.matter?.legal_hold_at && (
-                                        <Button
-                                            size="sm"
-                                            onClick={() => setOpen(true)}
-                                            className="h-7.5 rounded-lg bg-blue-600 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
-                                        >
-                                            <FileUp className="mr-1 size-3.5" />
-                                            + Versi Baru
-                                        </Button>
-                                    )}
-
-                                {can.delete &&
-                                    !document.matter?.legal_hold_at && (
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() =>
-                                                setShowDeleteConfirm(true)
-                                            }
-                                            className="h-7.5 rounded-lg border-rose-200 bg-rose-50/50 px-2.5 text-xs font-semibold text-rose-700 shadow-2xs hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300"
-                                        >
-                                            <Trash2 className="mr-1 size-3 text-rose-600 dark:text-rose-400" />
-                                            Hapus
-                                        </Button>
-                                    )}
-                            </div>
-                        </div>
-
-                        {/* Bottom Tier: Full-Width Document Title & Context Metadata */}
-                        <div className="space-y-1.5">
-                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-[26px] lg:leading-snug dark:text-white">
-                                {document.title}
-                            </h1>
-
-                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-zinc-400">
-                                {document.matter ? (
-                                    <>
-                                        <div className="flex items-center gap-1.5">
-                                            <span>Perkara:</span>
-                                            <Link
-                                                href={matterRoutes.show.url(
-                                                    document.matter.id,
-                                                )}
-                                                className="font-mono font-semibold text-blue-600 hover:underline dark:text-blue-400"
-                                            >
-                                                {document.matter.matter_number} -{' '}
-                                                {document.matter.title}
-                                            </Link>
-                                        </div>
-                                    </>
-                                ) : document.client ? (
-                                    <>
-                                        <div className="flex items-center gap-1.5">
-                                            <span>Klien:</span>
-                                            <Link
-                                                href={clientRoutes.show.url(
-                                                    document.client.id,
-                                                )}
-                                                className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
-                                            >
-                                                {document.client.display_name}
-                                            </Link>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <span>Dokumen Umum Firma</span>
-                                )}
-                                <span>·</span>
-                                <div>
-                                    Dibuat oleh{' '}
-                                    <strong className="font-semibold text-slate-900 dark:text-white">
-                                        {document.creator.name}
-                                    </strong>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     {/* Legal Hold Warning Banner */}
                     {document.matter?.legal_hold_at && (
-                        <div className="flex items-center gap-2.5 rounded-lg border border-amber-200 bg-amber-50/90 p-3 text-xs text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200">
+                        <div className="flex items-center gap-2.5 rounded-xl border border-amber-200 bg-amber-50/90 p-3 text-xs text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200">
                             <ShieldAlert className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
                             <div className="min-w-0">
                                 <p className="font-semibold text-slate-900 dark:text-amber-200">
@@ -319,119 +211,227 @@ export default function DocumentShow({
                         </div>
                     )}
 
-                    {/* 2. Top Bento Summary Cards for Selected Version */}
-                    {selectedVersion && (
-                        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                            {/* 1. Versi Terpilih */}
-                            <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                    <span className="text-[10px] font-semibold uppercase">
-                                        VERSI DITINJAU
-                                    </span>
-                                    <FileText className="size-3.5 text-blue-600 dark:text-blue-400" />
-                                </div>
-                                <div className="mt-1.5 flex items-baseline justify-between gap-2">
-                                    <span className="font-mono text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                                        v{selectedVersion.version_number}.0
-                                    </span>
-                                    <p className="max-w-[130px] truncate font-mono text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                        {selectedVersion.original_filename}
-                                    </p>
-                                </div>
-                                <div className="mt-2 border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
-                                    Berkas aktif ditinjau
-                                </div>
+                    {/* 1. Executive Document Cockpit */}
+                    <div className="space-y-4 rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs sm:p-5 dark:border-white/[0.06] dark:bg-[#14161b]">
+                        {/* Top Row: Navigation + Status & Actions */}
+                        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                            {/* Left: Back Link */}
+                            <div>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    asChild
+                                    className="-ml-2 h-7 px-2 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
+                                >
+                                    <Link href={documentRoutes.index.url()}>
+                                        <ArrowLeft className="mr-1.5 size-3.5 text-slate-400" />
+                                        Repositori Dokumen
+                                    </Link>
+                                </Button>
                             </div>
 
-                            {/* 2. Keamanan & Integritas */}
-                            <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                    <span className="text-[10px] font-semibold uppercase">
-                                        INTEGRITAS BERKAS
-                                    </span>
-                                    <ShieldCheck className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                </div>
-                                <div className="mt-1.5 flex items-baseline justify-between">
-                                    <span className="font-mono text-base font-bold text-emerald-600 dark:text-emerald-400">
-                                        Aman (Terverifikasi)
-                                    </span>
-                                    <span className="py-0.2 rounded bg-slate-100 px-1.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
-                                        SHA-256
-                                    </span>
-                                </div>
-                                <div className="mt-2 border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
-                                    Status proteksi &amp; keaslian berkas
-                                </div>
-                            </div>
-
-                            {/* 3. Ukuran & Pengunggah */}
-                            <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                    <span className="text-[10px] font-semibold uppercase">
-                                        UKURAN BERKAS
-                                    </span>
-                                    <FileClock className="size-3.5 text-purple-600 dark:text-purple-400" />
-                                </div>
-                                <div className="mt-1.5 flex items-baseline justify-between">
-                                    <span className="font-mono text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-                                        {formatBytes(selectedVersion.file_size)}
-                                    </span>
-                                    <p className="text-[11px] font-semibold text-slate-700 dark:text-zinc-300">
-                                        {selectedVersion.uploader.name}
-                                    </p>
-                                </div>
-                                <div className="mt-2 border-t border-slate-100 pt-1.5 text-[10px] text-slate-500 dark:border-white/[0.04]">
-                                    Pengunggah versi
-                                </div>
-                            </div>
-
-                            {/* 4. Tanggal Rilis */}
-                            <div className="group rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                    <span className="text-[10px] font-semibold uppercase">
-                                        TANGGAL RILIS
-                                    </span>
-                                    <FileCheck className="size-3.5 text-slate-500 dark:text-zinc-400" />
-                                </div>
-                                <p className="mt-1.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                    {formatDate(
-                                        selectedVersion.created_at,
-                                        true,
+                            {/* Right: Action Buttons */}
+                            <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+                                {can.uploadVersion &&
+                                    !document.matter?.legal_hold_at && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                                setWorkflowOpen('review')
+                                            }
+                                            className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300"
+                                        >
+                                            <PenLine className="mr-1.5 size-3 text-slate-400" />
+                                            Ajukan Review
+                                        </Button>
                                     )}
-                                </p>
-                                <div className="mt-2 truncate border-t border-slate-100 pt-1.5 font-mono text-[10px] text-slate-400">
-                                    SHA:{' '}
-                                    {selectedVersion.checksum.substring(0, 16)}
-                                    ...
-                                </div>
-                            </div>
-                        </section>
-                    )}
 
-                    {/* 3. Document Preview Viewport Section */}
+                                {can.signature &&
+                                    !document.matter?.legal_hold_at && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                                setWorkflowOpen('signature')
+                                            }
+                                            className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#14161b] dark:text-zinc-300"
+                                        >
+                                            <QrCode className="mr-1.5 size-3 text-purple-600 dark:text-purple-400" />
+                                            E-Sign Internal
+                                        </Button>
+                                    )}
+
+                                {can.uploadVersion &&
+                                    !document.matter?.legal_hold_at && (
+                                        <Button
+                                            size="sm"
+                                            onClick={() => setOpen(true)}
+                                            className="h-7.5 rounded-lg bg-slate-950 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-98 dark:bg-white dark:text-slate-950 dark:hover:bg-zinc-200"
+                                        >
+                                            <FileUp className="mr-1.5 size-3.5" />
+                                            Versi Baru
+                                        </Button>
+                                    )}
+
+                                {can.delete &&
+                                    !document.matter?.legal_hold_at && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() =>
+                                                setShowDeleteConfirm(true)
+                                            }
+                                            className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-rose-600 shadow-2xs hover:border-rose-200 hover:bg-rose-50 dark:border-white/10 dark:bg-[#14161b] dark:text-rose-400 dark:hover:bg-rose-950/20"
+                                        >
+                                            <Trash2 className="mr-1.5 size-3 text-rose-500" />
+                                            Hapus
+                                        </Button>
+                                    )}
+                            </div>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="border-t border-slate-100 dark:border-white/[0.04]" />
+
+                        {/* Document Identity & Matter Context */}
+                        <div className="space-y-1.5 pt-0.5">
+                            <h1 className="text-base font-bold tracking-tight text-slate-950 sm:text-lg lg:text-xl leading-snug dark:text-white">
+                                {document.title}
+                            </h1>
+
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-slate-500 dark:text-zinc-400">
+                                {document.matter ? (
+                                    <Link
+                                        href={matterRoutes.show.url(
+                                            document.matter.id,
+                                        )}
+                                        className="inline-flex items-center gap-1.5 font-medium text-slate-700 transition-colors hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
+                                    >
+                                        <FolderKanban className="size-3.5 text-slate-400" />
+                                        <span className="font-mono font-semibold text-slate-900 dark:text-white">
+                                            {document.matter.matter_number}
+                                        </span>
+                                        <span className="text-slate-300 dark:text-zinc-700">·</span>
+                                        <span className="hover:underline">
+                                            {document.matter.title}
+                                        </span>
+                                    </Link>
+                                ) : document.client ? (
+                                    <Link
+                                        href={clientRoutes.show.url(
+                                            document.client.id,
+                                        )}
+                                        className="inline-flex items-center gap-1.5 font-medium text-slate-700 hover:text-blue-600 dark:text-zinc-300 dark:hover:text-blue-400"
+                                    >
+                                        <Avatar className="size-4.5 shrink-0 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10">
+                                            <AvatarFallback className="bg-blue-50 text-[8px] font-bold text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
+                                                {getInitials(document.client.display_name)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <span>{document.client.display_name}</span>
+                                    </Link>
+                                ) : (
+                                    <span>Dokumen Umum Firma</span>
+                                )}
+
+                                <span className="text-slate-300 dark:text-zinc-700">·</span>
+
+                                <div className="inline-flex items-center gap-1.5 text-slate-700 dark:text-zinc-300">
+                                    <Avatar className="size-4.5 shrink-0 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10">
+                                        <AvatarImage
+                                            src={
+                                                document.creator.avatar_url ??
+                                                (document.creator.avatar_path
+                                                    ? `/storage/${document.creator.avatar_path}`
+                                                    : undefined)
+                                            }
+                                            alt={document.creator.name}
+                                        />
+                                        <AvatarFallback className="bg-slate-100 text-[8px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                            {getInitials(document.creator.name)}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <span className="font-medium">{document.creator.name}</span>
+                                </div>
+
+                                <span className="text-slate-300 dark:text-zinc-700">·</span>
+
+                                <span className="font-mono text-[11px] text-slate-400 dark:text-zinc-500">
+                                    {document.versions.length} Versi Tersimpan
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 2. Document Preview Viewport Section with Unified Toolbar */}
                     {selectedVersion && (
                         <div
                             id="preview-viewport"
-                            className="scroll-mt-6 overflow-hidden rounded-xl border border-slate-200/70 bg-white p-5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]"
+                            className="scroll-mt-6 overflow-hidden rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs sm:p-5 dark:border-white/[0.06] dark:bg-[#14161b]"
                         >
-                            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 dark:border-white/[0.04]">
-                                <div className="flex items-center gap-2">
-                                    <div className="flex size-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                                        <Eye className="size-3.5" />
-                                    </div>
-                                    <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                                        Pratinjau Dokumen (v
-                                        {selectedVersion.version_number}.0)
-                                    </h3>
+                            {/* Unified Inspector Toolbar */}
+                            <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-3 dark:border-white/[0.04]">
+                                {/* Left: Clean specs & status in one horizontal line */}
+                                <div className="flex min-w-0 flex-1 items-center gap-2 text-xs">
+                                    <span className="shrink-0 font-mono font-bold text-slate-950 dark:text-white">
+                                        v{selectedVersion.version_number}.0
+                                    </span>
+                                    <span className="shrink-0 text-slate-300 dark:text-zinc-700">·</span>
+                                    <span className="shrink-0 font-mono text-[11px] font-semibold text-slate-600 uppercase dark:text-zinc-300">
+                                        {selectedVersion.mime_type.split('/').pop()?.toUpperCase() || 'BERKAS'}
+                                    </span>
+                                    <span className="shrink-0 text-slate-300 dark:text-zinc-700">·</span>
+                                    <StatusTextGroup
+                                        values={[
+                                            document.status,
+                                            document.confidentiality_level,
+                                        ]}
+                                        className="shrink-0"
+                                    />
+                                    <span className="shrink-0 text-slate-300 dark:text-zinc-700">·</span>
+                                    <span className="shrink-0 font-mono text-[11px] text-slate-500 dark:text-zinc-400">
+                                        {formatBytes(selectedVersion.file_size)}
+                                    </span>
+                                    <span className="shrink-0 text-slate-300 dark:text-zinc-700">·</span>
+                                    <span
+                                        className="max-w-[150px] truncate font-mono text-[11px] text-slate-400 sm:max-w-[200px] lg:max-w-xs dark:text-zinc-500"
+                                        title={selectedVersion.original_filename}
+                                    >
+                                        {selectedVersion.original_filename}
+                                    </span>
                                 </div>
 
-                                <div className="flex items-center gap-2">
+                                {/* Right: Uploader Avatar, Date & Download Action */}
+                                <div className="flex shrink-0 items-center gap-2.5 sm:gap-3">
+                                    <div
+                                        className="flex items-center gap-2"
+                                        title={`Pengunggah: ${selectedVersion.uploader.name} (${formatDate(selectedVersion.created_at, true)})`}
+                                    >
+                                        <Avatar className="size-6 shrink-0 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10">
+                                            <AvatarImage
+                                                src={
+                                                    selectedVersion.uploader.avatar_url ??
+                                                    (selectedVersion.uploader.avatar_path
+                                                        ? `/storage/${selectedVersion.uploader.avatar_path}`
+                                                        : undefined)
+                                                }
+                                            />
+                                            <AvatarFallback className="bg-slate-100 text-[9px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                                {getInitials(selectedVersion.uploader.name)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <span className="hidden font-mono text-[11px] text-slate-400 sm:inline dark:text-zinc-500">
+                                            {formatDate(selectedVersion.created_at, true)}
+                                        </span>
+                                    </div>
+
                                     {can.download &&
                                         selectedVersion.scan_status !==
                                             'infected' && (
                                             <Button
                                                 size="sm"
-                                                className="h-8 rounded-lg bg-blue-600 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700"
+                                                className="h-7 rounded-lg bg-slate-950 px-2.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100"
                                                 asChild
                                             >
                                                 <a
@@ -444,7 +444,7 @@ export default function DocumentShow({
                                                         },
                                                     )}
                                                 >
-                                                    <Download className="mr-1 size-3" />
+                                                    <Download className="mr-1.5 size-3" />
                                                     Unduh Berkas
                                                 </a>
                                             </Button>
@@ -520,15 +520,10 @@ export default function DocumentShow({
                         {/* 1. Approval Dokumen */}
                         <div className="flex h-[350px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                <div className="flex items-center gap-2">
-                                    <div className="flex size-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                                        <PenLine className="size-3.5" />
-                                    </div>
-                                    <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                                        Approval &amp; Review Dokumen
-                                    </h3>
-                                </div>
-                                <span className="py-0.2 rounded bg-slate-100 px-1.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                                <h3 className="text-xs font-bold text-slate-900 dark:text-white">
+                                    Approval &amp; Review Dokumen
+                                </h3>
+                                <span className="font-mono text-[11px] text-slate-400 dark:text-zinc-500">
                                     {document.approvals.length} Pengajuan
                                 </span>
                             </div>
@@ -542,11 +537,19 @@ export default function DocumentShow({
                                         >
                                             <div className="flex items-center justify-between gap-2">
                                                 <div className="flex items-center gap-2">
-                                                    <div className="flex size-6 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                                        {approval.reviewer.name.charAt(
-                                                            0,
-                                                        )}
-                                                    </div>
+                                                    <Avatar className="size-6.5 shrink-0 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10">
+                                                        <AvatarImage
+                                                            src={
+                                                                approval.reviewer.avatar_url ??
+                                                                (approval.reviewer.avatar_path
+                                                                    ? `/storage/${approval.reviewer.avatar_path}`
+                                                                    : undefined)
+                                                            }
+                                                        />
+                                                        <AvatarFallback className="bg-slate-100 text-[9px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                                            {getInitials(approval.reviewer.name)}
+                                                        </AvatarFallback>
+                                                    </Avatar>
                                                     <div>
                                                         <p className="font-bold text-slate-900 dark:text-white">
                                                             Reviewer:{' '}
@@ -558,30 +561,43 @@ export default function DocumentShow({
                                                         </p>
                                                     </div>
                                                 </div>
-                                                <StatusBadge
+                                                <StatusText
                                                     value={approval.status}
                                                 />
                                             </div>
 
-                                            <div className="space-y-1 rounded-lg bg-slate-50/80 p-2.5 dark:bg-zinc-800/40">
-                                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                    Diajukan oleh{' '}
-                                                    <strong className="text-slate-800 dark:text-zinc-200">
-                                                        {
-                                                            approval.requester
-                                                                .name
-                                                        }
-                                                    </strong>
-                                                    {approval.request_note
-                                                        ? ` — "${approval.request_note}"`
-                                                        : ''}
-                                                </p>
+                                            <div className="space-y-1.5 rounded-lg bg-slate-50/80 p-2.5 dark:bg-zinc-800/40">
+                                                <div className="flex items-center gap-2">
+                                                    <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                        <AvatarImage
+                                                            src={
+                                                                approval.requester.avatar_url ??
+                                                                (approval.requester.avatar_path
+                                                                    ? `/storage/${approval.requester.avatar_path}`
+                                                                    : undefined)
+                                                            }
+                                                        />
+                                                        <AvatarFallback className="bg-slate-100 text-[8px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                                            {getInitials(approval.requester.name)}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    <p className="min-w-0 flex-1 truncate text-xs">
+                                                        <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                            Diajukan oleh{' '}
+                                                        </span>
+                                                        <strong className="font-semibold text-slate-800 dark:text-zinc-200">
+                                                            {approval.requester.name}
+                                                        </strong>
+                                                    </p>
+                                                </div>
+                                                {approval.request_note && (
+                                                    <p className="pl-7 text-[11.5px] leading-relaxed italic text-slate-600 dark:text-zinc-400">
+                                                        &ldquo;{approval.request_note}&rdquo;
+                                                    </p>
+                                                )}
                                                 {approval.resolution_note && (
-                                                    <p className="border-t border-slate-200/50 pt-1 text-[11px] font-medium text-slate-700 dark:text-zinc-300">
-                                                        Catatan:{' '}
-                                                        {
-                                                            approval.resolution_note
-                                                        }
+                                                    <p className="border-t border-slate-200/50 pl-7 pt-1 text-[11px] font-medium text-slate-700 dark:text-zinc-300">
+                                                        Catatan: {approval.resolution_note}
                                                     </p>
                                                 )}
                                             </div>
@@ -642,15 +658,10 @@ export default function DocumentShow({
                         {/* 2. Version History */}
                         <div className="flex h-[350px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                <div className="flex items-center gap-2">
-                                    <div className="flex size-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                                        <FileClock className="size-3.5" />
-                                    </div>
-                                    <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                                        Riwayat &amp; Log Seluruh Versi
-                                    </h3>
-                                </div>
-                                <span className="py-0.2 rounded bg-slate-100 px-1.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                                <h3 className="text-xs font-bold text-slate-900 dark:text-white">
+                                    Riwayat &amp; Log Seluruh Versi
+                                </h3>
+                                <span className="font-mono text-[11px] text-slate-400 dark:text-zinc-500">
                                     {document.versions.length} Versi
                                 </span>
                             </div>
@@ -668,8 +679,8 @@ export default function DocumentShow({
                                                         v{v.version_number}.0
                                                     </span>
                                                     {index === 0 && (
-                                                        <span className="py-0.2 shrink-0 rounded bg-blue-50 px-1.5 font-mono text-[9.5px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                                                            TERKINI
+                                                        <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400">
+                                                            · Terkini
                                                         </span>
                                                     )}
                                                 </div>
@@ -740,15 +751,30 @@ export default function DocumentShow({
                                             <p className="truncate text-xs font-semibold text-slate-800 dark:text-zinc-200">
                                                 {v.original_filename}
                                             </p>
-                                            <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Oleh{' '}
+                                            <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                                <span>Oleh</span>
+                                                <Avatar className="size-4 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                    <AvatarImage
+                                                        src={
+                                                            v.uploader.avatar_url ??
+                                                            (v.uploader.avatar_path
+                                                                ? `/storage/${v.uploader.avatar_path}`
+                                                                : undefined)
+                                                        }
+                                                        alt={v.uploader.name}
+                                                    />
+                                                    <AvatarFallback className="bg-slate-100 text-[7px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                                        {getInitials(v.uploader.name)}
+                                                    </AvatarFallback>
+                                                </Avatar>
                                                 <strong className="text-slate-700 dark:text-zinc-300">
                                                     {v.uploader.name}
-                                                </strong>{' '}
-                                                ·{' '}
-                                                {formatDate(v.created_at, true)}{' '}
-                                                · {formatBytes(v.file_size)}
-                                            </p>
+                                                </strong>
+                                                <span className="text-slate-300 dark:text-zinc-700">·</span>
+                                                <span>{formatDate(v.created_at, true)}</span>
+                                                <span className="text-slate-300 dark:text-zinc-700">·</span>
+                                                <span>{formatBytes(v.file_size)}</span>
+                                            </div>
                                             {v.notes && (
                                                 <p className="rounded bg-slate-50 p-1.5 text-[11px] text-slate-700 dark:bg-zinc-800/40 dark:text-zinc-300">
                                                     Catatan: {v.notes}
@@ -763,19 +789,11 @@ export default function DocumentShow({
                         {/* 3. Penerimaan Internal & Verifikasi E-Sign */}
                         <div className="flex h-[350px] flex-col rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
                             <div className="flex shrink-0 items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                <div className="flex items-center gap-2">
-                                    <div className="flex size-7 items-center justify-center rounded-lg bg-slate-100 text-slate-900 dark:bg-zinc-800 dark:text-zinc-100">
-                                        <QrCode className="size-3.5" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                                            Penerimaan &amp; Verifikasi E-Sign
-                                        </h3>
-                                    </div>
-                                </div>
-                                <span className="py-0.2 rounded bg-slate-100 px-1.5 font-mono text-[10px] font-semibold text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
-                                    {document.signature_requests.length}{' '}
-                                    Permintaan
+                                <h3 className="text-xs font-bold text-slate-900 dark:text-white">
+                                    Penerimaan &amp; Verifikasi E-Sign
+                                </h3>
+                                <span className="font-mono text-[11px] text-slate-400 dark:text-zinc-500">
+                                    {document.signature_requests.length} Permintaan
                                 </span>
                             </div>
 
@@ -790,12 +808,13 @@ export default function DocumentShow({
                                                 {/* Header Row: Mode + Code + Status */}
                                                 <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-slate-200/60 pb-2 dark:border-white/5">
                                                     <div className="flex flex-wrap items-center gap-1.5">
-                                                        <span className="py-0.2 rounded bg-slate-200/80 px-1.5 font-mono text-[9.5px] font-bold text-slate-700 uppercase dark:bg-zinc-800 dark:text-zinc-300">
+                                                        <span className="font-mono text-[10.5px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                             {request.mode ===
                                                             'sequential'
                                                                 ? 'Berurutan'
                                                                 : 'Paralel'}
                                                         </span>
+                                                        <span className="text-slate-300 dark:text-zinc-600">·</span>
                                                         <span className="font-mono text-[11px] font-bold text-slate-900 dark:text-white">
                                                             Kode:{' '}
                                                             {
@@ -803,7 +822,7 @@ export default function DocumentShow({
                                                             }
                                                         </span>
                                                     </div>
-                                                    <StatusBadge
+                                                    <StatusText
                                                         value={request.status}
                                                     />
                                                 </div>
@@ -858,26 +877,43 @@ export default function DocumentShow({
                                                 {/* Signers List */}
                                                 <div className="space-y-1.5 pt-0.5">
                                                     {request.signers.map(
-                                                        (s, idx) => (
-                                                            <div
-                                                                key={
-                                                                    s.id || idx
-                                                                }
-                                                                className="flex items-center gap-2 rounded border border-slate-200/80 bg-white p-2 shadow-2xs dark:border-white/10 dark:bg-[#14161b]"
-                                                            >
-                                                                <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-slate-100 font-mono text-[10px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                                                    {idx + 1}
-                                                                </div>
-                                                                <div className="space-y-0.2 min-w-0 flex-1">
-                                                                    <p className="truncate text-[11px] font-bold text-slate-900 dark:text-white">
-                                                                        {s.name}
-                                                                    </p>
-                                                                    <p className="truncate text-[10px] text-slate-500">
-                                                                        {
-                                                                            s.email
-                                                                        }
-                                                                    </p>
-                                                                    <p className="text-[10px]">
+                                                        (s, idx) => {
+                                                            const staff = s.email ? staffByEmail.get(s.email.toLowerCase()) : undefined;
+                                                            return (
+                                                                <div
+                                                                    key={
+                                                                        s.id || idx
+                                                                    }
+                                                                    className="flex items-center gap-2.5 rounded-lg border border-slate-200/80 bg-white p-2 shadow-2xs dark:border-white/10 dark:bg-[#14161b]"
+                                                                >
+                                                                    <div className="relative shrink-0">
+                                                                        <Avatar className="size-6.5 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10">
+                                                                            <AvatarImage
+                                                                                src={
+                                                                                    staff?.avatar_path
+                                                                                        ? `/storage/${staff.avatar_path}`
+                                                                                        : undefined
+                                                                                }
+                                                                                alt={s.name}
+                                                                            />
+                                                                            <AvatarFallback className="bg-slate-100 text-[9px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                                                                {getInitials(s.name)}
+                                                                            </AvatarFallback>
+                                                                        </Avatar>
+                                                                        <span className="absolute -bottom-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-slate-900 text-[8px] font-bold text-white shadow-2xs dark:bg-zinc-700">
+                                                                            {idx + 1}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className="space-y-0.2 min-w-0 flex-1">
+                                                                        <p className="truncate text-[11px] font-bold text-slate-900 dark:text-white">
+                                                                            {s.name}
+                                                                        </p>
+                                                                        <p className="truncate text-[10px] text-slate-500">
+                                                                            {
+                                                                                s.email
+                                                                            }
+                                                                        </p>
+                                                                        <p className="text-[10px]">
                                                                         {s.status ===
                                                                         'signed' ? (
                                                                             <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
@@ -930,7 +966,8 @@ export default function DocumentShow({
                                                                         </div>
                                                                     )}
                                                             </div>
-                                                        ),
+                                                            );
+                                                        },
                                                     )}
                                                 </div>
                                             </div>

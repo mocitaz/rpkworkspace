@@ -43,7 +43,35 @@ class SignatureSigner extends Model
 
     protected $attributes = ['signing_order' => 1, 'status' => 'pending'];
 
-    protected $appends = ['signing_url'];
+    protected $appends = ['signing_url', 'avatar_url'];
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        $user = User::query()
+            ->where('email', $this->email)
+            ->orWhere('name', $this->name)
+            ->first();
+
+        if ($user && $user->avatar_path) {
+            return '/storage/'.$user->avatar_path;
+        }
+
+        $contact = Contact::query()
+            ->where('email', $this->email)
+            ->orWhereRaw("TRIM(CONCAT(first_name, ' ', last_name)) = ?", [$this->name])
+            ->first();
+
+        if ($contact) {
+            if (! empty($contact->avatar_url)) {
+                return $contact->avatar_url;
+            }
+            if (! empty($contact->avatar_path)) {
+                return '/storage/'.$contact->avatar_path;
+            }
+        }
+
+        return null;
+    }
 
     protected function casts(): array
     {
