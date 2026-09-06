@@ -601,7 +601,7 @@ export default function DocumentShow({
                                 </span>
                             </div>
 
-                            <div className="custom-scroll min-h-0 flex-1 divide-y divide-slate-100 overflow-y-auto pr-1 dark:divide-white/[0.04]">
+                            <div className="custom-scroll min-h-0 flex-1 space-y-2.5 overflow-y-auto pt-1 pr-1">
                                 {document.approvals.length ? (
                                     document.approvals.map((approval) => {
                                         const isAssignedReviewer = Boolean(
@@ -614,7 +614,7 @@ export default function DocumentShow({
                                         return (
                                             <div
                                                 key={approval.id}
-                                                className="space-y-1.5 py-3 text-xs first:pt-1"
+                                                className="space-y-2 rounded-lg border border-slate-200/80 bg-slate-50/50 p-3 text-xs dark:border-white/10 dark:bg-zinc-900/40"
                                             >
                                                 {/* Top Row: Reviewer + Action buttons / Status badge */}
                                                 <div className="flex items-center justify-between gap-2">
@@ -723,16 +723,17 @@ export default function DocumentShow({
                                                         )}
                                                 </div>
 
-                                                {/* Clean Notes (if any) */}
+                                                {/* Notes (if any) */}
                                                 {approval.request_note && (
-                                                    <p className="rounded bg-slate-50 p-1.5 text-[11px] italic text-slate-600 dark:bg-zinc-800/40 dark:text-zinc-300">
+                                                    <div className="rounded border border-slate-200/60 bg-white/80 p-2 text-[11px] text-slate-600 dark:border-white/5 dark:bg-zinc-800/40 dark:text-zinc-300">
+                                                        <span className="font-medium text-slate-500 dark:text-zinc-400">Pesan: </span>
                                                         &ldquo;{approval.request_note}&rdquo;
-                                                    </p>
+                                                    </div>
                                                 )}
                                                 {approval.resolution_note && (
-                                                    <p className="rounded bg-slate-50 p-1.5 text-[11px] font-medium text-slate-700 dark:bg-zinc-800/40 dark:text-zinc-300">
+                                                    <div className="rounded border border-slate-200/60 bg-white/80 p-2 text-[11px] font-medium text-slate-700 dark:border-white/5 dark:bg-zinc-800/40 dark:text-zinc-300">
                                                         Catatan: {approval.resolution_note}
-                                                    </p>
+                                                    </div>
                                                 )}
                                             </div>
                                         );
