@@ -30,6 +30,8 @@ import * as commentRoutes from '@/routes/comments';
 export type DiscussionStaff = {
     id: number;
     name: string;
+    email?: string;
+    department?: string;
     position_title?: string;
     avatar_path?: string | null;
     avatar_url?: string | null;

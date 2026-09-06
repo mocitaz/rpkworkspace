@@ -1,4 +1,4 @@
-import { Form, Head, Link, router, useForm } from '@inertiajs/react';
+import { Form, Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import {
     ArrowLeft,
     ArrowUpRight,
@@ -106,15 +106,19 @@ type Document = {
     versions: Version[];
     approvals: {
         id: string;
+        reviewer_id?: number | string;
+        requester_id?: number | string;
         status: string;
         request_note?: string;
         resolution_note?: string;
         reviewer: {
+            id?: number | string;
             name: string;
             avatar_url?: string | null;
             avatar_path?: string | null;
         };
         requester: {
+            id?: number | string;
             name: string;
             avatar_url?: string | null;
             avatar_path?: string | null;
@@ -159,6 +163,15 @@ export default function DocumentShow({
     };
     reviewers: { id: number; name: string }[];
 }) {
+    const { auth } = usePage<{
+        auth?: {
+            user?: {
+                id: number | string;
+                name?: string;
+                email?: string;
+            };
+        };
+    }>().props;
     const getInitials = useInitials();
     const staffByEmail = new Map(
         firmStaff.map((s) => [s.email?.toLowerCase(), s]),
@@ -530,122 +543,138 @@ export default function DocumentShow({
 
                             <div className="custom-scroll min-h-0 flex-1 divide-y divide-slate-100 overflow-y-auto pt-1 pr-1 dark:divide-white/[0.04]">
                                 {document.approvals.length ? (
-                                    document.approvals.map((approval) => (
-                                        <div
-                                            key={approval.id}
-                                            className="space-y-2 py-3 text-xs"
-                                        >
-                                            <div className="flex items-center justify-between gap-2">
-                                                <div className="flex items-center gap-2">
-                                                    <Avatar className="size-6.5 shrink-0 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10">
-                                                        <AvatarImage
-                                                            src={
-                                                                approval.reviewer.avatar_url ??
-                                                                (approval.reviewer.avatar_path
-                                                                    ? `/storage/${approval.reviewer.avatar_path}`
-                                                                    : undefined)
-                                                            }
-                                                        />
-                                                        <AvatarFallback className="bg-slate-100 text-[9px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                                            {getInitials(approval.reviewer.name)}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                    <div>
-                                                        <p className="font-bold text-slate-900 dark:text-white">
-                                                            Reviewer:{' '}
-                                                            {
-                                                                approval
-                                                                    .reviewer
-                                                                    .name
-                                                            }
+                                    document.approvals.map((approval) => {
+                                        const isAssignedReviewer = Boolean(
+                                            auth?.user?.id && (
+                                                (approval.reviewer?.id && String(approval.reviewer.id) === String(auth.user.id)) ||
+                                                (approval.reviewer_id && String(approval.reviewer_id) === String(auth.user.id))
+                                            )
+                                        );
+
+                                        return (
+                                            <div
+                                                key={approval.id}
+                                                className="space-y-2 py-3 text-xs"
+                                            >
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <div className="flex items-center gap-2">
+                                                        <Avatar className="size-6.5 shrink-0 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10">
+                                                            <AvatarImage
+                                                                src={
+                                                                    approval.reviewer.avatar_url ??
+                                                                    (approval.reviewer.avatar_path
+                                                                        ? `/storage/${approval.reviewer.avatar_path}`
+                                                                        : undefined)
+                                                                }
+                                                            />
+                                                            <AvatarFallback className="bg-slate-100 text-[9px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                                                {getInitials(approval.reviewer.name)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div>
+                                                            <p className="font-bold text-slate-900 dark:text-white">
+                                                                Reviewer:{' '}
+                                                                {
+                                                                    approval
+                                                                        .reviewer
+                                                                        .name
+                                                                }
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <StatusText
+                                                        value={approval.status}
+                                                    />
+                                                </div>
+
+                                                <div className="space-y-1.5 rounded-lg bg-slate-50/80 p-2.5 dark:bg-zinc-800/40">
+                                                    <div className="flex items-center gap-2">
+                                                        <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                            <AvatarImage
+                                                                src={
+                                                                    approval.requester.avatar_url ??
+                                                                    (approval.requester.avatar_path
+                                                                        ? `/storage/${approval.requester.avatar_path}`
+                                                                        : undefined)
+                                                                }
+                                                            />
+                                                            <AvatarFallback className="bg-slate-100 text-[8px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
+                                                                {getInitials(approval.requester.name)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <p className="min-w-0 flex-1 truncate text-xs">
+                                                            <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                                Diajukan oleh{' '}
+                                                            </span>
+                                                            <strong className="font-semibold text-slate-800 dark:text-zinc-200">
+                                                                {approval.requester.name}
+                                                            </strong>
                                                         </p>
                                                     </div>
+                                                    {approval.request_note && (
+                                                        <p className="pl-7 text-[11.5px] leading-relaxed italic text-slate-600 dark:text-zinc-400">
+                                                            &ldquo;{approval.request_note}&rdquo;
+                                                        </p>
+                                                    )}
+                                                    {approval.resolution_note && (
+                                                        <p className="border-t border-slate-200/50 pl-7 pt-1 text-[11px] font-medium text-slate-700 dark:text-zinc-300">
+                                                            Catatan: {approval.resolution_note}
+                                                        </p>
+                                                    )}
                                                 </div>
-                                                <StatusText
-                                                    value={approval.status}
-                                                />
-                                            </div>
 
-                                            <div className="space-y-1.5 rounded-lg bg-slate-50/80 p-2.5 dark:bg-zinc-800/40">
-                                                <div className="flex items-center gap-2">
-                                                    <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                        <AvatarImage
-                                                            src={
-                                                                approval.requester.avatar_url ??
-                                                                (approval.requester.avatar_path
-                                                                    ? `/storage/${approval.requester.avatar_path}`
-                                                                    : undefined)
-                                                            }
-                                                        />
-                                                        <AvatarFallback className="bg-slate-100 text-[8px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                                            {getInitials(approval.requester.name)}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                    <p className="min-w-0 flex-1 truncate text-xs">
-                                                        <span className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                            Diajukan oleh{' '}
-                                                        </span>
-                                                        <strong className="font-semibold text-slate-800 dark:text-zinc-200">
-                                                            {approval.requester.name}
-                                                        </strong>
-                                                    </p>
-                                                </div>
-                                                {approval.request_note && (
-                                                    <p className="pl-7 text-[11.5px] leading-relaxed italic text-slate-600 dark:text-zinc-400">
-                                                        &ldquo;{approval.request_note}&rdquo;
-                                                    </p>
-                                                )}
-                                                {approval.resolution_note && (
-                                                    <p className="border-t border-slate-200/50 pl-7 pt-1 text-[11px] font-medium text-slate-700 dark:text-zinc-300">
-                                                        Catatan: {approval.resolution_note}
-                                                    </p>
+                                                {approval.status === 'pending' && (
+                                                    isAssignedReviewer && can.approve ? (
+                                                        <div className="flex items-center gap-2 pt-0.5">
+                                                            <Form
+                                                                action={approvalRoutes.resolve.url(
+                                                                    approval.id,
+                                                                )}
+                                                                method="patch"
+                                                            >
+                                                                <input
+                                                                    type="hidden"
+                                                                    name="approved"
+                                                                    value="1"
+                                                                />
+                                                                <Button
+                                                                    size="sm"
+                                                                    className="h-7 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                                                >
+                                                                    Setujui
+                                                                </Button>
+                                                            </Form>
+                                                            <Form
+                                                                action={approvalRoutes.resolve.url(
+                                                                    approval.id,
+                                                                )}
+                                                                method="patch"
+                                                            >
+                                                                <input
+                                                                    type="hidden"
+                                                                    name="approved"
+                                                                    value="0"
+                                                                />
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                    className="h-7 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-800 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                                                                >
+                                                                    Minta Revisi
+                                                                </Button>
+                                                            </Form>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="pt-0.5">
+                                                            <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                                                Menunggu keputusan dari {approval.reviewer.name}
+                                                            </span>
+                                                        </div>
+                                                    )
                                                 )}
                                             </div>
-
-                                            {approval.status === 'pending' &&
-                                                can.approve && (
-                                                    <div className="flex items-center gap-2 pt-0.5">
-                                                        <Form
-                                                            action={approvalRoutes.resolve.url(
-                                                                approval.id,
-                                                            )}
-                                                            method="patch"
-                                                        >
-                                                            <input
-                                                                type="hidden"
-                                                                name="approved"
-                                                                value="1"
-                                                            />
-                                                            <Button
-                                                                size="sm"
-                                                                className="h-7 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
-                                                            >
-                                                                Setujui
-                                                            </Button>
-                                                        </Form>
-                                                        <Form
-                                                            action={approvalRoutes.resolve.url(
-                                                                approval.id,
-                                                            )}
-                                                            method="patch"
-                                                        >
-                                                            <input
-                                                                type="hidden"
-                                                                name="approved"
-                                                                value="0"
-                                                            />
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline"
-                                                                className="h-7 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-800 hover:bg-slate-50"
-                                                            >
-                                                                Minta Revisi
-                                                            </Button>
-                                                        </Form>
-                                                    </div>
-                                                )}
-                                        </div>
-                                    ))
+                                        );
+                                    })
                                 ) : (
                                     <p className="py-6 text-center text-xs font-medium text-slate-400 dark:text-zinc-500">
                                         Belum ada pengajuan review pada dokumen
@@ -879,6 +908,14 @@ export default function DocumentShow({
                                                     {request.signers.map(
                                                         (s, idx) => {
                                                             const staff = s.email ? staffByEmail.get(s.email.toLowerCase()) : undefined;
+                                                            const isCurrentUserSigner = Boolean(
+                                                                auth?.user && (
+                                                                    (s.email && auth.user.email && s.email.toLowerCase().trim() === auth.user.email.toLowerCase().trim()) ||
+                                                                    (staff && String(staff.id) === String(auth.user.id)) ||
+                                                                    (s.name && auth.user.name && s.name.toLowerCase().trim() === auth.user.name.toLowerCase().trim())
+                                                                )
+                                                            );
+
                                                             return (
                                                                 <div
                                                                     key={
@@ -938,31 +975,35 @@ export default function DocumentShow({
                                                                     'pending' &&
                                                                     s.signing_token && (
                                                                         <div className="flex shrink-0 items-center gap-1">
-                                                                            <a
-                                                                                href={`/sign/${s.signing_token}`}
-                                                                                target="_blank"
-                                                                                rel="noreferrer"
-                                                                                className="inline-flex h-5.5 items-center justify-center gap-0.5 rounded bg-slate-900 px-1.5 text-[10px] font-bold text-white shadow-2xs transition-all hover:bg-black active:scale-95 dark:bg-white dark:text-slate-900"
-                                                                            >
-                                                                                <PenLine className="size-2" />
-                                                                                TTD
-                                                                            </a>
-                                                                            <button
-                                                                                type="button"
-                                                                                onClick={() => {
-                                                                                    const url = `${window.location.origin}/sign/${s.signing_token}`;
-                                                                                    navigator.clipboard.writeText(
-                                                                                        url,
-                                                                                    );
-                                                                                    alert(
-                                                                                        `Tautan tanda tangan disalin:\n${url}`,
-                                                                                    );
-                                                                                }}
-                                                                                className="inline-flex h-5.5 items-center justify-center rounded border border-slate-200 bg-white px-1.5 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
-                                                                                title="Salin tautan signer"
-                                                                            >
-                                                                                <Copy className="size-2" />
-                                                                            </button>
+                                                                            {isCurrentUserSigner && (
+                                                                                <a
+                                                                                    href={`/sign/${s.signing_token}`}
+                                                                                    target="_blank"
+                                                                                    rel="noreferrer"
+                                                                                    className="inline-flex h-5.5 items-center justify-center gap-0.5 rounded bg-slate-900 px-1.5 text-[10px] font-bold text-white shadow-2xs transition-all hover:bg-black active:scale-95 dark:bg-white dark:text-slate-900"
+                                                                                >
+                                                                                    <PenLine className="size-2" />
+                                                                                    TTD
+                                                                                </a>
+                                                                            )}
+                                                                            {(can.signature || isCurrentUserSigner) && (
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={() => {
+                                                                                        const url = `${window.location.origin}/sign/${s.signing_token}`;
+                                                                                        navigator.clipboard.writeText(
+                                                                                            url,
+                                                                                        );
+                                                                                        alert(
+                                                                                            `Tautan tanda tangan disalin:\n${url}`,
+                                                                                        );
+                                                                                    }}
+                                                                                    className="inline-flex h-5.5 items-center justify-center rounded border border-slate-200 bg-white px-1.5 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                                                                                    title="Salin tautan signer"
+                                                                                >
+                                                                                    <Copy className="size-2" />
+                                                                                </button>
+                                                                            )}
                                                                         </div>
                                                                     )}
                                                             </div>

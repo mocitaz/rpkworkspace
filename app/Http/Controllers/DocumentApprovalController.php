@@ -28,7 +28,11 @@ class DocumentApprovalController extends Controller
         Gate::authorize('view', $approval->document);
         abort_unless($request->user()->hasPermission('document.approve'), 403);
         $data = $request->validate(['approved' => ['required', 'boolean'], 'note' => ['nullable', 'string', 'max:2000']]);
-        $resolve->handle($approval, $request->user(), (bool) $data['approved'], $data['note'] ?? null);
+        try {
+            $resolve->handle($approval, $request->user(), (bool) $data['approved'], $data['note'] ?? null);
+        } catch (\DomainException $e) {
+            return back()->with('error', $e->getMessage());
+        }
 
         return back()->with('success', 'Keputusan review disimpan.');
     }
