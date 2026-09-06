@@ -55,6 +55,11 @@ import { Spinner } from '@/components/ui/spinner';
 import { formatBytes, formatDate } from '@/lib/format';
 import { useInitials } from '@/hooks/use-initials';
 import UserPicker, { type UserOption } from '@/components/user-picker';
+import {
+    FinanceDialogFooter,
+    FinanceDialogHeader,
+} from '@/pages/finance/components/finance-dialog-ui';
+import { financeDialogPanelClass } from '@/pages/finance/components/finance-dialog-design';
 import * as clientRoutes from '@/routes/clients';
 import * as documentRoutes from '@/routes/documents';
 import * as approvalRoutes from '@/routes/documents/approvals';
@@ -1221,94 +1226,56 @@ export default function DocumentShow({
                     }
                 }}
             >
-                <DialogContent className="w-full min-w-0 max-w-[calc(100%-2rem)] overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
-                    <div className="border-b border-slate-100 bg-slate-50/60 p-5 dark:border-white/5 dark:bg-zinc-900/40 min-w-0">
-                        <DialogHeader className="min-w-0">
-                            <div className="flex items-start gap-3.5 min-w-0">
-                                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-emerald-200/80 bg-emerald-50 text-emerald-600 dark:border-emerald-900/50 dark:bg-emerald-950/50 dark:text-emerald-400">
-                                    <CheckCircle2 className="size-5" />
-                                </div>
-                                <div className="min-w-0 flex-1 space-y-1 text-left">
-                                    <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
-                                        Setujui Dokumen
-                                    </DialogTitle>
-                                    <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed">
-                                        Konfirmasi persetujuan dokumen yang diajukan oleh{' '}
-                                        <strong className="text-slate-800 dark:text-zinc-200 font-semibold">
-                                            {approvingApproval?.requesterName}
-                                        </strong>.
-                                    </DialogDescription>
-                                </div>
-                            </div>
-                        </DialogHeader>
-                    </div>
+                <DialogContent className={financeDialogPanelClass('compact')}>
+                    <FinanceDialogHeader
+                        icon={CheckCircle2}
+                        eyebrow="Approval Dokumen"
+                        title="Setujui Dokumen"
+                        description={`Konfirmasi persetujuan dokumen yang diajukan oleh ${approvingApproval?.requesterName || 'pemohon'}.`}
+                    />
 
-                    <form onSubmit={handleApproveSubmit} className="min-w-0 w-full">
-                        <div className="p-5 space-y-4">
-                            {/* Pratinjau Dokumen */}
-                            <div className="flex items-start gap-2.5 rounded-xl border border-slate-200/80 bg-slate-50/70 p-3 text-xs dark:border-white/10 dark:bg-zinc-900/40 min-w-0">
-                                <FileCheck className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400 mt-0.5" />
-                                <div className="min-w-0 flex-1">
-                                    <p className="font-semibold text-slate-900 dark:text-white truncate" title={document.title}>
-                                        {document.title}
-                                    </p>
-                                    <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                        Status berkas akan diperbarui menjadi disetujui (Approved).
-                                    </p>
-                                </div>
+                    <form onSubmit={handleApproveSubmit} className="space-y-4 pt-1 text-xs">
+                        <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200/80 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-[#16181f]">
+                            <div className="min-w-0">
+                                <span className="block truncate text-xs font-semibold text-slate-800 dark:text-zinc-200">
+                                    {document.title}
+                                </span>
+                                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                    Status berkas akan diperbarui menjadi disetujui (Approved).
+                                </p>
                             </div>
-
-                            <div className="grid gap-1.5 min-w-0 w-full">
-                                <Label
-                                    htmlFor="approve-note"
-                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
-                                >
-                                    Catatan Persetujuan (Opsional)
-                                </Label>
-                                <textarea
-                                    id="approve-note"
-                                    rows={3}
-                                    value={approvalNote}
-                                    onChange={(e) => setApprovalNote(e.target.value)}
-                                    placeholder="Tambahkan catatan persetujuan jika diperlukan (opsional)..."
-                                    className="w-full min-w-0 max-w-full rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-900 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-white/10 dark:bg-[#121418] dark:text-white"
-                                />
+                            <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                                <FileCheck className="size-4" />
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-end gap-2.5 border-t border-slate-100 bg-slate-50/50 p-4 dark:border-white/5 dark:bg-zinc-900/30">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                disabled={isApproving}
-                                onClick={() => {
-                                    setApprovingApproval(null);
-                                    setApprovalNote('');
-                                }}
-                                className="h-9 rounded-xl border-slate-200 bg-white px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                        <div>
+                            <Label
+                                htmlFor="approve-note"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
                             >
-                                Batal
-                            </Button>
-                            <Button
-                                type="submit"
-                                size="sm"
-                                disabled={isApproving}
-                                className="h-9 rounded-xl bg-emerald-600 px-4 text-xs font-bold text-white shadow-2xs hover:bg-emerald-700 active:scale-[0.98] transition-all dark:bg-emerald-600 dark:hover:bg-emerald-500"
-                            >
-                                {isApproving ? (
-                                    <>
-                                        <Spinner className="mr-1.5 size-3.5" />
-                                        Menyetujui...
-                                    </>
-                                ) : (
-                                    <>
-                                        <Check className="mr-1.5 size-3.5" />
-                                        Setujui Dokumen
-                                    </>
-                                )}
-                            </Button>
+                                Catatan Persetujuan (Opsional)
+                            </Label>
+                            <textarea
+                                id="approve-note"
+                                rows={3}
+                                value={approvalNote}
+                                onChange={(e) => setApprovalNote(e.target.value)}
+                                placeholder="Tambahkan catatan persetujuan jika diperlukan..."
+                                className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-slate-900 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                            />
                         </div>
+
+                        <FinanceDialogFooter
+                            onCancel={() => {
+                                setApprovingApproval(null);
+                                setApprovalNote('');
+                            }}
+                            processing={isApproving}
+                            submitLabel="Setujui Dokumen"
+                            processingLabel="Menyetujui..."
+                            tone="primary"
+                        />
                     </form>
                 </DialogContent>
             </Dialog>
@@ -1323,96 +1290,61 @@ export default function DocumentShow({
                     }
                 }}
             >
-                <DialogContent className="w-full min-w-0 max-w-[calc(100%-2rem)] overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
-                    <div className="border-b border-slate-100 bg-slate-50/60 p-5 dark:border-white/5 dark:bg-zinc-900/40 min-w-0">
-                        <DialogHeader className="min-w-0">
-                            <div className="flex items-start gap-3.5 min-w-0">
-                                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-amber-200/80 bg-amber-50 text-amber-600 dark:border-amber-900/50 dark:bg-amber-950/50 dark:text-amber-400">
-                                    <AlertTriangle className="size-5" />
-                                </div>
-                                <div className="min-w-0 flex-1 space-y-1 text-left">
-                                    <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
-                                        Permintaan Revisi Dokumen
-                                    </DialogTitle>
-                                    <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400 leading-relaxed">
-                                        Kembalikan berkas ke{' '}
-                                        <strong className="text-slate-800 dark:text-zinc-200 font-semibold">
-                                            {revisingApproval?.requesterName}
-                                        </strong>{' '}
-                                        disertai instruksi atau poin klausul yang perlu direvisi.
-                                    </DialogDescription>
-                                </div>
-                            </div>
-                        </DialogHeader>
-                    </div>
+                <DialogContent className={financeDialogPanelClass('compact')}>
+                    <FinanceDialogHeader
+                        icon={AlertTriangle}
+                        eyebrow="Approval Dokumen"
+                        title="Permintaan Revisi Dokumen"
+                        description={`Kembalikan berkas ke ${revisingApproval?.requesterName || 'pemohon'} disertai instruksi poin revisi.`}
+                    />
 
-                    <form onSubmit={handleRevisionSubmit} className="min-w-0 w-full">
-                        <div className="p-5 space-y-4">
-                            {/* Pratinjau Dokumen */}
-                            <div className="flex items-start gap-2.5 rounded-xl border border-amber-200/60 bg-amber-50/50 p-3 text-xs dark:border-amber-900/30 dark:bg-amber-950/20 min-w-0">
-                                <FileClock className="size-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
-                                <div className="min-w-0 flex-1">
-                                    <p className="font-semibold text-slate-900 dark:text-white truncate" title={document.title}>
-                                        {document.title}
-                                    </p>
-                                    <p className="mt-0.5 text-[11px] text-amber-800 dark:text-amber-300">
-                                        Status berkas akan menjadi Perlu Revisi (Revision Requested).
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="grid gap-1.5 min-w-0 w-full">
-                                <Label
-                                    htmlFor="revision-note"
-                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
-                                >
-                                    Catatan / Poin Revisi <span className="text-rose-500">*</span>
-                                </Label>
-                                <textarea
-                                    id="revision-note"
-                                    rows={3}
-                                    required
-                                    value={revisionNote}
-                                    onChange={(e) => setRevisionNote(e.target.value)}
-                                    placeholder="Jelaskan pasal, klausul, atau halaman yang memerlukan perbaikan dari pemohon..."
-                                    className="w-full min-w-0 max-w-full rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-900 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 dark:border-white/10 dark:bg-[#121418] dark:text-white"
-                                />
-                                <span className="text-[10px] text-slate-400 dark:text-zinc-500">
-                                    Catatan ini akan dikirimkan langsung ke pemohon review.
+                    <form onSubmit={handleRevisionSubmit} className="space-y-4 pt-1 text-xs">
+                        <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200/80 bg-slate-50/50 p-3.5 dark:border-white/[0.06] dark:bg-[#16181f]">
+                            <div className="min-w-0">
+                                <span className="block truncate text-xs font-semibold text-slate-800 dark:text-zinc-200">
+                                    {document.title}
                                 </span>
+                                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
+                                    Status berkas akan menjadi Perlu Revisi (Revision Requested).
+                                </p>
+                            </div>
+                            <div className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+                                <FileClock className="size-4" />
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-end gap-2.5 border-t border-slate-100 bg-slate-50/50 p-4 dark:border-white/5 dark:bg-zinc-900/30">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                disabled={isRevising}
-                                onClick={() => {
-                                    setRevisingApproval(null);
-                                    setRevisionNote('');
-                                }}
-                                className="h-9 rounded-xl border-slate-200 bg-white px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300"
+                        <div>
+                            <Label
+                                htmlFor="revision-note"
+                                className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
                             >
-                                Batal
-                            </Button>
-                            <Button
-                                type="submit"
-                                size="sm"
-                                disabled={isRevising || !revisionNote.trim()}
-                                className="h-9 rounded-xl bg-amber-600 px-4 text-xs font-bold text-white shadow-2xs hover:bg-amber-700 active:scale-[0.98] transition-all disabled:opacity-50 dark:bg-amber-600 dark:hover:bg-amber-500"
-                            >
-                                {isRevising ? (
-                                    <>
-                                        <Spinner className="mr-1.5 size-3.5" />
-                                        Mengirim...
-                                    </>
-                                ) : (
-                                    'Kirim Permintaan Revisi'
-                                )}
-                            </Button>
+                                Catatan / Poin Revisi <span className="text-rose-500">*</span>
+                            </Label>
+                            <textarea
+                                id="revision-note"
+                                rows={3}
+                                required
+                                value={revisionNote}
+                                onChange={(e) => setRevisionNote(e.target.value)}
+                                placeholder="Jelaskan pasal, klausul, atau halaman yang memerlukan perbaikan dari pemohon..."
+                                className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-slate-900 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                            />
+                            <p className="mt-1 text-[11px] text-slate-400 dark:text-zinc-500">
+                                Catatan ini akan dikirimkan langsung ke pemohon review.
+                            </p>
                         </div>
+
+                        <FinanceDialogFooter
+                            onCancel={() => {
+                                setRevisingApproval(null);
+                                setRevisionNote('');
+                            }}
+                            processing={isRevising}
+                            disabled={!revisionNote.trim()}
+                            submitLabel="Kirim Permintaan Revisi"
+                            processingLabel="Mengirim..."
+                            tone="primary"
+                        />
                     </form>
                 </DialogContent>
             </Dialog>
