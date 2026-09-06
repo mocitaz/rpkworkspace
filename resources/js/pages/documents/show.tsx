@@ -684,11 +684,9 @@ export default function DocumentShow({
 
                                                     {approval.status === 'pending' && (
                                                         isAssignedReviewer && can.approve ? (
-                                                            <div className="flex items-center justify-end gap-2 border-t border-slate-200/60 pt-2 dark:border-white/5">
-                                                                <Button
-                                                                    size="sm"
+                                                            <div className="flex items-center justify-end gap-1.5 border-t border-slate-200/60 pt-2 dark:border-white/5">
+                                                                <button
                                                                     type="button"
-                                                                    variant="outline"
                                                                     onClick={() => {
                                                                         setRevisingApproval({
                                                                             id: approval.id,
@@ -698,13 +696,13 @@ export default function DocumentShow({
                                                                         });
                                                                         setRevisionNote('');
                                                                     }}
-                                                                    className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs transition-colors hover:border-amber-300 hover:bg-amber-50/70 hover:text-amber-800 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:border-amber-500/40 dark:hover:bg-amber-950/30 dark:hover:text-amber-300"
+                                                                    className="inline-flex h-6 items-center gap-1 rounded border border-slate-200 bg-white px-2 text-[10.5px] font-semibold text-slate-700 shadow-2xs transition-all hover:bg-slate-50 active:scale-95 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
+                                                                    title="Minta Revisi Dokumen"
                                                                 >
-                                                                    <RotateCcw className="mr-1.5 size-3 text-amber-600 dark:text-amber-400" />
-                                                                    Minta Revisi
-                                                                </Button>
-                                                                <Button
-                                                                    size="sm"
+                                                                    <RotateCcw className="size-2.5 text-amber-600 dark:text-amber-400" />
+                                                                    <span>Minta Revisi</span>
+                                                                </button>
+                                                                <button
                                                                     type="button"
                                                                     onClick={() => {
                                                                         setApprovingApproval({
@@ -715,11 +713,12 @@ export default function DocumentShow({
                                                                         });
                                                                         setApprovalNote('');
                                                                     }}
-                                                                    className="h-7.5 rounded-lg bg-emerald-600 px-3 text-xs font-semibold text-white shadow-2xs transition-all hover:bg-emerald-700 active:scale-[0.98] dark:bg-emerald-600 dark:hover:bg-emerald-500"
+                                                                    className="inline-flex h-6 items-center gap-1 rounded bg-slate-900 px-2 text-[10.5px] font-bold text-white shadow-2xs transition-all hover:bg-black active:scale-95 dark:bg-white dark:text-slate-900"
+                                                                    title="Setujui Dokumen"
                                                                 >
-                                                                    <Check className="mr-1.5 size-3.5" />
-                                                                    Setujui
-                                                                </Button>
+                                                                    <Check className="size-2.5 text-emerald-400 dark:text-emerald-600" />
+                                                                    <span>Setujui</span>
+                                                                </button>
                                                             </div>
                                                         ) : (
                                                             <div className="border-t border-slate-200/60 pt-1.5 text-right dark:border-white/5">
