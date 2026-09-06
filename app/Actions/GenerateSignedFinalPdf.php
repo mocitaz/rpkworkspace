@@ -133,6 +133,45 @@ class GenerateSignedFinalPdf
                     $sigPath = $outputDir.'/visual_sig_'.$signer->getKey().'.png';
                     $im = @imagecreatefromstring($decoded);
                     if ($im !== false) {
+                        // Auto-trim transparent pixels so signature never gets distorted or artificially zoomed
+                        $w = imagesx($im);
+                        $h = imagesy($im);
+                        $top = $h;
+                        $bottom = 0;
+                        $left = $w;
+                        $right = 0;
+                        for ($ix = 0; $ix < $w; $ix++) {
+                            for ($iy = 0; $iy < $h; $iy++) {
+                                $rgba = imagecolorat($im, $ix, $iy);
+                                $alpha = ($rgba & 0x7F000000) >> 24;
+                                if ($alpha < 120) {
+                                    if ($ix < $left) {
+                                        $left = $ix;
+                                    }
+                                    if ($ix > $right) {
+                                        $right = $ix;
+                                    }
+                                    if ($iy < $top) {
+                                        $top = $iy;
+                                    }
+                                    if ($iy > $bottom) {
+                                        $bottom = $iy;
+                                    }
+                                }
+                            }
+                        }
+                        if ($top <= $bottom && $left <= $right) {
+                            $pad = 6;
+                            $cropLeft = max(0, $left - $pad);
+                            $cropTop = max(0, $top - $pad);
+                            $cropW = min($w - $cropLeft, ($right - $left + 1) + ($pad * 2));
+                            $cropH = min($h - $cropTop, ($bottom - $top + 1) + ($pad * 2));
+                            $cropped = imagecrop($im, ['x' => $cropLeft, 'y' => $cropTop, 'width' => $cropW, 'height' => $cropH]);
+                            if ($cropped !== false) {
+                                imagedestroy($im);
+                                $im = $cropped;
+                            }
+                        }
                         imagesavealpha($im, true);
                         imagepng($im, $sigPath);
                         imagedestroy($im);
@@ -221,7 +260,20 @@ class GenerateSignedFinalPdf
                     $qrSize = min(18.0, min($stampW * 0.36, $stampH * 0.78));
                     $qrMargin = 2.0;
 
-                    if ($layout === 'qr_left') {
+                    if ($layout === 'qr_only') {
+                        $qrMargin = $showBorder ? 2.0 : 1.0;
+                        if ($showName && $namePos !== 'none') {
+                            $qrSize = min(18.0, min($stampW - ($qrMargin * 2), $stampH - 9.0));
+                            $qrX = $x + ($stampW - $qrSize) / 2;
+                            $qrY = $y + $qrMargin;
+                        } else {
+                            $qrSize = min(22.0, min($stampW - ($qrMargin * 2), $stampH - ($qrMargin * 2)));
+                            $qrX = $x + ($stampW - $qrSize) / 2;
+                            $qrY = $y + ($stampH - $qrSize) / 2;
+                        }
+                        $contentX = $x;
+                        $contentW = $stampW;
+                    } elseif ($layout === 'qr_left') {
                         $qrSize = min(16.0, max(12.0, $stampH * 0.85));
                         $qrX = max(3.0, $x - $qrSize - 2.5);
                         $qrY = $y + ($stampH - $qrSize) / 2;
@@ -300,7 +352,21 @@ class GenerateSignedFinalPdf
                 }
 
                 // Render Name & Title vs Signature
-                if ($showName && $namePos !== 'none') {
+                if ($layout === 'qr_only') {
+                    if ($showName && $namePos !== 'none') {
+                        $nameY = $y + $stampH - 6.5;
+                        $pdf->SetTextColor(15, 23, 42);
+                        $pdf->SetFont('Helvetica', 'B', 6.8);
+                        $pdf->SetXY($x + 1.0, $nameY);
+                        $pdf->Cell($stampW - 2.0, 3.0, substr($signerItem['name'], 0, 32), 0, 0, 'C');
+                        if ($showTitle && $signerItem['title']) {
+                            $pdf->SetFont('Helvetica', '', 5.0);
+                            $pdf->SetTextColor(100, 116, 139);
+                            $pdf->SetXY($x + 1.0, $nameY + 3.0);
+                            $pdf->Cell($stampW - 2.0, 2.0, substr($signerItem['title'], 0, 36), 0, 0, 'C');
+                        }
+                    }
+                } elseif ($showName && $namePos !== 'none') {
                     $nameHeight = ($showTitle && $signerItem['title']) ? 7.0 : 4.5;
                     $sigAvailableH = max(8.0, $stampH - $nameHeight - 3.5);
 
@@ -330,15 +396,17 @@ class GenerateSignedFinalPdf
                             if ($imgInfo && $imgInfo[0] > 0 && $imgInfo[1] > 0) {
                                 $imgW = (float) $imgInfo[0];
                                 $imgH = (float) $imgInfo[1];
-                                $maxW = $contentW;
-                                $maxH = $sigAvailableH;
+                                $paddingX = $showBorder ? 2.5 : 1.0;
+                                $paddingY = $showBorder ? 1.8 : 0.8;
+                                $availW = max(5.0, $contentW - ($paddingX * 2));
+                                $availH = max(5.0, $sigAvailableH - ($paddingY * 2));
 
-                                $scale = min($maxW / $imgW, $maxH / $imgH);
-                                $targetW = max(3, $imgW * $scale);
-                                $targetH = max(3, $imgH * $scale);
+                                $scale = min($availW / $imgW, $availH / $imgH);
+                                $targetW = max(3.0, $imgW * $scale);
+                                $targetH = max(3.0, $imgH * $scale);
 
-                                $sigX = $contentX + ($maxW - $targetW) / 2;
-                                $sigY = $lineY + 1.0 + ($maxH - $targetH) / 2;
+                                $sigX = $contentX + $paddingX + ($availW - $targetW) / 2;
+                                $sigY = $lineY + 1.0 + $paddingY + ($availH - $targetH) / 2;
 
                                 $pdf->Image($signerItem['sig_path'], $sigX, $sigY, $targetW, $targetH, 'PNG');
                             }
@@ -352,15 +420,17 @@ class GenerateSignedFinalPdf
                             if ($imgInfo && $imgInfo[0] > 0 && $imgInfo[1] > 0) {
                                 $imgW = (float) $imgInfo[0];
                                 $imgH = (float) $imgInfo[1];
-                                $maxW = $contentW;
-                                $maxH = $sigAvailableH;
+                                $paddingX = $showBorder ? 2.5 : 1.0;
+                                $paddingY = $showBorder ? 1.8 : 0.8;
+                                $availW = max(5.0, $contentW - ($paddingX * 2));
+                                $availH = max(5.0, $sigAvailableH - ($paddingY * 2));
 
-                                $scale = min($maxW / $imgW, $maxH / $imgH);
-                                $targetW = max(3, $imgW * $scale);
-                                $targetH = max(3, $imgH * $scale);
+                                $scale = min($availW / $imgW, $availH / $imgH);
+                                $targetW = max(3.0, $imgW * $scale);
+                                $targetH = max(3.0, $imgH * $scale);
 
-                                $sigX = $contentX + ($maxW - $targetW) / 2;
-                                $sigY = $y + ($showBorder ? 1.5 : 0.0) + ($maxH - $targetH) / 2;
+                                $sigX = $contentX + $paddingX + ($availW - $targetW) / 2;
+                                $sigY = $y + ($showBorder ? 1.5 : 0.5) + $paddingY + ($availH - $targetH) / 2;
 
                                 $pdf->Image($signerItem['sig_path'], $sigX, $sigY, $targetW, $targetH, 'PNG');
                             }
@@ -376,14 +446,14 @@ class GenerateSignedFinalPdf
                         // Name on Bottom
                         $pdf->SetTextColor(15, 23, 42);
                         $pdf->SetFont('Helvetica', 'B', 7.0);
-                        $pdf->SetXY($contentX, $lineY + 1.0);
-                        $pdf->Cell($contentW, 3.2, substr($signerItem['name'], 0, 30), 0, 0, 'L');
+                        $pdf->SetXY($contentX + ($showBorder ? 1.5 : 0.5), $lineY + 1.0);
+                        $pdf->Cell($contentW - ($showBorder ? 3.0 : 1.0), 3.2, substr($signerItem['name'], 0, 32), 0, 0, 'L');
 
                         if ($showTitle && $signerItem['title']) {
                             $pdf->SetFont('Helvetica', '', 5.2);
                             $pdf->SetTextColor(100, 116, 139);
-                            $pdf->SetXY($contentX, $lineY + 4.2);
-                            $pdf->Cell($contentW, 2.2, substr($signerItem['title'], 0, 34), 0, 0, 'L');
+                            $pdf->SetXY($contentX + ($showBorder ? 1.5 : 0.5), $lineY + 4.2);
+                            $pdf->Cell($contentW - ($showBorder ? 3.0 : 1.0), 2.2, substr($signerItem['title'], 0, 36), 0, 0, 'L');
                         }
                     }
                 } else {
@@ -393,15 +463,18 @@ class GenerateSignedFinalPdf
                         if ($imgInfo && $imgInfo[0] > 0 && $imgInfo[1] > 0) {
                             $imgW = (float) $imgInfo[0];
                             $imgH = (float) $imgInfo[1];
-                            $maxW = $contentW;
-                            $maxH = $showBorder ? max(8.0, $stampH - 3.0) : $stampH;
+                            $paddingX = $showBorder ? 2.5 : 1.0;
+                            $paddingY = $showBorder ? 2.0 : 1.0;
+                            $availW = max(5.0, $contentW - ($paddingX * 2));
+                            $fullSigH = $showBorder ? max(8.0, $stampH - 3.0) : $stampH;
+                            $availH = max(5.0, $fullSigH - ($paddingY * 2));
 
-                            $scale = min($maxW / $imgW, $maxH / $imgH);
-                            $targetW = max(3, $imgW * $scale);
-                            $targetH = max(3, $imgH * $scale);
+                            $scale = min($availW / $imgW, $availH / $imgH);
+                            $targetW = max(3.0, $imgW * $scale);
+                            $targetH = max(3.0, $imgH * $scale);
 
-                            $sigX = $contentX + ($maxW - $targetW) / 2;
-                            $sigY = $y + ($stampH - $targetH) / 2;
+                            $sigX = $contentX + $paddingX + ($availW - $targetW) / 2;
+                            $sigY = $y + $paddingY + ($availH - $targetH) / 2;
 
                             $pdf->Image($signerItem['sig_path'], $sigX, $sigY, $targetW, $targetH, 'PNG');
                         }

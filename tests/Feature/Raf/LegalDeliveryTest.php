@@ -86,7 +86,7 @@ it('moves a document through requested review, revision, approved, and signing v
     Queue::assertPushed(GenerateSignedFinalArtifact::class, fn (GenerateSignedFinalArtifact $job) => $job->signatureRequestId === $signatureRequest->getKey());
     $this->get(route('signature.verify', $signatureRequest->verification_code))
         ->assertSuccessful()
-        ->assertSee('Dokumen telah ditandatangani');
+        ->assertSee('Sah');
     $this->get(route('signature.qr', $signatureRequest->verification_code))
         ->assertSuccessful()
         ->assertHeader('content-type', 'image/svg+xml');
@@ -216,4 +216,65 @@ it('renders the executive signing page with Privy-grade stamp customization and 
         ->and($signer->show_title)->toBeTrue()
         ->and($signer->show_border)->toBeTrue()
         ->and($signer->signature_type)->toBe('type');
+});
+
+test('signer can sign document using barcode qr only mode without wet signature stroke', function () {
+    Storage::fake('documents');
+    Storage::fake('signatures');
+
+    $actor = rafUser();
+    $document = Document::factory()->recycle($actor)->create(['status' => 'approved']);
+    $version = DocumentVersion::factory()->recycle($document)->recycle($actor)->create([
+        'document_id' => $document->getKey(),
+        'uploaded_by' => $actor->getKey(),
+    ]);
+    $document->update(['current_version_id' => $version->getKey()]);
+
+    $signatureRequest = app(CreateSignatureRequest::class)->handle($document, $actor, [
+        ['name' => 'Raden Kusumah, S.H.', 'email' => 'kusumah@rpklawoffice.local'],
+    ]);
+
+    $signer = $signatureRequest->signers()->sole();
+
+    // Verify signing page contains Undo, Skip TTD button, proceed confirmation modal, and no baseline dot-dot
+    $this->get(route('signature.sign.show', $signer->signing_token))
+        ->assertSuccessful()
+        ->assertSee('Urungkan (⌘Z)')
+        ->assertSee('Lewati TTD (Gunakan QR Saja)')
+        ->assertSee('Sahkan Dokumen dengan Barcode QR Saja?')
+        ->assertSee('Konfirmasi Telaah Dokumen &amp; Identitas', false)
+        ->assertSee('proceedToStudioModal')
+        ->assertSee('Sesi Aktif')
+        ->assertSee('id="labelToggleQr"', false)
+        ->assertSee('id="toggleQr"', false)
+        ->assertSee('id="qrRequiredBadge"', false)
+        ->assertDontSee('Garis Acuan Tanda Tangan');
+
+    // Submit signature with qr_only stamp layout, null signature_data, and test show_qr override if 0
+    $response = $this->post(route('signature.sign.store', $signer->signing_token), [
+        'accepted_name' => 'Raden Kusumah, S.H.',
+        'signer_title' => 'Senior Legal Counsel',
+        'accept_terms' => '1',
+        'signature_data' => null,
+        'page_number' => 1,
+        'position_x' => 55.0,
+        'position_y' => 70.0,
+        'stamp_width' => 45.0,
+        'stamp_height' => 30.0,
+        'show_qr' => '0', // Attempt to turn off QR in qr_only mode
+        'show_name' => '1',
+        'show_title' => '1',
+        'show_border' => '1',
+        'stamp_layout' => 'qr_only',
+        'name_position' => 'bottom',
+    ]);
+
+    $response->assertRedirect(route('signature.verify', $signatureRequest->verification_code));
+
+    $signer->refresh();
+    expect($signer->status)->toBe('signed')
+        ->and($signer->accepted_name)->toBe('Raden Kusumah, S.H.')
+        ->and($signer->stamp_layout)->toBe('qr_only')
+        ->and($signer->signature_data)->toBeNull()
+        ->and($signer->show_qr)->toBeTrue(); // Must be forced to true
 });

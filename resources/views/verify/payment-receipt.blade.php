@@ -1,282 +1,438 @@
 <!doctype html>
-<html lang="id" class="h-full bg-slate-100 antialiased">
+<html lang="id" class="h-full antialiased">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Verifikasi Kuitansi Pembayaran {{ $payment->reference_number ?: ('PAY-' . $payment->id) }} | RPK Law Firm</title>
     <link rel="icon" type="image/png" href="/images/rpkapp.png">
     <link rel="apple-touch-icon" href="/images/rpkapp.png">
+    
+    <script>
+        (function() {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (prefersDark) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
     @vite(['resources/css/app.css'])
+    
     <style>
-        body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; }
+        :root {
+            --workspace-light-background: radial-gradient(ellipse 68% 58% at 50% 48%, rgba(250, 250, 252, 0.72) 0%, rgba(250, 250, 252, 0.46) 44%, rgba(250, 250, 252, 0.12) 74%, transparent 100%), linear-gradient(rgba(250, 250, 252, 0.24), rgba(250, 250, 252, 0.24)), url('/images/workspace-landscape-bg.png');
+            --workspace-dark-background: radial-gradient(ellipse 72% 62% at 50% 42%, rgba(15, 23, 42, 0.08) 0%, rgba(8, 15, 28, 0.2) 66%, rgba(5, 10, 19, 0.38) 100%), url('/images/workspace-architectural-dark-bg.png');
+        }
+
+        html {
+            background-color: oklch(0.978 0.003 255);
+        }
+        html.dark {
+            background-color: oklch(0.145 0 0);
+        }
+
+        body { 
+            font-family: 'Manrope', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background-image: var(--workspace-light-background);
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: bottom;
+            background-repeat: no-repeat;
+        }
+        .dark body,
+        html.dark body {
+            background-color: #101216;
+            background-image: var(--workspace-dark-background);
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: bottom;
+            background-repeat: no-repeat;
+        }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
+
         @media print {
             body { background: white !important; padding: 0 !important; }
             .no-print { display: none !important; }
         }
     </style>
 </head>
-<body class="min-h-full bg-slate-100 text-slate-900 flex flex-col justify-between py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto w-full max-w-[820px] space-y-4">
-        
-        <!-- Corporate Letterhead Header -->
-        <header class="flex items-center justify-between rounded-2xl border border-slate-200/90 bg-white p-4 sm:px-6 shadow-xs">
+<body class="min-h-screen text-slate-900 selection:bg-slate-900 selection:text-white dark:text-zinc-100 flex flex-col justify-between">
+
+    <!-- 1. Header Resmi -->
+    <header class="sticky top-0 z-40 flex h-15 w-full shrink-0 items-center justify-between border-b border-slate-200/80 bg-white/85 px-4 backdrop-blur-md transition-all sm:px-6 lg:px-8 dark:border-white/10 dark:bg-[#111317]/85">
+        <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
             <div class="flex items-center gap-3.5">
-                <a href="{{ route('home') }}" title="RPK Law Firm" class="shrink-0">
+                <a href="{{ route('home') }}" title="RPK Law Firm" class="shrink-0 transition-opacity hover:opacity-90 flex items-center">
                     <img 
-                        src="/logo/logo.png" 
+                        src="/logo/raf-law-firm-transparent.png" 
                         alt="RPK Law Firm" 
-                        class="h-9 w-auto max-w-[150px] object-contain"
-                        onerror="this.onerror=null; this.src='/logo/raf-law-firm-transparent.png';"
+                        class="h-8.5 w-auto max-w-[145px] object-contain dark:brightness-110"
+                        onerror="this.onerror=null; this.src='/logo/logo.png';"
                     />
                 </a>
-                <div class="border-l border-slate-200 pl-3">
-                    <h2 class="text-xs font-black tracking-tight text-slate-900 uppercase">
-                        RPK LAW FIRM
-                    </h2>
-                    <p class="text-[10px] font-semibold text-slate-500">
-                        Treasury &amp; Financial Governance • Bandung
-                    </p>
+                <div class="h-5 w-px bg-slate-200 dark:bg-white/10 hidden sm:block"></div>
+                <div class="flex flex-col">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs sm:text-sm font-extrabold tracking-tight text-slate-950 dark:text-white uppercase font-sans">RPK LAW FIRM</span>
+                        <span class="text-slate-300 dark:text-zinc-700 hidden sm:inline">·</span>
+                        <span class="text-[10.5px] font-medium text-slate-500 dark:text-zinc-400 hidden sm:inline">Portal Verifikasi Kuitansi Pembayaran</span>
+                    </div>
+                    <span class="text-[10px] text-slate-400 dark:text-zinc-500 truncate max-w-[280px] sm:max-w-none">Roni, Putra &amp; Kusumah Law Firm · Treasury &amp; Governance</span>
                 </div>
             </div>
 
-            <div>
-                <div class="flex items-center gap-2 rounded-xl border border-slate-200/90 bg-slate-50/80 px-3 py-1.5 shadow-2xs">
-                    <svg class="size-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                    <div class="text-left">
-                        <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Status Transaksi</div>
-                        <div class="text-[11.5px] font-extrabold text-slate-900 leading-tight">Pembayaran Sah Diterima</div>
-                    </div>
+            <!-- Protocol & Security Status -->
+            <div class="flex items-center gap-3 text-xs font-mono text-slate-500 dark:text-zinc-400">
+                <div class="hidden md:flex items-center gap-1.5 text-[11px]">
+                    <span class="text-slate-400 dark:text-zinc-500">Protokol:</span>
+                    <span class="font-medium text-slate-800 dark:text-zinc-200">Sistem Perbendaharaan Sah</span>
                 </div>
+                <span class="hidden md:inline text-slate-300 dark:text-zinc-700">·</span>
+                <span class="text-[11px] font-sans font-semibold text-emerald-600 dark:text-emerald-400">Pembayaran Sah Diterima</span>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <!-- Main Verification Certificate Card -->
-        <main class="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-xl shadow-slate-200/50 divide-y divide-slate-100">
-            
-            <!-- Hero Top Header -->
-            <div class="p-6 sm:p-8 space-y-4 bg-gradient-to-b from-slate-50/80 via-white to-white">
-                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                    <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">
-                        <span class="font-bold text-slate-900">RPK Law Firm</span>
-                        <span>•</span>
-                        <span>Divisi Keuangan &amp; Akuntansi Perkara</span>
-                    </div>
-                    <span class="text-[11px] text-slate-400">
-                        Diverifikasi: <span class="font-medium text-slate-600">{{ now()->timezone(config('raf.timezone'))->translatedFormat('d F Y, H:i') }} WIB</span>
+    <!-- 2. Main Workspace Layout -->
+    <main class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 space-y-5 flex-1">
+
+        <!-- Executive Document Hero -->
+        <section class="group relative overflow-hidden rounded-[20px] border border-slate-200/80 bg-gradient-to-br from-[#f7f9ff] via-white to-[#eaf3ff] p-6 sm:p-7 shadow-[0_10px_28px_rgba(71,85,105,0.075)] dark:border-white/[0.08] dark:from-[#17191f] dark:via-[#17191f] dark:to-[#18202b]">
+            <!-- Ambient Breathing Radial Glow -->
+            <div class="matters-hero-glow pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_83%_38%,rgba(147,197,253,0.34),transparent_30%),radial-gradient(circle_at_65%_115%,rgba(251,191,36,0.12),transparent_27%)]"></div>
+
+            <!-- Drifting Micro-Dot Matrix Pattern -->
+            <div class="matters-hero-dots pointer-events-none absolute inset-y-0 right-0 hidden w-[480px] [background-image:radial-gradient(rgba(59,130,246,0.24)_1px,transparent_1px)] [mask-image:linear-gradient(to_right,transparent,black_28%)] [background-size:18px_18px] opacity-30 md:block"></div>
+
+            <!-- Animated Vector Wave Lines -->
+            <svg
+                viewBox="0 0 560 200"
+                aria-hidden="true"
+                class="pointer-events-none absolute right-0 bottom-0 hidden h-full w-[480px] text-white/90 drop-shadow-[0_0_8px_rgba(96,165,250,0.35)] md:block"
+            >
+                <path
+                    d="M8 165 C95 94 176 178 270 108 S430 49 554 72"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    class="matters-hero-line"
+                    pathLength="1"
+                />
+                <path
+                    d="M55 192 C138 136 213 187 302 128 S442 84 558 99"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    class="matters-hero-line matters-hero-line-secondary opacity-55"
+                    pathLength="1"
+                />
+                <circle cx="270" cy="108" r="3.5" fill="currentColor" />
+                <circle cx="430" cy="49" r="2.5" fill="currentColor" />
+            </svg>
+
+            <!-- Content Area -->
+            <div class="relative z-10 max-w-5xl">
+                <!-- Matter Reference & Title -->
+                <div class="flex flex-wrap items-center gap-2 text-xs mb-1">
+                    <span class="font-mono font-bold text-xs tracking-wider text-slate-900 dark:text-zinc-100 uppercase">
+                        {{ $payment->matter?->matter_number ?? 'RPK-TREASURY' }}
+                    </span>
+                    <span class="text-slate-300 dark:text-zinc-700 font-light">/</span>
+                    <span class="text-slate-600 dark:text-zinc-400 font-medium text-xs sm:text-sm">
+                        {{ $payment->matter?->title ?? 'Divisi Keuangan & Akuntansi Perkara' }}
                     </span>
                 </div>
 
-                <div>
-                    <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                        Verifikasi Keabsahan Kuitansi Pembayaran
-                    </h1>
-                    <p class="mt-1 text-xs sm:text-sm text-slate-600">
-                        Tanda terima setoran dan pelunasan honorarium jasa hukum serta biaya perkara resmi RPK Law Firm.
-                    </p>
+                <!-- Document Official Title -->
+                <h1 class="text-xl sm:text-2xl lg:text-[26px] font-black tracking-tight text-slate-950 dark:text-white leading-snug">
+                    Verifikasi Keabsahan Kuitansi Pembayaran
+                </h1>
+
+                <!-- Balanced 4-Column Metadata Ledger Strip -->
+                <div class="mt-5 pt-4 border-t border-slate-200/80 dark:border-white/[0.08] grid grid-cols-2 md:grid-cols-4 gap-3.5 md:gap-0 md:divide-x md:divide-slate-200/80 dark:md:divide-white/[0.08]">
+                    <!-- 1. Ref -->
+                    <div class="flex flex-col md:pr-4">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">Nomor Kuitansi / Referensi</span>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span class="font-mono font-bold text-xs sm:text-[13px] text-slate-950 dark:text-white select-all">{{ $payment->reference_number ?: ('PAY-' . $payment->id) }}</span>
+                            <button 
+                                type="button" 
+                                onclick="copyText('{{ $payment->reference_number ?: ('PAY-' . $payment->id) }}', this)"
+                                title="Salin Nomor Referensi"
+                                class="inline-flex items-center gap-1 text-[10.5px] font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors cursor-pointer"
+                            >
+                                <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                <span>Salin</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 2. Tanggal Penerimaan -->
+                    <div class="flex flex-col md:px-4">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">Tanggal Penerimaan</span>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span class="text-xs sm:text-[13px] font-bold text-slate-800 dark:text-zinc-200 font-mono">
+                                {{ $payment->received_at ? $payment->received_at->translatedFormat('d M Y, H:i') . ' WIB' : now()->translatedFormat('d M Y') }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- 3. Metode Pembayaran -->
+                    <div class="flex flex-col md:px-4">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">Metode Transaksi</span>
+                        <div class="mt-0.5">
+                            <span class="text-xs sm:text-[13px] font-bold text-emerald-600 dark:text-emerald-400 font-mono">{{ strtoupper($payment->method ?: 'BANK TRANSFER') }}</span>
+                        </div>
+                    </div>
+
+                    <!-- 4. Waktu Verifikasi -->
+                    <div class="flex flex-col md:pl-4">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">Waktu Verifikasi</span>
+                        <span class="font-mono text-xs sm:text-[12.5px] font-medium text-slate-700 dark:text-zinc-300 mt-0.5">
+                            {{ now()->timezone(config('raf.timezone', 'Asia/Jakarta'))->translatedFormat('d M Y, H:i') }} WIB
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. BARIS 1: Kartu Utama Berkas Dokumen (Full Width, Lapang & Sangat Terbaca) -->
+        <div class="rounded-2xl border border-slate-200/80 bg-white/95 p-6 sm:p-7 shadow-xs backdrop-blur-md dark:border-white/10 dark:bg-[#14161b]/95 space-y-6">
+            
+            <!-- 1. Executive Legal Authentication -->
+            <div class="space-y-3.5">
+                <div class="flex items-center gap-3.5">
+                    <div class="relative flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-sm ring-4 ring-emerald-500/10 dark:ring-emerald-400/20">
+                        <svg class="size-5.5 text-white drop-shadow-xs" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-black tracking-tight text-slate-950 dark:text-white leading-tight">
+                            Tanda Terima Pembayaran Sah &amp; Terotentikasi
+                        </h2>
+                        <p class="text-[11.5px] text-slate-500 dark:text-zinc-400 mt-0.5">
+                            Kuitansi Resmi Penerimaan Dana Rekening Kantor Hukum RPK Law Firm
+                        </p>
+                    </div>
                 </div>
 
-                <!-- Unified 3-Column Data Bar -->
-                <div class="overflow-hidden rounded-2xl border border-slate-200/90 bg-slate-50/60 shadow-2xs grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-200/80">
-                    <div class="p-3.5 sm:px-4 sm:py-3 flex flex-col justify-center">
-                        <span class="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Nomor Kuitansi / Referensi</span>
-                        <span class="mt-0.5 font-mono text-xs sm:text-sm font-black text-slate-900 truncate">
-                            {{ $payment->reference_number ?: ('PAY-' . $payment->id) }}
-                        </span>
-                    </div>
+                <p class="text-xs sm:text-[13px] text-slate-600 dark:text-zinc-300 leading-relaxed font-normal">
+                    Kuitansi elektronik ini sah dan diakui sebagai bukti setoran pembayaran resmi jasa bantuan hukum yang tercatat efektif pada pembukuan kas RPK Law Firm.
+                </p>
+            </div>
 
-                    <div class="p-3.5 sm:px-4 sm:py-3 flex flex-col justify-center">
-                        <span class="text-[9.5px] font-bold text-slate-400 uppercase tracking-wider">Tanggal Penerimaan</span>
-                        <span class="mt-0.5 text-xs sm:text-sm font-bold text-slate-900">
-                            {{ $payment->received_at ? $payment->received_at->translatedFormat('d F Y, H:i') . ' WIB' : now()->translatedFormat('d F Y') }}
-                        </span>
-                    </div>
+            <!-- Hairline Separator -->
+            <div class="h-px w-full bg-slate-200/70 dark:bg-white/[0.06]"></div>
 
-                    <div class="p-3.5 sm:px-4 sm:py-3 flex flex-col justify-center bg-emerald-50/60">
-                        <span class="text-[9.5px] font-bold uppercase tracking-wider text-emerald-700">
-                            Metode Pembayaran
-                        </span>
-                        <div class="mt-0.5 flex items-center gap-1.5 font-extrabold text-xs sm:text-[13px] text-emerald-950">
-                            <svg class="size-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
-                            <span>{{ strtoupper($payment->method ?: 'BANK TRANSFER') }}</span>
+            <!-- 2. Parties Breakdown (Penyetor & Nominal) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="space-y-1 text-xs">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">Diterima Dari (Penyetor)</span>
+                    <div class="font-bold text-slate-950 dark:text-white text-sm sm:text-base">
+                        {{ $payment->client->display_name ?? 'Klien Terdaftar' }}
+                    </div>
+                    @if ($payment->client?->legal_name && $payment->client->legal_name !== $payment->client->display_name)
+                        <div class="text-[11.5px] text-slate-500 dark:text-zinc-400 font-medium">{{ $payment->client->legal_name }}</div>
+                    @endif
+                    @if ($payment->matter)
+                        <div class="text-[11px] text-slate-500 dark:text-zinc-400 pt-0.5">
+                            Perkara: <span class="font-semibold text-slate-800 dark:text-zinc-200">{{ $payment->matter->title }}</span> <span class="font-mono text-blue-600 dark:text-blue-400">({{ $payment->matter->matter_number }})</span>
                         </div>
+                    @endif
+                </div>
+
+                <div class="space-y-1 text-xs">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">Jumlah Setoran Diterima</span>
+                    <div class="font-mono text-xl sm:text-2xl font-black text-slate-950 dark:text-white">
+                        {{ $payment->currency ?: 'IDR' }} {{ number_format($payment->amount, 0, ',', '.') }}
+                    </div>
+                    <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 pt-0.5">
+                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <span>Tercatat Efektif di Kas Firma</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Payment Details & Allocation -->
-            <div class="p-6 sm:p-8 space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <!-- Left: Penyetor / Klien -->
-                    <div class="rounded-2xl border border-slate-200/90 bg-slate-50/40 p-4 space-y-3">
-                        <div>
-                            <span class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">
-                                Diterima Dari (Penyetor)
-                            </span>
-                            <h2 class="mt-0.5 text-sm sm:text-base font-extrabold text-slate-900 leading-snug">
-                                {{ $payment->client->display_name ?? 'Klien Terdaftar' }}
-                            </h2>
-                        </div>
+            <!-- Hairline Separator -->
+            <div class="h-px w-full bg-slate-200/70 dark:bg-white/[0.06]"></div>
 
-                        <div class="space-y-1.5 border-t border-slate-200/70 pt-2.5 text-xs text-slate-600">
-                            @if ($payment->client?->legal_name && $payment->client->legal_name !== $payment->client->display_name)
-                                <div class="flex items-center justify-between gap-2">
-                                    <span class="text-slate-400">Nama Badan Hukum:</span>
-                                    <span class="font-semibold text-slate-800">{{ $payment->client->legal_name }}</span>
-                                </div>
-                            @endif
-                            @if ($payment->matter)
-                                <div class="flex items-start justify-between gap-2">
-                                    <span class="text-slate-400 shrink-0">Perkara:</span>
-                                    <span class="font-semibold text-slate-800 text-right text-[11.5px] leading-tight max-w-[220px]">
-                                        {{ $payment->matter->title }} <span class="font-mono font-bold text-blue-600">({{ $payment->matter->matter_number }})</span>
-                                    </span>
-                                </div>
-                            @endif
-                            @if ($payment->notes)
-                                <div class="flex items-start justify-between gap-2 pt-1">
-                                    <span class="text-slate-400 shrink-0">Catatan:</span>
-                                    <span class="text-slate-700 italic text-right max-w-[220px]">{{ $payment->notes }}</span>
-                                </div>
-                            @endif
-                        </div>
+            <!-- 3. Account Details & Notes -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-xs">
+                <div class="space-y-1">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">Rekening Bank Penerima</span>
+                    <div class="font-bold text-slate-900 dark:text-white text-xs sm:text-[13px]">
+                        {{ $payment->account->name ?? 'Rekening Bank Operasional Firma' }}
                     </div>
-
-                    <!-- Right: Nominal & Rekening Penerima -->
-                    <div class="rounded-2xl border border-slate-200/90 bg-slate-50/40 p-4 space-y-3">
-                        <div>
-                            <span class="text-[9.5px] font-bold uppercase tracking-wider text-slate-400">
-                                Jumlah Setoran Diterima
-                            </span>
-                            <div class="mt-0.5 font-mono text-xl sm:text-2xl font-black text-slate-900">
-                                {{ $payment->currency ?: 'IDR' }} {{ number_format($payment->amount, 0, ',', '.') }}
-                            </div>
+                    @if ($payment->account?->account_number)
+                        <div class="font-mono text-[11px] text-slate-600 dark:text-zinc-300">
+                            {{ $payment->account->account_number }} ({{ $payment->account->bank_name ?? 'Bank' }})
                         </div>
-
-                        <div class="space-y-1.5 border-t border-slate-200/70 pt-2.5 text-xs text-slate-600">
-                            <div class="flex items-center justify-between gap-2">
-                                <span class="text-slate-400">Rekening Penerima:</span>
-                                <span class="font-semibold text-slate-800">{{ $payment->account->name ?? 'Rekening Bank Operasional Firma' }}</span>
-                            </div>
-                            @if ($payment->account?->account_number)
-                                <div class="flex items-center justify-between gap-2">
-                                    <span class="text-slate-400">Nomor Rekening:</span>
-                                    <span class="font-mono text-[11px] font-semibold text-slate-800">{{ $payment->account->account_number }} ({{ $payment->account->bank_name ?? 'Bank' }})</span>
-                                </div>
-                            @endif
-                            <div class="flex items-center justify-between gap-2">
-                                <span class="text-slate-400">Status Dana:</span>
-                                <span class="font-semibold text-emerald-700 flex items-center gap-1">
-                                    <svg class="size-3 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                                    </svg>
-                                    <span>Tercatat Efektif di Kas Firma</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                    @endif
                 </div>
 
-                @if ($payment->allocations->isNotEmpty())
-                    <div class="rounded-2xl border border-slate-200/90 overflow-hidden text-xs">
-                        <div class="bg-slate-50/80 px-4 py-2.5 border-b border-slate-200 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                            Alokasi Pelunasan Faktur Tagihan
-                        </div>
+                @if ($payment->notes)
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">Catatan Transaksi</span>
+                        <p class="text-[11.5px] text-slate-600 dark:text-zinc-400 italic leading-relaxed">
+                            "{{ $payment->notes }}"
+                        </p>
+                    </div>
+                @endif
+            </div>
+
+            <!-- 4. Invoice Allocations (if any) -->
+            @if ($payment->allocations->isNotEmpty())
+                <div class="space-y-2.5">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                        Alokasi Pelunasan Faktur Tagihan
+                    </span>
+
+                    <div class="rounded-xl border border-slate-200/80 dark:border-white/10 overflow-hidden text-xs">
                         <table class="w-full text-left">
-                            <thead class="bg-slate-100/60 text-slate-600 text-[10.5px] font-bold border-b border-slate-200">
+                            <thead class="bg-slate-50 dark:bg-zinc-900/60 text-slate-600 dark:text-zinc-400 text-[10.5px] font-bold border-b border-slate-200/80 dark:border-white/10">
                                 <tr>
-                                    <th class="p-3">Nomor Faktur Tagihan</th>
-                                    <th class="p-3">Perihal / Deskripsi</th>
-                                    <th class="p-3 text-right">Jumlah Dialokasikan</th>
+                                    <th class="p-3.5">Nomor Faktur</th>
+                                    <th class="p-3.5">Perihal / Deskripsi</th>
+                                    <th class="p-3.5 text-right">Jumlah Dialokasikan</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-100 bg-white">
+                            <tbody class="divide-y divide-slate-100 dark:divide-white/[0.06] bg-white dark:bg-transparent">
                                 @foreach ($payment->allocations as $alloc)
                                     <tr>
-                                        <td class="p-3 font-mono font-bold text-blue-600">{{ $alloc->invoice?->invoice_number ?? '-' }}</td>
-                                        <td class="p-3 font-medium text-slate-800">{{ $alloc->invoice?->title ?? 'Tagihan Jasa Hukum' }}</td>
-                                        <td class="p-3 text-right font-mono font-bold text-slate-900">{{ $payment->currency ?: 'IDR' }} {{ number_format($alloc->amount, 0, ',', '.') }}</td>
+                                        <td class="p-3.5 font-mono font-bold text-blue-600 dark:text-blue-400">{{ $alloc->invoice?->invoice_number ?? '-' }}</td>
+                                        <td class="p-3.5 font-medium text-slate-900 dark:text-zinc-100">{{ $alloc->invoice?->title ?? 'Tagihan Jasa Hukum' }}</td>
+                                        <td class="p-3.5 text-right font-mono font-bold text-slate-900 dark:text-white">{{ $payment->currency ?: 'IDR' }} {{ number_format($alloc->amount, 0, ',', '.') }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
-                @endif
+                </div>
+            @endif
 
-                <!-- QR Code & Verification Security Box -->
-                <div class="rounded-2xl border border-slate-200 bg-slate-50/70 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div class="flex items-center gap-3.5">
-                        <div class="shrink-0 rounded-xl bg-white p-1.5 border border-slate-200 shadow-2xs">
-                            <img 
-                                src="{{ route('verify.payment-receipt.qr', $payment->reference_number ?: $payment->id) }}" 
-                                alt="QR Code Verifikasi Kuitansi" 
-                                class="size-16 sm:size-18 object-contain"
-                            />
-                        </div>
-                        <div class="space-y-0.5 text-xs">
-                            <div class="font-bold text-slate-900 flex items-center gap-1.5">
-                                <svg class="size-3.5 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
-                                </svg>
-                                <span>Dokumen Terdaftar Resmi</span>
-                            </div>
-                            <p class="text-slate-500 text-[11px] leading-tight">
-                                Kuitansi elektronik ini sah dan diakui sebagai bukti setoran pembayaran resmi RPK Law Firm.
-                            </p>
-                            <div class="font-mono text-[10px] text-slate-400 truncate max-w-[320px] pt-0.5">
-                                ID: {{ $payment->id }}
-                            </div>
-                        </div>
+            <!-- Legal Entity Footer Notice -->
+            <div class="pt-4 flex flex-wrap items-center justify-between gap-2 text-xs border-t border-slate-100 dark:border-white/5">
+                <div class="flex items-center gap-2 text-slate-500 dark:text-zinc-400 text-[11px]">
+                    <svg class="size-3.5 text-slate-400 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                    <span>Otorisasi Resmi Roni, Putra &amp; Kusumah Law Firm</span>
+                </div>
+                <div class="font-mono text-[11px] text-slate-400 dark:text-zinc-500 font-medium">
+                    Divisi Perbendaharaan &amp; Akuntansi
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. BARIS 2: Container Verifikasi QR Code & Aksi Berkas (Dibawah Dokumen) -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-5 items-stretch">
+            
+            <!-- Kiri: QR Code & Validasi Kuitansi Instan (7 Cols) -->
+            <div class="md:col-span-7 flex items-center gap-4 rounded-2xl border border-slate-200/80 bg-white/95 p-5 sm:p-6 shadow-xs backdrop-blur-md dark:border-white/10 dark:bg-[#14161b]/95">
+                <div class="shrink-0 p-2.5 rounded-xl bg-white dark:bg-zinc-950 border border-slate-200/90 dark:border-white/10 shadow-2xs">
+                    <img 
+                        src="{{ route('verify.payment-receipt.qr', $payment->reference_number ?: $payment->id) }}" 
+                        alt="QR Code Verifikasi Kuitansi" 
+                        class="size-20 sm:size-22 object-contain"
+                    />
+                </div>
+
+                <div class="space-y-1.5 text-xs min-w-0 flex-1">
+                    <div class="font-bold text-slate-950 dark:text-white flex items-center gap-1.5">
+                        <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                        <span class="text-xs sm:text-sm">Validasi Kuitansi Instan</span>
                     </div>
-
-                    <div class="flex items-center gap-2 w-full sm:w-auto no-print">
-                        <button 
-                            type="button" 
-                            onclick="window.print()" 
-                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 shadow-2xs hover:bg-slate-50 active:scale-95 transition-all cursor-pointer"
-                        >
-                            <svg class="size-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                            </svg>
-                            <span>Cetak</span>
-                        </button>
-                        <button 
-                            type="button" 
-                            onclick="copyLink()" 
-                            id="copyBtn"
-                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 transition-all cursor-pointer"
-                        >
-                            <svg class="size-3.5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                            <span id="copyBtnText">Salin Tautan</span>
-                        </button>
+                    <p class="text-slate-500 dark:text-zinc-400 text-[11px] sm:text-xs leading-relaxed">
+                        Pindai kode QR untuk memvalidasi keabsahan data kuitansi penerimaan pembayaran resmi secara publik.
+                    </p>
+                    <div class="font-mono text-[11px] text-slate-400 dark:text-zinc-500 truncate pt-0.5 select-all">
+                        Ref: <span class="font-semibold text-slate-800 dark:text-zinc-200">{{ $payment->reference_number ?: ('PAY-' . $payment->id) }}</span>
                     </div>
                 </div>
             </div>
 
-            <!-- System Disclaimer Footer -->
-            <div class="p-4 sm:px-8 bg-slate-50 flex items-center justify-between text-xs text-slate-500">
-                <span>© {{ date('Y') }} Roni, Putra &amp; Kusumah Law Firm</span>
-                <span>RPK App - Integrated Legal Practice System</span>
+            <!-- Kanan: Aksi & Bukti Kuitansi (5 Cols) -->
+            <div class="md:col-span-5 flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white/95 p-5 sm:p-6 shadow-xs backdrop-blur-md dark:border-white/10 dark:bg-[#14161b]/95 space-y-3">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500 block">
+                    Aksi &amp; Bukti Kuitansi
+                </span>
+
+                <div class="flex flex-col gap-2.5 flex-1 justify-center">
+                    <button
+                        type="button"
+                        onclick="window.print()"
+                        class="group flex items-center justify-between rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 px-4 py-2.5 text-xs font-bold text-white shadow-sm transition-all cursor-pointer"
+                    >
+                        <div class="flex items-center gap-2.5">
+                            <svg class="size-4 shrink-0 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>
+                            <span>Cetak Kuitansi Pembayaran</span>
+                        </div>
+                        <span class="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-white/20 text-white">
+                            Berkas Cetak
+                        </span>
+                    </button>
+                    <button
+                        type="button"
+                        onclick="copyText(window.location.href, this)"
+                        class="group flex items-center justify-between rounded-xl border border-slate-200/90 bg-white hover:bg-slate-50 active:bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-800 shadow-2xs transition-all dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-200 dark:hover:bg-zinc-800 cursor-pointer"
+                    >
+                        <div class="flex items-center gap-2.5">
+                            <svg class="size-4 text-slate-500 dark:text-zinc-400 shrink-0 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            <span>Salin Tautan Verifikasi</span>
+                        </div>
+                        <span class="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-zinc-300">
+                            Tautan Publik
+                        </span>
+                    </button>
+                </div>
+
+                <!-- Baseline Note -->
+                <div class="pt-2 flex items-center justify-between text-slate-400 dark:text-zinc-500 font-mono text-[10.5px] border-t border-slate-100 dark:border-white/5">
+                    <span class="flex items-center gap-1.5">
+                        <span class="size-1.5 rounded-full bg-emerald-500"></span>
+                        <span>Sistem Perbendaharaan Sah</span>
+                    </span>
+                    <span>Terenkripsi TLS 1.3</span>
+                </div>
             </div>
-        </main>
-    </div>
+
+        </div>
+
+    </main>
+
+    <!-- 5. Footer Minimalis Resmi -->
+    <footer class="mt-auto border-t border-slate-200/80 bg-white/80 py-4.5 text-center text-xs text-slate-500 backdrop-blur-md transition-colors dark:border-white/[0.06] dark:bg-[#0f1115]/80 dark:text-zinc-400">
+        <div class="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-3 px-4 sm:flex-row sm:px-6 lg:px-8">
+            <div class="flex items-center gap-2.5 font-mono text-[11px]">
+                <span class="font-extrabold text-slate-950 dark:text-zinc-100 uppercase tracking-wider font-sans">RPK LAW FIRM</span>
+                <span class="text-slate-300 dark:text-zinc-700">·</span>
+                <span class="text-slate-600 dark:text-zinc-400 font-sans">Integritas Dokumen Terjamin (UU ITE No. 11/2008 &amp; No. 1/2024)</span>
+            </div>
+            <div class="flex items-center gap-3 font-mono text-[11px] text-slate-400 dark:text-zinc-500">
+                <span>Ref: <span class="font-semibold text-slate-600 dark:text-zinc-400">{{ $payment->reference_number ?: ('PAY-' . $payment->id) }}</span></span>
+                <span class="text-slate-300 dark:text-zinc-700">·</span>
+                <span>Hak Cipta Dilindungi Undang-Undang</span>
+            </div>
+        </div>
+    </footer>
 
     <script>
-        function copyLink() {
-            navigator.clipboard.writeText(window.location.href).then(() => {
-                const btn = document.getElementById('copyBtnText');
-                const prev = btn.innerText;
-                btn.innerText = 'Tersalin!';
-                setTimeout(() => { btn.innerText = prev; }, 2000);
+        function copyText(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<span class="text-emerald-600 dark:text-emerald-400 font-bold">Tersalin!</span>';
+                setTimeout(() => { btn.innerHTML = originalHtml; }, 2000);
             });
         }
     </script>
