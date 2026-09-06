@@ -131,7 +131,7 @@ class DocumentController extends Controller
                 'signature' => $request->user()->hasPermission('signature.manage'),
             ],
             'reviewers' => $request->user()->hasPermission('document.upload')
-                ? User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name'])
+                ? User::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'email', 'position_title', 'avatar_path'])
                 : [],
         ]);
     }

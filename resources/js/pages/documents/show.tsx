@@ -52,6 +52,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { formatBytes, formatDate } from '@/lib/format';
 import { useInitials } from '@/hooks/use-initials';
+import UserPicker, { type UserOption } from '@/components/user-picker';
 import * as clientRoutes from '@/routes/clients';
 import * as documentRoutes from '@/routes/documents';
 import * as approvalRoutes from '@/routes/documents/approvals';
@@ -150,7 +151,7 @@ export default function DocumentShow({
     document,
     firmStaff = [],
     can,
-    reviewers,
+    reviewers = [],
 }: {
     document: Document;
     firmStaff?: DiscussionStaff[];
@@ -161,7 +162,7 @@ export default function DocumentShow({
         signature: boolean;
         delete?: boolean;
     };
-    reviewers: { id: number; name: string }[];
+    reviewers: UserOption[];
 }) {
     const { auth } = usePage<{
         auth?: {
@@ -180,6 +181,7 @@ export default function DocumentShow({
     const [workflowOpen, setWorkflowOpen] = useState<
         'review' | 'signature' | null
     >(null);
+    const [selectedReviewerId, setSelectedReviewerId] = useState<string>('');
     const [selectedVersionId, setSelectedVersionId] = useState(
         document.versions[0]?.id,
     );
@@ -1046,7 +1048,12 @@ export default function DocumentShow({
             {/* Modal: Ajukan Review */}
             <Dialog
                 open={workflowOpen === 'review'}
-                onOpenChange={(value) => !value && setWorkflowOpen(null)}
+                onOpenChange={(value) => {
+                    if (!value) {
+                        setWorkflowOpen(null);
+                        setSelectedReviewerId('');
+                    }
+                }}
             >
                 <DialogContent className="max-h-[85vh] w-full min-w-0 max-w-[calc(100%-2rem)] overflow-y-auto overflow-x-hidden rounded-xl border border-slate-200/80 bg-white p-5 shadow-xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
                     <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
@@ -1063,7 +1070,10 @@ export default function DocumentShow({
                         action={approvalRoutes.store.url(document.id)}
                         method="post"
                         className="space-y-3.5 pt-1 min-w-0 w-full"
-                        onSuccess={() => setWorkflowOpen(null)}
+                        onSuccess={() => {
+                            setWorkflowOpen(null);
+                            setSelectedReviewerId('');
+                        }}
                     >
                         {({ processing, errors }) => (
                             <>
@@ -1074,27 +1084,19 @@ export default function DocumentShow({
                                     >
                                         Pilih Reviewer *
                                     </Label>
-                                    <div className="relative min-w-0 w-full">
-                                        <select
-                                            id="reviewer_id"
-                                            name="reviewer_id"
-                                            required
-                                            className="h-8 w-full min-w-0 max-w-full cursor-pointer appearance-none truncate rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
-                                        >
-                                            <option value="">
-                                                Pilih Reviewer
-                                            </option>
-                                            {reviewers.map((reviewer) => (
-                                                <option
-                                                    key={reviewer.id}
-                                                    value={reviewer.id}
-                                                >
-                                                    {reviewer.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
-                                    </div>
+                                    <input
+                                        type="hidden"
+                                        name="reviewer_id"
+                                        value={selectedReviewerId}
+                                    />
+                                    <UserPicker
+                                        id="reviewer_id"
+                                        value={selectedReviewerId}
+                                        onChange={setSelectedReviewerId}
+                                        users={reviewers}
+                                        placeholder="Pilih Reviewer..."
+                                        error={Boolean(errors.reviewer_id)}
+                                    />
                                     <InputError message={errors.reviewer_id} />
                                 </div>
 
@@ -1120,15 +1122,18 @@ export default function DocumentShow({
                                         type="button"
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => setWorkflowOpen(null)}
+                                        onClick={() => {
+                                            setWorkflowOpen(null);
+                                            setSelectedReviewerId('');
+                                        }}
                                         className="h-8 rounded-lg border-slate-200 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                                     >
                                         Batal
                                     </Button>
                                     <Button
                                         size="sm"
-                                        disabled={processing}
-                                        className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95"
+                                        disabled={processing || !selectedReviewerId}
+                                        className="h-8 rounded-lg bg-blue-600 px-4 text-xs font-semibold text-white shadow-2xs hover:bg-blue-700 active:scale-95 disabled:opacity-50"
                                     >
                                         {processing ? (
                                             <>
@@ -1374,95 +1379,70 @@ export default function DocumentShow({
                                                 {firmStaff.length > 0 && (
                                                     <div className="space-y-1 min-w-0 w-full">
                                                         <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                                            Pilih dari Anggota
-                                                            Tim RPK
+                                                            Pilih dari Anggota Tim RPK
                                                         </span>
-                                                        <div className="relative min-w-0 w-full">
-                                                            <select
-                                                                onChange={(
-                                                                    e,
-                                                                ) => {
-                                                                    const selectedId =
-                                                                        Number(
-                                                                            e
-                                                                                .target
-                                                                                .value,
+                                                        <div className="min-w-0 w-full">
+                                                            <UserPicker
+                                                                users={firmStaff as UserOption[]}
+                                                                value={
+                                                                    (() => {
+                                                                        const matched = firmStaff.find(
+                                                                            (s) =>
+                                                                                s.email &&
+                                                                                signer.email &&
+                                                                                s.email.toLowerCase() ===
+                                                                                    signer.email.toLowerCase(),
                                                                         );
-                                                                    if (
-                                                                        !selectedId
-                                                                    )
+                                                                        return matched ? String(matched.id) : '';
+                                                                    })()
+                                                                }
+                                                                onChange={(selectedId) => {
+                                                                    if (!selectedId) {
+                                                                        setSigners((cur) =>
+                                                                            cur.map((item, i) =>
+                                                                                i === index
+                                                                                    ? { ...item, name: '', email: '' }
+                                                                                    : item,
+                                                                            ),
+                                                                        );
                                                                         return;
-                                                                    const staff =
-                                                                        firmStaff.find(
-                                                                            (
-                                                                                s,
-                                                                            ) =>
-                                                                                s.id ===
-                                                                                selectedId,
-                                                                        );
+                                                                    }
+                                                                    const staff = firmStaff.find(
+                                                                        (s) => String(s.id) === String(selectedId),
+                                                                    );
                                                                     if (staff) {
-                                                                        setSigners(
-                                                                            (
-                                                                                cur,
-                                                                            ) =>
-                                                                                cur.map(
-                                                                                    (
-                                                                                        item,
-                                                                                        i,
-                                                                                    ) =>
-                                                                                        i ===
-                                                                                        index
-                                                                                            ? {
-                                                                                                  ...item,
-                                                                                                  name: staff.name,
-                                                                                                  email:
-                                                                                                      (
-                                                                                                          staff as any
-                                                                                                      )
-                                                                                                          .email ||
-                                                                                                      '',
-                                                                                              }
-                                                                                            : item,
-                                                                                ),
+                                                                        setSigners((cur) =>
+                                                                            cur.map((item, i) =>
+                                                                                i === index
+                                                                                    ? {
+                                                                                          ...item,
+                                                                                          name: staff.name,
+                                                                                          email: (staff as any).email || '',
+                                                                                      }
+                                                                                    : item,
+                                                                            ),
                                                                         );
                                                                     }
                                                                 }}
-                                                                defaultValue=""
-                                                                className="h-8 w-full min-w-0 max-w-full cursor-pointer appearance-none truncate rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs text-slate-800 outline-none hover:bg-slate-50 focus:border-slate-900 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
-                                                            >
-                                                                <option
-                                                                    value=""
-                                                                    disabled
-                                                                >
-                                                                    Pilih Staf /
-                                                                    Partner
-                                                                    Firma...
-                                                                </option>
-                                                                {firmStaff.map(
-                                                                    (staff) => (
-                                                                        <option
-                                                                            key={
-                                                                                staff.id
-                                                                            }
-                                                                            value={
-                                                                                staff.id
-                                                                            }
-                                                                            title={`${staff.name} ${(staff as any).email ? `(${ (staff as any).email })` : ''}`}
-                                                                        >
-                                                                            {
-                                                                                staff.name
-                                                                            }{' '}
-                                                                            {(
-                                                                                staff as any
-                                                                            )
-                                                                                .email
-                                                                                ? `— ${(staff as any).email}`
-                                                                                : ''}
-                                                                        </option>
-                                                                    ),
-                                                                )}
-                                                            </select>
-                                                            <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400" />
+                                                                placeholder="Pilih Staf / Partner Firma..."
+                                                                allowClear
+                                                                disabledUserIds={
+                                                                    signers
+                                                                        .filter((_, i) => i !== index)
+                                                                        .map((other) => {
+                                                                            const matched = firmStaff.find(
+                                                                                (s) =>
+                                                                                    s.email &&
+                                                                                    other.email &&
+                                                                                    s.email.toLowerCase() ===
+                                                                                        other.email.toLowerCase(),
+                                                                            );
+                                                                            return matched ? String(matched.id) : null;
+                                                                        })
+                                                                        .filter(Boolean) as string[]
+                                                                }
+                                                                disabledReason="Sudah dipilih pada pihak lain"
+                                                            />
                                                         </div>
                                                     </div>
                                                 )}
