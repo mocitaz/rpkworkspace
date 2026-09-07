@@ -18,6 +18,7 @@ import {
     FileText,
     FileUp,
     Globe,
+    ListChecks,
     Mail,
     MapPin,
     Pencil,
@@ -176,12 +177,12 @@ type Document = {
 };
 
 const tabs = [
-    { id: 'Overview', label: 'Ringkasan', icon: Building2 },
-    { id: 'Matters', label: 'Matters', icon: Briefcase },
-    { id: 'Legalitas', label: 'Legalitas & Kepatuhan', icon: Scale },
-    { id: 'Kontak', label: 'Kontak Person', icon: ContactRound },
-    { id: 'KYC', label: 'Kepatuhan KYC & AML', icon: ShieldCheck },
-    { id: 'Dokumen', label: 'Dokumen', icon: FileText },
+    { id: 'Overview', label: 'Ringkasan' },
+    { id: 'Matters', label: 'Perkara' },
+    { id: 'Legalitas', label: 'Legalitas' },
+    { id: 'Kontak', label: 'Kontak' },
+    { id: 'KYC', label: 'Kepatuhan KYC' },
+    { id: 'Dokumen', label: 'Dokumen' },
 ] as const;
 
 const complianceTypeLabels: Record<string, string> = {
@@ -250,280 +251,259 @@ export default function ClientShow({
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
-                    {/* 1. Header Navigation & Client Cockpit Bar */}
-                    <div className="space-y-3 border-b border-slate-200/60 pb-5 dark:border-white/[0.06]">
-                        {/* Top Tier: Breadcrumbs / Client Code + Action Buttons */}
-                        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                            {/* Left: Breadcrumbs & Client Number */}
-                            <div className="flex flex-wrap items-center gap-2">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="-ml-2 h-7 px-2 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
-                                    asChild
-                                >
-                                    <Link href={clientRoutes.index.url()}>
-                                        <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
-                                        Daftar Klien
-                                    </Link>
-                                </Button>
-                                <span className="text-slate-300 dark:text-zinc-600">
-                                    /
-                                </span>
-                                {getDetailHeaderMetadata(
-                                    client.client_number,
-                                ).map((item) => (
-                                    <span
-                                        key={item.testId}
-                                        data-testid={item.testId}
-                                        className={`text-[11px] font-bold tracking-tight whitespace-nowrap ${item.className}`}
+                    {/* Executive Cockpit Hero (Matching tasks/show.tsx) */}
+                    <section className="group relative overflow-hidden rounded-[20px] border border-slate-200/80 bg-gradient-to-br from-[#f7f9ff] via-white to-[#eaf3ff] p-5 shadow-[0_10px_28px_rgba(71,85,105,0.075)] sm:p-6 dark:border-white/[0.08] dark:from-[#17191f] dark:via-[#17191f] dark:to-[#18202b]">
+                        {/* 1. Ambient Breathing Radial Glow */}
+                        <div className="matters-hero-glow pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_83%_38%,rgba(147,197,253,0.34),transparent_30%),radial-gradient(circle_at_65%_115%,rgba(251,191,36,0.12),transparent_27%)]" />
+
+                        {/* 2. Floating dynamic wave lines SVG */}
+                        <svg
+                            viewBox="0 0 560 200"
+                            aria-hidden="true"
+                            className="pointer-events-none absolute right-0 bottom-0 hidden h-full w-[480px] text-white/90 drop-shadow-[0_0_8px_rgba(96,165,250,0.35)] md:block"
+                        >
+                            <path
+                                d="M8 165 C95 94 176 178 270 108 S430 49 554 72"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                className="matters-hero-line"
+                                pathLength={1}
+                            />
+                            <path
+                                d="M55 192 C138 136 213 187 302 128 S442 84 558 99"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                className="matters-hero-line matters-hero-line-secondary opacity-55"
+                                pathLength={1}
+                            />
+                            <circle
+                                cx="270"
+                                cy="108"
+                                r="3.5"
+                                fill="currentColor"
+                            />
+                            <circle
+                                cx="430"
+                                cy="49"
+                                r="2.5"
+                                fill="currentColor"
+                            />
+                        </svg>
+
+                        {/* 3. Content Area: Official Client Dossier */}
+                        <div className="relative z-10 space-y-4">
+                            {/* Top Navigation & Action Buttons */}
+                            <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                                {/* Left: Breadcrumbs & Client Number */}
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="-ml-2 h-7.5 px-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-200/50 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
+                                        asChild
                                     >
-                                        {item.label}
+                                        <Link href={clientRoutes.index.url()}>
+                                            <ArrowLeft className="mr-1.5 size-3.5 text-slate-400" />
+                                            Daftar Klien
+                                        </Link>
+                                    </Button>
+                                    <span className="text-slate-300 dark:text-zinc-700">
+                                        /
                                     </span>
-                                ))}
-                            </div>
-
-                            {/* Right: Action Buttons */}
-                            <div className="flex shrink-0 flex-wrap items-center gap-1.5">
-                                {can.update && (
-                                    <ClientEditDialog
-                                        client={client}
-                                        partners={partners}
-                                        trigger={
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                className="h-7.5 cursor-pointer rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
-                                            >
-                                                <Pencil className="mr-1 size-3 text-slate-400" />
-                                                Edit Profil
-                                            </Button>
-                                        }
+                                    {getDetailHeaderMetadata(
+                                        client.client_number,
+                                    ).map((item) => (
+                                        <span
+                                            key={item.testId}
+                                            data-testid={item.testId}
+                                            className={`font-mono text-xs font-bold tracking-wider uppercase ${item.className}`}
+                                        >
+                                            {item.label}
+                                        </span>
+                                    ))}
+                                    <span className="text-slate-300 dark:text-zinc-700">
+                                        ·
+                                    </span>
+                                    <StatusText
+                                        value={client.status}
+                                        className="text-xs font-semibold"
                                     />
-                                )}
+                                </div>
 
-                                <Button
-                                    size="sm"
-                                    className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
-                                    asChild
-                                >
-                                    <Link href={matterRoutes.create.url()}>
-                                        <Plus className="mr-1 size-3.5" />
-                                        Buat Matter Baru
-                                    </Link>
-                                </Button>
-                            </div>
-                        </div>
+                                {/* Right: Action Buttons */}
+                                <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+                                    {can.update && (
+                                        <ClientEditDialog
+                                            client={client}
+                                            partners={partners}
+                                            trigger={
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="h-7.5 cursor-pointer rounded-lg border-slate-200/80 bg-white/90 px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-white dark:border-white/10 dark:bg-zinc-800/80 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                                                >
+                                                    <Pencil className="mr-1.5 size-3 text-slate-400" />
+                                                    Edit Profil
+                                                </Button>
+                                            }
+                                        />
+                                    )}
 
-                        {/* Bottom Tier: Full-Width Client Title & Metadata */}
-                        <div className="space-y-1.5">
-                            <div className="flex items-center gap-2.5">
-                                {client.type === 'individual' ||
-                                client.type === 'person' ? (
-                                    <div className="flex size-7.5 shrink-0 items-center justify-center rounded-lg border border-emerald-200/60 bg-emerald-50 text-emerald-700 shadow-2xs dark:border-emerald-900/40 dark:bg-emerald-950/60 dark:text-emerald-300">
-                                        <User className="size-4" />
-                                    </div>
-                                ) : (
-                                    <div className="flex size-7.5 shrink-0 items-center justify-center rounded-lg border border-blue-200/60 bg-blue-50 text-blue-700 shadow-2xs dark:border-blue-900/40 dark:bg-blue-950/60 dark:text-blue-300">
-                                        <Building2 className="size-4" />
-                                    </div>
-                                )}
-                                <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-[26px] lg:leading-snug dark:text-white">
-                                    {client.display_name}
-                                </h1>
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-slate-500 dark:text-zinc-400">
-                                <span className="font-medium text-slate-700 dark:text-zinc-200">
-                                    {client.legal_name}
-                                </span>
-                                <span className="text-slate-300 dark:text-zinc-700">
-                                    •
-                                </span>
-                                <span>
-                                    Industri: {client.industry ?? 'Umum'}
-                                </span>
-                                {client.city && (
-                                    <>
-                                        <span className="text-slate-300 dark:text-zinc-700">
-                                            •
-                                        </span>
-                                        <span>
-                                            Lokasi:{' '}
-                                            {[client.city, client.country_code]
-                                                .filter(Boolean)
-                                                .join(', ')}
-                                        </span>
-                                    </>
-                                )}
-                                {client.tax_identifier && (
-                                    <>
-                                        <span className="text-slate-300 dark:text-zinc-700">
-                                            •
-                                        </span>
-                                        <span>
-                                            NPWP:{' '}
-                                            <span className="font-mono">
-                                                {client.tax_identifier}
-                                            </span>
-                                        </span>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* 2. Top 4 Overview Stat Cards */}
-                    <section className="grid grid-cols-2 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
-                        {/* 1. Relationship Partner */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
-                                    RELATIONSHIP PARTNER
-                                </span>
-                                <ShieldCheck className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
-                            </div>
-                            <div className="mt-2 flex items-center gap-2">
-                                <Avatar className="size-6 rounded-full border border-slate-200/80 dark:border-white/10">
-                                    <AvatarImage
-                                        src={
-                                            client.relationship_partner
-                                                ?.avatar_url ?? undefined
-                                        }
-                                    />
-                                    <AvatarFallback className="text-[8px] font-bold">
-                                        {client.relationship_partner
-                                            ? getInitials(
-                                                  client.relationship_partner
-                                                      .name,
-                                              )
-                                            : '-'}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="min-w-0">
-                                    <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                                        {client.relationship_partner?.name ??
-                                            'Belum ditentukan'}
-                                    </p>
-                                    <p className="truncate text-[10px] text-slate-400 dark:text-zinc-500">
-                                        {client.relationship_partner
-                                            ?.position_title ?? 'Partner'}
-                                    </p>
+                                    <Button
+                                        size="sm"
+                                        className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-98 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
+                                        asChild
+                                    >
+                                        <Link href={matterRoutes.create.url()}>
+                                            <Plus className="mr-1.5 size-3.5" />
+                                            Buat Matter Baru
+                                        </Link>
+                                    </Button>
                                 </div>
                             </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
-                                <span>Penanggung Jawab</span>
-                            </div>
-                        </div>
 
-                        {/* 2. Sektor & Entitas */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
-                                    SEKTOR &amp; ENTITAS
-                                </span>
-                                <Building2 className="size-3.5 text-slate-400 transition-colors group-hover:text-emerald-600 dark:text-zinc-500" />
-                            </div>
-                            <div className="mt-2">
-                                <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                                    {client.industry ?? 'Umum / Korporasi'}
-                                </p>
-                                <p className="truncate text-[10px] text-slate-500 sm:text-[11px] dark:text-zinc-400">
-                                    {client.type === 'corporate'
-                                        ? 'Badan Hukum'
-                                        : 'Perorangan'}
-                                </p>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
-                                <span>Profil Usaha</span>
-                            </div>
-                        </div>
+                            {/* Hairline Divider */}
+                            <div className="border-t border-slate-200/70 dark:border-white/[0.08]" />
 
-                        {/* 3. Portofolio Perkara */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
-                                    PORTOFOLIO PERKARA
-                                </span>
-                                <Briefcase className="size-3.5 text-slate-400 transition-colors group-hover:text-amber-600 dark:text-zinc-500" />
-                            </div>
-                            <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                    {activeMatters.length}
-                                </span>
-                                <span className="text-[10px] font-medium text-slate-500 sm:text-[11px] dark:text-zinc-400">
-                                    matter aktif
-                                </span>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
-                                <span>Total: {allMatters.length}</span>
-                            </div>
-                        </div>
+                            {/* Bottom Tier: Full-Width Client Title & Metadata */}
+                            <div className="max-w-5xl">
+                                <h1 className="text-xl leading-snug font-black tracking-tight text-slate-950 sm:text-2xl lg:text-[26px] dark:text-white">
+                                    {client.display_name}
+                                </h1>
 
-                        {/* 4. Kontak Person */}
-                        <div className="group rounded-xl border border-slate-200/70 bg-white p-3 shadow-2xs transition-all hover:border-slate-300 sm:p-3.5 dark:border-white/[0.06] dark:bg-[#14161b]">
-                            <div className="flex items-center justify-between text-slate-500 dark:text-zinc-400">
-                                <span className="text-[10px] font-bold tracking-wider uppercase sm:text-[11px]">
-                                    KONTAK PERSON
-                                </span>
-                                <ContactRound className="size-3.5 text-slate-400 transition-colors group-hover:text-blue-600 dark:text-zinc-500" />
-                            </div>
-                            <div className="mt-2 flex items-baseline justify-between">
-                                <span className="font-mono text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-                                    {client.contacts.length}
-                                </span>
-                                <span className="text-[10px] font-medium text-slate-500 sm:text-[11px] dark:text-zinc-400">
-                                    perwakilan
-                                </span>
-                            </div>
-                            <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-500 sm:text-[11px] dark:border-white/[0.04]">
-                                <span>Personil Resmi</span>
+                                {/* Compact Metadata Strip (Relationship Partner, Entitas, Domisili, NPWP) */}
+                                <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:gap-x-6">
+                                    {/* Relationship Partner */}
+                                    {client.relationship_partner && (
+                                        <div className="inline-flex items-center gap-1.5 leading-none">
+                                            <span className="text-[10.5px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                                Relationship Partner:
+                                            </span>
+                                            <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-zinc-200">
+                                                <Avatar className="size-4 shrink-0 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10">
+                                                    <AvatarImage
+                                                        src={
+                                                            client.relationship_partner
+                                                                .avatar_url ??
+                                                            undefined
+                                                        }
+                                                        alt={
+                                                            client.relationship_partner
+                                                                .name
+                                                        }
+                                                    />
+                                                    <AvatarFallback className="bg-blue-600 text-[6px] font-bold text-white">
+                                                        {getInitials(
+                                                            client.relationship_partner
+                                                                .name,
+                                                        )}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <span>
+                                                    {client.relationship_partner.name}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Sektor & Entitas */}
+                                    <div className="inline-flex items-center gap-1.5 leading-none">
+                                        <span className="text-[10.5px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                            Entitas:
+                                        </span>
+                                        <span className="text-xs font-semibold text-slate-800 dark:text-zinc-200">
+                                            {client.type === 'corporate'
+                                                ? 'Badan Hukum'
+                                                : 'Perorangan'}
+                                            {client.industry && ` · ${client.industry}`}
+                                        </span>
+                                    </div>
+
+                                    {/* Legal Name (only if different from display_name) */}
+                                    {client.legal_name &&
+                                        client.legal_name.trim().toLowerCase() !==
+                                            client.display_name.trim().toLowerCase() && (
+                                            <div className="inline-flex items-center gap-1.5 leading-none">
+                                                <span className="text-[10.5px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                                    Nama Hukum:
+                                                </span>
+                                                <span className="text-xs font-medium text-slate-700 dark:text-zinc-300">
+                                                    {client.legal_name}
+                                                </span>
+                                            </div>
+                                        )}
+
+                                    {/* Domisili */}
+                                    {client.city && (
+                                        <div className="inline-flex items-center gap-1.5 leading-none">
+                                            <span className="text-[10.5px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                                Domisili:
+                                            </span>
+                                            <span className="text-xs font-medium text-slate-700 dark:text-zinc-300">
+                                                {[client.city, client.country_code]
+                                                    .filter(Boolean)
+                                                    .join(', ')}
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {/* NPWP */}
+                                    {client.tax_identifier && (
+                                        <div className="inline-flex items-center gap-1.5 leading-none">
+                                            <span className="text-[10.5px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                                NPWP:
+                                            </span>
+                                            <span className="font-mono text-xs font-medium text-slate-700 dark:text-zinc-300">
+                                                {client.tax_identifier}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </section>
 
-                    {/* 3. Segmented Navigation Tabs (Horizontal Swipeable on Mobile) */}
-                    <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto rounded-xl border border-slate-200/70 bg-slate-100/70 p-1 shadow-2xs [-ms-overflow-style:none] dark:border-white/[0.06] dark:bg-[#14161b] [&::-webkit-scrollbar]:hidden">
+                    {/* 2. Navigation Tabs (Clean text-only border-b style matching tasks/show.tsx and matters/show.tsx) */}
+                    <div
+                        role="tablist"
+                        className="flex [scrollbar-width:none] items-center gap-6 overflow-x-auto border-b border-slate-200/70 [-ms-overflow-style:none] dark:border-white/[0.07] [&::-webkit-scrollbar]:hidden"
+                    >
                         {tabs.map((item) => {
                             const isActive = tab === item.id;
-                            const Icon = item.icon;
                             const count =
                                 item.id === 'Matters'
                                     ? allMatters.length
                                     : item.id === 'Legalitas'
-                                      ? client.compliance_documents?.length || 0
+                                      ? (client.compliance_documents?.length ?? 0)
                                       : item.id === 'Kontak'
-                                        ? client.contacts.length
+                                        ? (client.contacts?.length ?? 0)
                                         : item.id === 'Dokumen'
                                           ? documents.length
                                           : null;
+
+                            const label =
+                                count !== null
+                                    ? `${item.label} · ${count}`
+                                    : item.label;
 
                             return (
                                 <button
                                     key={item.id}
                                     type="button"
+                                    role="tab"
+                                    aria-selected={isActive}
                                     onClick={() => setTab(item.id)}
-                                    className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
+                                    className={`relative shrink-0 border-b-2 px-1 pb-2.5 pt-1 text-xs font-semibold transition-colors ${
                                         isActive
-                                            ? 'bg-white text-slate-900 shadow-2xs dark:bg-[#20232a] dark:text-white'
-                                            : 'text-slate-600 hover:bg-white/60 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
+                                            ? 'border-slate-950 text-slate-950 dark:border-white dark:text-white'
+                                            : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white'
                                     }`}
                                 >
-                                    <Icon
-                                        className={`size-3.5 shrink-0 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-zinc-500'}`}
-                                    />
-                                    <span>{item.label}</span>
-                                    {count !== null && count > 0 && (
-                                        <span
-                                            className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] font-bold ${
-                                                isActive
-                                                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900'
-                                                    : 'bg-slate-200/80 text-slate-700 dark:bg-zinc-800 dark:text-zinc-400'
-                                            }`}
-                                        >
-                                            {count}
-                                        </span>
-                                    )}
+                                    {label}
                                 </button>
                             );
                         })}
@@ -557,11 +537,11 @@ export default function ClientShow({
 
                                     {/* Matter Berjalan */}
                                     <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                        <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                        <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
                                             <div className="flex items-center gap-1.5">
                                                 <Briefcase className="size-3.5 text-slate-500 dark:text-zinc-400" />
                                                 <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
-                                                    Matter Berjalan (
+                                                    Perkara Berjalan (
                                                     {activeMatters.length})
                                                 </span>
                                             </div>
@@ -570,7 +550,7 @@ export default function ClientShow({
                                                     onClick={() =>
                                                         setTab('Matters')
                                                     }
-                                                    className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                                    className="cursor-pointer text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                                 >
                                                     Lihat Semua →
                                                 </button>
@@ -624,7 +604,7 @@ export default function ClientShow({
 
                                     {/* Kontak Preview */}
                                     <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                        <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                        <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
                                             <div className="flex items-center gap-1.5">
                                                 <ContactRound className="size-3.5 text-slate-500 dark:text-zinc-400" />
                                                 <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
@@ -708,30 +688,24 @@ export default function ClientShow({
                             {/* TAB 2: MATTERS */}
                             {tab === 'Matters' && (
                                 <div className="space-y-3 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <Briefcase className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Daftar Perkara Hukum (
-                                                    {allMatters.length})
-                                                </h2>
-                                            </div>
-                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Seluruh riwayat penanganan
-                                                perkara aktif maupun selesai.
-                                            </p>
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                        <div className="flex items-center gap-1.5">
+                                            <Briefcase className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Daftar Perkara Hukum (
+                                                {allMatters.length})
+                                            </span>
                                         </div>
                                         <Button
                                             size="sm"
-                                            className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                            className="h-7 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                             asChild
                                         >
                                             <Link
                                                 href={matterRoutes.create.url()}
                                             >
                                                 <Plus className="mr-1 size-3" />
-                                                Buat Matter
+                                                Buat Perkara
                                             </Link>
                                         </Button>
                                     </div>
@@ -879,24 +853,16 @@ export default function ClientShow({
                             {/* TAB: LEGALITAS & KEPATUHAN KORPORASI */}
                             {tab === 'Legalitas' && (
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex flex-col justify-between gap-3 border-b border-slate-100 pb-3 sm:flex-row sm:items-center dark:border-white/[0.04]">
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <Scale className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Legalitas Korporasi &amp;
-                                                    Kepatuhan Izin (
-                                                    {client.compliance_documents
-                                                        ?.length ?? 0}
-                                                    )
-                                                </h2>
-                                            </div>
-                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Monitoring masa berlaku akta
-                                                pendirian, susunan direksi, SK
-                                                Menkumham, NIB OSS, dan izin
-                                                operasional klien.
-                                            </p>
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                        <div className="flex items-center gap-1.5">
+                                            <Scale className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Legalitas Korporasi &amp;
+                                                Kepatuhan Izin (
+                                                {client.compliance_documents
+                                                    ?.length ?? 0}
+                                                )
+                                            </span>
                                         </div>
 
                                         {can.update && (
@@ -905,7 +871,7 @@ export default function ClientShow({
                                                 onClick={() =>
                                                     setIsAddingCompliance(true)
                                                 }
-                                                className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                                                className="h-7 cursor-pointer rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                             >
                                                 <Plus className="mr-1.5 size-3.5" />
                                                 Tambah Dokumen Legalitas
@@ -1016,6 +982,12 @@ export default function ClientShow({
                                         <div className="space-y-2.5 pt-1">
                                             {client.compliance_documents.map(
                                                 (doc) => {
+                                                    const isExpired =
+                                                        doc.compliance_status ===
+                                                        'expired';
+                                                    const isExpiring =
+                                                        doc.compliance_status ===
+                                                        'expiring_soon';
                                                     return (
                                                         <div
                                                             key={doc.id}
@@ -1165,20 +1137,13 @@ export default function ClientShow({
                             {/* TAB 3: KONTAK */}
                             {tab === 'Kontak' && (
                                 <div className="space-y-3 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <ContactRound className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Daftar Kontak Perwakilan (
-                                                    {client.contacts.length})
-                                                </h2>
-                                            </div>
-                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Personil yang dapat dihubungi
-                                                terkait administrasi dan
-                                                komunikasi perkara.
-                                            </p>
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                        <div className="flex items-center gap-1.5">
+                                            <ContactRound className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Daftar Kontak Perwakilan (
+                                                {client.contacts.length})
+                                            </span>
                                         </div>
                                         <Button
                                             type="button"
@@ -1186,7 +1151,7 @@ export default function ClientShow({
                                             onClick={() =>
                                                 setIsAddingContact(true)
                                             }
-                                            className="h-8 cursor-pointer rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                            className="h-7 cursor-pointer rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
                                             <Plus className="mr-1.5 size-3.5" />
                                             Tambah Kontak
@@ -1311,22 +1276,15 @@ export default function ClientShow({
                             {/* TAB 4: KEPATUHAN KYC & AML */}
                             {tab === 'KYC' && (
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3 dark:border-white/[0.04]">
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <ShieldCheck className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Kepatuhan KYC &amp;
-                                                    Anti-Money Laundering (PMPJ)
-                                                </h2>
-                                            </div>
-                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Prinsip Mengenali Pengguna Jasa
-                                                (PMPJ) dan penilaian risiko
-                                                kepatuhan hukum.
-                                            </p>
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                        <div className="flex items-center gap-1.5">
+                                            <ShieldCheck className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Kepatuhan KYC &amp;
+                                                Anti-Money Laundering (PMPJ)
+                                            </span>
                                         </div>
-                                        <div className="flex flex-wrap items-center gap-2">
+                                        <div className="flex items-center gap-2">
                                             <StatusText
                                                 value={
                                                     client.kyc_status ??
@@ -1342,7 +1300,7 @@ export default function ClientShow({
                                                     trigger={
                                                         <Button
                                                             size="sm"
-                                                            className="h-8 cursor-pointer rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
+                                                            className="h-7 cursor-pointer rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
                                                         >
                                                             <Pencil className="mr-1 size-3" />
                                                             Perbarui KYC
@@ -1425,11 +1383,14 @@ export default function ClientShow({
                                     </div>
 
                                     {/* Statutory Documents Checklist */}
-                                    <div className="space-y-2 pt-1">
-                                        <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                                            Kelengkapan Berkas Legalitas &amp;
-                                            Dokumen Korporasi
-                                        </h3>
+                                    <div className="space-y-2.5 pt-1">
+                                        <div className="flex items-center gap-1.5 border-b border-slate-100 pb-2 dark:border-white/[0.04]">
+                                            <ListChecks className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Kelengkapan Berkas Legalitas &amp;
+                                                Dokumen Korporasi
+                                            </span>
+                                        </div>
                                         <div className="space-y-1.5">
                                             {[
                                                 {
@@ -1507,19 +1468,13 @@ export default function ClientShow({
                             {/* TAB 5: DOKUMEN */}
                             {tab === 'Dokumen' && (
                                 <div className="space-y-3 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <FileText className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Dokumen Terkait Klien (
-                                                    {documents.length})
-                                                </h2>
-                                            </div>
-                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Arsip legalitas, surat kuasa,
-                                                dan dokumen perkara terkait.
-                                            </p>
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                        <div className="flex items-center gap-1.5">
+                                            <FileText className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Dokumen Terkait Klien (
+                                                {documents.length})
+                                            </span>
                                         </div>
                                         <Button
                                             type="button"
@@ -1527,7 +1482,7 @@ export default function ClientShow({
                                             onClick={() =>
                                                 setIsUploadingDocument(true)
                                             }
-                                            className="h-8 cursor-pointer rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                            className="h-7 cursor-pointer rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                         >
                                             <FileUp className="mr-1.5 size-3.5" />
                                             Unggah Dokumen
@@ -1669,11 +1624,13 @@ export default function ClientShow({
                         <div className="space-y-4 lg:col-span-4">
                             {/* Legalitas & Kontak Perusahaan */}
                             <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="mb-3 flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
-                                    <Building2 className="size-3.5 text-slate-400" />
-                                    <span className="text-[11px] font-semibold uppercase">
-                                        Legalitas &amp; Kontak Perusahaan
-                                    </span>
+                                <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                    <div className="flex items-center gap-1.5">
+                                        <Building2 className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                        <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                            Legalitas &amp; Kontak Perusahaan
+                                        </span>
+                                    </div>
                                 </div>
                                 <div className="space-y-2.5 text-xs">
                                     {client.tax_identifier && (
@@ -1778,11 +1735,13 @@ export default function ClientShow({
 
                             {/* Alamat & Domisili */}
                             <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="mb-2 flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
-                                    <MapPin className="size-3.5 text-slate-400" />
-                                    <span className="text-[11px] font-semibold uppercase">
-                                        Alamat &amp; Domisili
-                                    </span>
+                                <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                    <div className="flex items-center gap-1.5">
+                                        <MapPin className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                        <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                            Alamat &amp; Domisili
+                                        </span>
+                                    </div>
                                 </div>
                                 <div className="space-y-1 text-xs text-slate-700 dark:text-zinc-200">
                                     <p className="font-semibold text-slate-900 dark:text-white">
@@ -1808,10 +1767,10 @@ export default function ClientShow({
 
                             {/* Berkas Legalitas Terkini */}
                             <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="mb-3 flex items-center justify-between">
-                                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
-                                        <FileText className="size-3.5 text-slate-400" />
-                                        <span className="text-[11px] font-semibold uppercase">
+                                <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                    <div className="flex items-center gap-1.5">
+                                        <FileText className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                        <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                             Berkas Legalitas ({documents.length}
                                             )
                                         </span>
@@ -1819,9 +1778,9 @@ export default function ClientShow({
                                     {documents.length > 0 && (
                                         <button
                                             onClick={() => setTab('Dokumen')}
-                                            className="text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                            className="cursor-pointer text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                         >
-                                            Semua Berkas
+                                            Semua Berkas →
                                         </button>
                                     )}
                                 </div>
