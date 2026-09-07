@@ -72,7 +72,7 @@ export function WelcomeModal({
 
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
-            <DialogContent className="w-[calc(100vw-1.5rem)] max-w-[390px] overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 gap-0 shadow-xl dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className="w-[calc(100vw-1.5rem)] max-w-[390px] gap-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-xl dark:border-white/10 dark:bg-[#14161b]">
                 {/* 1. Header (Clean, minimal, no badge) */}
                 <div className="p-5 pb-3.5">
                     <div className="flex items-center gap-3 pr-6">
@@ -146,14 +146,15 @@ export function WelcomeModal({
                         onClick={() => handleClose(false)}
                         className="group flex items-center justify-between rounded-lg px-2.5 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-white/[0.04]"
                     >
-                        <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex min-w-0 items-center gap-2.5">
                             <CalendarDays className="size-4 text-slate-400 transition-colors group-hover:text-slate-700 dark:text-zinc-500 dark:group-hover:text-zinc-300" />
                             <div className="min-w-0">
                                 <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200">
                                     Agenda Sidang &amp; Kalender
                                 </p>
                                 <p className="truncate text-[11px] text-slate-400 dark:text-zinc-500">
-                                    Pantau jadwal persidangan &amp; tenggat minggu ini
+                                    Pantau jadwal persidangan &amp; tenggat
+                                    minggu ini
                                 </p>
                             </div>
                         </div>
@@ -165,14 +166,15 @@ export function WelcomeModal({
                         onClick={() => handleClose(false)}
                         className="group flex items-center justify-between rounded-lg px-2.5 py-2 transition-colors hover:bg-slate-50 dark:hover:bg-white/[0.04]"
                     >
-                        <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex min-w-0 items-center gap-2.5">
                             <FileCheck2 className="size-4 text-slate-400 transition-colors group-hover:text-slate-700 dark:text-zinc-500 dark:group-hover:text-zinc-300" />
                             <div className="min-w-0">
                                 <p className="text-xs font-semibold text-slate-800 dark:text-zinc-200">
                                     Draf &amp; Dokumen Perkara
                                 </p>
                                 <p className="truncate text-[11px] text-slate-400 dark:text-zinc-500">
-                                    Periksa legal advice &amp; berkas perkara review
+                                    Periksa legal advice &amp; berkas perkara
+                                    review
                                 </p>
                             </div>
                         </div>

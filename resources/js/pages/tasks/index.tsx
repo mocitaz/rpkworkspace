@@ -176,7 +176,7 @@ export default function TasksIndex({
             <Head title="Manajemen Tugas & Instruksi Kerja" />
 
             <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-8 dark:bg-[#0c0d10]">
-                <main className="w-full space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
                     <TasksWorkHero
                         totalTasks={metrics.total}
                         visibleTasks={tasks.data.length}
@@ -739,25 +739,32 @@ export default function TasksIndex({
                                                     </td>
 
                                                     {/* Priority */}
-                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap text-xs">
+                                                    <td className="px-3 py-2.5 text-center text-xs whitespace-nowrap">
                                                         <span
                                                             className={
-                                                                task.priority === 'critical'
+                                                                task.priority ===
+                                                                'critical'
                                                                     ? 'font-semibold text-rose-600 dark:text-rose-400'
-                                                                    : task.priority === 'high'
+                                                                    : task.priority ===
+                                                                        'high'
                                                                       ? 'font-semibold text-amber-600 dark:text-amber-400'
-                                                                      : task.priority === 'normal'
+                                                                      : task.priority ===
+                                                                          'normal'
                                                                         ? 'font-semibold text-blue-600 dark:text-blue-400'
                                                                         : 'font-semibold text-slate-600 dark:text-zinc-400'
                                                             }
                                                         >
-                                                            {task.priority === 'critical'
+                                                            {task.priority ===
+                                                            'critical'
                                                                 ? 'Kritis'
-                                                                : task.priority === 'high'
+                                                                : task.priority ===
+                                                                    'high'
                                                                   ? 'Tinggi'
-                                                                  : task.priority === 'normal'
+                                                                  : task.priority ===
+                                                                      'normal'
                                                                     ? 'Normal'
-                                                                    : task.priority === 'low'
+                                                                    : task.priority ===
+                                                                        'low'
                                                                       ? 'Rendah'
                                                                       : task.priority}
                                                         </span>
@@ -810,8 +817,7 @@ export default function TasksIndex({
                                                     <td className="py-2.5 pr-4 pl-1 text-right whitespace-nowrap">
                                                         <Link
                                                             href={
-                                                                taskRoutes
-                                                                    .show
+                                                                taskRoutes.show
                                                                     ?.url
                                                                     ? taskRoutes.show.url(
                                                                           task.id,

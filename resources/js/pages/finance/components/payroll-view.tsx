@@ -313,23 +313,34 @@ export function PayrollView({
                                                     <Avatar className="size-7.5 shrink-0 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10">
                                                         <AvatarImage
                                                             src={getAvatarUrl(
-                                                                p.user?.avatar_url ||
-                                                                    p.user?.avatar_path ||
-                                                                    p.user?.avatar,
+                                                                p.user
+                                                                    ?.avatar_url ||
+                                                                    p.user
+                                                                        ?.avatar_path ||
+                                                                    p.user
+                                                                        ?.avatar,
                                                             )}
-                                                            alt={p.user?.name || 'Pegawai'}
+                                                            alt={
+                                                                p.user?.name ||
+                                                                'Pegawai'
+                                                            }
                                                             className="object-cover"
                                                         />
                                                         <AvatarFallback className="bg-slate-100 text-[10px] font-bold text-slate-700 dark:bg-zinc-800 dark:text-zinc-200">
-                                                            {getInitials(p.user?.name || 'Pegawai')}
+                                                            {getInitials(
+                                                                p.user?.name ||
+                                                                    'Pegawai',
+                                                            )}
                                                         </AvatarFallback>
                                                     </Avatar>
                                                     <div className="min-w-0">
-                                                        <p className="font-bold text-slate-950 truncate dark:text-white">
-                                                            {p.user?.name || 'Pegawai'}
+                                                        <p className="truncate font-bold text-slate-950 dark:text-white">
+                                                            {p.user?.name ||
+                                                                'Pegawai'}
                                                         </p>
-                                                        <p className="mt-0.5 text-[10px] text-slate-500 truncate dark:text-zinc-400">
-                                                            {p.user?.position_title ||
+                                                        <p className="mt-0.5 truncate text-[10px] text-slate-500 dark:text-zinc-400">
+                                                            {p.user
+                                                                ?.position_title ||
                                                                 'Staf'}
                                                         </p>
                                                     </div>
@@ -498,11 +509,19 @@ export function PayrollView({
                     <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                         <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3">
                             <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
-                                <AlertTriangle className="size-4.5" strokeWidth={1.8} />
+                                <AlertTriangle
+                                    className="size-4.5"
+                                    strokeWidth={1.8}
+                                />
                             </div>
                             <div className="min-w-0 self-center">
-                                <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">Konfirmasi Edit Slip Gaji Lunas</DialogTitle>
-                                <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Pastikan perubahan pada slip yang telah lunas.</p>
+                                <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">
+                                    Konfirmasi Edit Slip Gaji Lunas
+                                </DialogTitle>
+                                <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
+                                    Pastikan perubahan pada slip yang telah
+                                    lunas.
+                                </p>
                             </div>
                         </div>
                     </DialogHeader>

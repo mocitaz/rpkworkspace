@@ -8,18 +8,12 @@ import {
     Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { formatMoney } from '@/lib/format';
 import type { FinancialAccountItem } from './accounts-view';
 import { financeDialogPanelClass } from './finance-dialog-design';
-import {
-    FinanceDialogErrors,
-    FinanceDialogHeader,
-} from './finance-dialog-ui';
+import { FinanceDialogErrors, FinanceDialogHeader } from './finance-dialog-ui';
 
 export function DeleteAccountDialog({
     account,
@@ -89,7 +83,10 @@ export function DeleteAccountDialog({
                 />
 
                 {/* Form & Content matching CreateAccountDialog */}
-                <form onSubmit={handleSubmit} className="space-y-3.5 pt-1 text-xs">
+                <form
+                    onSubmit={handleSubmit}
+                    className="space-y-3.5 pt-1 text-xs"
+                >
                     <FinanceDialogErrors errors={errors} />
 
                     {/* Account Summary Card */}
@@ -99,7 +96,7 @@ export function DeleteAccountDialog({
                                 <span className="truncate text-xs font-semibold text-slate-800 dark:text-zinc-200">
                                     {account.name}
                                 </span>
-                                <span className="text-[10px] font-bold uppercase text-blue-600 dark:text-blue-400">
+                                <span className="text-[10px] font-bold text-blue-600 uppercase dark:text-blue-400">
                                     {account.type}
                                 </span>
                             </div>
@@ -155,53 +152,72 @@ export function DeleteAccountDialog({
                                                         : 'text-slate-800 dark:text-zinc-200'
                                                 }`}
                                             >
-                                                Pindahkan Saldo & Riwayat Transaksi
+                                                Pindahkan Saldo & Riwayat
+                                                Transaksi
                                             </p>
                                             <span className="text-[10px] font-bold tracking-wide text-emerald-600 uppercase dark:text-emerald-400">
                                                 Rekomendasi
                                             </span>
                                         </div>
                                         <p className="mt-0.5 text-[10px] text-slate-500 dark:text-zinc-400">
-                                            Seluruh saldo dan riwayat pencatatan dialihkan ke rekening penampung yang dipilih.
+                                            Seluruh saldo dan riwayat pencatatan
+                                            dialihkan ke rekening penampung yang
+                                            dipilih.
                                         </p>
 
                                         {mode === 'transfer' && (
                                             <div
-                                                onClick={(e) => e.stopPropagation()}
+                                                onClick={(e) =>
+                                                    e.stopPropagation()
+                                                }
                                                 className="mt-2.5 border-t border-slate-200/70 pt-2.5 dark:border-white/[0.06]"
                                             >
                                                 <Label
                                                     htmlFor="target_account_id"
                                                     className="text-[10px] font-semibold tracking-wider text-slate-500 uppercase dark:text-zinc-400"
                                                 >
-                                                    Pilih Rekening Tujuan Penampung *
+                                                    Pilih Rekening Tujuan
+                                                    Penampung *
                                                 </Label>
-                                                {availableAccounts.length === 0 ? (
+                                                {availableAccounts.length ===
+                                                0 ? (
                                                     <p className="mt-1 text-[11px] text-amber-600 dark:text-amber-400">
-                                                        Tidak ada rekening lain. Gunakan opsi hapus langsung di bawah.
+                                                        Tidak ada rekening lain.
+                                                        Gunakan opsi hapus
+                                                        langsung di bawah.
                                                     </p>
                                                 ) : (
                                                     <div className="relative mt-1">
                                                         <select
                                                             id="target_account_id"
-                                                            value={targetAccountId}
+                                                            value={
+                                                                targetAccountId
+                                                            }
                                                             onChange={(e) =>
                                                                 setTargetAccountId(
-                                                                    e.target.value,
+                                                                    e.target
+                                                                        .value,
                                                                 )
                                                             }
                                                             className="h-8.5 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-8 pl-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-colors hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600/30 dark:border-white/10 dark:bg-[#121418] dark:text-zinc-200"
                                                         >
                                                             <option value="">
-                                                                -- Pilih Rekening Tujuan --
+                                                                -- Pilih
+                                                                Rekening Tujuan
+                                                                --
                                                             </option>
                                                             {availableAccounts.map(
                                                                 (a) => (
                                                                     <option
-                                                                        key={a.id}
-                                                                        value={a.id}
+                                                                        key={
+                                                                            a.id
+                                                                        }
+                                                                        value={
+                                                                            a.id
+                                                                        }
                                                                     >
-                                                                        {a.name} (Saldo:{' '}
+                                                                        {a.name}{' '}
+                                                                        (Saldo:{' '}
                                                                         {formatMoney(
                                                                             a.current_balance,
                                                                             'IDR',
@@ -218,7 +234,10 @@ export function DeleteAccountDialog({
                                                 {selectedTarget && (
                                                     <div className="mt-2 flex items-center gap-1.5 text-[10px] text-slate-600 dark:text-zinc-400">
                                                         <CheckCircle2 className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                                                        <span>Estimasi saldo gabungan:</span>
+                                                        <span>
+                                                            Estimasi saldo
+                                                            gabungan:
+                                                        </span>
                                                         <span className="font-mono font-bold text-slate-900 dark:text-white">
                                                             {formatMoney(
                                                                 selectedTarget.current_balance +
@@ -270,7 +289,9 @@ export function DeleteAccountDialog({
                                             </span>
                                         </div>
                                         <p className="mt-0.5 text-[10px] text-slate-500 dark:text-zinc-400">
-                                            Rekening dihapus permanen. Mutasi transfer langsung terkait rekening ini akan dibersihkan.
+                                            Rekening dihapus permanen. Mutasi
+                                            transfer langsung terkait rekening
+                                            ini akan dibersihkan.
                                         </p>
 
                                         {mode === 'direct_delete' && (
@@ -284,7 +305,8 @@ export function DeleteAccountDialog({
                                                             'IDR',
                                                         )}
                                                     </span>{' '}
-                                                    akan dihapus permanen dari buku kas firma.
+                                                    akan dihapus permanen dari
+                                                    buku kas firma.
                                                 </p>
                                             </div>
                                         )}

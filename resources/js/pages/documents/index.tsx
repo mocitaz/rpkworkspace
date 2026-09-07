@@ -112,7 +112,8 @@ function formatDocumentStatus(status?: string): {
         case 'approved':
             return {
                 label: 'Disetujui',
-                className: 'font-semibold text-emerald-600 dark:text-emerald-400',
+                className:
+                    'font-semibold text-emerald-600 dark:text-emerald-400',
             };
         case 'final':
             return {
@@ -122,7 +123,8 @@ function formatDocumentStatus(status?: string): {
         case 'signed':
             return {
                 label: 'Ditandatangani',
-                className: 'font-semibold text-emerald-600 dark:text-emerald-400',
+                className:
+                    'font-semibold text-emerald-600 dark:text-emerald-400',
             };
         case 'archived':
             return {
@@ -223,7 +225,7 @@ export default function DocumentsIndex({
             <Head title="Dokumen & Repositori Legal - Vault Privat" />
 
             <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-10 dark:bg-[#0c0d10]">
-                <main className="w-full space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
                     <DocumentsVaultHero
                         metrics={metrics}
                         canUpload={can.upload}
@@ -663,9 +665,7 @@ export default function DocumentsIndex({
                                                                 }
                                                                 className="block truncate font-semibold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
                                                             >
-                                                                {
-                                                                    document.title
-                                                                }
+                                                                {document.title}
                                                             </Link>
                                                         </td>
 
@@ -719,7 +719,7 @@ export default function DocumentsIndex({
                                                         </td>
 
                                                         {/* Tipe Dokumen (Centered) */}
-                                                        <td className="px-3 py-2.5 text-center whitespace-nowrap text-xs text-slate-600 dark:text-zinc-400">
+                                                        <td className="px-3 py-2.5 text-center text-xs whitespace-nowrap text-slate-600 dark:text-zinc-400">
                                                             <span
                                                                 title={docType}
                                                                 className="inline-block max-w-[130px] truncate"
@@ -729,7 +729,7 @@ export default function DocumentsIndex({
                                                         </td>
 
                                                         {/* Kerahasiaan (Centered, Solid Text) */}
-                                                        <td className="px-3 py-2.5 text-center whitespace-nowrap text-xs">
+                                                        <td className="px-3 py-2.5 text-center text-xs whitespace-nowrap">
                                                             <span
                                                                 className={
                                                                     conf.className
@@ -740,7 +740,7 @@ export default function DocumentsIndex({
                                                         </td>
 
                                                         {/* Status (Centered, Solid Text) */}
-                                                        <td className="px-3 py-2.5 text-center whitespace-nowrap text-xs">
+                                                        <td className="px-3 py-2.5 text-center text-xs whitespace-nowrap">
                                                             <span
                                                                 className={
                                                                     stat.className
@@ -882,7 +882,7 @@ function UploadDocumentModal({
                 }
             }}
         >
-            <DialogContent className="max-h-[90vh] w-full min-w-0 max-w-[calc(100%-2rem)] overflow-y-auto overflow-x-hidden rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className="max-h-[90vh] w-full max-w-[calc(100%-2rem)] min-w-0 overflow-x-hidden overflow-y-auto rounded-2xl border border-slate-200/90 bg-white p-6 shadow-2xl sm:max-w-lg dark:border-white/10 dark:bg-[#14161b]">
                 <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
                     <div className="flex items-center gap-2.5">
                         <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
@@ -914,8 +914,11 @@ function UploadDocumentModal({
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-3.5 pt-1 min-w-0 w-full">
-                    <div className="grid gap-1 min-w-0">
+                <form
+                    onSubmit={handleSubmit}
+                    className="w-full min-w-0 space-y-3.5 pt-1"
+                >
+                    <div className="grid min-w-0 gap-1">
                         <Label
                             htmlFor="title"
                             className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
@@ -934,22 +937,22 @@ function UploadDocumentModal({
                         <InputError message={errors.title} />
                     </div>
 
-                    <div className="grid gap-2.5 sm:grid-cols-2 min-w-0">
-                        <div className="grid gap-1 min-w-0">
+                    <div className="grid min-w-0 gap-2.5 sm:grid-cols-2">
+                        <div className="grid min-w-0 gap-1">
                             <Label
                                 htmlFor="matter_id"
                                 className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
                             >
                                 Terkait Perkara (Matter)
                             </Label>
-                            <div className="relative min-w-0 w-full">
+                            <div className="relative w-full min-w-0">
                                 <select
                                     id="matter_id"
                                     value={data.matter_id}
                                     onChange={(e) =>
                                         setData('matter_id', e.target.value)
                                     }
-                                    className="h-8 w-full min-w-0 max-w-full cursor-pointer appearance-none truncate rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    className="h-8 w-full max-w-full min-w-0 cursor-pointer appearance-none truncate rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                 >
                                     <option value="">
                                         Dokumen Umum (Tanpa Matter)
@@ -962,7 +965,8 @@ function UploadDocumentModal({
                                         >
                                             {matter.matter_number} -{' '}
                                             {matter.title.length > 45
-                                                ? matter.title.slice(0, 42) + '...'
+                                                ? matter.title.slice(0, 42) +
+                                                  '...'
                                                 : matter.title}
                                         </option>
                                     ))}
@@ -972,21 +976,21 @@ function UploadDocumentModal({
                             <InputError message={errors.matter_id} />
                         </div>
 
-                        <div className="grid gap-1 min-w-0">
+                        <div className="grid min-w-0 gap-1">
                             <Label
                                 htmlFor="client_id"
                                 className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
                             >
                                 Terkait Klien
                             </Label>
-                            <div className="relative min-w-0 w-full">
+                            <div className="relative w-full min-w-0">
                                 <select
                                     id="client_id"
                                     value={data.client_id}
                                     onChange={(e) =>
                                         setData('client_id', e.target.value)
                                     }
-                                    className="h-8 w-full min-w-0 max-w-full cursor-pointer appearance-none truncate rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    className="h-8 w-full max-w-full min-w-0 cursor-pointer appearance-none truncate rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                 >
                                     <option value="">
                                         Pilih Klien (Opsional)
@@ -998,7 +1002,10 @@ function UploadDocumentModal({
                                             title={client.display_name}
                                         >
                                             {client.display_name.length > 45
-                                                ? client.display_name.slice(0, 42) + '...'
+                                                ? client.display_name.slice(
+                                                      0,
+                                                      42,
+                                                  ) + '...'
                                                 : client.display_name}
                                         </option>
                                     ))}
@@ -1009,8 +1016,8 @@ function UploadDocumentModal({
                         </div>
                     </div>
 
-                    <div className="grid gap-2.5 sm:grid-cols-2 min-w-0">
-                        <div className="grid gap-1 min-w-0">
+                    <div className="grid min-w-0 gap-2.5 sm:grid-cols-2">
+                        <div className="grid min-w-0 gap-1">
                             <Label
                                 htmlFor="document_type"
                                 className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
@@ -1029,14 +1036,14 @@ function UploadDocumentModal({
                             <InputError message={errors.document_type} />
                         </div>
 
-                        <div className="grid gap-1 min-w-0">
+                        <div className="grid min-w-0 gap-1">
                             <Label
                                 htmlFor="confidentiality_level"
                                 className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
                             >
                                 Tingkat Kerahasiaan
                             </Label>
-                            <div className="relative min-w-0 w-full">
+                            <div className="relative w-full min-w-0">
                                 <select
                                     id="confidentiality_level"
                                     value={data.confidentiality_level}
@@ -1046,7 +1053,7 @@ function UploadDocumentModal({
                                             e.target.value,
                                         )
                                     }
-                                    className="h-8 w-full min-w-0 max-w-full cursor-pointer appearance-none truncate rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                                    className="h-8 w-full max-w-full min-w-0 cursor-pointer appearance-none truncate rounded-lg border border-slate-200 bg-slate-50/60 pr-8 pl-2.5 text-xs text-slate-900 outline-none hover:bg-slate-100/70 focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                                 >
                                     <option value="standard">
                                         Standar Internal
@@ -1069,7 +1076,7 @@ function UploadDocumentModal({
                         </div>
                     </div>
 
-                    <div className="grid gap-1 min-w-0">
+                    <div className="grid min-w-0 gap-1">
                         <Label
                             htmlFor="file"
                             className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
@@ -1090,7 +1097,7 @@ function UploadDocumentModal({
                         <InputError message={errors.file} />
                     </div>
 
-                    <div className="grid gap-1 min-w-0">
+                    <div className="grid min-w-0 gap-1">
                         <Label
                             htmlFor="notes"
                             className="text-xs font-semibold text-slate-700 dark:text-zinc-200"
@@ -1103,7 +1110,7 @@ function UploadDocumentModal({
                             onChange={(e) => setData('notes', e.target.value)}
                             rows={2}
                             placeholder="Keterangan draf, ringkasan berkas, atau instruksi..."
-                            className="w-full min-w-0 max-w-full rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
+                            className="w-full max-w-full min-w-0 rounded-lg border border-slate-200 bg-slate-50/60 p-2.5 text-xs text-slate-900 outline-none focus:border-blue-500 focus:bg-white dark:border-white/10 dark:bg-[#121418] dark:text-white"
                         />
                         <InputError message={errors.notes} />
                     </div>

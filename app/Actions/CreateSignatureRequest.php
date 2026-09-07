@@ -14,7 +14,7 @@ class CreateSignatureRequest
 {
     public function __construct(private AuditService $audit, private EnsureMatterIsNotOnLegalHold $legalHold) {}
 
-    public function handle(Document $document, User $actor, array $signers, string $mode = 'sequential', ?\DateTimeInterface $expiresAt = null, ?string $documentVersionId = null): SignatureRequest
+    public function handle(Document $document, User $actor, array $signers, string $mode = 'parallel', ?\DateTimeInterface $expiresAt = null, ?string $documentVersionId = null): SignatureRequest
     {
         $document->loadMissing(['matter', 'currentVersion', 'versions']);
         if ($document->matter) {

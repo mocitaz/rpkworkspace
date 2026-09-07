@@ -159,7 +159,8 @@ export function PartnerAdvancesView({
     if (confirmTransForEdit) {
         lastConfirmTransRef.current = confirmTransForEdit;
     }
-    const activeConfirmTrans = confirmTransForEdit || lastConfirmTransRef.current;
+    const activeConfirmTrans =
+        confirmTransForEdit || lastConfirmTransRef.current;
 
     const managedTransactions = activeAggregate
         ? transactions.filter(
@@ -195,19 +196,34 @@ export function PartnerAdvancesView({
     );
 
     const getPartnerAvatar = (partnerId: number) => {
-        const fromPartners = partners.find((p) => Number(p.id) === Number(partnerId));
-        if (fromPartners?.avatar_path) return getAvatarUrl(fromPartners.avatar_path);
+        const fromPartners = partners.find(
+            (p) => Number(p.id) === Number(partnerId),
+        );
+        if (fromPartners?.avatar_path)
+            return getAvatarUrl(fromPartners.avatar_path);
         const fromAccounts = (accounts as any[]).find(
             (a) => a.partner && Number(a.partner.id) === Number(partnerId),
         );
-        if (fromAccounts?.partner?.avatar_url || fromAccounts?.partner?.avatar_path) {
-            return getAvatarUrl(fromAccounts.partner.avatar_url || fromAccounts.partner.avatar_path);
+        if (
+            fromAccounts?.partner?.avatar_url ||
+            fromAccounts?.partner?.avatar_path
+        ) {
+            return getAvatarUrl(
+                fromAccounts.partner.avatar_url ||
+                    fromAccounts.partner.avatar_path,
+            );
         }
         const fromTx = transactions.find(
             (t) => t.partner && Number(t.partner.id) === Number(partnerId),
         );
-        if ((fromTx?.partner as any)?.avatar_url || (fromTx?.partner as any)?.avatar_path) {
-            return getAvatarUrl((fromTx?.partner as any)?.avatar_url || (fromTx?.partner as any)?.avatar_path);
+        if (
+            (fromTx?.partner as any)?.avatar_url ||
+            (fromTx?.partner as any)?.avatar_path
+        ) {
+            return getAvatarUrl(
+                (fromTx?.partner as any)?.avatar_url ||
+                    (fromTx?.partner as any)?.avatar_path,
+            );
         }
         return '';
     };
@@ -372,12 +388,15 @@ export function PartnerAdvancesView({
                             </span>
                         </div>
                         <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                            Rekonsiliasi saldo awal, talangan berjalan, pengembalian, bagi hasil laba, dan prive.
+                            Rekonsiliasi saldo awal, talangan berjalan,
+                            pengembalian, bagi hasil laba, dan prive.
                         </p>
                     </div>
                     <div className="flex items-center gap-1.5 text-[11px] text-slate-400 dark:text-zinc-500">
                         <Pencil className="size-3 text-slate-400 dark:text-zinc-500" />
-                        <span>Klik nominal bertanda edit untuk kelola mutasi</span>
+                        <span>
+                            Klik nominal bertanda edit untuk kelola mutasi
+                        </span>
                     </div>
                 </div>
 
@@ -411,11 +430,16 @@ export function PartnerAdvancesView({
                             </thead>
                             <tbody className="divide-y divide-slate-100 font-medium text-slate-700 dark:divide-white/[0.04] dark:text-zinc-300">
                                 {advancesSummary.map((partner) => {
-                                    const avatarUrl = getPartnerAvatar(partner.partner_id);
+                                    const avatarUrl = getPartnerAvatar(
+                                        partner.partner_id,
+                                    );
 
                                     return (
                                         <tr
-                                            key={partner.partner_id || partner.account_id}
+                                            key={
+                                                partner.partner_id ||
+                                                partner.account_id
+                                            }
                                             className="transition-colors hover:bg-slate-50/60 dark:hover:bg-white/[0.02]"
                                         >
                                             <td className="px-4 py-3 whitespace-nowrap">
@@ -433,15 +457,20 @@ export function PartnerAdvancesView({
                                                             aria-hidden="true"
                                                             className="bg-slate-100 text-[9px] font-semibold text-slate-600 dark:bg-white/10 dark:text-zinc-300"
                                                         >
-                                                            {getInitials(partner.partner_name)}
+                                                            {getInitials(
+                                                                partner.partner_name,
+                                                            )}
                                                         </AvatarFallback>
                                                     </Avatar>
                                                     <div className="min-w-0">
-                                                        <p className="text-xs font-semibold text-slate-900 truncate dark:text-white">
-                                                            {partner.partner_name}
+                                                        <p className="truncate text-xs font-semibold text-slate-900 dark:text-white">
+                                                            {
+                                                                partner.partner_name
+                                                            }
                                                         </p>
-                                                        <p className="mt-0.5 font-mono text-[10px] text-slate-400 dark:text-zinc-500 truncate">
-                                                            {partner.account_name || 'Kas Talangan'}
+                                                        <p className="mt-0.5 truncate font-mono text-[10px] text-slate-400 dark:text-zinc-500">
+                                                            {partner.account_name ||
+                                                                'Kas Talangan'}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -474,7 +503,7 @@ export function PartnerAdvancesView({
                                                             'IDR',
                                                         )}
                                                     </span>
-                                                    <Pencil className="size-3 text-slate-400 opacity-40 transition-opacity group-hover:opacity-100 group-hover:text-slate-700 dark:group-hover:text-zinc-200" />
+                                                    <Pencil className="size-3 text-slate-400 opacity-40 transition-opacity group-hover:text-slate-700 group-hover:opacity-100 dark:group-hover:text-zinc-200" />
                                                 </button>
                                             </td>
                                             <td className="px-3.5 py-3 text-right whitespace-nowrap">
@@ -499,7 +528,7 @@ export function PartnerAdvancesView({
                                                             'IDR',
                                                         )}
                                                     </span>
-                                                    <Pencil className="size-3 text-slate-400 opacity-40 transition-opacity group-hover:opacity-100 group-hover:text-slate-700 dark:group-hover:text-zinc-200" />
+                                                    <Pencil className="size-3 text-slate-400 opacity-40 transition-opacity group-hover:text-slate-700 group-hover:opacity-100 dark:group-hover:text-zinc-200" />
                                                 </button>
                                             </td>
                                             <td className="px-3.5 py-3 text-right font-mono text-xs font-bold whitespace-nowrap text-slate-900 dark:text-white">
@@ -530,7 +559,7 @@ export function PartnerAdvancesView({
                                                             'IDR',
                                                         )}
                                                     </span>
-                                                    <Pencil className="size-3 text-slate-400 opacity-40 transition-opacity group-hover:opacity-100 group-hover:text-slate-700 dark:group-hover:text-zinc-200" />
+                                                    <Pencil className="size-3 text-slate-400 opacity-40 transition-opacity group-hover:text-slate-700 group-hover:opacity-100 dark:group-hover:text-zinc-200" />
                                                 </button>
                                             </td>
                                             <td className="px-3.5 py-3 text-right whitespace-nowrap">
@@ -555,7 +584,7 @@ export function PartnerAdvancesView({
                                                             'IDR',
                                                         )}
                                                     </span>
-                                                    <Pencil className="size-3 text-slate-400 opacity-40 transition-opacity group-hover:opacity-100 group-hover:text-slate-700 dark:group-hover:text-zinc-200" />
+                                                    <Pencil className="size-3 text-slate-400 opacity-40 transition-opacity group-hover:text-slate-700 group-hover:opacity-100 dark:group-hover:text-zinc-200" />
                                                 </button>
                                             </td>
                                         </tr>
@@ -580,7 +609,10 @@ export function PartnerAdvancesView({
                                         {formatMoney(totalDueToPartners, 'IDR')}
                                     </td>
                                     <td className="px-3.5 py-3 text-right text-slate-800 dark:text-zinc-200">
-                                        {formatMoney(totalProfitDistributed, 'IDR')}
+                                        {formatMoney(
+                                            totalProfitDistributed,
+                                            'IDR',
+                                        )}
                                     </td>
                                     <td className="px-3.5 py-3 text-right text-slate-800 dark:text-zinc-200">
                                         {formatMoney(totalPriveDrawn, 'IDR')}
@@ -804,7 +836,8 @@ export function PartnerAdvancesView({
                                         />
                                         <AvatarFallback className="bg-slate-700 text-[8px] font-bold text-white">
                                             {getInitials(
-                                                activeAggregate?.partnerName || '',
+                                                activeAggregate?.partnerName ||
+                                                    '',
                                             )}
                                         </AvatarFallback>
                                     </Avatar>
@@ -820,7 +853,7 @@ export function PartnerAdvancesView({
                         {/* Compact Summary Strip */}
                         <div className="flex items-center justify-between rounded-xl border border-slate-200/80 bg-slate-50/70 p-3.5 dark:border-white/[0.06] dark:bg-white/[0.02]">
                             <div>
-                                <p className="text-[10px] font-medium tracking-wider uppercase text-slate-400 dark:text-zinc-500">
+                                <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase dark:text-zinc-500">
                                     Total {activeAggregate?.label}
                                 </p>
                                 <p className="mt-0.5 font-mono text-base font-bold tracking-tight text-slate-900 dark:text-white">
@@ -834,7 +867,7 @@ export function PartnerAdvancesView({
 
                         {/* Transactions List */}
                         {managedTransactions.length > 0 ? (
-                            <div className="space-y-2 max-h-[300px] overflow-y-auto pr-0.5">
+                            <div className="max-h-[300px] space-y-2 overflow-y-auto pr-0.5">
                                 {managedTransactions.map((transaction) => (
                                     <div
                                         key={transaction.id}
@@ -856,10 +889,13 @@ export function PartnerAdvancesView({
                                                 </div>
                                                 <p
                                                     className="mt-1 truncate text-[11px] text-slate-500 dark:text-zinc-400"
-                                                    title={transaction.notes || ''}
+                                                    title={
+                                                        transaction.notes || ''
+                                                    }
                                                 >
                                                     {transaction.notes ||
-                                                        transaction.account?.name ||
+                                                        transaction.account
+                                                            ?.name ||
                                                         'Tanpa catatan'}
                                                 </p>
                                             </div>
@@ -875,7 +911,8 @@ export function PartnerAdvancesView({
 
                                         <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 dark:border-white/[0.05]">
                                             <div className="truncate text-[10.5px] text-slate-400 dark:text-zinc-500">
-                                                {transaction.account?.name || 'Kas Rekening'}
+                                                {transaction.account?.name ||
+                                                    'Kas Rekening'}
                                             </div>
                                             <div className="flex items-center gap-1.5">
                                                 {onViewProof &&
@@ -908,7 +945,9 @@ export function PartnerAdvancesView({
                                                     size="sm"
                                                     variant="outline"
                                                     onClick={() => {
-                                                        setManagedAggregate(null);
+                                                        setManagedAggregate(
+                                                            null,
+                                                        );
                                                         setSelectedTransForEdit(
                                                             transaction,
                                                         );
@@ -1035,9 +1074,7 @@ export function PartnerAdvancesView({
                             size="sm"
                             onClick={() => {
                                 if (activeConfirmTrans) {
-                                    setSelectedTransForEdit(
-                                        activeConfirmTrans,
-                                    );
+                                    setSelectedTransForEdit(activeConfirmTrans);
                                     setConfirmTransForEdit(null);
                                 }
                             }}

@@ -183,7 +183,7 @@ export default function CalendarIndex({
             <Head title={`Kalender & Jadwal Agenda - ${formattedMonthTitle}`} />
 
             <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-10 dark:bg-[#0c0d10]">
-                <main className="w-full space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
                     <CalendarDashboardHero
                         formattedMonthTitle={formattedMonthTitle}
                         timezone={timezone}
@@ -1187,7 +1187,8 @@ function MonthGrid({
                             const dayOfWeek = new Date(
                                 `${day}T00:00:00Z`,
                             ).getUTCDay();
-                            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+                            const isWeekend =
+                                dayOfWeek === 0 || dayOfWeek === 6;
                             const holiday = holidayByDate.get(day);
                             const isDayOff = isWeekend || Boolean(holiday);
 

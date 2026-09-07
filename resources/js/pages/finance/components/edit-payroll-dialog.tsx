@@ -148,8 +148,12 @@ export function EditPayrollDialog({
                             <Receipt className="size-4.5" strokeWidth={1.8} />
                         </div>
                         <div className="min-w-0 self-center">
-                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 sm:text-base dark:text-white">Edit Slip Penghasilan</DialogTitle>
-                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Perbarui penghasilan dan potongan pegawai.</p>
+                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 sm:text-base dark:text-white">
+                                Edit Slip Penghasilan
+                            </DialogTitle>
+                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
+                                Perbarui penghasilan dan potongan pegawai.
+                            </p>
                         </div>
                     </div>
                 </DialogHeader>

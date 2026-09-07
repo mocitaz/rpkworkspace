@@ -140,7 +140,9 @@ export default function TaskEdit({
         start_date: initialStartDate,
         due_at: initialDueDate,
         is_billable: Boolean(task.is_billable),
-        estimated_hours: task.estimated_hours ? String(task.estimated_hours) : '',
+        estimated_hours: task.estimated_hours
+            ? String(task.estimated_hours)
+            : '',
         actual_hours: task.actual_hours ? String(task.actual_hours) : '',
         checklists: [] as ChecklistItem[],
         completion_notes: task.completion_notes || '',
@@ -192,7 +194,7 @@ export default function TaskEdit({
             <Head title={`Edit Tugas ${task.task_number}: ${task.title}`} />
 
             <div className="min-h-screen bg-[#fafafc] pb-24 dark:bg-[#0c0d10]">
-                <main className="mx-auto max-w-4xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
                     {/* Header Navigation */}
                     <div className="flex flex-col justify-between gap-4 border-b border-slate-200/70 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">
@@ -200,7 +202,8 @@ export default function TaskEdit({
                                 Edit Tugas &amp; Alur Kerja
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Perbarui instruksi penugasan, pelaksana tugas, status pengerjaan, dan checklist pekerjaan.
+                                Perbarui instruksi penugasan, pelaksana tugas,
+                                status pengerjaan, dan checklist pekerjaan.
                             </p>
                         </div>
 
@@ -229,12 +232,13 @@ export default function TaskEdit({
                             </div>
 
                             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div className="sm:col-span-2 space-y-1.5">
+                                <div className="space-y-1.5 sm:col-span-2">
                                     <Label
                                         htmlFor="title"
                                         className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                                     >
-                                        Judul / Instruksi Tugas <span className="text-rose-500">*</span>
+                                        Judul / Instruksi Tugas{' '}
+                                        <span className="text-rose-500">*</span>
                                     </Label>
                                     <Input
                                         id="title"
@@ -255,14 +259,18 @@ export default function TaskEdit({
                                         htmlFor="category"
                                         className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                                     >
-                                        Kategori Tugas Hukum <span className="text-rose-500">*</span>
+                                        Kategori Tugas Hukum{' '}
+                                        <span className="text-rose-500">*</span>
                                     </Label>
                                     <div className="relative">
                                         <select
                                             id="category"
                                             value={data.category}
                                             onChange={(e) =>
-                                                setData('category', e.target.value)
+                                                setData(
+                                                    'category',
+                                                    e.target.value,
+                                                )
                                             }
                                             className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs text-slate-800 shadow-2xs focus:border-blue-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
                                             required
@@ -305,7 +313,7 @@ export default function TaskEdit({
                                     <InputError message={errors.stage} />
                                 </div>
 
-                                <div className="sm:col-span-2 space-y-1.5">
+                                <div className="space-y-1.5 sm:col-span-2">
                                     <Label
                                         htmlFor="matter_id"
                                         className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
@@ -317,16 +325,22 @@ export default function TaskEdit({
                                             id="matter_id"
                                             value={data.matter_id}
                                             onChange={(e) =>
-                                                setData('matter_id', e.target.value)
+                                                setData(
+                                                    'matter_id',
+                                                    e.target.value,
+                                                )
                                             }
                                             className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs text-slate-800 shadow-2xs focus:border-blue-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
                                         >
                                             <option value="">
-                                                -- Tanpa Perkara (Tugas Operasional Kantor / Non-Perkara) --
+                                                -- Tanpa Perkara (Tugas
+                                                Operasional Kantor /
+                                                Non-Perkara) --
                                             </option>
                                             {matters.map((m) => (
                                                 <option key={m.id} value={m.id}>
-                                                    {m.matter_number} - {m.title}{' '}
+                                                    {m.matter_number} -{' '}
+                                                    {m.title}{' '}
                                                     {m.client
                                                         ? `(${m.client.display_name || m.client.name})`
                                                         : ''}
@@ -336,7 +350,9 @@ export default function TaskEdit({
                                         <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
                                     </div>
                                     <p className="text-[11px] text-slate-500 dark:text-zinc-500">
-                                        Jika dihubungkan, tugas akan otomatis tampil pada tab Berkas Kerja Perkara terkait.
+                                        Jika dihubungkan, tugas akan otomatis
+                                        tampil pada tab Berkas Kerja Perkara
+                                        terkait.
                                     </p>
                                     <InputError message={errors.matter_id} />
                                 </div>
@@ -347,24 +363,40 @@ export default function TaskEdit({
                                         htmlFor="status"
                                         className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                                     >
-                                        Status Alur Kerja <span className="text-rose-500">*</span>
+                                        Status Alur Kerja{' '}
+                                        <span className="text-rose-500">*</span>
                                     </Label>
                                     <div className="relative">
                                         <select
                                             id="status"
                                             value={data.status}
                                             onChange={(e) =>
-                                                setData('status', e.target.value)
+                                                setData(
+                                                    'status',
+                                                    e.target.value,
+                                                )
                                             }
                                             className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs font-semibold text-slate-800 shadow-2xs focus:border-blue-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
                                             required
                                         >
-                                            <option value="todo">Belum Dikerjakan (Todo)</option>
-                                            <option value="in_progress">Sedang Dikerjakan (In Progress)</option>
-                                            <option value="waiting">Menunggu Pihak Luar (Waiting)</option>
-                                            <option value="review">Dalam Peninjauan (Review)</option>
-                                            <option value="completed">Selesai (Completed)</option>
-                                            <option value="cancelled">Dibatalkan (Cancelled)</option>
+                                            <option value="todo">
+                                                Belum Dikerjakan (Todo)
+                                            </option>
+                                            <option value="in_progress">
+                                                Sedang Dikerjakan (In Progress)
+                                            </option>
+                                            <option value="waiting">
+                                                Menunggu Pihak Luar (Waiting)
+                                            </option>
+                                            <option value="review">
+                                                Dalam Peninjauan (Review)
+                                            </option>
+                                            <option value="completed">
+                                                Selesai (Completed)
+                                            </option>
+                                            <option value="cancelled">
+                                                Dibatalkan (Cancelled)
+                                            </option>
                                         </select>
                                         <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
                                     </div>
@@ -380,7 +412,10 @@ export default function TaskEdit({
                                             { id: 'low', label: 'Rendah' },
                                             { id: 'normal', label: 'Normal' },
                                             { id: 'high', label: 'Tinggi' },
-                                            { id: 'critical', label: 'Mendesak' },
+                                            {
+                                                id: 'critical',
+                                                label: 'Mendesak',
+                                            },
                                         ].map((p) => (
                                             <button
                                                 key={p.id}
@@ -418,15 +453,22 @@ export default function TaskEdit({
                                         htmlFor="assignee_id"
                                         className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                                     >
-                                        Pelaksana Utama (Assignee) <span className="text-rose-500">*</span>
+                                        Pelaksana Utama (Assignee){' '}
+                                        <span className="text-rose-500">*</span>
                                     </Label>
                                     <UserPicker
                                         id="assignee_id"
                                         value={data.assignee_id}
-                                        onChange={(val) => setData('assignee_id', val)}
+                                        onChange={(val) =>
+                                            setData('assignee_id', val)
+                                        }
                                         users={users}
                                         placeholder="Pilih Staf / Advokat Pelaksana..."
-                                        disabledUserIds={data.reviewer_id ? [data.reviewer_id] : []}
+                                        disabledUserIds={
+                                            data.reviewer_id
+                                                ? [data.reviewer_id]
+                                                : []
+                                        }
                                         disabledReason="Dipilih sebagai Reviewer"
                                         error={Boolean(errors.assignee_id)}
                                     />
@@ -438,17 +480,24 @@ export default function TaskEdit({
                                         htmlFor="reviewer_id"
                                         className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                                     >
-                                        Pemeriksa Hasil (Reviewer / Partner In Charge)
+                                        Pemeriksa Hasil (Reviewer / Partner In
+                                        Charge)
                                     </Label>
                                     <UserPicker
                                         id="reviewer_id"
                                         value={data.reviewer_id}
-                                        onChange={(val) => setData('reviewer_id', val)}
+                                        onChange={(val) =>
+                                            setData('reviewer_id', val)
+                                        }
                                         users={users}
                                         placeholder="Pilih Reviewer (Opsional)..."
                                         emptyOptionLabel="-- Tanpa Reviewer Khusus (Opsional) --"
                                         allowClear
-                                        disabledUserIds={data.assignee_id ? [data.assignee_id] : []}
+                                        disabledUserIds={
+                                            data.assignee_id
+                                                ? [data.assignee_id]
+                                                : []
+                                        }
                                         disabledReason="Dipilih sebagai Pelaksana"
                                         error={Boolean(errors.reviewer_id)}
                                     />
@@ -479,7 +528,10 @@ export default function TaskEdit({
                                         type="date"
                                         value={data.start_date}
                                         onChange={(e) =>
-                                            setData('start_date', e.target.value)
+                                            setData(
+                                                'start_date',
+                                                e.target.value,
+                                            )
                                         }
                                         className="h-9 text-xs"
                                     />
@@ -519,11 +571,16 @@ export default function TaskEdit({
                                         placeholder="0.00"
                                         value={data.estimated_hours}
                                         onChange={(e) =>
-                                            setData('estimated_hours', e.target.value)
+                                            setData(
+                                                'estimated_hours',
+                                                e.target.value,
+                                            )
                                         }
                                         className="h-9 text-xs"
                                     />
-                                    <InputError message={errors.estimated_hours} />
+                                    <InputError
+                                        message={errors.estimated_hours}
+                                    />
                                 </div>
 
                                 <div className="space-y-1.5">
@@ -540,30 +597,39 @@ export default function TaskEdit({
                                         placeholder="0.00"
                                         value={data.actual_hours}
                                         onChange={(e) =>
-                                            setData('actual_hours', e.target.value)
+                                            setData(
+                                                'actual_hours',
+                                                e.target.value,
+                                            )
                                         }
                                         className="h-9 text-xs"
                                     />
                                     <InputError message={errors.actual_hours} />
                                 </div>
 
-                                <div className="sm:col-span-2 rounded-lg border border-slate-200/80 bg-slate-50/70 p-3 dark:border-white/[0.07] dark:bg-[#181a20]">
-                                    <label className="flex items-center gap-3 cursor-pointer">
+                                <div className="rounded-lg border border-slate-200/80 bg-slate-50/70 p-3 sm:col-span-2 dark:border-white/[0.07] dark:bg-[#181a20]">
+                                    <label className="flex cursor-pointer items-center gap-3">
                                         <input
                                             type="checkbox"
                                             checked={data.is_billable}
                                             onChange={(e) =>
-                                                setData('is_billable', e.target.checked)
+                                                setData(
+                                                    'is_billable',
+                                                    e.target.checked,
+                                                )
                                             }
                                             className="size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-white/20 dark:bg-zinc-800"
                                         />
                                         <div>
-                                            <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                            <span className="flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-white">
                                                 <DollarSign className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                                Dapat Ditagihkan ke Klien (Billable Task)
+                                                Dapat Ditagihkan ke Klien
+                                                (Billable Task)
                                             </span>
                                             <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Centang jika tugas ini akan dicatat ke tagihan/invoice klien.
+                                                Centang jika tugas ini akan
+                                                dicatat ke tagihan/invoice
+                                                klien.
                                             </p>
                                         </div>
                                     </label>
@@ -594,9 +660,12 @@ export default function TaskEdit({
                                         placeholder="Tuliskan petunjuk teknis, pasal acuan, format draf, kronologi..."
                                         value={data.description}
                                         onChange={(e) =>
-                                            setData('description', e.target.value)
+                                            setData(
+                                                'description',
+                                                e.target.value,
+                                            )
                                         }
-                                        className="w-full rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-800 shadow-2xs focus:border-purple-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200 leading-relaxed"
+                                        className="w-full rounded-lg border border-slate-200 bg-white p-3 text-xs leading-relaxed text-slate-800 shadow-2xs focus:border-purple-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
                                     />
                                     <InputError message={errors.description} />
                                 </div>
@@ -607,7 +676,8 @@ export default function TaskEdit({
                                             htmlFor="completion_notes"
                                             className="text-xs font-semibold text-emerald-700 dark:text-emerald-400"
                                         >
-                                            Catatan Penyelesaian (Completion Notes)
+                                            Catatan Penyelesaian (Completion
+                                            Notes)
                                         </Label>
                                         <textarea
                                             id="completion_notes"
@@ -615,11 +685,16 @@ export default function TaskEdit({
                                             placeholder="Ringkasan hasil akhir pekerjaan yang telah diselesaikan..."
                                             value={data.completion_notes}
                                             onChange={(e) =>
-                                                setData('completion_notes', e.target.value)
+                                                setData(
+                                                    'completion_notes',
+                                                    e.target.value,
+                                                )
                                             }
                                             className="w-full rounded-lg border border-emerald-200 bg-emerald-50/30 p-3 text-xs text-slate-800 shadow-2xs focus:border-emerald-500 focus:outline-hidden dark:border-emerald-900/50 dark:bg-emerald-950/20 dark:text-zinc-200"
                                         />
-                                        <InputError message={errors.completion_notes} />
+                                        <InputError
+                                            message={errors.completion_notes}
+                                        />
                                     </div>
                                 )}
                             </div>
@@ -639,7 +714,7 @@ export default function TaskEdit({
                                     variant="outline"
                                     size="sm"
                                     onClick={addChecklistRow}
-                                    className="h-7 text-xs gap-1 border-dashed text-slate-700 dark:text-zinc-300"
+                                    className="h-7 gap-1 border-dashed text-xs text-slate-700 dark:text-zinc-300"
                                 >
                                     <Plus className="size-3" />
                                     Tambah Butir
@@ -659,7 +734,7 @@ export default function TaskEdit({
                                                 toggleChecklistStatus(index)
                                             }
                                             title="Tandai selesai"
-                                            className="size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-white/20 dark:bg-zinc-800 cursor-pointer"
+                                            className="size-4 cursor-pointer rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-white/20 dark:bg-zinc-800"
                                         />
                                         <Input
                                             type="text"
@@ -671,9 +746,9 @@ export default function TaskEdit({
                                                     e.target.value,
                                                 )
                                             }
-                                            className={`h-8.5 text-xs flex-1 ${
+                                            className={`h-8.5 flex-1 text-xs ${
                                                 item.is_completed
-                                                    ? 'line-through text-slate-400 dark:text-zinc-500'
+                                                    ? 'text-slate-400 line-through dark:text-zinc-500'
                                                     : ''
                                             }`}
                                         />
@@ -685,7 +760,7 @@ export default function TaskEdit({
                                                 onClick={() =>
                                                     removeChecklistRow(index)
                                                 }
-                                                className="size-8 p-0 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                                                className="size-8 p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40"
                                             >
                                                 <Trash2 className="size-3.5" />
                                             </Button>

@@ -121,7 +121,7 @@ export default function MattersIndex({
             <Head title="Portofolio Perkara" />
 
             <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-10 dark:bg-[#0c0d10]">
-                <main className="w-full space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
                     <MattersPortfolioHero
                         totalMatters={matters.total}
                         visibleMatters={matters.data.length}
@@ -412,12 +412,12 @@ export default function MattersIndex({
                                                             className="block min-w-0 space-y-0.5"
                                                         >
                                                             <p
-                                                                title={matter.title}
-                                                                className="truncate text-xs font-bold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
-                                                            >
-                                                                {
+                                                                title={
                                                                     matter.title
                                                                 }
+                                                                className="truncate text-xs font-bold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
+                                                            >
+                                                                {matter.title}
                                                             </p>
                                                             <span className="inline-block font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
                                                                 {
@@ -437,7 +437,11 @@ export default function MattersIndex({
                                                                         .id,
                                                                 )}
                                                                 className="block max-w-[210px] truncate text-xs text-slate-700 hover:text-blue-600 hover:underline dark:text-zinc-300 dark:hover:text-blue-400"
-                                                                title={matter.client.display_name}
+                                                                title={
+                                                                    matter
+                                                                        .client
+                                                                        .display_name
+                                                                }
                                                             >
                                                                 {
                                                                     matter
@@ -446,7 +450,14 @@ export default function MattersIndex({
                                                                 }
                                                             </Link>
                                                         ) : (
-                                                            <span className="block max-w-[210px] truncate text-xs text-slate-700 dark:text-zinc-300" title={matter.client.display_name}>
+                                                            <span
+                                                                className="block max-w-[210px] truncate text-xs text-slate-700 dark:text-zinc-300"
+                                                                title={
+                                                                    matter
+                                                                        .client
+                                                                        .display_name
+                                                                }
+                                                            >
                                                                 {
                                                                     matter
                                                                         .client

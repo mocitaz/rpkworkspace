@@ -30,13 +30,14 @@ type Partner = {
 };
 
 export default function ClientCreate({ partners }: { partners: Partner[] }) {
-    const [relationshipPartnerId, setRelationshipPartnerId] = useState<string>('');
+    const [relationshipPartnerId, setRelationshipPartnerId] =
+        useState<string>('');
     return (
         <>
             <Head title="Registrasi Klien Baru" />
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
-                <main className="mx-auto max-w-4xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
                     {/* Header with Navigation */}
                     <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">
@@ -165,7 +166,8 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
                                                         htmlFor="relationship_partner_id"
                                                         className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
                                                     >
-                                                        Relationship Partner (Penanggung Jawab)
+                                                        Relationship Partner
+                                                        (Penanggung Jawab)
                                                     </Label>
                                                     <span className="text-[10px] text-slate-400 dark:text-zinc-500">
                                                         Opsional
@@ -174,13 +176,21 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
                                                 <input
                                                     type="hidden"
                                                     name="relationship_partner_id"
-                                                    value={relationshipPartnerId}
+                                                    value={
+                                                        relationshipPartnerId
+                                                    }
                                                 />
                                                 <UserPicker
                                                     id="relationship_partner_id"
-                                                    value={relationshipPartnerId}
-                                                    onChange={setRelationshipPartnerId}
-                                                    users={partners as UserOption[]}
+                                                    value={
+                                                        relationshipPartnerId
+                                                    }
+                                                    onChange={
+                                                        setRelationshipPartnerId
+                                                    }
+                                                    users={
+                                                        partners as UserOption[]
+                                                    }
                                                     placeholder="Pilih Partner Penanggung Jawab (Opsional)..."
                                                     emptyOptionLabel="-- Tanpa Relationship Partner --"
                                                     allowClear
@@ -308,7 +318,9 @@ export default function ClientCreate({ partners }: { partners: Partner[] }) {
                                             className="h-8 rounded-lg border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
                                             asChild
                                         >
-                                            <Link href={clientRoutes.index.url()}>
+                                            <Link
+                                                href={clientRoutes.index.url()}
+                                            >
                                                 Batal
                                             </Link>
                                         </Button>

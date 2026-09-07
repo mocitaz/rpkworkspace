@@ -18,12 +18,7 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 
 export type ConfirmVariant =
-    | 'danger'
-    | 'warning'
-    | 'primary'
-    | 'info'
-    | 'destructive'
-    | 'default';
+    'danger' | 'warning' | 'primary' | 'info' | 'destructive' | 'default';
 
 export interface ConfirmDialogProps {
     open?: boolean;
@@ -142,25 +137,28 @@ export function ConfirmDialog({
     return (
         <>
             {!isControlled && children && (
-                <span onClick={() => setEffectiveOpen(true)} className="inline-block cursor-pointer">
+                <span
+                    onClick={() => setEffectiveOpen(true)}
+                    className="inline-block cursor-pointer"
+                >
                     {children}
                 </span>
             )}
             <Dialog open={effectiveOpen} onOpenChange={setEffectiveOpen}>
-                <DialogContent className="w-full min-w-0 max-w-[calc(100%-2rem)] sm:max-w-md overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
-                    <div className="border-b border-slate-100 bg-slate-50/60 p-5 dark:border-white/5 dark:bg-zinc-900/40 min-w-0">
+                <DialogContent className="w-full max-w-[calc(100%-2rem)] min-w-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-md dark:border-white/10 dark:bg-[#14161b]">
+                    <div className="min-w-0 border-b border-slate-100 bg-slate-50/60 p-5 dark:border-white/5 dark:bg-zinc-900/40">
                         <DialogHeader className="min-w-0">
-                            <div className="flex items-start gap-3 min-w-0">
+                            <div className="flex min-w-0 items-start gap-3">
                                 <div
                                     className={`flex size-10 shrink-0 items-center justify-center rounded-xl border ${config.iconBorder} ${config.iconBg} ${config.iconText}`}
                                 >
                                     <Icon className="size-5" />
                                 </div>
-                                <div className="space-y-1 text-left min-w-0 flex-1">
-                                    <DialogTitle className="text-base font-bold text-slate-900 dark:text-white break-words">
+                                <div className="min-w-0 flex-1 space-y-1 text-left">
+                                    <DialogTitle className="text-base font-bold break-words text-slate-900 dark:text-white">
                                         {title}
                                     </DialogTitle>
-                                    <DialogDescription className="text-xs leading-relaxed text-slate-500 dark:text-zinc-400 break-words">
+                                    <DialogDescription className="text-xs leading-relaxed break-words text-slate-500 dark:text-zinc-400">
                                         {description}
                                     </DialogDescription>
                                 </div>
@@ -168,7 +166,9 @@ export function ConfirmDialog({
                         </DialogHeader>
                     </div>
 
-                    {isControlled && children && <div className="p-5">{children}</div>}
+                    {isControlled && children && (
+                        <div className="p-5">{children}</div>
+                    )}
 
                     <div className="flex items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/50 p-4 dark:border-white/5 dark:bg-zinc-900/30">
                         <Button
@@ -186,7 +186,7 @@ export function ConfirmDialog({
                             size="sm"
                             disabled={processing}
                             onClick={handleConfirm}
-                            className={`h-9 rounded-xl px-4 text-xs font-bold transition-all shadow-2xs ${config.confirmButtonClass}`}
+                            className={`h-9 rounded-xl px-4 text-xs font-bold shadow-2xs transition-all ${config.confirmButtonClass}`}
                         >
                             {processing ? (
                                 <>

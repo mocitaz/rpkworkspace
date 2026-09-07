@@ -143,7 +143,13 @@ const AVAILABLE_AVATARS = Array.from({ length: 15 }, (_, i) => ({
     label: `Avatar 3D ${i + 1}`,
 }));
 
-function getContactAvatarUrl(contact?: { id?: string; full_name?: string; avatar_url?: string | null } | null): string {
+function getContactAvatarUrl(
+    contact?: {
+        id?: string;
+        full_name?: string;
+        avatar_url?: string | null;
+    } | null,
+): string {
     if (!contact) return '/images/avatars/avatar-1.svg';
     if (contact.avatar_url && contact.avatar_url.trim() !== '') {
         return contact.avatar_url;
@@ -261,7 +267,9 @@ export default function ClientShow({
                                         Daftar Klien
                                     </Link>
                                 </Button>
-                                <span className="text-slate-300 dark:text-zinc-600">/</span>
+                                <span className="text-slate-300 dark:text-zinc-600">
+                                    /
+                                </span>
                                 {getDetailHeaderMetadata(
                                     client.client_number,
                                 ).map((item) => (
@@ -332,7 +340,9 @@ export default function ClientShow({
                                 <span className="text-slate-300 dark:text-zinc-700">
                                     •
                                 </span>
-                                <span>Industri: {client.industry ?? 'Umum'}</span>
+                                <span>
+                                    Industri: {client.industry ?? 'Umum'}
+                                </span>
                                 {client.city && (
                                     <>
                                         <span className="text-slate-300 dark:text-zinc-700">
@@ -473,7 +483,7 @@ export default function ClientShow({
                     </section>
 
                     {/* 3. Segmented Navigation Tabs (Horizontal Swipeable on Mobile) */}
-                    <div className="flex items-center gap-1 overflow-x-auto rounded-xl border border-slate-200/70 bg-slate-100/70 p-1 shadow-2xs [scrollbar-width:none] [-ms-overflow-style:none] dark:border-white/[0.06] dark:bg-[#14161b] [&::-webkit-scrollbar]:hidden">
+                    <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto rounded-xl border border-slate-200/70 bg-slate-100/70 p-1 shadow-2xs [-ms-overflow-style:none] dark:border-white/[0.06] dark:bg-[#14161b] [&::-webkit-scrollbar]:hidden">
                         {tabs.map((item) => {
                             const isActive = tab === item.id;
                             const Icon = item.icon;
@@ -717,7 +727,9 @@ export default function ClientShow({
                                             className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                             asChild
                                         >
-                                            <Link href={matterRoutes.create.url()}>
+                                            <Link
+                                                href={matterRoutes.create.url()}
+                                            >
                                                 <Plus className="mr-1 size-3" />
                                                 Buat Matter
                                             </Link>

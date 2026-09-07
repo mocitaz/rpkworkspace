@@ -26,7 +26,7 @@ class SignatureRequest extends Model
         'expires_at', 'sent_at', 'completed_at', 'signed_final_started_at', 'signed_final_completed_at', 'created_by',
     ];
 
-    protected $attributes = ['mode' => 'sequential', 'status' => 'draft', 'signed_final_status' => 'pending'];
+    protected $attributes = ['mode' => 'parallel', 'status' => 'draft', 'signed_final_status' => 'pending'];
 
     protected function casts(): array
     {

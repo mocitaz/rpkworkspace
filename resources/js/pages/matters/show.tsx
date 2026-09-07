@@ -236,14 +236,14 @@ type Matter = {
 };
 
 const tabs = [
-    { id: 'Overview', label: 'Ringkasan', icon: Briefcase },
-    { id: 'Diskusi', label: 'Diskusi Tim', icon: MessageSquare },
-    { id: 'Tugas', label: 'Tugas', icon: ListChecks },
-    { id: 'Timeline', label: 'Timeline & Sidang', icon: CalendarClock },
-    { id: 'Kronologi', label: 'Kronologi Fakta', icon: History },
-    { id: 'BuktiFisik', label: 'Brankas Alat Bukti', icon: Archive },
-    { id: 'Dokumen', label: 'Dokumen', icon: FileText },
-    { id: 'Catatan', label: 'Catatan', icon: FileText },
+    { id: 'Overview', label: 'Ringkasan' },
+    { id: 'Diskusi', label: 'Diskusi Tim' },
+    { id: 'Tugas', label: 'Tugas' },
+    { id: 'Timeline', label: 'Timeline & Sidang' },
+    { id: 'Kronologi', label: 'Kronologi Fakta' },
+    { id: 'BuktiFisik', label: 'Brankas Alat Bukti' },
+    { id: 'Dokumen', label: 'Dokumen' },
+    { id: 'Catatan', label: 'Catatan' },
 ] as const;
 
 const relationshipTypeLabels: Record<string, string> = {
@@ -355,7 +355,6 @@ export default function MatterShow({
         Matter['notes'][number] | null
     >(null);
     const [isDeleting, setIsDeleting] = useState(false);
-    const nextDeadline = matter.deadlines[0];
     const headerMetadata = getDetailHeaderMetadata(matter.matter_number);
 
     const upcomingHearing = useMemo(() => {
@@ -385,182 +384,13 @@ export default function MatterShow({
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
                 <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
-                    {/* 1. Header Navigation & Matter Cockpit Bar */}
-                    <div className="space-y-3 border-b border-slate-200/60 pb-5 dark:border-white/[0.06]">
-                        {/* Top Tier: Breadcrumbs / Matter Code + Action Buttons */}
-                        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-                            {/* Left: Breadcrumbs & Matter Metadata */}
-                            <div className="flex flex-wrap items-center gap-2">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="-ml-2 h-7 px-2 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
-                                    asChild
-                                >
-                                    <Link href={matterRoutes.index.url()}>
-                                        <ArrowLeft className="mr-1 size-3.5 text-slate-400" />
-                                        Portofolio Perkara
-                                    </Link>
-                                </Button>
-                                <span className="text-slate-300 dark:text-zinc-600">
-                                    /
-                                </span>
-                                {headerMetadata.map((item) => (
-                                    <span
-                                        key={item.testId}
-                                        data-testid={item.testId}
-                                        className={`text-[11px] font-bold tracking-tight whitespace-nowrap ${item.className}`}
-                                    >
-                                        {item.label}
-                                    </span>
-                                ))}
-                            </div>
-
-                            {/* Right: Actions */}
-                            <div className="flex shrink-0 flex-wrap items-center gap-1.5">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
-                                    asChild
-                                >
-                                    <a
-                                        href={reportRoutes.pdf.url({
-                                            matter: matter.id,
-                                        })}
-                                        target="_blank"
-                                        rel="noreferrer"
-                                    >
-                                        <Printer className="mr-1 size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                        PDF Progres
-                                    </a>
-                                </Button>
-
-                                {can.update && (
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-200"
-                                        asChild
-                                    >
-                                        <Link
-                                            href={
-                                                matterRoutes.edit?.url
-                                                    ? matterRoutes.edit.url(
-                                                          matter.id,
-                                                      )
-                                                    : `/matters/${matter.id}/edit`
-                                            }
-                                        >
-                                            <Pencil className="mr-1 size-3 text-slate-400" />
-                                            Edit Perkara
-                                        </Link>
-                                    </Button>
-                                )}
-
-                                {can.update && (
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => setOperation('party')}
-                                        className="h-7.5 rounded-lg border-slate-200/80 bg-white px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 dark:border-white/10 dark:bg-[#16181d] dark:text-zinc-300"
-                                    >
-                                        <Plus className="mr-1 size-3.5 text-slate-400" />
-                                        Aktivitas
-                                    </Button>
-                                )}
-
-                                {can.uploadDocument && (
-                                    <Button
-                                        size="sm"
-                                        className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900"
-                                        asChild
-                                    >
-                                        <Link
-                                            href={documentRoutes.index.url({
-                                                query: {
-                                                    upload: 1,
-                                                    matter_id: matter.id,
-                                                },
-                                            })}
-                                        >
-                                            <FileUp className="mr-1 size-3.5" />
-                                            Unggah Dokumen
-                                        </Link>
-                                    </Button>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Bottom Tier: Full-Width Title & Client Context */}
-                        <div className="space-y-1.5">
-                            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-[26px] lg:leading-snug dark:text-white">
-                                {matter.title}
-                            </h1>
-
-                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-zinc-400">
-                                <div className="flex items-center gap-1.5">
-                                    <span>Klien:</span>
-                                    <Link
-                                        href={clientRoutes.show.url(
-                                            matter.client.id,
-                                        )}
-                                        className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:underline dark:text-blue-400"
-                                    >
-                                        {matter.client.type === 'individual' ||
-                                        matter.client.type === 'person' ? (
-                                            <User className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                        ) : (
-                                            <Building2 className="size-3.5 text-blue-600 dark:text-blue-400" />
-                                        )}
-                                        <span>
-                                            {matter.client.display_name}
-                                        </span>
-                                    </Link>
-                                    <span
-                                        className={`rounded px-1.5 py-0.5 text-[9.5px] font-bold ${
-                                            matter.client.type ===
-                                                'individual' ||
-                                            matter.client.type === 'person'
-                                                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
-                                                : 'bg-slate-100 text-slate-600 dark:bg-white/[0.06] dark:text-zinc-300'
-                                        }`}
-                                    >
-                                        {matter.client.type === 'individual' ||
-                                        matter.client.type === 'person'
-                                            ? 'Individu'
-                                            : 'Badan Hukum'}
-                                    </span>
-                                </div>
-                                <span>·</span>
-                                <div>
-                                    Area Praktik:{' '}
-                                    <strong className="font-semibold text-slate-700 dark:text-zinc-300">
-                                        {matter.practice_area?.name ?? 'Umum'}
-                                    </strong>
-                                </div>
-                                {matter.jurisdiction && (
-                                    <>
-                                        <span>·</span>
-                                        <div>
-                                            Yurisdiksi:{' '}
-                                            <span className="font-medium text-slate-700 dark:text-zinc-300">
-                                                {matter.jurisdiction}
-                                            </span>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
+                    {/* Legal Hold Warning Banner */}
                     {matter.legal_hold_at && (
                         <div className="flex items-start gap-2.5 rounded-xl border border-amber-300 bg-amber-50 px-3.5 py-3 text-amber-950 dark:border-amber-700/60 dark:bg-amber-950/30 dark:text-amber-100">
                             <Lock className="mt-0.5 size-4 shrink-0 text-amber-700 dark:text-amber-400" />
                             <div>
                                 <p className="text-xs font-bold">
-                                    Legal Hold aktif — penghapusan bukti,
-                                    dokumen, dan korespondensi dikunci.
+                                    Legal Hold aktif — penghapusan bukti, dokumen, dan korespondensi dikunci.
                                 </p>
                                 {matter.legal_hold_reason && (
                                     <p className="mt-0.5 text-[11px] text-amber-800 dark:text-amber-300">
@@ -571,159 +401,263 @@ export default function MatterShow({
                         </div>
                     )}
 
-                    {/* 2. Top 4 Bento Stat Cards */}
-                    <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                        {/* 1. Responsible Partner */}
-                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                    LEAD PARTNER
-                                </span>
-                                <div className="flex size-6 items-center justify-center rounded-md bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
-                                    <UserCheck className="size-3.5" />
-                                </div>
-                            </div>
-                            <div className="mt-2 flex items-center gap-2.5">
-                                <Avatar className="size-7 rounded-full border border-slate-200/80 dark:border-white/10">
-                                    <AvatarImage
-                                        src={
-                                            matter.responsible_partner
-                                                .avatar_url ?? undefined
-                                        }
-                                    />
-                                    <AvatarFallback className="text-[9px] font-bold">
-                                        {getInitials(
-                                            matter.responsible_partner.name,
-                                        )}
-                                    </AvatarFallback>
-                                </Avatar>
-                                <div className="min-w-0">
-                                    <p
-                                        className="truncate text-xs font-bold text-slate-900 dark:text-white"
-                                        title={matter.responsible_partner.name}
+                    {/* 1. Executive Matter Cockpit Hero (Matching tasks/show & documents/show) */}
+                    <section className="group relative overflow-hidden rounded-[20px] border border-slate-200/80 bg-gradient-to-br from-[#f7f9ff] via-white to-[#eaf3ff] p-5 shadow-[0_10px_28px_rgba(71,85,105,0.075)] sm:p-6 dark:border-white/[0.08] dark:from-[#17191f] dark:via-[#17191f] dark:to-[#18202b]">
+                        {/* 1. Ambient Breathing Radial Glow */}
+                        <div className="matters-hero-glow pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_83%_38%,rgba(147,197,253,0.34),transparent_30%),radial-gradient(circle_at_65%_115%,rgba(251,191,36,0.12),transparent_27%)]" />
+
+                        {/* 2. Drifting Micro-Dot Matrix Pattern */}
+                        <div className="matters-hero-dots pointer-events-none absolute inset-y-0 right-0 hidden w-[480px] [background-image:radial-gradient(rgba(59,130,246,0.24)_1px,transparent_1px)] [mask-image:linear-gradient(to_right,transparent,black_28%)] [background-size:18px_18px] opacity-30 md:block" />
+
+                        {/* 3. Animated Vector Wave Lines with Drop Shadow */}
+                        <svg
+                            viewBox="0 0 560 200"
+                            aria-hidden="true"
+                            className="pointer-events-none absolute right-0 bottom-0 hidden h-full w-[480px] text-white/90 drop-shadow-[0_0_8px_rgba(96,165,250,0.35)] md:block"
+                        >
+                            <path
+                                d="M8 165 C95 94 176 178 270 108 S430 49 554 72"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                className="matters-hero-line"
+                                pathLength={1}
+                            />
+                            <path
+                                d="M55 192 C138 136 213 187 302 128 S442 84 558 99"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                className="matters-hero-line matters-hero-line-secondary opacity-55"
+                                pathLength={1}
+                            />
+                            <circle
+                                cx="270"
+                                cy="108"
+                                r="3.5"
+                                fill="currentColor"
+                            />
+                            <circle
+                                cx="430"
+                                cy="49"
+                                r="2.5"
+                                fill="currentColor"
+                            />
+                        </svg>
+
+                        {/* 4. Content Area: Official Matter Dossier */}
+                        <div className="relative z-10 space-y-4">
+                            {/* Top Navigation & Action Buttons */}
+                            <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                                {/* Left: Back Link & Matter Number */}
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        asChild
+                                        className="-ml-2 h-7.5 px-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-200/50 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white"
                                     >
-                                        {matter.responsible_partner.name}
-                                    </p>
-                                    <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
-                                        {matter.responsible_partner
-                                            .position_title ?? 'Lead Partner'}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="mt-2.5 border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Penanggung jawab utama</span>
-                            </div>
-                        </div>
-
-                        {/* 2. Area Praktik */}
-                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                    AREA PRAKTIK
-                                </span>
-                                <div className="flex size-6 items-center justify-center rounded-md bg-purple-50 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400">
-                                    <Scale className="size-3.5" />
-                                </div>
-                            </div>
-                            <div className="mt-2 space-y-0.5">
-                                <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                                    {matter.practice_area?.name ?? 'Umum'}
-                                </p>
-                                <p className="truncate text-[10px] text-slate-500 dark:text-zinc-400">
-                                    {matter.matter_type ??
-                                        'Advisory & Litigation'}
-                                </p>
-                            </div>
-                            <div className="mt-2.5 border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Klasifikasi perkara hukum</span>
-                            </div>
-                        </div>
-
-                        {/* 3. Tim Advokat */}
-                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                    TIM ADVOKAT
-                                </span>
-                                <div className="flex size-6 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
-                                    <Users className="size-3.5" />
-                                </div>
-                            </div>
-                            <div className="mt-2 flex items-center justify-between">
-                                <div className="flex -space-x-1.5 overflow-hidden">
-                                    {matter.members
-                                        .slice(0, 4)
-                                        .map((member) => (
-                                            <Avatar
-                                                key={member.id}
-                                                className="size-6 rounded-full border-2 border-white dark:border-[#14161b]"
-                                            >
-                                                <AvatarImage
-                                                    src={
-                                                        member.avatar_url ??
-                                                        undefined
-                                                    }
-                                                />
-                                                <AvatarFallback className="text-[8px] font-bold">
-                                                    {getInitials(member.name)}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                        ))}
-                                    {matter.members.length > 4 && (
-                                        <span className="flex size-6 items-center justify-center rounded-full border-2 border-white bg-slate-200 text-[8px] font-bold text-slate-700 dark:border-[#14161b] dark:bg-zinc-800 dark:text-zinc-300">
-                                            +{matter.members.length - 4}
+                                        <Link href={matterRoutes.index.url()}>
+                                            <ArrowLeft className="mr-1.5 size-3.5 text-slate-400" />
+                                            Portofolio Perkara
+                                        </Link>
+                                    </Button>
+                                    <span className="text-slate-300 dark:text-zinc-700">
+                                        /
+                                    </span>
+                                    {headerMetadata.map((item) => (
+                                        <span
+                                            key={item.testId}
+                                            data-testid={item.testId}
+                                            className={`font-mono text-xs font-bold tracking-wider uppercase ${item.className}`}
+                                        >
+                                            {item.label}
                                         </span>
+                                    ))}
+                                    <span className="text-slate-300 dark:text-zinc-700">
+                                        ·
+                                    </span>
+                                    <StatusText
+                                        value={matter.status}
+                                        className="text-xs font-semibold"
+                                    />
+                                    {matter.priority && (
+                                        <>
+                                            <span className="text-slate-300 dark:text-zinc-700">
+                                                ·
+                                            </span>
+                                            <StatusText
+                                                value={matter.priority}
+                                                className="text-xs font-semibold"
+                                            />
+                                        </>
                                     )}
                                 </div>
-                                <span className="font-mono text-xs font-semibold text-slate-900 dark:text-white">
-                                    {matter.members.length} Advokat
-                                </span>
-                            </div>
-                            <div className="mt-2.5 border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Tim penanganan aktif</span>
-                            </div>
-                        </div>
 
-                        {/* 4. Tenggat Terdekat */}
-                        <div className="group flex min-h-[96px] flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-slate-300 dark:border-white/[0.08] dark:bg-[#14161b] dark:hover:border-white/15">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold tracking-wider text-slate-500 uppercase dark:text-zinc-400">
-                                    TENGGAT TERDEKAT
-                                </span>
-                                <div className="flex size-6 items-center justify-center rounded-md bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
-                                    <Clock className="size-3.5" />
+                                {/* Right: Action Buttons */}
+                                <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-7.5 rounded-lg border-slate-200/80 bg-white/90 px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-white dark:border-white/10 dark:bg-zinc-800/80 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                                        asChild
+                                    >
+                                        <a
+                                            href={reportRoutes.pdf.url({
+                                                matter: matter.id,
+                                            })}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                        >
+                                            <Printer className="mr-1.5 size-3 text-emerald-600 dark:text-emerald-400" />
+                                            PDF Progres
+                                        </a>
+                                    </Button>
+
+                                    {can.update && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-7.5 rounded-lg border-slate-200/80 bg-white/90 px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-white dark:border-white/10 dark:bg-zinc-800/80 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                                            asChild
+                                        >
+                                            <Link
+                                                href={
+                                                    matterRoutes.edit?.url
+                                                        ? matterRoutes.edit.url(
+                                                              matter.id,
+                                                          )
+                                                        : `/matters/${matter.id}/edit`
+                                                }
+                                            >
+                                                <Pencil className="mr-1.5 size-3 text-slate-400" />
+                                                Edit Perkara
+                                            </Link>
+                                        </Button>
+                                    )}
+
+                                    {can.update && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => setOperation('party')}
+                                            className="h-7.5 rounded-lg border-slate-200/80 bg-white/90 px-2.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-white dark:border-white/10 dark:bg-zinc-800/80 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                                        >
+                                            <Plus className="mr-1.5 size-3 text-slate-400" />
+                                            Aktivitas
+                                        </Button>
+                                    )}
+
+                                    {can.uploadDocument && (
+                                        <Button
+                                            size="sm"
+                                            className="h-7.5 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-98 dark:bg-white dark:text-slate-900 dark:hover:bg-zinc-200"
+                                            asChild
+                                        >
+                                            <Link
+                                                href={documentRoutes.index.url({
+                                                    query: {
+                                                        upload: 1,
+                                                        matter_id: matter.id,
+                                                    },
+                                                })}
+                                            >
+                                                <FileUp className="mr-1.5 size-3.5" />
+                                                Unggah Dokumen
+                                            </Link>
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
-                            <div className="mt-2 min-w-0">
-                                {nextDeadline ? (
-                                    <>
-                                        <p
-                                            className="truncate text-xs font-semibold text-slate-900 dark:text-white"
-                                            title={nextDeadline.title}
-                                        >
-                                            {nextDeadline.title}
-                                        </p>
-                                        <p className="font-mono text-[11px] font-bold text-amber-600 dark:text-amber-400">
-                                            {formatDate(
-                                                nextDeadline.due_at,
-                                                true,
-                                            )}
-                                        </p>
-                                    </>
-                                ) : (
-                                    <p className="text-xs text-slate-400 dark:text-zinc-500">
-                                        Tidak ada tenggat aktif
-                                    </p>
-                                )}
-                            </div>
-                            <div className="mt-2.5 border-t border-slate-100 pt-2 text-[11px] text-slate-500 dark:border-white/[0.04]">
-                                <span>Batas waktu dokumen &amp; sidang</span>
+
+                            {/* Hairline Divider */}
+                            <div className="border-t border-slate-200/70 dark:border-white/[0.08]" />
+
+                            {/* Official Matter Context & Title */}
+                            <div className="max-w-5xl">
+                                {/* Matter Title */}
+                                <h1 className="text-xl leading-snug font-black tracking-tight text-slate-950 sm:text-2xl lg:text-[26px] dark:text-white">
+                                    {matter.title}
+                                </h1>
+
+                                {/* Compact Metadata Strip (Lead Partner & Tim Advokat) */}
+                                <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs sm:gap-x-6">
+                                    {/* Lead Partner */}
+                                    <div className="inline-flex items-center gap-1.5 leading-none">
+                                        <span className="text-[10.5px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                            Lead Partner:
+                                        </span>
+                                        <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-zinc-200">
+                                            <Avatar className="size-4 shrink-0 rounded-full border border-slate-200/80 shadow-2xs dark:border-white/10">
+                                                <AvatarImage
+                                                    src={
+                                                        matter.responsible_partner
+                                                            .avatar_url ??
+                                                        undefined
+                                                    }
+                                                    alt={
+                                                        matter.responsible_partner
+                                                            .name
+                                                    }
+                                                />
+                                                <AvatarFallback className="bg-blue-600 text-[6px] font-bold text-white">
+                                                    {getInitials(
+                                                        matter.responsible_partner
+                                                            .name,
+                                                    )}
+                                                </AvatarFallback>
+                                            </Avatar>
+                                            <span>
+                                                {matter.responsible_partner.name}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Tim Advokat */}
+                                    <div className="inline-flex items-center gap-1.5 leading-none">
+                                        <span className="text-[10.5px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
+                                            Tim:
+                                        </span>
+                                        <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-zinc-200">
+                                            <div className="flex -space-x-1.5 overflow-hidden">
+                                                {matter.members
+                                                    .slice(0, 3)
+                                                    .map((member) => (
+                                                        <Avatar
+                                                            key={member.id}
+                                                            className="size-4 rounded-full border border-white dark:border-[#14161b]"
+                                                        >
+                                                            <AvatarImage
+                                                                src={
+                                                                    member.avatar_url ??
+                                                                    undefined
+                                                                }
+                                                            />
+                                                            <AvatarFallback className="text-[6px] font-bold">
+                                                                {getInitials(
+                                                                    member.name,
+                                                                )}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                    ))}
+                                            </div>
+                                            <span>
+                                                {matter.members.length} Advokat
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
 
-                    {/* 3. Segmented Navigation Tabs (Horizontal Swipeable on Mobile) */}
-                    <div className="flex [scrollbar-width:none] items-center gap-1 overflow-x-auto rounded-xl border border-slate-200/70 bg-white p-1 shadow-2xs [-ms-overflow-style:none] dark:border-white/[0.06] dark:bg-[#14161b] [&::-webkit-scrollbar]:hidden">
+                    {/* 3. Navigation Tabs (Clean text-only border-b style matching tasks/show.tsx) */}
+                    <div
+                        role="tablist"
+                        className="flex [scrollbar-width:none] items-center gap-6 overflow-x-auto border-b border-slate-200/70 [-ms-overflow-style:none] dark:border-white/[0.07] [&::-webkit-scrollbar]:hidden"
+                    >
                         {tabs.map((item) => {
                             const isActive = tab === item.id;
                             const count =
@@ -745,36 +679,23 @@ export default function MatterShow({
                                                   0)
                                                 : null;
 
+                            const label =
+                                count !== null
+                                    ? `${item.label} · ${count}`
+                                    : item.label;
+
                             return (
                                 <button
                                     key={item.id}
                                     type="button"
                                     onClick={() => setTab(item.id)}
-                                    className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
+                                    className={`relative shrink-0 border-b-2 px-1 pb-2.5 pt-1 text-xs font-semibold transition-colors ${
                                         isActive
-                                            ? 'bg-slate-900 text-white shadow-2xs dark:bg-white dark:text-slate-900'
-                                            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-white/[0.04] dark:hover:text-white'
+                                            ? 'border-slate-950 text-slate-950 dark:border-white dark:text-white'
+                                            : 'border-transparent text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white'
                                     }`}
                                 >
-                                    <item.icon
-                                        className={`size-3.5 shrink-0 ${
-                                            isActive
-                                                ? 'text-white dark:text-slate-900'
-                                                : 'text-slate-500 group-hover:text-slate-700 dark:text-zinc-400'
-                                        }`}
-                                    />
-                                    <span>{item.label}</span>
-                                    {count !== null && count > 0 && (
-                                        <span
-                                            className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] font-bold ${
-                                                isActive
-                                                    ? 'bg-white/20 text-white dark:bg-slate-900/20 dark:text-slate-900'
-                                                    : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-300'
-                                            }`}
-                                        >
-                                            {count}
-                                        </span>
-                                    )}
+                                    {label}
                                 </button>
                             );
                         })}
@@ -789,24 +710,24 @@ export default function MatterShow({
                                 <div className="space-y-5">
                                     {/* Ringkasan & Lingkup Perkara */}
                                     <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                        <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                            <div className="flex items-center gap-2">
-                                                <Briefcase className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                            <div className="flex items-center gap-1.5">
+                                                <Briefcase className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                                <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                     Ringkasan &amp; Lingkup
                                                     Perkara
-                                                </h2>
+                                                </span>
                                             </div>
-                                            <span className="text-[11px] text-slate-400">
+                                            <span className="text-[11px] text-slate-400 dark:text-zinc-500">
                                                 Latar Belakang Kasus
                                             </span>
                                         </div>
                                         {matter.summary ? (
-                                            <p className="text-xs leading-relaxed whitespace-pre-wrap text-slate-700 dark:text-zinc-300">
+                                            <p className="mt-3 text-xs leading-relaxed whitespace-pre-wrap text-slate-700 dark:text-zinc-300">
                                                 {matter.summary}
                                             </p>
                                         ) : (
-                                            <p className="text-xs text-slate-400 italic">
+                                            <p className="mt-3 text-xs text-slate-400 italic">
                                                 Belum ada uraian ringkasan
                                                 perkara yang dicatat.
                                             </p>
@@ -815,15 +736,15 @@ export default function MatterShow({
 
                                     {/* Hierarki & Silsilah Perkara (Parent-Child Matters) */}
                                     <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                        <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                            <div className="flex items-center gap-2">
-                                                <FolderKanban className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                            <div className="flex items-center gap-1.5">
+                                                <FolderKanban className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                                <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                     Hierarki &amp; Perkara
                                                     Terkait
-                                                </h2>
+                                                </span>
                                             </div>
-                                            <span className="text-[11px] text-slate-400">
+                                            <span className="text-[11px] text-slate-400 dark:text-zinc-500">
                                                 Banding / Kasasi / PK
                                             </span>
                                         </div>
@@ -940,13 +861,13 @@ export default function MatterShow({
 
                                     {/* Tugas Berjalan */}
                                     <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                        <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                            <div className="flex items-center gap-2">
-                                                <ListChecks className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                            <div className="flex items-center gap-1.5">
+                                                <ListChecks className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                                <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                     Tugas Berjalan (
                                                     {matter.tasks.length})
-                                                </h2>
+                                                </span>
                                             </div>
                                             {matter.tasks.length > 3 && (
                                                 <button
@@ -959,21 +880,23 @@ export default function MatterShow({
                                                 </button>
                                             )}
                                         </div>
-                                        <TaskList
-                                            tasks={matter.tasks.slice(0, 4)}
-                                            getInitials={getInitials}
-                                        />
+                                        <div className="pt-2">
+                                            <TaskList
+                                                tasks={matter.tasks.slice(0, 4)}
+                                                getInitials={getInitials}
+                                            />
+                                        </div>
                                     </div>
 
                                     {/* Pihak Terkait & Lawan */}
                                     <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                        <div className="mb-2.5 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
-                                            <div className="flex items-center gap-2">
-                                                <Users className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
+                                        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                            <div className="flex items-center gap-1.5">
+                                                <Users className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                                <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                                     Pihak Terkait &amp; Lawan (
                                                     {matter.parties.length})
-                                                </h2>
+                                                </span>
                                             </div>
                                             {can.update && (
                                                 <button
@@ -1065,25 +988,20 @@ export default function MatterShow({
                                     staffList={firmStaff || []}
                                     title="Diskusi Strategi Perkara"
                                     subtitle="Kolaborasi strategi pembuktian, pembagian tugas, dan catatan instruksi tim perkara."
+                                    variant="compact"
                                 />
                             )}
 
                             {/* TAB 2: TUGAS */}
                             {tab === 'Tugas' && (
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <ListChecks className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Daftar Tugas Perkara (
-                                                    {matter.tasks.length})
-                                                </h2>
-                                            </div>
-                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Item pekerjaan hukum, riset
-                                                berkas, dan penugasan advokat.
-                                            </p>
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                        <div className="flex items-center gap-1.5">
+                                            <ListChecks className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Daftar Tugas Perkara (
+                                                {matter.tasks.length})
+                                            </span>
                                         </div>
                                     </div>
 
@@ -1180,21 +1098,14 @@ export default function MatterShow({
                             {/* TAB 3: TIMELINE & SIDANG */}
                             {tab === 'Timeline' && (
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <CalendarClock className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Agenda, Sidang &amp;
-                                                    Timeline (
-                                                    {matter.events.length})
-                                                </h2>
-                                            </div>
-                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Jadwal pertemuan, proses
-                                                peradilan, dan hitung mundur
-                                                sidang pengadilan.
-                                            </p>
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                        <div className="flex items-center gap-1.5">
+                                            <CalendarClock className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Agenda, Sidang &amp;
+                                                Timeline (
+                                                {matter.events.length})
+                                            </span>
                                         </div>
                                         {can.update && (
                                             <Button
@@ -1203,9 +1114,9 @@ export default function MatterShow({
                                                 onClick={() =>
                                                     setOperation('event')
                                                 }
-                                                className="h-8 rounded-lg border-slate-200/80 px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200"
+                                                className="h-7 text-xs font-semibold"
                                             >
-                                                <Plus className="mr-1 size-3.5 text-slate-400" />
+                                                <Plus className="mr-1 size-3" />
                                                 Tambah Agenda
                                             </Button>
                                         )}
@@ -1645,7 +1556,7 @@ export default function MatterShow({
                                             })}
                                         </div>
                                     ) : (
-                                        <div className="flex min-h-[180px] items-center justify-center p-6 text-center">
+                                                                        <div className="flex min-h-[180px] items-center justify-center p-6 text-center">
                                             <EmptyState title="Belum ada agenda atau jadwal sidang yang dicatat" />
                                         </div>
                                     )}
@@ -1655,29 +1566,22 @@ export default function MatterShow({
                             {/* TAB: KRONOLOGI FAKTA PERKARA */}
                             {tab === 'Kronologi' && (
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3 dark:border-white/[0.04]">
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <History className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Kronologi &amp; Rekaman
-                                                    Fakta Hukum (
-                                                    {matter.chronologies
-                                                        ?.length ?? 0}
-                                                    )
-                                                </h2>
-                                            </div>
-                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Garis waktu peristiwa faktual
-                                                perkara, referensi alat bukti
-                                                surat, dan saksi terkait.
-                                            </p>
+                                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                        <div className="flex items-center gap-1.5">
+                                            <History className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Kronologi &amp; Rekaman
+                                                Fakta Hukum (
+                                                {matter.chronologies
+                                                    ?.length ?? 0}
+                                                )
+                                            </span>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Button
                                                 size="sm"
                                                 variant="outline"
-                                                className="h-8 rounded-lg border-slate-200/80 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200"
+                                                className="h-7 text-xs font-semibold"
                                                 asChild
                                             >
                                                 <a
@@ -1700,7 +1604,7 @@ export default function MatterShow({
                                                             'chronology',
                                                         )
                                                     }
-                                                    className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                                    className="h-7 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                                 >
                                                     <Plus className="mr-1 size-3.5" />
                                                     Tambah Fakta
@@ -1839,24 +1743,16 @@ export default function MatterShow({
                             {/* TAB: BRANKAS ALAT BUKTI FISIK */}
                             {tab === 'BuktiFisik' && (
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex flex-col justify-between gap-3 border-b border-slate-100 pb-3.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <Archive className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Brankas &amp; Posisi Fisik
-                                                    Alat Bukti (
-                                                    {matter.evidences?.length ??
-                                                        0}
-                                                    )
-                                                </h2>
-                                            </div>
-                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Pelacakan dokumen asli, salinan
-                                                legalisir, lokasi lemari/bantex,
-                                                dan rantai peminjaman sidang /
-                                                majelis hakim.
-                                            </p>
+                                    <div className="flex flex-col justify-between gap-3 border-b border-slate-100 pb-2.5 sm:flex-row sm:items-center dark:border-white/[0.04]">
+                                        <div className="flex items-center gap-1.5">
+                                            <Archive className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Brankas &amp; Posisi Fisik
+                                                Alat Bukti (
+                                                {matter.evidences?.length ??
+                                                    0}
+                                                )
+                                            </span>
                                         </div>
 
                                         {can.update && (
@@ -1865,9 +1761,9 @@ export default function MatterShow({
                                                 onClick={() =>
                                                     setOperation('evidence')
                                                 }
-                                                className="h-8 rounded-lg bg-slate-900 px-3.5 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
+                                                className="h-7 bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 active:scale-95 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
                                             >
-                                                <Plus className="mr-1.5 size-3.5" />
+                                                <Plus className="mr-1 size-3" />
                                                 Catat Bukti Fisik
                                             </Button>
                                         )}
@@ -2125,24 +2021,18 @@ export default function MatterShow({
                             {/* TAB 4: DOKUMEN */}
                             {tab === 'Dokumen' && (
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <FileText className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Berkas &amp; Dokumen Perkara
-                                                    ({matter.documents.length})
-                                                </h2>
-                                            </div>
-                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Arsip surat kuasa, bukti dokumen
-                                                perkara, dan draft perjanjian.
-                                            </p>
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                        <div className="flex items-center gap-1.5">
+                                            <FileText className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Berkas &amp; Dokumen Perkara
+                                                ({matter.documents.length})
+                                            </span>
                                         </div>
                                         {can.uploadDocument && (
                                             <Button
                                                 size="sm"
-                                                className="h-8 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
+                                                className="h-7 rounded-lg bg-slate-900 px-3 text-xs font-semibold text-white shadow-2xs hover:bg-slate-800 dark:bg-white dark:text-slate-900"
                                                 asChild
                                             >
                                                 <Link
@@ -2291,20 +2181,13 @@ export default function MatterShow({
                             {/* TAB 5: CATATAN */}
                             {tab === 'Catatan' && (
                                 <div className="space-y-4 rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                    <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/[0.04]">
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <FileText className="size-4 text-slate-700 dark:text-zinc-300" />
-                                                <h2 className="text-xs font-bold text-slate-900 dark:text-white">
-                                                    Catatan Internal (
-                                                    {matter.notes.length})
-                                                </h2>
-                                            </div>
-                                            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Memorandum rahasia, arahan
-                                                partner, dan catatan strategi
-                                                perkara.
-                                            </p>
+                                    <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                        <div className="flex items-center gap-1.5">
+                                            <FileText className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                            <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                                Catatan Internal (
+                                                {matter.notes.length})
+                                            </span>
                                         </div>
                                         {can.update && (
                                             <Button
@@ -2313,9 +2196,9 @@ export default function MatterShow({
                                                 onClick={() =>
                                                     setOperation('note')
                                                 }
-                                                className="h-8 rounded-lg border-slate-200/80 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-200"
+                                                className="h-7 text-xs font-semibold"
                                             >
-                                                <Plus className="mr-1 size-3.5 text-slate-400" />
+                                                <Plus className="mr-1 size-3" />
                                                 Tambah Catatan
                                             </Button>
                                         )}
@@ -2399,13 +2282,13 @@ export default function MatterShow({
                         </div>
 
                         {/* Right Sticky Cockpit Inspector (4 Cols) */}
-                        <div className="space-y-3.5 lg:col-span-4">
+                        <div className="space-y-4 lg:col-span-4">
                             {/* Client Profile Card */}
-                            <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="mb-2 flex items-center justify-between">
-                                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
-                                        <Building2 className="size-3.5 text-slate-400" />
-                                        <span className="text-[11px] font-semibold uppercase">
+                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="mb-2 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                    <div className="flex items-center gap-1.5">
+                                        <Building2 className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                        <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                             Profil Klien
                                         </span>
                                     </div>
@@ -2457,15 +2340,34 @@ export default function MatterShow({
                                         </p>
                                     </div>
                                 </div>
+
+                                {/* Area Praktik */}
+                                <div className="mt-2.5 border-t border-slate-100 pt-2.5 dark:border-white/[0.04]">
+                                    <div className="flex items-start justify-between gap-2 text-xs">
+                                        <span className="shrink-0 text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                            Area Praktik
+                                        </span>
+                                        <span className="text-right text-xs font-semibold text-slate-800 dark:text-zinc-200">
+                                            {matter.practice_area?.name ?? 'Umum'}
+                                            {matter.matter_type && (
+                                                <span className="font-medium text-slate-500 dark:text-zinc-400">
+                                                    {' '}· {matter.matter_type}
+                                                </span>
+                                            )}
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* Parameter & Metadata Cockpit */}
-                            <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="mb-2.5 flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
-                                    <Scale className="size-3.5 text-slate-400" />
-                                    <span className="text-[11px] font-semibold uppercase">
-                                        Parameter Perkara
-                                    </span>
+                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="mb-2 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                    <div className="flex items-center gap-1.5">
+                                        <Scale className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                        <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                                            Parameter Perkara
+                                        </span>
+                                    </div>
                                 </div>
                                 <div className="space-y-2 text-xs">
                                     <div className="flex items-center justify-between">
@@ -2512,11 +2414,11 @@ export default function MatterShow({
                             </div>
 
                             {/* Progres & Kesehatan Perkara */}
-                            <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="mb-2 flex items-center justify-between">
-                                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
-                                        <TrendingUp className="size-3.5 text-slate-400" />
-                                        <span className="text-[11px] font-semibold uppercase">
+                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="mb-2 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                    <div className="flex items-center gap-1.5">
+                                        <TrendingUp className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                        <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                             Progres Tugas
                                         </span>
                                     </div>
@@ -2543,11 +2445,11 @@ export default function MatterShow({
                             </div>
 
                             {/* Lampiran Dokumen Terkini */}
-                            <div className="rounded-xl border border-slate-200/70 bg-white p-3.5 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
-                                <div className="mb-2 flex items-center justify-between">
-                                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-zinc-400">
-                                        <FileText className="size-3.5 text-slate-400" />
-                                        <span className="text-[11px] font-semibold uppercase">
+                            <div className="rounded-xl border border-slate-200/70 bg-white p-4 shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]">
+                                <div className="mb-2 flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-white/[0.04]">
+                                    <div className="flex items-center gap-1.5">
+                                        <FileText className="size-3.5 text-slate-500 dark:text-zinc-400" />
+                                        <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
                                             Lampiran Terkini (
                                             {matter.documents.length})
                                         </span>

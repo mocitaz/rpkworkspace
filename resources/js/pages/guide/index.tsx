@@ -67,7 +67,8 @@ const GUIDES: GuideItem[] = [
         code: 'SOP-OPS-01',
         category: 'Perkara',
         title: 'Manajemen Perkara & Uji Konflik Kepentingan',
-        description: 'Alur penanganan perkara: conflict check otomatis, penunjukan kuasa hukum, brankas bukti surat (P-1 s.d. P-n), kronologi perkara, hingga putusan inkracht.',
+        description:
+            'Alur penanganan perkara: conflict check otomatis, penunjukan kuasa hukum, brankas bukti surat (P-1 s.d. P-n), kronologi perkara, hingga putusan inkracht.',
         image: '/images/guide/matter.jpg',
         route: '/matters',
         actionLabel: 'Buka Modul Perkara',
@@ -98,7 +99,8 @@ const GUIDES: GuideItem[] = [
         code: 'SOP-DOC-02',
         category: 'Dokumen',
         title: 'Repositori Dokumen & Tanda Tangan Elektronik',
-        description: 'Unggah berkas privat, audit jejak versi dokumen (SHA-256), persetujuan internal, sirkulasi tanda tangan elektronik, dan verifikasi segel QR Code.',
+        description:
+            'Unggah berkas privat, audit jejak versi dokumen (SHA-256), persetujuan internal, sirkulasi tanda tangan elektronik, dan verifikasi segel QR Code.',
         image: '/images/guide/signature.jpg',
         route: '/documents',
         actionLabel: 'Buka Modul Dokumen',
@@ -129,7 +131,8 @@ const GUIDES: GuideItem[] = [
         code: 'SOP-FIN-03',
         category: 'Keuangan',
         title: 'Honorarium Hukum, Invoice, Biaya & PPh 23',
-        description: 'Penerbitan penawaran (quotation), tagihan invoice perkara, pencatatan biaya operasional (expenses), potongan pajak PPh 23 (2%), dan kuitansi resmi.',
+        description:
+            'Penerbitan penawaran (quotation), tagihan invoice perkara, pencatatan biaya operasional (expenses), potongan pajak PPh 23 (2%), dan kuitansi resmi.',
         image: '/images/guide/finance.jpg',
         route: '/finance',
         actionLabel: 'Buka Modul Keuangan',
@@ -160,7 +163,8 @@ const GUIDES: GuideItem[] = [
         code: 'SOP-CAL-04',
         category: 'Kalender',
         title: 'Kalender Persidangan & Sinkronisasi Agenda',
-        description: 'Pencatatan agenda sidang pengadilan, mediasi, tenggat upaya hukum 14 hari, notifikasi alarm H-7/H-1, serta sinkronisasi iCal feed ke ponsel.',
+        description:
+            'Pencatatan agenda sidang pengadilan, mediasi, tenggat upaya hukum 14 hari, notifikasi alarm H-7/H-1, serta sinkronisasi iCal feed ke ponsel.',
         image: '/images/guide/calendar.jpg',
         route: '/calendar',
         actionLabel: 'Buka Kalender Sidang',
@@ -191,7 +195,8 @@ const GUIDES: GuideItem[] = [
         code: 'SOP-TSK-05',
         category: 'Tugas',
         title: 'Manajemen Tugas, Tenggat Waktu & Diskusi',
-        description: 'Pendelegasian tugas drafting berkas hukum, riset yurisprudensi perkara, pemantauan prioritas (Critical/High), dan diskusi internal terpusat.',
+        description:
+            'Pendelegasian tugas drafting berkas hukum, riset yurisprudensi perkara, pemantauan prioritas (Critical/High), dan diskusi internal terpusat.',
         image: '/images/guide/task.jpg',
         route: '/tasks',
         actionLabel: 'Buka Modul Tugas',
@@ -222,7 +227,8 @@ const GUIDES: GuideItem[] = [
         code: 'SOP-KYC-06',
         category: 'Klien',
         title: 'Direktori Klien & Kepatuhan Legalitas (KYC/AML)',
-        description: 'Basis data induk klien perorangan dan korporasi, pencatatan kontak penanggung jawab, serta pemantauan masa berlaku dokumen kepatuhan/NIB.',
+        description:
+            'Basis data induk klien perorangan dan korporasi, pencatatan kontak penanggung jawab, serta pemantauan masa berlaku dokumen kepatuhan/NIB.',
         image: '/images/guide/kyc.jpg',
         route: '/clients',
         actionLabel: 'Buka Direktori Klien',
@@ -253,7 +259,8 @@ const GUIDES: GuideItem[] = [
         code: 'SOP-GOV-07',
         category: 'Tata Kelola',
         title: 'Korespondensi Surat, Legal Hold & Ekspor Arsip',
-        description: 'Pencatatan korespondensi surat masuk/keluar firma, proteksi pembekuan berkas perkara (Legal Hold), dan ekspor paket arsip digital perkara (ZIP).',
+        description:
+            'Pencatatan korespondensi surat masuk/keluar firma, proteksi pembekuan berkas perkara (Legal Hold), dan ekspor paket arsip digital perkara (ZIP).',
         image: '/images/guide/governance.jpg',
         route: '/governance',
         actionLabel: 'Buka Tata Kelola',
@@ -284,7 +291,8 @@ const GUIDES: GuideItem[] = [
         code: 'SOP-SEC-08',
         category: 'Keamanan',
         title: 'Autentikasi Passkey Biometrik, 2FA & Tanda Tangan',
-        description: 'Pengaturan kredensial advokat (NIA & BAS), spesimen tanda tangan digital, aktivasi verifikasi dua langkah (2FA), dan login biometrik Passkey (FIDO2).',
+        description:
+            'Pengaturan kredensial advokat (NIA & BAS), spesimen tanda tangan digital, aktivasi verifikasi dua langkah (2FA), dan login biometrik Passkey (FIDO2).',
         image: '/images/guide/passkey.jpg',
         route: '/settings/profile',
         actionLabel: 'Buka Pengaturan Keamanan',
@@ -315,7 +323,8 @@ const GUIDES: GuideItem[] = [
         code: 'SOP-ADM-09',
         category: 'Admin',
         title: 'Tata Kelola Staf, 26 Matriks RBAC & Audit Trail',
-        description: 'Manajemen akun staf firma, penyesuaian 26 matriks izin modul peran, pemantauan log audit trail real-time, dan ekspor laporan keamanan.',
+        description:
+            'Manajemen akun staf firma, penyesuaian 26 matriks izin modul peran, pemantauan log audit trail real-time, dan ekspor laporan keamanan.',
         image: '/images/guide/rbac.jpg',
         route: '/admin/users',
         actionLabel: 'Kelola Staf & Peran',
@@ -442,7 +451,10 @@ export default function GuideIndex() {
                                 Panduan Cara Penggunaan RPK App
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Tata kelola operasional terpadu: manajemen perkara, repositori berkas, penagihan honorarium, jadwal sidang, dan tata kelola kantor hukum.
+                                Tata kelola operasional terpadu: manajemen
+                                perkara, repositori berkas, penagihan
+                                honorarium, jadwal sidang, dan tata kelola
+                                kantor hukum.
                             </p>
                         </div>
 
@@ -453,7 +465,9 @@ export default function GuideIndex() {
                                 <Input
                                     type="text"
                                     value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onChange={(e) =>
+                                        setSearchQuery(e.target.value)
+                                    }
                                     placeholder="Cari panduan alur, tugas, invoice..."
                                     className="h-9 w-full rounded-lg border-slate-200 bg-white pr-4 pl-9 text-xs shadow-2xs transition-all focus-visible:border-slate-400 focus-visible:ring-1 focus-visible:ring-slate-300 dark:border-white/10 dark:bg-[#14161b] dark:text-white"
                                 />
@@ -542,10 +556,10 @@ export default function GuideIndex() {
                                                         </span>
                                                         <div className="min-w-0 flex-1 space-y-0.5">
                                                             <div className="flex items-center justify-between gap-1">
-                                                                <span className="font-bold text-slate-900 truncate dark:text-white">
+                                                                <span className="truncate font-bold text-slate-900 dark:text-white">
                                                                     {st.title}
                                                                 </span>
-                                                                <span className="font-mono text-[8.5px] text-slate-400 shrink-0 dark:text-zinc-500">
+                                                                <span className="shrink-0 font-mono text-[8.5px] text-slate-400 dark:text-zinc-500">
                                                                     {st.role}
                                                                 </span>
                                                             </div>
@@ -581,7 +595,8 @@ export default function GuideIndex() {
                     {filteredGuides.length === 0 && (
                         <div className="rounded-xl border border-slate-200 bg-white p-8 text-center shadow-2xs dark:border-white/[0.08] dark:bg-[#14161b]">
                             <p className="text-xs font-semibold text-slate-600 dark:text-zinc-400">
-                                Tidak ada panduan yang cocok dengan pencarian "{searchQuery}".
+                                Tidak ada panduan yang cocok dengan pencarian "
+                                {searchQuery}".
                             </p>
                             <Button
                                 variant="outline"
@@ -625,7 +640,11 @@ export default function GuideIndex() {
                                     >
                                         <button
                                             type="button"
-                                            onClick={() => setOpenFaqIndex(isOpen ? null : fIdx)}
+                                            onClick={() =>
+                                                setOpenFaqIndex(
+                                                    isOpen ? null : fIdx,
+                                                )
+                                            }
                                             className="flex w-full items-center justify-between gap-4 p-4 text-left"
                                         >
                                             <div className="space-y-1">
@@ -636,11 +655,13 @@ export default function GuideIndex() {
                                                     {faq.q}
                                                 </h4>
                                             </div>
-                                            <div className={`flex size-6 shrink-0 items-center justify-center rounded-full border transition-transform duration-200 ${
-                                                isOpen
-                                                    ? 'rotate-180 border-slate-300 bg-slate-900 text-white dark:border-white/20 dark:bg-white dark:text-slate-900'
-                                                    : 'border-slate-200 bg-slate-50 text-slate-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-400'
-                                            }`}>
+                                            <div
+                                                className={`flex size-6 shrink-0 items-center justify-center rounded-full border transition-transform duration-200 ${
+                                                    isOpen
+                                                        ? 'rotate-180 border-slate-300 bg-slate-900 text-white dark:border-white/20 dark:bg-white dark:text-slate-900'
+                                                        : 'border-slate-200 bg-slate-50 text-slate-500 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-400'
+                                                }`}
+                                            >
                                                 <ChevronDown className="size-3.5" />
                                             </div>
                                         </button>
@@ -648,17 +669,22 @@ export default function GuideIndex() {
                                         {isOpen && (
                                             <div className="border-t border-slate-200/60 bg-white p-4 text-xs leading-relaxed text-slate-600 dark:border-white/[0.04] dark:bg-transparent dark:text-zinc-300">
                                                 <p>{faq.a}</p>
-                                                {faq.route && faq.routeLabel && (
-                                                    <div className="mt-3 pt-2 border-t border-slate-100 dark:border-white/[0.04]">
-                                                        <Link
-                                                            href={faq.route}
-                                                            className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                                                        >
-                                                            <span>{faq.routeLabel}</span>
-                                                            <ArrowRight className="size-3" />
-                                                        </Link>
-                                                    </div>
-                                                )}
+                                                {faq.route &&
+                                                    faq.routeLabel && (
+                                                        <div className="mt-3 border-t border-slate-100 pt-2 dark:border-white/[0.04]">
+                                                            <Link
+                                                                href={faq.route}
+                                                                className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                                                            >
+                                                                <span>
+                                                                    {
+                                                                        faq.routeLabel
+                                                                    }
+                                                                </span>
+                                                                <ArrowRight className="size-3" />
+                                                            </Link>
+                                                        </div>
+                                                    )}
                                             </div>
                                         )}
                                     </div>

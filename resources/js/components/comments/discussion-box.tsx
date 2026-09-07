@@ -103,6 +103,7 @@ export function DiscussionBox({
     staffList = [],
     title = 'Diskusi Internal Tim',
     subtitle = 'Kolaborasi strategi perkara, catatan draf, dan instruksi tim hukum.',
+    variant = 'default',
 }: {
     commentableType: 'matter' | 'document' | 'task';
     commentableId: string;
@@ -110,6 +111,7 @@ export function DiscussionBox({
     staffList: DiscussionStaff[];
     title?: string;
     subtitle?: string;
+    variant?: 'default' | 'compact';
 }) {
     const page = usePage();
     const currentUser = page.props.auth?.user as DiscussionStaff | undefined;
@@ -362,28 +364,43 @@ export function DiscussionBox({
     }, [localComments]);
 
     return (
-        <div className="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-2xs dark:border-white/[0.08] dark:bg-[#15171c]">
+        <div
+            className={
+                variant === 'compact'
+                    ? 'overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-2xs dark:border-white/[0.06] dark:bg-[#14161b]'
+                    : 'overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-2xs dark:border-white/[0.08] dark:bg-[#15171c]'
+            }
+        >
             {/* Header Toolbar */}
-            <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-white/[0.06]">
-                <div className="flex items-center gap-3">
-                    <div className="flex size-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
-                        <MessageSquare className="size-4" />
-                    </div>
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h3 className="text-xs font-black tracking-wider text-slate-900 uppercase dark:text-white">
-                                {title}
-                            </h3>
-                            <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
-                                {totalCommentCount}
-                            </span>
+            {variant === 'compact' ? (
+                <div className="flex items-center gap-1.5 border-b border-slate-100 px-4 py-2.5 dark:border-white/[0.04]">
+                    <MessageSquare className="size-3.5 text-slate-600 dark:text-zinc-400" />
+                    <span className="text-[11px] font-semibold text-slate-500 uppercase dark:text-zinc-400">
+                        {title} ({totalCommentCount})
+                    </span>
+                </div>
+            ) : (
+                <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-white/[0.06]">
+                    <div className="flex items-center gap-3">
+                        <div className="flex size-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400">
+                            <MessageSquare className="size-4" />
                         </div>
-                        <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                            {subtitle}
-                        </p>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-xs font-black tracking-wider text-slate-900 uppercase dark:text-white">
+                                    {title}
+                                </h3>
+                                <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-700 dark:bg-white/[0.08] dark:text-zinc-300">
+                                    {totalCommentCount}
+                                </span>
+                            </div>
+                            <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                {subtitle}
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Comment Stream */}
             <div className="divide-y divide-slate-100 p-5 dark:divide-white/[0.04]">

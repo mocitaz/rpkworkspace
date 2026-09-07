@@ -225,4 +225,3 @@ export const parseRupiahInput = (value?: number | string | null): number => {
     const digits = String(value).replace(/\D/g, '');
     return digits ? parseInt(digits, 10) : 0;
 };
-

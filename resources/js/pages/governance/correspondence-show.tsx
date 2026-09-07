@@ -587,8 +587,9 @@ export default function CorrespondenceShow({
                                         <p className="text-[11px] font-bold text-slate-900 dark:text-white">
                                             QR Registrasi Surat
                                         </p>
-                                        <p className="text-[10px] text-slate-500 leading-tight dark:text-zinc-400">
-                                            Pindai untuk memvalidasi keaslian surat ini di server firma.
+                                        <p className="text-[10px] leading-tight text-slate-500 dark:text-zinc-400">
+                                            Pindai untuk memvalidasi keaslian
+                                            surat ini di server firma.
                                         </p>
                                     </div>
                                 </div>

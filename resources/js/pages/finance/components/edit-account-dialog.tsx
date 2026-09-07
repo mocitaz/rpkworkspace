@@ -8,10 +8,7 @@ import {
     Shield,
     Users,
 } from 'lucide-react';
-import {
-    Dialog,
-    DialogContent,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import UserPicker, { type UserOption } from '@/components/user-picker';
@@ -79,7 +76,9 @@ export function EditAccountDialog({
                 name: account.name || '',
                 bank_name: account.bank_name || '',
                 account_number: account.account_number || '',
-                partner_id: account.partner?.id ? String(account.partner.id) : '',
+                partner_id: account.partner?.id
+                    ? String(account.partner.id)
+                    : '',
                 description: account.description || '',
             });
             form.clearErrors();
@@ -123,7 +122,7 @@ export function EditAccountDialog({
                 <form onSubmit={submit} className="space-y-3.5 pt-1 text-xs">
                     {/* Sleek Summary & Locked Balance Card */}
                     <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 dark:border-white/[0.06] dark:bg-[#16181f]">
-                        <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex min-w-0 items-center gap-2.5">
                             <div
                                 className={`flex size-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-white/10 ${cfg.color}`}
                             >
@@ -134,7 +133,7 @@ export function EditAccountDialog({
                                     <p className="truncate text-xs font-semibold text-slate-800 dark:text-zinc-200">
                                         {cfg.label}
                                     </p>
-                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-500 uppercase tracking-wide dark:text-zinc-400">
+                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold tracking-wide text-slate-500 uppercase dark:text-zinc-400">
                                         <Lock className="size-2.5 text-slate-400" />
                                         Saldo Terkunci
                                     </span>

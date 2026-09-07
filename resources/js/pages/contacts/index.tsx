@@ -294,7 +294,7 @@ export default function ContactsIndex({
             <Head title="Direktori Kontak & Perwakilan Stakeholder" />
 
             <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-10 dark:bg-[#0c0d10]">
-                <main className="w-full space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
                     <ContactsDirectoryHero
                         totalContacts={metrics.total}
                         visibleContacts={contacts.data.length}
@@ -1216,7 +1216,10 @@ export default function ContactsIndex({
                     <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
                         <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3">
                             <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
-                                <UserPlus className="size-4.5" strokeWidth={1.8} />
+                                <UserPlus
+                                    className="size-4.5"
+                                    strokeWidth={1.8}
+                                />
                             </div>
                             <div className="min-w-0 self-center">
                                 <DialogTitle className="text-sm leading-5 font-bold text-slate-900 sm:text-base dark:text-white">
@@ -1381,7 +1384,10 @@ export default function ContactsIndex({
                         <DialogHeader className="border-b border-slate-100 pb-3.5 dark:border-white/[0.06]">
                             <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3">
                                 <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
-                                    <Pencil className="size-4.5" strokeWidth={1.8} />
+                                    <Pencil
+                                        className="size-4.5"
+                                        strokeWidth={1.8}
+                                    />
                                 </div>
                                 <div className="min-w-0 self-center">
                                     <DialogTitle className="text-sm leading-5 font-bold text-slate-900 sm:text-base dark:text-white">

@@ -120,7 +120,9 @@ export default function TaskCreate({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const validChecklists = checklistItems.filter((c) => c.title.trim().length > 0);
+        const validChecklists = checklistItems.filter(
+            (c) => c.title.trim().length > 0,
+        );
         data.checklists = validChecklists;
         post(taskRoutes.store.url());
     };
@@ -130,7 +132,7 @@ export default function TaskCreate({
             <Head title="Buat Tugas Baru" />
 
             <div className="min-h-screen bg-[#fafafc] pb-24 dark:bg-[#0c0d10]">
-                <main className="mx-auto max-w-4xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-6 px-4 py-6 sm:px-6 lg:px-8">
                     {/* Header Navigation */}
                     <div className="flex flex-col justify-between gap-4 border-b border-slate-200/70 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">
@@ -138,7 +140,8 @@ export default function TaskCreate({
                                 Delegasi &amp; Penugasan Baru
                             </h1>
                             <p className="text-xs text-slate-500 dark:text-zinc-400">
-                                Delegasikan instruksi pekerjaan hukum, riset, sidang, atau administrasi kantor kepada tim.
+                                Delegasikan instruksi pekerjaan hukum, riset,
+                                sidang, atau administrasi kantor kepada tim.
                             </p>
                         </div>
 
@@ -167,16 +170,22 @@ export default function TaskCreate({
                             </div>
 
                             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                <div className="sm:col-span-2 space-y-1.5">
-                                    <Label htmlFor="title" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                                        Judul / Instruksi Tugas <span className="text-rose-500">*</span>
+                                <div className="space-y-1.5 sm:col-span-2">
+                                    <Label
+                                        htmlFor="title"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                    >
+                                        Judul / Instruksi Tugas{' '}
+                                        <span className="text-rose-500">*</span>
                                     </Label>
                                     <Input
                                         id="title"
                                         type="text"
                                         placeholder="Contoh: Susun Draf Replik Perkara PT KKG vs PT Megah Mandiri"
                                         value={data.title}
-                                        onChange={(e) => setData('title', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('title', e.target.value)
+                                        }
                                         className="h-9 text-xs"
                                         required
                                     />
@@ -184,14 +193,23 @@ export default function TaskCreate({
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="category" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                                        Kategori Tugas Hukum <span className="text-rose-500">*</span>
+                                    <Label
+                                        htmlFor="category"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                    >
+                                        Kategori Tugas Hukum{' '}
+                                        <span className="text-rose-500">*</span>
                                     </Label>
                                     <div className="relative">
                                         <select
                                             id="category"
                                             value={data.category}
-                                            onChange={(e) => setData('category', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'category',
+                                                    e.target.value,
+                                                )
+                                            }
                                             className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs text-slate-800 shadow-2xs focus:border-blue-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
                                             required
                                         >
@@ -207,14 +225,19 @@ export default function TaskCreate({
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="stage" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                    <Label
+                                        htmlFor="stage"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                    >
                                         Tahapan Perkara
                                     </Label>
                                     <div className="relative">
                                         <select
                                             id="stage"
                                             value={data.stage}
-                                            onChange={(e) => setData('stage', e.target.value)}
+                                            onChange={(e) =>
+                                                setData('stage', e.target.value)
+                                            }
                                             className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs text-slate-800 shadow-2xs focus:border-blue-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
                                         >
                                             {stages.map((s) => (
@@ -228,47 +251,87 @@ export default function TaskCreate({
                                     <InputError message={errors.stage} />
                                 </div>
 
-                                <div className="sm:col-span-2 space-y-1.5">
-                                    <Label htmlFor="matter_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                <div className="space-y-1.5 sm:col-span-2">
+                                    <Label
+                                        htmlFor="matter_id"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                    >
                                         Hubungkan ke Perkara Terkait
                                     </Label>
                                     <div className="relative">
                                         <select
                                             id="matter_id"
                                             value={data.matter_id}
-                                            onChange={(e) => setData('matter_id', e.target.value)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'matter_id',
+                                                    e.target.value,
+                                                )
+                                            }
                                             className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs text-slate-800 shadow-2xs focus:border-blue-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
                                         >
-                                            <option value="">-- Tanpa Perkara (Tugas Operasional Kantor / Non-Perkara) --</option>
+                                            <option value="">
+                                                -- Tanpa Perkara (Tugas
+                                                Operasional Kantor /
+                                                Non-Perkara) --
+                                            </option>
                                             {matters.map((m) => (
                                                 <option key={m.id} value={m.id}>
-                                                    {m.matter_number} - {m.title} {m.client ? `(${m.client.name})` : ''}
+                                                    {m.matter_number} -{' '}
+                                                    {m.title}{' '}
+                                                    {m.client
+                                                        ? `(${m.client.name})`
+                                                        : ''}
                                                 </option>
                                             ))}
                                         </select>
                                         <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 size-3.5 -translate-y-1/2 text-slate-400 dark:text-zinc-500" />
                                     </div>
                                     <p className="text-[11px] text-slate-500 dark:text-zinc-500">
-                                        Jika dihubungkan, tugas akan otomatis tampil pada tab Berkas Kerja Perkara terkait.
+                                        Jika dihubungkan, tugas akan otomatis
+                                        tampil pada tab Berkas Kerja Perkara
+                                        terkait.
                                     </p>
                                     <InputError message={errors.matter_id} />
                                 </div>
 
-                                <div className="sm:col-span-2 space-y-2">
+                                <div className="space-y-2 sm:col-span-2">
                                     <Label className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
                                         Tingkat Prioritas Tugas
                                     </Label>
                                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                                         {[
-                                            { id: 'low', label: 'Rendah (Low)', desc: 'Fleksibel', color: 'border-slate-200 dark:border-white/10 hover:border-slate-300' },
-                                            { id: 'normal', label: 'Normal', desc: 'Standar Pengerjaan', color: 'border-blue-200 dark:border-blue-900/40 hover:border-blue-300' },
-                                            { id: 'high', label: 'Tinggi (High)', desc: 'Prioritas Tim', color: 'border-amber-200 dark:border-amber-900/40 hover:border-amber-300' },
-                                            { id: 'critical', label: 'Mendesak (Critical)', desc: 'Batas Sidang / Segera', color: 'border-rose-200 dark:border-rose-900/40 hover:border-rose-300' },
+                                            {
+                                                id: 'low',
+                                                label: 'Rendah (Low)',
+                                                desc: 'Fleksibel',
+                                                color: 'border-slate-200 dark:border-white/10 hover:border-slate-300',
+                                            },
+                                            {
+                                                id: 'normal',
+                                                label: 'Normal',
+                                                desc: 'Standar Pengerjaan',
+                                                color: 'border-blue-200 dark:border-blue-900/40 hover:border-blue-300',
+                                            },
+                                            {
+                                                id: 'high',
+                                                label: 'Tinggi (High)',
+                                                desc: 'Prioritas Tim',
+                                                color: 'border-amber-200 dark:border-amber-900/40 hover:border-amber-300',
+                                            },
+                                            {
+                                                id: 'critical',
+                                                label: 'Mendesak (Critical)',
+                                                desc: 'Batas Sidang / Segera',
+                                                color: 'border-rose-200 dark:border-rose-900/40 hover:border-rose-300',
+                                            },
                                         ].map((p) => (
                                             <button
                                                 key={p.id}
                                                 type="button"
-                                                onClick={() => setData('priority', p.id)}
+                                                onClick={() =>
+                                                    setData('priority', p.id)
+                                                }
                                                 className={`flex flex-col items-start rounded-lg border p-2.5 text-left transition-all ${
                                                     data.priority === p.id
                                                         ? 'border-blue-600 bg-blue-50/70 ring-2 ring-blue-600/20 dark:border-blue-500 dark:bg-blue-950/40 dark:ring-blue-500/30'
@@ -300,43 +363,65 @@ export default function TaskCreate({
 
                             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="assignee_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                                        Pelaksana Utama (Assignee) <span className="text-rose-500">*</span>
+                                    <Label
+                                        htmlFor="assignee_id"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                    >
+                                        Pelaksana Utama (Assignee){' '}
+                                        <span className="text-rose-500">*</span>
                                     </Label>
                                     <UserPicker
                                         id="assignee_id"
                                         value={data.assignee_id}
-                                        onChange={(val) => setData('assignee_id', val)}
+                                        onChange={(val) =>
+                                            setData('assignee_id', val)
+                                        }
                                         users={users}
                                         placeholder="Pilih Staf / Advokat Pelaksana..."
-                                        disabledUserIds={data.reviewer_id ? [data.reviewer_id] : []}
+                                        disabledUserIds={
+                                            data.reviewer_id
+                                                ? [data.reviewer_id]
+                                                : []
+                                        }
                                         disabledReason="Dipilih sebagai Reviewer"
                                         error={Boolean(errors.assignee_id)}
                                     />
                                     <p className="text-[11px] text-slate-500 dark:text-zinc-500">
-                                        Staf akan menerima notifikasi penugasan otomatis.
+                                        Staf akan menerima notifikasi penugasan
+                                        otomatis.
                                     </p>
                                     <InputError message={errors.assignee_id} />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="reviewer_id" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                                        Pemeriksa Hasil (Reviewer / Partner In Charge)
+                                    <Label
+                                        htmlFor="reviewer_id"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                    >
+                                        Pemeriksa Hasil (Reviewer / Partner In
+                                        Charge)
                                     </Label>
                                     <UserPicker
                                         id="reviewer_id"
                                         value={data.reviewer_id}
-                                        onChange={(val) => setData('reviewer_id', val)}
+                                        onChange={(val) =>
+                                            setData('reviewer_id', val)
+                                        }
                                         users={users}
                                         placeholder="Pilih Reviewer (Opsional)..."
                                         emptyOptionLabel="-- Tanpa Reviewer Khusus (Opsional) --"
                                         allowClear
-                                        disabledUserIds={data.assignee_id ? [data.assignee_id] : []}
+                                        disabledUserIds={
+                                            data.assignee_id
+                                                ? [data.assignee_id]
+                                                : []
+                                        }
                                         disabledReason="Dipilih sebagai Pelaksana"
                                         error={Boolean(errors.reviewer_id)}
                                     />
                                     <p className="text-[11px] text-slate-500 dark:text-zinc-500">
-                                        Partner/Senior yang akan memvalidasi draf sebelum difinalisasi.
+                                        Partner/Senior yang akan memvalidasi
+                                        draf sebelum difinalisasi.
                                     </p>
                                     <InputError message={errors.reviewer_id} />
                                 </div>
@@ -354,48 +439,69 @@ export default function TaskCreate({
 
                             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="start_date" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                    <Label
+                                        htmlFor="start_date"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                    >
                                         Tanggal Mulai
                                     </Label>
                                     <Input
                                         id="start_date"
                                         type="date"
                                         value={data.start_date}
-                                        onChange={(e) => setData('start_date', e.target.value)}
+                                        onChange={(e) =>
+                                            setData(
+                                                'start_date',
+                                                e.target.value,
+                                            )
+                                        }
                                         className="h-9 text-xs"
                                     />
                                     <InputError message={errors.start_date} />
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <Label htmlFor="due_at" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                    <Label
+                                        htmlFor="due_at"
+                                        className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                    >
                                         Tenggat Waktu (Due Date)
                                     </Label>
                                     <Input
                                         id="due_at"
                                         type="datetime-local"
                                         value={data.due_at}
-                                        onChange={(e) => setData('due_at', e.target.value)}
+                                        onChange={(e) =>
+                                            setData('due_at', e.target.value)
+                                        }
                                         className="h-9 text-xs"
                                     />
                                     <InputError message={errors.due_at} />
                                 </div>
 
-                                <div className="sm:col-span-2 rounded-lg border border-slate-200/80 bg-slate-50/70 p-3 dark:border-white/[0.07] dark:bg-[#181a20]">
-                                    <label className="flex items-center gap-3 cursor-pointer">
+                                <div className="rounded-lg border border-slate-200/80 bg-slate-50/70 p-3 sm:col-span-2 dark:border-white/[0.07] dark:bg-[#181a20]">
+                                    <label className="flex cursor-pointer items-center gap-3">
                                         <input
                                             type="checkbox"
                                             checked={data.is_billable}
-                                            onChange={(e) => setData('is_billable', e.target.checked)}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'is_billable',
+                                                    e.target.checked,
+                                                )
+                                            }
                                             className="size-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-white/20 dark:bg-zinc-800"
                                         />
                                         <div>
-                                            <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                            <span className="flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-white">
                                                 <DollarSign className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-                                                Dapat Ditagihkan ke Klien (Billable Task)
+                                                Dapat Ditagihkan ke Klien
+                                                (Billable Task)
                                             </span>
                                             <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                Centang jika tugas ini akan dicatat ke tagihan/invoice klien.
+                                                Centang jika tugas ini akan
+                                                dicatat ke tagihan/invoice
+                                                klien.
                                             </p>
                                         </div>
                                     </label>
@@ -413,7 +519,10 @@ export default function TaskCreate({
                             </div>
 
                             <div className="mt-4 space-y-1.5">
-                                <Label htmlFor="description" className="text-xs font-semibold text-slate-700 dark:text-zinc-300">
+                                <Label
+                                    htmlFor="description"
+                                    className="text-xs font-semibold text-slate-700 dark:text-zinc-300"
+                                >
                                     Detail Instruksi & Catatan Khusus
                                 </Label>
                                 <textarea
@@ -421,8 +530,10 @@ export default function TaskCreate({
                                     rows={5}
                                     placeholder="Tuliskan petunjuk teknis, pasal acuan, kronologis singkat, format dokumen yang diharapkan, atau kontak pihak yang perlu dihubungi..."
                                     value={data.description}
-                                    onChange={(e) => setData('description', e.target.value)}
-                                    className="w-full rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-800 shadow-2xs focus:border-purple-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200 leading-relaxed"
+                                    onChange={(e) =>
+                                        setData('description', e.target.value)
+                                    }
+                                    className="w-full rounded-lg border border-slate-200 bg-white p-3 text-xs leading-relaxed text-slate-800 shadow-2xs focus:border-purple-500 focus:outline-hidden dark:border-white/10 dark:bg-[#191c22] dark:text-zinc-200"
                                 />
                                 <InputError message={errors.description} />
                             </div>
@@ -442,7 +553,7 @@ export default function TaskCreate({
                                     variant="outline"
                                     size="sm"
                                     onClick={addChecklistRow}
-                                    className="h-7 text-xs gap-1 border-dashed text-slate-700 dark:text-zinc-300"
+                                    className="h-7 gap-1 border-dashed text-xs text-slate-700 dark:text-zinc-300"
                                 >
                                     <Plus className="size-3" />
                                     Tambah Butir
@@ -451,7 +562,10 @@ export default function TaskCreate({
 
                             <div className="mt-4 space-y-2.5">
                                 {checklistItems.map((item, index) => (
-                                    <div key={item.id} className="flex items-center gap-2">
+                                    <div
+                                        key={item.id}
+                                        className="flex items-center gap-2"
+                                    >
                                         <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600 dark:bg-white/10 dark:text-zinc-300">
                                             {index + 1}
                                         </span>
@@ -459,24 +573,33 @@ export default function TaskCreate({
                                             type="text"
                                             placeholder={`Contoh butir ${index + 1}: Kumpulkan bukti surat P-1 s/d P-5`}
                                             value={item.title}
-                                            onChange={(e) => updateChecklistTitle(index, e.target.value)}
-                                            className="h-8.5 text-xs flex-1"
+                                            onChange={(e) =>
+                                                updateChecklistTitle(
+                                                    index,
+                                                    e.target.value,
+                                                )
+                                            }
+                                            className="h-8.5 flex-1 text-xs"
                                         />
                                         {checklistItems.length > 1 && (
                                             <Button
                                                 type="button"
                                                 variant="ghost"
                                                 size="sm"
-                                                onClick={() => removeChecklistRow(index)}
-                                                className="size-8 p-0 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                                                onClick={() =>
+                                                    removeChecklistRow(index)
+                                                }
+                                                className="size-8 p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950/40"
                                             >
                                                 <Trash2 className="size-3.5" />
                                             </Button>
                                         )}
                                     </div>
                                 ))}
-                                <p className="text-[11px] text-slate-500 dark:text-zinc-500 pt-1">
-                                    Checklist ini dapat langsung dicentang satu per satu oleh staf pelaksana saat mengerjakan tugas.
+                                <p className="pt-1 text-[11px] text-slate-500 dark:text-zinc-500">
+                                    Checklist ini dapat langsung dicentang satu
+                                    per satu oleh staf pelaksana saat
+                                    mengerjakan tugas.
                                 </p>
                             </div>
                         </section>

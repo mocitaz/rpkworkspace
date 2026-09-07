@@ -558,7 +558,7 @@ export default function FinanceIndex({
             <Head title="Keuangan & Billing Operasional - RPK Legal Workspace" />
 
             <div className="min-h-screen bg-[#fafafc] pb-16 dark:bg-[#0c0d10]">
-                <main className="w-full space-y-4 px-4 py-3.5 sm:px-6 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-4 px-4 py-3.5 sm:px-6 lg:px-8">
                     <FinanceDashboardHero
                         scope={scope}
                         onScopeChange={setScope}
@@ -1882,11 +1882,18 @@ export default function FinanceIndex({
                     <DialogHeader className="border-b border-slate-100 pb-3 dark:border-white/[0.06]">
                         <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3">
                             <div className="flex size-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-400">
-                                <AlertTriangle className="size-4.5" strokeWidth={1.8} />
+                                <AlertTriangle
+                                    className="size-4.5"
+                                    strokeWidth={1.8}
+                                />
                             </div>
                             <div className="min-w-0 self-center">
-                                <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">Konfirmasi Edit Pengeluaran</DialogTitle>
-                                <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Pastikan sebelum mengubah pengeluaran.</p>
+                                <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">
+                                    Konfirmasi Edit Pengeluaran
+                                </DialogTitle>
+                                <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
+                                    Pastikan sebelum mengubah pengeluaran.
+                                </p>
                             </div>
                         </div>
                     </DialogHeader>
@@ -2704,14 +2711,15 @@ function PaymentLedger({
                                                     }
                                                     className="transition-colors hover:text-emerald-600 dark:hover:text-emerald-400"
                                                 >
-                                                    {payment.client?.display_name
+                                                    {payment.client
+                                                        ?.display_name
                                                         ? `Penerimaan Kas - ${payment.client.display_name}`
                                                         : 'Penerimaan Kas (Umum / Kantor)'}
                                                 </button>
+                                            ) : payment.client?.display_name ? (
+                                                `Penerimaan Kas - ${payment.client.display_name}`
                                             ) : (
-                                                payment.client?.display_name
-                                                    ? `Penerimaan Kas - ${payment.client.display_name}`
-                                                    : 'Penerimaan Kas (Umum / Kantor)'
+                                                'Penerimaan Kas (Umum / Kantor)'
                                             )}
                                         </h4>
 
@@ -2719,7 +2727,8 @@ function PaymentLedger({
                                             <span>
                                                 {payment.matter?.title
                                                     ? payment.matter.title
-                                                    : payment.client?.display_name
+                                                    : payment.client
+                                                            ?.display_name
                                                       ? 'Pembayaran Langsung Klien'
                                                       : 'Kas Umum / Non-Perkara'}
                                             </span>
@@ -2903,8 +2912,12 @@ function ReversePaymentDialog({
                             <Undo2 className="size-4.5" strokeWidth={1.8} />
                         </div>
                         <div className="min-w-0 self-center">
-                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">Koreksi &amp; Batalkan Pembayaran</DialogTitle>
-                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Batalkan pencatatan pembayaran yang keliru.</p>
+                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">
+                                Koreksi &amp; Batalkan Pembayaran
+                            </DialogTitle>
+                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
+                                Batalkan pencatatan pembayaran yang keliru.
+                            </p>
                         </div>
                     </div>
                 </DialogHeader>
@@ -2983,8 +2996,12 @@ function RefundPaymentDialog({
                             <Undo2 className="size-4.5" strokeWidth={1.8} />
                         </div>
                         <div className="min-w-0 self-center">
-                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">Refund Dana ke Klien</DialogTitle>
-                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Catat pengembalian dana kepada klien.</p>
+                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">
+                                Refund Dana ke Klien
+                            </DialogTitle>
+                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
+                                Catat pengembalian dana kepada klien.
+                            </p>
                         </div>
                     </div>
                 </DialogHeader>
@@ -3062,8 +3079,12 @@ function CancelInvoiceDialog({
                             <Trash2 className="size-4.5" strokeWidth={1.8} />
                         </div>
                         <div className="min-w-0 self-center">
-                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">Batalkan Invoice</DialogTitle>
-                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Konfirmasi pembatalan invoice tagihan.</p>
+                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 dark:text-white">
+                                Batalkan Invoice
+                            </DialogTitle>
+                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
+                                Konfirmasi pembatalan invoice tagihan.
+                            </p>
                         </div>
                     </div>
                 </DialogHeader>
@@ -3965,7 +3986,8 @@ function FinanceDialog({
                                                         className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                                     >
                                                         <option value="">
-                                                            -- Tanpa Terikat Perkara --
+                                                            -- Tanpa Terikat
+                                                            Perkara --
                                                         </option>
                                                         {matters.map((m) => (
                                                             <option
@@ -4003,7 +4025,8 @@ function FinanceDialog({
                                                         className="h-9 w-full cursor-pointer appearance-none rounded-lg border border-slate-200 bg-white pr-9 pl-3 text-xs font-medium text-slate-800 shadow-2xs outline-hidden transition-all hover:border-slate-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200"
                                                     >
                                                         <option value="">
-                                                            -- Tanpa Klien / Kas Umum --
+                                                            -- Tanpa Klien / Kas
+                                                            Umum --
                                                         </option>
                                                         {clients.map((c) => (
                                                             <option
@@ -4161,8 +4184,12 @@ function FinanceDialog({
                                                 }
                                                 if (paymentClientId) {
                                                     return (
-                                                        (inv as any).client_id === paymentClientId ||
-                                                        (inv as any).client?.id === paymentClientId
+                                                        (inv as any)
+                                                            .client_id ===
+                                                            paymentClientId ||
+                                                        (inv as any).client
+                                                            ?.id ===
+                                                            paymentClientId
                                                     );
                                                 }
                                                 return false;

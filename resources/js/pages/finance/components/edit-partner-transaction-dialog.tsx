@@ -145,16 +145,19 @@ export function EditPartnerTransactionDialog({
             )
         ) {
             setProcessing(true);
-            router.delete(`/finance/partner-transactions/${currentTransaction.id}`, {
-                preserveScroll: true,
-                onSuccess: () => {
-                    setProcessing(false);
-                    onOpenChange(false);
+            router.delete(
+                `/finance/partner-transactions/${currentTransaction.id}`,
+                {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        setProcessing(false);
+                        onOpenChange(false);
+                    },
+                    onError: () => {
+                        setProcessing(false);
+                    },
                 },
-                onError: () => {
-                    setProcessing(false);
-                },
-            });
+            );
         }
     };
 
@@ -168,8 +171,12 @@ export function EditPartnerTransactionDialog({
                             <HandCoins className="size-4.5" strokeWidth={1.8} />
                         </div>
                         <div className="min-w-0 self-center">
-                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 sm:text-base dark:text-white">Edit Transaksi &amp; Talangan Partner</DialogTitle>
-                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Perbarui transaksi dan talangan partner.</p>
+                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 sm:text-base dark:text-white">
+                                Edit Transaksi &amp; Talangan Partner
+                            </DialogTitle>
+                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
+                                Perbarui transaksi dan talangan partner.
+                            </p>
                         </div>
                     </div>
                 </DialogHeader>

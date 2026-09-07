@@ -1,11 +1,5 @@
 import { useState } from 'react';
-import {
-    ArrowRightLeft,
-    Banknote,
-    Pencil,
-    Plus,
-    Trash2,
-} from 'lucide-react';
+import { ArrowRightLeft, Banknote, Pencil, Plus, Trash2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import type { UserOption } from '@/components/user-picker';
@@ -78,7 +72,10 @@ type AccountStyleConfig = {
     progressBarClass: string;
 };
 
-const accountTypeConfig: Record<FinancialAccountItem['type'], AccountStyleConfig> = {
+const accountTypeConfig: Record<
+    FinancialAccountItem['type'],
+    AccountStyleConfig
+> = {
     cash: {
         label: 'Kas Tunai',
         cardClass:
@@ -129,9 +126,12 @@ export function AccountsView({
     onViewDetail?: (item: AccountTransferItem) => void;
 }) {
     const getInitials = useInitials();
-    const [accountToDelete, setAccountToDelete] = useState<FinancialAccountItem | null>(null);
-    const [accountToEdit, setAccountToEdit] = useState<FinancialAccountItem | null>(null);
-    const [selectedAccountForDetail, setSelectedAccountForDetail] = useState<FinancialAccountItem | null>(null);
+    const [accountToDelete, setAccountToDelete] =
+        useState<FinancialAccountItem | null>(null);
+    const [accountToEdit, setAccountToEdit] =
+        useState<FinancialAccountItem | null>(null);
+    const [selectedAccountForDetail, setSelectedAccountForDetail] =
+        useState<FinancialAccountItem | null>(null);
     const totalCash = accounts
         .filter((a) => a.type === 'cash')
         .reduce((sum, a) => sum + a.current_balance, 0);
@@ -318,11 +318,16 @@ export function AccountsView({
             {/* Accounts Bento Grid */}
             <div className="grid gap-2.5 px-4 pb-4 sm:grid-cols-2">
                 {accounts.map((acc) => {
-                    const cfg = accountTypeConfig[acc.type] || accountTypeConfig.bank;
+                    const cfg =
+                        accountTypeConfig[acc.type] || accountTypeConfig.bank;
                     const isPartnerAdvance = acc.type === 'partner_advance';
                     const partner = acc.partner;
                     const partnerAvatarSrc = partner
-                        ? getAvatarUrl(partner.avatar_url || partner.avatar_path || partner.avatar)
+                        ? getAvatarUrl(
+                              partner.avatar_url ||
+                                  partner.avatar_path ||
+                                  partner.avatar,
+                          )
                         : '';
 
                     return (
@@ -343,7 +348,7 @@ export function AccountsView({
                                             </h4>
                                             <span
                                                 className={cn(
-                                                    'text-[9.5px] font-bold uppercase tracking-wider',
+                                                    'text-[9.5px] font-bold tracking-wider uppercase',
                                                     cfg.textClass,
                                                 )}
                                             >
@@ -351,16 +356,24 @@ export function AccountsView({
                                             </span>
                                         </div>
 
-                                        <p className="mt-0.5 text-[10px] text-slate-500 dark:text-zinc-400 truncate">
+                                        <p className="mt-0.5 truncate text-[10px] text-slate-500 dark:text-zinc-400">
                                             {isPartnerAdvance && partner ? (
                                                 <span className="inline-flex items-center gap-1">
                                                     <span className="font-semibold text-slate-700 dark:text-zinc-200">
                                                         {partner.name}
                                                     </span>
                                                     {partner.position_title ? (
-                                                        <span>· {partner.position_title}</span>
+                                                        <span>
+                                                            ·{' '}
+                                                            {
+                                                                partner.position_title
+                                                            }
+                                                        </span>
                                                     ) : acc.account_number ? (
-                                                        <span>· {acc.account_number}</span>
+                                                        <span>
+                                                            ·{' '}
+                                                            {acc.account_number}
+                                                        </span>
                                                     ) : null}
                                                 </span>
                                             ) : (
@@ -378,7 +391,7 @@ export function AccountsView({
                                     </div>
 
                                     {/* Top Right: Partner avatar & actions */}
-                                    <div className="flex items-center gap-2 shrink-0">
+                                    <div className="flex shrink-0 items-center gap-2">
                                         {isPartnerAdvance && partner && (
                                             <Avatar
                                                 className="size-8 shrink-0 rounded-full border border-amber-300/90 shadow-2xs ring-2 ring-amber-500/20 dark:border-amber-500/40"
@@ -447,7 +460,10 @@ export function AccountsView({
                                 </div>
                                 <div className="mt-2 h-1 overflow-hidden rounded-full bg-black/5 dark:bg-white/[0.06]">
                                     <div
-                                        className={cn('h-full rounded-full', cfg.progressBarClass)}
+                                        className={cn(
+                                            'h-full rounded-full',
+                                            cfg.progressBarClass,
+                                        )}
                                         style={{
                                             width: `${(Math.abs(acc.current_balance) / largestAccountBalance) * 100}%`,
                                         }}

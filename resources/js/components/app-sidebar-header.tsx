@@ -72,7 +72,7 @@ export function AppSidebarHeader({
                                 </Avatar>
 
                                 {/* Emerald Online Status Indicator */}
-                                <span className="absolute right-0 bottom-0 size-2 rounded-full bg-emerald-500 ring-1.5 ring-white dark:ring-[#111317]" />
+                                <span className="ring-1.5 absolute right-0 bottom-0 size-2 rounded-full bg-emerald-500 ring-white dark:ring-[#111317]" />
                             </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent

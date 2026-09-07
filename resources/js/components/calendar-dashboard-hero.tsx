@@ -1,10 +1,5 @@
 import { Link } from '@inertiajs/react';
-import {
-    ChevronLeft,
-    ChevronRight,
-    Grid3X3,
-    List,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Grid3X3, List } from 'lucide-react';
 import { GoogleLogo } from '@/components/google-logo';
 
 type CalendarView = 'month' | 'list';

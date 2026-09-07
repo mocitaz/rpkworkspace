@@ -113,7 +113,7 @@ export default function MatterEdit({
             <Head title={`Edit Perkara: ${matter.matter_number}`} />
 
             <div className="min-h-screen bg-[#fafafc] pb-20 dark:bg-[#0c0d10]">
-                <main className="mx-auto max-w-4xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 py-5 sm:px-6 lg:px-8">
                     {/* Header Navigation */}
                     <div className="flex flex-col justify-between gap-4 border-b border-slate-200/60 pb-5 sm:flex-row sm:items-center dark:border-white/[0.06]">
                         <div className="space-y-1">

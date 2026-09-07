@@ -1,11 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import {
-    ChevronRight,
-    Plus,
-    RotateCcw,
-    Search,
-    Users,
-} from 'lucide-react';
+import { ChevronRight, Plus, RotateCcw, Search, Users } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { ClientsDirectoryHero } from '@/components/clients-directory-hero';
 import { EmptyState } from '@/components/empty-state';
@@ -126,7 +120,7 @@ export default function ClientsIndex({
             <Head title="Direktori Klien & Entitas Hukum" />
 
             <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-10 dark:bg-[#0c0d10]">
-                <main className="w-full space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
                     <ClientsDirectoryHero
                         totalClients={clients.total}
                         visibleClients={clients.data.length}
@@ -383,7 +377,9 @@ export default function ClientsIndex({
                                                             className="block min-w-0 space-y-0.5"
                                                         >
                                                             <p
-                                                                title={client.display_name}
+                                                                title={
+                                                                    client.display_name
+                                                                }
                                                                 className="truncate text-xs font-bold text-slate-900 transition-colors hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
                                                             >
                                                                 {
@@ -399,14 +395,16 @@ export default function ClientsIndex({
                                                     </td>
 
                                                     {/* 2. Client Type */}
-                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap text-xs font-medium text-slate-700 dark:text-zinc-300">
-                                                        {client.type === 'individual' || client.type === 'person'
+                                                    <td className="px-3 py-2.5 text-center text-xs font-medium whitespace-nowrap text-slate-700 dark:text-zinc-300">
+                                                        {client.type ===
+                                                            'individual' ||
+                                                        client.type === 'person'
                                                             ? 'Individu'
                                                             : 'Badan Hukum'}
                                                     </td>
 
                                                     {/* 3. Industry */}
-                                                    <td className="px-3 py-2.5 text-center whitespace-nowrap text-xs text-slate-700 dark:text-zinc-300">
+                                                    <td className="px-3 py-2.5 text-center text-xs whitespace-nowrap text-slate-700 dark:text-zinc-300">
                                                         {client.industry ?? '-'}
                                                     </td>
 

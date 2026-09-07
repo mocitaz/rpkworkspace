@@ -265,7 +265,7 @@ export default function GovernanceIndex({
             <Head title="Tata Kelola & Kepatuhan Perkara" />
 
             <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-10 dark:bg-[#0c0d10]">
-                <main className="w-full space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
                     <GovernanceComplianceHero
                         correspondences={metrics.total_correspondences}
                         conflictChecks={metrics.conflict_checks}

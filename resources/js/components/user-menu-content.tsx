@@ -138,7 +138,12 @@ export function UserMenuContent({ user }: Props) {
                             Keluar dari Workspace?
                         </DialogTitle>
                         <DialogDescription className="mt-1.5 text-xs leading-relaxed text-slate-500 dark:text-zinc-400">
-                            Sesi Anda sebagai <span className="font-semibold text-slate-700 dark:text-zinc-200">{user.name}</span> akan diakhiri. Pastikan draf pekerjaan Anda telah tersimpan.
+                            Sesi Anda sebagai{' '}
+                            <span className="font-semibold text-slate-700 dark:text-zinc-200">
+                                {user.name}
+                            </span>{' '}
+                            akan diakhiri. Pastikan draf pekerjaan Anda telah
+                            tersimpan.
                         </DialogDescription>
                     </div>
 

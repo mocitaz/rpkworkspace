@@ -14,7 +14,11 @@ export function toUrl(url?: InertiaLinkProps['href'] | null): string {
     if (typeof url === 'string') {
         return url;
     }
-    if (typeof url === 'object' && 'url' in url && typeof url.url === 'string') {
+    if (
+        typeof url === 'object' &&
+        'url' in url &&
+        typeof url.url === 'string'
+    ) {
         return url.url;
     }
     return '';

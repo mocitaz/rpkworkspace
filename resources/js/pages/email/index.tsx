@@ -118,7 +118,8 @@ Apabila dalam batas waktu yang ditentukan tidak ada itikad baik, kami akan menem
     },
     {
         label: 'Konfirmasi Pembayaran',
-        subject: 'Konfirmasi Penerimaan Pembayaran dan Rekapitulasi Tagihan Perkara',
+        subject:
+            'Konfirmasi Penerimaan Pembayaran dan Rekapitulasi Tagihan Perkara',
         body: `Yth. Bapak/Ibu Klien,
 
 Kami mengonfirmasi bahwa pembayaran terkait biaya honorarium / operasional penanganan perkara telah kami terima dengan baik pada [Tanggal Pembayaran].
@@ -129,7 +130,11 @@ Terima kasih atas kepercayaan yang diberikan kepada kantor hukum kami.`,
     },
 ];
 
-const generateSignatureText = (name: string, title: string, address: string) => {
+const generateSignatureText = (
+    name: string,
+    title: string,
+    address: string,
+) => {
     return `\n\n--\n${name}\n${title}\nRPK Law Office & Partners\nJl. Bukit Nirwana VII, Blok CC.04, Sariwangi, Bandung Barat\nTel: 0852 9560 1417 | Email: ${address} | Web: www.rpklawoffice.com\n\n[CONFIDENTIALITY NOTICE / ATTORNEY-CLIENT PRIVILEGE]\nKorespondensi elektronik ini beserta lampirannya bersifat rahasia dan dilindungi hak istimewa hukum kerahasiaan profesi advokat berdasarkan UU No. 18 Tahun 2003 tentang Advokat. Apabila Anda bukan penerima yang sah, dilarang menyalin, mendistribusikan, atau memanfaatkan isi pesan ini. Mohon segera beritahukan pengirim dan hapus pesan ini dari seluruh sistem Anda.`;
 };
 
@@ -208,7 +213,9 @@ export default function EmailIndex({
     const [tab, setTab] = useState<'all' | Status>('all');
     const [search, setSearch] = useState('');
     const [composerOpen, setComposerOpen] = useState(false);
-    const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+    const [selectedMessage, setSelectedMessage] = useState<Message | null>(
+        null,
+    );
 
     // Form field states
     const [toText, setToText] = useState('');
@@ -237,7 +244,10 @@ export default function EmailIndex({
     const submitButtonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
-        if (currentUser?.name && signerName === 'Tim Advokat & Konsultan Hukum') {
+        if (
+            currentUser?.name &&
+            signerName === 'Tim Advokat & Konsultan Hukum'
+        ) {
             setSignerName(currentUser.name);
         }
         if (
@@ -294,7 +304,9 @@ export default function EmailIndex({
             ? `${prefix}${selected}${suffix}`
             : `${prefix}teks${suffix}`;
         const newText =
-            bodyText.substring(0, start) + replacement + bodyText.substring(end);
+            bodyText.substring(0, start) +
+            replacement +
+            bodyText.substring(end);
         setBodyText(newText);
         setTimeout(() => {
             el.focus();
@@ -328,7 +340,9 @@ export default function EmailIndex({
     const insertDynamicToken = (type: 'client' | 'matter' | 'date') => {
         if (type === 'client') {
             const foundClient = clients.find((c) => c.id === clientId);
-            insertSnippet(foundClient ? foundClient.display_name : '[Nama Klien]');
+            insertSnippet(
+                foundClient ? foundClient.display_name : '[Nama Klien]',
+            );
         } else if (type === 'matter') {
             const foundMatter = matters.find((m) => m.id === matterId);
             insertSnippet(
@@ -403,7 +417,7 @@ export default function EmailIndex({
         <>
             <Head title="Email Workspace" />
             <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-10 dark:bg-[#0c0d10]">
-                <main className="w-full space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
                     <EmailCorrespondenceHero
                         totalEmails={counts.all}
                         sentEmails={counts.sent}
@@ -438,7 +452,8 @@ export default function EmailIndex({
                                     Register Korespondensi Email
                                 </h2>
                                 <p className="text-[10px] text-slate-400 dark:text-zinc-500">
-                                    Riwayat komunikasi resmi, status antrean pengiriman, dan perkara terkait.
+                                    Riwayat komunikasi resmi, status antrean
+                                    pengiriman, dan perkara terkait.
                                 </p>
                             </div>
                             <div className="relative w-full sm:w-64">
@@ -449,7 +464,7 @@ export default function EmailIndex({
                                         setSearch(event.target.value)
                                     }
                                     placeholder="Cari subjek, penerima, atau perkara..."
-                                    className="h-8 w-full rounded-lg border border-slate-200 bg-slate-50/70 pl-8 pr-3 text-[11px] text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none dark:border-white/10 dark:bg-white/[0.04] dark:text-white"
+                                    className="h-8 w-full rounded-lg border border-slate-200 bg-slate-50/70 pr-3 pl-8 text-[11px] text-slate-900 placeholder:text-slate-400 focus:border-slate-400 focus:outline-none dark:border-white/10 dark:bg-white/[0.04] dark:text-white"
                                 />
                             </div>
                         </div>
@@ -474,18 +489,24 @@ export default function EmailIndex({
                                         return (
                                             <div
                                                 key={message.id}
-                                                onClick={() => setSelectedMessage(message)}
+                                                onClick={() =>
+                                                    setSelectedMessage(message)
+                                                }
                                                 className="block cursor-pointer p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
                                             >
                                                 <div className="flex items-start justify-between gap-2">
                                                     <div className="min-w-0 flex-1">
                                                         <div className="flex items-center gap-1.5 font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
                                                             <span>
-                                                                {message.matter?.matter_number ?? 'EMAIL'}
+                                                                {message.matter
+                                                                    ?.matter_number ??
+                                                                    'EMAIL'}
                                                             </span>
                                                             <span>·</span>
                                                             <span className="truncate">
-                                                                {message.matter?.title ?? 'Korespondensi Umum'}
+                                                                {message.matter
+                                                                    ?.title ??
+                                                                    'Korespondensi Umum'}
                                                             </span>
                                                         </div>
                                                         <p className="mt-0.5 line-clamp-2 text-xs font-bold text-slate-900 dark:text-white">
@@ -494,30 +515,58 @@ export default function EmailIndex({
                                                         <div className="mt-2 flex items-center gap-2">
                                                             <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
                                                                 <AvatarImage
-                                                                    src={message.sender?.avatar_url ?? undefined}
-                                                                    alt={message.sender?.name ?? 'Pengirim'}
+                                                                    src={
+                                                                        message
+                                                                            .sender
+                                                                            ?.avatar_url ??
+                                                                        undefined
+                                                                    }
+                                                                    alt={
+                                                                        message
+                                                                            .sender
+                                                                            ?.name ??
+                                                                        'Pengirim'
+                                                                    }
                                                                 />
                                                                 <AvatarFallback className="text-[7px] font-bold">
-                                                                    {getInitials(message.sender?.name ?? 'RPK')}
+                                                                    {getInitials(
+                                                                        message
+                                                                            .sender
+                                                                            ?.name ??
+                                                                            'RPK',
+                                                                    )}
                                                                 </AvatarFallback>
                                                             </Avatar>
                                                             <span className="truncate text-[11px] font-medium text-slate-700 dark:text-zinc-200">
-                                                                {message.sender?.name ?? 'Tim Advokat'}
+                                                                {message.sender
+                                                                    ?.name ??
+                                                                    'Tim Advokat'}
                                                             </span>
-                                                            <span className="text-[10px] text-slate-400">&bull;</span>
+                                                            <span className="text-[10px] text-slate-400">
+                                                                &bull;
+                                                            </span>
                                                             <span className="truncate text-[11px] text-slate-500 dark:text-zinc-400">
-                                                                Kepada: {message.to_addresses.join(', ')}
+                                                                Kepada:{' '}
+                                                                {message.to_addresses.join(
+                                                                    ', ',
+                                                                )}
                                                             </span>
                                                         </div>
                                                     </div>
                                                     <ChevronRight className="mt-1 size-4 shrink-0 text-slate-400" />
                                                 </div>
                                                 <div className="mt-2.5 flex flex-wrap items-center justify-between gap-1.5 border-t border-slate-100 pt-2 text-[11px] dark:border-white/[0.04]">
-                                                    <span className={`font-semibold ${status.colorClass}`}>
+                                                    <span
+                                                        className={`font-semibold ${status.colorClass}`}
+                                                    >
                                                         {status.label}
                                                     </span>
                                                     <span className="font-mono text-[10.5px] text-slate-500 dark:text-zinc-400">
-                                                        {formatDate(message.sent_at ?? message.created_at)} WIB
+                                                        {formatDate(
+                                                            message.sent_at ??
+                                                                message.created_at,
+                                                        )}{' '}
+                                                        WIB
                                                     </span>
                                                 </div>
                                             </div>
@@ -550,24 +599,35 @@ export default function EmailIndex({
                                         </thead>
                                         <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                                             {visible.map((message) => {
-                                                const status = meta[message.status];
+                                                const status =
+                                                    meta[message.status];
                                                 return (
                                                     <tr
                                                         key={message.id}
-                                                        onClick={() => setSelectedMessage(message)}
+                                                        onClick={() =>
+                                                            setSelectedMessage(
+                                                                message,
+                                                            )
+                                                        }
                                                         className="group cursor-pointer transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
                                                     >
                                                         {/* 1. Subjek & Perkara */}
                                                         <td className="py-2.5 pr-3 pl-4">
                                                             <div className="min-w-0 space-y-0.5">
                                                                 <p
-                                                                    title={message.subject}
+                                                                    title={
+                                                                        message.subject
+                                                                    }
                                                                     className="truncate text-xs font-bold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
                                                                 >
-                                                                    {message.subject}
+                                                                    {
+                                                                        message.subject
+                                                                    }
                                                                 </p>
                                                                 <span className="block truncate font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
-                                                                    {message.matter ? `${message.matter.matter_number} · ${message.matter.title}` : 'Korespondensi Umum'}
+                                                                    {message.matter
+                                                                        ? `${message.matter.matter_number} · ${message.matter.title}`
+                                                                        : 'Korespondensi Umum'}
                                                                 </span>
                                                             </div>
                                                         </td>
@@ -576,33 +636,63 @@ export default function EmailIndex({
                                                         <td className="px-3 py-2.5 font-medium whitespace-nowrap">
                                                             <span
                                                                 className="block max-w-[190px] truncate text-xs text-slate-700 dark:text-zinc-300"
-                                                                title={message.to_addresses.join(', ')}
+                                                                title={message.to_addresses.join(
+                                                                    ', ',
+                                                                )}
                                                             >
-                                                                {message.to_addresses.join(', ')}
+                                                                {message.to_addresses.join(
+                                                                    ', ',
+                                                                )}
                                                             </span>
                                                         </td>
 
                                                         {/* 3. Pengirim with Profile Picture / Avatar */}
                                                         <td className="px-3 py-2.5 font-medium whitespace-nowrap">
-                                                            <div className="flex items-center gap-2 min-w-0">
+                                                            <div className="flex min-w-0 items-center gap-2">
                                                                 <Avatar className="size-6 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
                                                                     <AvatarImage
-                                                                        src={message.sender?.avatar_url ?? undefined}
-                                                                        alt={message.sender?.name ?? 'Pengirim'}
+                                                                        src={
+                                                                            message
+                                                                                .sender
+                                                                                ?.avatar_url ??
+                                                                            undefined
+                                                                        }
+                                                                        alt={
+                                                                            message
+                                                                                .sender
+                                                                                ?.name ??
+                                                                            'Pengirim'
+                                                                        }
                                                                     />
                                                                     <AvatarFallback className="text-[8px] font-bold">
-                                                                        {getInitials(message.sender?.name ?? 'RPK')}
+                                                                        {getInitials(
+                                                                            message
+                                                                                .sender
+                                                                                ?.name ??
+                                                                                'RPK',
+                                                                        )}
                                                                     </AvatarFallback>
                                                                 </Avatar>
                                                                 <div className="min-w-0 flex-1 truncate">
                                                                     <p
                                                                         className="truncate text-xs font-semibold text-slate-900 dark:text-white"
-                                                                        title={message.sender?.name ?? 'Tim Advokat'}
+                                                                        title={
+                                                                            message
+                                                                                .sender
+                                                                                ?.name ??
+                                                                            'Tim Advokat'
+                                                                        }
                                                                     >
-                                                                        {message.sender?.name ?? 'Tim Advokat'}
+                                                                        {message
+                                                                            .sender
+                                                                            ?.name ??
+                                                                            'Tim Advokat'}
                                                                     </p>
                                                                     <p className="truncate text-[10px] text-slate-400 dark:text-zinc-500">
-                                                                        {message.sender?.position_title ?? message.from_address}
+                                                                        {message
+                                                                            .sender
+                                                                            ?.position_title ??
+                                                                            message.from_address}
                                                                     </p>
                                                                 </div>
                                                             </div>
@@ -610,23 +700,32 @@ export default function EmailIndex({
 
                                                         {/* 4. Status (text only, solid color) */}
                                                         <td className="px-3 py-2.5 text-center whitespace-nowrap">
-                                                            <span className={`text-xs font-semibold ${status.colorClass}`}>
+                                                            <span
+                                                                className={`text-xs font-semibold ${status.colorClass}`}
+                                                            >
                                                                 {status.label}
                                                             </span>
                                                         </td>
 
                                                         {/* 5. Waktu */}
                                                         <td className="px-3 py-2.5 text-center font-mono text-[11px] whitespace-nowrap text-slate-500 dark:text-zinc-400">
-                                                            {formatDate(message.sent_at ?? message.created_at)}
+                                                            {formatDate(
+                                                                message.sent_at ??
+                                                                    message.created_at,
+                                                            )}
                                                         </td>
 
                                                         {/* 6. Action Arrow */}
                                                         <td className="py-2.5 pr-4 pl-1 text-right whitespace-nowrap">
                                                             <button
                                                                 type="button"
-                                                                onClick={(e) => {
+                                                                onClick={(
+                                                                    e,
+                                                                ) => {
                                                                     e.stopPropagation();
-                                                                    setSelectedMessage(message);
+                                                                    setSelectedMessage(
+                                                                        message,
+                                                                    );
                                                                 }}
                                                                 className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
                                                             >
@@ -647,7 +746,7 @@ export default function EmailIndex({
 
             {/* Clean Gmail-Style Compose Dialog with Governance/Finance standard header */}
             <Dialog open={composerOpen} onOpenChange={setComposerOpen}>
-                <DialogContent className="flex h-[88vh] max-h-[88vh] w-[95vw] sm:max-w-4xl flex-col gap-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
+                <DialogContent className="flex h-[88vh] max-h-[88vh] w-[95vw] flex-col gap-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-4xl dark:border-white/10 dark:bg-[#14161b]">
                     {/* Header: Neutral & Matching Governance Dialog Header */}
                     <DialogHeader className="shrink-0 border-b border-slate-100 bg-slate-50/60 px-5 py-3 text-left sm:px-6 dark:border-white/[0.06] dark:bg-white/[0.025]">
                         <div className="grid min-h-9 grid-cols-[36px_minmax(0,1fr)] items-center gap-3 pr-6">
@@ -659,7 +758,11 @@ export default function EmailIndex({
                                     Tulis Pesan Baru
                                 </DialogTitle>
                                 <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
-                                    Dari: {signerName ? `${signerName} (${fromAddress})` : fromAddress} &bull; Tercatat pada register korespondensi
+                                    Dari:{' '}
+                                    {signerName
+                                        ? `${signerName} (${fromAddress})`
+                                        : fromAddress}{' '}
+                                    &bull; Tercatat pada register korespondensi
                                 </p>
                             </div>
                         </div>
@@ -680,15 +783,15 @@ export default function EmailIndex({
                                 showCcBcc ||
                                 Boolean(
                                     ccText ||
-                                        bccText ||
-                                        errors.cc ||
-                                        errors.bcc,
+                                    bccText ||
+                                    errors.cc ||
+                                    errors.bcc,
                                 );
 
                             return (
                                 <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
                                     {/* Scrollable Middle Body */}
-                                    <div className="min-h-0 flex-1 flex flex-col overflow-y-auto">
+                                    <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
                                         {/* Error Alert */}
                                         {Object.keys(errors).length > 0 && (
                                             <div
@@ -696,7 +799,8 @@ export default function EmailIndex({
                                                 className="mx-5 mt-3 rounded-lg border border-rose-200 bg-rose-50/80 p-3 text-xs text-rose-800 sm:mx-6 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300"
                                             >
                                                 <p className="font-semibold">
-                                                    Periksa kembali data pengiriman:
+                                                    Periksa kembali data
+                                                    pengiriman:
                                                 </p>
                                                 <ul className="mt-1 list-disc space-y-0.5 pl-4 text-[11px]">
                                                     {Object.entries(errors).map(
@@ -723,7 +827,7 @@ export default function EmailIndex({
                                                     setToText(e.target.value)
                                                 }
                                                 placeholder="Penerima (pisahkan koma jika lebih dari satu)"
-                                                className="h-8 w-full border-0 bg-transparent p-0 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-0 dark:text-white dark:placeholder:text-zinc-500"
+                                                className="h-8 w-full border-0 bg-transparent p-0 text-xs text-slate-900 placeholder:text-slate-400 focus:ring-0 focus:outline-none dark:text-white dark:placeholder:text-zinc-500"
                                                 required
                                             />
                                             <div className="flex shrink-0 items-center gap-1 pl-2">
@@ -760,7 +864,7 @@ export default function EmailIndex({
                                                             )
                                                         }
                                                         placeholder="Salinan (Cc)"
-                                                        className="h-7 w-full border-0 bg-transparent p-0 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-0 dark:text-white dark:placeholder:text-zinc-500"
+                                                        className="h-7 w-full border-0 bg-transparent p-0 text-xs text-slate-900 placeholder:text-slate-400 focus:ring-0 focus:outline-none dark:text-white dark:placeholder:text-zinc-500"
                                                     />
                                                 </div>
                                                 <div className="flex items-center border-b border-slate-100 px-5 py-1.5 sm:px-6 dark:border-white/[0.06]">
@@ -776,7 +880,7 @@ export default function EmailIndex({
                                                             )
                                                         }
                                                         placeholder="Salinan rahasia (Bcc)"
-                                                        className="h-7 w-full border-0 bg-transparent p-0 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-0 dark:text-white dark:placeholder:text-zinc-500"
+                                                        className="h-7 w-full border-0 bg-transparent p-0 text-xs text-slate-900 placeholder:text-slate-400 focus:ring-0 focus:outline-none dark:text-white dark:placeholder:text-zinc-500"
                                                     />
                                                 </div>
                                             </>
@@ -799,7 +903,8 @@ export default function EmailIndex({
                                                     className="h-7 w-full cursor-pointer appearance-none border-0 bg-transparent p-0 text-xs text-slate-700 outline-none focus:ring-0 dark:text-zinc-200"
                                                 >
                                                     <option value="">
-                                                        -- Tidak dikaitkan perkara --
+                                                        -- Tidak dikaitkan
+                                                        perkara --
                                                     </option>
                                                     {matters.map((m) => (
                                                         <option
@@ -827,7 +932,8 @@ export default function EmailIndex({
                                                     className="h-7 w-full cursor-pointer appearance-none border-0 bg-transparent p-0 text-xs text-slate-700 outline-none focus:ring-0 dark:text-zinc-200"
                                                 >
                                                     <option value="">
-                                                        -- Tidak dikaitkan klien --
+                                                        -- Tidak dikaitkan klien
+                                                        --
                                                     </option>
                                                     {clients.map((c) => (
                                                         <option
@@ -855,12 +961,14 @@ export default function EmailIndex({
                                                     )
                                                 }
                                                 placeholder="Subjek email..."
-                                                className="h-8 w-full border-0 bg-transparent p-0 text-xs font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none focus:ring-0 dark:text-white dark:placeholder:text-zinc-500"
+                                                className="h-8 w-full border-0 bg-transparent p-0 text-xs font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:ring-0 focus:outline-none dark:text-white dark:placeholder:text-zinc-500"
                                                 required
                                             />
                                         </div>
                                         <div className="px-5 sm:px-6">
-                                            <InputError message={errors.subject} />
+                                            <InputError
+                                                message={errors.subject}
+                                            />
                                         </div>
 
                                         {/* GMAIL FORMATTING & TEMPLATE TOOLBAR */}
@@ -888,7 +996,7 @@ export default function EmailIndex({
                                                             '*',
                                                         )
                                                     }
-                                                    className="flex size-7 items-center justify-center rounded text-xs italic text-slate-600 hover:bg-slate-200/60 dark:text-zinc-400 dark:hover:bg-white/10"
+                                                    className="flex size-7 items-center justify-center rounded text-xs text-slate-600 italic hover:bg-slate-200/60 dark:text-zinc-400 dark:hover:bg-white/10"
                                                 >
                                                     <Italic className="size-3.5" />
                                                 </button>
@@ -934,10 +1042,7 @@ export default function EmailIndex({
                                                     defaultValue=""
                                                     className="h-6.5 cursor-pointer rounded border border-slate-200 bg-white px-2 text-[11px] text-slate-600 outline-none hover:border-slate-300 dark:border-white/10 dark:bg-[#16181f] dark:text-zinc-300"
                                                 >
-                                                    <option
-                                                        value=""
-                                                        disabled
-                                                    >
+                                                    <option value="" disabled>
                                                         Template surat...
                                                     </option>
                                                     {quickTemplates.map(
@@ -1006,7 +1111,7 @@ export default function EmailIndex({
                                                 setBodyText(e.target.value)
                                             }
                                             placeholder="Tulis pesan resmi Anda di sini..."
-                                            className="min-h-[220px] w-full flex-1 resize-none border-0 bg-transparent px-5 py-4 text-xs leading-relaxed text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-0 dark:text-zinc-200 dark:placeholder:text-zinc-500"
+                                            className="min-h-[220px] w-full flex-1 resize-none border-0 bg-transparent px-5 py-4 text-xs leading-relaxed text-slate-800 placeholder:text-slate-400 focus:ring-0 focus:outline-none dark:text-zinc-200 dark:placeholder:text-zinc-500"
                                             required
                                         />
                                         <div className="px-5 sm:px-6">
@@ -1031,7 +1136,9 @@ export default function EmailIndex({
                                                         className="size-3.5 rounded border-slate-300 text-slate-900 focus:ring-0 dark:border-white/20 dark:bg-[#16181f]"
                                                     />
                                                     <span>
-                                                        Sertakan tanda tangan &amp; disclaimer resmi firma
+                                                        Sertakan tanda tangan
+                                                        &amp; disclaimer resmi
+                                                        firma
                                                     </span>
                                                 </label>
 
@@ -1058,15 +1165,14 @@ export default function EmailIndex({
                                                     <div className="mt-2.5 grid grid-cols-1 gap-2.5 rounded-lg border border-slate-200 bg-white p-2.5 sm:grid-cols-2 dark:border-white/10 dark:bg-[#16181f]">
                                                         <div>
                                                             <span className="text-[10px] font-medium text-slate-500">
-                                                                Nama Penandatangan
+                                                                Nama
+                                                                Penandatangan
                                                             </span>
                                                             <input
                                                                 value={
                                                                     signerName
                                                                 }
-                                                                onChange={(
-                                                                    e,
-                                                                ) =>
+                                                                onChange={(e) =>
                                                                     setSignerName(
                                                                         e.target
                                                                             .value,
@@ -1084,9 +1190,7 @@ export default function EmailIndex({
                                                                 value={
                                                                     signerTitle
                                                                 }
-                                                                onChange={(
-                                                                    e,
-                                                                ) =>
+                                                                onChange={(e) =>
                                                                     setSignerTitle(
                                                                         e.target
                                                                             .value,
@@ -1118,23 +1222,45 @@ export default function EmailIndex({
                                                                 {signerTitle}
                                                             </p>
                                                             <p className="text-[10px] font-semibold text-slate-700 dark:text-zinc-300">
-                                                                RONI, PUTRA &amp; KUSUMAH LAW FIRM
+                                                                RONI, PUTRA
+                                                                &amp; KUSUMAH
+                                                                LAW FIRM
                                                             </p>
                                                         </div>
                                                     </div>
                                                     <div className="mt-2 text-[10.5px] leading-relaxed text-slate-500 dark:text-zinc-400">
-                                                        <span className="font-medium text-slate-700 dark:text-zinc-300">Tel/WA:</span> 0852 9560 1417 &bull;{' '}
-                                                        <span className="font-medium text-slate-700 dark:text-zinc-300">Email:</span> {fromAddress} &bull;{' '}
-                                                        <span className="font-medium text-slate-700 dark:text-zinc-300">Web:</span> rpklawoffice.com
+                                                        <span className="font-medium text-slate-700 dark:text-zinc-300">
+                                                            Tel/WA:
+                                                        </span>{' '}
+                                                        0852 9560 1417 &bull;{' '}
+                                                        <span className="font-medium text-slate-700 dark:text-zinc-300">
+                                                            Email:
+                                                        </span>{' '}
+                                                        {fromAddress} &bull;{' '}
+                                                        <span className="font-medium text-slate-700 dark:text-zinc-300">
+                                                            Web:
+                                                        </span>{' '}
+                                                        rpklawoffice.com
                                                         <p className="text-[10px] text-slate-400 dark:text-zinc-500">
-                                                            Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi, Bandung Barat
+                                                            Jl. Bukit Nirwana
+                                                            VII, Blok CC.04,
+                                                            Sariwangi, Bandung
+                                                            Barat
                                                         </p>
                                                     </div>
                                                     <p className="mt-2 border-t border-dashed border-slate-200 pt-1.5 text-[9.5px] leading-normal text-slate-400 dark:border-white/5 dark:text-zinc-500">
                                                         <strong className="font-medium text-slate-500 dark:text-zinc-400">
-                                                            KERAHASIAAN PROFESI ADVOKAT (ATTORNEY-CLIENT PRIVILEGE):
+                                                            KERAHASIAAN PROFESI
+                                                            ADVOKAT
+                                                            (ATTORNEY-CLIENT
+                                                            PRIVILEGE):
                                                         </strong>{' '}
-                                                        Surat elektronik ini bersifat rahasia dan dilindungi hak istimewa hukum kerahasiaan profesi advokat (Pasal 19 UU No. 18/2003).
+                                                        Surat elektronik ini
+                                                        bersifat rahasia dan
+                                                        dilindungi hak istimewa
+                                                        hukum kerahasiaan
+                                                        profesi advokat (Pasal
+                                                        19 UU No. 18/2003).
                                                     </p>
                                                 </div>
                                             )}
@@ -1276,8 +1402,10 @@ export default function EmailIndex({
                                 Perkara
                             </span>
                             <span className="max-w-[220px] truncate text-right text-slate-700 dark:text-zinc-300">
-                                {matters.find((m) => m.id === matterId)
-                                    ?.matter_number}{' '}
+                                {
+                                    matters.find((m) => m.id === matterId)
+                                        ?.matter_number
+                                }{' '}
                                 &bull;{' '}
                                 {matters.find((m) => m.id === matterId)?.title}
                             </span>
@@ -1301,178 +1429,292 @@ export default function EmailIndex({
                 open={!!selectedMessage}
                 onOpenChange={(open) => !open && setSelectedMessage(null)}
             >
-                <DialogContent className="flex max-h-[90vh] w-[95vw] sm:max-w-2xl flex-col gap-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
-                    {selectedMessage && (() => {
-                        const status = meta[selectedMessage.status];
-                        const { mainBody, sigName, sigTitle, hasSignature } = parseMessageBody(selectedMessage.body);
+                <DialogContent className="flex max-h-[90vh] w-[95vw] flex-col gap-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-2xl dark:border-white/10 dark:bg-[#14161b]">
+                    {selectedMessage &&
+                        (() => {
+                            const status = meta[selectedMessage.status];
+                            const {
+                                mainBody,
+                                sigName,
+                                sigTitle,
+                                hasSignature,
+                            } = parseMessageBody(selectedMessage.body);
 
-                        return (
-                            <>
-                                {/* Header */}
-                                <DialogHeader className="shrink-0 border-b border-slate-100 bg-slate-50/70 px-5 py-4 text-left sm:px-6 dark:border-white/[0.06] dark:bg-white/[0.02]">
-                                    <div className="flex items-start justify-between gap-3 pr-6">
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-2">
-                                                <span className={`text-xs font-semibold ${status.colorClass}`}>
-                                                    {status.label}
+                            return (
+                                <>
+                                    {/* Header */}
+                                    <DialogHeader className="shrink-0 border-b border-slate-100 bg-slate-50/70 px-5 py-4 text-left sm:px-6 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                                        <div className="flex items-start justify-between gap-3 pr-6">
+                                            <div className="space-y-1">
+                                                <div className="flex items-center gap-2">
+                                                    <span
+                                                        className={`text-xs font-semibold ${status.colorClass}`}
+                                                    >
+                                                        {status.label}
+                                                    </span>
+                                                    {selectedMessage.matter && (
+                                                        <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-medium text-slate-600 dark:bg-white/10 dark:text-zinc-300">
+                                                            {
+                                                                selectedMessage
+                                                                    .matter
+                                                                    .matter_number
+                                                            }
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
+                                                    {selectedMessage.subject}
+                                                </DialogTitle>
+                                                <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
+                                                    ID:{' '}
+                                                    <span className="font-mono text-[11px]">
+                                                        {selectedMessage.id}
+                                                    </span>{' '}
+                                                    &bull; Tercatat pada
+                                                    register korespondensi
+                                                </DialogDescription>
+                                            </div>
+                                        </div>
+                                    </DialogHeader>
+
+                                    {/* Scrollable Content */}
+                                    <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-5 sm:p-6">
+                                        {/* Meta summary card */}
+                                        <div className="grid grid-cols-1 gap-2.5 rounded-xl border border-slate-200/80 bg-slate-50/60 p-3.5 text-xs sm:grid-cols-2 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                                            <div className="flex items-center gap-2.5">
+                                                <Avatar className="size-8 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
+                                                    <AvatarImage
+                                                        src={
+                                                            selectedMessage
+                                                                .sender
+                                                                ?.avatar_url ??
+                                                            undefined
+                                                        }
+                                                        alt={
+                                                            selectedMessage
+                                                                .sender?.name ??
+                                                            'Pengirim'
+                                                        }
+                                                    />
+                                                    <AvatarFallback className="text-xs font-bold">
+                                                        {getInitials(
+                                                            selectedMessage
+                                                                .sender?.name ??
+                                                                'RPK',
+                                                        )}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div className="min-w-0 flex-1">
+                                                    <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-500">
+                                                        Pengirim
+                                                    </span>
+                                                    <p className="truncate font-semibold text-slate-900 dark:text-white">
+                                                        {selectedMessage.sender
+                                                            ?.name ??
+                                                            'Tim Advokat'}
+                                                    </p>
+                                                    <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400">
+                                                        {
+                                                            selectedMessage.from_address
+                                                        }
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
+                                                    Penerima (To)
                                                 </span>
-                                                {selectedMessage.matter && (
-                                                    <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-medium text-slate-600 dark:bg-white/10 dark:text-zinc-300">
-                                                        {selectedMessage.matter.matter_number}
+                                                <p className="font-semibold break-words text-slate-900 dark:text-white">
+                                                    {selectedMessage.to_addresses.join(
+                                                        ', ',
+                                                    )}
+                                                </p>
+                                                {selectedMessage.cc_addresses &&
+                                                    selectedMessage.cc_addresses
+                                                        .length > 0 && (
+                                                        <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                            <span className="font-medium">
+                                                                Cc:
+                                                            </span>{' '}
+                                                            {selectedMessage.cc_addresses.join(
+                                                                ', ',
+                                                            )}
+                                                        </p>
+                                                    )}
+                                                {selectedMessage.bcc_addresses &&
+                                                    selectedMessage
+                                                        .bcc_addresses.length >
+                                                        0 && (
+                                                        <p className="text-[11px] text-slate-500 dark:text-zinc-400">
+                                                            <span className="font-medium">
+                                                                Bcc:
+                                                            </span>{' '}
+                                                            {selectedMessage.bcc_addresses.join(
+                                                                ', ',
+                                                            )}
+                                                        </p>
+                                                    )}
+                                            </div>
+
+                                            {selectedMessage.matter && (
+                                                <div className="border-t border-slate-200/60 pt-2 sm:col-span-2 dark:border-white/5">
+                                                    <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
+                                                        Perkara Terkait
+                                                    </span>
+                                                    <p className="font-semibold text-slate-900 dark:text-white">
+                                                        {
+                                                            selectedMessage
+                                                                .matter
+                                                                .matter_number
+                                                        }{' '}
+                                                        &bull;{' '}
+                                                        {
+                                                            selectedMessage
+                                                                .matter.title
+                                                        }
+                                                    </p>
+                                                </div>
+                                            )}
+
+                                            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200/60 pt-2 text-[11px] text-slate-500 sm:col-span-2 dark:border-white/5 dark:text-zinc-400">
+                                                <span>
+                                                    Dibuat:{' '}
+                                                    <strong className="text-slate-700 dark:text-zinc-300">
+                                                        {formatDate(
+                                                            selectedMessage.created_at,
+                                                        )}{' '}
+                                                        WIB
+                                                    </strong>
+                                                </span>
+                                                {selectedMessage.sent_at && (
+                                                    <span>
+                                                        Terkirim:{' '}
+                                                        <strong className="text-emerald-700 dark:text-emerald-400">
+                                                            {formatDate(
+                                                                selectedMessage.sent_at,
+                                                            )}{' '}
+                                                            WIB
+                                                        </strong>
                                                     </span>
                                                 )}
                                             </div>
-                                            <DialogTitle className="text-base font-bold text-slate-900 dark:text-white">
-                                                {selectedMessage.subject}
-                                            </DialogTitle>
-                                            <DialogDescription className="text-xs text-slate-500 dark:text-zinc-400">
-                                                ID: <span className="font-mono text-[11px]">{selectedMessage.id}</span> &bull; Tercatat pada register korespondensi
-                                            </DialogDescription>
-                                        </div>
-                                    </div>
-                                </DialogHeader>
-
-                                {/* Scrollable Content */}
-                                <div className="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
-                                    {/* Meta summary card */}
-                                    <div className="grid grid-cols-1 gap-2.5 rounded-xl border border-slate-200/80 bg-slate-50/60 p-3.5 text-xs sm:grid-cols-2 dark:border-white/[0.06] dark:bg-white/[0.02]">
-                                        <div className="flex items-center gap-2.5">
-                                            <Avatar className="size-8 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                <AvatarImage
-                                                    src={selectedMessage.sender?.avatar_url ?? undefined}
-                                                    alt={selectedMessage.sender?.name ?? 'Pengirim'}
-                                                />
-                                                <AvatarFallback className="text-xs font-bold">
-                                                    {getInitials(selectedMessage.sender?.name ?? 'RPK')}
-                                                </AvatarFallback>
-                                            </Avatar>
-                                            <div className="min-w-0 flex-1">
-                                                <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-500">
-                                                    Pengirim
-                                                </span>
-                                                <p className="truncate font-semibold text-slate-900 dark:text-white">
-                                                    {selectedMessage.sender?.name ?? 'Tim Advokat'}
-                                                </p>
-                                                <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400">
-                                                    {selectedMessage.from_address}
-                                                </p>
-                                            </div>
                                         </div>
 
-                                        <div>
-                                            <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
-                                                Penerima (To)
-                                            </span>
-                                            <p className="font-semibold text-slate-900 dark:text-white break-words">
-                                                {selectedMessage.to_addresses.join(', ')}
-                                            </p>
-                                            {selectedMessage.cc_addresses && selectedMessage.cc_addresses.length > 0 && (
-                                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                    <span className="font-medium">Cc:</span> {selectedMessage.cc_addresses.join(', ')}
+                                        {selectedMessage.error_message && (
+                                            <div className="rounded-xl border border-rose-200 bg-rose-50/80 p-3 text-xs text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
+                                                <p className="font-bold">
+                                                    Pemberitahuan Kendala
+                                                    Pengiriman:
                                                 </p>
-                                            )}
-                                            {selectedMessage.bcc_addresses && selectedMessage.bcc_addresses.length > 0 && (
-                                                <p className="text-[11px] text-slate-500 dark:text-zinc-400">
-                                                    <span className="font-medium">Bcc:</span> {selectedMessage.bcc_addresses.join(', ')}
-                                                </p>
-                                            )}
-                                        </div>
-
-                                        {selectedMessage.matter && (
-                                            <div className="sm:col-span-2 border-t border-slate-200/60 pt-2 dark:border-white/5">
-                                                <span className="text-[10.5px] font-medium text-slate-400 dark:text-zinc-500">
-                                                    Perkara Terkait
-                                                </span>
-                                                <p className="font-semibold text-slate-900 dark:text-white">
-                                                    {selectedMessage.matter.matter_number} &bull; {selectedMessage.matter.title}
+                                                <p className="mt-0.5 font-mono text-[11px] leading-relaxed">
+                                                    {
+                                                        selectedMessage.error_message
+                                                    }
                                                 </p>
                                             </div>
                                         )}
 
-                                        <div className="sm:col-span-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200/60 pt-2 text-[11px] text-slate-500 dark:border-white/5 dark:text-zinc-400">
-                                            <span>
-                                                Dibuat: <strong className="text-slate-700 dark:text-zinc-300">{formatDate(selectedMessage.created_at)} WIB</strong>
-                                            </span>
-                                            {selectedMessage.sent_at && (
-                                                <span>
-                                                    Terkirim: <strong className="text-emerald-700 dark:text-emerald-400">{formatDate(selectedMessage.sent_at)} WIB</strong>
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
+                                        {/* Email Body Card */}
+                                        <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs dark:border-white/10 dark:bg-[#12141a]">
+                                            <div className="mb-3 border-b border-slate-100 pb-2 text-[10.5px] font-bold tracking-wider text-slate-400 uppercase dark:border-white/5 dark:text-zinc-500">
+                                                Isi Pesan Resmi
+                                            </div>
+                                            <div className="text-xs leading-relaxed whitespace-pre-wrap text-slate-800 dark:text-zinc-200">
+                                                {mainBody}
+                                            </div>
 
-                                    {selectedMessage.error_message && (
-                                        <div className="rounded-xl border border-rose-200 bg-rose-50/80 p-3 text-xs text-rose-800 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
-                                            <p className="font-bold">Pemberitahuan Kendala Pengiriman:</p>
-                                            <p className="mt-0.5 text-[11px] leading-relaxed font-mono">{selectedMessage.error_message}</p>
-                                        </div>
-                                    )}
-
-                                    {/* Email Body Card */}
-                                    <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs dark:border-white/10 dark:bg-[#12141a]">
-                                        <div className="border-b border-slate-100 pb-2 mb-3 text-[10.5px] font-bold tracking-wider text-slate-400 uppercase dark:border-white/5 dark:text-zinc-500">
-                                            Isi Pesan Resmi
-                                        </div>
-                                        <div className="whitespace-pre-wrap text-xs leading-relaxed text-slate-800 dark:text-zinc-200">
-                                            {mainBody}
-                                        </div>
-
-                                        {/* Letterhead Signature if included */}
-                                        {hasSignature && (
-                                            <div className="mt-5 border-t border-slate-200/80 pt-4 dark:border-white/10">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="flex h-9 w-20 shrink-0 items-center justify-center rounded border border-slate-200 bg-white p-1 dark:border-white/10 dark:bg-zinc-900">
-                                                        <img
-                                                            src="/logo/raf-law-firm-transparent.png"
-                                                            alt="RPK Law Firm"
-                                                            className="max-h-full max-w-full object-contain"
-                                                        />
+                                            {/* Letterhead Signature if included */}
+                                            {hasSignature && (
+                                                <div className="mt-5 border-t border-slate-200/80 pt-4 dark:border-white/10">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="flex h-9 w-20 shrink-0 items-center justify-center rounded border border-slate-200 bg-white p-1 dark:border-white/10 dark:bg-zinc-900">
+                                                            <img
+                                                                src="/logo/raf-law-firm-transparent.png"
+                                                                alt="RPK Law Firm"
+                                                                className="max-h-full max-w-full object-contain"
+                                                            />
+                                                        </div>
+                                                        <div className="min-w-0 border-l border-slate-200 pl-3 dark:border-white/10">
+                                                            <p className="text-xs font-bold text-slate-900 dark:text-white">
+                                                                {sigName ||
+                                                                    selectedMessage
+                                                                        .sender
+                                                                        ?.name ||
+                                                                    'Tim Advokat & Konsultan Hukum'}
+                                                            </p>
+                                                            <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                                                                {sigTitle ||
+                                                                    selectedMessage
+                                                                        .sender
+                                                                        ?.position_title ||
+                                                                    'Advokat & Konsultan Hukum'}
+                                                            </p>
+                                                            <p className="text-[10px] font-semibold text-slate-700 dark:text-zinc-300">
+                                                                RONI, PUTRA
+                                                                &amp; KUSUMAH
+                                                                LAW FIRM
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                    <div className="min-w-0 border-l border-slate-200 pl-3 dark:border-white/10">
-                                                        <p className="text-xs font-bold text-slate-900 dark:text-white">
-                                                            {sigName || selectedMessage.sender?.name || 'Tim Advokat & Konsultan Hukum'}
-                                                        </p>
-                                                        <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
-                                                            {sigTitle || selectedMessage.sender?.position_title || 'Advokat & Konsultan Hukum'}
-                                                        </p>
-                                                        <p className="text-[10px] font-semibold text-slate-700 dark:text-zinc-300">
-                                                            RONI, PUTRA &amp; KUSUMAH LAW FIRM
+                                                    <div className="mt-2 text-[10.5px] leading-relaxed text-slate-500 dark:text-zinc-400">
+                                                        <span className="font-medium text-slate-700 dark:text-zinc-300">
+                                                            Tel/WA:
+                                                        </span>{' '}
+                                                        0852 9560 1417 &bull;{' '}
+                                                        <span className="font-medium text-slate-700 dark:text-zinc-300">
+                                                            Email:
+                                                        </span>{' '}
+                                                        {
+                                                            selectedMessage.from_address
+                                                        }{' '}
+                                                        &bull;{' '}
+                                                        <span className="font-medium text-slate-700 dark:text-zinc-300">
+                                                            Web:
+                                                        </span>{' '}
+                                                        rpklawoffice.com
+                                                        <p className="text-[10px] text-slate-400 dark:text-zinc-500">
+                                                            Jl. Bukit Nirwana
+                                                            VII, Blok CC.04,
+                                                            Sariwangi, Bandung
+                                                            Barat
                                                         </p>
                                                     </div>
-                                                </div>
-                                                <div className="mt-2 text-[10.5px] leading-relaxed text-slate-500 dark:text-zinc-400">
-                                                    <span className="font-medium text-slate-700 dark:text-zinc-300">Tel/WA:</span> 0852 9560 1417 &bull;{' '}
-                                                    <span className="font-medium text-slate-700 dark:text-zinc-300">Email:</span> {selectedMessage.from_address} &bull;{' '}
-                                                    <span className="font-medium text-slate-700 dark:text-zinc-300">Web:</span> rpklawoffice.com
-                                                    <p className="text-[10px] text-slate-400 dark:text-zinc-500">
-                                                        Jl. Bukit Nirwana VII, Blok CC.04, Sariwangi, Bandung Barat
+                                                    <p className="mt-2.5 border-t border-dashed border-slate-200 pt-2 text-[9.5px] leading-normal text-slate-400 dark:border-white/5 dark:text-zinc-500">
+                                                        <strong className="font-medium text-slate-500 dark:text-zinc-400">
+                                                            KERAHASIAAN PROFESI
+                                                            ADVOKAT
+                                                            (ATTORNEY-CLIENT
+                                                            PRIVILEGE):
+                                                        </strong>{' '}
+                                                        Surat elektronik ini
+                                                        bersifat rahasia dan
+                                                        dilindungi hak istimewa
+                                                        hukum kerahasiaan
+                                                        profesi advokat (Pasal
+                                                        19 UU No. 18/2003).
                                                     </p>
                                                 </div>
-                                                <p className="mt-2.5 border-t border-dashed border-slate-200 pt-2 text-[9.5px] leading-normal text-slate-400 dark:border-white/5 dark:text-zinc-500">
-                                                    <strong className="font-medium text-slate-500 dark:text-zinc-400">
-                                                        KERAHASIAAN PROFESI ADVOKAT (ATTORNEY-CLIENT PRIVILEGE):
-                                                    </strong>{' '}
-                                                    Surat elektronik ini bersifat rahasia dan dilindungi hak istimewa hukum kerahasiaan profesi advokat (Pasal 19 UU No. 18/2003).
-                                                </p>
-                                            </div>
-                                        )}
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
 
-                                {/* Footer */}
-                                <div className="flex shrink-0 items-center justify-end border-t border-slate-100 bg-slate-50/60 px-5 py-3 sm:px-6 dark:border-white/[0.06] dark:bg-white/[0.02]">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        onClick={() => setSelectedMessage(null)}
-                                        className="h-8.5 rounded-lg border-slate-200 bg-white px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-transparent dark:text-zinc-200 dark:hover:bg-white/10"
-                                    >
-                                        Tutup
-                                    </Button>
-                                </div>
-                            </>
-                        );
-                    })()}
+                                    {/* Footer */}
+                                    <div className="flex shrink-0 items-center justify-end border-t border-slate-100 bg-slate-50/60 px-5 py-3 sm:px-6 dark:border-white/[0.06] dark:bg-white/[0.02]">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() =>
+                                                setSelectedMessage(null)
+                                            }
+                                            className="h-8.5 rounded-lg border-slate-200 bg-white px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-transparent dark:text-zinc-200 dark:hover:bg-white/10"
+                                        >
+                                            Tutup
+                                        </Button>
+                                    </div>
+                                </>
+                            );
+                        })()}
                 </DialogContent>
             </Dialog>
         </>

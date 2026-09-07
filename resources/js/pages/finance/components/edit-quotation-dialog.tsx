@@ -237,8 +237,12 @@ export function EditQuotationDialog({
                             <FilePlus2 className="size-4.5" strokeWidth={1.8} />
                         </div>
                         <div className="min-w-0 self-center">
-                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 sm:text-base dark:text-white">Edit Penawaran Biaya (Quotation)</DialogTitle>
-                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">Perbarui rincian penawaran biaya.</p>
+                            <DialogTitle className="text-sm leading-5 font-bold text-slate-900 sm:text-base dark:text-white">
+                                Edit Penawaran Biaya (Quotation)
+                            </DialogTitle>
+                            <p className="truncate text-[11px] leading-4 text-slate-500 dark:text-zinc-400">
+                                Perbarui rincian penawaran biaya.
+                            </p>
                         </div>
                     </div>
                 </DialogHeader>

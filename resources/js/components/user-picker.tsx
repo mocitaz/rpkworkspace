@@ -49,7 +49,9 @@ export default function UserPicker({
     className = '',
     error = false,
 }: UserPickerProps) {
-    const page = usePage<{ auth?: { user?: { id: number | string; name?: string } } }>();
+    const page = usePage<{
+        auth?: { user?: { id: number | string; name?: string } };
+    }>();
     const currentUserId = page.props.auth?.user?.id;
 
     const [isOpen, setIsOpen] = useState(false);
@@ -203,7 +205,9 @@ export default function UserPicker({
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === ' ') {
                                     e.preventDefault();
-                                    handleClear(e as unknown as React.MouseEvent);
+                                    handleClear(
+                                        e as unknown as React.MouseEvent,
+                                    );
                                 }
                             }}
                             className="rounded-full p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-200"
@@ -214,7 +218,9 @@ export default function UserPicker({
                     )}
                     <ChevronDown
                         className={`size-3.5 text-slate-400 transition-transform duration-200 dark:text-zinc-500 ${
-                            isOpen ? 'rotate-180 text-blue-600 dark:text-blue-400' : ''
+                            isOpen
+                                ? 'rotate-180 text-blue-600 dark:text-blue-400'
+                                : ''
                         }`}
                     />
                 </div>
@@ -222,7 +228,7 @@ export default function UserPicker({
 
             {/* Dropdown Popover */}
             {isOpen && (
-                <div className="absolute left-0 top-full z-50 mt-1.5 max-h-72 w-full min-w-[260px] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl animate-in fade-in-50 zoom-in-95 dark:border-white/10 dark:bg-[#15171c]">
+                <div className="absolute top-full left-0 z-50 mt-1.5 max-h-72 w-full min-w-[260px] animate-in overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl fade-in-50 zoom-in-95 dark:border-white/10 dark:bg-[#15171c]">
                     {/* Search Bar */}
                     <div className="sticky top-0 z-10 border-b border-slate-100 bg-slate-50/90 p-2 backdrop-blur-xs dark:border-white/[0.06] dark:bg-[#1a1d24]/90">
                         <div className="relative flex items-center">
@@ -233,7 +239,7 @@ export default function UserPicker({
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Cari nama atau jabatan..."
-                                className="h-8 w-full rounded-lg border border-slate-200 bg-white pl-8 pr-7 text-xs text-slate-800 placeholder-slate-400 focus:border-blue-500 focus:outline-hidden dark:border-white/10 dark:bg-[#111317] dark:text-zinc-100 dark:placeholder-zinc-500"
+                                className="h-8 w-full rounded-lg border border-slate-200 bg-white pr-7 pl-8 text-xs text-slate-800 placeholder-slate-400 focus:border-blue-500 focus:outline-hidden dark:border-white/10 dark:bg-[#111317] dark:text-zinc-100 dark:placeholder-zinc-500"
                             />
                             {searchQuery && (
                                 <button
@@ -273,11 +279,13 @@ export default function UserPicker({
 
                         {filteredUsers.length === 0 ? (
                             <div className="py-6 text-center text-xs text-slate-400 dark:text-zinc-500">
-                                Tidak ada staf yang cocok dengan &quot;{searchQuery}&quot;
+                                Tidak ada staf yang cocok dengan &quot;
+                                {searchQuery}&quot;
                             </div>
                         ) : (
                             filteredUsers.map((user) => {
-                                const isSelected = String(user.id) === String(value);
+                                const isSelected =
+                                    String(user.id) === String(value);
                                 const isDisabled = disabledUserIds
                                     .map(String)
                                     .includes(String(user.id));
@@ -287,7 +295,9 @@ export default function UserPicker({
                                         key={user.id}
                                         type="button"
                                         disabled={isDisabled}
-                                        onClick={() => handleSelect(String(user.id))}
+                                        onClick={() =>
+                                            handleSelect(String(user.id))
+                                        }
                                         className={`flex w-full items-center justify-between gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors ${
                                             isDisabled
                                                 ? 'cursor-not-allowed opacity-40'
@@ -299,7 +309,9 @@ export default function UserPicker({
                                         <div className="flex min-w-0 items-center gap-2.5">
                                             <Avatar className="size-7 shrink-0 rounded-full border border-slate-200 bg-slate-100 dark:border-white/10 dark:bg-zinc-800">
                                                 <AvatarImage
-                                                    src={getAvatarUrl(user.avatar_path)}
+                                                    src={getAvatarUrl(
+                                                        user.avatar_path,
+                                                    )}
                                                     alt={user.name || 'User'}
                                                     className="object-cover"
                                                 />
@@ -328,7 +340,7 @@ export default function UserPicker({
                                                             String(
                                                                 currentUserId,
                                                             ) && (
-                                                            <span className="shrink-0 rounded-sm bg-blue-100 px-1.5 py-0.2 font-mono text-[9.5px] font-bold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                                            <span className="py-0.2 shrink-0 rounded-sm bg-blue-100 px-1.5 font-mono text-[9.5px] font-bold text-blue-700 dark:bg-blue-950 dark:text-blue-300">
                                                                 (Anda)
                                                             </span>
                                                         )}
@@ -336,14 +348,18 @@ export default function UserPicker({
                                                 <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-zinc-400">
                                                     {user.position_title && (
                                                         <span className="truncate">
-                                                            {user.position_title}
+                                                            {
+                                                                user.position_title
+                                                            }
                                                         </span>
                                                     )}
                                                     {user.department && (
                                                         <>
                                                             <span>•</span>
                                                             <span className="truncate">
-                                                                {user.department}
+                                                                {
+                                                                    user.department
+                                                                }
                                                             </span>
                                                         </>
                                                     )}

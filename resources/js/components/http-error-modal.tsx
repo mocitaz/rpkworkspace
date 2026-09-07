@@ -27,7 +27,8 @@ export function HttpErrorModal() {
         const unbindHttpException = router.on('httpException', (event) => {
             const response = event.detail.response;
             const status = response?.status;
-            const responseText = typeof response?.data === 'string' ? response.data : '';
+            const responseText =
+                typeof response?.data === 'string' ? response.data : '';
 
             const is413 =
                 status === 413 ||
@@ -44,7 +45,9 @@ export function HttpErrorModal() {
                         'Berkas yang Anda unggah melebihi batas maksimal ukuran yang diizinkan oleh server. Silakan pilih berkas yang lebih kecil atau kompres terlebih dahulu.',
                 });
                 setOpen(true);
-                toast.error('Gagal Mengunggah: Ukuran berkas melebihi batas server (Error 413).');
+                toast.error(
+                    'Gagal Mengunggah: Ukuran berkas melebihi batas server (Error 413).',
+                );
             }
         });
 
@@ -61,11 +64,17 @@ export function HttpErrorModal() {
             setOpen(true);
         };
 
-        window.addEventListener('app:entity-too-large', handleCustom413 as EventListener);
+        window.addEventListener(
+            'app:entity-too-large',
+            handleCustom413 as EventListener,
+        );
 
         return () => {
             unbindHttpException();
-            window.removeEventListener('app:entity-too-large', handleCustom413 as EventListener);
+            window.removeEventListener(
+                'app:entity-too-large',
+                handleCustom413 as EventListener,
+            );
         };
     }, []);
 
@@ -102,8 +111,12 @@ export function HttpErrorModal() {
                 {errorInfo.fileInfo && (
                     <div className="px-5 pt-4">
                         <div className="flex items-center gap-2 rounded-lg border border-slate-200/80 bg-slate-50 px-3 py-2 text-xs text-slate-700 dark:border-white/10 dark:bg-[#181a20] dark:text-zinc-300">
-                            <span className="font-semibold text-slate-500 dark:text-zinc-400">Berkas:</span>
-                            <span className="truncate font-medium">{errorInfo.fileInfo}</span>
+                            <span className="font-semibold text-slate-500 dark:text-zinc-400">
+                                Berkas:
+                            </span>
+                            <span className="truncate font-medium">
+                                {errorInfo.fileInfo}
+                            </span>
                         </div>
                     </div>
                 )}
@@ -136,7 +149,7 @@ export function showEntityTooLargeAlert(options?: {
         window.dispatchEvent(
             new CustomEvent('app:entity-too-large', {
                 detail: options || {},
-            })
+            }),
         );
     }
 }

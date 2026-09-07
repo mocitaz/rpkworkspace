@@ -21,10 +21,7 @@ import {
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { useInitials } from '@/hooks/use-initials';
 import { formatDate, formatMoney, terbilang } from '@/lib/format';
@@ -146,11 +143,17 @@ export function AccountDetailModal({
                                     Saldo Saat Ini (Real-Time)
                                 </span>
                                 <p className="mt-0.5 font-mono text-2xl font-bold tracking-tight text-slate-900 sm:text-[26px] dark:text-white">
-                                    {formatMoney(account.current_balance, 'IDR')}
+                                    {formatMoney(
+                                        account.current_balance,
+                                        'IDR',
+                                    )}
                                 </p>
                                 <p
                                     className="mt-0.5 line-clamp-1 text-[10px] text-slate-400 italic dark:text-zinc-500"
-                                    title={terbilang(account.current_balance) + ' Rupiah'}
+                                    title={
+                                        terbilang(account.current_balance) +
+                                        ' Rupiah'
+                                    }
                                 >
                                     {account.current_balance > 0
                                         ? `“${terbilang(account.current_balance)} Rupiah”`
@@ -163,7 +166,10 @@ export function AccountDetailModal({
                                     Saldo Awal
                                 </span>
                                 <p className="mt-0.5 font-mono text-xs font-semibold text-slate-700 dark:text-zinc-300">
-                                    {formatMoney(account.opening_balance, 'IDR')}
+                                    {formatMoney(
+                                        account.opening_balance,
+                                        'IDR',
+                                    )}
                                 </p>
                             </div>
                         </div>
@@ -221,18 +227,23 @@ export function AccountDetailModal({
                                     </p>
                                     {account.partner && (
                                         <div className="flex items-center gap-1.5">
-                                            <Avatar className="size-5 shrink-0 rounded-full border border-amber-200/80 shadow-2xs dark:border-amber-500/30 ring-1 ring-amber-500/20">
+                                            <Avatar className="size-5 shrink-0 rounded-full border border-amber-200/80 shadow-2xs ring-1 ring-amber-500/20 dark:border-amber-500/30">
                                                 <AvatarImage
                                                     src={getAvatarUrl(
-                                                        account.partner.avatar_url ||
-                                                            account.partner.avatar_path ||
-                                                            account.partner.avatar,
+                                                        account.partner
+                                                            .avatar_url ||
+                                                            account.partner
+                                                                .avatar_path ||
+                                                            account.partner
+                                                                .avatar,
                                                     )}
                                                     alt={account.partner.name}
                                                     className="object-cover"
                                                 />
                                                 <AvatarFallback className="bg-amber-500 text-[9px] font-bold text-white">
-                                                    {getInitials(account.partner.name)}
+                                                    {getInitials(
+                                                        account.partner.name,
+                                                    )}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <span className="text-[11px] text-slate-500 dark:text-zinc-400">
@@ -266,15 +277,20 @@ export function AccountDetailModal({
                             {/* Payments In */}
                             <div className="flex items-center gap-2.5 rounded-lg border border-slate-200/80 bg-white p-2.5 transition-colors dark:border-white/10 dark:bg-[#16181f]">
                                 <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
-                                    <ArrowDownLeft className="size-3.5" strokeWidth={2.2} />
+                                    <ArrowDownLeft
+                                        className="size-3.5"
+                                        strokeWidth={2.2}
+                                    />
                                 </div>
                                 <div className="min-w-0">
-                                    <span className="block text-[10px] text-slate-400 truncate dark:text-zinc-500">
+                                    <span className="block truncate text-[10px] text-slate-400 dark:text-zinc-500">
                                         Invoice Masuk
                                     </span>
                                     <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
                                         {account.payments_count ?? 0}{' '}
-                                        <span className="text-[10px] font-normal text-slate-400">transaksi</span>
+                                        <span className="text-[10px] font-normal text-slate-400">
+                                            transaksi
+                                        </span>
                                     </span>
                                 </div>
                             </div>
@@ -282,15 +298,20 @@ export function AccountDetailModal({
                             {/* Expenses Out */}
                             <div className="flex items-center gap-2.5 rounded-lg border border-slate-200/80 bg-white p-2.5 transition-colors dark:border-white/10 dark:bg-[#16181f]">
                                 <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400">
-                                    <ArrowUpRight className="size-3.5" strokeWidth={2.2} />
+                                    <ArrowUpRight
+                                        className="size-3.5"
+                                        strokeWidth={2.2}
+                                    />
                                 </div>
                                 <div className="min-w-0">
-                                    <span className="block text-[10px] text-slate-400 truncate dark:text-zinc-500">
+                                    <span className="block truncate text-[10px] text-slate-400 dark:text-zinc-500">
                                         Biaya Keluar
                                     </span>
                                     <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
                                         {account.expenses_count ?? 0}{' '}
-                                        <span className="text-[10px] font-normal text-slate-400">transaksi</span>
+                                        <span className="text-[10px] font-normal text-slate-400">
+                                            transaksi
+                                        </span>
                                     </span>
                                 </div>
                             </div>
@@ -298,16 +319,23 @@ export function AccountDetailModal({
                             {/* Transfers */}
                             <div className="flex items-center gap-2.5 rounded-lg border border-slate-200/80 bg-white p-2.5 transition-colors dark:border-white/10 dark:bg-[#16181f]">
                                 <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400">
-                                    <ArrowRightLeft className="size-3.5" strokeWidth={2} />
+                                    <ArrowRightLeft
+                                        className="size-3.5"
+                                        strokeWidth={2}
+                                    />
                                 </div>
                                 <div className="min-w-0">
-                                    <span className="block text-[10px] text-slate-400 truncate dark:text-zinc-500">
+                                    <span className="block truncate text-[10px] text-slate-400 dark:text-zinc-500">
                                         Mutasi Transfer
                                     </span>
                                     <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
-                                        {(account.outgoing_transfers_count ?? 0) +
-                                            (account.incoming_transfers_count ?? 0)}{' '}
-                                        <span className="text-[10px] font-normal text-slate-400">kali</span>
+                                        {(account.outgoing_transfers_count ??
+                                            0) +
+                                            (account.incoming_transfers_count ??
+                                                0)}{' '}
+                                        <span className="text-[10px] font-normal text-slate-400">
+                                            kali
+                                        </span>
                                     </span>
                                 </div>
                             </div>
@@ -315,17 +343,24 @@ export function AccountDetailModal({
                             {/* Payroll & Trust */}
                             <div className="flex items-center gap-2.5 rounded-lg border border-slate-200/80 bg-white p-2.5 transition-colors dark:border-white/10 dark:bg-[#16181f]">
                                 <div className="flex size-7 shrink-0 items-center justify-center rounded-md bg-purple-50 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400">
-                                    <Receipt className="size-3.5" strokeWidth={2} />
+                                    <Receipt
+                                        className="size-3.5"
+                                        strokeWidth={2}
+                                    />
                                 </div>
                                 <div className="min-w-0">
-                                    <span className="block text-[10px] text-slate-400 truncate dark:text-zinc-500">
+                                    <span className="block truncate text-[10px] text-slate-400 dark:text-zinc-500">
                                         Payroll & Titipan
                                     </span>
                                     <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
                                         {(account.payrolls_count ?? 0) +
-                                            (account.client_trust_funds_count ?? 0) +
-                                            (account.partner_transactions_count ?? 0)}{' '}
-                                        <span className="text-[10px] font-normal text-slate-400">data</span>
+                                            (account.client_trust_funds_count ??
+                                                0) +
+                                            (account.partner_transactions_count ??
+                                                0)}{' '}
+                                        <span className="text-[10px] font-normal text-slate-400">
+                                            data
+                                        </span>
                                     </span>
                                 </div>
                             </div>

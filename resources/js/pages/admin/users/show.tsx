@@ -216,7 +216,7 @@ export default function UserShow({
             <Head title={`${staff.name} - Profil Staf & Advokat`} />
 
             <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-10 dark:bg-[#0c0d10]">
-                <main className="w-full space-y-4 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-4 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
                     {/* Executive Personnel Dossier */}
                     <section className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs dark:border-white/[0.08] dark:bg-[#14161b]">
                         <div className="pointer-events-none absolute top-12 -left-24 size-80 rounded-full border border-slate-200/40 dark:border-white/[0.03]" />

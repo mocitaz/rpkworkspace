@@ -42,7 +42,12 @@ type Log = {
     id: string;
     event: string;
     category?: string;
-    actor?: { id: number; name: string; email: string; avatar_url?: string | null };
+    actor?: {
+        id: number;
+        name: string;
+        email: string;
+        avatar_url?: string | null;
+    };
     subject_type?: string;
     subject_id?: string;
     subject?: Record<string, unknown> | null;
@@ -80,10 +85,7 @@ const subjectTypeLabels: Record<string, string> = {
 };
 
 // Event labels and solid text color themes (No badges, text-only solid colors)
-const eventThemeMap: Record<
-    string,
-    { label: string; textSolid: string }
-> = {
+const eventThemeMap: Record<string, { label: string; textSolid: string }> = {
     created: {
         label: 'Data Baru',
         textSolid: 'text-emerald-600 dark:text-emerald-400',
@@ -307,7 +309,7 @@ export default function AuditIndex({
             <Head title="Audit Log & Jejak Aktivitas - RPK App" />
 
             <div className="min-h-screen bg-[#fafafc] pb-24 md:pb-10 dark:bg-[#0c0d10]">
-                <main className="w-full space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
+                <main className="mx-auto max-w-7xl space-y-5 px-4 pt-2.5 pb-8 sm:px-6 sm:pt-3.5 lg:px-8">
                     {/* Flash Success Notification */}
                     {flash?.success && (
                         <div className="flex items-center gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50/90 p-3 text-xs font-semibold text-emerald-900 shadow-2xs dark:border-emerald-900/40 dark:bg-emerald-950/30 dark:text-emerald-300">
@@ -589,33 +591,57 @@ export default function AuditIndex({
                                 <div className="divide-y divide-slate-100 sm:hidden dark:divide-white/[0.04]">
                                     {auditLogs.data.map((log) => {
                                         const rawSubjectType = log.subject_type
-                                            ? (log.subject_type.split('\\').pop() ?? 'System')
+                                            ? (log.subject_type
+                                                  .split('\\')
+                                                  .pop() ?? 'System')
                                             : 'System';
                                         const friendlySubjectType =
-                                            subjectTypeLabels[rawSubjectType] || rawSubjectType;
+                                            subjectTypeLabels[rawSubjectType] ||
+                                            rawSubjectType;
                                         const eventKey =
-                                            log.event.split('.').pop() || log.event;
-                                        const theme = eventThemeMap[eventKey] || {
-                                            label: eventKey.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-                                            textSolid: 'text-slate-600 dark:text-zinc-400',
+                                            log.event.split('.').pop() ||
+                                            log.event;
+                                        const theme = eventThemeMap[
+                                            eventKey
+                                        ] || {
+                                            label: eventKey
+                                                .replace(/_/g, ' ')
+                                                .replace(/\b\w/g, (c) =>
+                                                    c.toUpperCase(),
+                                                ),
+                                            textSolid:
+                                                'text-slate-600 dark:text-zinc-400',
                                         };
-                                        const realSubjectName = getRealSubjectName(log, friendlySubjectType);
-                                        const narrative = getAuditNarrative(log);
+                                        const realSubjectName =
+                                            getRealSubjectName(
+                                                log,
+                                                friendlySubjectType,
+                                            );
+                                        const narrative =
+                                            getAuditNarrative(log);
 
                                         return (
                                             <div
                                                 key={log.id}
-                                                onClick={() => setSelectedLogForRaw(log)}
+                                                onClick={() =>
+                                                    setSelectedLogForRaw(log)
+                                                }
                                                 className="block cursor-pointer p-3.5 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:hover:bg-white/[0.02]"
                                             >
                                                 <div className="flex items-start justify-between gap-2">
                                                     <div className="min-w-0 flex-1">
                                                         <div className="flex items-center gap-1.5 font-mono text-[10px] font-semibold text-slate-500 dark:text-zinc-400">
-                                                            <span className={`font-semibold ${theme.textSolid}`}>
+                                                            <span
+                                                                className={`font-semibold ${theme.textSolid}`}
+                                                            >
                                                                 {theme.label}
                                                             </span>
                                                             <span>·</span>
-                                                            <span>{friendlySubjectType}</span>
+                                                            <span>
+                                                                {
+                                                                    friendlySubjectType
+                                                                }
+                                                            </span>
                                                         </div>
                                                         <p className="mt-0.5 line-clamp-1 text-xs font-bold text-slate-900 dark:text-white">
                                                             {realSubjectName}
@@ -625,22 +651,41 @@ export default function AuditIndex({
                                                         </p>
                                                         <div className="mt-2 flex items-center gap-2">
                                                             <Avatar className="size-5 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                                {log.actor?.avatar_url && (
+                                                                {log.actor
+                                                                    ?.avatar_url && (
                                                                     <AvatarImage
-                                                                        src={log.actor.avatar_url}
-                                                                        alt={log.actor.name}
+                                                                        src={
+                                                                            log
+                                                                                .actor
+                                                                                .avatar_url
+                                                                        }
+                                                                        alt={
+                                                                            log
+                                                                                .actor
+                                                                                .name
+                                                                        }
                                                                     />
                                                                 )}
                                                                 <AvatarFallback className="text-[7px] font-bold">
-                                                                    {getInitials(log.actor?.name ?? 'Sistem')}
+                                                                    {getInitials(
+                                                                        log
+                                                                            .actor
+                                                                            ?.name ??
+                                                                            'Sistem',
+                                                                    )}
                                                                 </AvatarFallback>
                                                             </Avatar>
                                                             <span className="truncate text-[11px] font-medium text-slate-700 dark:text-zinc-200">
-                                                                {log.actor?.name ?? 'Sistem Otomatis'}
+                                                                {log.actor
+                                                                    ?.name ??
+                                                                    'Sistem Otomatis'}
                                                             </span>
-                                                            <span className="text-[10px] text-slate-400">&bull;</span>
+                                                            <span className="text-[10px] text-slate-400">
+                                                                &bull;
+                                                            </span>
                                                             <span className="font-mono text-[10px] text-slate-400">
-                                                                {log.ip_address ?? '127.0.0.1'}
+                                                                {log.ip_address ??
+                                                                    '127.0.0.1'}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -651,7 +696,11 @@ export default function AuditIndex({
                                                         Log #{log.id}
                                                     </span>
                                                     <span className="font-mono text-slate-500 dark:text-zinc-400">
-                                                        {formatDate(log.created_at, true)} WIB
+                                                        {formatDate(
+                                                            log.created_at,
+                                                            true,
+                                                        )}{' '}
+                                                        WIB
                                                     </span>
                                                 </div>
                                             </div>
@@ -684,41 +733,71 @@ export default function AuditIndex({
                                         </thead>
                                         <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                                             {auditLogs.data.map((log) => {
-                                                const rawSubjectType = log.subject_type
-                                                    ? (log.subject_type.split('\\').pop() ?? 'System')
-                                                    : 'System';
+                                                const rawSubjectType =
+                                                    log.subject_type
+                                                        ? (log.subject_type
+                                                              .split('\\')
+                                                              .pop() ??
+                                                          'System')
+                                                        : 'System';
                                                 const friendlySubjectType =
-                                                    subjectTypeLabels[rawSubjectType] || rawSubjectType;
+                                                    subjectTypeLabels[
+                                                        rawSubjectType
+                                                    ] || rawSubjectType;
                                                 const eventKey =
-                                                    log.event.split('.').pop() || log.event;
-                                                const theme = eventThemeMap[eventKey] || {
-                                                    label: eventKey.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-                                                    textSolid: 'text-slate-600 dark:text-zinc-400',
+                                                    log.event
+                                                        .split('.')
+                                                        .pop() || log.event;
+                                                const theme = eventThemeMap[
+                                                    eventKey
+                                                ] || {
+                                                    label: eventKey
+                                                        .replace(/_/g, ' ')
+                                                        .replace(/\b\w/g, (c) =>
+                                                            c.toUpperCase(),
+                                                        ),
+                                                    textSolid:
+                                                        'text-slate-600 dark:text-zinc-400',
                                                 };
-                                                const realSubjectName = getRealSubjectName(log, friendlySubjectType);
-                                                const narrative = getAuditNarrative(log);
+                                                const realSubjectName =
+                                                    getRealSubjectName(
+                                                        log,
+                                                        friendlySubjectType,
+                                                    );
+                                                const narrative =
+                                                    getAuditNarrative(log);
 
                                                 return (
                                                     <tr
                                                         key={log.id}
-                                                        onClick={() => setSelectedLogForRaw(log)}
+                                                        onClick={() =>
+                                                            setSelectedLogForRaw(
+                                                                log,
+                                                            )
+                                                        }
                                                         className="group cursor-pointer transition-colors hover:bg-slate-50/50 dark:hover:bg-white/[0.02]"
                                                     >
                                                         {/* 1. Waktu */}
                                                         <td className="py-3 pr-3 pl-4 whitespace-nowrap">
                                                             <div className="font-mono text-xs leading-tight">
                                                                 <p className="font-medium text-slate-800 dark:text-zinc-200">
-                                                                    {formatDate(log.created_at)}
+                                                                    {formatDate(
+                                                                        log.created_at,
+                                                                    )}
                                                                 </p>
                                                                 <p className="mt-0.5 text-[10px] text-slate-400 dark:text-zinc-500">
-                                                                    {formatTime(log.created_at)}
+                                                                    {formatTime(
+                                                                        log.created_at,
+                                                                    )}
                                                                 </p>
                                                             </div>
                                                         </td>
 
                                                         {/* 2. Aktivitas (Text Only, Solid Color) */}
                                                         <td className="px-3 py-3 whitespace-nowrap">
-                                                            <span className={`text-xs font-semibold ${theme.textSolid}`}>
+                                                            <span
+                                                                className={`text-xs font-semibold ${theme.textSolid}`}
+                                                            >
                                                                 {theme.label}
                                                             </span>
                                                         </td>
@@ -727,40 +806,69 @@ export default function AuditIndex({
                                                         <td className="px-3 py-3">
                                                             <div className="min-w-0 space-y-0.5">
                                                                 <p
-                                                                    title={realSubjectName}
+                                                                    title={
+                                                                        realSubjectName
+                                                                    }
                                                                     className="truncate text-xs font-bold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400"
                                                                 >
-                                                                    {realSubjectName}
+                                                                    {
+                                                                        realSubjectName
+                                                                    }
                                                                 </p>
                                                                 <span className="block truncate font-mono text-[10px] font-medium text-slate-400 dark:text-zinc-500">
-                                                                    {friendlySubjectType}
+                                                                    {
+                                                                        friendlySubjectType
+                                                                    }
                                                                 </span>
                                                             </div>
                                                         </td>
 
                                                         {/* 4. Pelaku / Aktor with Avatar */}
                                                         <td className="px-3 py-3 whitespace-nowrap">
-                                                            <div className="flex items-center gap-2.5 min-w-0">
+                                                            <div className="flex min-w-0 items-center gap-2.5">
                                                                 <Avatar className="size-6 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
-                                                                    {log.actor?.avatar_url && (
+                                                                    {log.actor
+                                                                        ?.avatar_url && (
                                                                         <AvatarImage
-                                                                            src={log.actor.avatar_url}
-                                                                            alt={log.actor.name}
+                                                                            src={
+                                                                                log
+                                                                                    .actor
+                                                                                    .avatar_url
+                                                                            }
+                                                                            alt={
+                                                                                log
+                                                                                    .actor
+                                                                                    .name
+                                                                            }
                                                                         />
                                                                     )}
                                                                     <AvatarFallback className="text-[8px] font-bold">
-                                                                        {getInitials(log.actor?.name ?? 'Sistem')}
+                                                                        {getInitials(
+                                                                            log
+                                                                                .actor
+                                                                                ?.name ??
+                                                                                'Sistem',
+                                                                        )}
                                                                     </AvatarFallback>
                                                                 </Avatar>
                                                                 <div className="min-w-0 flex-1 truncate">
                                                                     <p
                                                                         className="truncate text-xs font-semibold text-slate-900 dark:text-white"
-                                                                        title={log.actor?.name ?? 'Sistem Otomatis'}
+                                                                        title={
+                                                                            log
+                                                                                .actor
+                                                                                ?.name ??
+                                                                            'Sistem Otomatis'
+                                                                        }
                                                                     >
-                                                                        {log.actor?.name ?? 'Sistem Otomatis'}
+                                                                        {log
+                                                                            .actor
+                                                                            ?.name ??
+                                                                            'Sistem Otomatis'}
                                                                     </p>
                                                                     <p className="truncate font-mono text-[10px] text-slate-400 dark:text-zinc-500">
-                                                                        {log.ip_address ?? '127.0.0.1'}
+                                                                        {log.ip_address ??
+                                                                            '127.0.0.1'}
                                                                     </p>
                                                                 </div>
                                                             </div>
@@ -770,7 +878,9 @@ export default function AuditIndex({
                                                         <td className="px-3 py-3">
                                                             <p
                                                                 className="line-clamp-2 text-xs leading-relaxed text-slate-600 dark:text-zinc-300"
-                                                                title={narrative}
+                                                                title={
+                                                                    narrative
+                                                                }
                                                             >
                                                                 {narrative}
                                                             </p>
@@ -780,9 +890,13 @@ export default function AuditIndex({
                                                         <td className="py-3 pr-4 pl-1 text-right whitespace-nowrap">
                                                             <button
                                                                 type="button"
-                                                                onClick={(e) => {
+                                                                onClick={(
+                                                                    e,
+                                                                ) => {
                                                                     e.stopPropagation();
-                                                                    setSelectedLogForRaw(log);
+                                                                    setSelectedLogForRaw(
+                                                                        log,
+                                                                    );
                                                                 }}
                                                                 className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 opacity-0 transition-all group-hover:opacity-100 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/[0.06] dark:hover:text-white"
                                                             >
@@ -859,7 +973,8 @@ function getRealSubjectName(log: Log, friendlySubjectType: string): string {
 const namedEvents: Record<string, string> = {
     'client.created': 'Mendaftarkan data profil klien baru.',
     'client.updated': 'Memperbarui rincian informasi klien.',
-    'client.compliance_added': 'Menambahkan dokumen kepatuhan / izin berusaha klien.',
+    'client.compliance_added':
+        'Menambahkan dokumen kepatuhan / izin berusaha klien.',
     'client.compliance_updated': 'Memperbarui dokumen kepatuhan klien.',
     'client.compliance_deleted': 'Menghapus dokumen kepatuhan klien.',
     'matter.created': 'Membuka berkas perkara hukum baru.',
@@ -873,17 +988,25 @@ const namedEvents: Record<string, string> = {
     'matter.evidence_deleted': 'Menghapus alat bukti berkas perkara.',
     'matter.chronology_added': 'Menambahkan kronologi peristiwa hukum perkara.',
     'matter.chronology_deleted': 'Menghapus catatan kronologi perkara.',
-    'matter.legal_hold_placed': 'Menerapkan status Legal Hold pada berkas perkara.',
-    'matter.legal_hold_released': 'Mencabut status Legal Hold pada berkas perkara.',
+    'matter.legal_hold_placed':
+        'Menerapkan status Legal Hold pada berkas perkara.',
+    'matter.legal_hold_released':
+        'Mencabut status Legal Hold pada berkas perkara.',
     'document.uploaded': 'Mengunggah berkas dokumen baru ke brankas.',
     'document.downloaded': 'Mengunduh salinan berkas dokumen.',
     'document.approved': 'Menyetujui draf dokumen hukum.',
-    'document.revision_requested': 'Mengajukan permintaan revisi pada draf dokumen.',
-    'document.approval_requested': 'Mengajukan permohonan persetujuan draf dokumen.',
-    'signature.request_sent': 'Mengirimkan permohonan tanda tangan digital kepada pihak terkait.',
-    'signature.signer_completed': 'Penandatangan telah menyelesaikan proses tanda tangan digital.',
-    'signature.signed_final_processed': 'Menghasilkan berkas final bertanda tangan digital tersertifikasi.',
-    'signature.reminder_resent': 'Mengirimkan ulang notifikasi pengingat tanda tangan.',
+    'document.revision_requested':
+        'Mengajukan permintaan revisi pada draf dokumen.',
+    'document.approval_requested':
+        'Mengajukan permohonan persetujuan draf dokumen.',
+    'signature.request_sent':
+        'Mengirimkan permohonan tanda tangan digital kepada pihak terkait.',
+    'signature.signer_completed':
+        'Penandatangan telah menyelesaikan proses tanda tangan digital.',
+    'signature.signed_final_processed':
+        'Menghasilkan berkas final bertanda tangan digital tersertifikasi.',
+    'signature.reminder_resent':
+        'Mengirimkan ulang notifikasi pengingat tanda tangan.',
     'invoice.generated': 'Menerbitkan tagihan invoice baru kepada klien.',
     'invoice.cancelled': 'Membatalkan tagihan invoice.',
     'payment.recorded': 'Mencatat penerimaan pembayaran tagihan klien.',
@@ -900,7 +1023,8 @@ const namedEvents: Record<string, string> = {
     'conflict.resolved': 'Menyelesaikan pemeriksaan konflik kepentingan.',
     'template.created': 'Membuat template draf hukum baru.',
     'template.duplicated': 'Menduplikasi template draf hukum.',
-    'template.document_generated': 'Menghasilkan draf dokumen otomatis dari template.',
+    'template.document_generated':
+        'Menghasilkan draf dokumen otomatis dari template.',
 };
 
 /**
@@ -984,8 +1108,10 @@ function getAuditNarrative(log: Log): string {
     if (namedEvents[log.event]) {
         let extra = '';
         if (metadata.title) extra = ` (${metadata.title})`;
-        else if (metadata.client_number) extra = ` (No. ${metadata.client_number})`;
-        else if (metadata.version_number) extra = ` (Versi ${metadata.version_number})`;
+        else if (metadata.client_number)
+            extra = ` (No. ${metadata.client_number})`;
+        else if (metadata.version_number)
+            extra = ` (Versi ${metadata.version_number})`;
         else if (metadata.reason) extra = ` dengan alasan: ${metadata.reason}`;
         return `${namedEvents[log.event]}${extra}`;
     }
@@ -1040,10 +1166,13 @@ function RawLogDetailDialog({
     const rawSubjectType = log.subject_type
         ? (log.subject_type.split('\\').pop() ?? 'System')
         : 'System';
-    const friendlySubjectType = subjectTypeLabels[rawSubjectType] || rawSubjectType;
+    const friendlySubjectType =
+        subjectTypeLabels[rawSubjectType] || rawSubjectType;
     const eventKey = log.event.split('.').pop() || log.event;
     const theme = eventThemeMap[eventKey] || {
-        label: eventKey.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+        label: eventKey
+            .replace(/_/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase()),
         textSolid: 'text-slate-600 dark:text-zinc-400',
     };
     const realSubjectName = getRealSubjectName(log, friendlySubjectType);
@@ -1063,22 +1192,25 @@ function RawLogDetailDialog({
 
     // Extract changes table if available
     const metadata = log.metadata ?? {};
-    const changes = metadata.changes as {
-        before?: Record<string, unknown>;
-        after?: Record<string, unknown>;
-    } | undefined;
+    const changes = metadata.changes as
+        | {
+              before?: Record<string, unknown>;
+              after?: Record<string, unknown>;
+          }
+        | undefined;
     const beforeObj = changes?.before ?? {};
     const afterObj = changes?.after ?? {};
     const changeKeys = Array.from(
         new Set([...Object.keys(beforeObj), ...Object.keys(afterObj)]),
     ).filter((k) => {
-        if (['updated_at', 'created_at', 'id', 'remember_token'].includes(k)) return false;
+        if (['updated_at', 'created_at', 'id', 'remember_token'].includes(k))
+            return false;
         return JSON.stringify(beforeObj[k]) !== JSON.stringify(afterObj[k]);
     });
 
     return (
         <Dialog open={!!log} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="flex max-h-[90vh] w-[95vw] sm:max-w-2xl flex-col gap-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#14161b]">
+            <DialogContent className="flex max-h-[90vh] w-[95vw] flex-col gap-0 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-0 shadow-2xl sm:max-w-2xl dark:border-white/10 dark:bg-[#14161b]">
                 {/* 1. Header: Sleek, Compact & Proportional */}
                 <DialogHeader className="shrink-0 border-b border-slate-100 bg-slate-50/50 px-5 py-3 text-left sm:px-6 dark:border-white/[0.06] dark:bg-white/[0.02]">
                     <div className="flex items-center justify-between gap-3 pr-6">
@@ -1088,26 +1220,33 @@ function RawLogDetailDialog({
                             </div>
                             <div className="min-w-0 flex-1">
                                 <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
-                                    <span className={`font-semibold ${theme.textSolid}`}>
+                                    <span
+                                        className={`font-semibold ${theme.textSolid}`}
+                                    >
                                         {theme.label}
                                     </span>
-                                    <span className="text-slate-300 dark:text-zinc-700">•</span>
+                                    <span className="text-slate-300 dark:text-zinc-700">
+                                        •
+                                    </span>
                                     <span className="font-mono text-slate-500 dark:text-zinc-400">
                                         Log #{log.id}
                                     </span>
-                                    <span className="text-slate-300 dark:text-zinc-700">•</span>
+                                    <span className="text-slate-300 dark:text-zinc-700">
+                                        •
+                                    </span>
                                     <span className="font-mono text-slate-400 dark:text-zinc-500">
                                         {formatDate(log.created_at, true)} WIB
                                     </span>
                                 </div>
-                                <DialogTitle className="mt-0.5 truncate text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                                <DialogTitle className="mt-0.5 truncate text-sm font-bold text-slate-900 sm:text-base dark:text-white">
                                     {realSubjectName}{' '}
-                                    <span className="font-normal text-xs text-slate-400 dark:text-zinc-500">
+                                    <span className="text-xs font-normal text-slate-400 dark:text-zinc-500">
                                         ({friendlySubjectType})
                                     </span>
                                 </DialogTitle>
                                 <DialogDescription className="sr-only">
-                                    Rincian rekaman audit trail untuk objek {realSubjectName}
+                                    Rincian rekaman audit trail untuk objek{' '}
+                                    {realSubjectName}
                                 </DialogDescription>
                             </div>
                         </div>
@@ -1115,11 +1254,11 @@ function RawLogDetailDialog({
                 </DialogHeader>
 
                 {/* 2. Scrollable Body Content */}
-                <div className="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6 space-y-4">
+                <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-5 sm:p-6">
                     {/* Meta Summary Card (Compact & Non-redundant) */}
                     <div className="grid grid-cols-1 gap-3 rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 text-xs sm:grid-cols-2 dark:border-white/[0.06] dark:bg-white/[0.02]">
                         {/* Actor */}
-                        <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="flex min-w-0 items-center gap-2.5">
                             <Avatar className="size-9 shrink-0 rounded-full border border-slate-200/80 dark:border-white/10">
                                 {log.actor?.avatar_url && (
                                     <AvatarImage
@@ -1135,10 +1274,18 @@ function RawLogDetailDialog({
                                 <span className="block text-[10px] font-medium text-slate-400 dark:text-zinc-500">
                                     Pelaksana / Aktor
                                 </span>
-                                <p className="truncate font-semibold text-slate-900 dark:text-white" title={log.actor?.name ?? 'Sistem Otomatis'}>
+                                <p
+                                    className="truncate font-semibold text-slate-900 dark:text-white"
+                                    title={log.actor?.name ?? 'Sistem Otomatis'}
+                                >
                                     {log.actor?.name ?? 'Sistem Otomatis'}
                                 </p>
-                                <p className="truncate text-[11px] text-slate-500 dark:text-zinc-400" title={log.actor?.email ?? 'system@internal'}>
+                                <p
+                                    className="truncate text-[11px] text-slate-500 dark:text-zinc-400"
+                                    title={
+                                        log.actor?.email ?? 'system@internal'
+                                    }
+                                >
                                     {log.actor?.email ?? 'system@internal'}
                                 </p>
                             </div>
@@ -1158,7 +1305,10 @@ function RawLogDetailDialog({
                                 <span className="text-[10px] font-medium text-slate-400 dark:text-zinc-500">
                                     Event:
                                 </span>
-                                <span className="font-mono font-semibold text-slate-800 dark:text-zinc-200 truncate" title={log.event}>
+                                <span
+                                    className="truncate font-mono font-semibold text-slate-800 dark:text-zinc-200"
+                                    title={log.event}
+                                >
                                     {log.event}
                                 </span>
                             </div>
@@ -1178,7 +1328,7 @@ function RawLogDetailDialog({
                         <div className="mb-2 border-b border-slate-100 pb-1.5 text-[10.5px] font-bold tracking-wider text-slate-400 uppercase dark:border-white/5 dark:text-zinc-500">
                             Detail Perubahan
                         </div>
-                        <p className="text-xs sm:text-[13px] leading-relaxed text-slate-700 dark:text-zinc-300 font-normal">
+                        <p className="text-xs leading-relaxed font-normal text-slate-700 sm:text-[13px] dark:text-zinc-300">
                             {narrative}
                         </p>
 
@@ -1188,12 +1338,18 @@ function RawLogDetailDialog({
                                 <table className="w-full text-left text-xs">
                                     <thead>
                                         <tr className="border-b border-slate-200/80 bg-slate-50 text-[10px] font-semibold text-slate-500 uppercase dark:border-white/10 dark:bg-white/[0.04]">
-                                            <th className="px-3 py-2 font-semibold">Atribut</th>
-                                            <th className="px-3 py-2 font-semibold">Sebelum</th>
-                                            <th className="px-3 py-2 font-semibold">Sesudah</th>
+                                            <th className="px-3 py-2 font-semibold">
+                                                Atribut
+                                            </th>
+                                            <th className="px-3 py-2 font-semibold">
+                                                Sebelum
+                                            </th>
+                                            <th className="px-3 py-2 font-semibold">
+                                                Sesudah
+                                            </th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-slate-100 dark:divide-white/5 font-mono text-[11px]">
+                                    <tbody className="divide-y divide-slate-100 font-mono text-[11px] dark:divide-white/5">
                                         {changeKeys.map((k) => (
                                             <tr key={k}>
                                                 <td className="px-3 py-2 font-sans font-semibold text-slate-700 dark:text-zinc-300">
@@ -1216,20 +1372,24 @@ function RawLogDetailDialog({
                     {/* Cryptographic Ledger Hashes */}
                     {(log.entry_hash || log.previous_hash) && (
                         <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-3.5 text-xs dark:border-white/[0.06] dark:bg-white/[0.02]">
-                            <div className="flex items-center justify-between mb-2">
+                            <div className="mb-2 flex items-center justify-between">
                                 <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-zinc-500">
                                     Integritas Ledger Kriptografi (SHA-256)
                                 </span>
                                 {log.entry_hash && (
                                     <button
                                         type="button"
-                                        onClick={() => copyHash(log.entry_hash!)}
+                                        onClick={() =>
+                                            copyHash(log.entry_hash!)
+                                        }
                                         className="inline-flex items-center gap-1 text-[10.5px] font-medium text-slate-500 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                                     >
                                         {copiedHash ? (
                                             <>
                                                 <Check className="size-3 text-emerald-600" />
-                                                <span className="text-emerald-600 font-semibold">Tersalin</span>
+                                                <span className="font-semibold text-emerald-600">
+                                                    Tersalin
+                                                </span>
                                             </>
                                         ) : (
                                             <>
@@ -1241,17 +1401,21 @@ function RawLogDetailDialog({
                                 )}
                             </div>
                             {log.entry_hash && (
-                                <div className="space-y-0.5 mb-2">
-                                    <span className="block text-[9.5px] text-slate-400 dark:text-zinc-500">Entry Hash:</span>
-                                    <p className="font-mono text-[10.5px] break-all text-slate-800 dark:text-zinc-200 select-all">
+                                <div className="mb-2 space-y-0.5">
+                                    <span className="block text-[9.5px] text-slate-400 dark:text-zinc-500">
+                                        Entry Hash:
+                                    </span>
+                                    <p className="font-mono text-[10.5px] break-all text-slate-800 select-all dark:text-zinc-200">
                                         {log.entry_hash}
                                     </p>
                                 </div>
                             )}
                             {log.previous_hash && (
                                 <div className="space-y-0.5">
-                                    <span className="block text-[9.5px] text-slate-400 dark:text-zinc-500">Previous Hash (Chained):</span>
-                                    <p className="font-mono text-[10.5px] break-all text-slate-500 dark:text-zinc-400 select-all">
+                                    <span className="block text-[9.5px] text-slate-400 dark:text-zinc-500">
+                                        Previous Hash (Chained):
+                                    </span>
+                                    <p className="font-mono text-[10.5px] break-all text-slate-500 select-all dark:text-zinc-400">
                                         {log.previous_hash}
                                     </p>
                                 </div>
